@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-05  
-Current handoff build: `v0.26.07.05.0200_AIRCRAFT_RANGE_FUEL_AND_INTERCEPTION_CHOICES_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html`; browser Build Health/smoke testing should confirm aircraft fuel/range normalization, stance effects, launch blocking, refueling, and existing repair/travel behavior.**
+Current handoff build: `v0.26.07.05.0220_SKYRANGER_BASE_AND_SOLDIER_LOCATION_FIX_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html`; browser Build Health/smoke testing should confirm Skyranger launches use the craft's assigned base and only carry soldiers stationed at that launch base, while interceptor base selection, fuel/range, refueling, repair, and clock-based travel behavior remain intact.**
 
 ---
 
@@ -48,10 +48,19 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.05.0200_AIRCRAFT_RANGE_FUEL_AND_INTERCEPTION_CHOICES_INDEX_ONLY_PATCH`
+`v0.26.07.05.0220_SKYRANGER_BASE_AND_SOLDIER_LOCATION_FIX_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- A targeted correction so Skyranger mission launch evaluates each ready Skyranger's assigned base instead of the selected/first campaign base.
+- Save-compatible soldier home-base normalization so old saves place missing soldier base state at the campaign's selected/first base.
+- Mission launch pairing that only selects a ready Skyranger whose base contains the assigned response soldiers.
+- Clear Skyranger launch blockers for no ready transport, soldiers not stationed at a ready Skyranger base, practical range, and fuel.
+- Manual and simulated missions now resolve their response force from the preserved Skyranger launch base.
+- A targeted correction so interceptor range/fuel checks use each interceptor's assigned base or hangar, not the first campaign base.
+- Launch selection now prefers eligible ready interceptors from bases that can actually reach the UFO.
+- Interceptor travel now preserves the selected launch base for ETA/progress.
+- Old aircraft records with a `hangarKey` but missing `baseId` derive the base from the hangar key during normalization.
 - Save-compatible fuel, range, and refuel readiness fields on top of the existing `aircraftFleet` identity/readiness state.
 - Simple practical range profiles for Skyrangers and interceptors, with launch blocking when a round trip exceeds range.
 - Fuel consumption committed at launch and refueling advanced only by Geoscape clock minutes while craft are not airborne.
@@ -60,6 +69,7 @@ This patch adds:
 - UFO Tracking readouts for interceptor fuel/range readiness and per-contact sortie feasibility.
 - Hangar readiness readouts expanded through `aircraftStatusLine` to show fuel, range, repair, and refuel state.
 - Build Health coverage for old-save normalization, range checks, refueling behavior, stance effects, fuel-based launch blocking, and existing repair behavior.
+- Build Health coverage for multi-base interceptor range selection, hangar-key base normalization, Skyranger assigned-base selection, wrong-base soldier blocking, multi-base Skyranger matching, fuel/refuel continuity, and old-save soldier base fallback.
 
 ## Current Player Verification Needed
 Before moving to the next major feature stage, test:
@@ -72,6 +82,7 @@ Before moving to the next major feature stage, test:
 2. **Interceptor readiness and repair**
    - Launch one or more interceptors at a detected UFO.
    - Confirm ready interceptor count drops immediately and launch buttons disable when no ready/fueled/in-range craft remain.
+   - With multiple bases, confirm UFO Tracking and launch use the base where each interceptor is stationed.
    - Advance Geoscape time through the return leg and confirm any damaged craft enter Repairing.
    - Advance more clock time and confirm repaired craft return to Ready.
    - Confirm fuel refills only while craft are not Outbound or Returning.
@@ -83,6 +94,8 @@ Before moving to the next major feature stage, test:
 
 4. **Skyranger status**
    - Launch a mission and confirm Skyranger travel still uses clock-based progress.
+   - With multiple bases, confirm the Skyranger launches from the base where the chosen transport is housed.
+   - Confirm soldiers assigned to the mission must be stationed at the chosen Skyranger's launch base.
    - Confirm launch is blocked or clearly reported if the round trip exceeds practical range or current fuel.
    - Finish/return from the mission and confirm the Skyranger becomes Ready again.
 
@@ -91,7 +104,7 @@ Before moving to the next major feature stage, test:
    - Confirm it normalizes a Skyranger/interceptor fleet with fuel/range fields and no crash.
 
 6. **Build Health**
-   - Confirm the in-browser Build Health panel passes all checks, including the aircraft identity/repair and range/fuel/stance rows.
+   - Confirm the in-browser Build Health panel passes all checks, including the aircraft identity/repair, range/fuel/stance, interceptor assigned-base, and Skyranger assigned-base rows.
 
 ---
 
@@ -930,12 +943,14 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.05.0200_AIRCRAFT_RANGE_FUEL_AND_INTERCEPTION_CHOICES_INDEX_ONLY_PATCH` before deepening the air-war layer again.
+Playtest `v0.26.07.05.0220_SKYRANGER_BASE_AND_SOLDIER_LOCATION_FIX_INDEX_ONLY_PATCH` before deepening the air-war layer again.
 
 Focus verification on:
 - Old saves normalizing a valid aircraft fleet with fuel/range fields.
 - Starting hangars showing named Skyranger/interceptor fuel, range, readiness, repair, and refuel state.
 - UFO Tracking showing fuel/range readiness, stance selection, and per-contact sortie feasibility.
+- Multi-base campaigns where interceptors stationed in a newer base can intercept nearby UFOs even when the first base is out of range.
+- Multi-base campaigns where Skyranger mission launch originates from the Skyranger's assigned base and blocks squads whose soldiers are stationed elsewhere.
 - Interceptor ready count and fuel dropping on launch, then recovering after return/repair/refuel.
 - Repair and refuel timers advancing only through Geoscape clock time.
 - Skyranger mission launch/return still using the clock-based travel contract.
@@ -1169,3 +1184,42 @@ Verification checklist:
 - Advance Geoscape time and confirm grounded aircraft refuel while airborne aircraft do not.
 
 Roadmap follow-up: if this tests cleanly, move next to `RICHER_UFO_EVASION_AND_AIR_COMBAT_EVENTS_INDEX_ONLY` so UFO size, speed, stance, and formation choices produce more varied interception outcomes while preserving the new fuel/range/repair foundation.
+
+## 2026-07-05 Patch Notes - Interceptor Base Range Selection Fix
+
+Build `v0.26.07.05.0210_INTERCEPTOR_BASE_RANGE_SELECTION_FIX_INDEX_ONLY_PATCH` corrects the first-base range bug found after the aircraft fuel/range patch:
+
+- Interceptor sortie readiness now resolves each aircraft's launch base from its `baseId` or `hangarKey`.
+- Old aircraft records that have a hangar assignment but no explicit `baseId` now derive the base from the hangar key during normalization.
+- UFO Tracking readiness and launch blocking now evaluate all ready interceptors across all bases and prefer eligible aircraft with the lowest fuel cost.
+- Interceptor launch reports and travel plans preserve the selected launch base instead of always using the first base with a location.
+- Existing fuel consumption, refueling, stance effects, damage/repair, and clock-based travel contracts are preserved.
+- Build Health now includes a multi-base range selection row verifying that an interceptor in a closer North Africa base can be selected while a North America interceptor remains out of range.
+
+Verification checklist:
+- Build a first base far from a detected UFO and confirm its interceptor is correctly blocked by range.
+- Build/order an interceptor at a closer second base and confirm the UFO can be intercepted from that closer base once the aircraft is Ready and fueled.
+- Confirm Build Health passes the new `Interceptor range uses each aircraft assigned base` row.
+
+Roadmap follow-up remains `RICHER_UFO_EVASION_AND_AIR_COMBAT_EVENTS_INDEX_ONLY` after this bugfix verifies cleanly.
+
+## 2026-07-05 Patch Notes - Skyranger Base and Soldier Location Fix
+
+Build `v0.26.07.05.0220_SKYRANGER_BASE_AND_SOLDIER_LOCATION_FIX_INDEX_ONLY_PATCH` corrects the Skyranger equivalent of the multi-base aircraft-origin bug:
+
+- Skyranger sortie selection now evaluates ready Skyrangers from their assigned `baseId` / `hangarKey` base instead of the currently selected or first base.
+- Mission response soldiers now carry a save-compatible `baseId`; old saves with missing soldier base state normalize to the campaign selected/first base.
+- Mission launch only selects a Skyranger whose launch base contains the assigned response force.
+- Launch blocking now reports whether the blocker is no ready Skyranger, soldiers not stationed at a ready Skyranger base, route range, or fuel.
+- Skyranger travel still consumes fuel at launch, advances by Geoscape clock time, preserves the launch base for arrival/return, and restores Ready status after the return leg.
+- Manual tactical missions and simulated missions now resolve the response force against the preserved launch base.
+- Selected-base live activity and base-defense preview data now use soldiers stationed at that base rather than every global soldier.
+- Build Health now includes Skyranger assigned-base selection, wrong-base soldier blocking, multi-base matching, range/fuel continuity, and old-save soldier base fallback checks.
+
+Verification checklist:
+- Build or load a multi-base campaign with a Skyranger in a secondary base and soldiers still stationed at the first base; confirm launch is blocked with a soldier-location reason.
+- Station or recruit soldiers at the same base as a ready Skyranger and confirm mission launch originates from that Skyranger's base.
+- Confirm existing interceptor multi-base range behavior still passes.
+- Confirm Build Health passes the new `Skyranger launch matches assigned base and stationed soldiers` row.
+
+Roadmap follow-up remains `RICHER_UFO_EVASION_AND_AIR_COMBAT_EVENTS_INDEX_ONLY` after this bugfix verifies cleanly.
