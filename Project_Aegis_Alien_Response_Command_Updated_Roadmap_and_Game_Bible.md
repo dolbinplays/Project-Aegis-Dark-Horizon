@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-05  
-Current handoff build: `v0.26.07.05.0100_AIRCRAFT_IDENTITY_DAMAGE_REPAIR_SEED_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html`; local static verification should be followed by browser Build Health/smoke testing for aircraft readiness, repair timers, hangar readouts, and launch blocking.**
+Current handoff build: `v0.26.07.05.0200_AIRCRAFT_RANGE_FUEL_AND_INTERCEPTION_CHOICES_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html`; browser Build Health/smoke testing should confirm aircraft fuel/range normalization, stance effects, launch blocking, refueling, and existing repair/travel behavior.**
 
 ---
 
@@ -48,44 +48,50 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.05.0100_AIRCRAFT_IDENTITY_DAMAGE_REPAIR_SEED_INDEX_ONLY_PATCH`
+`v0.26.07.05.0200_AIRCRAFT_RANGE_FUEL_AND_INTERCEPTION_CHOICES_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
-- Save-compatible `aircraftFleet` identity/readiness state alongside the legacy interceptor count.
-- Stable Skyranger/interceptor names and callsigns generated from hangar assignments or legacy interceptor counts.
-- Aircraft statuses for Ready, Outbound, Returning, and Repairing.
-- Skyranger launch/return status transitions tied to existing clock-based travel.
-- Interceptor launch blocking based on ready aircraft, not just raw owned count.
-- Interceptor sortie recovery that can place returning craft into short repair windows with light damage.
-- Repair timers advanced by Geoscape clock minutes.
-- Hangar and Geoscape readiness readouts showing named aircraft, repair state, ready/configured counts, and returning/repairing totals.
-- Build Health coverage for old-save aircraft normalization, repair readiness, and launch blocking.
+- Save-compatible fuel, range, and refuel readiness fields on top of the existing `aircraftFleet` identity/readiness state.
+- Simple practical range profiles for Skyrangers and interceptors, with launch blocking when a round trip exceeds range.
+- Fuel consumption committed at launch and refueling advanced only by Geoscape clock minutes while craft are not airborne.
+- Interception stance choices: Cautious, Standard, and Aggressive.
+- Stance effects on hit chance, aircraft damage risk, ammo expenditure, fuel use, and repair time.
+- UFO Tracking readouts for interceptor fuel/range readiness and per-contact sortie feasibility.
+- Hangar readiness readouts expanded through `aircraftStatusLine` to show fuel, range, repair, and refuel state.
+- Build Health coverage for old-save normalization, range checks, refueling behavior, stance effects, fuel-based launch blocking, and existing repair behavior.
 
 ## Current Player Verification Needed
 Before moving to the next major feature stage, test:
 
-1. **Aircraft identity and hangars**
+1. **Aircraft readiness and hangars**
    - Start a new campaign and inspect the starting base hangars.
-   - Confirm the Skyranger and starting Interceptor show named aircraft/readiness text.
-   - Order a new aircraft from an empty hangar and confirm the new craft receives a stable name/status.
+   - Confirm the Skyranger and starting Interceptor show named aircraft, fuel, range, and readiness text.
+   - Order a new aircraft from an empty hangar and confirm the new craft receives a stable name/status plus full fuel/range values.
 
 2. **Interceptor readiness and repair**
    - Launch one or more interceptors at a detected UFO.
-   - Confirm ready interceptor count drops immediately and launch buttons disable when no ready craft remain.
+   - Confirm ready interceptor count drops immediately and launch buttons disable when no ready/fueled/in-range craft remain.
    - Advance Geoscape time through the return leg and confirm any damaged craft enter Repairing.
    - Advance more clock time and confirm repaired craft return to Ready.
+   - Confirm fuel refills only while craft are not Outbound or Returning.
 
-3. **Skyranger status**
+3. **Interception stance**
+   - Change stance between Cautious, Standard, and Aggressive in UFO Tracking.
+   - Confirm contact readouts and launch reports show the selected stance.
+   - Confirm Aggressive improves hit chance but increases ammo/fuel/damage/repair pressure in Build Health and practical play.
+
+4. **Skyranger status**
    - Launch a mission and confirm Skyranger travel still uses clock-based progress.
+   - Confirm launch is blocked or clearly reported if the round trip exceeds practical range or current fuel.
    - Finish/return from the mission and confirm the Skyranger becomes Ready again.
 
-4. **Save compatibility**
+5. **Save compatibility**
    - Load or import an older save with no `aircraftFleet` field.
-   - Confirm it normalizes a Skyranger/interceptor fleet without crashing.
+   - Confirm it normalizes a Skyranger/interceptor fleet with fuel/range fields and no crash.
 
-5. **Build Health**
-   - Confirm the in-browser Build Health panel passes all checks, including the aircraft identity/repair readiness row.
+6. **Build Health**
+   - Confirm the in-browser Build Health panel passes all checks, including the aircraft identity/repair and range/fuel/stance rows.
 
 ---
 
@@ -473,11 +479,12 @@ Current aircraft ideas:
 - Hangar assignment and empty hangar states.
 - Named Skyranger/interceptor craft with Ready, Outbound, Returning, and Repairing status.
 - Light post-sortie interceptor damage and clock-driven repair timers.
+- Simple aircraft fuel/range readiness with clock-driven refueling.
+- Interception stances that trade hit chance against ammo burn, fuel use, damage risk, and repair time.
 
 Still planned:
-- Fuel/range constraints.
 - Pilot/crew identity if the air-war layer needs named aviators later.
-- Richer UFO evasive behavior and interception choices.
+- Richer UFO evasive behavior and multi-step interception events.
 - Deeper aircraft damage outcomes and repair cost/bay constraints.
 
 ---
@@ -853,6 +860,8 @@ Completed / first pass:
 - Save-compatible aircraft identity/readiness state.
 - Named Skyranger/interceptor craft with launch/return/repair status.
 - Light interceptor damage and clock-driven repair timers.
+- Aircraft fuel/range readiness and clock-driven refueling.
+- Cautious/Standard/Aggressive interception stance choices.
 - Crash-site incidents.
 - Hidden command-site discovery gating.
 - Base hallway/pathing foundation where hallways are represented by the grid lines around rooms, not by room tiles.
@@ -921,27 +930,28 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.05.0100_AIRCRAFT_IDENTITY_DAMAGE_REPAIR_SEED_INDEX_ONLY_PATCH` before extending the air-war layer again.
+Playtest `v0.26.07.05.0200_AIRCRAFT_RANGE_FUEL_AND_INTERCEPTION_CHOICES_INDEX_ONLY_PATCH` before deepening the air-war layer again.
 
 Focus verification on:
-- Old saves normalizing a valid aircraft fleet.
-- Starting hangars showing named Skyranger/interceptor readiness.
-- Interceptor ready count dropping on launch and recovering after return/repair.
-- Repair timers advancing only through Geoscape clock time.
+- Old saves normalizing a valid aircraft fleet with fuel/range fields.
+- Starting hangars showing named Skyranger/interceptor fuel, range, readiness, repair, and refuel state.
+- UFO Tracking showing fuel/range readiness, stance selection, and per-contact sortie feasibility.
+- Interceptor ready count and fuel dropping on launch, then recovering after return/repair/refuel.
+- Repair and refuel timers advancing only through Geoscape clock time.
 - Skyranger mission launch/return still using the clock-based travel contract.
 - Build Health passing all checks in browser.
 
 ## Best Next Feature Patch
-If this batch tests well, continue the air-war foundation:
+If this batch tests well, continue the air-war foundation with richer airborne contact resolution:
 
-`AIRCRAFT_RANGE_FUEL_AND_INTERCEPTION_CHOICES_INDEX_ONLY`
+`RICHER_UFO_EVASION_AND_AIR_COMBAT_EVENTS_INDEX_ONLY`
 
 Suggested focus:
-- Add simple interceptor/Skyranger range and fuel readiness values.
-- Block or warn on impossible long-range sorties.
-- Add limited interception choices such as cautious, standard, and aggressive attack runs.
-- Let choice affect hit chance, damage risk, ammo use, and repair time.
-- Keep all movement and recovery tied to Geoscape clock minutes.
+- Add lightweight UFO evasive outcomes such as breakaway, pursuit extension, forced abort, damaged escape, and confirmed shootdown.
+- Let UFO size/speed/threat interact with stance and formation size.
+- Add short interception event log lines to reports so air combat feels less binary.
+- Preserve the current fuel/range/repair model and clock-based travel contract.
+- Add Build Health coverage for evasion outcome bounds, stance/formation interactions, and no-regression aircraft readiness behavior.
 
 ---
 
@@ -1136,3 +1146,26 @@ Build `v0.26.07.05.0100_AIRCRAFT_IDENTITY_DAMAGE_REPAIR_SEED_INDEX_ONLY_PATCH` a
 - Build Health coverage now includes old-save aircraft-fleet normalization, repair readiness, and launch blocking.
 
 Roadmap follow-up: playtest the repair cadence and UI clarity, then extend the air-war layer with range/fuel constraints and player-facing interception choices that trade hit chance, damage risk, ammo use, and repair time.
+
+## 2026-07-05 Patch Notes - Aircraft Range, Fuel, and Interception Choices
+
+Build `v0.26.07.05.0200_AIRCRAFT_RANGE_FUEL_AND_INTERCEPTION_CHOICES_INDEX_ONLY_PATCH` extends the aircraft readiness layer without changing the single-file architecture:
+
+- Added save-compatible fuel capacity, current fuel, range, and refuel timer fields to normalized aircraft records.
+- Skyrangers and interceptors now use simple practical range profiles and block launches when the round trip exceeds range or available fuel.
+- Fuel is consumed at launch and refuels through existing Geoscape clock advancement while craft are not Outbound or Returning.
+- UFO Tracking now surfaces interceptor fuel/range readiness and per-contact sortie feasibility.
+- Added Cautious, Standard, and Aggressive interception stances; stance modifies hit chance, ammo expenditure, fuel use, damage risk, and repair time.
+- Hangar inspection inherits clearer fuel/range/repair/refuel status through the shared aircraft readiness line.
+- Existing clock-based Skyranger/interceptor travel and interceptor repair behavior are preserved.
+- Build Health coverage now includes aircraft fuel/range normalization, route range checks, fuel refill behavior, stance effect bounds, fuel-based launch blocking, and the previous repair readiness checks.
+
+Verification checklist:
+- Start a new campaign and confirm the start screen/build label shows `v0.26.07.05.0200`.
+- Open Build Health in browser and confirm all checks pass, including aircraft identity/repair and aircraft range/fuel/stance rows.
+- Inspect a hangar and confirm named aircraft show fuel and range readiness.
+- In UFO Tracking, switch stances and confirm contact launch buttons/readouts respond to readiness.
+- Launch an interceptor and confirm fuel is consumed, the craft becomes Outbound/Returning, then returns to Ready or Repairing after the clock-driven return leg.
+- Advance Geoscape time and confirm grounded aircraft refuel while airborne aircraft do not.
+
+Roadmap follow-up: if this tests cleanly, move next to `RICHER_UFO_EVASION_AND_AIR_COMBAT_EVENTS_INDEX_ONLY` so UFO size, speed, stance, and formation choices produce more varied interception outcomes while preserving the new fuel/range/repair foundation.
