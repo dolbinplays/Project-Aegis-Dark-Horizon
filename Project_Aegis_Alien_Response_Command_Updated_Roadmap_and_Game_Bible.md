@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-05  
-Current handoff build: `v0.26.07.05.0220_SKYRANGER_BASE_AND_SOLDIER_LOCATION_FIX_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html`; browser Build Health/smoke testing should confirm Skyranger launches use the craft's assigned base and only carry soldiers stationed at that launch base, while interceptor base selection, fuel/range, refueling, repair, and clock-based travel behavior remain intact.**
+Current handoff build: `v0.26.07.05.0230_NEW_BASE_PLACEMENT_CONFIRMATION_UI_FIX_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html`; browser Build Health/smoke testing should confirm the new-base placement confirmation panel is visible immediately above the Geoscape globe while Skyranger/interceptor base-selection, fuel/range, refueling, repair, and clock-based travel behavior remain intact.**
 
 ---
 
@@ -48,10 +48,14 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.05.0220_SKYRANGER_BASE_AND_SOLDIER_LOCATION_FIX_INDEX_ONLY_PATCH`
+`v0.26.07.05.0230_NEW_BASE_PLACEMENT_CONFIRMATION_UI_FIX_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- A targeted Geoscape UI fix so the new-base placement confirmation controls render directly above the globe when placement mode is active.
+- A visible base name field, selected site summary, construction cost, funds-after-construction readout, and confirm button near the existing Build/Cancel placement controls.
+- Shared placement validation state so confirm is disabled with a clear reason until a name is entered and enough funds are available.
+- Build Health coverage for the base-placement confirmation state and new-base construction data contract.
 - A targeted correction so Skyranger mission launch evaluates each ready Skyranger's assigned base instead of the selected/first campaign base.
 - Save-compatible soldier home-base normalization so old saves place missing soldier base state at the campaign's selected/first base.
 - Mission launch pairing that only selects a ready Skyranger whose base contains the assigned response soldiers.
@@ -73,6 +77,12 @@ This patch adds:
 
 ## Current Player Verification Needed
 Before moving to the next major feature stage, test:
+
+0. **New base placement**
+   - Click Build New Base from the Geoscape.
+   - Confirm the New Base Site panel, base name field, selected site summary, cost, and confirm button appear immediately above the globe without needing to hunt through the page.
+   - Confirm the button stays disabled until a base name is entered and enough funds are available.
+   - Enter a name, confirm construction, and verify the new base is created with the standard Access Lift seed layout.
 
 1. **Aircraft readiness and hangars**
    - Start a new campaign and inspect the starting base hangars.
@@ -104,7 +114,7 @@ Before moving to the next major feature stage, test:
    - Confirm it normalizes a Skyranger/interceptor fleet with fuel/range fields and no crash.
 
 6. **Build Health**
-   - Confirm the in-browser Build Health panel passes all checks, including the aircraft identity/repair, range/fuel/stance, interceptor assigned-base, and Skyranger assigned-base rows.
+   - Confirm the in-browser Build Health panel passes all checks, including the new-base placement, aircraft identity/repair, range/fuel/stance, interceptor assigned-base, and Skyranger assigned-base rows.
 
 ---
 
@@ -943,9 +953,10 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.05.0220_SKYRANGER_BASE_AND_SOLDIER_LOCATION_FIX_INDEX_ONLY_PATCH` before deepening the air-war layer again.
+Playtest `v0.26.07.05.0230_NEW_BASE_PLACEMENT_CONFIRMATION_UI_FIX_INDEX_ONLY_PATCH` before deepening the air-war layer again.
 
 Focus verification on:
+- New-base placement mode showing the name field, selected site summary, cost, and confirm button immediately above the Geoscape globe.
 - Old saves normalizing a valid aircraft fleet with fuel/range fields.
 - Starting hangars showing named Skyranger/interceptor fuel, range, readiness, repair, and refuel state.
 - UFO Tracking showing fuel/range readiness, stance selection, and per-contact sortie feasibility.
@@ -1202,6 +1213,25 @@ Verification checklist:
 - Confirm Build Health passes the new `Interceptor range uses each aircraft assigned base` row.
 
 Roadmap follow-up remains `RICHER_UFO_EVASION_AND_AIR_COMBAT_EVENTS_INDEX_ONLY` after this bugfix verifies cleanly.
+
+## 2026-07-05 Patch Notes - New Base Placement Confirmation UI Fix
+
+Build `v0.26.07.05.0230_NEW_BASE_PLACEMENT_CONFIRMATION_UI_FIX_INDEX_ONLY_PATCH` corrects the Geoscape placement flow where the globe entered base-placement mode but the actual confirmation controls were not visible to the player:
+
+- The New Base Site confirmation controls now render directly above the Geoscape globe whenever placement mode is active.
+- The visible placement panel includes the base name field, selected region/location summary, construction cost, projected funds after construction, validation reason, and confirm button.
+- The existing Cancel Base Placement button remains in the Geoscape action row.
+- Confirm construction is disabled until the base has a name and the council has enough funds.
+- Existing `buildNewBase` behavior remains the construction authority, preserving the single-file architecture and save compatibility.
+- Build Health now includes a row for new-base placement confirmation state and the new-base creation contract.
+
+Verification checklist:
+- Click Build New Base and confirm the New Base Site panel appears above the globe without scrolling.
+- Enter a valid base name and confirm the button enables when funds are sufficient.
+- Construct the base and confirm the new base appears with the Access Lift seed layout.
+- Confirm Build Health passes the new `New-base placement confirmation stays visible and validates construction` row.
+
+Roadmap follow-up remains `RICHER_UFO_EVASION_AND_AIR_COMBAT_EVENTS_INDEX_ONLY` after this UI bugfix verifies cleanly.
 
 ## 2026-07-05 Patch Notes - Skyranger Base and Soldier Location Fix
 
