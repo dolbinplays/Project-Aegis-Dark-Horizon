@@ -1,9 +1,9 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-07-04  
-Current handoff build: `v0.26.07.04.0053_AIRCRAFT_CLOCK_SPEED_COUNCIL_FRAME_INDEX_ONLY_PATCH`  
-Current patch status: **Built; extracted inline script syntax check passes. Build Health/browser smoke verification should confirm the Council frame and clock-based aircraft travel rows in the active GitHub build.**
+Last updated: 2026-07-05  
+Current handoff build: `v0.26.07.05.0100_AIRCRAFT_IDENTITY_DAMAGE_REPAIR_SEED_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html`; local static verification should be followed by browser Build Health/smoke testing for aircraft readiness, repair timers, hangar readouts, and launch blocking.**
 
 ---
 
@@ -48,47 +48,44 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.06.10.0300_BASE_ACTIVITY_ANIMATION_AND_INVASION_MAP_SEED_COUNCIL_SLIDE_FRAME_INDEX_ONLY_PATCH`
+`v0.26.07.05.0100_AIRCRAFT_IDENTITY_DAMAGE_REPAIR_SEED_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
-This patch combined:
-- Base hallway foundation correction: hallways are now textured grid lines/gaps around facilities, not buildable room tiles that consume facility space.
-- Memorial relationship/content pass: the supplied content pool now provides 200 tagged offering items and 281 tagged message templates, with donor gating based on friendship tier, shared service, downtime bonds, medic/engineer context, mission-survivor context, and rivalry/dislike suppression. Friendship score 8 remains the normal minimum for soldier offerings. Item-specific memorial message matching now prioritizes the object left behind so poker chips, seed packets, workshop parts, and other offerings receive appropriate text.
-- Base-defense planning foundation: helpers now identify Access Lift and Hangar invasion entry points, connected traversable room cells, hallway-grid coverage around rooms, reachable Alien Containment, and Air Defense Battery attacker reduction estimates.
-- Air Defense Battery seed facility: a future base-defense facility that can damage or drive off incoming base-invasion ships, or reduce attacker count.
-- Downtime location visualization seed: the Base view can place soldier markers on plausible facilities while the hallway texture surrounds rooms as the future movement layer.
-- Geoscape aesthetic polish: the globe panel now reads more like a Project Aegis command-console view.
-- New asset: `assets/base_tiles/hallway.png` provides the base-map hallway texture used between facility tiles.
-- Updated version/build label and Build Health coverage.
-- Persistent, save-compatible soldier base-location state for downtime positions and future base-defense starts.
-- Base Activity panel with Live/Static marker toggle; respects reduced-motion preference.
-- Base Defense Preview panel showing Access Lift/Hangar entries, arms lockers, defender starts, air defense strength, Sickbay staging note, and containment-route risk seed.
+This patch adds:
+- Save-compatible `aircraftFleet` identity/readiness state alongside the legacy interceptor count.
+- Stable Skyranger/interceptor names and callsigns generated from hangar assignments or legacy interceptor counts.
+- Aircraft statuses for Ready, Outbound, Returning, and Repairing.
+- Skyranger launch/return status transitions tied to existing clock-based travel.
+- Interceptor launch blocking based on ready aircraft, not just raw owned count.
+- Interceptor sortie recovery that can place returning craft into short repair windows with light damage.
+- Repair timers advanced by Geoscape clock minutes.
+- Hangar and Geoscape readiness readouts showing named aircraft, repair state, ready/configured counts, and returning/repairing totals.
+- Build Health coverage for old-save aircraft normalization, repair readiness, and launch blocking.
 
 ## Current Player Verification Needed
 Before moving to the next major feature stage, test:
 
-1. **Base hallway grid layout**
-   - Start a new game and inspect the starting base preview.
-   - Confirm hallways appear as textured grid lines/gaps around facilities rather than as buildable facility spaces.
-   - Confirm the layout shows two hangars, one Interceptor hangar, and one Skyranger hangar.
-   - Confirm existing saves still load and expansion bases still start with only the Access Lift.
+1. **Aircraft identity and hangars**
+   - Start a new campaign and inspect the starting base hangars.
+   - Confirm the Skyranger and starting Interceptor show named aircraft/readiness text.
+   - Order a new aircraft from an empty hangar and confirm the new craft receives a stable name/status.
 
-2. **Base downtime location markers**
-   - Advance at least one day so downtime activities resolve.
-   - Open Base view and confirm soldiers appear as small markers on plausible facilities while the hallway grid remains visible around rooms.
-   - Hover markers and confirm names/activity text are understandable and do not block facility use.
+2. **Interceptor readiness and repair**
+   - Launch one or more interceptors at a detected UFO.
+   - Confirm ready interceptor count drops immediately and launch buttons disable when no ready craft remain.
+   - Advance Geoscape time through the return leg and confirm any damaged craft enter Repairing.
+   - Advance more clock time and confirm repaired craft return to Ready.
 
-3. **Hallway asset and air-defense seed**
-   - Confirm Corridor does not appear as a buildable facility.
-   - Confirm Air Defense Battery appears in Build Facilities.
-   - Build/click Air Defense Battery if funds allow and confirm the selected facility panel text makes sense.
+3. **Skyranger status**
+   - Launch a mission and confirm Skyranger travel still uses clock-based progress.
+   - Finish/return from the mission and confirm the Skyranger becomes Ready again.
 
-4. **Geoscape presentation**
-   - Open Geoscape and confirm the globe panel feels visually consistent with the darker command-interface style.
-   - Confirm region/base/incident clicking still behaves normally.
+4. **Save compatibility**
+   - Load or import an older save with no `aircraftFleet` field.
+   - Confirm it normalizes a Skyranger/interceptor fleet without crashing.
 
 5. **Build Health**
-   - Confirm the in-browser Build Health panel reports 176/176 checks passing.
+   - Confirm the in-browser Build Health panel passes all checks, including the aircraft identity/repair readiness row.
 
 ---
 
@@ -450,6 +447,8 @@ Implemented or first-pass:
 - Radar detection.
 - Interceptors.
 - Aircraft ammo/upgrades.
+- Persistent aircraft identity/readiness seed.
+- Aircraft damage/repair seed after interception.
 - Crash-site incidents.
 - Hidden command-site discovery gating.
 
@@ -464,7 +463,7 @@ Implemented or first-pass:
 - Endgame final mission should become available after the correct chain of detection/research/escalation.
 
 ## Air War
-Current / planned aircraft ideas:
+Current aircraft ideas:
 - Interceptors are faster and shorter range than Skyrangers.
 - Multi-interceptor attack formation.
 - Default gatling + small missiles.
@@ -472,6 +471,14 @@ Current / planned aircraft ideas:
 - Energy weapons later.
 - Aircraft ammo/upgrades.
 - Hangar assignment and empty hangar states.
+- Named Skyranger/interceptor craft with Ready, Outbound, Returning, and Repairing status.
+- Light post-sortie interceptor damage and clock-driven repair timers.
+
+Still planned:
+- Fuel/range constraints.
+- Pilot/crew identity if the air-war layer needs named aviators later.
+- Richer UFO evasive behavior and interception choices.
+- Deeper aircraft damage outcomes and repair cost/bay constraints.
 
 ---
 
@@ -843,6 +850,9 @@ Completed / first pass:
 - Radar detection.
 - Interceptors.
 - Aircraft ammo/upgrades.
+- Save-compatible aircraft identity/readiness state.
+- Named Skyranger/interceptor craft with launch/return/repair status.
+- Light interceptor damage and clock-driven repair timers.
 - Crash-site incidents.
 - Hidden command-site discovery gating.
 - Base hallway/pathing foundation where hallways are represented by the grid lines around rooms, not by room tiles.
@@ -911,26 +921,27 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest the v0.26.06.09.0045 batch before starting the next major feature branch.
+Playtest `v0.26.07.05.0100_AIRCRAFT_IDENTITY_DAMAGE_REPAIR_SEED_INDEX_ONLY_PATCH` before extending the air-war layer again.
 
 Focus verification on:
-- Starting base corridor layout and hangar labels.
-- Soldier downtime markers in Base view, including Live/Static activity toggle behavior.
-- Corridor and Air Defense Battery build/select behavior.
-- Geoscape command-globe styling.
-- Build Health reporting 176/176 checks passing.
+- Old saves normalizing a valid aircraft fleet.
+- Starting hangars showing named Skyranger/interceptor readiness.
+- Interceptor ready count dropping on launch and recovering after return/repair.
+- Repair timers advancing only through Geoscape clock time.
+- Skyranger mission launch/return still using the clock-based travel contract.
+- Build Health passing all checks in browser.
 
 ## Best Next Feature Patch
-If this batch tests well, continue the base-defense foundation:
+If this batch tests well, continue the air-war foundation:
 
-`BASE_ACTIVITY_ANIMATION_AND_INVASION_MAP_SEED_INDEX_ONLY`
+`AIRCRAFT_RANGE_FUEL_AND_INTERCEPTION_CHOICES_INDEX_ONLY`
 
 Suggested focus:
-- Give soldiers persistent base-room/corridor positions during downtime.
-- Animate simple movement from current position to chosen downtime destination.
-- Generate a read-only base-defense preview map from the real base grid.
-- Define arms-locker locations and Sickbay emergency response rules.
-- Add alien weapon research gates for battlefield pickup/use.
+- Add simple interceptor/Skyranger range and fuel readiness values.
+- Block or warn on impossible long-range sorties.
+- Add limited interception choices such as cautious, standard, and aggressive attack runs.
+- Let choice affect hit chance, damage risk, ammo use, and repair time.
+- Keep all movement and recovery tied to Geoscape clock minutes.
 
 ---
 
@@ -1110,3 +1121,18 @@ Build `v0.26.07.04.0053_AIRCRAFT_CLOCK_SPEED_COUNCIL_FRAME_INDEX_ONLY_PATCH` rep
 - Build Health coverage now includes fixed aircraft speed consistency, route-distance progress scaling, elapsed-clock advancement, return-leg behavior, and the repaired Council slide frame.
 
 Roadmap follow-up: continue building toward persistent aircraft identity, aircraft damage/repair, range/fuel constraints, and richer UFO/interceptor choices. Keep travel progress tied to Geoscape time so future air-combat systems remain physically readable at Earth scale.
+
+## 2026-07-05 Patch Notes - Aircraft Identity, Damage, and Repair Seed
+
+Build `v0.26.07.05.0100_AIRCRAFT_IDENTITY_DAMAGE_REPAIR_SEED_INDEX_ONLY_PATCH` adds the first persistent aircraft readiness layer:
+
+- Added save-compatible `aircraftFleet` normalization so old saves without aircraft identity data receive named Skyranger/interceptor records from hangar assignments and legacy interceptor counts.
+- Aircraft now carry stable names, callsigns, base/hangar identity, status, damage, repair time, and last-sortie outcome.
+- Skyranger mission launch marks the selected Skyranger Outbound, mission return marks it Returning, and completed return restores it to Ready.
+- Interceptor launch now selects ready named interceptor craft, marks them Outbound, and blocks launches when no ready craft are available.
+- Returning interceptors can take light sortie damage and enter short Repairing windows; repair timers advance through Geoscape clock minutes.
+- The Geoscape UFO Tracking panel now reports ready/configured interceptors plus repairing/returning totals.
+- Hangar inspection now surfaces the named aircraft and its readiness/damage/repair status.
+- Build Health coverage now includes old-save aircraft-fleet normalization, repair readiness, and launch blocking.
+
+Roadmap follow-up: playtest the repair cadence and UI clarity, then extend the air-war layer with range/fuel constraints and player-facing interception choices that trade hit chance, damage risk, ammo use, and repair time.
