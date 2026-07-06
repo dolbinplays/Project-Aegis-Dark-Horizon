@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-06  
-Current handoff build: `v0.26.07.06.0155_STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html`; static parse and stubbed Build Health harness passed with 201/201 checks. Browser smoke was attempted but direct `file:///` navigation was blocked by browser policy. Browser Build Health/smoke testing should confirm fuel tank upgrade cards render in UFO Tracking, the starting base includes one Shortwave Radar, upgraded Interceptor/Skyranger fuel capacity and range apply to old and current aircraft, and there is no regression to richer air combat, stuck-Outbound recovery, new-base placement, Skyranger/interceptor base-selection, refueling, repair, and clock-based travel behavior.**
+Current handoff build: `v0.26.07.06.0175_SMOOTH_XCOM_STYLE_GEOSCAPE_TIME_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html`; static parse and stubbed Build Health harness passed with 203/203 checks. Browser smoke was attempted but direct local `file:///` navigation was blocked by browser policy. Browser Build Health/smoke testing should confirm the Geoscape clock offers X-COM-style time compression modes, aircraft/UFO progress still resolves from elapsed Geoscape minutes, Build New Base placement mode shows dotted Interceptor and Skyranger practical-reach rings centered on the proposed site, and there is no regression to starting Shortwave Radar, fuel tank cards, richer air combat, stuck-Outbound recovery, new-base placement confirmation, Skyranger/interceptor base-selection, refueling, repair, and clock-based travel behavior.**
 
 ---
 
@@ -48,10 +48,20 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.06.0155_STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY_PATCH`
+`v0.26.07.06.0175_SMOOTH_XCOM_STYLE_GEOSCAPE_TIME_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- X-COM-style Geoscape time compression modes: Pause, 5s, 1m, 5m, 30m, 1h, 6h, and 1d.
+- A smoother one-second Geoscape clock cadence where the selected compression mode controls elapsed simulation minutes instead of changing aircraft/travel formulas.
+- Old-save normalization for legacy or odd Geoscape tick settings, snapping them to the nearest supported compression mode.
+- Time-control UI labels that show the selected compression mode and perceived clock rate.
+- Build Health coverage for time-scale conversion, route progress scaling, repair/refuel progression, and no-regression tactical/modal clock blocking.
+- Dotted aircraft reach previews during Build New Base placement mode, centered on the proposed site on the Geoscape globe.
+- Separate current Interceptor and Skyranger practical reach rings, using the existing aircraft range profile and half-range round-trip planning model.
+- Additional upgrade-preview rings when Interceptor Drop Tanks or Skyranger Extended Tanks are not yet owned, so the player can compare starting craft reach against upgraded reach.
+- Selected-site summary text explaining the current aircraft reach values without requiring the player to hunt through unrelated panels.
+- Build Health coverage for placement-mode range preview state, range values, hidden inactive-mode previews, render data, summary text, and no-regression base construction behavior.
 - One Shortwave Radar seeded into the default Fort Aegis starting base layout.
 - Expansion bases remain clean starter bases with only their free Access Lift.
 - Starting radar coverage now contributes to the existing shortwave/longwave detection summary from the beginning of a new campaign.
@@ -104,8 +114,16 @@ Before moving to the next major feature stage, test:
 0. **New base placement**
    - Click Build New Base from the Geoscape.
    - Confirm the New Base Site panel, base name field, selected site summary, cost, and confirm button appear immediately above the globe without needing to hunt through the page.
+   - Confirm dotted Interceptor and Skyranger aircraft reach rings appear centered on the proposed base site.
+   - Confirm the selected-site summary includes the dotted aircraft reach values.
    - Confirm the button stays disabled until a base name is entered and enough funds are available.
    - Enter a name, confirm construction, and verify the new base is created with the standard Access Lift seed layout.
+
+0b. **Smooth Geoscape time**
+   - Use the Geoscape Clock modes: Pause, 5s, 1m, 5m, 30m, 1h, 6h, and 1d.
+   - Confirm the clock feels like time compression rather than a chunky End Day-only flow.
+   - Launch aircraft or track a UFO and confirm faster modes make visible progress faster while preserving the same clock-based travel/return/repair/refuel rules.
+   - Confirm tactical/manual mission states, council slides, and blocking modal states still stop the auto-clock.
 
 0a. **Starting Shortwave Radar**
    - Start a new campaign and inspect the starting base.
@@ -159,7 +177,7 @@ Before moving to the next major feature stage, test:
    - Confirm it normalizes a Skyranger/interceptor fleet with fuel/range fields and no crash.
 
 6. **Build Health**
-   - Confirm the in-browser Build Health panel passes all checks, including fuel tank upgrades, air-combat reports, stuck-Outbound recovery, richer UFO evasion, new-base placement, aircraft identity/repair, range/fuel/stance, interceptor assigned-base, and Skyranger assigned-base rows.
+   - Confirm the in-browser Build Health panel passes all checks, including smooth Geoscape time compression, base-placement aircraft range previews, fuel tank upgrades, air-combat reports, stuck-Outbound recovery, richer UFO evasion, new-base placement, aircraft identity/repair, range/fuel/stance, interceptor assigned-base, and Skyranger assigned-base rows.
 
 ---
 
@@ -1016,9 +1034,19 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.06.0155_STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY_PATCH` before adding another time/radar layer.
+Playtest `v0.26.07.06.0175_SMOOTH_XCOM_STYLE_GEOSCAPE_TIME_INDEX_ONLY_PATCH` before adding the distance-based radar layer.
 
 Focus verification on:
+- Geoscape Clock modes showing Pause, 5s, 1m, 5m, 30m, 1h, 6h, and 1d.
+- The active clock mode displaying a readable compression/rate label.
+- Aircraft/UFO visible progress feeling faster at higher compression while still completing from elapsed Geoscape minutes.
+- Repair, refuel, delayed crash, UFO movement, and mission timers remaining clock-based under every compression mode.
+- Tactical/manual mission states, council slides, and blocking modal states still stopping automatic time flow.
+- Build New Base placement mode showing dotted aircraft reach rings centered on the proposed site.
+- Interceptor and Skyranger current practical reach rings matching the aircraft range profile.
+- Fuel tank upgrade preview rings appearing only when the relevant tank upgrade is not already owned.
+- The New Base Site summary explaining dotted aircraft reach values near the confirm controls.
+- Base construction still creating the expected Access Lift seed layout after using the preview.
 - New campaigns showing one Shortwave Radar in the starting base.
 - UFO Tracking coverage showing one shortwave radar counted at campaign start.
 - Expansion bases still starting with only the free Access Lift layout.
@@ -1053,15 +1081,16 @@ Focus verification on:
 ## Best Next Feature Patch
 If this batch tests well, continue with the next priority roadmap patch:
 
-`SMOOTH_XCOM_STYLE_GEOSCAPE_TIME_INDEX_ONLY`
+`BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY`
 
 Suggested focus:
-- Replace the chunky tick-feeling Geoscape controls with smoother time compression modes inspired by X-COM.
-- Keep simulation authoritative in elapsed Geoscape minutes, but render aircraft, UFOs, clouds, clock, and route progress as smoothly animated between updates.
-- Make perceived aircraft/UFO speed visibly scale with selected time compression while preserving current route duration math.
-- Preserve current fuel use, repair, refuel, UFO progress, delayed crash, Skyranger travel, and interceptor return timing.
-- Pause or slow time automatically for important prompts such as new radar contact, interception result, crash site, mission landing/terror incident, base invasion warning, or council-critical event.
-- Add Build Health coverage for time-scale conversion, smooth route interpolation, aircraft perceived-speed scaling, prompt auto-pause/slowdown, and no-regression tactical/modal clock blocking.
+- Give each base radar facility a detection radius from that base's geoscape location.
+- Make Shortwave Radar a local/regional detection source and Longwave Radar a wider strategic detection source.
+- Replace or supplement the current global radar coverage score with distance-based per-UFO coverage from eligible bases.
+- Let overlapping radar fields improve detection chance, tracking speed, contact quality, or intercept solution accuracy.
+- Surface which base/radar network is detecting or tracking each UFO in UFO Tracking.
+- Keep old saves compatible by deriving radar coverage from existing base facilities.
+- Add Build Health coverage for distance-based detection, out-of-range UFO invisibility, Shortwave vs Longwave range differences, contact-quality progression, and no-regression interceptor launch behavior.
 
 ## Near-Term Starting Base Upgrade Candidate
 Implemented in `v0.26.07.06.0155_STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY_PATCH`; keep this section as the reference contract for any future starting-base template adjustments:
@@ -1076,8 +1105,22 @@ Suggested focus:
 - Surface the starting radar clearly in Base Facilities and any radar-readiness summaries.
 - Add Build Health coverage for first-base facility seeding, old-save normalization, radar count/detection coverage, and no-regression base construction behavior.
 
+## Near-Term Base Placement Planning Candidate
+Implemented in `v0.26.07.06.0165_BASE_PLACEMENT_AIRCRAFT_RANGE_PREVIEW_INDEX_ONLY_PATCH`; keep this section as the reference contract for future base-placement planning overlays:
+
+`BASE_PLACEMENT_AIRCRAFT_RANGE_PREVIEW_INDEX_ONLY`
+
+Suggested focus:
+- While Build New Base placement mode is active, show dotted circular range overlays centered on the proposed new base site.
+- Use the existing aircraft range profiles so the player can see practical Interceptor and Skyranger reach before confirming construction.
+- Show separate dotted circles for current Interceptor and Skyranger reach, plus upgraded fuel-tank preview rings when those upgrades are not already purchased.
+- Keep the overlay lightweight and readable on the Geoscape globe: thin dashed/dotted rings, restrained colors, and no large opaque coverage fills.
+- Update the selected-site summary to explain what the dotted circles represent, including approximate radius/range values.
+- Preserve current base-placement confirmation behavior, construction cost, validation, and save compatibility.
+- Add Build Health coverage for placement-mode range preview state, range values matching aircraft profiles/upgrades, no overlay when placement mode is inactive, and no regression to new-base construction.
+
 ## Near-Term Radar Model Candidate
-After the starting radar seed, consider:
+After the starting radar seed and base-placement aircraft range preview, consider:
 
 `BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY`
 
@@ -1092,18 +1135,18 @@ Suggested focus:
 - Add Build Health coverage for distance-based detection, out-of-range UFO invisibility, overlapping coverage bonuses, Shortwave vs Longwave range differences, contact-quality progression, old-save normalization, and no-regression interceptor launch behavior.
 
 ## Near-Term Geoscape Time Candidate
-After the current aircraft/radar foundations are stable, consider:
+Implemented in `v0.26.07.06.0175_SMOOTH_XCOM_STYLE_GEOSCAPE_TIME_INDEX_ONLY_PATCH`; keep this section as the reference contract for future time-control polish:
 
 `SMOOTH_XCOM_STYLE_GEOSCAPE_TIME_INDEX_ONLY`
 
 Suggested focus:
-- Replace the chunky tick-feeling Geoscape controls with smoother time compression modes inspired by X-COM: Pause, 5 Seconds, 1 Minute, 5 Minutes, 30 Minutes, 1 Hour, and 1 Day style rates if they fit the current UI.
-- Keep simulation authoritative in elapsed Geoscape minutes, but render aircraft, UFOs, clouds, clock, and route progress as smoothly animated between updates.
-- Make perceived aircraft/UFO speed visibly scale with selected time compression: fast time should make craft streak across routes, slow time should make them creep.
+- Replace the chunky tick-feeling Geoscape controls with smoother time compression modes inspired by X-COM: Pause, 5 Seconds, 1 Minute, 5 Minutes, 30 Minutes, 1 Hour, 6 Hours, and 1 Day.
+- Keep simulation authoritative in elapsed Geoscape minutes while using a consistent one-second real-time cadence for automatic advancement.
+- Make perceived aircraft/UFO speed visibly scale with selected time compression: fast time should make craft progress faster, slow time should make them creep.
 - Preserve current route duration math, fuel use, repair, refuel, UFO progress, delayed crash, Skyranger travel, and interceptor return timing.
 - Pause or slow time automatically for important prompts such as new radar contact, mission landing/terror incident, interception result, crash site, base invasion warning, or council-critical event.
 - Surface the active time scale clearly near the Geoscape clock without making the interface feel like an End Day/End Month button stack.
-- Add Build Health coverage for time-scale conversion, smooth route interpolation, aircraft perceived-speed scaling, prompt auto-pause/slowdown, clock-accurate travel completion, repair/refuel progression, UFO movement progression, and no-regression tactical/modal clock blocking.
+- Add Build Health coverage for time-scale conversion, route progress scaling, clock-accurate travel completion, repair/refuel progression, UFO movement progression, and no-regression tactical/modal clock blocking.
 
 ## Near-Term Campaign Escalation Candidate
 After fuel tanks, the starting radar seed, smoother Geoscape time, and base-centered radar range, consider:
@@ -1397,6 +1440,46 @@ Verification checklist:
 
 Roadmap follow-up remains `AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY`.
 
+## 2026-07-06 Patch Notes - Smooth X-COM Style Geoscape Time
+
+Build `v0.26.07.06.0175_SMOOTH_XCOM_STYLE_GEOSCAPE_TIME_INDEX_ONLY_PATCH` makes the Geoscape clock feel more like classic time compression while preserving the existing simulation contract:
+
+- Added Geoscape time compression modes: Pause, 5s, 1m, 5m, 30m, 1h, 6h, and 1d.
+- Automatic Geoscape time now advances on a smoother one-second cadence, with the selected mode controlling elapsed Geoscape minutes.
+- Time-control labels now show the active compression mode and perceived clock rate.
+- Old saves with missing or odd clock settings normalize to the nearest supported compression mode.
+- Aircraft travel, UFO movement, repair, refuel, delayed crash, and mission timing remain driven by elapsed Geoscape minutes.
+- Build Health now includes `Smooth X-COM-style Geoscape time compression preserves clock math`, covering time-scale conversion, route progress scaling, repair/refuel progression, and no-regression clock blocking.
+
+Verification checklist:
+- Open the Geoscape and confirm the clock offers Pause, 5s, 1m, 5m, 30m, 1h, 6h, and 1d modes.
+- Confirm higher compression modes visibly advance aircraft/UFO progress faster than low compression modes.
+- Confirm repair and refuel progress still match elapsed Geoscape minutes.
+- Confirm tactical/manual mission states and council/modal states still block automatic clock flow.
+- Confirm Build Health passes the new `Smooth X-COM-style Geoscape time compression preserves clock math` row.
+
+Roadmap follow-up: `BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY`, followed by `UFO_LANDING_AND_TERROR_INCIDENTS_INDEX_ONLY`.
+
+## 2026-07-06 Patch Notes - Base Placement Aircraft Range Preview
+
+Build `v0.26.07.06.0165_BASE_PLACEMENT_AIRCRAFT_RANGE_PREVIEW_INDEX_ONLY_PATCH` makes new-base siting more readable by previewing aircraft reach before the player commits funds:
+
+- Build New Base placement mode now renders dotted aircraft reach rings centered on the proposed site.
+- The preview shows current Interceptor and Skyranger practical reach using the existing round-trip range model.
+- If Interceptor Drop Tanks or Skyranger Extended Tanks are not owned, lighter upgrade-preview rings show how future fuel tank upgrades would improve reach.
+- The New Base Site summary now includes a dotted aircraft reach line so the globe overlay is explained near the name/cost/confirm controls.
+- Existing base-placement confirmation behavior, construction cost, validation, and Access Lift seed layout are preserved.
+- Build Health now includes `New-base placement previews dotted aircraft range rings`, covering inactive preview hiding, ring values, render data, summary text, and no-regression base construction.
+
+Verification checklist:
+- Click Build New Base and confirm dotted Interceptor and Skyranger range rings appear around the proposed site.
+- Confirm the selected-site summary includes current aircraft reach values.
+- Purchase one or both fuel tank upgrades and confirm the preview no longer treats the owned upgrade as a future-preview ring.
+- Construct a new base and confirm it still starts with the expected Access Lift seed layout.
+- Confirm Build Health passes the new `New-base placement previews dotted aircraft range rings` row.
+
+Roadmap follow-up: `BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY`, followed by `UFO_LANDING_AND_TERROR_INCIDENTS_INDEX_ONLY`.
+
 ## 2026-07-06 Patch Notes - Starting Base Shortwave Radar Seed
 
 Build `v0.26.07.06.0155_STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY_PATCH` gives the player a clearer default radar foothold without changing expansion-base construction:
@@ -1414,7 +1497,7 @@ Verification checklist:
 - Build a new expansion base and confirm it still starts with only the Access Lift.
 - Confirm Build Health passes the new `Initial base starts with one Shortwave Radar` row.
 
-Roadmap follow-up: `SMOOTH_XCOM_STYLE_GEOSCAPE_TIME_INDEX_ONLY`, followed by `BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY`.
+Roadmap follow-up: `BASE_PLACEMENT_AIRCRAFT_RANGE_PREVIEW_INDEX_ONLY` and `SMOOTH_XCOM_STYLE_GEOSCAPE_TIME_INDEX_ONLY` are complete; next target is `BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY`.
 
 ## 2026-07-06 Patch Notes - Aircraft Fuel Tank Upgrades
 
