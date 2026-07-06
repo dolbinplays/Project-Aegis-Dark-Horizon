@@ -1,9 +1,9 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-07-05  
-Current handoff build: `v0.26.07.05.0230_NEW_BASE_PLACEMENT_CONFIRMATION_UI_FIX_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html`; browser Build Health/smoke testing should confirm the new-base placement confirmation panel is visible immediately above the Geoscape globe while Skyranger/interceptor base-selection, fuel/range, refueling, repair, and clock-based travel behavior remain intact.**
+Last updated: 2026-07-06  
+Current handoff build: `v0.26.07.06.0100_RICHER_UFO_EVASION_AND_AIR_COMBAT_EVENTS_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html`; browser Build Health/smoke testing should confirm richer UFO evasion / air-combat outcomes, stance-visible launch summaries, report lines, and no regression to new-base placement, Skyranger/interceptor base-selection, fuel/range, refueling, repair, and clock-based travel behavior.**
 
 ---
 
@@ -48,10 +48,17 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.05.0230_NEW_BASE_PLACEMENT_CONFIRMATION_UI_FIX_INDEX_ONLY_PATCH`
+`v0.26.07.06.0100_RICHER_UFO_EVASION_AND_AIR_COMBAT_EVENTS_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- Richer UFO interception outcomes: confirmed shootdown, damaged escape, evasive maneuvers, contact lost, forced disengage, ammunition pressure, and cautious breakaway.
+- A shared air-combat outcome helper that uses UFO size/speed/threat, formation size, weapon power, detection coverage, and Cautious/Standard/Aggressive stance.
+- Interceptor launch summaries now show the outcome, hit estimate, combat roll, evasion pressure, fuel cost, launch base, and clock-based ETA.
+- UFO Tracking sortie text now previews hit estimate and UFO evasion pressure alongside range/fuel readiness.
+- Missed/non-crash encounters can advance the UFO flight, mark contact lost, or preserve a damaged-escape summary without changing the clock-based travel/return contract.
+- Aircraft recovery now records the richer air-combat outcome and applies bounded outcome modifiers to damage and repair burden.
+- Build Health coverage for richer evasion/contact-lost outcomes, stance modifiers, ammo bounds, contact-state updates, recovery bounds, and no-regression checks for interceptor base range, Skyranger base matching, and new-base placement.
 - A targeted Geoscape UI fix so the new-base placement confirmation controls render directly above the globe when placement mode is active.
 - A visible base name field, selected site summary, construction cost, funds-after-construction readout, and confirm button near the existing Build/Cancel placement controls.
 - Shared placement validation state so confirm is disabled with a clear reason until a name is entered and enough funds are available.
@@ -102,6 +109,13 @@ Before moving to the next major feature stage, test:
    - Confirm contact readouts and launch reports show the selected stance.
    - Confirm Aggressive improves hit chance but increases ammo/fuel/damage/repair pressure in Build Health and practical play.
 
+3a. **Richer air-combat outcomes**
+   - Launch one or more interceptors at detected UFOs with different stances.
+   - Confirm launch summaries can report outcomes such as Confirmed Shootdown, Damaged Escape, Evasive Maneuvers, Contact Lost, Forced Disengage, Ammunition Pressure, or Breakaway.
+   - Confirm the UFO Tracking contact readout includes hit estimate and UFO evasion pressure.
+   - Confirm misses still send interceptors through clock-based return/recovery instead of instantly resetting them.
+   - Confirm any contact-lost result clearly changes the contact state instead of pretending the UFO was simply shot down or ignored.
+
 4. **Skyranger status**
    - Launch a mission and confirm Skyranger travel still uses clock-based progress.
    - With multiple bases, confirm the Skyranger launches from the base where the chosen transport is housed.
@@ -114,7 +128,7 @@ Before moving to the next major feature stage, test:
    - Confirm it normalizes a Skyranger/interceptor fleet with fuel/range fields and no crash.
 
 6. **Build Health**
-   - Confirm the in-browser Build Health panel passes all checks, including the new-base placement, aircraft identity/repair, range/fuel/stance, interceptor assigned-base, and Skyranger assigned-base rows.
+   - Confirm the in-browser Build Health panel passes all checks, including the richer UFO evasion, new-base placement, aircraft identity/repair, range/fuel/stance, interceptor assigned-base, and Skyranger assigned-base rows.
 
 ---
 
@@ -504,10 +518,11 @@ Current aircraft ideas:
 - Light post-sortie interceptor damage and clock-driven repair timers.
 - Simple aircraft fuel/range readiness with clock-driven refueling.
 - Interception stances that trade hit chance against ammo burn, fuel use, damage risk, and repair time.
+- Lightweight UFO evasion / air-combat event outcomes: confirmed shootdown, damaged escape, evasive maneuvers, contact lost, forced disengage, ammunition pressure, and cautious breakaway.
 
 Still planned:
 - Pilot/crew identity if the air-war layer needs named aviators later.
-- Richer UFO evasive behavior and multi-step interception events.
+- Persistent air-combat after-action history and fuller multi-step interception reports.
 - Deeper aircraft damage outcomes and repair cost/bay constraints.
 
 ---
@@ -885,6 +900,7 @@ Completed / first pass:
 - Light interceptor damage and clock-driven repair timers.
 - Aircraft fuel/range readiness and clock-driven refueling.
 - Cautious/Standard/Aggressive interception stance choices.
+- Richer UFO evasion / air-combat event outcomes with stance-visible launch summaries and report lines.
 - Crash-site incidents.
 - Hidden command-site discovery gating.
 - Base hallway/pathing foundation where hallways are represented by the grid lines around rooms, not by room tiles.
@@ -953,31 +969,34 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.05.0230_NEW_BASE_PLACEMENT_CONFIRMATION_UI_FIX_INDEX_ONLY_PATCH` before deepening the air-war layer again.
+Playtest `v0.26.07.06.0100_RICHER_UFO_EVASION_AND_AIR_COMBAT_EVENTS_INDEX_ONLY_PATCH` before adding another air-war mechanic layer.
 
 Focus verification on:
-- New-base placement mode showing the name field, selected site summary, cost, and confirm button immediately above the Geoscape globe.
+- Interceptor launches showing richer outcomes, hit estimate, combat roll, evasion pressure, fuel cost, launch base, and clock-based ETA.
+- UFO Tracking showing hit estimate and evasion pressure while still respecting range/fuel/base readiness.
+- Outcomes such as Confirmed Shootdown, Damaged Escape, Contact Lost, Forced Disengage, Ammunition Pressure, and Breakaway appearing clearly in practical play over several launches.
 - Old saves normalizing a valid aircraft fleet with fuel/range fields.
 - Starting hangars showing named Skyranger/interceptor fuel, range, readiness, repair, and refuel state.
-- UFO Tracking showing fuel/range readiness, stance selection, and per-contact sortie feasibility.
 - Multi-base campaigns where interceptors stationed in a newer base can intercept nearby UFOs even when the first base is out of range.
 - Multi-base campaigns where Skyranger mission launch originates from the Skyranger's assigned base and blocks squads whose soldiers are stationed elsewhere.
 - Interceptor ready count and fuel dropping on launch, then recovering after return/repair/refuel.
 - Repair and refuel timers advancing only through Geoscape clock time.
 - Skyranger mission launch/return still using the clock-based travel contract.
+- New-base placement mode showing the name field, selected site summary, cost, and confirm button immediately above the Geoscape globe.
 - Build Health passing all checks in browser.
 
 ## Best Next Feature Patch
-If this batch tests well, continue the air-war foundation with richer airborne contact resolution:
+If this batch tests well, continue the air-war foundation by making the new results easier to review and remember:
 
-`RICHER_UFO_EVASION_AND_AIR_COMBAT_EVENTS_INDEX_ONLY`
+`AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY`
 
 Suggested focus:
-- Add lightweight UFO evasive outcomes such as breakaway, pursuit extension, forced abort, damaged escape, and confirmed shootdown.
-- Let UFO size/speed/threat interact with stance and formation size.
-- Add short interception event log lines to reports so air combat feels less binary.
+- Add a compact air-combat after-action panel or report card for the latest interception.
+- Preserve `lastAirCombatOutcome` / `lastAirCombatSummary` style contact data in a player-readable place.
+- Let damaged-escape UFOs carry a lightweight damaged state or later crash/escape chance.
+- Make report entries easier to scan by aircraft, base, stance, UFO size, and outcome.
 - Preserve the current fuel/range/repair model and clock-based travel contract.
-- Add Build Health coverage for evasion outcome bounds, stance/formation interactions, and no-regression aircraft readiness behavior.
+- Add Build Health coverage for after-action report persistence, damaged-UFO memory, and no-regression aircraft readiness behavior.
 
 ---
 
@@ -1213,6 +1232,27 @@ Verification checklist:
 - Confirm Build Health passes the new `Interceptor range uses each aircraft assigned base` row.
 
 Roadmap follow-up remains `RICHER_UFO_EVASION_AND_AIR_COMBAT_EVENTS_INDEX_ONLY` after this bugfix verifies cleanly.
+
+## 2026-07-06 Patch Notes - Richer UFO Evasion and Air Combat Events
+
+Build `v0.26.07.06.0100_RICHER_UFO_EVASION_AND_AIR_COMBAT_EVENTS_INDEX_ONLY_PATCH` deepens interceptor resolution without changing the single-file architecture or the clock-based travel contract:
+
+- UFO interception can now resolve into Confirmed Shootdown, Damaged Escape, Evasive Maneuvers, Contact Lost, Forced Disengage, Ammunition Pressure, or Breakaway.
+- Outcome selection uses UFO size/speed/threat, formation size, weapon power, detection coverage, and the current Cautious/Standard/Aggressive stance.
+- UFO Tracking readiness text now includes a lightweight hit estimate and UFO evasion pressure preview.
+- Launch summaries and command reports now include outcome label, stance, hit estimate, combat roll, evasion pressure, launch base, fuel cost, and ETA.
+- Non-shootdown outcomes can advance UFO progress, mark contact lost, or store a damaged/evasion summary while interceptors still fly home on Geoscape clock ticks.
+- Aircraft recovery records the richer air-combat outcome and applies bounded damage/repair modifiers after the return leg.
+- Build Health now includes `Richer UFO evasion and air combat events stay bounded`, covering outcome variety, contact-lost state, stance modifiers, ammo bounds, recovery bounds, and regression checks for multi-base interceptor range, Skyranger base matching, and new-base placement.
+
+Verification checklist:
+- Launch interceptors against detected UFOs with different stances and confirm the launch summary names a richer air-combat outcome.
+- Confirm UFO Tracking shows hit estimate / evasion pressure while preserving range/fuel/base readiness.
+- Advance Geoscape time after an interception and confirm return/repair still follows clock time.
+- Confirm Build Health passes the new `Richer UFO evasion and air combat events stay bounded` row.
+- Confirm older saves still normalize `aircraftFleet` records safely.
+
+Roadmap follow-up: `AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY`.
 
 ## 2026-07-05 Patch Notes - New Base Placement Confirmation UI Fix
 
