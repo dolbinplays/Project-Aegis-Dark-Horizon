@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-06  
-Current handoff build: `v0.26.07.06.0100_RICHER_UFO_EVASION_AND_AIR_COMBAT_EVENTS_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html`; browser Build Health/smoke testing should confirm richer UFO evasion / air-combat outcomes, stance-visible launch summaries, report lines, and no regression to new-base placement, Skyranger/interceptor base-selection, fuel/range, refueling, repair, and clock-based travel behavior.**
+Current handoff build: `v0.26.07.06.0115_INTERCEPTOR_STUCK_OUTBOUND_RECOVERY_FIX_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html`; browser Build Health/smoke testing should confirm stale interceptor `Outbound` / `Returning` states recover safely, active interceptor travel visibly transitions to Returning, grounded recovered craft can refuel, and there is no regression to richer air combat, new-base placement, Skyranger/interceptor base-selection, fuel/range, refueling, repair, and clock-based travel behavior.**
 
 ---
 
@@ -48,10 +48,15 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.06.0100_RICHER_UFO_EVASION_AND_AIR_COMBAT_EVENTS_INDEX_ONLY_PATCH`
+`v0.26.07.06.0115_INTERCEPTOR_STUCK_OUTBOUND_RECOVERY_FIX_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- A targeted stuck-airborne recovery fix for interceptors left in `Outbound` or `Returning` without an active `interceptorTravel` record.
+- Active interceptor travel now synchronizes aircraft fleet status as `Outbound` before the attack leg and `Returning` after the attack leg.
+- Save/load migration now recovers stale airborne interceptors into a short `Repairing` recovery window so they become grounded and eligible to refuel instead of staying permanently unusable.
+- Aircraft readiness lines now call out airborne refuel pause and stale-travel recovery status.
+- Build Health coverage for active travel status sync, return recovery, stale `Outbound` / `Returning` recovery, recovered refueling, legitimate airborne no-refuel behavior, and recovery display text.
 - Richer UFO interception outcomes: confirmed shootdown, damaged escape, evasive maneuvers, contact lost, forced disengage, ammunition pressure, and cautious breakaway.
 - A shared air-combat outcome helper that uses UFO size/speed/threat, formation size, weapon power, detection coverage, and Cautious/Standard/Aggressive stance.
 - Interceptor launch summaries now show the outcome, hit estimate, combat roll, evasion pressure, fuel cost, launch base, and clock-based ETA.
@@ -100,9 +105,11 @@ Before moving to the next major feature stage, test:
    - Launch one or more interceptors at a detected UFO.
    - Confirm ready interceptor count drops immediately and launch buttons disable when no ready/fueled/in-range craft remain.
    - With multiple bases, confirm UFO Tracking and launch use the base where each interceptor is stationed.
+   - Confirm airborne interceptors show Outbound before the attack leg and Returning after the attack leg.
    - Advance Geoscape time through the return leg and confirm any damaged craft enter Repairing.
    - Advance more clock time and confirm repaired craft return to Ready.
    - Confirm fuel refills only while craft are not Outbound or Returning.
+   - Load an older/save-mismatched campaign with a stale Outbound or Returning interceptor and confirm it recovers through a short Repairing state instead of staying stuck.
 
 3. **Interception stance**
    - Change stance between Cautious, Standard, and Aggressive in UFO Tracking.
@@ -128,7 +135,7 @@ Before moving to the next major feature stage, test:
    - Confirm it normalizes a Skyranger/interceptor fleet with fuel/range fields and no crash.
 
 6. **Build Health**
-   - Confirm the in-browser Build Health panel passes all checks, including the richer UFO evasion, new-base placement, aircraft identity/repair, range/fuel/stance, interceptor assigned-base, and Skyranger assigned-base rows.
+   - Confirm the in-browser Build Health panel passes all checks, including the stuck-Outbound recovery, richer UFO evasion, new-base placement, aircraft identity/repair, range/fuel/stance, interceptor assigned-base, and Skyranger assigned-base rows.
 
 ---
 
@@ -969,9 +976,12 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.06.0100_RICHER_UFO_EVASION_AND_AIR_COMBAT_EVENTS_INDEX_ONLY_PATCH` before adding another air-war mechanic layer.
+Playtest `v0.26.07.06.0115_INTERCEPTOR_STUCK_OUTBOUND_RECOVERY_FIX_INDEX_ONLY_PATCH` before adding another air-war mechanic layer.
 
 Focus verification on:
+- Existing saves or playtest states with interceptors stuck in `Outbound` / `Returning` recovering into a short Repairing window instead of staying permanently unusable.
+- Active interceptor flights showing `Outbound` before the attack leg and `Returning` after the attack leg.
+- Grounded recovered interceptors gaining fuel again when Geoscape time advances.
 - Interceptor launches showing richer outcomes, hit estimate, combat roll, evasion pressure, fuel cost, launch base, and clock-based ETA.
 - UFO Tracking showing hit estimate and evasion pressure while still respecting range/fuel/base readiness.
 - Outcomes such as Confirmed Shootdown, Damaged Escape, Contact Lost, Forced Disengage, Ammunition Pressure, and Breakaway appearing clearly in practical play over several launches.
@@ -1253,6 +1263,27 @@ Verification checklist:
 - Confirm older saves still normalize `aircraftFleet` records safely.
 
 Roadmap follow-up: `AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY`.
+
+## 2026-07-06 Patch Notes - Interceptor Stuck-Outbound Recovery Fix
+
+Build `v0.26.07.06.0115_INTERCEPTOR_STUCK_OUTBOUND_RECOVERY_FIX_INDEX_ONLY_PATCH` fixes a playtest bug where an interceptor could remain stuck in `Outbound` with low fuel after the visible interception travel state was gone:
+
+- Active interceptor travel now synchronizes assigned aircraft to `Outbound` during the outbound leg and `Returning` after the attack leg reaches the UFO.
+- Stale airborne interceptor records with no active `interceptorTravel` are recovered conservatively into a short `Repairing` window instead of staying permanently Outbound/Returning.
+- Recovered craft are grounded and can refuel normally as Geoscape clock time advances.
+- Legitimately Outbound/Returning aircraft still do not refuel while airborne.
+- Aircraft status lines now indicate when airborne craft have refueling paused and when a craft was recovered from stale travel.
+- Save/load migration applies the stale-airborne recovery guard so old or mismatched saves can recover stuck interceptors.
+- Build Health now includes `Interceptor airborne status recovery prevents stuck Outbound craft`, covering active travel status sync, return recovery, stale Outbound/Returning recovery, recovered refueling, airborne no-refuel behavior, and recovery display text.
+
+Verification checklist:
+- Load a save with a stuck Outbound/Returning interceptor and confirm it enters short Repairing recovery, then refuels over clock time.
+- Launch an interceptor, advance time past the attack leg, and confirm the aircraft status changes to Returning before final recovery.
+- Confirm airborne craft do not refuel while Outbound/Returning.
+- Confirm recovered/grounded craft do refuel while Geoscape time advances.
+- Confirm Build Health passes the new `Interceptor airborne status recovery prevents stuck Outbound craft` row.
+
+Roadmap follow-up remains `AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY`.
 
 ## 2026-07-05 Patch Notes - New Base Placement Confirmation UI Fix
 
