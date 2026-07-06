@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-06  
-Current handoff build: `v0.26.07.06.0130_AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html`; browser Build Health/smoke testing should confirm latest air-combat reports render in UFO Tracking, damaged-escape UFOs retain damage memory, delayed damaged-UFO crashes can create crash sites, and there is no regression to richer air combat, stuck-Outbound recovery, new-base placement, Skyranger/interceptor base-selection, fuel/range, refueling, repair, and clock-based travel behavior.**
+Current handoff build: `v0.26.07.06.0155_STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html`; static parse and stubbed Build Health harness passed with 201/201 checks. Browser smoke was attempted but direct `file:///` navigation was blocked by browser policy. Browser Build Health/smoke testing should confirm fuel tank upgrade cards render in UFO Tracking, the starting base includes one Shortwave Radar, upgraded Interceptor/Skyranger fuel capacity and range apply to old and current aircraft, and there is no regression to richer air combat, stuck-Outbound recovery, new-base placement, Skyranger/interceptor base-selection, refueling, repair, and clock-based travel behavior.**
 
 ---
 
@@ -48,10 +48,21 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.06.0115_INTERCEPTOR_STUCK_OUTBOUND_RECOVERY_FIX_INDEX_ONLY_PATCH`
+`v0.26.07.06.0155_STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- One Shortwave Radar seeded into the default Fort Aegis starting base layout.
+- Expansion bases remain clean starter bases with only their free Access Lift.
+- Starting radar coverage now contributes to the existing shortwave/longwave detection summary from the beginning of a new campaign.
+- Build Health coverage for the starting Shortwave Radar seed without disturbing the existing hangar layout or expansion-base construction contract.
+- Global save-compatible aircraft fuel tank upgrade flags for Interceptors and Skyrangers.
+- Purchasable Interceptor Drop Tanks and Skyranger Extended Tanks in UFO Tracking.
+- Upgraded Interceptors increase from 100 fuel / 7,800km range to 135 fuel / 10,500km range.
+- Upgraded Skyrangers increase from 100 fuel / 16,000km range to 130 fuel / 20,800km range.
+- Existing and newly ordered aircraft inherit the upgraded capacity/range while preserving current status, repair, airborne, and fuel behavior.
+- Old saves normalize missing tank flags safely; saves that already have a fuel tank flag apply it to the aircraft fleet during load/migration.
+- Build Health coverage for fuel tank upgrade normalization, application, range expansion, refueling to the new capacity, and no-regression aircraft travel/range selection.
 - A targeted stuck-airborne recovery fix for interceptors left in `Outbound` or `Returning` without an active `interceptorTravel` record.
 - Active interceptor travel now synchronizes aircraft fleet status as `Outbound` before the attack leg and `Returning` after the attack leg.
 - Save/load migration now recovers stale airborne interceptors into a short `Repairing` recovery window so they become grounded and eligible to refuel instead of staying permanently unusable.
@@ -96,6 +107,12 @@ Before moving to the next major feature stage, test:
    - Confirm the button stays disabled until a base name is entered and enough funds are available.
    - Enter a name, confirm construction, and verify the new base is created with the standard Access Lift seed layout.
 
+0a. **Starting Shortwave Radar**
+   - Start a new campaign and inspect the starting base.
+   - Confirm the default base includes one Shortwave Radar facility.
+   - Confirm expansion bases built through Build New Base still start with only the Access Lift seed layout.
+   - Confirm UFO Tracking coverage starts with one shortwave radar counted.
+
 1. **Aircraft readiness and hangars**
    - Start a new campaign and inspect the starting base hangars.
    - Confirm the Skyranger and starting Interceptor show named aircraft, fuel, range, and readiness text.
@@ -123,6 +140,13 @@ Before moving to the next major feature stage, test:
    - Confirm misses still send interceptors through clock-based return/recovery instead of instantly resetting them.
    - Confirm any contact-lost result clearly changes the contact state instead of pretending the UFO was simply shot down or ignored.
 
+3b. **Aircraft fuel tank upgrades**
+   - Open UFO Tracking and confirm Interceptor Tanks and Skyranger Tanks upgrade cards are visible near aircraft ordnance.
+   - Purchase Interceptor Drop Tanks and confirm interceptor readiness text shows 10,500km range and 135 fuel capacity after normalization/refuel.
+   - Purchase Skyranger Extended Tanks and confirm Skyranger readiness text shows 20,800km range and 130 fuel capacity.
+   - Confirm upgraded aircraft can accept longer practical sorties but still block missions that exceed range or fuel.
+   - Confirm automatic refueling still uses Geoscape clock time and does not require funds or Base Stores.
+
 4. **Skyranger status**
    - Launch a mission and confirm Skyranger travel still uses clock-based progress.
    - With multiple bases, confirm the Skyranger launches from the base where the chosen transport is housed.
@@ -135,7 +159,7 @@ Before moving to the next major feature stage, test:
    - Confirm it normalizes a Skyranger/interceptor fleet with fuel/range fields and no crash.
 
 6. **Build Health**
-   - Confirm the in-browser Build Health panel passes all checks, including the stuck-Outbound recovery, richer UFO evasion, new-base placement, aircraft identity/repair, range/fuel/stance, interceptor assigned-base, and Skyranger assigned-base rows.
+   - Confirm the in-browser Build Health panel passes all checks, including fuel tank upgrades, air-combat reports, stuck-Outbound recovery, richer UFO evasion, new-base placement, aircraft identity/repair, range/fuel/stance, interceptor assigned-base, and Skyranger assigned-base rows.
 
 ---
 
@@ -437,6 +461,8 @@ KIA record, emotional attachment, future offerings.
 ### Radar
 Detects alien activity and UFOs. Longwave Radar adds incidents and detection value.
 
+Roadmap update: radar detection should eventually be distance-based from each base, not only a global coverage score. Shortwave Radar should provide local/regional detection, Longwave Radar should project farther coverage, and overlapping radar fields should improve contact quality.
+
 ### Hangar
 Aircraft storage. Hangar is conceptually a 2x2 tile. Supports craft purchase/assignment and empty hangar states.
 
@@ -507,10 +533,13 @@ Implemented or first-pass:
 ## Future Campaign Goals
 - Replace static End Day/End Month feeling with more continuous time progression.
 - Let the player control time speed.
+- Make Geoscape time feel closer to classic X-COM: smooth clock flow with selectable time compression, where aircraft and UFO motion visibly speed up or slow down with the selected time scale while underlying travel math remains clock-accurate.
 - Seed the first base with one Shortwave Radar so initial UFO detection feels intentional before the player expands the radar network.
+- Replace abstract global radar coverage with base-centered radar range so UFOs can only be reliably detected when they fly within Shortwave/Longwave coverage.
 - UFOs range from very small to very large.
 - Larger craft are harder to shoot down.
 - Shootdowns create crash incidents.
+- Some UFOs should eventually land or complete a mission profile, creating alien ground incidents such as terror raids, abductions, harvest sites, scouting operations, or landed UFO missions if not intercepted in time.
 - Live alien research should eventually reveal alien command sites.
 - Highest-tier live alien research gates alien base/final command-site discovery.
 - Endgame final mission should become available after the correct chain of detection/research/escalation.
@@ -925,6 +954,9 @@ Completed / first pass:
 Still planned:
 - Command Objectives Tracker.
 - Alien escalation over months.
+- Smooth Geoscape time-compression model where aircraft/UFO perceived speed scales with the selected clock rate without breaking real route duration, repair, refuel, or event timing.
+- Base-centered radar range and contact-quality model where UFO detection depends on distance from each base's radar facilities.
+- UFO landing / terror-style incident chain where flying UFOs have mission intent and can touch down or complete operations that create ground incidents and panic consequences.
 - Live alien research chain polish.
 - Command-site assault rewards.
 - Final mission path.
@@ -984,9 +1016,20 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.06.0130_AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY_PATCH` before adding another air-war mechanic layer.
+Playtest `v0.26.07.06.0155_STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY_PATCH` before adding another time/radar layer.
 
 Focus verification on:
+- New campaigns showing one Shortwave Radar in the starting base.
+- UFO Tracking coverage showing one shortwave radar counted at campaign start.
+- Expansion bases still starting with only the free Access Lift layout.
+- Interceptor Tanks and Skyranger Tanks cards appearing in UFO Tracking beside aircraft ordnance.
+- Interceptor Drop Tanks installing for $320k and raising Interceptors to 135 fuel / 10,500km practical range.
+- Skyranger Extended Tanks installing for $440k and raising Skyrangers to 130 fuel / 20,800km practical range.
+- Old saves normalizing missing tank flags safely.
+- Saves with tank flags applying upgraded range/fuel values to existing aircraft during load/migration.
+- Newly ordered Interceptors or Skyrangers inheriting the purchased global tank upgrade.
+- Longer sorties becoming possible only when upgraded range/fuel actually supports the route.
+- Refueling still advancing automatically through Geoscape clock time with no funds or Base Stores requirement.
 - Latest Air Combat report card appearing in UFO Tracking after an interception.
 - Per-contact Last air contact details appearing after damaged escape, contact lost, evasive maneuvers, forced disengage, ammunition pressure, or breakaway.
 - Damaged Escape UFOs showing damaged-memory follow-up hit bonus and delayed crash chance.
@@ -1008,20 +1051,20 @@ Focus verification on:
 - Build Health passing all checks in browser.
 
 ## Best Next Feature Patch
-If this batch tests well, continue the air-war foundation by making starting craft more useful without replacing them outright:
+If this batch tests well, continue with the next priority roadmap patch:
 
-`AIRCRAFT_FUEL_TANK_UPGRADES_INDEX_ONLY`
+`SMOOTH_XCOM_STYLE_GEOSCAPE_TIME_INDEX_ONLY`
 
 Suggested focus:
-- Add purchasable or research-unlocked fuel tank upgrades for Interceptors and Skyrangers.
-- Increase aircraft fuel capacity and practical range so starting craft can remain useful deeper into the campaign.
-- Surface upgraded tank/range values in Hangar, Base, and UFO Tracking readiness UI.
-- Decide whether upgrades are per-craft installs, global workshop retrofits, or hangar service packages.
-- Keep current automatic refueling behavior; do not require fuel storage unless a future explicit fuel-economy system is added.
-- Add Build Health coverage for old-save normalization, upgraded range/fuel calculations, launch blocking, refueling, and no-regression aircraft travel.
+- Replace the chunky tick-feeling Geoscape controls with smoother time compression modes inspired by X-COM.
+- Keep simulation authoritative in elapsed Geoscape minutes, but render aircraft, UFOs, clouds, clock, and route progress as smoothly animated between updates.
+- Make perceived aircraft/UFO speed visibly scale with selected time compression while preserving current route duration math.
+- Preserve current fuel use, repair, refuel, UFO progress, delayed crash, Skyranger travel, and interceptor return timing.
+- Pause or slow time automatically for important prompts such as new radar contact, interception result, crash site, mission landing/terror incident, base invasion warning, or council-critical event.
+- Add Build Health coverage for time-scale conversion, smooth route interpolation, aircraft perceived-speed scaling, prompt auto-pause/slowdown, and no-regression tactical/modal clock blocking.
 
 ## Near-Term Starting Base Upgrade Candidate
-After or alongside the fuel tank upgrade, keep this supporting base-start patch queued:
+Implemented in `v0.26.07.06.0155_STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY_PATCH`; keep this section as the reference contract for any future starting-base template adjustments:
 
 `STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY`
 
@@ -1032,6 +1075,50 @@ Suggested focus:
 - Ensure radar detection/coverage calculations count the seeded Shortwave Radar.
 - Surface the starting radar clearly in Base Facilities and any radar-readiness summaries.
 - Add Build Health coverage for first-base facility seeding, old-save normalization, radar count/detection coverage, and no-regression base construction behavior.
+
+## Near-Term Radar Model Candidate
+After the starting radar seed, consider:
+
+`BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY`
+
+Suggested focus:
+- Give each base radar facility a detection radius from that base's geoscape location.
+- Make Shortwave Radar a local/regional detection source and Longwave Radar a wider strategic detection source.
+- Replace or supplement the current global radar coverage score with distance-based per-UFO coverage from eligible bases.
+- Let overlapping radar fields improve detection chance, tracking speed, contact quality, or intercept solution accuracy.
+- Track contact quality states such as Faint Echo, Tracked Contact, and Precise Fix before a UFO becomes fully actionable.
+- Surface which base/radar network is detecting or tracking each UFO in UFO Tracking.
+- Keep old saves compatible by deriving radar coverage from existing base facilities.
+- Add Build Health coverage for distance-based detection, out-of-range UFO invisibility, overlapping coverage bonuses, Shortwave vs Longwave range differences, contact-quality progression, old-save normalization, and no-regression interceptor launch behavior.
+
+## Near-Term Geoscape Time Candidate
+After the current aircraft/radar foundations are stable, consider:
+
+`SMOOTH_XCOM_STYLE_GEOSCAPE_TIME_INDEX_ONLY`
+
+Suggested focus:
+- Replace the chunky tick-feeling Geoscape controls with smoother time compression modes inspired by X-COM: Pause, 5 Seconds, 1 Minute, 5 Minutes, 30 Minutes, 1 Hour, and 1 Day style rates if they fit the current UI.
+- Keep simulation authoritative in elapsed Geoscape minutes, but render aircraft, UFOs, clouds, clock, and route progress as smoothly animated between updates.
+- Make perceived aircraft/UFO speed visibly scale with selected time compression: fast time should make craft streak across routes, slow time should make them creep.
+- Preserve current route duration math, fuel use, repair, refuel, UFO progress, delayed crash, Skyranger travel, and interceptor return timing.
+- Pause or slow time automatically for important prompts such as new radar contact, mission landing/terror incident, interception result, crash site, base invasion warning, or council-critical event.
+- Surface the active time scale clearly near the Geoscape clock without making the interface feel like an End Day/End Month button stack.
+- Add Build Health coverage for time-scale conversion, smooth route interpolation, aircraft perceived-speed scaling, prompt auto-pause/slowdown, clock-accurate travel completion, repair/refuel progression, UFO movement progression, and no-regression tactical/modal clock blocking.
+
+## Near-Term Campaign Escalation Candidate
+After fuel tanks, the starting radar seed, smoother Geoscape time, and base-centered radar range, consider:
+
+`UFO_LANDING_AND_TERROR_INCIDENTS_INDEX_ONLY`
+
+Suggested focus:
+- Give active UFOs a simple mission intent such as Recon, Abduction, Terror Raid, Harvest, Base Scout, or Supply.
+- Let some UFOs land or complete their operation when flight progress reaches a threshold instead of only escaping.
+- Generate a ground incident from that UFO's size, region, alien type, mission intent, and detection state.
+- Keep crash sites separate from landed/terror incidents: shootdowns create crash sites, while missed/ignored operations create alien activity incidents.
+- Add panic/funding consequences for ignored terror-style incidents and smaller consequences for lesser operations.
+- Let successful interception prevent, delay, downgrade, or alter the incident depending on outcome.
+- Surface UFO mission intent and landing/operation risk in UFO Tracking once enough radar contact is available.
+- Add Build Health coverage for UFO mission intent normalization, landing incident generation, panic consequences, interception prevention/downgrade, old-save compatibility, and no-regression air travel/damage behavior.
 
 ---
 
@@ -1309,6 +1396,48 @@ Verification checklist:
 - Confirm Build Health passes the new `Interceptor airborne status recovery prevents stuck Outbound craft` row.
 
 Roadmap follow-up remains `AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY`.
+
+## 2026-07-06 Patch Notes - Starting Base Shortwave Radar Seed
+
+Build `v0.26.07.06.0155_STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY_PATCH` gives the player a clearer default radar foothold without changing expansion-base construction:
+
+- Added one Shortwave Radar to the default Fort Aegis starting base layout.
+- Preserved the existing two starting hangars, Access Lift, Living Quarters, Laboratory, Sickbay, and Base Stores seed.
+- Newly constructed expansion bases still start with only their free Access Lift.
+- Existing radar coverage math now counts the seeded Shortwave Radar at campaign start.
+- Build Health now includes `Initial base starts with one Shortwave Radar`, covering the seed while preserving the starting hangar and expansion-base checks.
+
+Verification checklist:
+- Start a new campaign and confirm the starting base contains one Shortwave Radar.
+- Confirm the starting Skyranger and Interceptor hangars are still present.
+- Open UFO Tracking and confirm coverage shows one shortwave radar counted at campaign start.
+- Build a new expansion base and confirm it still starts with only the Access Lift.
+- Confirm Build Health passes the new `Initial base starts with one Shortwave Radar` row.
+
+Roadmap follow-up: `SMOOTH_XCOM_STYLE_GEOSCAPE_TIME_INDEX_ONLY`, followed by `BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY`.
+
+## 2026-07-06 Patch Notes - Aircraft Fuel Tank Upgrades
+
+Build `v0.26.07.06.0145_AIRCRAFT_FUEL_TANK_UPGRADES_INDEX_ONLY_PATCH` makes starting craft more useful deeper into the campaign without replacing the single-file aircraft model:
+
+- Added global save-compatible fuel tank upgrade flags for Interceptors and Skyrangers.
+- Added purchasable Interceptor Drop Tanks in UFO Tracking for $320k.
+- Added purchasable Skyranger Extended Tanks in UFO Tracking for $440k.
+- Interceptor Drop Tanks raise Interceptors from 100 fuel / 7,800km range to 135 fuel / 10,500km range.
+- Skyranger Extended Tanks raise Skyrangers from 100 fuel / 16,000km range to 130 fuel / 20,800km range.
+- Existing aircraft, loaded aircraft, and newly ordered aircraft inherit purchased tank upgrades while preserving status, repair, airborne, and refuel behavior.
+- Refueling remains automatic and clock-based; no funds or Base Stores fuel storage is required.
+- Build Health now includes `Aircraft fuel tank upgrades extend sortie reach safely`, covering old-save normalization, upgrade application, upgraded range checks, upgraded refueling, and no-regression aircraft travel/range selection.
+
+Verification checklist:
+- Open Geoscape/UFO Tracking and confirm Interceptor Tanks and Skyranger Tanks upgrade cards appear beside aircraft ordnance.
+- Purchase Interceptor Drop Tanks and confirm Interceptor readiness/range updates to 10,500km / 135 fuel.
+- Purchase Skyranger Extended Tanks and confirm Skyranger readiness/range updates to 20,800km / 130 fuel.
+- Confirm upgraded aircraft can launch longer valid sorties while still blocking routes beyond upgraded practical range or current fuel.
+- Confirm refueling still advances only through Geoscape clock time and airborne craft still do not refuel.
+- Confirm Build Health passes the new `Aircraft fuel tank upgrades extend sortie reach safely` row.
+
+Roadmap follow-up: `STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY`, then `BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY` after the starting radar seed verifies cleanly.
 
 ## 2026-07-06 Patch Notes - Air Combat Reports and UFO Damage Memory
 
