@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-06  
-Current handoff build: `v0.26.07.06.0115_INTERCEPTOR_STUCK_OUTBOUND_RECOVERY_FIX_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html`; browser Build Health/smoke testing should confirm stale interceptor `Outbound` / `Returning` states recover safely, active interceptor travel visibly transitions to Returning, grounded recovered craft can refuel, and there is no regression to richer air combat, new-base placement, Skyranger/interceptor base-selection, fuel/range, refueling, repair, and clock-based travel behavior.**
+Current handoff build: `v0.26.07.06.0130_AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html`; browser Build Health/smoke testing should confirm latest air-combat reports render in UFO Tracking, damaged-escape UFOs retain damage memory, delayed damaged-UFO crashes can create crash sites, and there is no regression to richer air combat, stuck-Outbound recovery, new-base placement, Skyranger/interceptor base-selection, fuel/range, refueling, repair, and clock-based travel behavior.**
 
 ---
 
@@ -442,6 +442,8 @@ Aircraft storage. Hangar is conceptually a 2x2 tile. Supports craft purchase/ass
 
 Default starting base layout should include **two 2x2 hangars**: one populated with the starting Interceptor and one populated with the Skyranger. This keeps the visual base layout consistent with the campaign starting equipment.
 
+Roadmap update: the default starting base should also include **one Shortwave Radar** so new campaigns begin with minimal local detection coverage. Longwave Radar should remain the broader/deeper detection expansion facility.
+
 ---
 
 # 8. Tactical / Mission Game Bible
@@ -505,6 +507,7 @@ Implemented or first-pass:
 ## Future Campaign Goals
 - Replace static End Day/End Month feeling with more continuous time progression.
 - Let the player control time speed.
+- Seed the first base with one Shortwave Radar so initial UFO detection feels intentional before the player expands the radar network.
 - UFOs range from very small to very large.
 - Larger craft are harder to shoot down.
 - Shootdowns create crash incidents.
@@ -520,16 +523,20 @@ Current aircraft ideas:
 - Large missiles purchasable.
 - Energy weapons later.
 - Aircraft ammo/upgrades.
+- Aircraft fuel tank upgrades to extend practical range and make starting craft more useful before full aircraft replacement.
 - Hangar assignment and empty hangar states.
 - Named Skyranger/interceptor craft with Ready, Outbound, Returning, and Repairing status.
 - Light post-sortie interceptor damage and clock-driven repair timers.
 - Simple aircraft fuel/range readiness with clock-driven refueling.
 - Interception stances that trade hit chance against ammo burn, fuel use, damage risk, and repair time.
 - Lightweight UFO evasion / air-combat event outcomes: confirmed shootdown, damaged escape, evasive maneuvers, contact lost, forced disengage, ammunition pressure, and cautious breakaway.
+- Compact air-combat after-action reports in UFO Tracking for launch, impact, delayed crash, and recovery phases.
+- Lightweight damaged-UFO memory after damaged escapes, including follow-up hit bonuses and delayed crash-site chances.
 
 Still planned:
 - Pilot/crew identity if the air-war layer needs named aviators later.
-- Persistent air-combat after-action history and fuller multi-step interception reports.
+- Fuller multi-step air-combat history and filtering if the report list grows beyond the current compact latest-report model.
+- Fuel tank upgrade path for Interceptors and Skyrangers, likely through Workshop purchase/install or research unlocks, increasing fuel capacity/range while preserving automatic refueling.
 - Deeper aircraft damage outcomes and repair cost/bay constraints.
 
 ---
@@ -908,6 +915,7 @@ Completed / first pass:
 - Aircraft fuel/range readiness and clock-driven refueling.
 - Cautious/Standard/Aggressive interception stance choices.
 - Richer UFO evasion / air-combat event outcomes with stance-visible launch summaries and report lines.
+- Compact air-combat after-action reports and damaged-UFO memory after damaged escapes.
 - Crash-site incidents.
 - Hidden command-site discovery gating.
 - Base hallway/pathing foundation where hallways are represented by the grid lines around rooms, not by room tiles.
@@ -976,9 +984,13 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.06.0115_INTERCEPTOR_STUCK_OUTBOUND_RECOVERY_FIX_INDEX_ONLY_PATCH` before adding another air-war mechanic layer.
+Playtest `v0.26.07.06.0130_AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY_PATCH` before adding another air-war mechanic layer.
 
 Focus verification on:
+- Latest Air Combat report card appearing in UFO Tracking after an interception.
+- Per-contact Last air contact details appearing after damaged escape, contact lost, evasive maneuvers, forced disengage, ammunition pressure, or breakaway.
+- Damaged Escape UFOs showing damaged-memory follow-up hit bonus and delayed crash chance.
+- Damaged UFOs sometimes creating delayed crash sites as Geoscape clock time advances.
 - Existing saves or playtest states with interceptors stuck in `Outbound` / `Returning` recovering into a short Repairing window instead of staying permanently unusable.
 - Active interceptor flights showing `Outbound` before the attack leg and `Returning` after the attack leg.
 - Grounded recovered interceptors gaining fuel again when Geoscape time advances.
@@ -996,17 +1008,30 @@ Focus verification on:
 - Build Health passing all checks in browser.
 
 ## Best Next Feature Patch
-If this batch tests well, continue the air-war foundation by making the new results easier to review and remember:
+If this batch tests well, continue the air-war foundation by making starting craft more useful without replacing them outright:
 
-`AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY`
+`AIRCRAFT_FUEL_TANK_UPGRADES_INDEX_ONLY`
 
 Suggested focus:
-- Add a compact air-combat after-action panel or report card for the latest interception.
-- Preserve `lastAirCombatOutcome` / `lastAirCombatSummary` style contact data in a player-readable place.
-- Let damaged-escape UFOs carry a lightweight damaged state or later crash/escape chance.
-- Make report entries easier to scan by aircraft, base, stance, UFO size, and outcome.
-- Preserve the current fuel/range/repair model and clock-based travel contract.
-- Add Build Health coverage for after-action report persistence, damaged-UFO memory, and no-regression aircraft readiness behavior.
+- Add purchasable or research-unlocked fuel tank upgrades for Interceptors and Skyrangers.
+- Increase aircraft fuel capacity and practical range so starting craft can remain useful deeper into the campaign.
+- Surface upgraded tank/range values in Hangar, Base, and UFO Tracking readiness UI.
+- Decide whether upgrades are per-craft installs, global workshop retrofits, or hangar service packages.
+- Keep current automatic refueling behavior; do not require fuel storage unless a future explicit fuel-economy system is added.
+- Add Build Health coverage for old-save normalization, upgraded range/fuel calculations, launch blocking, refueling, and no-regression aircraft travel.
+
+## Near-Term Starting Base Upgrade Candidate
+After or alongside the fuel tank upgrade, keep this supporting base-start patch queued:
+
+`STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY`
+
+Suggested focus:
+- Add one Shortwave Radar to the default Fort Aegis starting layout.
+- Keep newly constructed expansion bases seeded only with their intended starter facilities unless a later base-template system changes this.
+- Preserve the existing starting hangar layout and avoid crowding or overlapping the base grid.
+- Ensure radar detection/coverage calculations count the seeded Shortwave Radar.
+- Surface the starting radar clearly in Base Facilities and any radar-readiness summaries.
+- Add Build Health coverage for first-base facility seeding, old-save normalization, radar count/detection coverage, and no-regression base construction behavior.
 
 ---
 
@@ -1284,6 +1309,26 @@ Verification checklist:
 - Confirm Build Health passes the new `Interceptor airborne status recovery prevents stuck Outbound craft` row.
 
 Roadmap follow-up remains `AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY`.
+
+## 2026-07-06 Patch Notes - Air Combat Reports and UFO Damage Memory
+
+Build `v0.26.07.06.0130_AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY_PATCH` makes interceptor outcomes easier to review and gives damaged UFO escapes a small persistent consequence layer:
+
+- Added compact air-combat after-action reports for launch, impact, delayed crash, and aircraft recovery phases.
+- UFO Tracking now surfaces the latest Air Combat report card and per-contact Last air contact summaries.
+- Damaged Escape outcomes now attach lightweight UFO damage memory with a follow-up hit bonus and delayed crash chance.
+- Damaged UFO memory advances only through Geoscape clock time; damaged contacts can later create delayed crash-site incidents.
+- Save/load migration normalizes older UFO contacts and air-combat report history safely.
+- Build Health now includes `Air combat after-action reports and UFO damage memory persist`, covering report creation, damaged-UFO memory, delayed crash behavior, report normalization, stance continuity, multi-base interceptor selection, and interceptor return recovery.
+
+Verification checklist:
+- Open Geoscape and confirm the UFO Tracking panel loads.
+- Launch an interceptor and confirm Latest Air Combat appears with outcome, stance, aircraft, fuel/ammo, and roll information.
+- Confirm damaged escapes show Last air contact plus UFO damaged follow-up/crash chance text on the contact.
+- Advance Geoscape time and confirm damaged-UFO delayed crash behavior does not break normal UFO detection/escape flow.
+- Confirm Build Health passes the new `Air combat after-action reports and UFO damage memory persist` row.
+
+Roadmap follow-up: `AIRCRAFT_FUEL_TANK_UPGRADES_INDEX_ONLY`, with `STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY` still queued as a small starting-base quality-of-life patch.
 
 ## 2026-07-05 Patch Notes - New Base Placement Confirmation UI Fix
 
