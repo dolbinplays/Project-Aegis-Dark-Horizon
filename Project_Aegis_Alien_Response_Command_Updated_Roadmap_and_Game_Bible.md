@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-07  
-Current handoff build: `v0.26.07.07.0120_SKYRANGER_STATIONING_LOAD_NORMALIZATION_FIX_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html`; static script parse passed and the stubbed Build Health harness passed 203/203 checks across three clean reruns, including the expanded Skyranger stationing row. Chrome/local browser smoke was blocked by browser URL policy for local `file:///` pages, so in-browser Build Health should still be confirmed by the player.**
+Current handoff build: `v0.26.07.07.0140_BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html`; static script parse passed and the stubbed Build Health harness passed 204/204 checks across three clean reruns, including the new base-radar/contact-quality row and the recent Skyranger stationing row. Chrome/local browser smoke was still blocked by browser URL policy for local `file:///` pages, so in-browser Build Health should still be confirmed by the player.**
 
 ---
 
@@ -48,10 +48,17 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.07.0120_SKYRANGER_STATIONING_LOAD_NORMALIZATION_FIX_INDEX_ONLY_PATCH`
+`v0.26.07.07.0140_BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- Distance-based base radar coverage for UFO contacts, derived from installed Shortwave and Longwave Radar facilities and each base's Geoscape location.
+- Shortwave Radar acts as a local/regional detector with a 4,500km range; Longwave Radar acts as a wider strategic detector with a 9,000km range.
+- UFO Tracking and the Geoscape globe now show only detected/known UFOs or contacts currently inside radar coverage, rather than exposing all UFOs whenever any radar exists.
+- Contact quality states such as Weak, Faint, Tracked, and Locked now affect detection chance and air-combat firing-solution quality.
+- Overlapping radar coverage improves contact quality and detection chance.
+- UFO Tracking now names the best detecting base/radar source, approximate distance, detection chance, and overlap count for each contact.
+- Build Health coverage now includes radar range gating, out-of-range UFO hiding, Shortwave-vs-Longwave range differences, overlapping coverage improvements, starting radar continuity, and no-regression checks for interceptor and Skyranger launch selection.
 - A second Skyranger stationing fix for saves where ready transport bases were visible but selected soldiers still failed to match either Fort Aegis or N. Africa ready Skyranger bases.
 - Soldier stationing now resolves through real campaign base IDs first, then safe legacy base name/region tokens, while ignoring room/activity-only `baseLocation` labels such as Barracks as base identity.
 - Save/load migration now normalizes missing soldier `baseId` values with the selected/first campaign base when only room-state location data exists.
@@ -1046,7 +1053,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.07.0120_SKYRANGER_STATIONING_LOAD_NORMALIZATION_FIX_INDEX_ONLY_PATCH` before adding the distance-based radar layer.
+Playtest `v0.26.07.07.0140_BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY_PATCH` before adding UFO landing and terror-style incident generation.
 
 Focus verification on:
 - Geoscape Clock modes showing Pause, 5s, 1m, 5m, 30m, 1h, 6h, and 1d.
@@ -1064,6 +1071,10 @@ Focus verification on:
 - Expansion bases still starting with only the free Access Lift layout.
 - Fort Aegis and N. Africa both listing ready Skyrangers while a Fort Aegis squad launches from the Fort Aegis Skyranger to an in-range incident.
 - Mixed-base response forces producing a blocker that names which soldiers are stationed away from the selected launch base.
+- UFO Tracking listing only contacts that are detected/known or currently inside radar range.
+- Shortwave Radar showing local/regional coverage while Longwave Radar reaches farther strategic contacts.
+- Per-contact radar text naming the detecting base/radar source and contact quality.
+- Overlapping radar coverage improving contact quality/detection chance in Build Health.
 - Interceptor Tanks and Skyranger Tanks cards appearing in UFO Tracking beside aircraft ordnance.
 - Interceptor Drop Tanks installing for $320k and raising Interceptors to 135 fuel / 10,500km practical range.
 - Skyranger Extended Tanks installing for $440k and raising Skyrangers to 130 fuel / 20,800km practical range.
@@ -1095,16 +1106,16 @@ Focus verification on:
 ## Best Next Feature Patch
 If this batch tests well, continue with the next priority roadmap patch:
 
-`BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY`
+`UFO_LANDING_AND_TERROR_INCIDENTS_INDEX_ONLY`
 
 Suggested focus:
-- Give each base radar facility a detection radius from that base's geoscape location.
-- Make Shortwave Radar a local/regional detection source and Longwave Radar a wider strategic detection source.
-- Replace or supplement the current global radar coverage score with distance-based per-UFO coverage from eligible bases.
-- Let overlapping radar fields improve detection chance, tracking speed, contact quality, or intercept solution accuracy.
-- Surface which base/radar network is detecting or tracking each UFO in UFO Tracking.
-- Keep old saves compatible by deriving radar coverage from existing base facilities.
-- Add Build Health coverage for distance-based detection, out-of-range UFO invisibility, Shortwave vs Longwave range differences, contact-quality progression, and no-regression interceptor launch behavior.
+- Give active UFOs simple mission intents such as Recon, Abduction, Terror Raid, Harvest, Base Scout, or Supply.
+- Let some UFOs land or complete their operation when flight progress reaches a threshold instead of only escaping.
+- Generate a ground incident from that UFO's size, region, alien type, mission intent, and detection/contact quality.
+- Keep crash sites separate from landed/terror incidents.
+- Let successful interception prevent, delay, downgrade, or alter the incident depending on outcome.
+- Surface UFO mission intent and landing/operation risk in UFO Tracking once enough radar contact is available.
+- Add Build Health coverage for UFO mission intent normalization, landing incident generation, panic consequences, interception prevention/downgrade, old-save compatibility, and no-regression radar/air-travel behavior.
 
 ## Near-Term Starting Base Upgrade Candidate
 Implemented in `v0.26.07.06.0155_STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY_PATCH`; keep this section as the reference contract for any future starting-base template adjustments:
@@ -1134,7 +1145,7 @@ Suggested focus:
 - Add Build Health coverage for placement-mode range preview state, range values matching aircraft profiles/upgrades, no overlay when placement mode is inactive, and no regression to new-base construction.
 
 ## Near-Term Radar Model Candidate
-After the starting radar seed and base-placement aircraft range preview, consider:
+Implemented in `v0.26.07.07.0140_BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY_PATCH`; keep this section as the reference contract for future radar polish:
 
 `BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY`
 
@@ -1453,6 +1464,29 @@ Verification checklist:
 - Confirm Build Health passes the new `Interceptor airborne status recovery prevents stuck Outbound craft` row.
 
 Roadmap follow-up remains `AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY`.
+
+## 2026-07-07 Patch Notes - Base Radar Range and Contact Quality
+
+Build `v0.26.07.07.0140_BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY_PATCH` implements the first distance-based radar model:
+
+- Base radar coverage is now derived from each base's installed radar facilities and Geoscape location.
+- Shortwave Radar provides local/regional UFO contact range at 4,500km.
+- Longwave Radar provides wider strategic UFO contact range at 9,000km.
+- UFOs outside radar range stay hidden unless already detected/known; the Geoscape globe and UFO Tracking panel no longer reveal all UFOs just because the player owns any radar.
+- Radar contact quality now reports Weak, Faint, Tracked, or Locked based on distance, UFO detectability, radar type, and overlapping radar coverage.
+- Overlapping radar coverage improves detection chance and air-combat firing solution quality.
+- UFO Tracking contact rows now name the detecting base/radar source, approximate range, detection chance, and overlap count.
+- Build Health now includes `Base radar range and contact quality gate UFO tracking`, covering range gating, Shortwave-vs-Longwave behavior, overlap quality, visible-contact filtering, starting radar continuity, and no-regression checks for interceptor and Skyranger launch selection.
+
+Verification checklist:
+- Start/load a campaign and confirm Fort Aegis' Shortwave Radar creates local/regional UFO coverage without globally revealing every UFO.
+- Add/build Longwave Radar and confirm it reaches farther contacts than Shortwave Radar.
+- Add overlapping radar coverage from multiple bases and confirm contact quality/detection improves.
+- Confirm detected UFOs still support assigned-base interceptor range/fuel selection.
+- Confirm Skyranger stationing/load normalization still passes and launch blockers remain clear.
+- Confirm Build Health passes 204/204 checks, including the new radar row.
+
+Roadmap follow-up is `UFO_LANDING_AND_TERROR_INCIDENTS_INDEX_ONLY`.
 
 ## 2026-07-07 Patch Notes - Skyranger Stationing Load Normalization Fix
 
