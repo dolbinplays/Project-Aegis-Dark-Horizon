@@ -1,9 +1,9 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-07-06  
-Current handoff build: `v0.26.07.06.0175_SMOOTH_XCOM_STYLE_GEOSCAPE_TIME_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html`; static parse and stubbed Build Health harness passed with 203/203 checks. Browser smoke was attempted but direct local `file:///` navigation was blocked by browser policy. Browser Build Health/smoke testing should confirm the Geoscape clock offers X-COM-style time compression modes, aircraft/UFO progress still resolves from elapsed Geoscape minutes, Build New Base placement mode shows dotted Interceptor and Skyranger practical-reach rings centered on the proposed site, and there is no regression to starting Shortwave Radar, fuel tank cards, richer air combat, stuck-Outbound recovery, new-base placement confirmation, Skyranger/interceptor base-selection, refueling, repair, and clock-based travel behavior.**
+Last updated: 2026-07-07  
+Current handoff build: `v0.26.07.07.0105_SKYRANGER_STATIONING_RANGE_LAUNCH_FIX_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html`; static parse and stubbed Build Health harness passed with 203/203 checks. Browser smoke was not possible in this handoff environment because direct local `file:///` navigation is blocked by browser policy. Browser Build Health/smoke testing should confirm a ready North America Skyranger with soldiers stationed at that base can launch to an in-range North/Central America incident, legacy soldier `baseLocation` / `baseId` state no longer causes false stationing blockers, wrong-base squads still block correctly, and there is no regression to smooth Geoscape time, starting Shortwave Radar, fuel tank cards, richer air combat, stuck-Outbound recovery, new-base placement confirmation, Skyranger/interceptor base-selection, refueling, repair, and clock-based travel behavior.**
 
 ---
 
@@ -48,10 +48,15 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.06.0175_SMOOTH_XCOM_STYLE_GEOSCAPE_TIME_INDEX_ONLY_PATCH`
+`v0.26.07.07.0105_SKYRANGER_STATIONING_RANGE_LAUNCH_FIX_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- A targeted Skyranger stationing fix so mission launch checks soldiers against the actual Skyranger launch base using current and legacy base identifiers.
+- Soldier stationing now recognizes base `id`, base name, region, legacy `baseLocation` strings/objects, and older `homeBaseId` / `assignedBaseId` fields without weakening wrong-base squad blocking.
+- North America-to-nearby-incident range validation remains tied to the Skyranger practical range/fuel model; a representative North America to Central America round trip is about 6,813km, inside the starting 16,000km range.
+- Skyranger blocker text now names the ready Skyranger bases involved when soldiers are not stationed at any matching transport base.
+- Build Health coverage for in-range North America launch eligibility, legacy soldier stationing normalization, wrong-base blocking, under-fueled blocking, and the existing Skyranger assigned-base regression row.
 - X-COM-style Geoscape time compression modes: Pause, 5s, 1m, 5m, 30m, 1h, 6h, and 1d.
 - A smoother one-second Geoscape clock cadence where the selected compression mode controls elapsed simulation minutes instead of changing aircraft/travel formulas.
 - Old-save normalization for legacy or odd Geoscape tick settings, snapping them to the nearest supported compression mode.
@@ -169,6 +174,8 @@ Before moving to the next major feature stage, test:
    - Launch a mission and confirm Skyranger travel still uses clock-based progress.
    - With multiple bases, confirm the Skyranger launches from the base where the chosen transport is housed.
    - Confirm soldiers assigned to the mission must be stationed at the chosen Skyranger's launch base.
+   - From a North America starting base, confirm a ready Skyranger and squad can launch to a nearby North/Central America incident that is within the 16,000km practical range.
+   - Confirm older soldiers with legacy `baseLocation` or missing `baseId` no longer get falsely blocked when they are effectively stationed at the Skyranger base.
    - Confirm launch is blocked or clearly reported if the round trip exceeds practical range or current fuel.
    - Finish/return from the mission and confirm the Skyranger becomes Ready again.
 
@@ -177,7 +184,7 @@ Before moving to the next major feature stage, test:
    - Confirm it normalizes a Skyranger/interceptor fleet with fuel/range fields and no crash.
 
 6. **Build Health**
-   - Confirm the in-browser Build Health panel passes all checks, including smooth Geoscape time compression, base-placement aircraft range previews, fuel tank upgrades, air-combat reports, stuck-Outbound recovery, richer UFO evasion, new-base placement, aircraft identity/repair, range/fuel/stance, interceptor assigned-base, and Skyranger assigned-base rows.
+   - Confirm the in-browser Build Health panel passes all checks, including the expanded Skyranger stationing/range launch row, smooth Geoscape time compression, base-placement aircraft range previews, fuel tank upgrades, air-combat reports, stuck-Outbound recovery, richer UFO evasion, new-base placement, aircraft identity/repair, range/fuel/stance, interceptor assigned-base, and Skyranger assigned-base rows.
 
 ---
 
@@ -1034,7 +1041,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.06.0175_SMOOTH_XCOM_STYLE_GEOSCAPE_TIME_INDEX_ONLY_PATCH` before adding the distance-based radar layer.
+Playtest `v0.26.07.07.0105_SKYRANGER_STATIONING_RANGE_LAUNCH_FIX_INDEX_ONLY_PATCH` before adding the distance-based radar layer.
 
 Focus verification on:
 - Geoscape Clock modes showing Pause, 5s, 1m, 5m, 30m, 1h, 6h, and 1d.
@@ -1439,6 +1446,26 @@ Verification checklist:
 - Confirm Build Health passes the new `Interceptor airborne status recovery prevents stuck Outbound craft` row.
 
 Roadmap follow-up remains `AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY`.
+
+## 2026-07-07 Patch Notes - Skyranger Stationing and Range Launch Fix
+
+Build `v0.26.07.07.0105_SKYRANGER_STATIONING_RANGE_LAUNCH_FIX_INDEX_ONLY_PATCH` fixes a playtest blocker where a ready Skyranger and apparently stationed squad could be refused with `assigned soldiers are not stationed at any ready Skyranger base`:
+
+- Skyranger launch eligibility now compares soldiers against the actual launch base object rather than only a raw base id string.
+- Soldier stationing checks now recognize current `baseId`, older `homeBaseId` / `assignedBaseId`, legacy `baseLocation` strings, legacy `baseLocation` objects, base names, and base regions.
+- Old-save and mixed-save soldier stationing data can match the correct base without allowing truly wrong-base soldiers to launch.
+- Blocking text now lists the ready Skyranger base names when soldiers are not stationed at any matching ready transport base.
+- Representative North America to Central America-style incidents validate as in range under the existing model: about 6,813km round trip against the starting Skyranger's 16,000km practical range.
+- Build Health expands the Skyranger assigned-base row with North America in-range launch eligibility, legacy stationing normalization, wrong-base blocking, under-fueled blocking, and existing multi-base/range/fuel continuity checks.
+
+Verification checklist:
+- Load or start a campaign with a ready North America Skyranger and squad at that base.
+- Launch to a nearby North/Central America incident and confirm the false stationing blocker no longer appears.
+- Confirm a squad stationed at a different base is still blocked from using the wrong Skyranger.
+- Confirm under-fueled and out-of-range Skyrangers still produce fuel/range blockers rather than stationing blockers.
+- Confirm Build Health passes the expanded `Skyranger launch matches assigned base and stationed soldiers` row.
+
+Roadmap follow-up remains `BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY`, followed by `UFO_LANDING_AND_TERROR_INCIDENTS_INDEX_ONLY`.
 
 ## 2026-07-06 Patch Notes - Smooth X-COM Style Geoscape Time
 
