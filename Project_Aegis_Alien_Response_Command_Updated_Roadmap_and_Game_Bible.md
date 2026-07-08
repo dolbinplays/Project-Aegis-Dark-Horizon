@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-07  
-Current handoff build: `v0.26.07.07.0105_SKYRANGER_STATIONING_RANGE_LAUNCH_FIX_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html`; static parse and stubbed Build Health harness passed with 203/203 checks. Browser smoke was not possible in this handoff environment because direct local `file:///` navigation is blocked by browser policy. Browser Build Health/smoke testing should confirm a ready North America Skyranger with soldiers stationed at that base can launch to an in-range North/Central America incident, legacy soldier `baseLocation` / `baseId` state no longer causes false stationing blockers, wrong-base squads still block correctly, and there is no regression to smooth Geoscape time, starting Shortwave Radar, fuel tank cards, richer air combat, stuck-Outbound recovery, new-base placement confirmation, Skyranger/interceptor base-selection, refueling, repair, and clock-based travel behavior.**
+Current handoff build: `v0.26.07.07.0120_SKYRANGER_STATIONING_LOAD_NORMALIZATION_FIX_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html`; static script parse passed and the stubbed Build Health harness passed 203/203 checks across three clean reruns, including the expanded Skyranger stationing row. Chrome/local browser smoke was blocked by browser URL policy for local `file:///` pages, so in-browser Build Health should still be confirmed by the player.**
 
 ---
 
@@ -48,10 +48,15 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.07.0105_SKYRANGER_STATIONING_RANGE_LAUNCH_FIX_INDEX_ONLY_PATCH`
+`v0.26.07.07.0120_SKYRANGER_STATIONING_LOAD_NORMALIZATION_FIX_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- A second Skyranger stationing fix for saves where ready transport bases were visible but selected soldiers still failed to match either Fort Aegis or N. Africa ready Skyranger bases.
+- Soldier stationing now resolves through real campaign base IDs first, then safe legacy base name/region tokens, while ignoring room/activity-only `baseLocation` labels such as Barracks as base identity.
+- Save/load migration now normalizes missing soldier `baseId` values with the selected/first campaign base when only room-state location data exists.
+- Skyranger launch blockers now name mixed-base offending soldiers and their interpreted stationing so the player can see exactly why a response force is blocked.
+- Build Health coverage now includes Fort Aegis plus N. Africa ready-Skyranger matching, room-only legacy location fallback, mixed-base named blocker text, and legacy load normalization.
 - A targeted Skyranger stationing fix so mission launch checks soldiers against the actual Skyranger launch base using current and legacy base identifiers.
 - Soldier stationing now recognizes base `id`, base name, region, legacy `baseLocation` strings/objects, and older `homeBaseId` / `assignedBaseId` fields without weakening wrong-base squad blocking.
 - North America-to-nearby-incident range validation remains tied to the Skyranger practical range/fuel model; a representative North America to Central America round trip is about 6,813km, inside the starting 16,000km range.
@@ -1041,7 +1046,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.07.0105_SKYRANGER_STATIONING_RANGE_LAUNCH_FIX_INDEX_ONLY_PATCH` before adding the distance-based radar layer.
+Playtest `v0.26.07.07.0120_SKYRANGER_STATIONING_LOAD_NORMALIZATION_FIX_INDEX_ONLY_PATCH` before adding the distance-based radar layer.
 
 Focus verification on:
 - Geoscape Clock modes showing Pause, 5s, 1m, 5m, 30m, 1h, 6h, and 1d.
@@ -1057,6 +1062,8 @@ Focus verification on:
 - New campaigns showing one Shortwave Radar in the starting base.
 - UFO Tracking coverage showing one shortwave radar counted at campaign start.
 - Expansion bases still starting with only the free Access Lift layout.
+- Fort Aegis and N. Africa both listing ready Skyrangers while a Fort Aegis squad launches from the Fort Aegis Skyranger to an in-range incident.
+- Mixed-base response forces producing a blocker that names which soldiers are stationed away from the selected launch base.
 - Interceptor Tanks and Skyranger Tanks cards appearing in UFO Tracking beside aircraft ordnance.
 - Interceptor Drop Tanks installing for $320k and raising Interceptors to 135 fuel / 10,500km practical range.
 - Skyranger Extended Tanks installing for $440k and raising Skyrangers to 130 fuel / 20,800km practical range.
@@ -1446,6 +1453,26 @@ Verification checklist:
 - Confirm Build Health passes the new `Interceptor airborne status recovery prevents stuck Outbound craft` row.
 
 Roadmap follow-up remains `AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY`.
+
+## 2026-07-07 Patch Notes - Skyranger Stationing Load Normalization Fix
+
+Build `v0.26.07.07.0120_SKYRANGER_STATIONING_LOAD_NORMALIZATION_FIX_INDEX_ONLY_PATCH` fixes the remaining playtest blocker where the game listed ready Skyranger bases such as `N. Africa1` and `Fort Aegis` but still refused launch because selected soldiers did not match either base:
+
+- Soldier stationing now resolves against actual campaign base IDs before falling back to safe legacy base name/region tokens.
+- Room/activity-only `baseLocation` state, such as Barracks movement markers, no longer counts as base identity and no longer prevents fallback to the selected/first base during old-save normalization.
+- Save/load migration assigns a real fallback base ID when soldiers lack explicit `baseId`, `homeBaseId`, or `assignedBaseId` data.
+- Skyranger launch selection now correctly chooses the matching ready Skyranger when Fort Aegis and N. Africa both have ready transports.
+- Mixed-base response forces remain blocked, but the blocker now names offending soldiers and where the game believes they are stationed.
+- Build Health expands the Skyranger assigned-base row with Fort Aegis/N. Africa matching, room-only legacy location fallback, mixed-base named blocker text, and legacy load normalization.
+
+Verification checklist:
+- Load the affected campaign and confirm a Fort Aegis squad can launch from a ready Fort Aegis Skyranger to an in-range incident while N. Africa also has a ready Skyranger.
+- Confirm an N. Africa squad can still launch from an N. Africa Skyranger to an in-range incident.
+- Confirm mixed-base squads are blocked with named soldiers and their interpreted stationing.
+- Confirm under-fueled and out-of-range Skyrangers still produce fuel/range blockers rather than stationing blockers.
+- Confirm Build Health passes the expanded `Skyranger launch matches assigned base and stationed soldiers` row.
+
+Roadmap follow-up remains `BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY`, followed by `UFO_LANDING_AND_TERROR_INCIDENTS_INDEX_ONLY`.
 
 ## 2026-07-07 Patch Notes - Skyranger Stationing and Range Launch Fix
 
