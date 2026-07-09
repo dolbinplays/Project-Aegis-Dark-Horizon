@@ -1,9 +1,9 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-07-07  
-Current handoff build: `v0.26.07.07.0140_BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html`; static script parse passed and the stubbed Build Health harness passed 204/204 checks across three clean reruns, including the new base-radar/contact-quality row and the recent Skyranger stationing row. Chrome/local browser smoke was still blocked by browser URL policy for local `file:///` pages, so in-browser Build Health should still be confirmed by the player.**
+Last updated: 2026-07-08  
+Current handoff build: `v0.26.07.08.0100_UFO_LANDING_AND_TERROR_INCIDENTS_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html`; targeted static seam checks confirmed the new build label, UFO mission helpers, completed-operation flow, UFO Tracking mission-risk text, and the new Build Health row are present. Browser/local-file smoke remains blocked by browser URL policy for local `file:///` pages, and this shell has no usable `node`/Python server path, so in-browser Build Health should be confirmed by the player.**
 
 ---
 
@@ -48,10 +48,16 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.07.0140_BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY_PATCH`
+`v0.26.07.08.0100_UFO_LANDING_AND_TERROR_INCIDENTS_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- UFO mission intents for active craft: Recon, Abduction, Terror Raid, Harvest, Base Scout, and Supply.
+- UFO flights can now complete operations into ground incidents before simply escaping, with threat/panic based on UFO size, region, alien type, and mission intent.
+- Crash sites remain separate from landed/terror-style incidents.
+- Interception outcomes can disrupt UFO operations, delaying mission completion and downgrading later ground threat/panic when damage or forced disengagement occurs.
+- UFO Tracking now surfaces mission intent/risk text once radar contact quality is strong enough to read the operation.
+- Build Health now includes `UFO mission intents can create landed terror incidents`, covering old-save intent normalization, landed incident generation, panic consequences, radar-readable mission text, and air-combat disruption/downgrade behavior.
 - Distance-based base radar coverage for UFO contacts, derived from installed Shortwave and Longwave Radar facilities and each base's Geoscape location.
 - Shortwave Radar acts as a local/regional detector with a 4,500km range; Longwave Radar acts as a wider strategic detector with a 9,000km range.
 - UFO Tracking and the Geoscape globe now show only detected/known UFOs or contacts currently inside radar coverage, rather than exposing all UFOs whenever any radar exists.
@@ -573,6 +579,7 @@ Implemented or first-pass:
 - Make Geoscape time feel closer to classic X-COM: smooth clock flow with selectable time compression, where aircraft and UFO motion visibly speed up or slow down with the selected time scale while underlying travel math remains clock-accurate.
 - Seed the first base with one Shortwave Radar so initial UFO detection feels intentional before the player expands the radar network.
 - Replace abstract global radar coverage with base-centered radar range so UFOs can only be reliably detected when they fly within Shortwave/Longwave coverage.
+- Add player-controlled Geoscape overlay filters so commanders can toggle radar rings, Interceptor practical reach, Skyranger practical reach, and all range rings off when the globe is too busy.
 - UFOs range from very small to very large.
 - Larger craft are harder to shoot down.
 - Shootdowns create crash incidents.
@@ -993,6 +1000,9 @@ Still planned:
 - Alien escalation over months.
 - Smooth Geoscape time-compression model where aircraft/UFO perceived speed scales with the selected clock rate without breaking real route duration, repair, refuel, or event timing.
 - Base-centered radar range and contact-quality model where UFO detection depends on distance from each base's radar facilities.
+- Geoscape overlay filter controls for showing/hiding radar and aircraft range rings around each existing base.
+- Selected-base scoping for base-local screens such as Barracks, Squads, Hangars, Sickbay, Workshop/Base Stores views, and personnel/equipment readiness lists.
+- Base-to-base transfer logistics for soldiers, weapons, armor, aircraft stores, and other portable equipment, with transfer time/cost and clear origin/destination state.
 - UFO landing / terror-style incident chain where flying UFOs have mission intent and can touch down or complete operations that create ground incidents and panic consequences.
 - Live alien research chain polish.
 - Command-site assault rewards.
@@ -1053,7 +1063,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.07.0140_BASE_RADAR_RANGE_AND_CONTACT_QUALITY_INDEX_ONLY_PATCH` before adding UFO landing and terror-style incident generation.
+Playtest `v0.26.07.08.0100_UFO_LANDING_AND_TERROR_INCIDENTS_INDEX_ONLY_PATCH` before adding more Geoscape overlays or base-local logistics.
 
 Focus verification on:
 - Geoscape Clock modes showing Pause, 5s, 1m, 5m, 30m, 1h, 6h, and 1d.
@@ -1075,6 +1085,11 @@ Focus verification on:
 - Shortwave Radar showing local/regional coverage while Longwave Radar reaches farther strategic contacts.
 - Per-contact radar text naming the detecting base/radar source and contact quality.
 - Overlapping radar coverage improving contact quality/detection chance in Build Health.
+- UFO Tracking showing mission intent/risk once contact quality is strong enough.
+- Active UFOs sometimes completing operations into landed/terror-style incidents instead of only escaping.
+- Crash-site incidents staying distinct from landed/terror-style incidents.
+- Damaged or disrupted UFOs delaying/downgrading later ground incident threat/panic.
+- Build Health including the new `UFO mission intents can create landed terror incidents` row.
 - Interceptor Tanks and Skyranger Tanks cards appearing in UFO Tracking beside aircraft ordnance.
 - Interceptor Drop Tanks installing for $320k and raising Interceptors to 135 fuel / 10,500km practical range.
 - Skyranger Extended Tanks installing for $440k and raising Skyrangers to 130 fuel / 20,800km practical range.
@@ -1106,16 +1121,14 @@ Focus verification on:
 ## Best Next Feature Patch
 If this batch tests well, continue with the next priority roadmap patch:
 
-`UFO_LANDING_AND_TERROR_INCIDENTS_INDEX_ONLY`
+`GEOSCAPE_RANGE_OVERLAY_FILTERS_INDEX_ONLY`
 
 Suggested focus:
-- Give active UFOs simple mission intents such as Recon, Abduction, Terror Raid, Harvest, Base Scout, or Supply.
-- Let some UFOs land or complete their operation when flight progress reaches a threshold instead of only escaping.
-- Generate a ground incident from that UFO's size, region, alien type, mission intent, and detection/contact quality.
-- Keep crash sites separate from landed/terror incidents.
-- Let successful interception prevent, delay, downgrade, or alter the incident depending on outcome.
-- Surface UFO mission intent and landing/operation risk in UFO Tracking once enough radar contact is available.
-- Add Build Health coverage for UFO mission intent normalization, landing incident generation, panic consequences, interception prevention/downgrade, old-save compatibility, and no-regression radar/air-travel behavior.
+- Add a compact Geoscape overlay/filter control that lets the player choose which base-centered rings are visible.
+- Support Shortwave Radar range, Longwave Radar range, Interceptor practical reach, Skyranger practical reach, and All Off.
+- Render dotted/dashed lightweight rings around existing bases without confusing them with the new-base placement preview.
+- Respect Interceptor Drop Tanks and Skyranger Extended Tanks when showing aircraft reach.
+- Add Build Health coverage for overlay filter state, ring visibility, upgraded aircraft values, radar ring values, all-off hiding, and no-regression base-placement preview behavior.
 
 ## Near-Term Starting Base Upgrade Candidate
 Implemented in `v0.26.07.06.0155_STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY_PATCH`; keep this section as the reference contract for any future starting-base template adjustments:
@@ -1158,6 +1171,40 @@ Suggested focus:
 - Surface which base/radar network is detecting or tracking each UFO in UFO Tracking.
 - Keep old saves compatible by deriving radar coverage from existing base facilities.
 - Add Build Health coverage for distance-based detection, out-of-range UFO invisibility, overlapping coverage bonuses, Shortwave vs Longwave range differences, contact-quality progression, old-save normalization, and no-regression interceptor launch behavior.
+
+## Near-Term Geoscape Overlay Filter Candidate
+Future patch candidate:
+
+`GEOSCAPE_RANGE_OVERLAY_FILTERS_INDEX_ONLY`
+
+Suggested focus:
+- Add a compact Geoscape overlay/filter control that lets the player choose which base-centered rings are visible.
+- Ring options should include Shortwave Radar range, Longwave Radar range, Interceptor practical reach, Skyranger practical reach, and an All Off state.
+- Rings should render around existing bases, not only proposed new-base sites.
+- Use dotted or dashed lightweight circles with restrained colors so overlays help planning without covering the globe.
+- Respect aircraft fuel tank upgrades when showing current Interceptor and Skyranger practical reach.
+- Make the control persistent/save-compatible if possible, but safe to default to a readable setting for old saves.
+- Keep base-placement range preview behavior intact; placement-preview rings and existing-base overlay rings should not visually fight each other.
+- Add Build Health coverage for overlay filter state, per-ring visibility, upgraded aircraft range values, radar ring values, all-off hiding, and no-regression base-placement preview behavior.
+
+## Near-Term Multi-Base Scope and Transfers Candidate
+Future patch candidate:
+
+`BASE_LOCAL_ROSTERS_AND_TRANSFER_LOGISTICS_INDEX_ONLY`
+
+Suggested focus:
+- Base-local screens should show information for the currently selected base when the data is physically local to a base.
+- Barracks should list only soldiers stationed at the selected base, with clear counts for other bases.
+- Squads should only assign soldiers stationed at the selected base unless a future explicit cross-base task force mode exists.
+- Sickbay should show wounded soldiers at the selected base; global memorial/history views can remain shared.
+- Hangars should show aircraft housed at the selected base and preserve assigned-base launch logic.
+- Base Stores / equipment views should separate local stock from globally shared knowledge. Mainframe, research database, alien intel, reports, and memorial records remain globally accessible.
+- Add base-to-base transfers for soldiers and portable equipment such as weapons, armor, medkits, recovered materials, and aircraft ammunition where appropriate.
+- Transfers should have origin base, destination base, item/person payload, travel time, optional cost, and clear in-transit status.
+- Soldiers in transit should be unavailable for squads/missions until they arrive.
+- Equipment in transit should be unavailable at both origin and destination until arrival.
+- Preserve save compatibility by normalizing older soldiers/equipment into the selected/first base if no base-local state exists.
+- Add Build Health coverage for selected-base roster filtering, wrong-base squad assignment blocking, transfer creation, in-transit unavailability, arrival at destination, equipment stock movement, old-save normalization, and no-regression Skyranger stationing behavior.
 
 ## Near-Term Geoscape Time Candidate
 Implemented in `v0.26.07.06.0175_SMOOTH_XCOM_STYLE_GEOSCAPE_TIME_INDEX_ONLY_PATCH`; keep this section as the reference contract for future time-control polish:
@@ -1464,6 +1511,28 @@ Verification checklist:
 - Confirm Build Health passes the new `Interceptor airborne status recovery prevents stuck Outbound craft` row.
 
 Roadmap follow-up remains `AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY`.
+
+## 2026-07-08 Patch Notes - UFO Landing and Terror Incidents
+
+Build `v0.26.07.08.0100_UFO_LANDING_AND_TERROR_INCIDENTS_INDEX_ONLY_PATCH` adds the first UFO operation-to-ground-incident loop:
+
+- Active UFOs now normalize with a mission intent: Recon, Abduction, Terror Raid, Harvest, Base Scout, or Supply.
+- UFOs can complete operations into ground incidents once flight progress reaches the mission threshold, instead of only disappearing as escaped contacts.
+- Landed/terror-style incidents are generated from UFO size, region, alien type, and mission intent, while existing crash-site incidents remain separate.
+- Air-combat outcomes can disrupt UFO operations: damaged escapes, forced disengagements, ammunition pressure, and breakaways add delay/downgrade pressure before a later ground incident.
+- UFO Tracking now shows a mission-risk line once radar contact quality and tracking are good enough to read the operation.
+- Old saves with UFO records missing mission intent normalize safely to a valid intent.
+- Build Health now includes `UFO mission intents can create landed terror incidents`, covering intent normalization, incident generation, panic consequences, radar-readable mission text, and interception disruption/downgrade behavior.
+
+Verification checklist:
+- Start/load a campaign and confirm UFO Tracking still respects radar range/contact quality.
+- Track contacts long enough to see mission risk text appear once radar quality improves.
+- Advance Geoscape time and confirm some UFOs generate landed/terror-style incidents rather than only lost-contact reports.
+- Confirm crash sites from shootdowns and delayed damaged-UFO crashes remain separate from landed incidents.
+- Intercept a UFO and confirm damaged/disrupted outcomes can delay or downgrade the later operation.
+- Confirm Build Health passes with the new UFO mission-intent row.
+
+Roadmap follow-up is `GEOSCAPE_RANGE_OVERLAY_FILTERS_INDEX_ONLY`, followed by `BASE_LOCAL_ROSTERS_AND_TRANSFER_LOGISTICS_INDEX_ONLY`.
 
 ## 2026-07-07 Patch Notes - Base Radar Range and Contact Quality
 
