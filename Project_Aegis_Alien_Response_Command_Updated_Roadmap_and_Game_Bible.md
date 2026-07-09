@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-08  
-Current handoff build: `v0.26.07.08.0120_GEOSCAPE_RANGE_OVERLAY_FILTERS_AND_SQUAD_BASE_FILTER_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html`; targeted static seam checks confirmed the new build label, Geoscape overlay helpers/UI, saved overlay filter normalization, squad same-base assignment helpers/UI, and the two new Build Health rows are present. Browser/local-file smoke remains blocked by browser URL policy for local `file:///` pages, and this shell has no usable `node`, Deno, Python, or `py` runtime, so in-browser Build Health should be confirmed by the player.**
+Current handoff build: `v0.26.07.08.0140_BASE_LOCAL_ROSTERS_AND_TRANSFER_LOGISTICS_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html`; targeted static seam checks confirmed the new build label, base-local roster derivation, soldier transfer helpers/UI, in-transit assignment/mission exclusions, clock-based transfer advancement, selected-base Sickbay display, and the new Build Health row are present. Browser/local-file smoke remains blocked by browser URL policy for local `file:///` pages, and this shell has no usable `node`, Deno, Python, `py`, or `git` runtime, so in-browser Build Health should be confirmed by the player.**
 
 ---
 
@@ -48,10 +48,18 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.08.0120_GEOSCAPE_RANGE_OVERLAY_FILTERS_AND_SQUAD_BASE_FILTER_INDEX_ONLY_PATCH`
+`v0.26.07.08.0140_BASE_LOCAL_ROSTERS_AND_TRANSFER_LOGISTICS_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- Base-local Barracks and Sickbay filtering using the currently selected base.
+- In-transit soldier state for initial soldier-only base transfers.
+- Barracks transfer buttons for moving a ready soldier from the selected base to another base.
+- Transfers record origin base, destination base, total/remaining travel time, and in-transit status.
+- Soldier transfers advance through Geoscape clock time and update the soldier's base on arrival.
+- In-transit soldiers are hidden from local base rosters, excluded from squad assignment, and unavailable for mission launch.
+- Selected-base Sickbay capacity/readout now matches the filtered local patient list.
+- Build Health now includes `Base-local rosters and soldier transfers keep personnel available only at their base`.
 - A compact Geoscape Range Overlays control with toggles for Shortwave Radar, Longwave Radar, Interceptor reach, Skyranger reach, and All Off.
 - Lightweight dotted/dashed base-centered range rings on the Geoscape globe.
 - Overlay rings respect Interceptor Drop Tanks and Skyranger Extended Tanks when showing practical aircraft reach.
@@ -1071,7 +1079,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.08.0120_GEOSCAPE_RANGE_OVERLAY_FILTERS_AND_SQUAD_BASE_FILTER_INDEX_ONLY_PATCH` before adding full base-local logistics and transfer systems.
+Playtest `v0.26.07.08.0140_BASE_LOCAL_ROSTERS_AND_TRANSFER_LOGISTICS_INDEX_ONLY_PATCH` before expanding transfers to equipment and base-local stores.
 
 Focus verification on:
 - Geoscape Clock modes showing Pause, 5s, 1m, 5m, 30m, 1h, 6h, and 1d.
@@ -1104,6 +1112,12 @@ Focus verification on:
 - Squads screen available-soldier list showing only soldiers stationed at the selected squad's base.
 - Same-base soldiers still appearing as assignable and wrong-base soldiers being hidden/blocked.
 - Build Health including `Geoscape range overlay filters render base rings` and `Squad assignment list filters by selected squad base`.
+- Barracks showing soldiers stationed at the currently selected base only.
+- Sickbay showing wounded/recovering soldiers stationed at the currently selected base only.
+- Transfer buttons appearing on ready Barracks soldiers when more than one base exists.
+- Transferred soldiers appearing in Personnel Transfers, becoming unavailable while in transit, and arriving after Geoscape clock time advances.
+- In-transit soldiers being blocked from squad assignment and mission launch.
+- Build Health including `Base-local rosters and soldier transfers keep personnel available only at their base`.
 - Interceptor Tanks and Skyranger Tanks cards appearing in UFO Tracking beside aircraft ordnance.
 - Interceptor Drop Tanks installing for $320k and raising Interceptors to 135 fuel / 10,500km practical range.
 - Skyranger Extended Tanks installing for $440k and raising Skyrangers to 130 fuel / 20,800km practical range.
@@ -1135,15 +1149,16 @@ Focus verification on:
 ## Best Next Feature Patch
 If this batch tests well, continue with the next priority roadmap patch:
 
-`BASE_LOCAL_ROSTERS_AND_TRANSFER_LOGISTICS_INDEX_ONLY`
+`BASE_LOCAL_EQUIPMENT_STORES_AND_TRANSFER_LOGISTICS_INDEX_ONLY`
 
 Suggested focus:
-- Base-local screens should show information for the currently selected base when the data is physically local to a base.
-- Barracks, Squads, Sickbay, Hangars, and Base Stores should distinguish local personnel/equipment from globally shared knowledge.
-- Add base-to-base transfers for soldiers and portable equipment with origin, destination, payload, travel time, cost if needed, and in-transit status.
-- Soldiers and gear in transit should be unavailable until arrival.
+- Extend the base-local logistics model from soldiers to portable equipment and stores.
+- Base Stores / Quartermaster should distinguish selected-base local stock from globally shared research knowledge.
+- Add base-to-base transfers for portable equipment such as weapons, armor, medkits, recovered materials, and aircraft ammunition where appropriate.
+- Equipment transfers should have origin, destination, item payload, travel time, optional cost, and in-transit status.
+- Gear in transit should be unavailable at both origin and destination until arrival.
 - Preserve global access for Mainframe/research database/alien intel/reports/memorial records.
-- Add Build Health coverage for selected-base filtering, transfer creation, in-transit unavailability, arrival, equipment movement, old-save normalization, and no-regression Skyranger stationing.
+- Add Build Health coverage for local stock filtering, equipment transfer creation, in-transit unavailability, arrival at destination, old-save normalization, and no-regression soldier transfers / Skyranger stationing.
 
 ## Near-Term Starting Base Upgrade Candidate
 Implemented in `v0.26.07.06.0155_STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY_PATCH`; keep this section as the reference contract for any future starting-base template adjustments:
@@ -1526,6 +1541,30 @@ Verification checklist:
 - Confirm Build Health passes the new `Interceptor airborne status recovery prevents stuck Outbound craft` row.
 
 Roadmap follow-up remains `AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY`.
+
+## 2026-07-08 Patch Notes - Base-Local Rosters and Soldier Transfer Logistics
+
+Build `v0.26.07.08.0140_BASE_LOCAL_ROSTERS_AND_TRANSFER_LOGISTICS_INDEX_ONLY_PATCH` begins the multi-base logistics pass:
+
+- Barracks now derives its visible soldier roster from the currently selected base.
+- Sickbay now derives its visible patient/recovery roster from the currently selected base.
+- Selected-base Sickbay patient count uses selected-base Sickbay capacity for the local screen.
+- Ready Barracks soldiers can be transferred from the selected base to another base when multiple bases exist.
+- Soldier transfers store origin base, destination base, total/remaining travel time, and in-transit status.
+- Transfers advance through Geoscape clock time and update the soldier's base on arrival.
+- In-transit soldiers are removed from squad duty, hidden from local base rosters, blocked from squad assignment, and excluded from mission response forces until arrival.
+- Personnel Transfers appear in Barracks for inbound/outbound selected-base transfers.
+- Build Health now includes `Base-local rosters and soldier transfers keep personnel available only at their base`.
+
+Verification checklist:
+- Select different bases and confirm Barracks shows only soldiers stationed at the selected base.
+- Confirm Sickbay/patient lists are filtered to the selected base.
+- Transfer a ready soldier from one base to another and confirm the soldier is removed from squad duty and listed as in transit.
+- Advance Geoscape clock time and confirm the transferred soldier arrives at the destination base.
+- Confirm in-transit soldiers cannot be assigned to squads or launched on missions.
+- Confirm Build Health passes with the new base-local transfer row and the prior squad/base filter row.
+
+Roadmap follow-up is `BASE_LOCAL_EQUIPMENT_STORES_AND_TRANSFER_LOGISTICS_INDEX_ONLY`.
 
 ## 2026-07-08 Patch Notes - Geoscape Range Overlay Filters and Squad Base Filter
 
