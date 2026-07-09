@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-08  
-Current handoff build: `v0.26.07.08.0100_UFO_LANDING_AND_TERROR_INCIDENTS_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html`; targeted static seam checks confirmed the new build label, UFO mission helpers, completed-operation flow, UFO Tracking mission-risk text, and the new Build Health row are present. Browser/local-file smoke remains blocked by browser URL policy for local `file:///` pages, and this shell has no usable `node`/Python server path, so in-browser Build Health should be confirmed by the player.**
+Current handoff build: `v0.26.07.08.0120_GEOSCAPE_RANGE_OVERLAY_FILTERS_AND_SQUAD_BASE_FILTER_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html`; targeted static seam checks confirmed the new build label, Geoscape overlay helpers/UI, saved overlay filter normalization, squad same-base assignment helpers/UI, and the two new Build Health rows are present. Browser/local-file smoke remains blocked by browser URL policy for local `file:///` pages, and this shell has no usable `node`, Deno, Python, or `py` runtime, so in-browser Build Health should be confirmed by the player.**
 
 ---
 
@@ -48,10 +48,18 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.08.0100_UFO_LANDING_AND_TERROR_INCIDENTS_INDEX_ONLY_PATCH`
+`v0.26.07.08.0120_GEOSCAPE_RANGE_OVERLAY_FILTERS_AND_SQUAD_BASE_FILTER_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- A compact Geoscape Range Overlays control with toggles for Shortwave Radar, Longwave Radar, Interceptor reach, Skyranger reach, and All Off.
+- Lightweight dotted/dashed base-centered range rings on the Geoscape globe.
+- Overlay rings respect Interceptor Drop Tanks and Skyranger Extended Tanks when showing practical aircraft reach.
+- Base-placement aircraft range preview rings remain separate from the persistent Geoscape overlay rings.
+- The Squads screen now filters available assignment candidates to soldiers stationed at the same base as the selected squad.
+- Squad base matching resolves real campaign base IDs first, then safe legacy stationing fields, and falls back conservatively for empty/legacy squads.
+- Cross-base soldiers are hidden from the selected squad's available assignment list, and direct assignment is defensively blocked if a soldier is stationed at another base.
+- Build Health now includes `Geoscape range overlay filters render base rings` and `Squad assignment list filters by selected squad base`.
 - UFO mission intents for active craft: Recon, Abduction, Terror Raid, Harvest, Base Scout, and Supply.
 - UFO flights can now complete operations into ground incidents before simply escaping, with threat/panic based on UFO size, region, alien type, and mission intent.
 - Crash sites remain separate from landed/terror-style incidents.
@@ -1063,7 +1071,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.08.0100_UFO_LANDING_AND_TERROR_INCIDENTS_INDEX_ONLY_PATCH` before adding more Geoscape overlays or base-local logistics.
+Playtest `v0.26.07.08.0120_GEOSCAPE_RANGE_OVERLAY_FILTERS_AND_SQUAD_BASE_FILTER_INDEX_ONLY_PATCH` before adding full base-local logistics and transfer systems.
 
 Focus verification on:
 - Geoscape Clock modes showing Pause, 5s, 1m, 5m, 30m, 1h, 6h, and 1d.
@@ -1090,6 +1098,12 @@ Focus verification on:
 - Crash-site incidents staying distinct from landed/terror-style incidents.
 - Damaged or disrupted UFOs delaying/downgrading later ground incident threat/panic.
 - Build Health including the new `UFO mission intents can create landed terror incidents` row.
+- Geoscape Range Overlays controls toggling Shortwave, Longwave, Interceptor, Skyranger, and All Off.
+- Dotted/dashed base-centered overlay rings staying visually distinct from new-base placement preview rings.
+- Aircraft overlay reach updating from Interceptor Drop Tanks and Skyranger Extended Tanks.
+- Squads screen available-soldier list showing only soldiers stationed at the selected squad's base.
+- Same-base soldiers still appearing as assignable and wrong-base soldiers being hidden/blocked.
+- Build Health including `Geoscape range overlay filters render base rings` and `Squad assignment list filters by selected squad base`.
 - Interceptor Tanks and Skyranger Tanks cards appearing in UFO Tracking beside aircraft ordnance.
 - Interceptor Drop Tanks installing for $320k and raising Interceptors to 135 fuel / 10,500km practical range.
 - Skyranger Extended Tanks installing for $440k and raising Skyrangers to 130 fuel / 20,800km practical range.
@@ -1121,14 +1135,15 @@ Focus verification on:
 ## Best Next Feature Patch
 If this batch tests well, continue with the next priority roadmap patch:
 
-`GEOSCAPE_RANGE_OVERLAY_FILTERS_INDEX_ONLY`
+`BASE_LOCAL_ROSTERS_AND_TRANSFER_LOGISTICS_INDEX_ONLY`
 
 Suggested focus:
-- Add a compact Geoscape overlay/filter control that lets the player choose which base-centered rings are visible.
-- Support Shortwave Radar range, Longwave Radar range, Interceptor practical reach, Skyranger practical reach, and All Off.
-- Render dotted/dashed lightweight rings around existing bases without confusing them with the new-base placement preview.
-- Respect Interceptor Drop Tanks and Skyranger Extended Tanks when showing aircraft reach.
-- Add Build Health coverage for overlay filter state, ring visibility, upgraded aircraft values, radar ring values, all-off hiding, and no-regression base-placement preview behavior.
+- Base-local screens should show information for the currently selected base when the data is physically local to a base.
+- Barracks, Squads, Sickbay, Hangars, and Base Stores should distinguish local personnel/equipment from globally shared knowledge.
+- Add base-to-base transfers for soldiers and portable equipment with origin, destination, payload, travel time, cost if needed, and in-transit status.
+- Soldiers and gear in transit should be unavailable until arrival.
+- Preserve global access for Mainframe/research database/alien intel/reports/memorial records.
+- Add Build Health coverage for selected-base filtering, transfer creation, in-transit unavailability, arrival, equipment movement, old-save normalization, and no-regression Skyranger stationing.
 
 ## Near-Term Starting Base Upgrade Candidate
 Implemented in `v0.26.07.06.0155_STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY_PATCH`; keep this section as the reference contract for any future starting-base template adjustments:
@@ -1511,6 +1526,30 @@ Verification checklist:
 - Confirm Build Health passes the new `Interceptor airborne status recovery prevents stuck Outbound craft` row.
 
 Roadmap follow-up remains `AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY`.
+
+## 2026-07-08 Patch Notes - Geoscape Range Overlay Filters and Squad Base Filter
+
+Build `v0.26.07.08.0120_GEOSCAPE_RANGE_OVERLAY_FILTERS_AND_SQUAD_BASE_FILTER_INDEX_ONLY_PATCH` adds player-selectable range planning overlays and tightens squad assignment to base-local soldiers:
+
+- Geoscape now has a compact Range Overlays control with toggles for Shortwave Radar, Longwave Radar, Interceptor reach, Skyranger reach, and All Off.
+- Overlay rings render as lightweight dotted/dashed circles around existing bases.
+- Radar rings use the existing Shortwave 4,500km and Longwave 9,000km range model.
+- Aircraft rings use practical round-trip reach and respect purchased Interceptor Drop Tanks and Skyranger Extended Tanks.
+- New-base placement preview rings remain separate and visually distinct from persistent base overlay rings.
+- Squads now resolve a selected squad's base from explicit squad base fields when available, assigned members when needed, and the selected/current base as a conservative fallback.
+- The Squads screen available-soldier list now only shows unassigned, living, non-wounded soldiers stationed at the selected squad's base.
+- Wrong-base soldiers are hidden from the assignable list and are defensively blocked if directly assigned through stale UI state.
+- Build Health now includes `Geoscape range overlay filters render base rings` and `Squad assignment list filters by selected squad base`.
+
+Verification checklist:
+- Open Geoscape and toggle Shortwave, Longwave, Interceptor, Skyranger, and All Off range overlays.
+- Confirm the overlay rings draw around existing bases and remain visually distinct from Build New Base preview rings.
+- Confirm tank upgrades change aircraft overlay reach values.
+- Open Squads, select a squad, and confirm only soldiers stationed at that squad's base appear in the available assignment list.
+- Confirm soldiers stationed at other bases are hidden and that same-base soldiers can still be assigned.
+- Confirm Build Health passes with the two new rows.
+
+Roadmap follow-up is `BASE_LOCAL_ROSTERS_AND_TRANSFER_LOGISTICS_INDEX_ONLY`.
 
 ## 2026-07-08 Patch Notes - UFO Landing and Terror Incidents
 
