@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-10  
-Current handoff build: `v0.26.07.10.0040_DETAILED_SOLID_GEOSCAPE_LANDMASSES_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html` with the solid Geoscape globe now rendering the detailed `GEOSCAPE_THREE_LANDMASSES` shapes from the earlier hologram/Three.js globe surface instead of using the coarse six-region gameplay polygons as visible continents. Region polygons remain available as subtle/transparent gameplay boundaries, save format remains 4, and verification should confirm the new detailed solid landmass row in Build Health.**
+Current handoff build: `v0.26.07.10.0045_BORDERLESS_SOLID_GEOSCAPE_LANDMASSES_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html` with the detailed solid Geoscape landmasses now rendered without the thin white landmass stroke/border. The globe still uses the detailed `GEOSCAPE_THREE_LANDMASSES` shapes, keeps coarse region polygons as subtle/transparent gameplay boundaries, save format remains 4, and verification should confirm the detailed solid landmass Build Health row still passes.**
 
 ---
 
@@ -1695,7 +1695,7 @@ Verification checklist:
 
 Roadmap follow-up is `BASE_TRANSFER_COSTS_CANCELLATION_AND_LOGISTICS_RULES_INDEX_ONLY`, unless globe playtesting suggests a smaller camera-control adjustment first.
 
-## 2026-07-10 Patch Notes - Detailed Solid Geoscape Landmasses
+## 2026-07-10 Patch Notes - Borderless Solid Geoscape Landmasses`r`n`r`nBuild `v0.26.07.10.0045_BORDERLESS_SOLID_GEOSCAPE_LANDMASSES_INDEX_ONLY_PATCH` removes the thin white outline from the detailed solid Geoscape landmasses:`r`n`r`n- Detailed landmass paths now render with transparent stroke and zero stroke width.`r`n- The globe keeps the restored `GEOSCAPE_THREE_LANDMASSES` shapes and solid ocean/land styling.`r`n- Region gameplay boundaries remain separate and subtle, so selection logic is preserved without outlining every landmass.`r`n`r`nVerification checklist:`r`n- Confirm the start screen shows `v0.26.07.10.0045`.`r`n- Confirm Geoscape landmasses no longer show a thin white border.`r`n- Confirm globe dragging still works and Build Health passes the detailed solid-landmass row.`r`n`r`n## 2026-07-10 Patch Notes - Detailed Solid Geoscape Landmasses
 
 Build `v0.26.07.10.0040_DETAILED_SOLID_GEOSCAPE_LANDMASSES_INDEX_ONLY_PATCH` keeps the solid Geoscape globe styling but restores the more detailed landmass shapes from the earlier hologram/Three.js globe:
 

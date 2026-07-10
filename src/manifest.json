@@ -1,7 +1,7 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.07.10.0040_DETAILED_SOLID_GEOSCAPE_LANDMASSES_INDEX_ONLY_PATCH",
+  "currentBuild": "v0.26.07.10.0045_BORDERLESS_SOLID_GEOSCAPE_LANDMASSES_INDEX_ONLY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
