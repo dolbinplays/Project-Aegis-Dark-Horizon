@@ -1,0 +1,29 @@
+{
+  "project": "Project Aegis / Alien Response Command",
+  "playableArtifact": "index.html",
+  "currentBuild": "v0.26.07.10.0005_BASE_LOCAL_EQUIPMENT_LOGISTICS_POLISH_AND_WORKSHOP_ORIGIN_INDEX_ONLY_PATCH",
+  "saveFormat": 4,
+  "sourceRoot": "src",
+  "toolRoot": "tools",
+  "status": "prep-scaffold",
+  "preserveSingleFileArtifact": true,
+  "sourceAreas": [
+    "data",
+    "systems",
+    "ui",
+    "tests",
+    "assets"
+  ],
+  "enginePortTargets": [
+    "Godot 4",
+    "JSON campaign data",
+    "deterministic simulation helpers",
+    "UI adapter boundary"
+  ],
+  "requiredRuntimeSeams": [
+    "CURRENT_GAME_BUILD",
+    "CURRENT_SAVE_FORMAT_VERSION",
+    "ARCHITECTURE_MODULE_PLAN",
+    "runSelfTests"
+  ]
+}

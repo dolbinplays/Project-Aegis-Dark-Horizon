@@ -1,9 +1,9 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-07-09  
-Current handoff build: `v0.26.07.09.0035_MISSION_RECOVERY_LOCAL_STORES_AND_UI_ENCODING_CLEANUP_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html`; mission recovery now routes alien loot and KIA equipment recovery into the returning Skyranger base's local stores while preserving aggregate inventory compatibility, and high-visibility UI mojibake/icon artifacts were cleaned from the game file. Node static app-script parse passed, localhost start screen loaded, Start New Game -> first base confirmation -> main Geoscape passed, the Time Control funds label rendered cleanly, browser console errors were clear, and Build Health passed 211/211.**
+Last updated: 2026-07-10  
+Current handoff build: `v0.26.07.10.0005_BASE_LOCAL_EQUIPMENT_LOGISTICS_POLISH_AND_WORKSHOP_ORIGIN_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html` with Workshop orders preserving their intended destination base, local Workshop stock display, compact equipment logistics summaries, and clearer local/issued/in-transit loadout messaging. The playable artifact remains `index.html`, save format remains 4, the seam checker passed, Node static app-script parse passed, localhost start screen loaded, Start New Game -> first base confirmation -> main Geoscape passed, browser console errors were clear, and Build Health passed 213/213 with the new Workshop destination/logistics row.**
 
 ---
 
@@ -48,10 +48,22 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.09.0035_MISSION_RECOVERY_LOCAL_STORES_AND_UI_ENCODING_CLEANUP_INDEX_ONLY_PATCH`
+`v0.26.07.10.0005_BASE_LOCAL_EQUIPMENT_LOGISTICS_POLISH_AND_WORKSHOP_ORIGIN_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- Workshop orders now preserve the production/destination base chosen when the order starts, instead of implicitly using the selected base at completion time.
+- Completed Workshop stock is routed into the intended destination base's local stores.
+- Workshop inventory display now shows manufactured stock for the currently selected base instead of global stock.
+- Quartermaster/Base Stores now surfaces compact inbound/outbound equipment logistics summaries for the selected base.
+- Quartermaster item cards now distinguish local stock, issued gear, and in-transit gear in a compact availability line.
+- `src/manifest.json` and `tools/check-aegis-build.cjs` now track the current playable build label and verify the new Workshop/logistics Build Health row.
+- Build Health now includes `Workshop production preserves destination base and equipment logistics summaries`.
+- A first `src/` source-layout scaffold while preserving `index.html` as the playable distribution artifact.
+- `src/manifest.json` records the current playable artifact, save format, source areas, required runtime seams, and future engine-port targets.
+- `src/engine-port-contract.md` defines the Godot 4 readiness boundary: JSON-friendly data, deterministic systems, UI adapters, explicit save migrations, and manifest-keyed assets.
+- `tools/check-aegis-build.cjs` provides a dependency-free static seam check that validates the current build label and required architecture/runtime markers.
+- `index.html` now exposes `ARCHITECTURE_MODULE_PLAN` and Build Health includes `Modular source layout and engine-port prep contract is present`.
 - Mission recovery stock routing into the Skyranger return-base local `baseInventories`, while keeping legacy aggregate `gearInventory` compatibility.
 - Successful mission alien spoils and KIA equipment recovery now update the local stores of the base that receives the returning Skyranger.
 - Mission summaries now include a compact return-base stock delivery line.
@@ -1092,9 +1104,19 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.09.0035_MISSION_RECOVERY_LOCAL_STORES_AND_UI_ENCODING_CLEANUP_INDEX_ONLY_PATCH`, then consider a contained architecture-prep pass before adding another large gameplay layer.
+Playtest `v0.26.07.10.0005_BASE_LOCAL_EQUIPMENT_LOGISTICS_POLISH_AND_WORKSHOP_ORIGIN_INDEX_ONLY_PATCH`, then continue with first-base planning polish.
 
 Focus verification on:
+- Workshop build orders showing and preserving their intended destination base.
+- Completed Workshop items appearing in the destination base's local stores even if another base is selected when time advances.
+- Workshop stock display reflecting the currently selected base's manufactured stock.
+- Quartermaster/Base Stores showing compact inbound/outbound equipment logistics for the selected base.
+- Quartermaster availability lines distinguishing local stock, issued gear, and in-transit gear.
+- Build Health including `Workshop production preserves destination base and equipment logistics summaries`.
+- `index.html` remaining the playable artifact after the source-layout scaffold.
+- `src/manifest.json`, `src/engine-port-contract.md`, and `tools/check-aegis-build.cjs` staying aligned with the current build label.
+- The dependency-free build seam checker passing.
+- Build Health including `Modular source layout and engine-port prep contract is present`.
 - Successful missions adding alien bodies/materials/equipment to the returning Skyranger base's local stores.
 - KIA recovered equipment returning to the correct local base stores.
 - Legacy aggregate `gearInventory` still reflecting recovered stock for compatibility.
@@ -1169,18 +1191,18 @@ Focus verification on:
 ## Best Next Feature Patch
 If this batch tests well, continue with the next priority roadmap patch:
 
-`MODULAR_SOURCE_LAYOUT_AND_ENGINE_PORT_PREP_INDEX_ONLY`
+`FIRST_BASE_SELECTION_RANGE_PREVIEW_INDEX_ONLY`
 
 Suggested focus:
-- Introduce a build-friendly source layout while preserving `index.html` as the playable distribution artifact.
-- Split future work into clear source areas such as data definitions, simulation systems, UI panels, Build Health tests, and asset manifests.
-- Keep the current single-file game runnable during the transition by generating or manually syncing the production `index.html` from the organized source.
-- Create a lightweight contract for future Godot 4 migration: data-driven game state, deterministic simulation helpers, explicit UI adapters, and JSON-friendly campaign/save structures.
-- Move no risky gameplay systems during the first pass; start with extracted constants/helpers/tests or a documented build harness if that is the safest step.
-- Preserve save compatibility, current browser deployment, and localhost Build Health behavior.
-- Add Build Health/static checks that prove the generated/playable `index.html` contains the expected build label and key systems after any source organization step.
+- Seed the first two alien incidents before first-base confirmation and show them on the same world map the player uses to choose the starting base.
+- Position those first two incidents so one well-placed starting base can respond to both with the starting Skyranger.
+- Show dotted starting-site preview rings for Interceptor practical reach, Skyranger practical reach, and starting Shortwave Radar coverage.
+- Use the opening incidents to make first-base placement feel like the world governments' direct response to the first alien crisis.
+- Keep the first-base confirmation flow stable and readable.
+- Add Build Health coverage for visible opening incidents, reachable first crises, preview ring values, inactive-state hiding, and no-regression first-base confirmation.
 
-Follow-up gameplay polish after the architecture pass:
+## Near-Term Base-Local Equipment Logistics Polish
+Implemented in `v0.26.07.10.0005_BASE_LOCAL_EQUIPMENT_LOGISTICS_POLISH_AND_WORKSHOP_ORIGIN_INDEX_ONLY_PATCH`; keep this section as the reference contract for future logistics polish:
 
 `BASE_LOCAL_EQUIPMENT_LOGISTICS_POLISH_AND_WORKSHOP_ORIGIN_INDEX_ONLY`
 
@@ -1191,6 +1213,20 @@ Suggested focus:
 - Consider transfer costs and transfer cancellation rules after the core flow is playtested.
 - Preserve global access for Mainframe/research database/alien intel/reports/memorial records.
 - Add Build Health coverage for workshop destination stock, transfer UI summaries, local loadout messaging, old-save normalization, and no-regression soldier transfers / Skyranger stationing.
+
+## Near-Term Modular Source Layout and Engine-Port Prep
+Implemented in `v0.26.07.09.0045_MODULAR_SOURCE_LAYOUT_AND_ENGINE_PORT_PREP_INDEX_ONLY_PATCH`; keep this section as the reference contract for future source extraction:
+
+`MODULAR_SOURCE_LAYOUT_AND_ENGINE_PORT_PREP_INDEX_ONLY`
+
+Suggested focus:
+- Introduce a build-friendly source layout while preserving `index.html` as the playable distribution artifact.
+- Split future work into clear source areas such as data definitions, simulation systems, UI panels, Build Health tests, and asset manifests.
+- Keep the current single-file game runnable during the transition by generating or manually syncing the production `index.html` from the organized source.
+- Create a lightweight contract for future Godot 4 migration: data-driven game state, deterministic simulation helpers, explicit UI adapters, and JSON-friendly campaign/save structures.
+- Move no risky gameplay systems during the first pass; start with extracted constants/helpers/tests or a documented build harness if that is the safest step.
+- Preserve save compatibility, current browser deployment, and localhost Build Health behavior.
+- Add Build Health/static checks that prove the generated/playable `index.html` contains the expected build label and key systems after any source organization step.
 
 ## Near-Term Mission Recovery Local Stores Fix
 Implemented in `v0.26.07.09.0035_MISSION_RECOVERY_LOCAL_STORES_AND_UI_ENCODING_CLEANUP_INDEX_ONLY_PATCH`; keep this section as the reference contract for future mission-recovery expansion:
@@ -1616,6 +1652,53 @@ Verification checklist:
 - Confirm Build Health passes the new `Interceptor airborne status recovery prevents stuck Outbound craft` row.
 
 Roadmap follow-up remains `AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY`.
+
+## 2026-07-10 Patch Notes - Base-Local Equipment Logistics Polish and Workshop Origin
+
+Build `v0.26.07.10.0005_BASE_LOCAL_EQUIPMENT_LOGISTICS_POLISH_AND_WORKSHOP_ORIGIN_INDEX_ONLY_PATCH` tightens the base-local equipment loop without changing save format:
+
+- Workshop orders now record the production/destination base at queue time.
+- Completed Workshop items route into that destination base's local stores, rather than whichever base is selected when time advances.
+- Workshop inventory display now shows manufactured stock for the currently selected base.
+- Quartermaster/Base Stores now shows compact inbound/outbound equipment logistics for the selected base.
+- Quartermaster item cards now include a compact availability line for local stock, issued gear, and in-transit gear.
+- `src/manifest.json` now tracks the current build label and `tools/check-aegis-build.cjs` verifies the new Workshop/logistics Build Health row.
+- Build Health now includes `Workshop production preserves destination base and equipment logistics summaries`.
+- Verified through `node tools/check-aegis-build.cjs`, Node static app-script parse, localhost start screen smoke, Start New Game -> first base confirmation -> main Geoscape, clean browser console, and Build Health 213/213.
+
+Verification checklist:
+- Confirm the start screen shows `v0.26.07.10.0005`.
+- Run `node tools/check-aegis-build.cjs` and confirm the source manifest matches the playable artifact.
+- Run the Node app-script parse check.
+- Start a new campaign, confirm first base placement, and open the main Geoscape.
+- Confirm Build Health passes 213/213 and includes the new Workshop/logistics row.
+- Confirm browser console errors are clear.
+- In practical play, queue Workshop production from one base, switch bases while time advances, and confirm completed stock appears at the original production destination.
+
+Roadmap follow-up is `FIRST_BASE_SELECTION_RANGE_PREVIEW_INDEX_ONLY`, then deeper transfer rules such as costs/cancellation if needed.
+
+## 2026-07-09 Patch Notes - Modular Source Layout and Engine Port Prep
+
+Build `v0.26.07.09.0045_MODULAR_SOURCE_LAYOUT_AND_ENGINE_PORT_PREP_INDEX_ONLY_PATCH` begins the project-organization pass without disrupting the current browser build:
+
+- `index.html` remains the playable distribution artifact and save format remains 4.
+- Added `ARCHITECTURE_MODULE_PLAN` inside the playable build so Build Health can verify the source-layout contract from the runtime artifact.
+- Added `src/README.md` as the extraction roadmap for data, systems, UI, tests, and asset manifest areas.
+- Added `src/manifest.json` with the current build label, save format, playable artifact, required runtime seams, and engine-port targets.
+- Added `src/engine-port-contract.md` to define the Godot 4 migration boundary around JSON-friendly data, deterministic simulation helpers, UI adapters, and explicit save migrations.
+- Added `tools/check-aegis-build.cjs`, a dependency-free Node seam check for the current build label and required architecture/runtime markers.
+- Build Health now includes `Modular source layout and engine-port prep contract is present`.
+- Verified through `node tools/check-aegis-build.cjs`, Node static app-script parse, localhost start screen smoke, Start New Game -> first base confirmation -> main Geoscape, clean browser console, and Build Health 212/212.
+
+Verification checklist:
+- Confirm the start screen shows `v0.26.07.09.0045`.
+- Run `node tools/check-aegis-build.cjs` and confirm the source manifest matches the playable artifact.
+- Run the Node app-script parse check.
+- Start a new campaign, confirm first base placement, and open the main Geoscape.
+- Confirm Build Health passes 212/212 and includes the new modular-source row.
+- Confirm browser console errors are clear.
+
+Roadmap follow-up is `BASE_LOCAL_EQUIPMENT_LOGISTICS_POLISH_AND_WORKSHOP_ORIGIN_INDEX_ONLY`, then `FIRST_BASE_SELECTION_RANGE_PREVIEW_INDEX_ONLY`.
 
 ## 2026-07-09 Patch Notes - Mission Recovery Local Stores and UI Encoding Cleanup
 
