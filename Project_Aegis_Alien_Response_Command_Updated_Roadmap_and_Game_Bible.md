@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-10  
-Current handoff build: `v0.26.07.10.0035_SOLID_GEOSCAPE_GLOBE_AND_DRAG_RECOVERY_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html` with Geoscape globe drag/wheel/click input no longer blocked by stale or active aircraft travel state, plus a more solid satellite-style globe surface using visible ocean, land, stroke, cloud, and day/night layers instead of the prior hologram-like transparency. The playable artifact remains `index.html`, save format remains 4, the seam checker passed, Node static app-script parse passed, localhost start screen loaded, Start New Game -> first-base setup worked, first base confirmation -> main Geoscape loaded, an actual pointer-drag test changed the globe projection path, solid globe DOM checks passed, browser console errors were clear, and Build Health passed 215/215 with the new solid-globe drag recovery row.**
+Current handoff build: `v0.26.07.10.0040_DETAILED_SOLID_GEOSCAPE_LANDMASSES_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html` with the solid Geoscape globe now rendering the detailed `GEOSCAPE_THREE_LANDMASSES` shapes from the earlier hologram/Three.js globe surface instead of using the coarse six-region gameplay polygons as visible continents. Region polygons remain available as subtle/transparent gameplay boundaries, save format remains 4, and verification should confirm the new detailed solid landmass row in Build Health.**
 
 ---
 
@@ -48,10 +48,13 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.10.0035_SOLID_GEOSCAPE_GLOBE_AND_DRAG_RECOVERY_INDEX_ONLY_PATCH`
+`v0.26.07.10.0040_DETAILED_SOLID_GEOSCAPE_LANDMASSES_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- The solid Geoscape globe now renders visible land using the detailed `GEOSCAPE_THREE_LANDMASSES` dataset from the earlier hologram globe, preserving the more recognizable continent/island shapes.
+- The coarse `EARTH_BASE_REGIONS` polygons are no longer used as filled visible continents; they remain as transparent/subtle selection boundaries for gameplay region logic.
+- Build Health now includes `Solid Geoscape globe uses detailed landmasses and remains draggable`.
 - Geoscape globe input now remains available even when Skyranger or interceptor travel state exists, preventing stale travel records from permanently locking map rotation.
 - A small interaction policy helper defines drag, wheel, click, and incident-focus behavior so future travel-camera work does not accidentally disable player globe control.
 - The Geoscape globe now uses a solid ocean fill, visible land fills/strokes, capped terminator shading, and restrained cloud/gloss layers so Earth reads more like a satellite globe than a transparent hologram.
@@ -1114,12 +1117,12 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.10.0035_SOLID_GEOSCAPE_GLOBE_AND_DRAG_RECOVERY_INDEX_ONLY_PATCH`, then continue with contained logistics polish.
+Playtest `v0.26.07.10.0040_DETAILED_SOLID_GEOSCAPE_LANDMASSES_INDEX_ONLY_PATCH`, then continue with contained logistics polish.
 
 Focus verification on:
 - Dragging the Geoscape globe after aircraft travel has occurred, including after Skyranger and interceptor sorties.
-- Confirming the globe reads as a solid Earth-style map rather than a transparent hologram.
-- Build Health including `Solid Geoscape globe remains draggable during travel states`.
+- Confirming the globe reads as a solid Earth-style map while keeping the more detailed hologram-era continent/island shapes.
+- Build Health including `Solid Geoscape globe uses detailed landmasses and remains draggable`.
 - First-base setup showing `Prairie Abduction` and `Red River Signal` before confirmation.
 - The dotted first-base setup rings showing starting Shortwave Radar coverage, Interceptor practical reach, and Skyranger practical reach.
 - The opening-crisis coverage summary showing both opening incidents inside the default North America starting Skyranger radius.
@@ -1691,6 +1694,22 @@ Verification checklist:
 - Confirm browser console errors are clear.
 
 Roadmap follow-up is `BASE_TRANSFER_COSTS_CANCELLATION_AND_LOGISTICS_RULES_INDEX_ONLY`, unless globe playtesting suggests a smaller camera-control adjustment first.
+
+## 2026-07-10 Patch Notes - Detailed Solid Geoscape Landmasses
+
+Build `v0.26.07.10.0040_DETAILED_SOLID_GEOSCAPE_LANDMASSES_INDEX_ONLY_PATCH` keeps the solid Geoscape globe styling but restores the more detailed landmass shapes from the earlier hologram/Three.js globe:
+
+- Visible continents and islands now render from `GEOSCAPE_THREE_LANDMASSES`, preserving the 30-landmass / 356-vertex geography set.
+- Coarse `EARTH_BASE_REGIONS` polygons are no longer filled as visible land; they remain as transparent/subtle selection boundaries for region gameplay.
+- The solid globe visual contract now records `landmassSource: "GEOSCAPE_THREE_LANDMASSES"`.
+- Build Health now includes `Solid Geoscape globe uses detailed landmasses and remains draggable`.
+
+Verification checklist:
+- Confirm the start screen shows `v0.26.07.10.0040`.
+- Start a new campaign, confirm the first base, and verify the Geoscape globe landmasses look like the previous detailed globe shapes while staying solid.
+- Drag the globe and confirm rotation still works.
+- Run Build Health and confirm the detailed solid-landmass row passes.
+- Confirm browser console errors are clear.
 
 ## 2026-07-10 Patch Notes - Solid Geoscape Globe and Drag Recovery
 
