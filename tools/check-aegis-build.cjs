@@ -13,6 +13,7 @@ const required = [
   "ARCHITECTURE_MODULE_PLAN",
   "Modular source layout and engine-port prep contract is present",
   "Workshop production preserves destination base and equipment logistics summaries",
+  "First-base selection previews opening incidents and starting reach",
   "runSelfTests"
 ];
 

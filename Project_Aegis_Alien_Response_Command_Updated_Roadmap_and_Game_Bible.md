@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-10  
-Current handoff build: `v0.26.07.10.0005_BASE_LOCAL_EQUIPMENT_LOGISTICS_POLISH_AND_WORKSHOP_ORIGIN_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html` with Workshop orders preserving their intended destination base, local Workshop stock display, compact equipment logistics summaries, and clearer local/issued/in-transit loadout messaging. The playable artifact remains `index.html`, save format remains 4, the seam checker passed, Node static app-script parse passed, localhost start screen loaded, Start New Game -> first base confirmation -> main Geoscape passed, browser console errors were clear, and Build Health passed 213/213 with the new Workshop destination/logistics row.**
+Current handoff build: `v0.26.07.10.0020_FIRST_BASE_SELECTION_RANGE_PREVIEW_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html` with first-base setup now showing the first two opening alien incidents before confirmation, dotted starting reach rings for Shortwave Radar / Interceptor / Skyranger coverage, and a readable opening-crisis coverage summary. The playable artifact remains `index.html`, save format remains 4, the seam checker passed, Node static app-script parse passed, localhost start screen loaded, Start New Game -> first-base setup showed both opening incident markers, first base confirmation -> main Geoscape retained those opening incidents, browser console errors were clear, and Build Health passed 214/214 with the new first-base selection range preview row.**
 
 ---
 
@@ -48,10 +48,16 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.10.0005_BASE_LOCAL_EQUIPMENT_LOGISTICS_POLISH_AND_WORKSHOP_ORIGIN_INDEX_ONLY_PATCH`
+`v0.26.07.10.0020_FIRST_BASE_SELECTION_RANGE_PREVIEW_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- The first-base selection screen now shows the first two opening alien incidents before the player confirms the starting base.
+- Opening incidents are deterministic North America crisis markers: `Prairie Abduction` and `Red River Signal`.
+- The confirmed campaign starts with those same two opening incidents, keeping setup guidance and actual Geoscape state aligned.
+- The first-base globe now previews dotted starting reach rings for Shortwave Radar coverage, Interceptor practical reach, and Skyranger practical reach.
+- The setup side panel now explains whether both opening crises are inside the proposed starting site's Skyranger radius.
+- Build Health now includes `First-base selection previews opening incidents and starting reach`.
 - Workshop orders now preserve the production/destination base chosen when the order starts, instead of implicitly using the selected base at completion time.
 - Completed Workshop stock is routed into the intended destination base's local stores.
 - Workshop inventory display now shows manufactured stock for the currently selected base instead of global stock.
@@ -1104,9 +1110,14 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.10.0005_BASE_LOCAL_EQUIPMENT_LOGISTICS_POLISH_AND_WORKSHOP_ORIGIN_INDEX_ONLY_PATCH`, then continue with first-base planning polish.
+Playtest `v0.26.07.10.0020_FIRST_BASE_SELECTION_RANGE_PREVIEW_INDEX_ONLY_PATCH`, then continue with contained logistics polish.
 
 Focus verification on:
+- First-base setup showing `Prairie Abduction` and `Red River Signal` before confirmation.
+- The dotted first-base setup rings showing starting Shortwave Radar coverage, Interceptor practical reach, and Skyranger practical reach.
+- The opening-crisis coverage summary showing both opening incidents inside the default North America starting Skyranger radius.
+- First base confirmation carrying those same two incidents into the main Geoscape.
+- Build Health including `First-base selection previews opening incidents and starting reach`.
 - Workshop build orders showing and preserving their intended destination base.
 - Completed Workshop items appearing in the destination base's local stores even if another base is selected when time advances.
 - Workshop stock display reflecting the currently selected base's manufactured stock.
@@ -1191,6 +1202,19 @@ Focus verification on:
 ## Best Next Feature Patch
 If this batch tests well, continue with the next priority roadmap patch:
 
+`BASE_TRANSFER_COSTS_CANCELLATION_AND_LOGISTICS_RULES_INDEX_ONLY`
+
+Suggested focus:
+- Add clear cost rules for soldier and equipment transfers between bases.
+- Add safe transfer cancellation before arrival, returning soldiers/equipment to the origin base.
+- Surface transfer ETA, cost, payload, origin, destination, and cancel availability in one Logistics summary.
+- Keep in-transit soldiers/equipment unavailable while preserving local-base stores and roster filtering.
+- Preserve current first-base setup incidents/range preview, Workshop destination routing, Skyranger stationing, interceptor range, and save compatibility.
+- Add Build Health coverage for transfer cost deduction, insufficient-funds blockers, cancellation return-to-origin, arrival, in-transit unavailability, and no-regression first-base setup.
+
+## Near-Term First Base Placement Planning Candidate
+Implemented in `v0.26.07.10.0020_FIRST_BASE_SELECTION_RANGE_PREVIEW_INDEX_ONLY_PATCH`; keep this section as the reference contract for future first-base story/onboarding polish:
+
 `FIRST_BASE_SELECTION_RANGE_PREVIEW_INDEX_ONLY`
 
 Suggested focus:
@@ -1253,22 +1277,6 @@ Suggested focus:
 - Check high-visibility UI surfaces first: Time Control header, Geoscape panels, mission reports, Quartermaster/Base Stores, build/transfer summaries, aircraft readiness, and modal confirmations.
 - Preserve intentional ASCII abbreviations, version strings, save keys, and player-facing content that is already rendering correctly.
 - Add Build Health coverage or static seam checks for disallowed mojibake markers in rendered/static UI text, plus a targeted check that the Time Control funds label renders cleanly.
-
-## Near-Term First Base Placement Planning Candidate
-Future patch candidate:
-
-`FIRST_BASE_SELECTION_RANGE_PREVIEW_INDEX_ONLY`
-
-Suggested focus:
-- Seed the first two alien incidents before first-base confirmation and show them on the same world map the player uses to choose the starting base.
-- Position those two opening incidents so a single well-placed starting base can reach both with the starting Skyranger, making them a practical guide for where the world governments establish Project Aegis.
-- Treat first-base placement as the story kickoff: governments are responding to visible alien activity, and the chosen base site is the coordinated first answer to the new threat.
-- On the beginning first-base location selection screen, show dotted circular range overlays centered on the proposed starting site.
-- Preview starting Interceptor practical reach, starting Skyranger practical reach, and starting Shortwave Radar coverage before the player confirms the first base.
-- Reuse the restrained dashed/dotted visual language from Build New Base range previews and Geoscape overlay filters, without opaque coverage blobs.
-- Keep the first-base selection controls readable on desktop and mobile; the rings should support location choice, not obscure the globe.
-- Explain the preview values and visible opening incidents near the first-base confirmation controls so players understand whether a starting region gives good early aircraft/radar coverage and can answer both first crises.
-- Add Build Health coverage for first-base range preview state, two opening incidents visible during first-base selection, both opening incidents being reachable by one valid starting Skyranger base placement, starting craft/radar range values, inactive-state hiding, and no regression to first-base confirmation.
 
 ## Near-Term Starting Base Upgrade Candidate
 Implemented in `v0.26.07.06.0155_STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY_PATCH`; keep this section as the reference contract for any future starting-base template adjustments:
@@ -1652,6 +1660,30 @@ Verification checklist:
 - Confirm Build Health passes the new `Interceptor airborne status recovery prevents stuck Outbound craft` row.
 
 Roadmap follow-up remains `AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY`.
+
+## 2026-07-10 Patch Notes - First Base Selection Range Preview
+
+Build `v0.26.07.10.0020_FIRST_BASE_SELECTION_RANGE_PREVIEW_INDEX_ONLY_PATCH` makes first-base placement part of the campaign opening instead of a blind map choice:
+
+- The first-base selection screen now shows two opening alien incidents before the player confirms the starting base.
+- The opening incidents are deterministic and carry into the actual campaign Geoscape: `Prairie Abduction` and `Red River Signal`.
+- The beginning globe now shows the opening incident markers alongside the proposed starting-base crosshair.
+- Dotted first-base preview rings show starting Shortwave Radar coverage, starting Interceptor practical reach, and starting Skyranger practical reach from the proposed site.
+- The setup side panel now reports whether both opening crises are inside the current proposed site's starting Skyranger radius.
+- Build Health now includes `First-base selection previews opening incidents and starting reach`.
+- Verified through `node tools/check-aegis-build.cjs`, Node static app-script parse, localhost start screen smoke, first-base setup verification, first base confirmation -> main Geoscape, clean browser console, and Build Health 214/214.
+
+Verification checklist:
+- Confirm the start screen shows `v0.26.07.10.0020`.
+- Start a new campaign and confirm the first-base setup screen shows `Prairie Abduction` and `Red River Signal`.
+- Confirm the setup screen shows dotted starting reach rings and a `2/2` opening-crisis Skyranger coverage summary for the default North America site.
+- Confirm first base placement carries those same two incidents into the main Geoscape.
+- Run `node tools/check-aegis-build.cjs`.
+- Run the Node app-script parse check.
+- Confirm Build Health passes 214/214 and includes the new first-base selection row.
+- Confirm browser console errors are clear.
+
+Roadmap follow-up is `BASE_TRANSFER_COSTS_CANCELLATION_AND_LOGISTICS_RULES_INDEX_ONLY`, unless first-base playtesting suggests a smaller onboarding adjustment first.
 
 ## 2026-07-10 Patch Notes - Base-Local Equipment Logistics Polish and Workshop Origin
 
