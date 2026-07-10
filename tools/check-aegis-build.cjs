@@ -13,6 +13,7 @@ const required = [
   "ARCHITECTURE_MODULE_PLAN",
   "Modular source layout and engine-port prep contract is present",
   "Workshop production preserves destination base and equipment logistics summaries",
+  "Base transfer logistics charge fees and cancel back to origin",
   "First-base selection previews opening incidents and starting reach",
   "Solid Geoscape globe uses opaque detailed landmasses and remains draggable",
   "runSelfTests"

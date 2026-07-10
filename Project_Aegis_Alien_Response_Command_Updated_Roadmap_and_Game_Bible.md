@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-10  
-Current handoff build: `v0.26.07.10.0050_OPAQUE_BORDERLESS_GEOSCAPE_LANDMASSES_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html` with the detailed solid Geoscape landmasses now fully opaque and borderless, preventing the ocean layer from showing through the continents. The globe still uses the detailed `GEOSCAPE_THREE_LANDMASSES` shapes, keeps coarse region polygons as subtle/transparent gameplay boundaries, save format remains 4, and verification should confirm the opaque detailed landmass Build Health row passes.**
+Current handoff build: `v0.26.07.10.0055_BASE_TRANSFER_COSTS_CANCELLATION_AND_LOGISTICS_RULES_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html` with base-to-base soldier and equipment transfers now charging clear logistics fees, blocking when funds are insufficient, and supporting cancel-to-origin behavior without refunds. The recent opaque/borderless detailed Geoscape globe fix remains intact, save format remains 4, localhost smoke passed, browser console errors were clear, and Build Health passed 216/216.**
 
 ---
 
@@ -48,10 +48,15 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.10.0040_DETAILED_SOLID_GEOSCAPE_LANDMASSES_INDEX_ONLY_PATCH`
+`v0.26.07.10.0055_BASE_TRANSFER_COSTS_CANCELLATION_AND_LOGISTICS_RULES_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- Clear base-to-base logistics fees for soldier and equipment transfers.
+- Insufficient-funds blockers for soldier/equipment transfer creation.
+- Cancel-to-origin actions for in-transit soldiers and equipment, with explicit no-refund messaging.
+- Personnel Transfers and Quartermaster item transfer cards now show transfer fee/cancel information.
+- Build Health now includes `Base transfer logistics charge fees and cancel back to origin`.
 - The solid Geoscape globe now renders visible land using the detailed `GEOSCAPE_THREE_LANDMASSES` dataset from the earlier hologram globe, preserving the more recognizable continent/island shapes.
 - The coarse `EARTH_BASE_REGIONS` polygons are no longer used as filled visible continents; they remain as transparent/subtle selection boundaries for gameplay region logic.
 - Build Health now includes `Solid Geoscape globe uses detailed landmasses and remains draggable`.
@@ -1117,9 +1122,15 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.10.0040_DETAILED_SOLID_GEOSCAPE_LANDMASSES_INDEX_ONLY_PATCH`, then continue with contained logistics polish.
+Playtest `v0.26.07.10.0055_BASE_TRANSFER_COSTS_CANCELLATION_AND_LOGISTICS_RULES_INDEX_ONLY_PATCH`, then continue with contained logistics polish or the next small base-local quality-of-life patch.
 
 Focus verification on:
+- Soldier transfer buttons showing ETA and logistics fee.
+- Equipment transfer buttons showing transfer fee in Quartermaster/Base Stores.
+- Transfers blocking when funds are below the required logistics fee.
+- In-transit soldiers and equipment showing cancel actions that return the payload to the origin base with no refund.
+- Canceled soldiers/equipment becoming available again at the origin base.
+- Build Health including `Base transfer logistics charge fees and cancel back to origin`.
 - Dragging the Geoscape globe after aircraft travel has occurred, including after Skyranger and interceptor sorties.
 - Confirming the globe reads as a solid Earth-style map while keeping the more detailed hologram-era continent/island shapes.
 - Build Health including `Solid Geoscape globe uses detailed landmasses and remains draggable`.
@@ -1212,15 +1223,16 @@ Focus verification on:
 ## Best Next Feature Patch
 If this batch tests well, continue with the next priority roadmap patch:
 
-`BASE_TRANSFER_COSTS_CANCELLATION_AND_LOGISTICS_RULES_INDEX_ONLY`
+`BASE_TRANSFER_LOGISTICS_CENTER_AND_BULK_PAYLOADS_INDEX_ONLY`
 
 Suggested focus:
-- Add clear cost rules for soldier and equipment transfers between bases.
-- Add safe transfer cancellation before arrival, returning soldiers/equipment to the origin base.
-- Surface transfer ETA, cost, payload, origin, destination, and cancel availability in one Logistics summary.
+- Add one compact Logistics Center / transfer manifest that lists all inbound and outbound soldier/equipment transfers for the selected base.
+- Add quantity controls or small bulk-transfer options for portable equipment instead of only `Send 1`.
+- Keep ETA, cost, payload, origin, destination, and cancel availability readable in one place.
+- Preserve the new transfer fee and cancel-to-origin rules.
 - Keep in-transit soldiers/equipment unavailable while preserving local-base stores and roster filtering.
-- Preserve current first-base setup incidents/range preview, Workshop destination routing, Skyranger stationing, interceptor range, and save compatibility.
-- Add Build Health coverage for transfer cost deduction, insufficient-funds blockers, cancellation return-to-origin, arrival, in-transit unavailability, and no-regression first-base setup.
+- Preserve current first-base setup incidents/range preview, Workshop destination routing, Skyranger stationing, interceptor range, Geoscape globe behavior, and save compatibility.
+- Add Build Health coverage for central transfer summary rows, equipment bulk quantities, fee scaling, cancellation, arrival, in-transit unavailability, and no-regression first-base/globe behavior.
 
 ## Near-Term First Base Placement Planning Candidate
 Implemented in `v0.26.07.10.0020_FIRST_BASE_SELECTION_RANGE_PREVIEW_INDEX_ONLY_PATCH`; keep this section as the reference contract for future first-base story/onboarding polish:
@@ -1693,9 +1705,62 @@ Verification checklist:
 - Confirm Build Health passes 214/214 and includes the new first-base selection row.
 - Confirm browser console errors are clear.
 
-Roadmap follow-up is `BASE_TRANSFER_COSTS_CANCELLATION_AND_LOGISTICS_RULES_INDEX_ONLY`, unless globe playtesting suggests a smaller camera-control adjustment first.
+Roadmap follow-up is `BASE_TRANSFER_LOGISTICS_CENTER_AND_BULK_PAYLOADS_INDEX_ONLY`, unless playtesting finds a smaller transfer or globe-control issue first.
 
-## 2026-07-10 Patch Notes - Opaque Borderless Geoscape Landmasses`r`n`r`nBuild `v0.26.07.10.0050_OPAQUE_BORDERLESS_GEOSCAPE_LANDMASSES_INDEX_ONLY_PATCH` makes the detailed solid Geoscape landmasses fully opaque:`r`n`r`n- Landmass fill opacity is now `1`, so the ocean layer no longer shows through the continents.`r`n- The borderless landmass stroke behavior from `v0.26.07.10.0045` is preserved.`r`n- Build Health now checks the opaque detailed landmass contract.`r`n`r`nVerification checklist:`r`n- Confirm the start screen shows `v0.26.07.10.0050`.`r`n- Confirm Geoscape landmasses are solid/opaque and still borderless.`r`n- Confirm globe dragging still works and Build Health passes the opaque detailed-landmass row.`r`n`r`n## 2026-07-10 Patch Notes - Borderless Solid Geoscape Landmasses`r`n`r`nBuild `v0.26.07.10.0045_BORDERLESS_SOLID_GEOSCAPE_LANDMASSES_INDEX_ONLY_PATCH` removes the thin white outline from the detailed solid Geoscape landmasses:`r`n`r`n- Detailed landmass paths now render with transparent stroke and zero stroke width.`r`n- The globe keeps the restored `GEOSCAPE_THREE_LANDMASSES` shapes and solid ocean/land styling.`r`n- Region gameplay boundaries remain separate and subtle, so selection logic is preserved without outlining every landmass.`r`n`r`nVerification checklist:`r`n- Confirm the start screen shows `v0.26.07.10.0045`.`r`n- Confirm Geoscape landmasses no longer show a thin white border.`r`n- Confirm globe dragging still works and Build Health passes the detailed solid-landmass row.`r`n`r`n## 2026-07-10 Patch Notes - Detailed Solid Geoscape Landmasses
+## 2026-07-10 Patch Notes - Base Transfer Costs, Cancellation, and Logistics Rules
+
+Build `v0.26.07.10.0055_BASE_TRANSFER_COSTS_CANCELLATION_AND_LOGISTICS_RULES_INDEX_ONLY_PATCH` makes base-to-base logistics more legible and less free-form:
+
+- Soldier transfers now charge distance-based logistics fees and block if funds are insufficient.
+- Equipment transfers now charge distance/handling-based logistics fees and block if funds are insufficient.
+- In-transit soldier transfers can be cancelled from the Personnel Transfers panel; cancellation returns the soldier to the origin base and does not refund the fee.
+- In-transit equipment transfers can be cancelled from Quartermaster item logistics rows; cancellation returns the item payload to the origin base and does not refund the fee.
+- Transfer summaries now include fee-paid/no-refund messaging so the player can understand cancellation consequences before using the action.
+- The detailed solid Geoscape globe Build Health helper was tightened so the early self-test path recognizes the preserved 30-landmass / 356-vertex detailed geometry set.
+- `src/manifest.json` and `tools/check-aegis-build.cjs` now track this build label and required transfer-cost Build Health row.
+- Build Health now includes `Base transfer logistics charge fees and cancel back to origin`.
+- Verified through `node tools/check-aegis-build.cjs`, Node static app-script parse, localhost start screen smoke, Start New Game -> first-base setup, first base confirmation -> main Geoscape, clean browser console, opaque/borderless globe DOM check, and browser Build Health 216/216.
+
+Verification checklist:
+- Confirm the start screen shows `v0.26.07.10.0055`.
+- Start a campaign with more than one base and confirm Barracks soldier transfer buttons show ETA and fee.
+- Confirm low funds block soldier and equipment transfers with a clear required/available funds message.
+- Confirm active soldier transfers appear in Personnel Transfers with a cancel action and return the soldier to the origin base without refund.
+- Confirm Quartermaster equipment transfer buttons show fee and active equipment transfers can be cancelled back to origin.
+- Confirm in-transit soldiers/equipment remain unavailable until arrival or cancellation.
+- Confirm Geoscape landmasses remain detailed, opaque, borderless, and draggable.
+- Run `node tools/check-aegis-build.cjs`.
+- Run the Node app-script parse check.
+- Run browser Build Health and confirm 216/216 with the new transfer-cost row.
+- Confirm browser console errors are clear.
+
+## 2026-07-10 Patch Notes - Opaque Borderless Geoscape Landmasses
+
+Build `v0.26.07.10.0050_OPAQUE_BORDERLESS_GEOSCAPE_LANDMASSES_INDEX_ONLY_PATCH` makes the detailed solid Geoscape landmasses fully opaque:
+
+- Landmass fill opacity is now `1`, so the ocean layer no longer shows through the continents.
+- The borderless landmass stroke behavior from `v0.26.07.10.0045` is preserved.
+- Build Health now checks the opaque detailed landmass contract.
+
+Verification checklist:
+- Confirm the start screen shows `v0.26.07.10.0050`.
+- Confirm Geoscape landmasses are solid/opaque and still borderless.
+- Confirm globe dragging still works and Build Health passes the opaque detailed-landmass row.
+
+## 2026-07-10 Patch Notes - Borderless Solid Geoscape Landmasses
+
+Build `v0.26.07.10.0045_BORDERLESS_SOLID_GEOSCAPE_LANDMASSES_INDEX_ONLY_PATCH` removes the thin white outline from the detailed solid Geoscape landmasses:
+
+- Detailed landmass paths now render with transparent stroke and zero stroke width.
+- The globe keeps the restored `GEOSCAPE_THREE_LANDMASSES` shapes and solid ocean/land styling.
+- Region gameplay boundaries remain separate and subtle, so selection logic is preserved without outlining every landmass.
+
+Verification checklist:
+- Confirm the start screen shows `v0.26.07.10.0045`.
+- Confirm Geoscape landmasses no longer show a thin white border.
+- Confirm globe dragging still works and Build Health passes the detailed solid-landmass row.
+
+## 2026-07-10 Patch Notes - Detailed Solid Geoscape Landmasses
 
 Build `v0.26.07.10.0040_DETAILED_SOLID_GEOSCAPE_LANDMASSES_INDEX_ONLY_PATCH` keeps the solid Geoscape globe styling but restores the more detailed landmass shapes from the earlier hologram/Three.js globe:
 
