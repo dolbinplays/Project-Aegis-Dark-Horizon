@@ -1,9 +1,9 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-07-08  
-Current handoff build: `v0.26.07.08.0140_BASE_LOCAL_ROSTERS_AND_TRANSFER_LOGISTICS_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html`; targeted static seam checks confirmed the new build label, base-local roster derivation, soldier transfer helpers/UI, in-transit assignment/mission exclusions, clock-based transfer advancement, selected-base Sickbay display, and the new Build Health row are present. Browser/local-file smoke remains blocked by browser URL policy for local `file:///` pages, and this shell has no usable `node`, Deno, Python, `py`, or `git` runtime, so in-browser Build Health should be confirmed by the player.**
+Last updated: 2026-07-09  
+Current handoff build: `v0.26.07.09.0025_BASE_LOCAL_EQUIPMENT_STORES_AND_TRANSFER_LOGISTICS_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html`; Node static app-script parse passed, localhost browser smoke passed, Start New Game -> first base confirmation -> main Geoscape passed, Quartermaster local-store UI rendered, browser console showed no errors, and Build Health passed 209/209. The prior `v0.26.07.09.0008_START_SCREEN_MOUNT_FIX_INDEX_ONLY_PATCH` was also verified through localhost with Build Health 208/208 before this equipment patch.**
 
 ---
 
@@ -48,10 +48,17 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.08.0140_BASE_LOCAL_ROSTERS_AND_TRANSFER_LOGISTICS_INDEX_ONLY_PATCH`
+`v0.26.07.09.0025_BASE_LOCAL_EQUIPMENT_STORES_AND_TRANSFER_LOGISTICS_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- Start-screen mount recovery from `v0.26.07.09.0008_START_SCREEN_MOUNT_FIX_INDEX_ONLY_PATCH`, verified through localhost before continuing roadmap work.
+- Base-local equipment store normalization with old-save compatible `baseInventories` while preserving aggregate `gearInventory` compatibility.
+- Quartermaster/Base Stores selected-base stock display, local storage capacity/readout, and all-bases storage summary.
+- Buy, sell, equip, remove, and forced assignment auto-equip paths now route practical loose stock through the relevant local base inventory where safely contained.
+- Initial equipment transfer logistics for portable gear, with origin base, destination base, item payload, quantity, travel time, in-transit status, and Geoscape-clock arrival.
+- In-transit equipment is removed from the origin's available local stock until it arrives at the destination base.
+- Build Health now includes `Base-local equipment stores and transfers keep stock local until arrival`.
 - Base-local Barracks and Sickbay filtering using the currently selected base.
 - In-transit soldier state for initial soldier-only base transfers.
 - Barracks transfer buttons for moving a ready soldier from the selected base to another base.
@@ -1149,16 +1156,15 @@ Focus verification on:
 ## Best Next Feature Patch
 If this batch tests well, continue with the next priority roadmap patch:
 
-`BASE_LOCAL_EQUIPMENT_STORES_AND_TRANSFER_LOGISTICS_INDEX_ONLY`
+`BASE_LOCAL_EQUIPMENT_LOGISTICS_POLISH_AND_WORKSHOP_ORIGIN_INDEX_ONLY`
 
 Suggested focus:
-- Extend the base-local logistics model from soldiers to portable equipment and stores.
-- Base Stores / Quartermaster should distinguish selected-base local stock from globally shared research knowledge.
-- Add base-to-base transfers for portable equipment such as weapons, armor, medkits, recovered materials, and aircraft ammunition where appropriate.
-- Equipment transfers should have origin, destination, item payload, travel time, optional cost, and in-transit status.
-- Gear in transit should be unavailable at both origin and destination until arrival.
+- Give workshop orders an explicit production/base destination instead of implicitly using the selected base at day-end.
+- Surface equipment transfers in a compact Logistics/Transfers summary so players can review inbound and outbound payloads without opening each item card.
+- Tighten mission loadout messaging so local base stock, issued gear, and in-transit gear are easy to distinguish before launch.
+- Consider transfer costs and transfer cancellation rules after the core flow is playtested.
 - Preserve global access for Mainframe/research database/alien intel/reports/memorial records.
-- Add Build Health coverage for local stock filtering, equipment transfer creation, in-transit unavailability, arrival at destination, old-save normalization, and no-regression soldier transfers / Skyranger stationing.
+- Add Build Health coverage for workshop destination stock, transfer UI summaries, local loadout messaging, old-save normalization, and no-regression soldier transfers / Skyranger stationing.
 
 ## Near-Term Starting Base Upgrade Candidate
 Implemented in `v0.26.07.06.0155_STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY_PATCH`; keep this section as the reference contract for any future starting-base template adjustments:
@@ -1542,6 +1548,36 @@ Verification checklist:
 
 Roadmap follow-up remains `AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY`.
 
+## 2026-07-09 Patch Notes - Base-Local Equipment Stores and Transfer Logistics
+
+Build `v0.26.07.09.0025_BASE_LOCAL_EQUIPMENT_STORES_AND_TRANSFER_LOGISTICS_INDEX_ONLY_PATCH` extends the multi-base logistics pass from personnel into portable equipment:
+
+- Added old-save compatible `baseInventories` while preserving aggregate `gearInventory` for compatibility with older saves and existing systems.
+- Quartermaster/Base Stores now show selected-base local stock, selected-base storage capacity, all-bases storage totals, and local issued gear.
+- Buying, selling, equipping, removing gear, and forced auto-equip now use the selected/relevant base inventory where safely contained.
+- Added initial equipment transfer records with origin base, destination base, item name, quantity, total/remaining travel time, and in-transit status.
+- Equipment transfers advance through Geoscape clock time and add stock to the destination base on arrival.
+- In-transit equipment is unavailable at both origin and destination until arrival.
+- Build Health now includes `Base-local equipment stores and transfers keep stock local until arrival`.
+
+Verification checklist:
+- Confirm the start screen shows `v0.26.07.09.0025`.
+- Start a new campaign, confirm first base placement, and open the main Geoscape.
+- Open Quartermaster and confirm local storage, local free storage, all-bases storage, and local issued items render.
+- Confirm Build Health passes 209/209 and includes the new equipment logistics row.
+- Confirm browser console errors are clear during start screen, Geoscape, Quartermaster, and Build Health.
+
+Roadmap follow-up is `BASE_LOCAL_EQUIPMENT_LOGISTICS_POLISH_AND_WORKSHOP_ORIGIN_INDEX_ONLY`.
+
+## 2026-07-09 Patch Notes - Start-Screen Mount Fix
+
+Build `v0.26.07.09.0008_START_SCREEN_MOUNT_FIX_INDEX_ONLY_PATCH` repaired the start-screen mount after the first base-local roster/transfer patch.
+
+- Start screen loads from localhost.
+- Start New Game works.
+- First base confirmation reaches the main Geoscape.
+- Browser console errors were clear.
+- Build Health passed 208/208 before the equipment-localization patch.
 ## 2026-07-08 Patch Notes - Base-Local Rosters and Soldier Transfer Logistics
 
 Build `v0.26.07.08.0140_BASE_LOCAL_ROSTERS_AND_TRANSFER_LOGISTICS_INDEX_ONLY_PATCH` begins the multi-base logistics pass:
