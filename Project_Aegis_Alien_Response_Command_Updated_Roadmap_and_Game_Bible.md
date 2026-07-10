@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-10  
-Current handoff build: `v0.26.07.10.0055_BASE_TRANSFER_COSTS_CANCELLATION_AND_LOGISTICS_RULES_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html` with base-to-base soldier and equipment transfers now charging clear logistics fees, blocking when funds are insufficient, and supporting cancel-to-origin behavior without refunds. The recent opaque/borderless detailed Geoscape globe fix remains intact, save format remains 4, localhost smoke passed, browser console errors were clear, and Build Health passed 216/216.**
+Current handoff build: `v0.26.07.10.0060_BASE_TRANSFER_LOGISTICS_CENTER_AND_BULK_PAYLOADS_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html` with a selected-base Logistics Center that lists inbound/outbound personnel and equipment transfers, plus bulk equipment transfer buttons for 1/5/All payloads where stock allows. Transfer fee/cancel rules, local stores, local rosters, and the recent opaque/borderless Geoscape globe work remain intact, save format remains 4, localhost smoke passed, browser console errors were clear, and Build Health passed 217/217.**
 
 ---
 
@@ -48,10 +48,15 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.10.0055_BASE_TRANSFER_COSTS_CANCELLATION_AND_LOGISTICS_RULES_INDEX_ONLY_PATCH`
+`v0.26.07.10.0060_BASE_TRANSFER_LOGISTICS_CENTER_AND_BULK_PAYLOADS_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- A compact selected-base Logistics Center that merges inbound/outbound soldier and equipment transfers into one manifest.
+- Transfer manifest rows show direction, payload, origin, destination, ETA, fee-paid state, no-refund status, and cancel action.
+- Quartermaster equipment transfers now offer bulk payload choices of 1, 5, and All where local stock allows.
+- Bulk transfer fees scale from the existing distance/handling cost rules.
+- Build Health now includes `Base transfer Logistics Center lists payloads and supports bulk equipment quantities`.
 - Clear base-to-base logistics fees for soldier and equipment transfers.
 - Insufficient-funds blockers for soldier/equipment transfer creation.
 - Cancel-to-origin actions for in-transit soldiers and equipment, with explicit no-refund messaging.
@@ -1122,9 +1127,14 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.10.0055_BASE_TRANSFER_COSTS_CANCELLATION_AND_LOGISTICS_RULES_INDEX_ONLY_PATCH`, then continue with contained logistics polish or the next small base-local quality-of-life patch.
+Playtest `v0.26.07.10.0060_BASE_TRANSFER_LOGISTICS_CENTER_AND_BULK_PAYLOADS_INDEX_ONLY_PATCH`, then continue with base-local loadout stock enforcement and logistics polish.
 
 Focus verification on:
+- Logistics Center appearing on the selected base when inbound/outbound soldier or equipment transfers exist.
+- Logistics Center rows showing direction, payload, origin, destination, ETA, fee-paid text, no-refund text, and cancel actions.
+- Quartermaster equipment transfer controls offering 1, 5, and All payload choices when local stock allows.
+- Bulk equipment transfer fees scaling from payload quantity and handling size.
+- Build Health including `Base transfer Logistics Center lists payloads and supports bulk equipment quantities`.
 - Soldier transfer buttons showing ETA and logistics fee.
 - Equipment transfer buttons showing transfer fee in Quartermaster/Base Stores.
 - Transfers blocking when funds are below the required logistics fee.
@@ -1223,16 +1233,14 @@ Focus verification on:
 ## Best Next Feature Patch
 If this batch tests well, continue with the next priority roadmap patch:
 
-`BASE_TRANSFER_LOGISTICS_CENTER_AND_BULK_PAYLOADS_INDEX_ONLY`
+`BASE_LOCAL_LOADOUT_STOCK_ENFORCEMENT_AND_TRANSFER_POLISH_INDEX_ONLY`
 
 Suggested focus:
-- Add one compact Logistics Center / transfer manifest that lists all inbound and outbound soldier/equipment transfers for the selected base.
-- Add quantity controls or small bulk-transfer options for portable equipment instead of only `Send 1`.
-- Keep ETA, cost, payload, origin, destination, and cancel availability readable in one place.
-- Preserve the new transfer fee and cancel-to-origin rules.
-- Keep in-transit soldiers/equipment unavailable while preserving local-base stores and roster filtering.
-- Preserve current first-base setup incidents/range preview, Workshop destination routing, Skyranger stationing, interceptor range, Geoscape globe behavior, and save compatibility.
-- Add Build Health coverage for central transfer summary rows, equipment bulk quantities, fee scaling, cancellation, arrival, in-transit unavailability, and no-regression first-base/globe behavior.
+- Tighten mission loadout/equip flows so local stock, issued gear, and in-transit gear are enforced consistently from the selected soldier/base context.
+- Make loadout buttons name the source base and explain when an item is unavailable because it is issued elsewhere or in transit.
+- Add a small logistics manifest polish pass for empty-state text and high-stock bulk transfer controls.
+- Preserve transfer fees, cancel-to-origin behavior, bulk equipment transfers, selected-base rosters, Skyranger stationing, and save compatibility.
+- Add Build Health coverage for local-stock equip enforcement, in-transit stock exclusion, issued-elsewhere messaging, bulk transfer no-regression, and mission launch no-regression.
 
 ## Near-Term First Base Placement Planning Candidate
 Implemented in `v0.26.07.10.0020_FIRST_BASE_SELECTION_RANGE_PREVIEW_INDEX_ONLY_PATCH`; keep this section as the reference contract for future first-base story/onboarding polish:
@@ -1705,7 +1713,33 @@ Verification checklist:
 - Confirm Build Health passes 214/214 and includes the new first-base selection row.
 - Confirm browser console errors are clear.
 
-Roadmap follow-up is `BASE_TRANSFER_LOGISTICS_CENTER_AND_BULK_PAYLOADS_INDEX_ONLY`, unless playtesting finds a smaller transfer or globe-control issue first.
+Roadmap follow-up is `BASE_LOCAL_LOADOUT_STOCK_ENFORCEMENT_AND_TRANSFER_POLISH_INDEX_ONLY`, unless playtesting finds a smaller transfer-control issue first.
+
+## 2026-07-10 Patch Notes - Base Transfer Logistics Center and Bulk Payloads
+
+Build `v0.26.07.10.0060_BASE_TRANSFER_LOGISTICS_CENTER_AND_BULK_PAYLOADS_INDEX_ONLY_PATCH` makes transfer logistics easier to inspect and reduces click friction for moving equipment:
+
+- Added a compact selected-base Logistics Center that merges personnel and equipment transfers into one inbound/outbound manifest.
+- Logistics Center rows show transfer direction, payload, origin, destination, ETA, fee-paid state, no-refund status, and cancel action.
+- Quartermaster equipment transfer controls now offer bulk payload choices of `1`, `5`, and `All` where selected-base stock allows.
+- Bulk transfer costs scale through the existing distance/handling cost rules.
+- Added pure helper seams for equipment transfer quantity choices and selected-base transfer manifests.
+- `src/manifest.json` and `tools/check-aegis-build.cjs` now track this build label and required Logistics Center Build Health row.
+- Build Health now includes `Base transfer Logistics Center lists payloads and supports bulk equipment quantities`.
+- Verified through `node tools/check-aegis-build.cjs`, Node static app-script parse, localhost start screen smoke, Start New Game -> first-base setup, first base confirmation -> main Geoscape, clean browser console, and browser Build Health 217/217.
+
+Verification checklist:
+- Confirm the start screen shows `v0.26.07.10.0060`.
+- Start or load a campaign with at least two bases and create a soldier or equipment transfer.
+- Confirm the selected base shows a Logistics Center with inbound/outbound transfer manifest rows.
+- Confirm manifest rows show payload, origin, destination, ETA, fee-paid/no-refund text, and cancel actions.
+- Confirm Quartermaster equipment cards show `Send 1`, `Send 5`, and `Send All` options when local stock allows.
+- Confirm bulk transfers deduct the correct local quantity and charge a scaled logistics fee.
+- Confirm transfer cancellation still returns soldiers/equipment to origin with no refund.
+- Run `node tools/check-aegis-build.cjs`.
+- Run the Node app-script parse check.
+- Run browser Build Health and confirm 217/217 with the new Logistics Center row.
+- Confirm browser console errors are clear.
 
 ## 2026-07-10 Patch Notes - Base Transfer Costs, Cancellation, and Logistics Rules
 

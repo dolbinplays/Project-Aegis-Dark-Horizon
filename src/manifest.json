@@ -1,7 +1,7 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.07.10.0055_BASE_TRANSFER_COSTS_CANCELLATION_AND_LOGISTICS_RULES_INDEX_ONLY_PATCH",
+  "currentBuild": "v0.26.07.10.0060_BASE_TRANSFER_LOGISTICS_CENTER_AND_BULK_PAYLOADS_INDEX_ONLY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
