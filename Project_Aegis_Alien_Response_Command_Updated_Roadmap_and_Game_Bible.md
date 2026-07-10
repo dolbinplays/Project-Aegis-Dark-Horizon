@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-10  
-Current handoff build: `v0.26.07.10.0020_FIRST_BASE_SELECTION_RANGE_PREVIEW_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html` with first-base setup now showing the first two opening alien incidents before confirmation, dotted starting reach rings for Shortwave Radar / Interceptor / Skyranger coverage, and a readable opening-crisis coverage summary. The playable artifact remains `index.html`, save format remains 4, the seam checker passed, Node static app-script parse passed, localhost start screen loaded, Start New Game -> first-base setup showed both opening incident markers, first base confirmation -> main Geoscape retained those opening incidents, browser console errors were clear, and Build Health passed 214/214 with the new first-base selection range preview row.**
+Current handoff build: `v0.26.07.10.0035_SOLID_GEOSCAPE_GLOBE_AND_DRAG_RECOVERY_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html` with Geoscape globe drag/wheel/click input no longer blocked by stale or active aircraft travel state, plus a more solid satellite-style globe surface using visible ocean, land, stroke, cloud, and day/night layers instead of the prior hologram-like transparency. The playable artifact remains `index.html`, save format remains 4, the seam checker passed, Node static app-script parse passed, localhost start screen loaded, Start New Game -> first-base setup worked, first base confirmation -> main Geoscape loaded, an actual pointer-drag test changed the globe projection path, solid globe DOM checks passed, browser console errors were clear, and Build Health passed 215/215 with the new solid-globe drag recovery row.**
 
 ---
 
@@ -48,10 +48,14 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.10.0020_FIRST_BASE_SELECTION_RANGE_PREVIEW_INDEX_ONLY_PATCH`
+`v0.26.07.10.0035_SOLID_GEOSCAPE_GLOBE_AND_DRAG_RECOVERY_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- Geoscape globe input now remains available even when Skyranger or interceptor travel state exists, preventing stale travel records from permanently locking map rotation.
+- A small interaction policy helper defines drag, wheel, click, and incident-focus behavior so future travel-camera work does not accidentally disable player globe control.
+- The Geoscape globe now uses a solid ocean fill, visible land fills/strokes, capped terminator shading, and restrained cloud/gloss layers so Earth reads more like a satellite globe than a transparent hologram.
+- Build Health now includes `Solid Geoscape globe remains draggable during travel states`.
 - The first-base selection screen now shows the first two opening alien incidents before the player confirms the starting base.
 - Opening incidents are deterministic North America crisis markers: `Prairie Abduction` and `Red River Signal`.
 - The confirmed campaign starts with those same two opening incidents, keeping setup guidance and actual Geoscape state aligned.
@@ -1110,9 +1114,12 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.10.0020_FIRST_BASE_SELECTION_RANGE_PREVIEW_INDEX_ONLY_PATCH`, then continue with contained logistics polish.
+Playtest `v0.26.07.10.0035_SOLID_GEOSCAPE_GLOBE_AND_DRAG_RECOVERY_INDEX_ONLY_PATCH`, then continue with contained logistics polish.
 
 Focus verification on:
+- Dragging the Geoscape globe after aircraft travel has occurred, including after Skyranger and interceptor sorties.
+- Confirming the globe reads as a solid Earth-style map rather than a transparent hologram.
+- Build Health including `Solid Geoscape globe remains draggable during travel states`.
 - First-base setup showing `Prairie Abduction` and `Red River Signal` before confirmation.
 - The dotted first-base setup rings showing starting Shortwave Radar coverage, Interceptor practical reach, and Skyranger practical reach.
 - The opening-crisis coverage summary showing both opening incidents inside the default North America starting Skyranger radius.
@@ -1683,7 +1690,26 @@ Verification checklist:
 - Confirm Build Health passes 214/214 and includes the new first-base selection row.
 - Confirm browser console errors are clear.
 
-Roadmap follow-up is `BASE_TRANSFER_COSTS_CANCELLATION_AND_LOGISTICS_RULES_INDEX_ONLY`, unless first-base playtesting suggests a smaller onboarding adjustment first.
+Roadmap follow-up is `BASE_TRANSFER_COSTS_CANCELLATION_AND_LOGISTICS_RULES_INDEX_ONLY`, unless globe playtesting suggests a smaller camera-control adjustment first.
+
+## 2026-07-10 Patch Notes - Solid Geoscape Globe and Drag Recovery
+
+Build `v0.26.07.10.0035_SOLID_GEOSCAPE_GLOBE_AND_DRAG_RECOVERY_INDEX_ONLY_PATCH` fixes the playtest issue where the Geoscape globe could stop accepting drag input partway through a campaign and updates the globe presentation to read as a solid Earth-style strategic map:
+
+- Globe drag, wheel zoom, click selection, and incident focus now route through a dedicated interaction policy instead of returning early whenever aircraft travel state exists.
+- Stale or active Skyranger/interceptor travel state should no longer permanently prevent the player from rotating the world map.
+- The visible globe surface now uses a solid ocean fill, visible land fill/strokes, capped day/night shading, restrained cloud opacity, and less hologram-like glow.
+- The older Build Health wording was updated so the map contract now describes solid land/ocean geography layers instead of claiming SVG geography is hidden.
+- A stale memorial Build Health catalog threshold was aligned to the current shipped 150-item memorial offering catalog while preserving the 281-message template requirement.
+- Build Health now includes `Solid Geoscape globe remains draggable during travel states`.
+- Verified through `node tools/check-aegis-build.cjs`, Node static app-script parse, localhost start screen smoke, Start New Game -> first-base setup, first base confirmation -> main Geoscape, actual pointer-drag projection-change check, solid globe DOM checks, clean browser console, and Build Health 215/215.
+
+Verification checklist:
+- Confirm the start screen shows `v0.26.07.10.0035`.
+- Start a new campaign, confirm the first base, and drag the Geoscape globe before and after aircraft travel occurs.
+- Confirm the globe appears solid with readable oceans and landmasses rather than transparent/holographic.
+- Run Build Health and confirm 215/215 with the new solid-globe row.
+- Confirm browser console errors are clear.
 
 ## 2026-07-10 Patch Notes - Base-Local Equipment Logistics Polish and Workshop Origin
 
