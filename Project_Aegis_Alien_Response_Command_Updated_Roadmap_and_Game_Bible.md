@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-10  
-Current handoff build: `v0.26.07.10.0060_BASE_TRANSFER_LOGISTICS_CENTER_AND_BULK_PAYLOADS_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html` with a selected-base Logistics Center that lists inbound/outbound personnel and equipment transfers, plus bulk equipment transfer buttons for 1/5/All payloads where stock allows. Transfer fee/cancel rules, local stores, local rosters, and the recent opaque/borderless Geoscape globe work remain intact, save format remains 4, localhost smoke passed, browser console errors were clear, and Build Health passed 217/217.**
+Current handoff build: `v0.26.07.10.0065_BASE_LOCAL_LOADOUT_STOCK_ENFORCEMENT_AND_TRANSFER_POLISH_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html` with Barracks equip buttons now advertising only selected-base local stock, local loadout availability text naming local stock/issued/in-transit counts, and Build Health coverage for the selected-base stock rule. Transfer fee/cancel rules, Logistics Center, local stores, local rosters, and the recent opaque/borderless Geoscape globe work remain intact, save format remains 4, localhost smoke passed, browser console errors were clear, and Build Health passed 218/218.**
 
 ---
 
@@ -48,10 +48,15 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.10.0060_BASE_TRANSFER_LOGISTICS_CENTER_AND_BULK_PAYLOADS_INDEX_ONLY_PATCH`
+`v0.26.07.10.0065_BASE_LOCAL_LOADOUT_STOCK_ENFORCEMENT_AND_TRANSFER_POLISH_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- Barracks equip buttons now list only weapons/armor available in the currently selected base's local stores.
+- Equip button labels name the selected base stock source instead of showing aggregate global inventory.
+- Loadout availability tooltips now describe selected-base stock, issued gear, and in-transit gear counts.
+- Pure helper seams now count issued equipment and in-transit equipment for an item.
+- Build Health now includes `Base-local loadout buttons only advertise selected-base stock`.
 - A compact selected-base Logistics Center that merges inbound/outbound soldier and equipment transfers into one manifest.
 - Transfer manifest rows show direction, payload, origin, destination, ETA, fee-paid state, no-refund status, and cancel action.
 - Quartermaster equipment transfers now offer bulk payload choices of 1, 5, and All where local stock allows.
@@ -1127,9 +1132,14 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.10.0060_BASE_TRANSFER_LOGISTICS_CENTER_AND_BULK_PAYLOADS_INDEX_ONLY_PATCH`, then continue with base-local loadout stock enforcement and logistics polish.
+Playtest `v0.26.07.10.0065_BASE_LOCAL_LOADOUT_STOCK_ENFORCEMENT_AND_TRANSFER_POLISH_INDEX_ONLY_PATCH`, then continue with a small manual loadout/mission-launch hardening pass.
 
 Focus verification on:
+- Barracks equip buttons showing only weapons/armor stocked at the selected base.
+- Equip button labels naming the selected base as the stock source.
+- Equip tooltips explaining local stock, issued gear, and in-transit gear counts.
+- Switching bases changes the available equip buttons to that base's local stores.
+- Build Health including `Base-local loadout buttons only advertise selected-base stock`.
 - Logistics Center appearing on the selected base when inbound/outbound soldier or equipment transfers exist.
 - Logistics Center rows showing direction, payload, origin, destination, ETA, fee-paid text, no-refund text, and cancel actions.
 - Quartermaster equipment transfer controls offering 1, 5, and All payload choices when local stock allows.
@@ -1233,14 +1243,14 @@ Focus verification on:
 ## Best Next Feature Patch
 If this batch tests well, continue with the next priority roadmap patch:
 
-`BASE_LOCAL_LOADOUT_STOCK_ENFORCEMENT_AND_TRANSFER_POLISH_INDEX_ONLY`
+`BASE_LOCAL_LOADOUT_AND_MISSION_CONFIRMATION_HARDENING_INDEX_ONLY`
 
 Suggested focus:
-- Tighten mission loadout/equip flows so local stock, issued gear, and in-transit gear are enforced consistently from the selected soldier/base context.
-- Make loadout buttons name the source base and explain when an item is unavailable because it is issued elsewhere or in transit.
-- Add a small logistics manifest polish pass for empty-state text and high-stock bulk transfer controls.
+- Manually playtest multi-base local equip, transfer, cancel, and mission-launch flows using the new selected-base stock rules.
+- Add clearer empty-state text when no local weapons/armor can be equipped at the selected base.
+- Tighten any remaining mission confirmation/loadout messaging that still references aggregate global stock.
 - Preserve transfer fees, cancel-to-origin behavior, bulk equipment transfers, selected-base rosters, Skyranger stationing, and save compatibility.
-- Add Build Health coverage for local-stock equip enforcement, in-transit stock exclusion, issued-elsewhere messaging, bulk transfer no-regression, and mission launch no-regression.
+- Add Build Health coverage for empty local loadout state, mission confirmation local-stock messaging, bulk transfer no-regression, and mission launch no-regression.
 
 ## Near-Term First Base Placement Planning Candidate
 Implemented in `v0.26.07.10.0020_FIRST_BASE_SELECTION_RANGE_PREVIEW_INDEX_ONLY_PATCH`; keep this section as the reference contract for future first-base story/onboarding polish:
@@ -1713,7 +1723,31 @@ Verification checklist:
 - Confirm Build Health passes 214/214 and includes the new first-base selection row.
 - Confirm browser console errors are clear.
 
-Roadmap follow-up is `BASE_LOCAL_LOADOUT_STOCK_ENFORCEMENT_AND_TRANSFER_POLISH_INDEX_ONLY`, unless playtesting finds a smaller transfer-control issue first.
+Roadmap follow-up is `BASE_LOCAL_LOADOUT_AND_MISSION_CONFIRMATION_HARDENING_INDEX_ONLY`, unless playtesting finds a smaller transfer-control issue first.
+
+## 2026-07-10 Patch Notes - Base-Local Loadout Stock Enforcement and Transfer Polish
+
+Build `v0.26.07.10.0065_BASE_LOCAL_LOADOUT_STOCK_ENFORCEMENT_AND_TRANSFER_POLISH_INDEX_ONLY_PATCH` tightens the Barracks equipment UI so it matches the local-base stock rules already enforced by the equip action:
+
+- Barracks equip buttons now list only weapons and armor physically stocked at the currently selected base.
+- Equip button labels now show the selected base as the stock source instead of showing aggregate/global inventory counts.
+- Equip button tooltips use `localLoadoutAvailabilityMessage` to show selected-base local stock plus issued and in-transit counts.
+- Added helper seams for issued-equipment counting and in-transit equipment counting.
+- Corrected the Build Health fixture to use shipped catalog item names such as `Laser Carbine`.
+- Build Health now includes `Base-local loadout buttons only advertise selected-base stock`.
+- Verified through `node tools/check-aegis-build.cjs`, Node static app-script parse, localhost start screen smoke, Start New Game -> first-base setup, first base confirmation -> main Geoscape, clean browser console, and browser Build Health 218/218.
+
+Verification checklist:
+- Confirm the start screen shows `v0.26.07.10.0065`.
+- Confirm Barracks equip buttons only show selected-base local weapons/armor.
+- Confirm switching selected bases changes the available equip buttons to that base's local stores.
+- Confirm equip button labels name the selected base stock source.
+- Confirm equip button tooltips describe local stock, issued gear, and in-transit gear.
+- Confirm transfer fees, Logistics Center rows, and bulk equipment transfer buttons still behave as in `v0.26.07.10.0060`.
+- Run `node tools/check-aegis-build.cjs`.
+- Run the Node app-script parse check.
+- Run browser Build Health and confirm 218/218 with the new local-loadout row.
+- Confirm browser console errors are clear.
 
 ## 2026-07-10 Patch Notes - Base Transfer Logistics Center and Bulk Payloads
 
