@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-09  
-Current handoff build: `v0.26.07.09.0025_BASE_LOCAL_EQUIPMENT_STORES_AND_TRANSFER_LOGISTICS_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html`; Node static app-script parse passed, localhost browser smoke passed, Start New Game -> first base confirmation -> main Geoscape passed, Quartermaster local-store UI rendered, browser console showed no errors, and Build Health passed 209/209. The prior `v0.26.07.09.0008_START_SCREEN_MOUNT_FIX_INDEX_ONLY_PATCH` was also verified through localhost with Build Health 208/208 before this equipment patch.**
+Current handoff build: `v0.26.07.09.0035_MISSION_RECOVERY_LOCAL_STORES_AND_UI_ENCODING_CLEANUP_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html`; mission recovery now routes alien loot and KIA equipment recovery into the returning Skyranger base's local stores while preserving aggregate inventory compatibility, and high-visibility UI mojibake/icon artifacts were cleaned from the game file. Node static app-script parse passed, localhost start screen loaded, Start New Game -> first base confirmation -> main Geoscape passed, the Time Control funds label rendered cleanly, browser console errors were clear, and Build Health passed 211/211.**
 
 ---
 
@@ -48,10 +48,16 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.09.0025_BASE_LOCAL_EQUIPMENT_STORES_AND_TRANSFER_LOGISTICS_INDEX_ONLY_PATCH`
+`v0.26.07.09.0035_MISSION_RECOVERY_LOCAL_STORES_AND_UI_ENCODING_CLEANUP_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- Mission recovery stock routing into the Skyranger return-base local `baseInventories`, while keeping legacy aggregate `gearInventory` compatibility.
+- Successful mission alien spoils and KIA equipment recovery now update the local stores of the base that receives the returning Skyranger.
+- Mission summaries now include a compact return-base stock delivery line.
+- High-visibility UI text encoding cleanup removed broken currency/icon mojibake from the game file, including the Time Control funds line class of issue.
+- Former fragile inline load/save marker text now uses the existing icon component path.
+- Build Health now includes `Mission recovery stock routes to Skyranger return-base local stores` and `UI text encoding cleanup keeps funds labels readable`.
 - Start-screen mount recovery from `v0.26.07.09.0008_START_SCREEN_MOUNT_FIX_INDEX_ONLY_PATCH`, verified through localhost before continuing roadmap work.
 - Base-local equipment store normalization with old-save compatible `baseInventories` while preserving aggregate `gearInventory` compatibility.
 - Quartermaster/Base Stores selected-base stock display, local storage capacity/readout, and all-bases storage summary.
@@ -1086,9 +1092,16 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.08.0140_BASE_LOCAL_ROSTERS_AND_TRANSFER_LOGISTICS_INDEX_ONLY_PATCH` before expanding transfers to equipment and base-local stores.
+Playtest `v0.26.07.09.0035_MISSION_RECOVERY_LOCAL_STORES_AND_UI_ENCODING_CLEANUP_INDEX_ONLY_PATCH`, then consider a contained architecture-prep pass before adding another large gameplay layer.
 
 Focus verification on:
+- Successful missions adding alien bodies/materials/equipment to the returning Skyranger base's local stores.
+- KIA recovered equipment returning to the correct local base stores.
+- Legacy aggregate `gearInventory` still reflecting recovered stock for compatibility.
+- Wrong-base local stores remaining isolated after mission recovery.
+- The Time Control funds line rendering without stray encoding characters before `Funds`.
+- Load / Save Menu using a real icon path rather than fragile inline symbol text.
+- Build Health including `Mission recovery stock routes to Skyranger return-base local stores` and `UI text encoding cleanup keeps funds labels readable`.
 - Geoscape Clock modes showing Pause, 5s, 1m, 5m, 30m, 1h, 6h, and 1d.
 - The active clock mode displaying a readable compression/rate label.
 - Aircraft/UFO visible progress feeling faster at higher compression while still completing from elapsed Geoscape minutes.
@@ -1156,6 +1169,19 @@ Focus verification on:
 ## Best Next Feature Patch
 If this batch tests well, continue with the next priority roadmap patch:
 
+`MODULAR_SOURCE_LAYOUT_AND_ENGINE_PORT_PREP_INDEX_ONLY`
+
+Suggested focus:
+- Introduce a build-friendly source layout while preserving `index.html` as the playable distribution artifact.
+- Split future work into clear source areas such as data definitions, simulation systems, UI panels, Build Health tests, and asset manifests.
+- Keep the current single-file game runnable during the transition by generating or manually syncing the production `index.html` from the organized source.
+- Create a lightweight contract for future Godot 4 migration: data-driven game state, deterministic simulation helpers, explicit UI adapters, and JSON-friendly campaign/save structures.
+- Move no risky gameplay systems during the first pass; start with extracted constants/helpers/tests or a documented build harness if that is the safest step.
+- Preserve save compatibility, current browser deployment, and localhost Build Health behavior.
+- Add Build Health/static checks that prove the generated/playable `index.html` contains the expected build label and key systems after any source organization step.
+
+Follow-up gameplay polish after the architecture pass:
+
 `BASE_LOCAL_EQUIPMENT_LOGISTICS_POLISH_AND_WORKSHOP_ORIGIN_INDEX_ONLY`
 
 Suggested focus:
@@ -1165,6 +1191,48 @@ Suggested focus:
 - Consider transfer costs and transfer cancellation rules after the core flow is playtested.
 - Preserve global access for Mainframe/research database/alien intel/reports/memorial records.
 - Add Build Health coverage for workshop destination stock, transfer UI summaries, local loadout messaging, old-save normalization, and no-regression soldier transfers / Skyranger stationing.
+
+## Near-Term Mission Recovery Local Stores Fix
+Implemented in `v0.26.07.09.0035_MISSION_RECOVERY_LOCAL_STORES_AND_UI_ENCODING_CLEANUP_INDEX_ONLY_PATCH`; keep this section as the reference contract for future mission-recovery expansion:
+
+`MISSION_RECOVERY_TO_LOCAL_BASE_STORES_INDEX_ONLY`
+
+Suggested focus:
+- Route successful mission recovery loot into the Skyranger's return-base local `baseInventories`, not only the legacy aggregate `gearInventory`.
+- Preserve old-save compatibility by keeping aggregate `gearInventory` synchronized or derivable from local base stores where older systems still read it.
+- Recovered alien remains, alien weapon fragments, alien power cells, live aliens, and KIA soldier equipment should appear in the local stores of the base that actually received the returning Skyranger.
+- Mission reports should continue to list recovered materials, but the Quartermaster/Base Stores screen should also visibly reflect the recovered stock at the correct base.
+- Keep crash-site recovery, landed/terror incident recovery, alien containment handling, known alien unlocks, and research/autopsy prerequisites intact.
+- Add Build Health coverage for successful mission alien-body recovery, alien equipment/material recovery, local return-base stock updates, legacy `gearInventory` compatibility, KIA equipment recovery to the return base, wrong-base stock isolation, and no-regression base-local equipment transfers.
+
+## Near-Term UI Text Encoding and Icon Cleanup Candidate
+Implemented in `v0.26.07.09.0035_MISSION_RECOVERY_LOCAL_STORES_AND_UI_ENCODING_CLEANUP_INDEX_ONLY_PATCH`; keep this section as the reference contract for future text/icon sanitation passes:
+
+`UI_TEXT_ENCODING_AND_ICON_SANITATION_INDEX_ONLY`
+
+Suggested focus:
+- Sweep the single-file build for mojibake / garbled encoding artifacts such as U+00C2, U+00E2, U+00C3, replacement characters, or broken currency/icon text.
+- Clean up visible odd characters like the stray encoded currency marker before `Funds`; replace with the intended icon component where appropriate, or use plain readable text if an icon is not useful.
+- Prefer existing `Icon` / `ICONS` usage for former inline-symbol UI markers so future encoding passes are less fragile.
+- Check high-visibility UI surfaces first: Time Control header, Geoscape panels, mission reports, Quartermaster/Base Stores, build/transfer summaries, aircraft readiness, and modal confirmations.
+- Preserve intentional ASCII abbreviations, version strings, save keys, and player-facing content that is already rendering correctly.
+- Add Build Health coverage or static seam checks for disallowed mojibake markers in rendered/static UI text, plus a targeted check that the Time Control funds label renders cleanly.
+
+## Near-Term First Base Placement Planning Candidate
+Future patch candidate:
+
+`FIRST_BASE_SELECTION_RANGE_PREVIEW_INDEX_ONLY`
+
+Suggested focus:
+- Seed the first two alien incidents before first-base confirmation and show them on the same world map the player uses to choose the starting base.
+- Position those two opening incidents so a single well-placed starting base can reach both with the starting Skyranger, making them a practical guide for where the world governments establish Project Aegis.
+- Treat first-base placement as the story kickoff: governments are responding to visible alien activity, and the chosen base site is the coordinated first answer to the new threat.
+- On the beginning first-base location selection screen, show dotted circular range overlays centered on the proposed starting site.
+- Preview starting Interceptor practical reach, starting Skyranger practical reach, and starting Shortwave Radar coverage before the player confirms the first base.
+- Reuse the restrained dashed/dotted visual language from Build New Base range previews and Geoscape overlay filters, without opaque coverage blobs.
+- Keep the first-base selection controls readable on desktop and mobile; the rings should support location choice, not obscure the globe.
+- Explain the preview values and visible opening incidents near the first-base confirmation controls so players understand whether a starting region gives good early aircraft/radar coverage and can answer both first crises.
+- Add Build Health coverage for first-base range preview state, two opening incidents visible during first-base selection, both opening incidents being reachable by one valid starting Skyranger base placement, starting craft/radar range values, inactive-state hiding, and no regression to first-base confirmation.
 
 ## Near-Term Starting Base Upgrade Candidate
 Implemented in `v0.26.07.06.0155_STARTING_BASE_SHORTWAVE_RADAR_SEED_INDEX_ONLY_PATCH`; keep this section as the reference contract for any future starting-base template adjustments:
@@ -1186,6 +1254,7 @@ Implemented in `v0.26.07.06.0165_BASE_PLACEMENT_AIRCRAFT_RANGE_PREVIEW_INDEX_ONL
 
 Suggested focus:
 - While Build New Base placement mode is active, show dotted circular range overlays centered on the proposed new base site.
+- Future extension: mirror this range-preview behavior on the beginning first-base selection screen via `FIRST_BASE_SELECTION_RANGE_PREVIEW_INDEX_ONLY`.
 - Use the existing aircraft range profiles so the player can see practical Interceptor and Skyranger reach before confirming construction.
 - Show separate dotted circles for current Interceptor and Skyranger reach, plus upgraded fuel-tank preview rings when those upgrades are not already purchased.
 - Keep the overlay lightweight and readable on the Geoscape globe: thin dashed/dotted rings, restrained colors, and no large opaque coverage fills.
@@ -1547,6 +1616,30 @@ Verification checklist:
 - Confirm Build Health passes the new `Interceptor airborne status recovery prevents stuck Outbound craft` row.
 
 Roadmap follow-up remains `AIR_COMBAT_AFTER_ACTION_REPORTS_AND_UFO_DAMAGE_MEMORY_INDEX_ONLY`.
+
+## 2026-07-09 Patch Notes - Mission Recovery Local Stores and UI Encoding Cleanup
+
+Build `v0.26.07.09.0035_MISSION_RECOVERY_LOCAL_STORES_AND_UI_ENCODING_CLEANUP_INDEX_ONLY_PATCH` tightens the new base-local inventory loop and cleans up visible text/icon encoding artifacts:
+
+- Successful mission recovery now routes alien spoils into the returning Skyranger base's local `baseInventories`.
+- KIA recovered equipment now returns to the same local base inventory instead of only updating the legacy aggregate stock.
+- The legacy aggregate `gearInventory` remains synchronized for compatibility with older systems and older saves.
+- Mission summaries now include a compact line naming the base that received recovered stock.
+- The game file was swept for common mojibake markers and broken inline-symbol UI text in high-visibility surfaces.
+- The Load / Save Menu button now uses the existing icon component path instead of a fragile inline marker.
+- Build Health now includes `Mission recovery stock routes to Skyranger return-base local stores` and `UI text encoding cleanup keeps funds labels readable`.
+- Verified through Node static app-script parse, localhost start screen smoke, Start New Game -> first base confirmation -> main Geoscape, clean browser console, and Build Health 211/211.
+
+Verification checklist:
+- Confirm the start screen shows `v0.26.07.09.0035`.
+- Start a new campaign, confirm first base placement, and open the main Geoscape.
+- Complete or simulate a successful mission and confirm alien bodies/materials/equipment arrive in the Skyranger return-base stores.
+- Confirm KIA recovered gear returns to the correct local base inventory.
+- Confirm wrong-base local stores do not receive the recovered stock.
+- Confirm the Time Control funds label renders without stray encoded characters.
+- Confirm Build Health passes 211/211 and includes the two new rows.
+
+Roadmap follow-up is `MODULAR_SOURCE_LAYOUT_AND_ENGINE_PORT_PREP_INDEX_ONLY`, then `BASE_LOCAL_EQUIPMENT_LOGISTICS_POLISH_AND_WORKSHOP_ORIGIN_INDEX_ONLY`.
 
 ## 2026-07-09 Patch Notes - Base-Local Equipment Stores and Transfer Logistics
 
