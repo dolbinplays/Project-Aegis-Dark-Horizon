@@ -14,7 +14,7 @@ const required = [
   "Modular source layout and engine-port prep contract is present",
   "Workshop production preserves destination base and equipment logistics summaries",
   "First-base selection previews opening incidents and starting reach",
-  "Solid Geoscape globe uses detailed landmasses and remains draggable",
+  "Solid Geoscape globe uses opaque detailed landmasses and remains draggable",
   "runSelfTests"
 ];
 
