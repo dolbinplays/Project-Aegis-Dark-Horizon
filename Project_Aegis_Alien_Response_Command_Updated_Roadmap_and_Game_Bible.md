@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-10  
-Current handoff build: `v0.26.07.10.0065_BASE_LOCAL_LOADOUT_STOCK_ENFORCEMENT_AND_TRANSFER_POLISH_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html` with Barracks equip buttons now advertising only selected-base local stock, local loadout availability text naming local stock/issued/in-transit counts, and Build Health coverage for the selected-base stock rule. Transfer fee/cancel rules, Logistics Center, local stores, local rosters, and the recent opaque/borderless Geoscape globe work remain intact, save format remains 4, localhost smoke passed, browser console errors were clear, and Build Health passed 218/218.**
+Current handoff build: `v0.26.07.10.0090_AIRCRAFT_FERRY_REFUEL_AND_MULTI_BASE_SORTIE_STAGING_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html` with the first aircraft ferry/refuel staging seed: pure route-leg helpers, open-hangar checks, one-way ferry validation, refueled final-leg round-trip validation, and a compact Geoscape/UFO Tracking staging readout. Mission launch loadout hardening, transfer fee/cancel rules, Logistics Center, local stores, local rosters, and the opaque/borderless Geoscape globe work remain intact, save format remains 4, static seam checks passed, and Build Health includes the new ferry staging row.**
 
 ---
 
@@ -48,10 +48,21 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.10.0065_BASE_LOCAL_LOADOUT_STOCK_ENFORCEMENT_AND_TRANSFER_POLISH_INDEX_ONLY_PATCH`
+`v0.26.07.10.0090_AIRCRAFT_FERRY_REFUEL_AND_MULTI_BASE_SORTIE_STAGING_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- Aircraft ferry/refuel staging planning helpers that evaluate owned bases as intermediate refuel stops.
+- Ferry legs are checked as one-way base-to-base flights so aircraft can use their full practical range to reach a staging base.
+- Final incident/intercept legs from the staging base still require enough refueled range/fuel for the round trip back to that last staging base.
+- Staging requires an owned base with an open hangar slot.
+- UFO Tracking now includes a compact Ferry / Refuel Staging readout for selected incidents and detected UFOs.
+- Build Health now includes `Aircraft ferry staging checks open hangars and refuel legs`.
+- Mission launch confirmation now previews the selected Skyranger, launch base, round-trip distance, fuel commitment, and response-force soldier loadout before the player confirms.
+- The confirmation modal now reports local launch-base weapons/armor stock, issued gear, in-transit gear, unarmed soldiers, and soldiers without armor.
+- Barracks now shows a clear empty-state message when the selected base has no local weapons or armor available for rearming.
+- Pure helper seams now summarize selected-base loadout stock and mission-launch loadout readiness.
+- Build Health now includes `Mission confirmation explains local loadout and launch base`.
 - Barracks equip buttons now list only weapons/armor available in the currently selected base's local stores.
 - Equip button labels name the selected base stock source instead of showing aggregate global inventory.
 - Loadout availability tooltips now describe selected-base stock, issued gear, and in-transit gear counts.
@@ -670,6 +681,8 @@ Current aircraft ideas:
 - Named Skyranger/interceptor craft with Ready, Outbound, Returning, and Repairing status.
 - Light post-sortie interceptor damage and clock-driven repair timers.
 - Simple aircraft fuel/range readiness with clock-driven refueling.
+- Future ferry/staging routes where aircraft can land at another owned base with an open compatible hangar, refuel there, and launch a follow-up leg to extend practical response range.
+- Multi-base sortie staging so Skyrangers and their squads can fly to a forward base, refuel, and join a closer-base Skyranger response when hangar capacity and timing allow.
 - Interception stances that trade hit chance against ammo burn, fuel use, damage risk, and repair time.
 - Lightweight UFO evasion / air-combat event outcomes: confirmed shootdown, damaged escape, evasive maneuvers, contact lost, forced disengage, ammunition pressure, and cautious breakaway.
 - Compact air-combat after-action reports in UFO Tracking for launch, impact, delayed crash, and recovery phases.
@@ -679,6 +692,7 @@ Still planned:
 - Pilot/crew identity if the air-war layer needs named aviators later.
 - Fuller multi-step air-combat history and filtering if the report list grows beyond the current compact latest-report model.
 - Fuel tank upgrade path for Interceptors and Skyrangers, likely through Workshop purchase/install or research unlocks, increasing fuel capacity/range while preserving automatic refueling.
+- Aircraft ferry/refuel staging through owned bases, including hangar reservation, refuel/turnaround timing, staged mission launches, staged interceptions, and clear return-home/stay-staged options.
 - Deeper aircraft damage outcomes and repair cost/bay constraints.
 
 ---
@@ -1132,9 +1146,20 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.10.0065_BASE_LOCAL_LOADOUT_STOCK_ENFORCEMENT_AND_TRANSFER_POLISH_INDEX_ONLY_PATCH`, then continue with a small manual loadout/mission-launch hardening pass.
+Playtest `v0.26.07.10.0090_AIRCRAFT_FERRY_REFUEL_AND_MULTI_BASE_SORTIE_STAGING_INDEX_ONLY_PATCH`, then continue into live staged launch execution once the planner reads correctly in normal play.
 
 Focus verification on:
+- UFO Tracking showing the Ferry / Refuel Staging readout without crowding the existing aircraft/radar controls.
+- Selected incidents producing a Skyranger staging preview when a ready Skyranger, open staging hangar, and valid final round trip exist.
+- Detected UFOs producing an interceptor staging preview when a ready interceptor, open staging hangar, and valid final round trip exist.
+- One-way ferry legs allowing a craft to reach a staging base farther than a normal round-trip sortie would allow.
+- Final staging-base-to-target legs still requiring refueled round-trip range/fuel back to the staging base.
+- Closed/occupied hangars blocking staged-route readiness.
+- Build Health including `Aircraft ferry staging checks open hangars and refuel legs`.
+- Mission launch confirmation naming the selected Skyranger, launch base, round-trip distance, and fuel commitment.
+- Mission launch confirmation showing response-force weapon/armor state plus local launch-base stock/issued/in-transit messaging.
+- Barracks showing a clear selected-base empty state when no local weapons/armor can be equipped.
+- Build Health including `Mission confirmation explains local loadout and launch base`.
 - Barracks equip buttons showing only weapons/armor stocked at the selected base.
 - Equip button labels naming the selected base as the stock source.
 - Equip tooltips explaining local stock, issued gear, and in-transit gear counts.
@@ -1243,14 +1268,16 @@ Focus verification on:
 ## Best Next Feature Patch
 If this batch tests well, continue with the next priority roadmap patch:
 
-`BASE_LOCAL_LOADOUT_AND_MISSION_CONFIRMATION_HARDENING_INDEX_ONLY`
+`AIRCRAFT_FERRY_REFUEL_AND_MULTI_BASE_SORTIE_EXECUTION_INDEX_ONLY`
 
 Suggested focus:
-- Manually playtest multi-base local equip, transfer, cancel, and mission-launch flows using the new selected-base stock rules.
-- Add clearer empty-state text when no local weapons/armor can be equipped at the selected base.
-- Tighten any remaining mission confirmation/loadout messaging that still references aggregate global stock.
-- Preserve transfer fees, cancel-to-origin behavior, bulk equipment transfers, selected-base rosters, Skyranger stationing, and save compatibility.
-- Add Build Health coverage for empty local loadout state, mission confirmation local-stock messaging, bulk transfer no-regression, and mission launch no-regression.
+- Convert the 0090 planning helpers into a small live execution path for one staged leg.
+- Start with Skyranger staged incident response or interceptor staged intercepts, not both if risk is high.
+- Reserve the open staging hangar while the aircraft is inbound/turning around.
+- Refuel at the staging base on Geoscape clock time before enabling the final launch leg.
+- Keep Skyrangers and their assigned squads together during ferry staging.
+- Preserve direct Skyranger/interceptor launches, assigned-base range checks, local rosters/stores, transfer logistics, and save compatibility.
+- Add Build Health coverage for staging-hangar reservation, base-to-base ferry travel, refuel/turnaround timing, final-leg launch, return-to-staging-base behavior, and no-regression direct launches.
 
 ## Near-Term First Base Placement Planning Candidate
 Implemented in `v0.26.07.10.0020_FIRST_BASE_SELECTION_RANGE_PREVIEW_INDEX_ONLY_PATCH`; keep this section as the reference contract for future first-base story/onboarding polish:
@@ -1264,6 +1291,26 @@ Suggested focus:
 - Use the opening incidents to make first-base placement feel like the world governments' direct response to the first alien crisis.
 - Keep the first-base confirmation flow stable and readable.
 - Add Build Health coverage for visible opening incidents, reachable first crises, preview ring values, inactive-state hiding, and no-regression first-base confirmation.
+
+## Near-Term Aircraft Ferry / Refuel Staging Candidate
+Planned as a future Air War and multi-base logistics patch:
+
+`AIRCRAFT_FERRY_REFUEL_AND_MULTI_BASE_SORTIE_STAGING_INDEX_ONLY`
+
+Suggested focus:
+- Allow Skyrangers and interceptors to ferry to another owned base as an intermediate staging/refuel stop when the destination base has an available compatible hangar.
+- Treat base-to-base ferry legs as one-way legs that only need enough fuel/range to reach the next friendly base, because the aircraft will refuel there before continuing.
+- Do not require a craft to have enough fuel for a full home-base round trip when it is transiting between owned bases; this effectively lets staged aircraft extend their operational reach by chaining valid base-to-base legs.
+- Once an aircraft leaves the last friendly staging base for a mission site or UFO interception, require enough practical fuel/range to complete the outbound leg and return to that last staging base.
+- After the sortie, aircraft should either remain at the last staging base until ordered home or retrace the planned staging route home through valid refuel stops, with each return leg advancing on Geoscape clock time.
+- Track hangar occupancy/reservations so a forward base cannot accept more staged aircraft than it can physically house.
+- Keep ferry, refuel, turnaround, mission launch, interception, return, and optional return-home legs tied to Geoscape clock time.
+- Let a Skyranger from a farther base carry its own stationed squad to a forward base, refuel, and then launch alongside a local Skyranger for the same incident when both routes and hangars are valid.
+- Preserve squad stationing clarity: soldiers remain associated with the Skyranger/base they boarded from unless a later transfer or cross-base task-force system explicitly changes that.
+- Let interceptors stage through forward bases to attack UFOs that are outside their direct home-base range, with the same fuel, damage, repair, and after-action rules used by normal interceptions.
+- Surface route-leg planning clearly in Geoscape and aircraft readiness UI: home base, staging base, one-way ferry reach, final sortie round-trip reach from the last staging base, hangar blocker, refuel ETA, launch window, return-home/stay-staged choice, and combined response readiness.
+- Preserve existing direct-launch behavior, fuel tank upgrades, assigned-base range checks, base-local rosters/stores, Skyranger stationing, interceptor selection, transfer logistics, and old-save compatibility.
+- Add Build Health coverage for ferry-to-base creation, one-way base-to-base range validation, final sortie round-trip validation from the last staging base, hangar availability/reservation blockers, refuel timing at staging base, staged Skyranger incident launch, staged interceptor launch, in-range-after-staging validation, route-home/refuel-stop handling, return-home/stay-staged handling, old-save normalization, and no-regression direct aircraft travel/repair/refuel.
 
 ## Near-Term Base-Local Equipment Logistics Polish
 Implemented in `v0.26.07.10.0005_BASE_LOCAL_EQUIPMENT_LOGISTICS_POLISH_AND_WORKSHOP_ORIGIN_INDEX_ONLY_PATCH`; keep this section as the reference contract for future logistics polish:
@@ -1723,7 +1770,50 @@ Verification checklist:
 - Confirm Build Health passes 214/214 and includes the new first-base selection row.
 - Confirm browser console errors are clear.
 
-Roadmap follow-up is `BASE_LOCAL_LOADOUT_AND_MISSION_CONFIRMATION_HARDENING_INDEX_ONLY`, unless playtesting finds a smaller transfer-control issue first.
+Roadmap follow-up was `BASE_LOCAL_LOADOUT_AND_MISSION_CONFIRMATION_HARDENING_INDEX_ONLY`, completed in `v0.26.07.10.0080`.
+
+## 2026-07-10 Patch Notes - Aircraft Ferry Refuel and Multi-Base Sortie Staging
+
+Build `v0.26.07.10.0090_AIRCRAFT_FERRY_REFUEL_AND_MULTI_BASE_SORTIE_STAGING_INDEX_ONLY_PATCH` seeds the aircraft ferry/refuel staging system without yet changing live launch/return state:
+
+- Added pure helper seams for owned-base staging plans, open-hangar checks, one-way base-to-base ferry validation, and refueled final-leg round-trip validation.
+- Ferry legs use one-way range/fuel checks because the aircraft is expected to land and refuel at the staging base.
+- Final mission/interception legs still require enough refueled range/fuel to fly from the last staging base to the target and return to that same staging base.
+- Staging candidates require an open hangar at the intermediate base before they can be considered ready.
+- UFO Tracking now includes a compact Ferry / Refuel Staging card for selected incidents and detected UFOs.
+- Build Health now includes `Aircraft ferry staging checks open hangars and refuel legs`.
+- `src/manifest.json` and `tools/check-aegis-build.cjs` now track the new playable build label and seam.
+
+Verification checklist:
+- Run `node tools\check-aegis-build.cjs`.
+- Run static app-script parse.
+- Load `http://127.0.0.1:5173/index.html`, confirm the start screen shows the new build label, start a campaign, and confirm the Geoscape loads.
+- Confirm UFO Tracking shows the Ferry / Refuel Staging card.
+- Run Build Health and confirm all checks pass, including `Aircraft ferry staging checks open hangars and refuel legs`.
+- Confirm browser console errors are clear.
+
+Roadmap follow-up is `AIRCRAFT_FERRY_REFUEL_AND_MULTI_BASE_SORTIE_EXECUTION_INDEX_ONLY`, starting with one staged-leg execution path and hangar reservation/refuel timing.
+
+## 2026-07-10 Patch Notes - Base-Local Loadout and Mission Confirmation Hardening
+
+Build `v0.26.07.10.0080_BASE_LOCAL_LOADOUT_AND_MISSION_CONFIRMATION_HARDENING_INDEX_ONLY_PATCH` tightens the last step before squad deployment so commanders can see the local-base consequences before committing a Skyranger:
+
+- Mission launch confirmation now previews the selected Skyranger, launch base, round-trip distance, and fuel commitment when a valid sortie can be selected.
+- If launch is blocked, the confirmation preview surfaces the same Skyranger stationing/range/fuel blocker text used by the launch path.
+- The confirmation modal now lists the response-force soldiers with weapon and armor state, plus a local loadout check for unarmed soldiers, under-armored soldiers, loose launch-base stock, issued gear, and in-transit gear.
+- Barracks now shows a selected-base empty state when no local weapons or armor are available for rearming instead of silently rendering no equip buttons.
+- Added pure helper seams for selected-base loadout summaries and mission-launch loadout summaries.
+- Build Health now includes `Mission confirmation explains local loadout and launch base`.
+- Verified through Node app-script parse, `node tools/check-aegis-build.cjs`, localhost start screen smoke, first-base confirmation to main Geoscape, and browser Build Health 219/219.
+
+Verification checklist:
+- Confirm the start screen shows `v0.26.07.10.0080`.
+- Start a new campaign and confirm first-base setup and main Geoscape still load without runtime errors.
+- Open Build Health and confirm 219/219 checks pass with `Mission confirmation explains local loadout and launch base`.
+- Open Barracks at a base with no local weapons/armor and confirm the empty rearm text is shown.
+- Open a mission launch confirmation and confirm the launch base, Skyranger, fuel/distance, response-force loadout, and local stock/in-transit summary are visible.
+
+Roadmap follow-up is `AIRCRAFT_FERRY_REFUEL_AND_MULTI_BASE_SORTIE_STAGING_INDEX_ONLY`, starting with a contained route-leg and hangar-eligibility seed.
 
 ## 2026-07-10 Patch Notes - Base-Local Loadout Stock Enforcement and Transfer Polish
 

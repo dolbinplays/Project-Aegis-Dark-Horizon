@@ -16,6 +16,8 @@ const required = [
   "Base transfer logistics charge fees and cancel back to origin",
   "Base transfer Logistics Center lists payloads and supports bulk equipment quantities",
   "Base-local loadout buttons only advertise selected-base stock",
+  "Mission confirmation explains local loadout and launch base",
+  "Aircraft ferry staging checks open hangars and refuel legs",
   "First-base selection previews opening incidents and starting reach",
   "Solid Geoscape globe uses opaque detailed landmasses and remains draggable",
   "runSelfTests"
