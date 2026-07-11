@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-10  
-Current handoff build: `v0.26.07.10.0095_BASE_PLACEMENT_FERRY_LINK_PREVIEW_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html` with new-base placement now previewing dotted ferry links from the proposed site to existing bases when current player aircraft types can make a one-way ferry trip. The 0090 ferry/refuel staging seed remains intact, save format remains 4, and Build Health includes the new ferry-link placement row.**
+Current handoff build: `v0.26.07.10.0100_INTERCEPTOR_FERRY_STAGING_RECOGNITION_FIX_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html` with UFO Tracking and interceptor launch blockers now recognizing when a detected UFO is reachable through ferry/refuel staging, instead of reporting it as simply out of range. Save format remains 4, the 0090 ferry/refuel staging seed remains intact, and Build Health includes the new interceptor ferry-staged reach row.**
 
 ---
 
@@ -48,10 +48,15 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.10.0095_BASE_PLACEMENT_FERRY_LINK_PREVIEW_INDEX_ONLY_PATCH`
+`v0.26.07.10.0100_INTERCEPTOR_FERRY_STAGING_RECOGNITION_FIX_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- UFO Tracking now checks the ferry/refuel staging planner when no interceptor has a direct home-base round trip to a detected UFO.
+- Detected UFOs reachable through a staging base now report `staged route available`, naming the interceptor, staging base, one-way ferry leg, and final refueled intercept round trip.
+- Interceptor launch blockers now distinguish a recognized staged route from a true range/fuel failure, while leaving full staged launch execution as the next bounded patch.
+- Build Health now includes `Interceptor UFO tracking recognizes ferry-staged reach`.
+
 - New-base placement now draws dotted ferry-link lines from the proposed site to existing bases when at least one currently accessible aircraft type can fly the one-way base-to-base leg.
 - Ferry-link preview text names each connected base, approximate one-way distance, and the aircraft types that can make the trip.
 - The link preview uses current aircraft access and fuel-tank upgrade range profiles, while keeping the existing aircraft reach rings intact.
@@ -1150,7 +1155,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.10.0095_BASE_PLACEMENT_FERRY_LINK_PREVIEW_INDEX_ONLY_PATCH`, then continue into live staged launch execution once the planner and base-placement ferry previews read correctly in normal play.
+Playtest `v0.26.07.10.0100_INTERCEPTOR_FERRY_STAGING_RECOGNITION_FIX_INDEX_ONLY_PATCH`, then continue into live staged interceptor/Skyranger launch execution now that UFO Tracking can identify staged reach correctly.
 
 Focus verification on:
 - Build New Base placement showing dotted ferry links from the proposed new site to existing bases when current aircraft can fly the one-way leg.
@@ -2358,3 +2363,19 @@ Verification checklist:
 - Confirm Build Health passes the new `Skyranger launch matches assigned base and stationed soldiers` row.
 
 Roadmap follow-up remains `RICHER_UFO_EVASION_AND_AIR_COMBAT_EVENTS_INDEX_ONLY` after this bugfix verifies cleanly.
+
+## v0.26.07.10.0100 - Interceptor Ferry-Staged Reach Recognition Fix
+
+Build `v0.26.07.10.0100_INTERCEPTOR_FERRY_STAGING_RECOGNITION_FIX_INDEX_ONLY_PATCH` fixes a UFO Tracking/readiness gap in the ferry/refuel staging seed:
+
+- Interceptor readiness text now consults the ferry/refuel staging planner after direct home-base range checks fail.
+- UFOs reachable by ferrying to another base, refueling, then flying the final round trip are labeled as staged-route targets instead of being reported as simply out of range.
+- Launch blockers now explain that a staged route was found but direct launch execution cannot yet fly the staged sortie.
+- Build Health includes `Interceptor UFO tracking recognizes ferry-staged reach`.
+
+Verification checklist:
+- Confirm a UFO beyond direct interceptor round-trip range can show `staged route available` when a valid staging base has an open hangar.
+- Confirm direct interceptor launches still behave as before.
+- Confirm Build Health passes, including the new staged-reach row.
+
+Next recommended patch: `LIVE_AIRCRAFT_FERRY_STAGED_SORTIE_EXECUTION_INDEX_ONLY`, implementing actual multi-leg staged launch/return state now that recognition is correct.
