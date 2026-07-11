@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-10  
-Current handoff build: `v0.26.07.10.0090_AIRCRAFT_FERRY_REFUEL_AND_MULTI_BASE_SORTIE_STAGING_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html` with the first aircraft ferry/refuel staging seed: pure route-leg helpers, open-hangar checks, one-way ferry validation, refueled final-leg round-trip validation, and a compact Geoscape/UFO Tracking staging readout. Mission launch loadout hardening, transfer fee/cancel rules, Logistics Center, local stores, local rosters, and the opaque/borderless Geoscape globe work remain intact, save format remains 4, static seam checks passed, and Build Health includes the new ferry staging row.**
+Current handoff build: `v0.26.07.10.0095_BASE_PLACEMENT_FERRY_LINK_PREVIEW_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html` with new-base placement now previewing dotted ferry links from the proposed site to existing bases when current player aircraft types can make a one-way ferry trip. The 0090 ferry/refuel staging seed remains intact, save format remains 4, and Build Health includes the new ferry-link placement row.**
 
 ---
 
@@ -48,10 +48,14 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.10.0090_AIRCRAFT_FERRY_REFUEL_AND_MULTI_BASE_SORTIE_STAGING_INDEX_ONLY_PATCH`
+`v0.26.07.10.0095_BASE_PLACEMENT_FERRY_LINK_PREVIEW_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- New-base placement now draws dotted ferry-link lines from the proposed site to existing bases when at least one currently accessible aircraft type can fly the one-way base-to-base leg.
+- Ferry-link preview text names each connected base, approximate one-way distance, and the aircraft types that can make the trip.
+- The link preview uses current aircraft access and fuel-tank upgrade range profiles, while keeping the existing aircraft reach rings intact.
+- Build Health now includes `New-base placement previews dotted aircraft ferry links`.
 - Aircraft ferry/refuel staging planning helpers that evaluate owned bases as intermediate refuel stops.
 - Ferry legs are checked as one-way base-to-base flights so aircraft can use their full practical range to reach a staging base.
 - Final incident/intercept legs from the staging base still require enough refueled range/fuel for the round trip back to that last staging base.
@@ -1146,9 +1150,14 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.10.0090_AIRCRAFT_FERRY_REFUEL_AND_MULTI_BASE_SORTIE_STAGING_INDEX_ONLY_PATCH`, then continue into live staged launch execution once the planner reads correctly in normal play.
+Playtest `v0.26.07.10.0095_BASE_PLACEMENT_FERRY_LINK_PREVIEW_INDEX_ONLY_PATCH`, then continue into live staged launch execution once the planner and base-placement ferry previews read correctly in normal play.
 
 Focus verification on:
+- Build New Base placement showing dotted ferry links from the proposed new site to existing bases when current aircraft can fly the one-way leg.
+- Ferry-link text naming connected bases, one-way distance, and whether Interceptors, Skyrangers, or both can make the ferry trip.
+- Moving the proposed site updating both the aircraft reach rings and the ferry-link connections.
+- Existing base-placement confirmation behavior remaining visible and usable.
+- Build Health including `New-base placement previews dotted aircraft ferry links`.
 - UFO Tracking showing the Ferry / Refuel Staging readout without crowding the existing aircraft/radar controls.
 - Selected incidents producing a Skyranger staging preview when a ready Skyranger, open staging hangar, and valid final round trip exist.
 - Detected UFOs producing an interceptor staging preview when a ready interceptor, open staging hangar, and valid final round trip exist.
@@ -1771,6 +1780,27 @@ Verification checklist:
 - Confirm browser console errors are clear.
 
 Roadmap follow-up was `BASE_LOCAL_LOADOUT_AND_MISSION_CONFIRMATION_HARDENING_INDEX_ONLY`, completed in `v0.26.07.10.0080`.
+
+## 2026-07-10 Patch Notes - Base Placement Ferry Link Preview
+
+Build `v0.26.07.10.0095_BASE_PLACEMENT_FERRY_LINK_PREVIEW_INDEX_ONLY_PATCH` extends new-base placement with ferry-network visibility:
+
+- While Build New Base placement mode is active, the Geoscape draws dotted links from the proposed site to existing bases when at least one currently accessible aircraft type can fly the one-way ferry leg.
+- The New Base Site summary now includes ferry-link text naming the connected base, approximate one-way distance, and whether Interceptors, Skyrangers, or both can make the trip.
+- Ferry-link calculations use the player's current aircraft types and fuel-tank upgrade range profiles.
+- Existing base-placement aircraft reach rings remain unchanged.
+- Build Health now includes `New-base placement previews dotted aircraft ferry links`.
+- `src/manifest.json` and `tools/check-aegis-build.cjs` now track the new playable build label and seam.
+
+Verification checklist:
+- Run `node tools\check-aegis-build.cjs`.
+- Run inline script syntax checks.
+- Load `http://127.0.0.1:5173/index.html`, start/load a campaign, click Build New Base, and confirm dotted ferry-link lines/text appear when the proposed site is within one-way ferry range of existing bases.
+- Move the proposed site and confirm ferry links update with the site.
+- Run Build Health and confirm all checks pass, including `New-base placement previews dotted aircraft ferry links`.
+- Confirm browser console errors are clear.
+
+Roadmap follow-up remains `AIRCRAFT_FERRY_REFUEL_AND_MULTI_BASE_SORTIE_EXECUTION_INDEX_ONLY`, starting with one staged-leg execution path and hangar reservation/refuel timing.
 
 ## 2026-07-10 Patch Notes - Aircraft Ferry Refuel and Multi-Base Sortie Staging
 

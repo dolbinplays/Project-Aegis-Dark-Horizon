@@ -18,6 +18,7 @@ const required = [
   "Base-local loadout buttons only advertise selected-base stock",
   "Mission confirmation explains local loadout and launch base",
   "Aircraft ferry staging checks open hangars and refuel legs",
+  "New-base placement previews dotted aircraft ferry links",
   "First-base selection previews opening incidents and starting reach",
   "Solid Geoscape globe uses opaque detailed landmasses and remains draggable",
   "runSelfTests"
