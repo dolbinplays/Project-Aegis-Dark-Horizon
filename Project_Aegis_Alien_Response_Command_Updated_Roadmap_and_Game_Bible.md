@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-11  
-Current handoff build: `v0.26.07.11.0020_BASE_PLACEMENT_FERRY_LANES_AND_SKYRANGER_STAGING_FIX_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html` with Skyranger staged incident response hardened so transports can use ferry/refuel staging reach similarly to interceptors, plus new-base placement ferry previews now split Interceptor and Skyranger links into adjacent colored dotted lanes. Mission confirmation names staged Skyranger ferry/refuel routes, loadout checks use the boarding/origin base, save format remains 4, and Build Health includes the staged Skyranger and separated ferry-lane rows.**
+Current handoff build: `v0.26.07.11.0025_STAGED_ROUTE_LABELS_AND_DAY_NIGHT_GLOBE_READABILITY_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html` with staged aircraft route labels surfaced on the Geoscape globe and the day/night lighting made easier to read. Skyranger staged incident response, separated new-base ferry lanes, save format 4, and the recent globe drag/opaque-landmass fixes are preserved. Build Health includes the staged-route label and day/night readability row.**
 
 ---
 
@@ -48,10 +48,14 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.11.0020_BASE_PLACEMENT_FERRY_LANES_AND_SKYRANGER_STAGING_FIX_INDEX_ONLY_PATCH`
+`v0.26.07.11.0025_STAGED_ROUTE_LABELS_AND_DAY_NIGHT_GLOBE_READABILITY_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- Staged Skyranger and interceptor markers now show compact current phase labels on the Geoscape globe, such as ferry, refuel, attack, and return phases.
+- The Geoscape globe now includes a small Solar readout in the globe header so the player can tell whether the visible terminator is daylight, night side, dawn, or dusk.
+- Day/night lighting is more readable through stronger terminator placement, a brighter sun glow, more visible twilight line, and synchronized Three.js ambient/back-light intensity.
+- Build Health now includes `Staged aircraft route labels and day-night globe lighting are readable`.
 - New-base placement ferry previews now render Interceptor and Skyranger ferry eligibility as separated side-by-side dotted lanes with distinct colors when both craft types can connect the proposed base to an existing base.
 - Build Health now includes `New-base placement previews separated Interceptor and Skyranger ferry lanes`.
 - Skyranger mission confirmation now surfaces staged ferry/refuel incident routes instead of only showing the final staging-base round trip.
@@ -1170,7 +1174,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.11.0020_BASE_PLACEMENT_FERRY_LANES_AND_SKYRANGER_STAGING_FIX_INDEX_ONLY_PATCH`, then continue into staged-sortie route UI and return-home polish now that Skyranger incident response and interceptor interception both use ferry/refuel staging reach.
+Playtest `v0.26.07.11.0025_STAGED_ROUTE_LABELS_AND_DAY_NIGHT_GLOBE_READABILITY_INDEX_ONLY_PATCH`, then continue into staged-sortie return-home polish now that route phases are easier to read on the Geoscape globe.
 
 Focus verification on:
 - Build New Base placement showing dotted ferry links from the proposed new site to existing bases when current aircraft can fly the one-way leg.
@@ -2471,3 +2475,23 @@ Verification checklist:
 - Confirm Build Health passes, including `New-base placement previews separated Interceptor and Skyranger ferry lanes` and `Skyranger ferry staging extends incident response range`.
 
 Next recommended patch: `STAGED_SORTIE_ROUTE_UI_AND_RETURN_HOME_FIX_INDEX_ONLY`, fixing friendly staging-base landing/refuel presentation and visible return-home ferry-route replay after staged interceptor attacks.
+
+## v0.26.07.11.0025 - Staged Route Labels and Day/Night Globe Readability
+
+Build `v0.26.07.11.0025_STAGED_ROUTE_LABELS_AND_DAY_NIGHT_GLOBE_READABILITY_INDEX_ONLY_PATCH` continues the staged-sortie UI roadmap and improves Geoscape globe readability:
+
+- Staged aircraft markers now display a compact current route phase label directly on the Geoscape globe, covering ferry, refuel, attack, mission, and return phases.
+- The Geoscape globe header now includes a Solar readout that names Daylight, Night Side, Dawn Line, or Dusk Line and summarizes the current day/night mix.
+- The SVG terminator overlay uses stronger shade placement, a clearer twilight ring, and a brighter sun glow so the day/night cycle is easier to parse at a glance.
+- Three.js globe lighting now syncs sunlight, ambient light, and back-light intensity to the same day/night helper.
+- Staged route phase labels use readable title-cased ferry text so the Geoscape label and Build Health route-label checks agree.
+- Existing opaque detailed landmasses, globe dragging, base-placement ferry lanes, Skyranger staged incident response, and interceptor staged route behavior are preserved.
+- Build Health includes `Staged aircraft route labels and day-night globe lighting are readable`.
+
+Verification checklist:
+- Open the Geoscape and confirm the globe header shows a Solar day/night readout.
+- Advance time through morning/evening and confirm the terminator and sun glow visibly shift.
+- Launch or simulate a staged route and confirm the current ferry/refuel/attack/return phase label appears near the aircraft marker.
+- Confirm Build Health passes, including `Staged aircraft route labels and day-night globe lighting are readable`.
+
+Next recommended patch: `STAGED_SORTIE_RETURN_HOME_AND_FRIENDLY_BASE_LANDING_FIX_INDEX_ONLY`, focusing on the staged interceptor landing/refuel presentation at friendly bases and replaying the return-home ferry route after attacks.
