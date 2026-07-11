@@ -1,7 +1,7 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.07.11.0005_STAGED_AIRCRAFT_ROUTE_DISPLAY_AND_SKYRANGER_FERRY_FIX_INDEX_ONLY_PATCH",
+  "currentBuild": "v0.26.07.11.0020_BASE_PLACEMENT_FERRY_LANES_AND_SKYRANGER_STAGING_FIX_INDEX_ONLY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",

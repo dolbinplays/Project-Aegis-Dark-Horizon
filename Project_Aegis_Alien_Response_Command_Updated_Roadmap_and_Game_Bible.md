@@ -1,9 +1,9 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-07-10  
-Current handoff build: `v0.26.07.11.0005_STAGED_AIRCRAFT_ROUTE_DISPLAY_AND_SKYRANGER_FERRY_FIX_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html` with staged aircraft travel now preserving visible origin-to-staging ferry legs before the final attack/mission leg. The ChatGPT-applied staged-interceptor execution and ferry-decision modal were synced into the bible, Skyranger staged launch display now uses phase-aware routing, save format remains 4, and Build Health includes the new staged-route display row.**
+Last updated: 2026-07-11  
+Current handoff build: `v0.26.07.11.0020_BASE_PLACEMENT_FERRY_LANES_AND_SKYRANGER_STAGING_FIX_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html` with Skyranger staged incident response hardened so transports can use ferry/refuel staging reach similarly to interceptors, plus new-base placement ferry previews now split Interceptor and Skyranger links into adjacent colored dotted lanes. Mission confirmation names staged Skyranger ferry/refuel routes, loadout checks use the boarding/origin base, save format remains 4, and Build Health includes the staged Skyranger and separated ferry-lane rows.**
 
 ---
 
@@ -48,10 +48,15 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.11.0005_STAGED_AIRCRAFT_ROUTE_DISPLAY_AND_SKYRANGER_FERRY_FIX_INDEX_ONLY_PATCH`
+`v0.26.07.11.0020_BASE_PLACEMENT_FERRY_LANES_AND_SKYRANGER_STAGING_FIX_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- New-base placement ferry previews now render Interceptor and Skyranger ferry eligibility as separated side-by-side dotted lanes with distinct colors when both craft types can connect the proposed base to an existing base.
+- Build Health now includes `New-base placement previews separated Interceptor and Skyranger ferry lanes`.
+- Skyranger mission confirmation now surfaces staged ferry/refuel incident routes instead of only showing the final staging-base round trip.
+- Staged Skyranger loadout checks use the home/origin base where the squad boards, not the forward staging base where the transport refuels.
+- Build Health now includes `Skyranger ferry staging extends incident response range`, covering a mission that is out of direct Skyranger round-trip range but reachable through an open-hangar staging base.
 - Phase-aware travel display for staged aircraft routes so craft visibly depart their home base, fly ferry/refuel legs, then depart the staging base for the UFO or incident.
 - Skyranger mission launch can now select a same-base squad/Skyranger pairing that stages through an owned base with an open hangar when direct mission range is not enough.
 - Staged Skyranger travel stores the final mission return base so the return leg goes back to the forward staging base instead of pretending the transport started there.
@@ -608,6 +613,8 @@ Default starting base layout should include **two 2x2 hangars**: one populated w
 
 Roadmap update: the default starting base should also include **one Shortwave Radar** so new campaigns begin with minimal local detection coverage. Longwave Radar should remain the broader/deeper detection expansion facility.
 
+Future ambient base-life note: when a base has an empty, operationally free hangar reserved for ferry-route flexibility, stationed soldiers can sometimes use that open space for improvised recreation such as soccer, touch football, sparring drills, or other off-duty games. This should be flavor/morale texture first, not a blocker: aircraft storage, ferry staging, refuel stops, hangar reservation, and emergency operations always take priority and immediately clear the space.
+
 ---
 
 # 8. Tactical / Mission Game Bible
@@ -698,6 +705,7 @@ Current aircraft ideas:
 - Simple aircraft fuel/range readiness with clock-driven refueling.
 - Future ferry/staging routes where aircraft can land at another owned base with an open compatible hangar, refuel there, and launch a follow-up leg to extend practical response range.
 - Multi-base sortie staging so Skyrangers and their squads can fly to a forward base, refuel, and join a closer-base Skyranger response when hangar capacity and timing allow.
+- Ambient base-life use for empty, operationally free hangars: soldiers stationed at that base may use unused hangar floor space for morale/recreation scenes such as improvised sports, as long as this never interferes with aircraft storage, ferry staging, refuel reservations, or emergency launch readiness.
 - Interception stances that trade hit chance against ammo burn, fuel use, damage risk, and repair time.
 - Lightweight UFO evasion / air-combat event outcomes: confirmed shootdown, damaged escape, evasive maneuvers, contact lost, forced disengage, ammunition pressure, and cautious breakaway.
 - Compact air-combat after-action reports in UFO Tracking for launch, impact, delayed crash, and recovery phases.
@@ -708,6 +716,7 @@ Still planned:
 - Fuller multi-step air-combat history and filtering if the report list grows beyond the current compact latest-report model.
 - Fuel tank upgrade path for Interceptors and Skyrangers, likely through Workshop purchase/install or research unlocks, increasing fuel capacity/range while preserving automatic refueling.
 - Aircraft ferry/refuel staging through owned bases, including hangar reservation, refuel/turnaround timing, staged mission launches, staged interceptions, and clear return-home/stay-staged options.
+- Hangar downtime scenes that make empty hangars feel lived-in: soldiers can use unused hangars for improvised sports or recreation when no aircraft, ferry reservation, refuel stop, transfer, repair, or emergency sortie needs the space. These scenes can feed small morale, friendship, rivalry, or squad-cohesion flavor later.
 - Deeper aircraft damage outcomes and repair cost/bay constraints.
 
 ---
@@ -1161,7 +1170,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.11.0005_STAGED_AIRCRAFT_ROUTE_DISPLAY_AND_SKYRANGER_FERRY_FIX_INDEX_ONLY_PATCH`, then continue into staged-sortie route UI and multi-craft backup polish now that staged interceptor and Skyranger route execution is represented in travel state.
+Playtest `v0.26.07.11.0020_BASE_PLACEMENT_FERRY_LANES_AND_SKYRANGER_STAGING_FIX_INDEX_ONLY_PATCH`, then continue into staged-sortie route UI and return-home polish now that Skyranger incident response and interceptor interception both use ferry/refuel staging reach.
 
 Focus verification on:
 - Build New Base placement showing dotted ferry links from the proposed new site to existing bases when current aircraft can fly the one-way leg.
@@ -1288,16 +1297,16 @@ Focus verification on:
 ## Best Next Feature Patch
 If this batch tests well, continue with the next priority roadmap patch:
 
-`AIRCRAFT_FERRY_REFUEL_AND_MULTI_BASE_SORTIE_EXECUTION_INDEX_ONLY`
+`STAGED_SORTIE_ROUTE_UI_AND_RETURN_HOME_FIX_INDEX_ONLY`
 
 Suggested focus:
-- Convert the 0090 planning helpers into a small live execution path for one staged leg.
-- Start with Skyranger staged incident response or interceptor staged intercepts, not both if risk is high.
-- Reserve the open staging hangar while the aircraft is inbound/turning around.
-- Refuel at the staging base on Geoscape clock time before enabling the final launch leg.
-- Keep Skyrangers and their assigned squads together during ferry staging.
-- Preserve direct Skyranger/interceptor launches, assigned-base range checks, local rosters/stores, transfer logistics, and save compatibility.
-- Add Build Health coverage for staging-hangar reservation, base-to-base ferry travel, refuel/turnaround timing, final-leg launch, return-to-staging-base behavior, and no-regression direct launches.
+- Fix staged interceptor visual semantics so arrival at a friendly staging base is shown as a landing/refuel/turnaround, not as an attack impact or base explosion.
+- Separate friendly ferry/refuel phase effects from hostile UFO attack/interception effects in Geoscape rendering, event text, sound cues, and action logs.
+- Preserve the current staged-interceptor reach/launch behavior, but make each route phase readable: home-base takeoff, ferry leg, staging-base landing, refuel timer, final attack launch, UFO attack, return-to-staging-base, and post-attack decision.
+- When the player chooses to return home after a staged interception, show the interceptor retracing the planned ferry route through valid refuel stops instead of disappearing or snapping home.
+- If the UFO survives and the interceptor returns to the staging base, keep the prompt to attack again or ferry back home, but make the aircraft's current base/status/readiness match the visible route phase.
+- Keep direct interceptor launches, direct Skyranger launches, staged Skyranger travel, fuel tank upgrades, assigned-base range checks, local rosters/stores, transfer logistics, and save compatibility intact.
+- Add Build Health coverage for friendly staging-base arrival using non-combat effects, no base-destruction/attack text on refuel stops, post-intercept return-to-staging-base, return-home route replay through ferry legs, and no-regression direct aircraft travel/repair/refuel.
 
 ## Near-Term First Base Placement Planning Candidate
 Implemented in `v0.26.07.10.0020_FIRST_BASE_SELECTION_RANGE_PREVIEW_INDEX_ONLY_PATCH`; keep this section as the reference contract for future first-base story/onboarding polish:
@@ -1323,6 +1332,8 @@ Suggested focus:
 - Do not require a craft to have enough fuel for a full home-base round trip when it is transiting between owned bases; this effectively lets staged aircraft extend their operational reach by chaining valid base-to-base legs.
 - Once an aircraft leaves the last friendly staging base for a mission site or UFO interception, require enough practical fuel/range to complete the outbound leg and return to that last staging base.
 - After the sortie, aircraft should either remain at the last staging base until ordered home or retrace the planned staging route home through valid refuel stops, with each return leg advancing on Geoscape clock time.
+- Friendly staging-base arrival must never reuse hostile attack/explosion presentation. It should show landing, hangar reservation/occupancy, refuel/turnaround progress, and clear action text so players understand the base is helping the aircraft rather than being attacked.
+- Return-home after a staged interception should visibly replay the reverse ferry path from the staging base to the original home base, including travel time and refuel stops where needed, instead of teleporting or silently resetting the aircraft.
 - Track hangar occupancy/reservations so a forward base cannot accept more staged aircraft than it can physically house.
 - Keep ferry, refuel, turnaround, mission launch, interception, return, and optional return-home legs tied to Geoscape clock time.
 - Let a Skyranger from a farther base carry its own stationed squad to a forward base, refuel, and then launch alongside a local Skyranger for the same incident when both routes and hangars are valid.
@@ -1332,6 +1343,24 @@ Suggested focus:
 - Preserve existing direct-launch behavior, fuel tank upgrades, assigned-base range checks, base-local rosters/stores, Skyranger stationing, interceptor selection, transfer logistics, and old-save compatibility.
 - Add Build Health coverage for ferry-to-base creation, one-way base-to-base range validation, final sortie round-trip validation from the last staging base, hangar availability/reservation blockers, refuel timing at staging base, staged Skyranger incident launch, staged interceptor launch, in-range-after-staging validation, route-home/refuel-stop handling, return-home/stay-staged handling, old-save normalization, and no-regression direct aircraft travel/repair/refuel.
 
+## Near-Term Staged Sortie Route UI / Return-Home Fix
+Future bugfix and polish patch:
+
+`STAGED_SORTIE_ROUTE_UI_AND_RETURN_HOME_FIX_INDEX_ONLY`
+
+Observed issue:
+- During a staged interceptor sortie, the craft can appear to attack or blow up the friendly destination/staging base when it reaches that base for refueling, then continue on to the UFO after refuel completes.
+- After the interception, the interceptor may not visibly return along the ferry route back to its original home base.
+
+Suggested focus:
+- Give route phases explicit presentation modes such as `friendly-ferry`, `friendly-landing`, `refuel`, `hostile-intercept`, `return-to-staging`, and `return-home-ferry`.
+- Ensure friendly base arrival cannot trigger attack, explosion, combat, UFO impact, or base-damage visual/audio/text effects.
+- Show a clear landing/refuel state at the staging base before the final attack leg begins.
+- If the UFO survives, return the interceptor to the last staging base and ask whether to attack again or ferry home.
+- If the player chooses ferry home, visibly fly the reverse route through each ferry/refuel leg back to the original base, preserving clock-based travel time and aircraft status.
+- Keep aircraft `baseId`, `hangarKey`, status, fuel, repair, and current-route state aligned with what the player sees on the Geoscape.
+- Add Build Health coverage for no friendly-base attack visuals, staging-base refuel presentation, post-attack return-to-staging, player choice to attack again, player choice to ferry home, reverse-route travel display, and no-regression direct interceptor/Skyranger sorties.
+
 ## Near-Term Base-Local Equipment Logistics Polish
 Implemented in `v0.26.07.10.0005_BASE_LOCAL_EQUIPMENT_LOGISTICS_POLISH_AND_WORKSHOP_ORIGIN_INDEX_ONLY_PATCH`; keep this section as the reference contract for future logistics polish:
 
@@ -1340,6 +1369,7 @@ Implemented in `v0.26.07.10.0005_BASE_LOCAL_EQUIPMENT_LOGISTICS_POLISH_AND_WORKS
 Suggested focus:
 - Give workshop orders an explicit production/base destination instead of implicitly using the selected base at day-end.
 - Surface equipment transfers in a compact Logistics/Transfers summary so players can review inbound and outbound payloads without opening each item card.
+- Add a confirmation screen before starting any equipment transfer. The confirmation should name the origin base, destination base, item, quantity, logistics fee, travel time/ETA, and the fact that the gear will be unavailable while in transit.
 - Tighten mission loadout messaging so local base stock, issued gear, and in-transit gear are easy to distinguish before launch.
 - Consider transfer costs and transfer cancellation rules after the core flow is playtested.
 - Preserve global access for Mainframe/research database/alien intel/reports/memorial records.
@@ -1457,10 +1487,11 @@ Suggested focus:
 - Base Stores / equipment views should separate local stock from globally shared knowledge. Mainframe, research database, alien intel, reports, and memorial records remain globally accessible.
 - Add base-to-base transfers for soldiers and portable equipment such as weapons, armor, medkits, recovered materials, and aircraft ammunition where appropriate.
 - Transfers should have origin base, destination base, item/person payload, travel time, optional cost, and clear in-transit status.
+- Starting a soldier or equipment transfer should require a confirmation modal before the payload leaves the base. The modal should clearly summarize who/what is moving, origin, destination, ETA, fee, refund/cancellation rules, and operational consequences such as soldiers being unavailable for squads or gear being unavailable for loadouts.
 - Soldiers in transit should be unavailable for squads/missions until they arrive.
 - Equipment in transit should be unavailable at both origin and destination until arrival.
 - Preserve save compatibility by normalizing older soldiers/equipment into the selected/first base if no base-local state exists.
-- Add Build Health coverage for selected-base roster filtering, wrong-base squad assignment blocking, transfer creation, in-transit unavailability, arrival at destination, equipment stock movement, old-save normalization, and no-regression Skyranger stationing behavior.
+- Add Build Health coverage for selected-base roster filtering, wrong-base squad assignment blocking, transfer confirmation, transfer creation, in-transit unavailability, arrival at destination, equipment stock movement, old-save normalization, and no-regression Skyranger stationing behavior.
 
 ## Near-Term Geoscape Time Candidate
 Implemented in `v0.26.07.06.0175_SMOOTH_XCOM_STYLE_GEOSCAPE_TIME_INDEX_ONLY_PATCH`; keep this section as the reference contract for future time-control polish:
@@ -2403,3 +2434,40 @@ Verification checklist:
 - Confirm Build Health passes, including `Staged aircraft routes display origin ferry legs`.
 
 Next recommended patch: `STAGED_SORTIE_ROUTE_UI_AND_MULTI_CRAFT_BACKUP_POLISH_INDEX_ONLY`, making multi-craft staged backup choices clearer in the launch confirmation UI and adding stronger route-line visualization for every ferry leg.
+
+## v0.26.07.11.0015 - Skyranger Ferry-Staged Incident Response Fix
+
+Build `v0.26.07.11.0015_SKYRANGER_FERRY_STAGED_INCIDENT_RESPONSE_FIX_INDEX_ONLY_PATCH` hardens Skyranger use of the ferry/refuel staging system so incident response behaves more like the updated interceptor staging flow:
+
+- Skyranger mission confirmation now displays the full staged ferry/refuel plan when direct home-base round-trip range is not enough.
+- Staged Skyranger confirmation text names the boarding/origin base, staging base, ferry distance, refuel stop, final incident round trip, and route fuel budget.
+- Local loadout checks in the mission confirmation now use the boarding/origin base where the soldiers and Skyranger actually start, not the forward staging base.
+- Build Health includes `Skyranger ferry staging extends incident response range`, covering a mission outside direct Skyranger range but reachable through an owned base with an open compatible hangar.
+- The existing phase-aware staged Skyranger travel display and direct Skyranger launch behavior are preserved.
+
+Verification checklist:
+- Confirm a Skyranger/squad whose incident is outside direct round-trip range can use a valid open-hangar staging base when the ferry leg and final staging-base round trip are both valid.
+- Confirm the launch confirmation explains the ferry/refuel route instead of only showing the final staging-base leg.
+- Confirm the loadout warning/stock text references the soldiers' boarding base.
+- Confirm closing the staging-base hangar blocks the staged route.
+- Confirm Build Health passes, including `Skyranger ferry staging extends incident response range`.
+
+Next recommended patch: `STAGED_SORTIE_ROUTE_UI_AND_RETURN_HOME_FIX_INDEX_ONLY`, fixing friendly staging-base landing/refuel presentation and visible return-home ferry-route replay after staged interceptor attacks.
+
+## v0.26.07.11.0020 - Base Placement Ferry Lanes and Skyranger Staging Fix
+
+Build `v0.26.07.11.0020_BASE_PLACEMENT_FERRY_LANES_AND_SKYRANGER_STAGING_FIX_INDEX_ONLY_PATCH` adds the requested new-base siting readability pass on top of the Skyranger ferry-staged incident response work:
+
+- New-base placement ferry previews now split Interceptor and Skyranger connection lines into separated side-by-side dotted lanes instead of collapsing both aircraft types into one line.
+- Interceptor ferry lanes use the existing yellow aircraft-range language; Skyranger ferry lanes use the existing blue transport-range language.
+- A proposed site that can connect to an existing base by both aircraft types now shows both lanes at once, making it easier to tell whether the new base can join the ferry network for combat craft, transports, or both.
+- Existing range rings, base-placement confirmation, ferry reach math, and Skyranger staged incident response behavior are preserved.
+- Build Health includes `New-base placement previews separated Interceptor and Skyranger ferry lanes`.
+
+Verification checklist:
+- Click Build New Base and confirm existing-base ferry links render as adjacent colored dotted lanes when both Interceptors and Skyrangers can make the one-way ferry leg.
+- Confirm one-type ferry links still render as a single dotted lane in that craft type's color.
+- Confirm the text summary still names connected bases, one-way distance, and eligible aircraft types.
+- Confirm Build Health passes, including `New-base placement previews separated Interceptor and Skyranger ferry lanes` and `Skyranger ferry staging extends incident response range`.
+
+Next recommended patch: `STAGED_SORTIE_ROUTE_UI_AND_RETURN_HOME_FIX_INDEX_ONLY`, fixing friendly staging-base landing/refuel presentation and visible return-home ferry-route replay after staged interceptor attacks.
