@@ -1,16 +1,15 @@
 Alien Response Command / Project Aegis
-v0.26.07.04.0031_THREE_GEOSCAPE_CAMERA_TICK_SNAP_FIX_INDEX_ONLY_PATCH
+Patch: v0.26.07.10.0101_INTERCEPTOR_FERRY_STAGED_REACH_REFERENCE_FIX_INDEX_ONLY_PATCH
 
-Patch type: INDEX_ONLY
-
-Summary:
-- Restores Geoscape camera ownership separation for the Three.js globe.
-- Prevents passive render/tick/base/incident/cloud/UFO/solar refreshes from recentering the player camera.
-- Keeps selected base/incident UI selection separate from globe viewCenter.
-- Makes incident marker clicks explicitly focus the globe, while selectedIncidentId refreshes only sync the focused-region label.
-- Keeps reset token and cinematic travel as intentional camera owners.
-- Adds stronger Build Health coverage for passive render/incident-refresh and explicit incident-click focus behavior.
+Purpose:
+- Fix startup-blocking runtime error: interceptorFerryStagedReachRecognitionTest is not defined.
+- Add the missing Build Health regression test constant instead of removing the Build Health rows.
+- Preserve the interceptor ferry-staged reach recognition feature and related Build Health coverage.
 
 Validation performed:
-- Extracted main game script from index.html and ran node --check successfully.
-- Ran targeted static assertions confirming the duplicate geoscapeShouldAutoFocusCamera declarations were both patched and old selected-incident camera effect was removed.
+- Extracted all inline scripts from index.html.
+- Ran node --check against every non-empty inline script.
+- Ran a static scan for missing *Test identifiers in the main game script; none remained except Three.js material option property depthTest, which is not a Build Health test identifier.
+
+Browser note:
+- Please open index.html locally and confirm the start screen renders, then run the in-browser Build Health panel.
