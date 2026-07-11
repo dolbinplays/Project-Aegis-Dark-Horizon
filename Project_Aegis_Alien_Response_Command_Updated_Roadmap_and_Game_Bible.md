@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-11  
-Current handoff build: `v0.26.07.11.0025_STAGED_ROUTE_LABELS_AND_DAY_NIGHT_GLOBE_READABILITY_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html` with staged aircraft route labels surfaced on the Geoscape globe and the day/night lighting made easier to read. Skyranger staged incident response, separated new-base ferry lanes, save format 4, and the recent globe drag/opaque-landmass fixes are preserved. Build Health includes the staged-route label and day/night readability row.**
+Current handoff build: `v0.26.07.11.0030_SUN_GLOW_OVERLAY_SOFTENING_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html` as a small visual follow-up to soften the Geoscape sun-glow cue so it reads as lighting direction instead of a yellow ball on the globe. Staged route labels, day/night readout, Skyranger staged incident response, separated new-base ferry lanes, save format 4, and the recent globe drag/opaque-landmass fixes are preserved.**
 
 ---
 
@@ -2495,3 +2495,19 @@ Verification checklist:
 - Confirm Build Health passes, including `Staged aircraft route labels and day-night globe lighting are readable`.
 
 Next recommended patch: `STAGED_SORTIE_RETURN_HOME_AND_FRIENDLY_BASE_LANDING_FIX_INDEX_ONLY`, focusing on the staged interceptor landing/refuel presentation at friendly bases and replaying the return-home ferry route after attacks.
+
+## v0.26.07.11.0030 - Sun Glow Overlay Softening
+
+Build `v0.26.07.11.0030_SUN_GLOW_OVERLAY_SOFTENING_INDEX_ONLY_PATCH` is a small visual correction after the day/night readability pass:
+
+- The Geoscape sun-glow cue was softened so it no longer reads as a literal yellow ball overlaid on the Earth.
+- Both `geoscapeTerminatorOverlay` helper definitions now return the same explicit `sunGlowOpacity` and twilight data, preventing the SVG glow circle from falling back to full opacity.
+- The glow is broader and opacity-capped, preserving the readable day/night lighting direction while keeping attention on the globe surface.
+- Existing Solar readout, terminator shade, twilight ring, staged route labels, globe dragging, opaque landmasses, and aircraft ferry/staging behavior are preserved.
+
+Verification checklist:
+- Confirm the Geoscape globe still shows a readable day/night terminator and Solar readout.
+- Confirm the former yellow sun-ball cue is no longer visually dominant on the globe.
+- Confirm Build Health passes after the visual-only correction.
+
+Next recommended patch remains `STAGED_SORTIE_RETURN_HOME_AND_FRIENDLY_BASE_LANDING_FIX_INDEX_ONLY`.
