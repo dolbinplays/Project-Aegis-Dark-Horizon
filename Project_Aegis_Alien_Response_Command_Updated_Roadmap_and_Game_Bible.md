@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-10  
-Current handoff build: `v0.26.07.10.0100_INTERCEPTOR_FERRY_STAGING_RECOGNITION_FIX_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html` with UFO Tracking and interceptor launch blockers now recognizing when a detected UFO is reachable through ferry/refuel staging, instead of reporting it as simply out of range. Save format remains 4, the 0090 ferry/refuel staging seed remains intact, and Build Health includes the new interceptor ferry-staged reach row.**
+Current handoff build: `v0.26.07.11.0005_STAGED_AIRCRAFT_ROUTE_DISPLAY_AND_SKYRANGER_FERRY_FIX_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html` with staged aircraft travel now preserving visible origin-to-staging ferry legs before the final attack/mission leg. The ChatGPT-applied staged-interceptor execution and ferry-decision modal were synced into the bible, Skyranger staged launch display now uses phase-aware routing, save format remains 4, and Build Health includes the new staged-route display row.**
 
 ---
 
@@ -48,10 +48,16 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.10.0100_INTERCEPTOR_FERRY_STAGING_RECOGNITION_FIX_INDEX_ONLY_PATCH`
+`v0.26.07.11.0005_STAGED_AIRCRAFT_ROUTE_DISPLAY_AND_SKYRANGER_FERRY_FIX_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- Phase-aware travel display for staged aircraft routes so craft visibly depart their home base, fly ferry/refuel legs, then depart the staging base for the UFO or incident.
+- Skyranger mission launch can now select a same-base squad/Skyranger pairing that stages through an owned base with an open hangar when direct mission range is not enough.
+- Staged Skyranger travel stores the final mission return base so the return leg goes back to the forward staging base instead of pretending the transport started there.
+- The ChatGPT-applied staged-interceptor execution pass is now recorded: interceptor staged routes can execute ferry/refuel/attack/return phases and prompt after a surviving UFO whether to attack again or ferry back home.
+- Build Health now includes `Staged aircraft routes display origin ferry legs`.
+
 - UFO Tracking now checks the ferry/refuel staging planner when no interceptor has a direct home-base round trip to a detected UFO.
 - Detected UFOs reachable through a staging base now report `staged route available`, naming the interceptor, staging base, one-way ferry leg, and final refueled intercept round trip.
 - Interceptor launch blockers now distinguish a recognized staged route from a true range/fuel failure, while leaving full staged launch execution as the next bounded patch.
@@ -1155,7 +1161,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.10.0100_INTERCEPTOR_FERRY_STAGING_RECOGNITION_FIX_INDEX_ONLY_PATCH`, then continue into live staged interceptor/Skyranger launch execution now that UFO Tracking can identify staged reach correctly.
+Playtest `v0.26.07.11.0005_STAGED_AIRCRAFT_ROUTE_DISPLAY_AND_SKYRANGER_FERRY_FIX_INDEX_ONLY_PATCH`, then continue into staged-sortie route UI and multi-craft backup polish now that staged interceptor and Skyranger route execution is represented in travel state.
 
 Focus verification on:
 - Build New Base placement showing dotted ferry links from the proposed new site to existing bases when current aircraft can fly the one-way leg.
@@ -2379,3 +2385,21 @@ Verification checklist:
 - Confirm Build Health passes, including the new staged-reach row.
 
 Next recommended patch: `LIVE_AIRCRAFT_FERRY_STAGED_SORTIE_EXECUTION_INDEX_ONLY`, implementing actual multi-leg staged launch/return state now that recognition is correct.
+
+## v0.26.07.11.0005 - Staged Aircraft Route Display and Skyranger Ferry Fix
+
+Build `v0.26.07.11.0005_STAGED_AIRCRAFT_ROUTE_DISPLAY_AND_SKYRANGER_FERRY_FIX_INDEX_ONLY_PATCH` syncs the recent staged-interceptor work and fixes the visible ferry-route issue:
+
+- Records the ChatGPT-applied staged-interceptor execution work in the bible: staged interceptor launches can carry route phases, recover to the staging base, and ask whether to attack again or ferry home if the UFO survives.
+- Adds phase-aware Skyranger travel display so transports do not appear to launch from the closest/staging base when they actually originate elsewhere.
+- Allows Skyranger mission launch to use the existing ferry/refuel planner when a same-base squad and transport can reach a forward base with an open hangar, refuel, then continue to the incident.
+- Staged Skyranger mission state preserves the original base, forward launch base, return hangar, route description, ferry/refuel timing, and final return base.
+- Build Health includes `Staged aircraft routes display origin ferry legs`.
+
+Verification checklist:
+- Confirm an interceptor staged sortie visibly starts at its origin base and follows ferry/refuel/attack phases.
+- Confirm a staged Skyranger visibly departs its home base before the final incident leg.
+- Confirm direct interceptor and direct Skyranger launches still behave normally.
+- Confirm Build Health passes, including `Staged aircraft routes display origin ferry legs`.
+
+Next recommended patch: `STAGED_SORTIE_ROUTE_UI_AND_MULTI_CRAFT_BACKUP_POLISH_INDEX_ONLY`, making multi-craft staged backup choices clearer in the launch confirmation UI and adding stronger route-line visualization for every ferry leg.

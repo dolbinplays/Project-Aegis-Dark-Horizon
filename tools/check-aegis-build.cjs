@@ -20,6 +20,7 @@ const required = [
   "Aircraft ferry staging checks open hangars and refuel legs",
   "New-base placement previews dotted aircraft ferry links",
   "Interceptor UFO tracking recognizes ferry-staged reach",
+  "Staged aircraft routes display origin ferry legs",
   "First-base selection previews opening incidents and starting reach",
   "Solid Geoscape globe uses opaque detailed landmasses and remains draggable",
   "runSelfTests"
