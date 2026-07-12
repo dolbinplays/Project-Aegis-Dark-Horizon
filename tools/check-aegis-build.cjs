@@ -20,6 +20,7 @@ const required = [
   "Aircraft ferry staging checks open hangars and refuel legs",
   "New-base placement previews separated Interceptor and Skyranger ferry lanes",
   "Interceptor UFO tracking recognizes ferry-staged reach",
+  "Loaded saves preserve interceptor eligibility and active travel",
   "Aircraft ferry range and home return preserve direct staged and repeat-attack routes",
   "Staged aircraft routes display origin ferry legs",
   "Staged interceptor route timeline and return decision are restored",

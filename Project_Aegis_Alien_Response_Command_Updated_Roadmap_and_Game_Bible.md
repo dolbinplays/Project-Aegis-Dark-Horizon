@@ -1,9 +1,9 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-07-11  
-Current handoff build: `v0.26.07.12.1310_AIRCRAFT_FERRY_RANGE_AND_HOME_RETURN_HARDENING_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html` as a ferry staging and fast-forward regression fix on top of the external tactical 3D victory dance / equipment color build. Real open hangars are again required for staged ferry destinations, multi-interceptor staged selection reserves distinct hangars, and fast-forward recovered soldiers can use completed Workshop gear. Browser verification is pending until this pass completes.**
+Last updated: 2026-07-12  
+Current handoff build: `v0.26.07.12.1500_LOADED_SAVE_INTERCEPTOR_ELIGIBILITY_FIX_INDEX_ONLY_PATCH`  
+Current patch status: **Loaded-save interceptor eligibility is hardened on top of the Geoscape Ferry Network overlay. Legacy tracked UFOs retain radar-lock eligibility, explicit contact-lost states remain respected, and active interceptor/Skyranger travel plus staged return decisions now survive saves. Static and browser verification are recorded in the latest patch notes below.**
 
 ---
 
@@ -1175,7 +1175,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Playtest `v0.26.07.11.0025_STAGED_ROUTE_LABELS_AND_DAY_NIGHT_GLOBE_READABILITY_INDEX_ONLY_PATCH`, then continue into staged-sortie return-home polish now that route phases are easier to read on the Geoscape globe.
+Manually load the affected campaign in `v0.26.07.12.1500_LOADED_SAVE_INTERCEPTOR_ELIGIBILITY_FIX_INDEX_ONLY_PATCH` and verify both North America UFO cards permit a one-aircraft launch when the two local interceptors show Ready. If a card remains blocked, record its new radar/status/range/fuel explanation and the aircraft readiness rows; the UI now exposes the decision boundary needed for a targeted follow-up.
 
 Focus verification on:
 - Build New Base placement showing dotted ferry links from the proposed new site to existing bases when current aircraft can fly the one-way leg.
@@ -2786,3 +2786,38 @@ Verification checklist:
 - Run a staged Skyranger incident and confirm the return timeline reaches its original base after the mission.
 
 Next recommended patch: `STAGED_SORTIE_MANUAL_FLOW_AND_FERRY_RETURN_PLAYTEST_INDEX_ONLY`, focused on live multi-base route behavior and any remaining visual/state findings after this logic hardening.
+
+## v0.26.07.12.1415 - Geoscape Ferry Network Overlay
+
+Build `v0.26.07.12.1415_GEOSCAPE_FERRY_NETWORK_OVERLAY_INDEX_ONLY_PATCH` was integrated externally after the 1310 handoff:
+
+- Added player-controlled Interceptor and Skyranger ferry-network line filters to the Geoscape.
+- Added Show Both and Hide Lines controls plus a connectivity summary for isolated bases.
+- Kept ferry-network lines separate from range overlays and new-base placement previews.
+- Added Build Health coverage for network filtering, one-way link visibility, lane types, and isolated-base reporting.
+
+This external patch was inspected and preserved by the 1500 loaded-save eligibility pass.
+
+## v0.26.07.12.1500 - Loaded-Save Interceptor Eligibility Fix
+
+Build `v0.26.07.12.1500_LOADED_SAVE_INTERCEPTOR_ELIGIBILITY_FIX_INDEX_ONLY_PATCH` fixes loaded campaigns that could show nearby UFOs and home-base interceptors while leaving all interception controls unavailable, without changing save format:
+
+- Legacy UFO records with tracking history but no explicit `detected` field now retain a firing-quality radar lock after normalization.
+- Explicit modern `detected: false` contact-lost states remain false and still require radar reacquisition.
+- Active Interceptor travel, Skyranger travel, and pending staged-return decisions are now included in campaign saves and restored on load.
+- Migration now consults saved interceptor travel before applying stale-airborne recovery, preventing a legitimate active sortie from being incorrectly converted to Repairing.
+- UFO Tracking now distinguishes a visible radar echo without firing-quality lock from aircraft readiness blockers and summarizes non-ready aircraft statuses.
+- Added a deterministic loaded-save fixture with two ready North America interceptors and two nearby North America UFOs, including legacy radar-lock inference, home-base/hangar preservation, per-contact launch eligibility, explicit contact-lost preservation, and active-travel preservation.
+
+Verification checklist:
+
+- `node tools\\check-aegis-build.cjs` passed for `v0.26.07.12.1500_LOADED_SAVE_INTERCEPTOR_ELIGIBILITY_FIX_INDEX_ONLY_PATCH`.
+- Static app-script parsing passed.
+- Localhost browser smoke confirmed the 1500 start screen, loaded Autosave 2, and rendered the main Geoscape.
+- Browser Build Health passed `234/234`, including `Loaded saves preserve interceptor eligibility and active travel`.
+- No game runtime exception surfaced during the browser smoke or Build Health pass.
+- Manually load the affected two-UFO North America campaign and confirm each detected contact enables `1 Interceptor` while a ready local craft remains available.
+- Confirm an explicit contact-lost radar echo remains blocked and now explains that Geoscape time must advance for reacquisition.
+- Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
+
+Next recommended patch: `LOADED_SAVE_INTERCEPTOR_MANUAL_REPRO_AND_ROUTE_RESUME_POLISH_INDEX_ONLY`, limited to any blocker revealed by the affected player save and live save-during-flight testing.

@@ -1,7 +1,7 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.07.12.1310_AIRCRAFT_FERRY_RANGE_AND_HOME_RETURN_HARDENING_INDEX_ONLY_PATCH",
+  "currentBuild": "v0.26.07.12.1500_LOADED_SAVE_INTERCEPTOR_ELIGIBILITY_FIX_INDEX_ONLY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
@@ -26,5 +26,5 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.07.12.1310_AIRCRAFT_FERRY_RANGE_AND_HOME_RETURN_HARDENING_INDEX_ONLY_PATCH"
+  "lastInspectedBuild": "v0.26.07.12.1500_LOADED_SAVE_INTERCEPTOR_ELIGIBILITY_FIX_INDEX_ONLY_PATCH"
 }
