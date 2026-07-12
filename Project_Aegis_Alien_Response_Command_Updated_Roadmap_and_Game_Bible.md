@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-12  
-Current handoff build: `v0.26.07.12.1630_FERRY_AIRCRAFT_REBASE_AND_HOMEWARD_RECOVERY_CONTROLS_INDEX_ONLY_PATCH`  
-Current patch status: **Ready Interceptors and Skyrangers parked away from home now have explicit Send Home and Rebase orders in the selected Hangar panel. Orders use complete clock-tracked ferry/refuel routes, require open hangars, preserve home identity during flight, and only change permanent home assignment after a successful Rebase arrival. Browser Build Health passes 236/236.**
+Current handoff build: `v0.26.07.12.1715_AIRCRAFT_RELOCATION_RESERVATIONS_AND_ROUND_BASED_MISSION_TIME_INDEX_ONLY_PATCH`  
+Current patch status: **Aircraft relocations now reserve destination hangars across save/load, alien incident duration advances by combat rounds instead of consuming a full day, the Three.js tactical viewport preserves vertical proportions, and every tactical presentation celebrates surviving soldiers on victory. Browser Build Health passes 240/240.**
 
 ---
 
@@ -48,7 +48,7 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.12.1630_FERRY_AIRCRAFT_REBASE_AND_HOMEWARD_RECOVERY_CONTROLS_INDEX_ONLY_PATCH`
+`v0.26.07.12.1715_AIRCRAFT_RELOCATION_RESERVATIONS_AND_ROUND_BASED_MISSION_TIME_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
@@ -1175,7 +1175,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Manually validate the new selected-Hangar Send Home/Rebase controls in the affected multi-base campaign. Advance any recovery timers, send Saber Two home through `Madagascar 1 -> N. Africa 1 -> Fort Aegis`, and save/reload once during the route. Then test one deliberate Rebase to an open remote hangar and confirm current base, permanent home, hangar occupancy, refueling, and UFO/incident eligibility all agree after arrival.
+Manually validate a multi-base Send Home/Rebase flight in the affected campaign, including save/reload while airborne and destination-hangar reservation visibility. Also visually compare the taller Three.js battlefield with the 2D hex view and confirm surviving soldiers dance on the final victory frame in manual 2D, Three.js, simulation-map, and classic-lineup presentations.
 
 Focus verification on:
 - Build New Base placement showing dotted ferry links from the proposed new site to existing bases when current aircraft can fly the one-way leg.
@@ -2820,7 +2820,45 @@ Verification checklist:
 - Confirm an explicit contact-lost radar echo remains blocked and now explains that Geoscape time must advance for reacquisition.
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
-Next recommended patch: `AIRCRAFT_RELOCATION_ROUTE_RESUME_AND_STAGING_RESERVATION_HARDENING_INDEX_ONLY`, limited to any blocker revealed by real Send Home/Rebase, save-during-flight, and competing-hangar testing.
+Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.12.1715 - Aircraft Relocation Reservations and Round-Based Mission Time
+
+Build `v0.26.07.12.1715_AIRCRAFT_RELOCATION_RESERVATIONS_AND_ROUND_BASED_MISSION_TIME_INDEX_ONLY_PATCH` preserves save format 4 while hardening aircraft relocation and making incident duration proportional to battle length.
+
+Implemented changes:
+
+- Send Home/Rebase orders reserve their destination hangar as soon as the aircraft launches, preventing another route or purchase from claiming the slot.
+- Hangar reservations are stored in existing campaign hangar state and survive save/load when the matching relocation remains active.
+- Orphaned or mismatched reservations are cleared conservatively during load normalization instead of permanently blocking a base.
+- A craft can recognize and use its own reservation, while other aircraft see the slot as occupied.
+- Successful relocation converts the reservation into the aircraft's normal hangar assignment; Rebase still changes permanent home only on arrival.
+- Alien incidents no longer advance an automatic full day after resolution.
+- Mission results now store combat rounds. Manual tactical play counts completed player/alien rounds, while simulation, AI-led, and classic playback use the resolver's rounds.
+- Field time is calculated as 30 deployment/recovery minutes plus 5 minutes per combat round, bounded by the existing 24-round battle limit. Typical incidents consume 35 to 150 Geoscape minutes.
+- Mission time advances through the authoritative Geoscape minute system, so UFO movement, repairs, refueling, transfers, aircraft travel, incident timers, and midnight rollover remain synchronized.
+- Mission Reports and the general event log show combat rounds and exact elapsed field time.
+- The Three.js isometric battlefield now uses viewport-proportional orthographic camera bounds and a 600px minimum tactical height, reducing the vertically squashed appearance on wide screens without distorting hex geometry or units.
+- Manual 2D, Three.js isometric, standard simulation-map, and classic-lineup battle views now animate living soldiers on the final victory frame. Defeats, fallen soldiers, and unresolved rounds remain still.
+
+Verification checklist:
+
+- Static app-script parsing passed.
+- The dependency-free build seam checker passed.
+- Localhost browser smoke passed through start screen, first-base confirmation, main Geoscape, squad assignment, mission confirmation, Skyranger outbound travel, simulated combat, return travel, and Reports.
+- A practical 9-round `Red River Signal` simulation consumed `1h 15m`, remained on Month 1 Day 1, returned the Skyranger normally, and recorded the duration in the mission report.
+- Browser Build Health passed `240/240`.
+- New rows pass for destination-hangar save/resume reservations, round-based incident duration, proportional Three.js tactical framing, and victory dances in every tactical presentation.
+- Browser console errors were clear.
+
+Manual validation still required:
+
+- Save and reload during a real multi-base Send Home/Rebase flight, then confirm the destination remains reserved and the aircraft resumes its route.
+- Confirm the reserved hangar is visibly understandable in the selected Base/Hangar UI.
+- Compare the Three.js map height on the player's normal display and confirm the extra vertical space feels better rather than oversized.
+- Watch the final success frame in all four battle presentations and confirm the celebration is readable without obscuring controls.
+
+Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, adding a compact reservation badge/ETA and considering multiple simultaneous relocation flights after the single active-route architecture is safely expanded.
 
 ## v0.26.07.12.1630 - Ferry Aircraft Rebase and Homeward Recovery Controls
 
@@ -2853,7 +2891,7 @@ Manual validation still required:
 - Rebase a Ready aircraft to a different open hangar and confirm the old home slot is released only after arrival.
 - Confirm a competing aircraft cannot claim the destination hangar during the active route. This patch validates the destination at order time; explicit in-flight hangar reservation hardening remains the next bounded patch.
 
-Next recommended patch: `AIRCRAFT_RELOCATION_ROUTE_RESUME_AND_STAGING_RESERVATION_HARDENING_INDEX_ONLY` after the manual multi-base validation above.
+Completed next in `v0.26.07.12.1715_AIRCRAFT_RELOCATION_RESERVATIONS_AND_ROUND_BASED_MISSION_TIME_INDEX_ONLY_PATCH`: active relocations now reserve destination hangars and restore valid reservations on load.
 
 ## v0.26.07.12.1545 - Attached-Save Multi-Hop Interceptor Ferry Fix
 

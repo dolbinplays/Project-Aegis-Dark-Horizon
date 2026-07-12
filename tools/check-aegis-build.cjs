@@ -23,6 +23,8 @@ const required = [
   "Loaded saves preserve interceptor eligibility and active travel",
   "Attached save supports reserved-home and multi-hop interceptor ferry routes",
   "Ready aircraft can ferry home or rebase through clock-tracked routes",
+  "Aircraft relocation reserves destination hangars across save resume",
+  "Alien incident duration advances by combat rounds instead of a full day",
   "Aircraft ferry range and home return preserve direct staged and repeat-attack routes",
   "Staged aircraft routes display origin ferry legs",
   "Staged interceptor route timeline and return decision are restored",
@@ -34,6 +36,8 @@ const required = [
   "Three.js tactical readability overlay summarizes selected unit cover weapon and turn",
   "Three.js tactical incident battle polish shows terrain colors LOS movement ammo and 3D defaults",
   "Procedural tactical biomes generate wilderness streams city roads farms and small towns",
+  "Three.js isometric tactical framing preserves vertical proportions",
+  "All tactical battle views animate surviving soldiers after victory",
   "runSelfTests"
 ];
 
