@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-12  
-Current handoff build: `v0.26.07.12.1500_LOADED_SAVE_INTERCEPTOR_ELIGIBILITY_FIX_INDEX_ONLY_PATCH`  
-Current patch status: **Loaded-save interceptor eligibility is hardened on top of the Geoscape Ferry Network overlay. Legacy tracked UFOs retain radar-lock eligibility, explicit contact-lost states remain respected, and active interceptor/Skyranger travel plus staged return decisions now survive saves. Static and browser verification are recorded in the latest patch notes below.**
+Current handoff build: `v0.26.07.12.1545_ATTACHED_SAVE_MULTI_HOP_INTERCEPTOR_FERRY_FIX_INDEX_ONLY_PATCH`  
+Current patch status: **The player-provided Month 4 save now anchors interceptor ferry regression coverage. Legacy staged aircraft recover their original Fort Aegis home hangars, reserved home slots accept their own aircraft, multi-hop paths enforce real intermediate refuel hangars, and UFO Tracking/launch controls share one authoritative eligibility result.**
 
 ---
 
@@ -1175,7 +1175,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Manually load the affected campaign in `v0.26.07.12.1500_LOADED_SAVE_INTERCEPTOR_ELIGIBILITY_FIX_INDEX_ONLY_PATCH` and verify both North America UFO cards permit a one-aircraft launch when the two local interceptors show Ready. If a card remains blocked, record its new radar/status/range/fuel explanation and the aircraft readiness rows; the UI now exposes the decision boundary needed for a targeted follow-up.
+Load the affected Month 4 campaign in `v0.26.07.12.1545_ATTACHED_SAVE_MULTI_HOP_INTERCEPTOR_FERRY_FIX_INDEX_ONLY_PATCH`, advance at least 60 Geoscape minutes for the two saved recovery timers, and send Saber Two home first via `Madagascar 1 -> N. Africa 1 -> Fort Aegis`. Saber One can follow from `Oceana 1` after the Madagascar hangar clears. Confirm the two North America contacts then expose direct Fort Aegis interception choices.
 
 Focus verification on:
 - Build New Base placement showing dotted ferry links from the proposed new site to existing bases when current aircraft can fly the one-way leg.
@@ -2821,3 +2821,47 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `LOADED_SAVE_INTERCEPTOR_MANUAL_REPRO_AND_ROUTE_RESUME_POLISH_INDEX_ONLY`, limited to any blocker revealed by the affected player save and live save-during-flight testing.
+
+## v0.26.07.12.1545 - Attached-Save Multi-Hop Interceptor Ferry Fix
+
+Build `v0.26.07.12.1545_ATTACHED_SAVE_MULTI_HOP_INTERCEPTOR_FERRY_FIX_INDEX_ONLY_PATCH` uses the player-provided Month 4 campaign export as the authoritative regression case without changing save format.
+
+Root cause and save findings:
+
+- The save's Fort Aegis hangar configuration still listed two interceptor home slots, but the fleet records placed Saber One at Oceana 1 with stale `Outbound` status and Saber Two at Madagascar 1 with 60 repair minutes remaining. The UI's configured-hangar count made those remote aircraft look local.
+- Both records predated permanent `homeBaseId` / `homeHangarKey` fields. Normalization incorrectly treated their current ferry bases as permanent homes, even though their stable aircraft IDs still encoded the original Fort Aegis slots.
+- Route planning treated the configured Fort Aegis home slots as occupied. A returning aircraft therefore could not select its own reserved home hangar as the final staging/refuel destination.
+- Ferry graph search supported several hops, but intermediate stops used permissive transient placeholders instead of consistently requiring real open hangars.
+- The two North America contacts are approximately 1,483 km and 1,486 km from Fort Aegis. Saber Two's valid route is `Madagascar 1 -> N. Africa 1 -> Fort Aegis`; Saber One's later route is `Oceana 1 -> Madagascar 1 -> N. Africa 1 -> Fort Aegis` once Madagascar's only hangar is clear.
+
+Implemented changes:
+
+- Legacy aircraft home identity is inferred from stable aircraft IDs and matching configured hangar slots when explicit home fields are absent.
+- Aircraft may use their own reserved home hangar when returning or staging, but another physically present aircraft still blocks that slot.
+- Every intermediate ferry/refuel base now requires a real open hangar; full-tank range is evaluated separately for every one-way leg.
+- Explicit destination-transient overrides no longer leak through a conflicting `allowTransientStage` option.
+- Interceptor preview, button state, formation selection, and launch execution now share `interceptorEligibilityForContact` as the authoritative result.
+- UFO Tracking reports radar lock, eligible count, current aircraft status/base/timer, origin, complete ferry route, staging base, and final round-trip distance/fuel.
+- Pair launches no longer silently clamp to one aircraft when only one interceptor is ready.
+- Added a minimized regression fixture derived from the attached save, including both exact North America UFO coordinates and all five saved base coordinates.
+
+Verification checklist:
+
+- Static app-script parsing passed after the route and diagnostics changes.
+- Browser Build Health passed `235/235`, including `Attached save supports reserved-home and multi-hop interceptor ferry routes`.
+- The attached-save fixture confirms legacy Fort Aegis home identity for Saber One and Saber Two.
+- The fixture confirms Saber Two's two-hop route and Saber One's three-hop route.
+- The fixture confirms occupied intermediate hangars block refueling and each craft's own reserved Fort Aegis slot remains usable.
+- The fixture confirms both North America contacts are independently launchable when the two aircraft are Ready at Fort Aegis.
+- The fixture confirms UFO Tracking, launch-button eligibility, and formation selection agree.
+- Chrome file-chooser import was attempted, but local browser policy rejected automated file assignment. The original save file was never modified.
+
+Manual validation:
+
+- Load the attached campaign and advance at least 60 Geoscape minutes. Both saved interceptors initially require recovery because the export contains no active travel record and records Saber Two with 60 repair minutes.
+- Confirm UFO Tracking names Saber One at Oceana 1 and Saber Two at Madagascar 1 instead of presenting them as physically at Fort Aegis.
+- Launch Saber Two against a North America contact and confirm the route reads `Madagascar 1 -> N. Africa 1 -> Fort Aegis`, refuels at each stop, then flies the Fort Aegis/UFO round trip.
+- After Madagascar's hangar clears, confirm Saber One can route `Oceana 1 -> Madagascar 1 -> N. Africa 1 -> Fort Aegis`.
+- Confirm both aircraft ultimately return to their original Fort Aegis home hangars.
+
+Next recommended patch: `FERRY_AIRCRAFT_REBASE_AND_HOMEWARD_RECOVERY_CONTROLS_INDEX_ONLY`, adding an explicit Send Home/Rebase command for Ready aircraft parked at remote staging bases so players do not need an active UFO to initiate the ferry-home journey.

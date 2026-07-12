@@ -21,6 +21,7 @@ const required = [
   "New-base placement previews separated Interceptor and Skyranger ferry lanes",
   "Interceptor UFO tracking recognizes ferry-staged reach",
   "Loaded saves preserve interceptor eligibility and active travel",
+  "Attached save supports reserved-home and multi-hop interceptor ferry routes",
   "Aircraft ferry range and home return preserve direct staged and repeat-attack routes",
   "Staged aircraft routes display origin ferry legs",
   "Staged interceptor route timeline and return decision are restored",
