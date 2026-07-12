@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-11  
-Current handoff build: `v0.26.07.11.1715_STAGED_SORTIE_FRIENDLY_BASE_VISUAL_AND_RETURN_HARDENING_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html` as a staged-sortie visual hardening follow-up after the ChatGPT-applied transfer time sync fix. Manifest and bible metadata now match the playable artifact; friendly staging/refuel phases no longer draw interceptor weapon or explosion effects, while hit sorties still replay the return-home ferry route.**
+Current handoff build: `v0.26.07.11.1755_STAGED_SORTIE_ROUTE_TIMELINE_READOUT_INDEX_ONLY_PATCH`  
+Current patch status: **Built and browser-verified in `index.html` as a staged-sortie route timeline readout patch. The Geoscape globe now has an active route timeline strip for Skyranger and interceptor ferry/refuel/attack/return phases, while the preceding staged-sortie backup hangar reservation fix remains intact. Browser Build Health passes 228/228.**
 
 ---
 
@@ -2550,3 +2550,55 @@ Verification checklist:
 - In play, staged interceptor ferry/refuel phases should show ferry/refuel labels, not weapon fire or explosion effects; confirmed hits should still show impact at the UFO and route home when applicable.
 
 Next recommended patch: `STAGED_SORTIE_RETURN_DECISION_AND_MULTI_CRAFT_BACKUP_POLISH_INDEX_ONLY`, focusing on clearer post-attack choices for staged interceptors that miss or disengage and stronger multi-craft staged sortie confirmation text.
+
+
+## v0.26.07.11.1730 - Staged Sortie Return Decision and Multi-Craft Backup Polish
+
+Build `v0.26.07.11.1730_STAGED_SORTIE_RETURN_DECISION_AND_MULTI_CRAFT_BACKUP_POLISH_INDEX_ONLY_PATCH` continues the staged aircraft ferry roadmap while preserving save format 4:
+
+- Added a compact sortie-selection summary helper so staged interceptor launches can name direct vs staged craft, the staging base, and the ferry route used.
+- Polished the staged interceptor post-attack ferry decision modal with route, home-base, staging-base, and formation details.
+- The Attack UFO Again action now checks whether enough eligible ready aircraft can reengage before it is enabled or executed.
+- Multi-craft staged interceptor selection now reserves distinct open hangars at the staging base, preventing a pair of aircraft from sharing one empty hangar slot.
+- Added Build Health coverage for clear staged return decisions and multi-craft staged backup hangar reservation.
+
+Verification checklist:
+- Run `node tools\\check-aegis-build.cjs`.
+- Run a static app-script parse.
+- Run browser smoke and Build Health from `http://127.0.0.1:5173/index.html` when localhost is available.
+- In play, test a staged interceptor miss/disengage and confirm the decision modal clearly offers attack again only when valid, or ferry home to the original base.
+
+Next recommended patch: `STAGED_SORTIE_ROUTE_TIMELINE_AND_MANUAL_TEST_POLISH_INDEX_ONLY`, focusing on small visible route timeline improvements for staged ferry/attack/return phases and any manual-test findings from staged sortie play.
+
+## v0.26.07.11.1740 - Staged Sortie Backup Hangar Reservation Fix
+
+- Fixed a staged-interceptor formation fallback where backup selection could still treat one open staging hangar as enough for multiple aircraft after grouped selection failed.
+- Backup interceptor formation selection now reserves distinct staging hangars in the fallback path too, keeping ferry staging capacity honest.
+- Browser Build Health exposed the issue at 226/227; this fix restored the staged sortie return decision and multi-craft backup row.
+
+Verification checklist:
+- `node tools\\check-aegis-build.cjs` passed for `v0.26.07.11.1740_STAGED_SORTIE_BACKUP_HANGAR_RESERVATION_FIX_INDEX_ONLY_PATCH`.
+- Static app-script parse passed.
+- Browser smoke confirmed start screen, first base confirmation, and Geoscape load.
+- Browser Build Health passed `227/227`.
+- Browser console errors: none from the game page.
+
+Next recommended patch: STAGED_SORTIE_ROUTE_TIMELINE_AND_MANUAL_TEST_POLISH_INDEX_ONLY.
+
+## v0.26.07.11.1755 - Staged Sortie Route Timeline Readout
+
+Build `v0.26.07.11.1755_STAGED_SORTIE_ROUTE_TIMELINE_READOUT_INDEX_ONLY_PATCH` adds a compact route timeline readout while preserving save format 4:
+
+- Added an active route timeline helper for Skyranger and interceptor route phases.
+- Geoscape globe now shows a lightweight active route timeline strip during aircraft travel, including ferry, refuel, attack/mission, and return leg coloring.
+- Added Build Health coverage for current phase text, progress conversion, and route segment coloring.
+
+Verification checklist:
+- `node tools\\check-aegis-build.cjs` passed.
+- Static app-script parse passed.
+- Browser smoke confirmed start screen, first base confirmation, and Geoscape load from `http://127.0.0.1:5173/index.html`.
+- Browser Build Health passed `228/228`.
+- Browser console errors: none from the fixed `1755` game page.
+- In play, staged aircraft routes should show a bottom-of-globe route timeline during active travel.
+
+Next recommended patch: STAGED_SORTIE_ROUTE_TIMELINE_MANUAL_FLOW_HARDENING_INDEX_ONLY.

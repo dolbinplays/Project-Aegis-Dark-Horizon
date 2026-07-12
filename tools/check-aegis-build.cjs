@@ -23,6 +23,8 @@ const required = [
   "Staged aircraft routes display origin ferry legs",
   "Staged aircraft route labels and day-night globe lighting are readable",
   "Staged interceptor friendly-base phases stay non-combat",
+  "Staged sortie route timeline readout summarizes active legs",
+  "Staged sortie return decisions and multi-craft backup are clear",
   "Skyranger ferry staging extends incident response range",
   "First-base selection previews opening incidents and starting reach",
   "Solid Geoscape globe uses opaque detailed landmasses and remains draggable",
