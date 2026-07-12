@@ -22,6 +22,7 @@ const required = [
   "Interceptor UFO tracking recognizes ferry-staged reach",
   "Staged aircraft routes display origin ferry legs",
   "Staged aircraft route labels and day-night globe lighting are readable",
+  "Staged interceptor friendly-base phases stay non-combat",
   "Skyranger ferry staging extends incident response range",
   "First-base selection previews opening incidents and starting reach",
   "Solid Geoscape globe uses opaque detailed landmasses and remains draggable",

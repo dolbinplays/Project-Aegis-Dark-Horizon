@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-11  
-Current handoff build: `v0.26.07.11.0030_SUN_GLOW_OVERLAY_SOFTENING_INDEX_ONLY_PATCH`  
-Current patch status: **Built in `index.html` as a small visual follow-up to soften the Geoscape sun-glow cue so it reads as lighting direction instead of a yellow ball on the globe. Staged route labels, day/night readout, Skyranger staged incident response, separated new-base ferry lanes, save format 4, and the recent globe drag/opaque-landmass fixes are preserved.**
+Current handoff build: `v0.26.07.11.1715_STAGED_SORTIE_FRIENDLY_BASE_VISUAL_AND_RETURN_HARDENING_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html` as a staged-sortie visual hardening follow-up after the ChatGPT-applied transfer time sync fix. Manifest and bible metadata now match the playable artifact; friendly staging/refuel phases no longer draw interceptor weapon or explosion effects, while hit sorties still replay the return-home ferry route.**
 
 ---
 
@@ -2511,3 +2511,42 @@ Verification checklist:
 - Confirm Build Health passes after the visual-only correction.
 
 Next recommended patch remains `STAGED_SORTIE_RETURN_HOME_AND_FRIENDLY_BASE_LANDING_FIX_INDEX_ONLY`.
+
+
+## v0.26.07.11.1650 - Transfer Time Sync Fix
+
+Build `v0.26.07.11.1650_TRANSFER_TIME_SYNC_FIX_INDEX_ONLY_PATCH` was applied outside this Codex pass and then inspected here before further roadmap work:
+
+- The playable `index.html` build label advanced from the sun-glow patch to the transfer time sync fix.
+- App-script syntax parsing passed during inspection.
+- The bible and manifest were found stale at `v0.26.07.11.0030_SUN_GLOW_OVERLAY_SOFTENING_INDEX_ONLY_PATCH` and required sync before the next patch.
+- Existing staged interceptor and Skyranger ferry-route helpers, return-route planning, and clock-based route progress were present in the inspected build.
+
+Verification checklist:
+- Confirm manifest and bible match the playable build before future patches.
+- Confirm Build Health after the metadata sync and any follow-up code changes.
+
+Next recommended patch remained `STAGED_SORTIE_RETURN_HOME_AND_FRIENDLY_BASE_LANDING_FIX_INDEX_ONLY`.
+
+
+## v0.26.07.11.1715 - Staged Sortie Friendly-Base Visual and Return Hardening
+
+Build `v0.26.07.11.1715_STAGED_SORTIE_FRIENDLY_BASE_VISUAL_AND_RETURN_HARDENING_INDEX_ONLY_PATCH` tightens the staged ferry/interceptor presentation without changing the save format:
+
+- Added a phase-aware interceptor combat-visual guard so weapon fire and hit explosions only render during `attack-outbound` phases.
+- Friendly ferry, staging-base refuel, return-to-stage, and ferry-home phases remain visible as route labels/movement but no longer look like the interceptor is attacking a friendly base.
+- The hit explosion timing now keys off the route plan's `impactProgress` instead of the old fixed `94-128` global-progress window, which could overlap friendly refuel phases on staged sorties.
+- Added Build Health coverage for staged friendly-base phases staying non-combat while the actual attack leg remains combat-enabled.
+- Tightened ferry staging so the final staging/destination base must have a real open hangar; transient route handling is no longer allowed to stand in for an occupied destination hangar.
+- Fixed fast-forward recovered-soldier auto-equip so completed Workshop gear is seeded into the temporary equipment pool before recovered soldiers try to equip it.
+- Synced `src/manifest.json` and the seam checker to the new build label.
+
+Verification checklist:
+- `node tools\\check-aegis-build.cjs` passed.
+- Static app-script parse passed.
+- Browser smoke from `http://127.0.0.1:5173/index.html` passed: start screen, first-base setup, first-base confirmation, and main Geoscape loaded.
+- Browser Build Health passed `226/226`.
+- Browser console errors: none from the game page.
+- In play, staged interceptor ferry/refuel phases should show ferry/refuel labels, not weapon fire or explosion effects; confirmed hits should still show impact at the UFO and route home when applicable.
+
+Next recommended patch: `STAGED_SORTIE_RETURN_DECISION_AND_MULTI_CRAFT_BACKUP_POLISH_INDEX_ONLY`, focusing on clearer post-attack choices for staged interceptors that miss or disengage and stronger multi-craft staged sortie confirmation text.
