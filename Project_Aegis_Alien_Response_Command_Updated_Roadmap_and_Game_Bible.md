@@ -2,7 +2,7 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-11  
-Current handoff build: `v0.26.07.12.1210_TACTICAL_THREEJS_INCIDENT_BATTLE_POLISH_INDEX_ONLY_PATCH`  
+Current handoff build: `v0.26.07.12.1240_PROCEDURAL_TACTICAL_BIOMES_INDEX_ONLY_PATCH`  
 Current patch status: **Built in `index.html` as a ferry staging and fast-forward regression fix on top of the external tactical 3D victory dance / equipment color build. Real open hangars are again required for staged ferry destinations, multi-interceptor staged selection reserves distinct hangars, and fast-forward recovered soldiers can use completed Workshop gear. Browser verification is pending until this pass completes.**
 
 ---
@@ -2735,3 +2735,26 @@ Verification checklist:
 - Manual tactical smoke should verify Three.js incident maps open by default when available, 2D Hex remains selectable, and 3D tile colors feel closer to the 2D map.
 
 Next recommended patch: `STAGED_SORTIE_MANUAL_FLOW_AND_FERRY_RETURN_PLAYTEST_INDEX_ONLY` remains the route-flow priority, especially interceptor post-attack re-attack/send-home decisions and Skyranger staged-route manual playtesting. Tactical follow-up candidate: add stronger Three.js camera controls, cover markers, and selected-target previews after the ferry flow is stable.
+
+## v0.26.07.12.1240 - Procedural Tactical Biomes
+
+Build `v0.26.07.12.1240_PROCEDURAL_TACTICAL_BIOMES_INDEX_ONLY_PATCH` replaces the remaining cyan/holographic Three.js ground treatment with deterministic mission biomes without changing save format:
+
+- Added Wilderness, Farmland, Small Town, and Urban District tactical environments selected from mission intent and mission seed.
+- Unified the 2D and Three.js tactical views around the same procedural terrain data so paths, streams, roads, service lanes, irrigation ditches, fields, lawns, yards, and urban lots remain consistent when switching views.
+- Natural maps can generate winding dirt paths and streams; farm maps generate crop bands, pasture, tilled soil, lanes, irrigation, hay, fencing, and crop cover.
+- Small-town and city maps generate roads and lanes with environment-specific concrete, fencing, crates, wrecks, yards, lawns, and sparse vegetation.
+- Replaced the default cyan Three.js tile and lighting treatment with opaque natural/urban ground colors, warmer daylight, biome-colored fog/backgrounds, and subdued neutral tile seams. Selection and movement highlights remain distinct.
+- Added Build Health coverage for deterministic biome selection, terrain diversity, paths/water/roads, environment-specific cover, and shared 2D/Three.js terrain colors.
+
+Verification checklist:
+
+- `node tools\\check-aegis-build.cjs` passed for `v0.26.07.12.1240_PROCEDURAL_TACTICAL_BIOMES_INDEX_ONLY_PATCH`.
+- Static app-script parsing passed after the final terrain and lighting edits.
+- Localhost browser smoke passed through start screen, first-base confirmation, main Geoscape, Skyranger mission launch, clock-based incident arrival, and opening a live Three.js tactical mission.
+- Browser Build Health passed `231/231`, including `Procedural tactical biomes generate wilderness streams city roads farms and small towns`.
+- The live opening incident rendered as a Wilderness battlefield with opaque varied ground colors and reported shared 2D/Three.js terrain state. Final lighting was reduced and filmic color handling added after the smoke screenshot showed over-bright greens/browns.
+- Browser console contained no game runtime errors. The existing Tailwind development-CDN warning remains non-blocking.
+- Additional manual variety testing should open Farmland, Small Town, and Urban District incidents and confirm their roads, lanes, irrigation, structures, and traversal feel distinct during normal play.
+
+Next recommended patch: `STAGED_SORTIE_MANUAL_FLOW_AND_FERRY_RETURN_PLAYTEST_INDEX_ONLY` remains the campaign-flow priority. The next tactical follow-up should add Three.js camera controls, cover markers, and selected-target previews after biome playtesting.

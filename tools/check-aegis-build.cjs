@@ -29,6 +29,7 @@ const required = [
   "Solid Geoscape globe uses opaque detailed landmasses and remains draggable",
   "Three.js tactical readability overlay summarizes selected unit cover weapon and turn",
   "Three.js tactical incident battle polish shows terrain colors LOS movement ammo and 3D defaults",
+  "Procedural tactical biomes generate wilderness streams city roads farms and small towns",
   "runSelfTests"
 ];
 
