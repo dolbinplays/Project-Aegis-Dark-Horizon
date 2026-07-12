@@ -2,7 +2,7 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-11  
-Current handoff build: `v0.26.07.12.1140_TACTICAL_THREEJS_READABILITY_SEED_INDEX_ONLY_PATCH`  
+Current handoff build: `v0.26.07.12.1210_TACTICAL_THREEJS_INCIDENT_BATTLE_POLISH_INDEX_ONLY_PATCH`  
 Current patch status: **Built in `index.html` as a ferry staging and fast-forward regression fix on top of the external tactical 3D victory dance / equipment color build. Real open hangars are again required for staged ferry destinations, multi-interceptor staged selection reserves distinct hangars, and fast-forward recovered soldiers can use completed Workshop gear. Browser verification is pending until this pass completes.**
 
 ---
@@ -2715,3 +2715,23 @@ Verification checklist:
 - Browser Build Health should include the new Three.js tactical readability row on the next manual/browser pass.
 
 Next recommended patch remains `STAGED_SORTIE_MANUAL_FLOW_AND_FERRY_RETURN_PLAYTEST_INDEX_ONLY` for live ferry-route playtest hardening, with `TACTICAL_THREEJS_ALIEN_INCIDENT_BATTLE_POLISH_INDEX_ONLY` queued as the next tactical polish lane.
+
+## v0.26.07.12.1210 - Tactical Three.js Incident Battle Polish
+
+Build `v0.26.07.12.1210_TACTICAL_THREEJS_INCIDENT_BATTLE_POLISH_INDEX_ONLY_PATCH` expands the alien-incident Three.js tactical polish pass without changing save format:
+
+- Tactical missions now default to the Three.js view when the bundled renderer is available, with the existing 2D Hex view still available as a manual fallback.
+- Expanded the Three.js tactical readability overlay with selected soldier weapon, cover, HP/TU, ammo, fire mode, visible hostile count, line-of-sight target count, and reachable movement count.
+- Added terrain-aware Three.js ground hex coloring so forest/brush, city/terror, crash/wreck, rock, crate, and open tiles read closer to the 2D tactical maps.
+- Added Build Health coverage for the enhanced Three.js tactical incident battle readout, terrain color diversity, and 3D default/fallback seam.
+
+Verification checklist:
+
+- `node tools\\check-aegis-build.cjs` passed for `v0.26.07.12.1210_TACTICAL_THREEJS_INCIDENT_BATTLE_POLISH_INDEX_ONLY_PATCH`.
+- Static app-script parse passed.
+- Browser smoke confirmed the start screen shows `V0.26.07.12.1210`, first-base setup works, and Geoscape loads after confirming Fort Aegis.
+- Browser Build Health passed `230/230` and includes `Three.js tactical incident battle polish shows terrain colors LOS movement ammo and 3D defaults`.
+- Browser console check found no game runtime errors; the only warning observed was the existing Tailwind CDN production warning.
+- Manual tactical smoke should verify Three.js incident maps open by default when available, 2D Hex remains selectable, and 3D tile colors feel closer to the 2D map.
+
+Next recommended patch: `STAGED_SORTIE_MANUAL_FLOW_AND_FERRY_RETURN_PLAYTEST_INDEX_ONLY` remains the route-flow priority, especially interceptor post-attack re-attack/send-home decisions and Skyranger staged-route manual playtesting. Tactical follow-up candidate: add stronger Three.js camera controls, cover markers, and selected-target previews after the ferry flow is stable.
