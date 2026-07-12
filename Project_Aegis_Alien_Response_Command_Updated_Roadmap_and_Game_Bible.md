@@ -2,7 +2,7 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-11  
-Current handoff build: `v0.26.07.12.1240_PROCEDURAL_TACTICAL_BIOMES_INDEX_ONLY_PATCH`  
+Current handoff build: `v0.26.07.12.1310_AIRCRAFT_FERRY_RANGE_AND_HOME_RETURN_HARDENING_INDEX_ONLY_PATCH`  
 Current patch status: **Built in `index.html` as a ferry staging and fast-forward regression fix on top of the external tactical 3D victory dance / equipment color build. Real open hangars are again required for staged ferry destinations, multi-interceptor staged selection reserves distinct hangars, and fast-forward recovered soldiers can use completed Workshop gear. Browser verification is pending until this pass completes.**
 
 ---
@@ -2758,3 +2758,31 @@ Verification checklist:
 - Additional manual variety testing should open Farmland, Small Town, and Urban District incidents and confirm their roads, lanes, irrigation, structures, and traversal feel distinct during normal play.
 
 Next recommended patch: `STAGED_SORTIE_MANUAL_FLOW_AND_FERRY_RETURN_PLAYTEST_INDEX_ONLY` remains the campaign-flow priority. The next tactical follow-up should add Three.js camera controls, cover markers, and selected-target previews after biome playtesting.
+
+## v0.26.07.12.1310 - Aircraft Ferry Range and Home Return Hardening
+
+Build `v0.26.07.12.1310_AIRCRAFT_FERRY_RANGE_AND_HOME_RETURN_HARDENING_INDEX_ONLY_PATCH` audits and hardens interceptor/Skyranger ferry-network eligibility and return-home state without changing save format:
+
+- Aircraft now normalize separate permanent `homeBaseId` / `homeHangarKey` identity alongside mutable current base/hangar location. Old saves infer home identity from their existing aircraft assignment.
+- UFO Tracking and interceptor launch now use the same unified per-aircraft eligibility result, preferring a valid direct sortie and otherwise using a valid ferry/refuel route.
+- Staged interceptors retain their original home base and outbound ferry route after a surviving-UFO pass, including through a repeat attack.
+- A repeat attack that destroys the UFO now includes the reverse ferry/refuel route and does not silently treat the staging base as the aircraft's permanent home.
+- The post-pass decision validates that the same aircraft are present and ready, the UFO remains tracked/detected, and it is still reachable before enabling another attack.
+- Aircraft undergoing staging-base repair/refuel keep the decision pending without blocking Geoscape controls; the decision appears when the flight becomes ready.
+- Blocked attack/return actions no longer erase the pending decision. The player can also intentionally keep the flight at its staging base while preserving its permanent home identity.
+- Skyranger staged mission return remains incident site -> staging base -> reverse ferry route -> original home base, now backed by the same normalized aircraft home identity.
+- Added Build Health coverage for old-save home normalization, direct reach from a current operating base, ferry-network reach, vanished contacts, repair waits, repeat-attack home lineage, reverse ferry phases, and final home-base recovery.
+
+Verification checklist:
+
+- `node tools\\check-aegis-build.cjs` passed for `v0.26.07.12.1310_AIRCRAFT_FERRY_RANGE_AND_HOME_RETURN_HARDENING_INDEX_ONLY_PATCH`.
+- Static app-script parsing passed after the final route-contract wording fix.
+- Localhost browser smoke passed through the start screen, first-base confirmation, and main Geoscape.
+- Browser Build Health passed `232/232`, including `Aircraft ferry range and home return preserve direct staged and repeat-attack routes` and the existing staged-route timeline checks.
+- Browser console contained no game runtime errors.
+- Manually test a direct interceptor sortie and confirm it returns to its assigned home hangar.
+- Manually test a staged miss, another attack, and a later shootdown; confirm the route returns through the staging/ferry network to the original home base.
+- Let a UFO disappear after a staged pass and confirm re-attack is disabled while Ferry Back Home remains available.
+- Run a staged Skyranger incident and confirm the return timeline reaches its original base after the mission.
+
+Next recommended patch: `STAGED_SORTIE_MANUAL_FLOW_AND_FERRY_RETURN_PLAYTEST_INDEX_ONLY`, focused on live multi-base route behavior and any remaining visual/state findings after this logic hardening.
