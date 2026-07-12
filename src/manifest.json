@@ -1,7 +1,7 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.07.11.1755_STAGED_SORTIE_ROUTE_TIMELINE_READOUT_INDEX_ONLY_PATCH",
+  "currentBuild": "v0.26.07.12.1030_BUILD_HEALTH_STABILIZATION_AND_BIBLE_SYNC_INDEX_ONLY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
@@ -25,5 +25,6 @@
     "CURRENT_SAVE_FORMAT_VERSION",
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
-  ]
+  ],
+  "lastInspectedBuild": "v0.26.07.12.1030_BUILD_HEALTH_STABILIZATION_AND_BIBLE_SYNC_INDEX_ONLY_PATCH"
 }

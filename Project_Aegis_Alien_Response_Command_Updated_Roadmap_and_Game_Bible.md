@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-11  
-Current handoff build: `v0.26.07.11.1755_STAGED_SORTIE_ROUTE_TIMELINE_READOUT_INDEX_ONLY_PATCH`  
-Current patch status: **Built and browser-verified in `index.html` as a staged-sortie route timeline readout patch. The Geoscape globe now has an active route timeline strip for Skyranger and interceptor ferry/refuel/attack/return phases, while the preceding staged-sortie backup hangar reservation fix remains intact. Browser Build Health passes 228/228.**
+Current handoff build: `v0.26.07.12.1030_BUILD_HEALTH_STABILIZATION_AND_BIBLE_SYNC_INDEX_ONLY_PATCH`  
+Current patch status: **Built in `index.html` as a ferry staging and fast-forward regression fix on top of the external tactical 3D victory dance / equipment color build. Real open hangars are again required for staged ferry destinations, multi-interceptor staged selection reserves distinct hangars, and fast-forward recovered soldiers can use completed Workshop gear. Browser verification is pending until this pass completes.**
 
 ---
 
@@ -2602,3 +2602,57 @@ Verification checklist:
 - In play, staged aircraft routes should show a bottom-of-globe route timeline during active travel.
 
 Next recommended patch: STAGED_SORTIE_ROUTE_TIMELINE_MANUAL_FLOW_HARDENING_INDEX_ONLY.
+
+## v0.26.07.12.1010 - Tactical 3D Victory Dance and Equipment Colors Sync
+
+Build `v0.26.07.12.1010_TACTICAL_3D_VICTORY_DANCE_AND_EQUIPMENT_COLORS_INDEX_ONLY_PATCH` was applied outside this Codex pass and then inspected here before further roadmap work:
+
+- Current `index.html` now reports the tactical 3D victory dance / equipment color patch.
+- Added/confirmed Build Health coverage for a Three.js isometric tactical battlemap that reuses tactical hex state, natural cover, equipment colors, and victory display behavior.
+- Synced `src/manifest.json` and `tools/check-aegis-build.cjs` to the actual current build so seam checks no longer point at stale `1755` metadata.
+- Optimization note: the current build is still playable as a single-file artifact, but external patching appears to have dropped the recently added staged-sortie route timeline and staged-return decision Build Health rows. Treat that as a roadmap hardening item rather than assuming the previous staged-route polish is fully covered.
+
+Verification checklist:
+- `node tools\\check-aegis-build.cjs` should pass after this sync.
+- Static app-script parse should pass.
+- Browser smoke should confirm start screen, first base confirmation, and Geoscape load from `http://127.0.0.1:5173/index.html`.
+- Browser Build Health initially failed `221/226` on the inspected tactical 3D build, which led directly to the follow-up ferry staging and fast-forward regression fix.
+- Browser console errors should be checked after reload.
+
+Next recommended patch at the time of inspection: `FERRY_STAGING_AND_FAST_FORWARD_REGRESSION_FIX_INDEX_ONLY`, restoring ferry staging and fast-forward coverage before further roadmap work.
+
+## v0.26.07.12.1025 - Ferry Staging and Fast-Forward Regression Fix
+
+Build `v0.26.07.12.1025_FERRY_STAGING_AND_FAST_FORWARD_REGRESSION_FIX_INDEX_ONLY_PATCH` hardens the externally added tactical 3D build after browser Build Health exposed ferry/fast-forward regressions:
+
+- Restored real-open-hangar requirements for aircraft ferry staging and UFO tracking staged reach. Transient staging slots no longer satisfy live sortie planning.
+- Restored staged multi-interceptor hangar reservation so backup aircraft cannot overbook one staging hangar.
+- Restored fast-forward recovered-soldier auto-equip behavior so completed Workshop gear is seeded before recovered soldiers choose replacement equipment.
+- Updated Build Health expectations around closed staging bases and full-network ferry assignment to match the real-hangar rule.
+
+Verification checklist:
+- `node tools\\check-aegis-build.cjs` should pass.
+- Static app-script parse should pass.
+- Browser smoke should confirm start screen, first base confirmation, and Geoscape load.
+- Browser Build Health should return to all-pass from the observed `221/226` failure state.
+
+Next recommended patch: `STAGED_SORTIE_ROUTE_TIMELINE_AND_RETURN_DECISION_RESTORE_INDEX_ONLY`, restoring the route timeline/readout and post-attack ferry decision coverage on top of the tactical 3D work.
+
+## v0.26.07.12.1030 - Build Health Stabilization and Bible Sync
+
+Build `v0.26.07.12.1030_BUILD_HEALTH_STABILIZATION_AND_BIBLE_SYNC_INDEX_ONLY_PATCH` follows the external tactical 3D work and the 1025 ferry regression fix with a small verification stabilization pass:
+
+- Synced the playable `index.html` build constant with `src/manifest.json` so the seam checker and start screen point at the same current build lineage.
+- Corrected the full-network ferry self-test target so the final staging base is actually within the interceptor's post-refuel round-trip range under real-open-hangar rules.
+- Stabilized the memorial-offering variety self-test so randomized tribute selection no longer creates false negative Build Health rows when the expanded catalog is present.
+- Confirmed the 1010 tactical 3D sync notes remain distinct from the later 1025 ferry regression notes.
+
+Verification checklist:
+- `node tools\\check-aegis-build.cjs` passed.
+- Static app-script parse passed.
+- Local diagnostic self-test harness passed with no failing rows.
+- Browser smoke passed from `http://127.0.0.1:5173/index.html`: start screen, first base confirmation, and Geoscape load.
+- Browser Build Health passed `226/226`.
+- Browser console errors were clear.
+
+Next recommended patch: `STAGED_SORTIE_ROUTE_TIMELINE_AND_RETURN_DECISION_RESTORE_INDEX_ONLY`, then continue into the next roadmap systems once staged-route UX coverage is fully restored.
