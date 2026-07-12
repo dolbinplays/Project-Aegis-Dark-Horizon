@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-12  
-Current handoff build: `v0.26.07.12.1545_ATTACHED_SAVE_MULTI_HOP_INTERCEPTOR_FERRY_FIX_INDEX_ONLY_PATCH`  
-Current patch status: **The player-provided Month 4 save now anchors interceptor ferry regression coverage. Legacy staged aircraft recover their original Fort Aegis home hangars, reserved home slots accept their own aircraft, multi-hop paths enforce real intermediate refuel hangars, and UFO Tracking/launch controls share one authoritative eligibility result.**
+Current handoff build: `v0.26.07.12.1630_FERRY_AIRCRAFT_REBASE_AND_HOMEWARD_RECOVERY_CONTROLS_INDEX_ONLY_PATCH`  
+Current patch status: **Ready Interceptors and Skyrangers parked away from home now have explicit Send Home and Rebase orders in the selected Hangar panel. Orders use complete clock-tracked ferry/refuel routes, require open hangars, preserve home identity during flight, and only change permanent home assignment after a successful Rebase arrival. Browser Build Health passes 236/236.**
 
 ---
 
@@ -48,7 +48,7 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.11.0025_STAGED_ROUTE_LABELS_AND_DAY_NIGHT_GLOBE_READABILITY_INDEX_ONLY_PATCH`
+`v0.26.07.12.1630_FERRY_AIRCRAFT_REBASE_AND_HOMEWARD_RECOVERY_CONTROLS_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
@@ -1175,7 +1175,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Load the affected Month 4 campaign in `v0.26.07.12.1545_ATTACHED_SAVE_MULTI_HOP_INTERCEPTOR_FERRY_FIX_INDEX_ONLY_PATCH`, advance at least 60 Geoscape minutes for the two saved recovery timers, and send Saber Two home first via `Madagascar 1 -> N. Africa 1 -> Fort Aegis`. Saber One can follow from `Oceana 1` after the Madagascar hangar clears. Confirm the two North America contacts then expose direct Fort Aegis interception choices.
+Manually validate the new selected-Hangar Send Home/Rebase controls in the affected multi-base campaign. Advance any recovery timers, send Saber Two home through `Madagascar 1 -> N. Africa 1 -> Fort Aegis`, and save/reload once during the route. Then test one deliberate Rebase to an open remote hangar and confirm current base, permanent home, hangar occupancy, refueling, and UFO/incident eligibility all agree after arrival.
 
 Focus verification on:
 - Build New Base placement showing dotted ferry links from the proposed new site to existing bases when current aircraft can fly the one-way leg.
@@ -2820,7 +2820,40 @@ Verification checklist:
 - Confirm an explicit contact-lost radar echo remains blocked and now explains that Geoscape time must advance for reacquisition.
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
-Next recommended patch: `LOADED_SAVE_INTERCEPTOR_MANUAL_REPRO_AND_ROUTE_RESUME_POLISH_INDEX_ONLY`, limited to any blocker revealed by the affected player save and live save-during-flight testing.
+Next recommended patch: `AIRCRAFT_RELOCATION_ROUTE_RESUME_AND_STAGING_RESERVATION_HARDENING_INDEX_ONLY`, limited to any blocker revealed by real Send Home/Rebase, save-during-flight, and competing-hangar testing.
+
+## v0.26.07.12.1630 - Ferry Aircraft Rebase and Homeward Recovery Controls
+
+Build `v0.26.07.12.1630_FERRY_AIRCRAFT_REBASE_AND_HOMEWARD_RECOVERY_CONTROLS_INDEX_ONLY_PATCH` adds explicit player control over Ready aircraft parked away from their permanent home base without changing save format.
+
+Implemented changes:
+
+- The selected Hangar aircraft panel now shows the aircraft's current base and permanent home base.
+- Ready aircraft away from home receive a `Send Home` order without requiring an active UFO or alien incident.
+- Ready Interceptors and Skyrangers can be ordered to `Rebase` through a destination-base selector when a complete ferry route and open destination hangar exist.
+- Send Home preserves permanent home identity. Rebase changes `homeBaseId` and `homeHangarKey` only after clock-tracked arrival.
+- Ferry legs reuse complete graph routing, one-way full-tank leg checks, real intermediate hangars, per-stop refueling, and final-base refueling time.
+- The route is stored in the existing aircraft travel save state, appears in the Geoscape route timeline, and keeps the aircraft unavailable until arrival.
+- Arrival releases the old physical hangar assignment, reserves the destination hangar, and avoids creating duplicate seeded aircraft from stale hangar configuration.
+- Repairing, airborne, under-fueled, unreachable, and no-open-hangar aircraft remain blocked with a player-readable reason.
+
+Verification checklist:
+
+- Static app-script parsing passed.
+- The dependency-free build seam checker passed.
+- Localhost browser smoke passed through start screen, first-base confirmation, main Geoscape, Base screen, and selected Interceptor Hangar.
+- Browser Build Health passed `236/236`, including `Ready aircraft can ferry home or rebase through clock-tracked routes`.
+- Browser console errors were clear.
+- Deterministic coverage confirms final-destination refueling time, Send Home preserving home identity, Rebase changing home only on recovery, old-hangar release, destination-hangar reservation, and Ready-only blocking.
+
+Manual validation still required:
+
+- In a multi-base campaign, send a remotely parked craft home and confirm every ferry/refuel phase advances with Geoscape time.
+- Save and reload during that flight; confirm the route resumes and the craft remains unavailable.
+- Rebase a Ready aircraft to a different open hangar and confirm the old home slot is released only after arrival.
+- Confirm a competing aircraft cannot claim the destination hangar during the active route. This patch validates the destination at order time; explicit in-flight hangar reservation hardening remains the next bounded patch.
+
+Next recommended patch: `AIRCRAFT_RELOCATION_ROUTE_RESUME_AND_STAGING_RESERVATION_HARDENING_INDEX_ONLY` after the manual multi-base validation above.
 
 ## v0.26.07.12.1545 - Attached-Save Multi-Hop Interceptor Ferry Fix
 
@@ -2864,4 +2897,4 @@ Manual validation:
 - After Madagascar's hangar clears, confirm Saber One can route `Oceana 1 -> Madagascar 1 -> N. Africa 1 -> Fort Aegis`.
 - Confirm both aircraft ultimately return to their original Fort Aegis home hangars.
 
-Next recommended patch: `FERRY_AIRCRAFT_REBASE_AND_HOMEWARD_RECOVERY_CONTROLS_INDEX_ONLY`, adding an explicit Send Home/Rebase command for Ready aircraft parked at remote staging bases so players do not need an active UFO to initiate the ferry-home journey.
+Completed next in `v0.26.07.12.1630_FERRY_AIRCRAFT_REBASE_AND_HOMEWARD_RECOVERY_CONTROLS_INDEX_ONLY_PATCH`: explicit Send Home/Rebase commands now let Ready aircraft leave remote staging bases without requiring an active UFO.
