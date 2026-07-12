@@ -21,6 +21,8 @@ const required = [
   "New-base placement previews separated Interceptor and Skyranger ferry lanes",
   "Interceptor UFO tracking recognizes ferry-staged reach",
   "Staged aircraft routes display origin ferry legs",
+  "Staged interceptor route timeline and return decision are restored",
+  "Staged Skyranger route timeline includes ferry refuel incident and return legs",
   "Staged aircraft route labels and day-night globe lighting are readable",
   "Skyranger ferry staging extends incident response range",
   "First-base selection previews opening incidents and starting reach",

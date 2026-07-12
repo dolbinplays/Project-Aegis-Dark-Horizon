@@ -2,7 +2,7 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-11  
-Current handoff build: `v0.26.07.12.1030_BUILD_HEALTH_STABILIZATION_AND_BIBLE_SYNC_INDEX_ONLY_PATCH`  
+Current handoff build: `v0.26.07.12.1140_TACTICAL_THREEJS_READABILITY_SEED_INDEX_ONLY_PATCH`  
 Current patch status: **Built in `index.html` as a ferry staging and fast-forward regression fix on top of the external tactical 3D victory dance / equipment color build. Real open hangars are again required for staged ferry destinations, multi-interceptor staged selection reserves distinct hangars, and fast-forward recovered soldiers can use completed Workshop gear. Browser verification is pending until this pass completes.**
 
 ---
@@ -1053,6 +1053,7 @@ Still planned:
 - Better impact/miss feedback.
 - Battlefield-space optimization.
 - Simulated mission sprite consistency.
+- Improve the Three.js battle option for alien incidents so manual tactical missions feel more readable, responsive, and worth choosing over auto-resolve.
 
 Possible next Stage 3 patch:
 `TACTICAL_EVENT_LOG_AND_FEEDBACK_PASS_INDEX_ONLY`
@@ -2656,3 +2657,61 @@ Verification checklist:
 - Browser console errors were clear.
 
 Next recommended patch: `STAGED_SORTIE_ROUTE_TIMELINE_AND_RETURN_DECISION_RESTORE_INDEX_ONLY`, then continue into the next roadmap systems once staged-route UX coverage is fully restored.
+
+
+## v0.26.07.12.1115 - Staged Sortie Route Timeline and Return Decision Restore
+
+Build `v0.26.07.12.1115_STAGED_SORTIE_ROUTE_TIMELINE_AND_RETURN_DECISION_RESTORE_INDEX_ONLY_PATCH` restores the visible staged-sortie route readout on top of the ferry staging systems:
+
+- Added a compact Geoscape route timeline panel for active interceptor and Skyranger ferry sorties.
+- Timeline rows show queued, active, and completed ferry, refuel, attack, incident, and return legs.
+- Staged interceptor post-attack decisions now summarize the staging base, origin base, and return-home route.
+- Friendly staging-base arrival/refuel remains a non-combat route phase rather than a base attack.
+- Cleaned the backup reminder funds line so corrupted replacement characters no longer appear before Funds.
+- Build Health coverage now checks staged interceptor timeline/decision restoration and staged Skyranger ferry/refuel/incident/return route summaries.
+
+Verification checklist:
+
+- `node tools\\check-aegis-build.cjs` passed for `v0.26.07.12.1115_STAGED_SORTIE_ROUTE_TIMELINE_AND_RETURN_DECISION_RESTORE_INDEX_ONLY_PATCH`.
+- Static app-script parse passed.
+- Browser smoke passed from `http://127.0.0.1:5173/index.html`: start screen, first base confirmation, and main Geoscape load.
+- Browser Build Health passed `228/228`, including the staged route timeline rows.
+- Browser console errors were clear.
+- Manual follow-up should launch a ferry-staged interceptor and Skyranger to confirm the route panel is readable during live travel.
+
+Next recommended patch: `STAGED_SORTIE_MANUAL_FLOW_AND_FERRY_RETURN_PLAYTEST_INDEX_ONLY`, focused on manual staged-sortie playtest findings, attack-again/ferry-home flow polish, and any remaining route visualization edge cases. Near-term tactical candidate after the ferry/staged-sortie flow is stable: `TACTICAL_THREEJS_ALIEN_INCIDENT_BATTLE_POLISH_INDEX_ONLY`.
+
+## Roadmap Addition - Tactical Three.js Alien Incident Battle Polish
+
+Future patch candidate: `TACTICAL_THREEJS_ALIEN_INCIDENT_BATTLE_POLISH_INDEX_ONLY`.
+
+Goal: improve the Three.js battle option for alien incidents so it becomes a clearer, more satisfying tactical choice rather than a novelty beside auto-resolve/classic simulation.
+
+Planned scope:
+
+- Improve tactical camera framing, zoom defaults, and unit readability on the Three.js battlefield.
+- Make soldier and alien silhouettes, facing, movement paths, cover, overwatch/shot intent, hit/miss feedback, and deaths easier to read.
+- Keep alien incidents, landed UFO missions, crash sites, and future terror missions using a shared tactical battle presentation where possible.
+- Preserve existing tactical simulation helpers, mission reports, soldier XP/wounds/KIA handling, equipment recovery, and local-base Skyranger return logic.
+- Keep tactical mode isolated from Geoscape clock advancement until the mission resolves.
+- Add small tactical UI affordances for selected unit, current weapon, cover/line-of-sight hints, and end-turn/resolve state.
+- Add Build Health coverage for tactical Three.js initialization, selected-unit display, cover/LOS consistency, hit/miss event rendering metadata, mission completion handoff, and no-regression auto-resolve/classic lineup paths.
+
+Design note: this should remain an index-only polish pass until the tactical architecture is ready for a larger extraction. Avoid a broad tactical rewrite; make the current Three.js option visibly better and easier to test.
+
+
+## v0.26.07.12.1140 - Tactical Three.js Readability Seed
+
+Build `v0.26.07.12.1140_TACTICAL_THREEJS_READABILITY_SEED_INDEX_ONLY_PATCH` starts the tactical Three.js alien-incident polish roadmap without changing save format:
+
+- Added a compact tactical readability overlay for the Three.js battle view that summarizes selected unit, weapon kind, cover state, HP/TU, current turn, and fire mode.
+- Added a deterministic helper for tactical readability text so future camera/LOS/selection polish has a tested contract.
+- Added Build Health coverage for the tactical readability overlay helper while preserving the existing Three.js tactical battlemap coverage.
+
+Verification checklist:
+
+- `node tools\\check-aegis-build.cjs` passed for `v0.26.07.12.1140_TACTICAL_THREEJS_READABILITY_SEED_INDEX_ONLY_PATCH`.
+- Static app-script parse passed.
+- Browser Build Health should include the new Three.js tactical readability row on the next manual/browser pass.
+
+Next recommended patch remains `STAGED_SORTIE_MANUAL_FLOW_AND_FERRY_RETURN_PLAYTEST_INDEX_ONLY` for live ferry-route playtest hardening, with `TACTICAL_THREEJS_ALIEN_INCIDENT_BATTLE_POLISH_INDEX_ONLY` queued as the next tactical polish lane.
