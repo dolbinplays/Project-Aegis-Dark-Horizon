@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-12  
-Current handoff build: `v0.26.07.13.0030_TACTICAL_THREEJS_PERFORMANCE_AND_TIMEOUT_HARDENING_INDEX_ONLY_PATCH`  
-Current patch status: **The Three.js tactical renderer now defaults to conservative hardware-aware settings, caps expensive overview sizes, removes redundant meshes/lights/shadows, and renders idle scenes on demand. Browser Build Health passes 246/246 and a live Performance-mode 32x32 overview loads without console errors.**
+Current handoff build: `v0.26.07.13.0100_TACTICAL_THREEJS_INSTANCED_GROUND_AND_FAILSAFE_RECOVERY_INDEX_ONLY_PATCH`  
+Current patch status: **Three.js tactical ground now renders as one colorized instanced mesh with edge-to-edge pointy-hex spacing. New campaigns enter tactical combat in the reliable 2D view, while persistent Auto, Performance, and Quality controls are available on both the main menu and tactical screen. Browser Build Health passes 247/247; a live 26x26 Performance-mode isometric mission loaded with one canvas and no launch timeout.**
 
 ---
 
@@ -48,10 +48,16 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.13.0030_TACTICAL_THREEJS_PERFORMANCE_AND_TIMEOUT_HARDENING_INDEX_ONLY_PATCH`
+`v0.26.07.13.0100_TACTICAL_THREEJS_INSTANCED_GROUND_AND_FAILSAFE_RECOVERY_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- A single colorized `THREE.InstancedMesh` for tactical ground instead of one mesh per visible hex, while preserving instance-aware cell picking.
+- Exact pointy-hex center spacing plus a tiny overlap so neighboring ground hexes meet edge to edge without blue seams.
+- A reliable 2D tactical default for new campaigns; players opt into Three.js with the explicit `3D Iso` control.
+- A Three.js context-loss/missing-instancing recovery path that returns to the playable 2D battlefield instead of leaving a stalled mission.
+- Persistent Auto, Performance, and Quality controls on the main menu so lower-powered PCs can arm Performance mode before launching a mission.
+- Build Health coverage for instanced-ground budgets, instance picking, gapless hex spacing, main-menu preference wiring, and 2D recovery.
 - Persistent Auto, Performance, and Quality controls beside the Three.js tactical view selector.
 - Conservative Auto hardware detection that selects Performance on lower/unknown memory-core profiles and balanced settings only on stronger profiles.
 - Performance mode: 1x pixel ratio, antialiasing off, shadows off, Lambert materials, six local lights, 32x32 maximum 3D overview, lower-detail rings, and no redundant fog meshes.
@@ -1217,7 +1223,9 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-On the affected PC, first run a normal 26x26 Three.js mission in Auto, then select Map while Performance is active and confirm the capped 32x32 view remains responsive through unit selection, movement, firing, End Turn, and a victory. Only test Quality after Performance is stable. Continue the day/night building readability checks and retain the outstanding multi-base relocation queue save/reload validation from build 1830.
+On the affected PC, choose Performance on the main menu before starting or loading a campaign, launch a normal incident, confirm tactical combat opens safely in 2D, then select `3D Iso`. Verify the 26x26 Performance map remains responsive through unit selection, movement, firing, End Turn, and victory. Next select Map and confirm the capped 32x32 overview remains responsive. Only test Quality after Performance is stable. Continue the day/night building readability checks and retain the outstanding multi-base relocation queue save/reload validation from build 1830.
+
+If the affected PC still stalls in Performance after the instanced-ground patch, the next bounded diagnostic patch is `TACTICAL_THREEJS_SCENE_TELEMETRY_AND_COVER_INSTANCING_INDEX_ONLY`, adding player-readable renderer timing/count diagnostics and moving repeated cover/prop geometry into instanced batches. If Performance is stable, resume `TACTICAL_CIVILIANS_RESCUE_BREACH_AND_POWER_FEEDBACK_INDEX_ONLY`.
 
 Focus verification on:
 - Build New Base placement showing dotted ferry links from the proposed new site to existing bases when current aircraft can fly the one-way leg.
@@ -2863,6 +2871,36 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.13.0100 - Three.js Instanced Ground and Failsafe Recovery
+
+Build `v0.26.07.13.0100_TACTICAL_THREEJS_INSTANCED_GROUND_AND_FAILSAFE_RECOVERY_INDEX_ONLY_PATCH` preserves save format 4 and removes the largest remaining per-map Three.js ground allocation while making isometric combat opt-in and recoverable.
+
+Implemented changes:
+
+- Replaced hundreds of individual tactical ground meshes with one colorized `THREE.InstancedMesh`; instance IDs map back to authoritative tactical cells for selection and movement picking.
+- Standardized the ground transform on exact pointy-hex spacing (`sqrt(3) * radius` horizontally and `1.5 * radius` vertically) with a 1.2 percent overlap to eliminate visible seams between neighboring tiles.
+- Performance mode now budgets one ground mesh while preserving terrain colors, height, fog visibility, edge cells, and tactical simulation data.
+- New campaigns enter manual tactical combat in 2D Hex. Three.js remains available through the explicit `3D Iso` control and does not change tactical rules.
+- Missing Three.js instancing support or a lost WebGL context automatically returns the mission to 2D with a readable recovery notice.
+- Auto, Performance, and Quality controls now appear on the main menu and persist through the existing local preference key, allowing Performance to be selected before any battle loads.
+- Build Health includes `Three.js tactical instanced ground preserves picking gapless hexes and 2D recovery`.
+
+Verification checklist:
+
+- `node tools\\check-aegis-build.cjs` passed with the 0100 manifest/build seams.
+- Browser Build Health passed `247/247`.
+- Localhost smoke passed through the start screen, main-menu Performance selection, first-base confirmation, squad assignment, mission launch, and Skyranger arrival.
+- The mission opened in 2D Hex, then switched successfully to a live 26x26 Three.js Performance map with one 648x640 canvas.
+- The Three.js readout reported `Wilderness - Night - Performance`, confirming that the pre-battle main-menu preference was honored.
+
+Manual validation still required:
+
+- On the affected PC, select Performance on the main menu and complete a full Three.js mission, including selection, movement, firing, End Turn, and victory.
+- Confirm adjoining ground hexes visually meet edge to edge at Near, Close, and Map zoom levels.
+- Confirm deliberate WebGL interruption or graphics-driver reset returns to 2D rather than trapping the campaign, if such a test can be performed safely.
+
+Next recommended patch: `TACTICAL_THREEJS_SCENE_TELEMETRY_AND_COVER_INSTANCING_INDEX_ONLY` only if the affected PC still stalls. Otherwise continue `TACTICAL_CIVILIANS_RESCUE_BREACH_AND_POWER_FEEDBACK_INDEX_ONLY`.
 
 ## v0.26.07.13.0030 - Three.js Tactical Performance and Timeout Hardening
 
