@@ -1,7 +1,7 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.07.12.1715_AIRCRAFT_RELOCATION_RESERVATIONS_AND_ROUND_BASED_MISSION_TIME_INDEX_ONLY_PATCH",
+  "currentBuild": "v0.26.07.12.1830_RELOCATION_QUEUE_CLASSIC_DANCE_AND_TERMINATOR_MAP_INDEX_ONLY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
@@ -26,5 +26,5 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.07.12.1715_AIRCRAFT_RELOCATION_RESERVATIONS_AND_ROUND_BASED_MISSION_TIME_INDEX_ONLY_PATCH"
+  "lastInspectedBuild": "v0.26.07.12.1830_RELOCATION_QUEUE_CLASSIC_DANCE_AND_TERMINATOR_MAP_INDEX_ONLY_PATCH"
 }

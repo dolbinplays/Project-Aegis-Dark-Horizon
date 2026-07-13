@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-12  
-Current handoff build: `v0.26.07.12.1715_AIRCRAFT_RELOCATION_RESERVATIONS_AND_ROUND_BASED_MISSION_TIME_INDEX_ONLY_PATCH`  
-Current patch status: **Aircraft relocations now reserve destination hangars across save/load, alien incident duration advances by combat rounds instead of consuming a full day, the Three.js tactical viewport preserves vertical proportions, and every tactical presentation celebrates surviving soldiers on victory. Browser Build Health passes 240/240.**
+Current handoff build: `v0.26.07.12.1830_RELOCATION_QUEUE_CLASSIC_DANCE_AND_TERMINATOR_MAP_INDEX_ONLY_PATCH`  
+Current patch status: **Aircraft relocation orders can queue with visible destination-hangar reservations, the classic lineup victory dance moves only soldier paper dolls, and the Geoscape can switch between the solid globe and a clock-synchronized global day/night terminator map. Browser Build Health passes 243/243.**
 
 ---
 
@@ -48,10 +48,18 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.12.1715_AIRCRAFT_RELOCATION_RESERVATIONS_AND_ROUND_BASED_MISSION_TIME_INDEX_ONLY_PATCH`
+`v0.26.07.12.1830_RELOCATION_QUEUE_CLASSIC_DANCE_AND_TERMINATOR_MAP_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- A persistent Globe / Terminator Map segmented control on the Geoscape and first-base site view.
+- A full-world flat map using the existing detailed landmass geometry and current Project Aegis map colors.
+- A smooth day/night mask calculated from the authoritative Geoscape month, day, and minute state; the subsolar point and terminator move whenever simulation time advances.
+- The same bases, incidents, detected UFOs, alien bases, aircraft, range rings, ferry links, and placement crosshair on the flat operational map.
+- A serial aircraft relocation queue foundation that reserves destination hangars immediately and keeps queued aircraft unavailable until their clock-tracked route begins.
+- Compact active/queued relocation summaries naming craft, destination, route, ETA, and reservation state.
+- A classic-lineup victory-animation correction so only paper dolls dance while their information cards remain stable.
+- Build Health rows for relocation queue reservations, classic paper-doll-only dancing, and the clock-synchronized terminator map.
 - Staged Skyranger and interceptor markers now show compact current phase labels on the Geoscape globe, such as ferry, refuel, attack, and return phases.
 - The Geoscape globe now includes a small Solar readout in the globe header so the player can tell whether the visible terminator is daylight, night side, dawn, or dusk.
 - Day/night lighting is more readable through stronger terminator placement, a brighter sun glow, more visible twilight line, and synchronized Three.js ambient/back-light intensity.
@@ -1175,7 +1183,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Manually validate a multi-base Send Home/Rebase flight in the affected campaign, including save/reload while airborne and destination-hangar reservation visibility. Also visually compare the taller Three.js battlefield with the 2D hex view and confirm surviving soldiers dance on the final victory frame in manual 2D, Three.js, simulation-map, and classic-lineup presentations.
+Manually validate the serial aircraft relocation queue in a multi-base campaign, including save/reload while an order is queued, then compare Globe and Terminator Map modes while advancing Geoscape time. Also confirm the classic lineup keeps soldier cards still while only surviving paper dolls dance on victory.
 
 Focus verification on:
 - Build New Base placement showing dotted ferry links from the proposed new site to existing bases when current aircraft can fly the one-way leg.
@@ -2785,7 +2793,7 @@ Verification checklist:
 - Let a UFO disappear after a staged pass and confirm re-attack is disabled while Ferry Back Home remains available.
 - Run a staged Skyranger incident and confirm the return timeline reaches its original base after the mission.
 
-Next recommended patch: `STAGED_SORTIE_MANUAL_FLOW_AND_FERRY_RETURN_PLAYTEST_INDEX_ONLY`, focused on live multi-base route behavior and any remaining visual/state findings after this logic hardening.
+Next recommended patch: `AIRCRAFT_RELOCATION_QUEUE_CANCELLATION_AND_CONCURRENT_FLIGHT_PREP_INDEX_ONLY`, focused on canceling queued orders safely, returning reservations to the correct hangar state, and separating serial queue ownership from the future multi-flight travel model.
 
 ## v0.26.07.12.1415 - Geoscape Ferry Network Overlay
 
@@ -2821,6 +2829,41 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.12.1830 - Relocation Queue, Classic Dance, and Terminator Map
+
+Build `v0.26.07.12.1830_RELOCATION_QUEUE_CLASSIC_DANCE_AND_TERMINATOR_MAP_INDEX_ONLY_PATCH` preserves save format 4 while extending relocation logistics and adding an alternate operational world view.
+
+Implemented changes:
+
+- Send Home/Rebase requests made while another aircraft route is active can enter a conservative serial queue instead of failing outright.
+- Queued craft are marked unavailable, retain origin/home identity, and reserve their destination hangar immediately.
+- Queue state is included in campaign saves, normalized on load, and reconciled with existing active-route reservations.
+- The Geoscape Ferry / Refuel Staging area lists active and queued relocation routes with craft, destination, route, ETA, and hangar reservation.
+- Invalid or orphaned queued orders release their reservation and recover the affected craft safely.
+- The classic-lineup victory celebration applies animation to the soldier paper-doll group only; the surrounding status card remains still.
+- A persistent segmented control switches the Geoscape between the solid interactive globe and a full-world day/night terminator map.
+- The terminator map reuses the detailed Geoscape land geometry plus bases, incidents, detected UFOs, alien bases, active aircraft, range overlays, ferry links, and placement previews.
+- A continuous solar mask derives from the authoritative Geoscape clock. Advancing one Geoscape hour moves the subsolar longitude 15 degrees and redraws the day/night boundary.
+- The flat map remains interactive for incident selection and land-site placement, and its view preference is stored separately from campaign saves.
+
+Verification checklist:
+
+- Static app-script parsing passed.
+- `node tools\\check-aegis-build.cjs` passed with the 1830 manifest and required seams.
+- Localhost browser smoke passed through start screen, first-base setup, map-mode switching, first-base confirmation, and main Geoscape.
+- The Terminator Map rendered at 720x360 with detailed opaque landmasses, both opening incident markers, range previews, and a smooth clock-driven solar mask.
+- A practical `Tick +1h` changed the displayed subsolar longitude from E60 to E45, confirming synchronization with Geoscape time.
+- Browser Build Health passed `243/243`, including relocation queue, classic paper-doll dance, and terminator-map rows.
+
+Manual validation still required:
+
+- Queue two real aircraft relocation orders in a multi-base campaign and save/reload before the second begins.
+- Confirm a queued destination hangar clearly remains reserved and cannot be claimed by another aircraft/order.
+- Watch a classic-lineup victory and confirm cards stay fixed while surviving paper dolls dance.
+- Compare the Globe and Terminator Map during active UFO/aircraft movement and confirm all operational markers remain readable on both day and night sides.
+
+Next recommended patch: `AIRCRAFT_RELOCATION_QUEUE_CANCELLATION_AND_CONCURRENT_FLIGHT_PREP_INDEX_ONLY`.
 
 ## v0.26.07.12.1715 - Aircraft Relocation Reservations and Round-Based Mission Time
 

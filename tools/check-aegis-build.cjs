@@ -24,6 +24,7 @@ const required = [
   "Attached save supports reserved-home and multi-hop interceptor ferry routes",
   "Ready aircraft can ferry home or rebase through clock-tracked routes",
   "Aircraft relocation reserves destination hangars across save resume",
+  "Aircraft relocation queue preserves reservations and unavailable status",
   "Alien incident duration advances by combat rounds instead of a full day",
   "Aircraft ferry range and home return preserve direct staged and repeat-attack routes",
   "Staged aircraft routes display origin ferry legs",
@@ -38,6 +39,8 @@ const required = [
   "Procedural tactical biomes generate wilderness streams city roads farms and small towns",
   "Three.js isometric tactical framing preserves vertical proportions",
   "All tactical battle views animate surviving soldiers after victory",
+  "Classic lineup victory dance moves paper dolls without moving soldier cards",
+  "Day-night terminator map follows Geoscape clock and preserves operational layers",
   "runSelfTests"
 ];
 
