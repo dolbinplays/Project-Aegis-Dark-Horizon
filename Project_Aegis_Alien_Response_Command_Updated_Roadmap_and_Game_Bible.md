@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-12  
-Current handoff build: `v0.26.07.12.1830_RELOCATION_QUEUE_CLASSIC_DANCE_AND_TERMINATOR_MAP_INDEX_ONLY_PATCH`  
-Current patch status: **Aircraft relocation orders can queue with visible destination-hangar reservations, the classic lineup victory dance moves only soldier paper dolls, and the Geoscape can switch between the solid globe and a clock-synchronized global day/night terminator map. Browser Build Health passes 243/243.**
+Current handoff build: `v0.26.07.12.1900_TACTICAL_BUILDING_ARCHETYPES_AND_INTERIORS_INDEX_ONLY_PATCH`  
+Current patch status: **Tactical incidents now generate original biome-specific buildings with passable doors, blocking/destructible walls, windows, interior floors, and furnishings shared by the 2D Hex and Three.js cutaway views. Browser Build Health passes 244/244.**
 
 ---
 
@@ -48,10 +48,17 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.12.1830_RELOCATION_QUEUE_CLASSIC_DANCE_AND_TERMINATOR_MAP_INDEX_ONLY_PATCH`
+`v0.26.07.12.1900_TACTICAL_BUILDING_ARCHETYPES_AND_INTERIORS_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- Deterministic tactical building districts inspired by the readable, roofless battlefield architecture of early alien-defense strategy games while using original Project Aegis layouts and names.
+- Urban Municipal Records Offices, Corner Markets, and Vehicle Workshops; small-town Diners, Residences, and Fire Stations; Farmhouses and Equipment Barns; and wilderness Ranger Outposts.
+- Shared building plans for 2D Hex and Three.js, including passable door gaps, hard walls, partial-cover windows, interior floors, counters, tables, shelves, and storage racks.
+- Building walls participate in existing hit points, shot absorption, pathfinding, fog of war, and line-of-sight rules instead of being decorative scenery.
+- Roofless Three.js cutaway walls and glass plus distinct 2D wall/window/furnishing artwork.
+- Tactical status and event-log summaries that name the generated structures without revealing hidden occupants.
+- Build Health coverage for biome variety, doors, walls, windows, furnishings, interior terrain, both render paths, and safe unit deployment.
 - A persistent Globe / Terminator Map segmented control on the Geoscape and first-base site view.
 - A full-world flat map using the existing detailed landmass geometry and current Project Aegis map colors.
 - A smooth day/night mask calculated from the authoritative Geoscape month, day, and minute state; the subsolar point and terminator move whenever simulation time advances.
@@ -1054,6 +1061,9 @@ Completed:
 - Shot/death timing sync.
 - Classic Lineup Sim View restoration.
 - Simulated/classic playback speed controls: Slow, Normal, Fast, and Instant.
+- Deterministic nature, farm, small-town, and city terrain shared by 2D and Three.js tactical views.
+- Original biome-specific building archetypes with roofless cutaway presentation, doors, windows, destructible walls, interior floors, and furnishings.
+- Building geometry participates in tactical movement, deployment, cover, fog of war, and line of sight.
 
 Still planned:
 - Tactical event log.
@@ -1062,6 +1072,9 @@ Still planned:
 - Battlefield-space optimization.
 - Simulated mission sprite consistency.
 - Improve the Three.js battle option for alien incidents so manual tactical missions feel more readable, responsive, and worth choosing over auto-resolve.
+- Add deliberate building-breach interactions, fire/smoke propagation, and clearer damaged-wall/window states.
+- Add civilians, rescue/extraction zones, and structure-specific objectives for terror, abduction, harvest, and supply missions.
+- Explore upper floors, stairs, and roof visibility only after the single-level cutaway maps remain readable and performant.
 
 Possible next Stage 3 patch:
 `TACTICAL_EVENT_LOG_AND_FEEDBACK_PASS_INDEX_ONLY`
@@ -1183,7 +1196,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Manually validate the serial aircraft relocation queue in a multi-base campaign, including save/reload while an order is queued, then compare Globe and Terminator Map modes while advancing Geoscape time. Also confirm the classic lineup keeps soldier cards still while only surviving paper dolls dance on victory.
+Manually play one wilderness/farm incident and one small-town/city incident in both 2D Hex and Three.js modes. Confirm walls, windows, doors, interiors, furnishings, fog of war, and pathfinding remain readable. Also retain the outstanding multi-base relocation queue save/reload validation from build 1830.
 
 Focus verification on:
 - Build New Base placement showing dotted ferry links from the proposed new site to existing bases when current aircraft can fly the one-way leg.
@@ -2829,6 +2842,41 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.12.1900 - Tactical Building Archetypes and Interiors
+
+Build `v0.26.07.12.1900_TACTICAL_BUILDING_ARCHETYPES_AND_INTERIORS_INDEX_ONLY_PATCH` preserves save format 4 and expands the procedural tactical battlefield with original early-alien-defense-inspired structures.
+
+Implemented changes:
+
+- Added deterministic building plans for all four tactical biome families.
+- City districts can contain a Municipal Records Office, Corner Market, and Vehicle Workshop.
+- Small towns can contain a Roadside Diner, Family Residence, and Volunteer Fire Station.
+- Farmland can contain a Farmhouse and Equipment Barn; wilderness can contain a Ranger Outpost.
+- Each structure has an original footprint, one or more passable doors, hard/destructible wall cells, partial-cover window cells, distinct interior flooring, and interior cover props.
+- Building placement avoids roads, service lanes, streams, and irrigation channels while leaving navigable exterior space.
+- Random terrain cover no longer spawns inside planned building footprints.
+- The 2D Hex view renders distinct brick, plaster, metal, timber, window, shelf, rack, counter, and table silhouettes.
+- The Three.js view renders roofless cutaway wall sections, translucent blue window panes, and raised interior furnishings.
+- Both views consume the same terrain and cover records, preserving movement, TU, line of sight, fog, weapon, damage, and AI rules.
+- Tactical status and event logs identify the generated district structures without revealing hidden units.
+
+Verification checklist:
+
+- Static app-script parsing passed.
+- `node tools\\check-aegis-build.cjs` passed for the 1900 manifest/build seams.
+- Localhost browser smoke passed through start screen, first-base confirmation, squad assignment, mission confirmation, Skyranger travel, and Three.js tactical launch.
+- Browser Build Health passed `244/244`, including `Tactical building archetypes share passable interiors across 2D and Three.js maps`.
+- The deterministic test covers biome variety, six or more distinct structure names, blocking walls, partial windows, furnishings, passable doors, interior terrain, renderer support, and safe human/alien deployment.
+
+Manual validation still required:
+
+- Explore a wilderness/farm map and verify the outpost/farm structures read clearly after fog is revealed.
+- Explore a small-town/city map in both 2D and Three.js and compare door, window, interior, and wall readability.
+- Shoot structural wall/window cells and confirm their existing cover HP/destruction behavior feels appropriate.
+- Confirm soldiers and aliens route through door gaps rather than clipping through hard wall cells.
+
+Next recommended tactical patch: `TACTICAL_BUILDING_BREACHES_CIVILIANS_AND_OBJECTIVES_INDEX_ONLY`, adding clearer damaged structure states, controlled breach interactions, civilians/rescue zones, and mission-intent-specific objectives. Parallel strategic follow-up remains `AIRCRAFT_RELOCATION_QUEUE_CANCELLATION_AND_CONCURRENT_FLIGHT_PREP_INDEX_ONLY`.
 
 ## v0.26.07.12.1830 - Relocation Queue, Classic Dance, and Terminator Map
 

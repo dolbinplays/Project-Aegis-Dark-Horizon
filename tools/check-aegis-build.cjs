@@ -37,6 +37,7 @@ const required = [
   "Three.js tactical readability overlay summarizes selected unit cover weapon and turn",
   "Three.js tactical incident battle polish shows terrain colors LOS movement ammo and 3D defaults",
   "Procedural tactical biomes generate wilderness streams city roads farms and small towns",
+  "Tactical building archetypes share passable interiors across 2D and Three.js maps",
   "Three.js isometric tactical framing preserves vertical proportions",
   "All tactical battle views animate surviving soldiers after victory",
   "Classic lineup victory dance moves paper dolls without moving soldier cards",
