@@ -2877,6 +2877,49 @@ Verification checklist:
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
 
+## v0.26.07.13.0125 - Isometric Skyranger Single Craft and Ramp
+
+Build `v0.26.07.13.0125_TACTICAL_ISOMETRIC_SKYRANGER_SINGLE_CRAFT_AND_RAMP_INDEX_ONLY_PATCH` preserves save format 4 and replaces the modular-looking isometric Skyranger hull with one cohesive aircraft and attached rear extraction ramp.
+
+Visual scope implemented:
+
+- Three.js no longer renders one box or panel for every Skyranger collision cell. Hull and ramp cover cells remain gameplay-only in the isometric renderer.
+- One aligned `Skyranger` group now represents the complete transport with a continuous fuselage, lower hull, raised cabin, tapered nose, cockpit, wings, twin engines, tailplanes, vertical tail, rear cargo opening, and cargo floor.
+- A single sloped rear ramp is visibly attached to the cargo opening. Ramp rails and transverse deck stripes make the civilian extraction route readable from the tactical camera.
+- The craft uses the existing deterministic Skyranger placement and body direction, so the visual rear ramp remains aligned with the same passable extraction cells used by 2D, pathfinding, and civilian escort logic.
+- The model uses one bounded group of fixed primitive meshes and adds no dynamic lights, animation loop, per-cell model generation, or save data.
+
+Preserved behavior:
+
+- Safe 2D keeps its multi-cell hull and ramp indicators for precise tactical path reading.
+- Civilian escort capacity, breadcrumb following, panic, recovery, extraction rewards, and ramp-cell traversal are unchanged.
+- Port visibility, indexed cover lookup, reachable-cell flood fill, lighting removal, and safe-2D default remain unchanged.
+
+Verification checklist:
+
+- Static app-script parsing passed 6/6.
+- `node tools\check-aegis-build.cjs` passed for build 0125, and the checker passed `node --check`.
+- Browser Build Health passed 254/254, including the cohesive Three.js craft and attached-ramp contract.
+- The localhost start screen displayed build 0125, first-base confirmation reached the Geoscape, and a six-soldier 64 x 64 safe-2D mission launched with the unchanged 26-cell hull footprint and five passable ramp cells.
+- Three.js Performance mode rendered a nonblank 648 x 640 canvas. Visual inspection at Near and Close zoom confirmed one continuous aircraft silhouette with cockpit, fuselage, wings, engines, tail, rear cargo opening, and one attached ramp facing the deployed soldiers.
+- Three.js Quality mode rendered the same craft on a nonblank 800 x 750 canvas without a runtime error.
+- Three End Turn cycles in isometric Close view returned to human control in 915ms, 856ms, and 841ms.
+- Final browser console inspection found no errors. The only current-page message was the existing Tailwind CDN production advisory.
+
+Manual validation still required:
+
+- Inspect the Skyranger in Three.js Performance and Quality modes at Near and Close zoom. Confirm it reads as one aircraft rather than separate cover pieces.
+- Walk a soldier and escorted civilians onto the rear ramp. Confirm the visible ramp aligns with the cyan extraction cells and civilians extract normally.
+- Repeat the exact affected high-threat Port Attack in safe 2D to retain authoritative performance validation.
+
+Remaining risks:
+
+- The fixed primitive model is intentionally gameplay-readable rather than final aircraft art; proportions and colors may still benefit from art-direction tuning.
+- Wing overhang is visual and does not expand the underlying five-hex-wide collision footprint.
+- The exact high-threat Port Attack save remains the authoritative performance case.
+
+Next recommended patch: `TACTICAL_ESCORT_FORMATION_COLLISION_AND_PANIC_BALANCE_INDEX_ONLY`, after hands-on ramp alignment and multi-civilian escort validation.
+
 ## v0.26.07.13.0124 - Tactical Skyranger Ramp, Civilian Escorts, and Panic
 
 Build `v0.26.07.13.0124_TACTICAL_SKYRANGER_RAMP_CIVILIAN_ESCORT_AND_PANIC_INDEX_ONLY_PATCH` preserves save format 4 and replaces instant civilian extraction with physical escort gameplay tied to a deployed Skyranger.

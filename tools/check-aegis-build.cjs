@@ -45,6 +45,7 @@ const required = [
   "Tactical civilians rescue actions and breach feedback share 2D and 3D state",
   "Tactical rescue extraction state and mission-intent rewards stay distinct from casualties",
   "Skyranger ramp civilian escorts follow bounded paths and recover from panic",
+  "Three.js Skyranger renders one cohesive craft with attached extraction ramp",
   "Geoscape range and ferry controls share one operational overlay section",
   "Port tactical visibility and turns use indexed bounded passes",
   "Three.js isometric tactical framing preserves vertical proportions",
