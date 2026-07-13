@@ -41,6 +41,7 @@ const required = [
   "Tactical enclosures vehicles and local lights shape shared battlefield visibility",
   "Three.js tactical performance mode caps expensive rendering and idles on demand",
   "Three.js tactical instanced ground preserves picking gapless hexes and 2D recovery",
+  "Tactical lighting cache keeps local-light visibility bounded",
   "Port tactical visibility and turns use indexed bounded passes",
   "Three.js isometric tactical framing preserves vertical proportions",
   "All tactical battle views animate surviving soldiers after victory",

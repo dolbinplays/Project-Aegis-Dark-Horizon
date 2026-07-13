@@ -1,9 +1,9 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-07-12  
-Current handoff build: `v0.26.07.13.0120_TACTICAL_PORT_2D_VISIBILITY_AND_TURN_PERFORMANCE_FIX_INDEX_ONLY_PATCH`  
-Current patch status: **Safe 2D tactical launch and turn processing now use cached, indexed visibility plus a single reachable-cell flood fill instead of repeated full-map scans and per-destination pathfinding. Browser Build Health passes 248/248; a live six-soldier 2D mission launched without a stall and completed three End Turn cycles with no runtime errors. The player's exact high-threat Port Attack remains the final manual performance check.**
+Last updated: 2026-07-13  
+Current handoff build: `v0.26.07.13.0121_TACTICAL_LIGHTING_CACHE_PERFORMANCE_INDEX_ONLY_PATCH`  
+Current patch status: **Safe 2D tactical visibility now caches per-cell local-light intensity inside the shared visibility context, avoiding repeated scans of all building, lamp, and vehicle light sources during line-of-sight checks. Browser Build Health passes 249/249; a live six-soldier safe-2D mission launched, reached the 64x64 tactical map, selected a soldier, and completed three End Turn cycles with no runtime errors. The player's exact high-threat Port Attack remains the final manual performance check.**
 
 ---
 
@@ -48,11 +48,11 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.13.0120_TACTICAL_PORT_2D_VISIBILITY_AND_TURN_PERFORMANCE_FIX_INDEX_ONLY_PATCH`
+`v0.26.07.13.0121_TACTICAL_LIGHTING_CACHE_PERFORMANCE_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
-- A shared tactical visibility context that caches local light sources and indexes cover by cell instead of rebuilding and rescanning those collections for every line-of-sight query.
+- A shared tactical visibility context that caches local light sources, per-cell local-light intensity, and indexed cover lookups instead of rebuilding or rescanning those collections for every line-of-sight query.
 - A bounded human-visibility pass that visits only cells within observer vision range, deduplicates overlap, and exposes constant-time visible-cell membership to both tactical renderers.
 - A single breadth-first reachable-cell flood fill for soldier selection instead of running a separate path search for every candidate destination.
 - Removal of redundant 64x64 visibility scans during reveal/exploration and cover-reveal updates.
@@ -2877,34 +2877,34 @@ Verification checklist:
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
 
-## v0.26.07.13.0120 - Port 2D Visibility and Turn Performance Fix
+## v0.26.07.13.0121 - Tactical Lighting Cache Performance Fix
 
-Build `v0.26.07.13.0120_TACTICAL_PORT_2D_VISIBILITY_AND_TURN_PERFORMANCE_FIX_INDEX_ONLY_PATCH` preserves save format 4 and removes the largest renderer-independent tactical CPU spikes reported while launching and playing a Port Attack in safe 2D.
+Build `v0.26.07.13.0121_TACTICAL_LIGHTING_CACHE_PERFORMANCE_INDEX_ONLY_PATCH` preserves save format 4 and targets the remaining renderer-independent tactical CPU pressure from local lighting during safe-2D alien incident battles.
 
 Root causes addressed:
 
 - Tactical state changes scanned all 4,096 map cells and recalculated human visibility for each cell.
-- Each visibility calculation rebuilt local light sources, iterated all living soldiers, and searched the entire cover list during every line-of-sight step.
+- Each visibility calculation could still rescan all local light sources for target and observer cells during repeated line-of-sight checks, making lighting a likely contributor to the remaining Port Attack slowdown.
 - Cover reveal repeated much of the same visibility work after the full-map scan.
 - Selecting a soldier ran an independent breadth-first path search for every possible destination instead of computing the reachable area once.
 
 Implemented changes:
 
-- Added a shared visibility context with one cached light-source list and an indexed cover lookup.
-- Added a bounded, deduplicated visible-cell set shared by reveal logic and both tactical renderers.
-- Replaced per-destination pathfinding during soldier selection with one bounded reachable-cell flood fill.
-- Removed redundant full-map visibility and cover-reveal passes while preserving fog, lighting, movement, and line-of-sight rules.
-- Added Build Health row `Port tactical visibility and turns use indexed bounded passes` with a deterministic Port Attack fixture.
+- Added per-cell local-light caching to the shared tactical visibility context so target and observer lighting are computed once per visibility pass.
+- Reused the cached lighting object in tactical vision range checks instead of recalculating mission solar/phase lighting per cell.
+- Preserved the existing indexed cover lookup, bounded visible-cell set, and single reachable-cell flood fill from the previous performance patch.
+- Added Build Health row `Tactical lighting cache keeps local-light visibility bounded` and strengthened the deterministic Port Attack fixture.
 
 Verification checklist:
 
-- `node tools\\check-aegis-build.cjs` passed with the 0120 manifest/build seams.
-- Static app-script parsing passed.
-- Browser Build Health passed `248/248`, including the new Port tactical performance row.
-- Localhost smoke passed through the 0120 start screen, main-menu Performance selection, first-base confirmation, full six-soldier squad assignment, mission launch, and safe 2D tactical arrival.
-- The live 64x64 2D battlefield became interactive in approximately 1.23 seconds, including the verification wait interval.
-- Three End Turn cycles completed in approximately 1.2 seconds each, including the built-in 450 ms alien-phase delay and an 800 ms verification wait; control returned to the player after every cycle.
-- No browser runtime or console errors surfaced during Build Health or the live tactical mission.
+- Static app-script parsing passed across all six inline scripts.
+- `node tools\\check-aegis-build.cjs` passed with the 0121 manifest/build seams.
+- Browser Build Health passed `249/249`, including `Tactical lighting cache keeps local-light visibility bounded` and `Port tactical visibility and turns use indexed bounded passes`.
+- Localhost smoke passed through the 0121 start screen, first-base confirmation, main Geoscape load, Build Health, full six-soldier squad assignment, mission launch confirmation, Skyranger travel, and safe-2D tactical arrival.
+- The live 64x64 2D battlefield became interactive after the Skyranger arrival tick in approximately 3.6 seconds, including the verification wait interval.
+- Soldier selection returned the selected soldier controls in approximately 1.1 seconds; DOM inspection confirmed the selected-cell ring and tactical controls, but visual movement-highlight feel still needs manual eyes-on testing.
+- Three End Turn cycles returned to the human turn in approximately 0.9-1.0 seconds each.
+- No browser runtime or console errors surfaced during Build Health or the live tactical mission; the only browser warning was Tailwind's CDN production warning.
 
 Manual validation still required:
 
