@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-12  
-Current handoff build: `v0.26.07.13.0100_TACTICAL_THREEJS_INSTANCED_GROUND_AND_FAILSAFE_RECOVERY_INDEX_ONLY_PATCH`  
-Current patch status: **Three.js tactical ground now renders as one colorized instanced mesh with edge-to-edge pointy-hex spacing. New campaigns enter tactical combat in the reliable 2D view, while persistent Auto, Performance, and Quality controls are available on both the main menu and tactical screen. Browser Build Health passes 247/247; a live 26x26 Performance-mode isometric mission loaded with one canvas and no launch timeout.**
+Current handoff build: `v0.26.07.13.0120_TACTICAL_PORT_2D_VISIBILITY_AND_TURN_PERFORMANCE_FIX_INDEX_ONLY_PATCH`  
+Current patch status: **Safe 2D tactical launch and turn processing now use cached, indexed visibility plus a single reachable-cell flood fill instead of repeated full-map scans and per-destination pathfinding. Browser Build Health passes 248/248; a live six-soldier 2D mission launched without a stall and completed three End Turn cycles with no runtime errors. The player's exact high-threat Port Attack remains the final manual performance check.**
 
 ---
 
@@ -48,10 +48,15 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.13.0100_TACTICAL_THREEJS_INSTANCED_GROUND_AND_FAILSAFE_RECOVERY_INDEX_ONLY_PATCH`
+`v0.26.07.13.0120_TACTICAL_PORT_2D_VISIBILITY_AND_TURN_PERFORMANCE_FIX_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- A shared tactical visibility context that caches local light sources and indexes cover by cell instead of rebuilding and rescanning those collections for every line-of-sight query.
+- A bounded human-visibility pass that visits only cells within observer vision range, deduplicates overlap, and exposes constant-time visible-cell membership to both tactical renderers.
+- A single breadth-first reachable-cell flood fill for soldier selection instead of running a separate path search for every candidate destination.
+- Removal of redundant 64x64 visibility scans during reveal/exploration and cover-reveal updates.
+- Build Health coverage for a deterministic Port Attack visibility/reachability workload and the new indexed tactical seams.
 - A single colorized `THREE.InstancedMesh` for tactical ground instead of one mesh per visible hex, while preserving instance-aware cell picking.
 - Exact pointy-hex center spacing plus a tiny overlap so neighboring ground hexes meet edge to edge without blue seams.
 - A reliable 2D tactical default for new campaigns; players opt into Three.js with the explicit `3D Iso` control.
@@ -1223,9 +1228,9 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-On the affected PC, choose Performance on the main menu before starting or loading a campaign, launch a normal incident, confirm tactical combat opens safely in 2D, then select `3D Iso`. Verify the 26x26 Performance map remains responsive through unit selection, movement, firing, End Turn, and victory. Next select Map and confirm the capped 32x32 overview remains responsive. Only test Quality after Performance is stable. Continue the day/night building readability checks and retain the outstanding multi-base relocation queue save/reload validation from build 1830.
+Load the affected campaign and launch the Port Attack in safe 2D. Confirm the battlefield becomes interactive without Windows reporting a timeout, selecting each soldier produces movement highlights promptly, and at least three End Turn cycles return control to the player normally. Record whether the slowdown occurs during launch, soldier selection, alien thinking, or 2D redraw if any pause remains. Continue the outstanding multi-base relocation queue save/reload validation from build 1830 after this tactical check.
 
-If the affected PC still stalls in Performance after the instanced-ground patch, the next bounded diagnostic patch is `TACTICAL_THREEJS_SCENE_TELEMETRY_AND_COVER_INSTANCING_INDEX_ONLY`, adding player-readable renderer timing/count diagnostics and moving repeated cover/prop geometry into instanced batches. If Performance is stable, resume `TACTICAL_CIVILIANS_RESCUE_BREACH_AND_POWER_FEEDBACK_INDEX_ONLY`.
+If the exact Port Attack still stalls after the indexed visibility/reachability patch, the next bounded diagnostic patch is `TACTICAL_AI_TURN_CHUNKING_AND_2D_DOM_VIRTUALIZATION_INDEX_ONLY`, adding phase timings and yielding large AI/render batches without changing tactical outcomes. If the Port Attack is stable, resume `TACTICAL_CIVILIANS_RESCUE_BREACH_AND_POWER_FEEDBACK_INDEX_ONLY`.
 
 Focus verification on:
 - Build New Base placement showing dotted ferry links from the proposed new site to existing bases when current aircraft can fly the one-way leg.
@@ -2871,6 +2876,43 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.13.0120 - Port 2D Visibility and Turn Performance Fix
+
+Build `v0.26.07.13.0120_TACTICAL_PORT_2D_VISIBILITY_AND_TURN_PERFORMANCE_FIX_INDEX_ONLY_PATCH` preserves save format 4 and removes the largest renderer-independent tactical CPU spikes reported while launching and playing a Port Attack in safe 2D.
+
+Root causes addressed:
+
+- Tactical state changes scanned all 4,096 map cells and recalculated human visibility for each cell.
+- Each visibility calculation rebuilt local light sources, iterated all living soldiers, and searched the entire cover list during every line-of-sight step.
+- Cover reveal repeated much of the same visibility work after the full-map scan.
+- Selecting a soldier ran an independent breadth-first path search for every possible destination instead of computing the reachable area once.
+
+Implemented changes:
+
+- Added a shared visibility context with one cached light-source list and an indexed cover lookup.
+- Added a bounded, deduplicated visible-cell set shared by reveal logic and both tactical renderers.
+- Replaced per-destination pathfinding during soldier selection with one bounded reachable-cell flood fill.
+- Removed redundant full-map visibility and cover-reveal passes while preserving fog, lighting, movement, and line-of-sight rules.
+- Added Build Health row `Port tactical visibility and turns use indexed bounded passes` with a deterministic Port Attack fixture.
+
+Verification checklist:
+
+- `node tools\\check-aegis-build.cjs` passed with the 0120 manifest/build seams.
+- Static app-script parsing passed.
+- Browser Build Health passed `248/248`, including the new Port tactical performance row.
+- Localhost smoke passed through the 0120 start screen, main-menu Performance selection, first-base confirmation, full six-soldier squad assignment, mission launch, and safe 2D tactical arrival.
+- The live 64x64 2D battlefield became interactive in approximately 1.23 seconds, including the verification wait interval.
+- Three End Turn cycles completed in approximately 1.2 seconds each, including the built-in 450 ms alien-phase delay and an 800 ms verification wait; control returned to the player after every cycle.
+- No browser runtime or console errors surfaced during Build Health or the live tactical mission.
+
+Manual validation still required:
+
+- Load the player's affected campaign and launch the exact high-threat Port Attack in safe 2D.
+- Confirm initial launch, soldier movement-range highlights, and at least three End Turn cycles remain responsive without Windows offering to close the page.
+- If a long pause remains, note the displayed tactical phase and whether it occurs before the map appears, on soldier selection, or during alien actions.
+
+Next recommended patch: `TACTICAL_AI_TURN_CHUNKING_AND_2D_DOM_VIRTUALIZATION_INDEX_ONLY` only if the affected Port Attack still stalls. Otherwise continue `TACTICAL_CIVILIANS_RESCUE_BREACH_AND_POWER_FEEDBACK_INDEX_ONLY`.
 
 ## v0.26.07.13.0100 - Three.js Instanced Ground and Failsafe Recovery
 
