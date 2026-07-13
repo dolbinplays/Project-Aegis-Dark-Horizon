@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-13  
-Current handoff build: `v0.26.07.13.0121_TACTICAL_LIGHTING_CACHE_PERFORMANCE_INDEX_ONLY_PATCH`  
-Current patch status: **Safe 2D tactical visibility now caches per-cell local-light intensity inside the shared visibility context, avoiding repeated scans of all building, lamp, and vehicle light sources during line-of-sight checks. Browser Build Health passes 249/249; a live six-soldier safe-2D mission launched, reached the 64x64 tactical map, selected a soldier, and completed three End Turn cycles with no runtime errors. The player's exact high-threat Port Attack remains the final manual performance check.**
+Current handoff build: `v0.26.07.13.0122_TACTICAL_LIGHTING_REMOVAL_CIVILIAN_RESCUE_BREACH_FEEDBACK_INDEX_ONLY_PATCH`  
+Current patch status: **Tactical illumination simulation is disabled so LOS uses a fixed 20-hex range and neither safe 2D nor Three.js builds local-light workloads. The first bounded civilian/rescue and breach-feedback slice adds neutral civilians, adjacent 8-TU extraction actions, marked extraction cells, civilian danger during alien turns, targetable structural walls/windows, damage-state badges, and passable breach rubble. Browser Build Health passes 250/250; a final six-soldier safe-2D mission showed 180 movement highlights and completed three End Turn cycles in about 1.17-1.20 seconds each without runtime errors.**
 
 ---
 
@@ -48,11 +48,11 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.13.0121_TACTICAL_LIGHTING_CACHE_PERFORMANCE_INDEX_ONLY_PATCH`
+`v0.26.07.13.0122_TACTICAL_LIGHTING_REMOVAL_CIVILIAN_RESCUE_BREACH_FEEDBACK_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
-- A shared tactical visibility context that caches local light sources, per-cell local-light intensity, and indexed cover lookups instead of rebuilding or rescanning those collections for every line-of-sight query.
+- A lighting-free tactical visibility context with fixed 20-hex vision and indexed cover lookups, removing local-light generation and per-cell illumination work from LOS and rendering.
 - A bounded human-visibility pass that visits only cells within observer vision range, deduplicates overlap, and exposes constant-time visible-cell membership to both tactical renderers.
 - A single breadth-first reachable-cell flood fill for soldier selection instead of running a separate path search for every candidate destination.
 - Removal of redundant 64x64 visibility scans during reveal/exploration and cover-reveal updates.
@@ -65,11 +65,11 @@ This patch adds:
 - Build Health coverage for instanced-ground budgets, instance picking, gapless hex spacing, main-menu preference wiring, and 2D recovery.
 - Persistent Auto, Performance, and Quality controls beside the Three.js tactical view selector.
 - Conservative Auto hardware detection that selects Performance on lower/unknown memory-core profiles and balanced settings only on stronger profiles.
-- Performance mode: 1x pixel ratio, antialiasing off, shadows off, Lambert materials, six local lights, 32x32 maximum 3D overview, lower-detail rings, and no redundant fog meshes.
-- Auto Balanced mode: 1.2x pixel ratio, shadows off, ten local lights, and a 40x40 maximum overview.
-- Quality mode retains higher pixel density, shadows, standard materials, more lights, fog meshes, and the full 64x64 overview for players who explicitly choose it.
+- Performance mode: 1x pixel ratio, antialiasing off, shadows off, Lambert materials, 32x32 maximum 3D overview, lower-detail rings, and no redundant fog meshes.
+- Auto Balanced mode: 1.2x pixel ratio, shadows off, and a 40x40 maximum overview.
+- Quality mode retains higher pixel density, shadows, standard materials, fog meshes, and the full 64x64 overview for players who explicitly choose it.
 - Normal-cell ring removal so only edge, reachable, and selected cells create ring geometry.
-- View-local light filtering so distant building/street/vehicle lights are not added to the active Three.js scene.
+- Tactical building, street-lamp, vehicle, and interior light simulation is parked; these remain terrain and visual props without affecting LOS or creating static point lights.
 - On-demand idle rendering; continuous animation frames now run only for the victory dance.
 - Build Health performance budgets covering mode resolution, view caps, light caps, shadow/fog/ring budgets, idle frames, picking, and UI wiring.
 - Taller overlapping cutaway wall runs and internal room partitions so tactical structures read as enclosed buildings rather than isolated wall segments.
@@ -1092,8 +1092,8 @@ Completed:
 - Original biome-specific building archetypes with roofless cutaway presentation, doors, windows, destructible walls, interior floors, and furnishings.
 - Building geometry participates in tactical movement, deployment, cover, fog of war, and line of sight.
 - Enclosed building silhouettes with internal partitions and purpose-specific furnishing layouts.
-- Street vehicles, lamp posts, headlights, and local interior lighting.
-- Geoscape-clock/location-derived day, twilight, and night tactical conditions with illumination-aware visibility.
+- Street vehicles, lamp posts, headlights, and interior fixtures remain readable tactical scenery without active local-light simulation.
+- Tactical LOS now uses a fixed 20-hex visibility range; Geoscape-clock day/twilight/night illumination gameplay is parked until it can fit the tactical performance budget.
 - Persistent Auto/Performance/Quality Three.js modes with conservative hardware-aware defaults.
 - Three.js view-size, pixel-ratio, shadow, light, material, ring, fog-mesh, and idle-frame budgets to prevent tactical timeouts.
 
@@ -1230,7 +1230,7 @@ Planned:
 ## Immediate Recommendation
 Load the affected campaign and launch the Port Attack in safe 2D. Confirm the battlefield becomes interactive without Windows reporting a timeout, selecting each soldier produces movement highlights promptly, and at least three End Turn cycles return control to the player normally. Record whether the slowdown occurs during launch, soldier selection, alien thinking, or 2D redraw if any pause remains. Continue the outstanding multi-base relocation queue save/reload validation from build 1830 after this tactical check.
 
-If the exact Port Attack still stalls after the indexed visibility/reachability patch, the next bounded diagnostic patch is `TACTICAL_AI_TURN_CHUNKING_AND_2D_DOM_VIRTUALIZATION_INDEX_ONLY`, adding phase timings and yielding large AI/render batches without changing tactical outcomes. If the Port Attack is stable, resume `TACTICAL_CIVILIANS_RESCUE_BREACH_AND_POWER_FEEDBACK_INDEX_ONLY`.
+If the exact Port Attack still stalls after tactical lighting removal, the next bounded diagnostic patch is `TACTICAL_AI_TURN_CHUNKING_AND_2D_DOM_VIRTUALIZATION_INDEX_ONLY`, adding phase timings and yielding large AI/render batches without changing tactical outcomes. If the Port Attack is stable, continue `TACTICAL_RESCUE_OUTCOME_REWARDS_AND_MISSION_OBJECTIVE_VARIANTS_INDEX_ONLY`; the first civilian extraction and structural-breach interaction slice is complete in 0122.
 
 Focus verification on:
 - Build New Base placement showing dotted ferry links from the proposed new site to existing bases when current aircraft can fly the one-way leg.
@@ -2876,6 +2876,55 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.13.0122 - Tactical Lighting Removal, Civilian Rescue, and Breach Feedback
+
+Build `v0.26.07.13.0122_TACTICAL_LIGHTING_REMOVAL_CIVILIAN_RESCUE_BREACH_FEEDBACK_INDEX_ONLY_PATCH` preserves save format 4, removes tactical illumination from active gameplay/render hot paths, and implements the first contained civilian/rescue and structural-breach roadmap slice.
+
+Lighting decision:
+
+- Tactical vision is fixed at 20 hexes for soldiers and aliens; local lamps, interiors, headlights, solar phase, and per-cell brightness no longer change LOS.
+- The shared visibility context now contains only the indexed live-cover lookup used by bounded LOS checks.
+- Safe 2D terrain styling no longer calculates mission lighting or per-cell local light.
+- Three.js uses a neutral baseline scene and no longer builds static building, lamp, vehicle-headlight, or wreck point lights. Transient weapon-impact feedback remains.
+- Street lamps, vehicle headlights, windows, and fixtures remain visual terrain props so a future lighting pass can be reconsidered without changing map generation or saves.
+
+Gameplay scope implemented:
+
+- Manual tactical deployments create two to four neutral civilians on clear deterministic cells without changing campaign save data.
+- Civilians reveal through the existing bounded human visibility pass, can be attacked by aliens, and report rescued/lost/awaiting counts in the tactical objective panel and mission log.
+- A soldier adjacent to a revealed civilian can spend 8 TU to escort that civilian to the marked cyan extraction perimeter.
+- Both 2D and Three.js identify civilians separately from armed soldiers and aliens; civilians do not display weapons or facing beams.
+- Revealed structural walls, windows, and partitions can be targeted deliberately with the selected fire mode.
+- Structural damage produces damaged/critical HP badges. Destroyed structural cover becomes visible, passable breach rubble instead of disappearing without feedback.
+- Build Health adds rows for lighting-free tactical hot paths and shared civilian/rescue/breach state while retaining the bounded Port visibility/reachability regression.
+
+Verification checklist:
+
+- Static parsing passed across all six inline scripts after the final polish.
+- `node tools\check-aegis-build.cjs` passed for the 0122 manifest/build seams.
+- Localhost start screen displayed `v0.26.07.13.0122`; first-base confirmation and the main Geoscape loaded normally.
+- Browser Build Health passed `250/250`, including the lighting-removal, civilian/rescue/breach, and bounded Port rows.
+- A final six-soldier safe-2D mission launched on the 64x64 field with two civilians, 19 extraction-zone cells, one selected-soldier ring, and 180 visible movement highlights.
+- Three End Turn cycles returned to the human turn in approximately 1.17 to 1.20 seconds each without degrading the civilian objective state.
+- The Three.js Performance view rendered a nonblank 648x640 canvas with the neutral-visibility status and shared civilian/rescue/breach contract.
+- A separate clean localhost load produced no runtime or console errors. The only console message was the existing Tailwind CDN production warning.
+
+Manual validation still required:
+
+- Load the player's affected campaign without overwriting it and launch the exact high-threat Port Attack in safe 2D; compare launch, selection, highlights, and three End Turn cycles against 0121.
+- In a mission where civilians become visible, move adjacent and click one. Confirm 8 TU is spent, the extraction count increments, and aliens can kill an unrescued civilian without affecting soldier controls.
+- On a map with a revealed building, fire Single/Burst/Full Auto at a wall or window. Confirm HP badges progress through damaged/critical, destruction leaves passable rubble, and both 2D and 3D show the breach.
+- Judge whether immediate 8-TU extraction feels appropriately paced or should become a multi-turn escort objective in the next gameplay patch.
+
+Remaining risks:
+
+- The exact high-threat Port Attack save remains the authoritative performance case and was not available in this automated session.
+- The practical smoke mission did not reveal a civilian or structural building target near the drop zone, so live rescue and deliberate-breach interaction still need hands-on confirmation.
+- Civilian targeting increases tactical pressure and may need threat-specific weighting after playtesting.
+- Dormant lighting helper code remains parked for possible later reuse, but Build Health verifies that active LOS, safe 2D styling, and Three.js scene construction do not call it.
+
+Next recommended patch: `TACTICAL_RESCUE_OUTCOME_REWARDS_AND_MISSION_OBJECTIVE_VARIANTS_INDEX_ONLY`, adding mission-intent-specific rescue requirements and outcome rewards after the interaction feel is confirmed. Fire/smoke and building power-loss simulation remain deferred until gameplay behavior and the Port performance baseline are stable.
 
 ## v0.26.07.13.0121 - Tactical Lighting Cache Performance Fix
 
