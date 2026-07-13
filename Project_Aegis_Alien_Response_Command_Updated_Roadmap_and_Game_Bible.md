@@ -2877,6 +2877,54 @@ Verification checklist:
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
 
+## v0.26.07.13.0124 - Tactical Skyranger Ramp, Civilian Escorts, and Panic
+
+Build `v0.26.07.13.0124_TACTICAL_SKYRANGER_RAMP_CIVILIAN_ESCORT_AND_PANIC_INDEX_ONLY_PATCH` preserves save format 4 and replaces instant civilian extraction with physical escort gameplay tied to a deployed Skyranger.
+
+Gameplay scope implemented:
+
+- Tactical deployment clears a deterministic five-hex-wide Skyranger footprint near the squad, adds indestructible hull cover, and leaves a visible five-cell centerline rear ramp/corridor. Soldiers deploy just outside the ramp as if they disembarked from the transport.
+- Civilian extraction occurs only when a following civilian physically enters a Skyranger ramp cell. Rescued civilians retain living HP, leave occupancy and both renderers, and no longer intercept cell clicks or stale movement highlighting.
+- Contacting an adjacent revealed civilian costs 8 TU and assigns them to the selected soldier. Each soldier may lead up to four living civilians.
+- Escort followers advance through the cells vacated by the soldier and preceding followers. The update touches only that soldier's escort chain and keeps civilians in single file without full-map path searches.
+- Alien fire can break a surviving civilian from their escort. Losing a soldier escort gives each follower a chance to panic and detach.
+- Panicked civilians make at most two bounded neighbor steps per alien turn, choosing cells that increase distance from currently visible alien threats. Once no threat remains visible they have an increasing chance to recover.
+- A soldier can retry contact with a panicked civilian for 8 TU. The first attempt can fail, while later attempts receive an increasing success chance.
+- Safe 2D and Three.js both render the multi-cell Skyranger hull/ramp and civilian state feedback. Following civilians are cyan and marked `FOLLOW`; panicked civilians are red and marked `PANIC` without using the casualty state.
+- The Geoscape now presents range rings and aircraft ferry-route controls inside one `Operational Overlays` section while preserving the independent Shortwave, Longwave, Interceptor, Skyranger, Show Both, and hide controls.
+
+Performance and compatibility:
+
+- Save format remains 4 because Skyranger placement, escort chains, and panic are transient manual-battle state.
+- Port visibility, indexed cover lookup, shared reachable-cell flood fill, and lighting removal remain unchanged.
+- Panic movement examines at most six neighbors for two steps per panicked civilian. Escort movement updates at most four followers for the moving soldier.
+
+Verification checklist:
+
+- Static app-script parsing passed 6/6 after the final Geoscape merge.
+- `node tools\check-aegis-build.cjs` passed for build 0124, including the new escort and merged-overlay rows; the checker itself also passed `node --check`.
+- Browser Build Health passed 253/253.
+- The localhost start screen displayed build 0124, first-base confirmation reached the Geoscape, and the merged `Operational Overlays` section retained all seven range/ferry controls. Activating Shortwave reported one visible range ring; activating Show Both reported the combined Interceptor and Skyranger network without runtime errors.
+- A six-soldier 64 x 64 safe-2D Red River Signal mission generated 26 visible Skyranger hull cells, five passable ramp cells, and two living civilians. Three End Turn cycles returned to human control in 684ms, 684ms, and 656ms without a runtime banner.
+- Three.js Performance mode rendered the shared Skyranger state on a nonblank 648 x 640 canvas.
+- Final browser console inspection found no errors. The only current-page message was the existing Tailwind CDN production advisory.
+
+Manual validation still required:
+
+- Contact one civilian and move through several turns and corners. Confirm the civilian follows the soldier's vacated cells without blocking the soldier or overlapping another follower.
+- Build a four-civilian chain, walk the soldier up the Skyranger ramp, and confirm the civilians extract in order while the ramp cells remain traversable.
+- Let aliens fire at an escorted civilian and kill an escort soldier in separate tests. Confirm panic can occur, fleeing increases distance from visible aliens, and civilians stop fleeing before recovering once the threat is no longer visible.
+- Retry contact with a panicked civilian until they follow, confirming each attempt costs 8 TU and that an initial refusal remains possible.
+- Load the affected campaign without overwriting it and run the exact high-threat Port Attack in safe 2D through selection, movement highlights, escort movement, and at least three End Turn cycles.
+
+Remaining risks:
+
+- The exact high-threat Port Attack save remains the authoritative performance case.
+- Escort path behavior around tight one-cell breaches and multiple independently moving escort chains needs hands-on stress testing.
+- Panic and recovery percentages are first-pass values and may need pacing adjustments after campaign play.
+
+Next recommended patch: `TACTICAL_ESCORT_FORMATION_COLLISION_AND_PANIC_BALANCE_INDEX_ONLY`, after manual validation of multi-civilian corners, ramp entry, and panic recovery. Fire/smoke and building power-loss remain deferred while lighting is parked.
+
 ## v0.26.07.13.0123 - Tactical Rescue State, Rewards, and Objective Variants
 
 Build `v0.26.07.13.0123_TACTICAL_RESCUE_STATE_REWARDS_AND_OBJECTIVES_INDEX_ONLY_PATCH` preserves save format 4, fixes extracted-civilian state rendering, and implements the safest contained portion of the rescue outcome and mission-objective roadmap item.
@@ -2902,7 +2950,7 @@ Verification checklist:
 
 Manual validation still required:
 
-- Reveal a civilian, move adjacent, and click them. Confirm 8 TU is spent, the civilian disappears from the battlefield without turning red, the extracted count increments, and the movement cell becomes available.
+- Player validation confirmed that a revealed adjacent civilian disappeared without turning red, spent 8 TU, and incremented the extracted counter. The vacated cell remained non-traversable because the click occupant lookup and reachable-cell memo dependency still retained stale civilian state; build 0124 supersedes instant extraction and fixes both stale boundaries.
 - Complete and abort separate manual missions after extracting civilians. Confirm per-rescue funding is credited in both cases and the requirement completion bonus is credited only after primary victory.
 - Load the affected campaign without overwriting it and run the exact high-threat Port Attack in safe 2D through selection, movement highlighting, rescue interaction if available, and at least three End Turn cycles.
 

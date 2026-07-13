@@ -44,6 +44,8 @@ const required = [
   "Tactical lighting is removed from gameplay and render hot paths",
   "Tactical civilians rescue actions and breach feedback share 2D and 3D state",
   "Tactical rescue extraction state and mission-intent rewards stay distinct from casualties",
+  "Skyranger ramp civilian escorts follow bounded paths and recover from panic",
+  "Geoscape range and ferry controls share one operational overlay section",
   "Port tactical visibility and turns use indexed bounded passes",
   "Three.js isometric tactical framing preserves vertical proportions",
   "All tactical battle views animate surviving soldiers after victory",
