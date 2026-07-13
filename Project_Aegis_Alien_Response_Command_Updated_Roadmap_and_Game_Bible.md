@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-12  
-Current handoff build: `v0.26.07.12.1900_TACTICAL_BUILDING_ARCHETYPES_AND_INTERIORS_INDEX_ONLY_PATCH`  
-Current patch status: **Tactical incidents now generate original biome-specific buildings with passable doors, blocking/destructible walls, windows, interior floors, and furnishings shared by the 2D Hex and Three.js cutaway views. Browser Build Health passes 244/244.**
+Current handoff build: `v0.26.07.12.1940_TACTICAL_ENCLOSURES_VEHICLES_AND_LOCAL_LIGHTING_INDEX_ONLY_PATCH`  
+Current patch status: **Tactical structures now read as enclosed roofless buildings with internal rooms and purpose-specific contents; streets include vehicles and lamps; and incident maps derive day, twilight, or night conditions from Geoscape arrival time and location, with local lights affecting visibility. Browser Build Health passes 245/245.**
 
 ---
 
@@ -48,10 +48,17 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.12.1900_TACTICAL_BUILDING_ARCHETYPES_AND_INTERIORS_INDEX_ONLY_PATCH`
+`v0.26.07.12.1940_TACTICAL_ENCLOSURES_VEHICLES_AND_LOCAL_LIGHTING_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- Taller overlapping cutaway wall runs and internal room partitions so tactical structures read as enclosed buildings rather than isolated wall segments.
+- Denser, purpose-specific interiors: records desks/files, market shelves, workshop tools/workbenches, diner counters/tables, residential beds/sofas, fire-station lockers, farmhouse kitchens, barn hay/racks, and outpost radios.
+- Deterministic sedans, vans, utility vehicles, headlights, and roadside lamp posts on city, small-town, and farm routes.
+- Incident arrival-clock stamping plus solar phase calculation from Geoscape month/day/minute and incident latitude/longitude.
+- Day, twilight, and night ambient/fog/directional lighting in Three.js and matching brightness/saturation treatment in 2D Hex.
+- Night/twilight visibility ranges that improve inside illuminated interiors and near lamps or vehicle headlights.
+- Build Health coverage for enclosure partitions, furnishing diversity, vehicles, lamps, solar phase, local-light vision, render support, and mission clock normalization.
 - Deterministic tactical building districts inspired by the readable, roofless battlefield architecture of early alien-defense strategy games while using original Project Aegis layouts and names.
 - Urban Municipal Records Offices, Corner Markets, and Vehicle Workshops; small-town Diners, Residences, and Fire Stations; Farmhouses and Equipment Barns; and wilderness Ranger Outposts.
 - Shared building plans for 2D Hex and Three.js, including passable door gaps, hard walls, partial-cover windows, interior floors, counters, tables, shelves, and storage racks.
@@ -1064,6 +1071,9 @@ Completed:
 - Deterministic nature, farm, small-town, and city terrain shared by 2D and Three.js tactical views.
 - Original biome-specific building archetypes with roofless cutaway presentation, doors, windows, destructible walls, interior floors, and furnishings.
 - Building geometry participates in tactical movement, deployment, cover, fog of war, and line of sight.
+- Enclosed building silhouettes with internal partitions and purpose-specific furnishing layouts.
+- Street vehicles, lamp posts, headlights, and local interior lighting.
+- Geoscape-clock/location-derived day, twilight, and night tactical conditions with illumination-aware visibility.
 
 Still planned:
 - Tactical event log.
@@ -1072,7 +1082,7 @@ Still planned:
 - Battlefield-space optimization.
 - Simulated mission sprite consistency.
 - Improve the Three.js battle option for alien incidents so manual tactical missions feel more readable, responsive, and worth choosing over auto-resolve.
-- Add deliberate building-breach interactions, fire/smoke propagation, and clearer damaged-wall/window states.
+- Add deliberate building-breach actions, fire/smoke propagation, power loss, and clearer damaged-wall/window states.
 - Add civilians, rescue/extraction zones, and structure-specific objectives for terror, abduction, harvest, and supply missions.
 - Explore upper floors, stairs, and roof visibility only after the single-level cutaway maps remain readable and performant.
 
@@ -1196,7 +1206,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Manually play one wilderness/farm incident and one small-town/city incident in both 2D Hex and Three.js modes. Confirm walls, windows, doors, interiors, furnishings, fog of war, and pathfinding remain readable. Also retain the outstanding multi-base relocation queue save/reload validation from build 1830.
+Manually play one day or twilight wilderness/farm incident and one night small-town/city incident in both 2D Hex and Three.js modes. Confirm enclosed rooms, doors, partitions, themed furnishings, vehicles, lamp posts, local light pools, darkness visibility, fog of war, and pathfinding remain readable. Also retain the outstanding multi-base relocation queue save/reload validation from build 1830.
 
 Focus verification on:
 - Build New Base placement showing dotted ferry links from the proposed new site to existing bases when current aircraft can fly the one-way leg.
@@ -2842,6 +2852,44 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.12.1940 - Tactical Enclosures, Vehicles, and Local Lighting
+
+Build `v0.26.07.12.1940_TACTICAL_ENCLOSURES_VEHICLES_AND_LOCAL_LIGHTING_INDEX_ONLY_PATCH` preserves save format 4 while deepening tactical structure readability and incident atmosphere.
+
+Implemented changes:
+
+- Exterior wall segments are taller and overlap enough to read as continuous roofless building shells in the isometric view.
+- Larger structures receive internal hard-cover partitions with passable room gaps.
+- Furnishing placement now follows building purpose rather than a generic three-prop pattern, with at least eight distinct interior object types across district archetypes.
+- City, small-town, and farm route networks can contain sedans, vans, utility vehicles, and nearby lamp posts.
+- Vehicles provide substantial cover and street obstruction; lamps remain lighter cover while acting as illumination sources.
+- Three.js vehicles include body/cabin geometry and headlights, while 2D Hex uses matching vehicle and lamp silhouettes.
+- Manual tactical missions stamp their actual Geoscape arrival month/day/minute into mission state.
+- Tactical solar phase uses the incident latitude/longitude plus stamped Geoscape clock to select Daylight, Twilight, or Night.
+- Three.js changes sky, fog, hemisphere light, and directional light by phase, then adds local point lights for interiors, lamp posts, and vehicle headlights.
+- 2D Hex uses the same solar/local-light model for per-cell brightness and saturation.
+- Unaided visibility is longest in daylight, shorter at twilight, and shortest at night; lit target/observer areas restore part of that range without bypassing walls or facing cones.
+- Coordinated-support copy now correctly describes round-based field time rather than the removed one-day mission cost.
+
+Verification checklist:
+
+- Static app-script parsing passed.
+- `node tools\\check-aegis-build.cjs` passed for the 1940 manifest/build seams.
+- Browser Build Health passed `245/245`, including `Tactical enclosures vehicles and local lights shape shared battlefield visibility`.
+- Deterministic coverage confirms internal partitions, eight-plus furnishing visuals, three-plus city vehicles and lamps, all three solar phases, ordered vision ranges, local-light vision improvement, both render paths, and normalized mission clock stamps.
+- Localhost browser smoke passed through start screen, first base, squad assignment, manual mission confirmation, Skyranger travel, and a North America night tactical arrival.
+- The live Three.js status reported `Wilderness - Night`, named the Ranger Outpost, and explained that lamps/windows/vehicle lights affect visibility.
+
+Manual validation still required:
+
+- Reveal and enter several structures to judge wall continuity, room gaps, furniture density, and doorway pathfinding at normal tactical zoom.
+- Play a city or small-town map to compare parked vehicle spacing and street-lamp placement against road usability.
+- Compare the same tactical controls at day, twilight, and night and confirm darkness is tense without becoming visually exhausting.
+- Confirm local light pools are apparent around interiors, street lamps, and headlights in both 2D and Three.js.
+- Shoot vehicles, windows, partitions, and exterior walls to assess current cover-HP feedback before dedicated breach/fire work.
+
+Next recommended tactical patch: `TACTICAL_CIVILIANS_RESCUE_BREACH_AND_POWER_FEEDBACK_INDEX_ONLY`, adding civilians/rescue zones, explicit breach feedback, fire/smoke, destructible light sources, and building power-loss states. Parallel strategic follow-up remains `AIRCRAFT_RELOCATION_QUEUE_CANCELLATION_AND_CONCURRENT_FLIGHT_PREP_INDEX_ONLY`.
 
 ## v0.26.07.12.1900 - Tactical Building Archetypes and Interiors
 
