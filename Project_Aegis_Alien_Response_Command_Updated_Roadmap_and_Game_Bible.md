@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-12  
-Current handoff build: `v0.26.07.12.1940_TACTICAL_ENCLOSURES_VEHICLES_AND_LOCAL_LIGHTING_INDEX_ONLY_PATCH`  
-Current patch status: **Tactical structures now read as enclosed roofless buildings with internal rooms and purpose-specific contents; streets include vehicles and lamps; and incident maps derive day, twilight, or night conditions from Geoscape arrival time and location, with local lights affecting visibility. Browser Build Health passes 245/245.**
+Current handoff build: `v0.26.07.13.0030_TACTICAL_THREEJS_PERFORMANCE_AND_TIMEOUT_HARDENING_INDEX_ONLY_PATCH`  
+Current patch status: **The Three.js tactical renderer now defaults to conservative hardware-aware settings, caps expensive overview sizes, removes redundant meshes/lights/shadows, and renders idle scenes on demand. Browser Build Health passes 246/246 and a live Performance-mode 32x32 overview loads without console errors.**
 
 ---
 
@@ -48,10 +48,19 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.12.1940_TACTICAL_ENCLOSURES_VEHICLES_AND_LOCAL_LIGHTING_INDEX_ONLY_PATCH`
+`v0.26.07.13.0030_TACTICAL_THREEJS_PERFORMANCE_AND_TIMEOUT_HARDENING_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- Persistent Auto, Performance, and Quality controls beside the Three.js tactical view selector.
+- Conservative Auto hardware detection that selects Performance on lower/unknown memory-core profiles and balanced settings only on stronger profiles.
+- Performance mode: 1x pixel ratio, antialiasing off, shadows off, Lambert materials, six local lights, 32x32 maximum 3D overview, lower-detail rings, and no redundant fog meshes.
+- Auto Balanced mode: 1.2x pixel ratio, shadows off, ten local lights, and a 40x40 maximum overview.
+- Quality mode retains higher pixel density, shadows, standard materials, more lights, fog meshes, and the full 64x64 overview for players who explicitly choose it.
+- Normal-cell ring removal so only edge, reachable, and selected cells create ring geometry.
+- View-local light filtering so distant building/street/vehicle lights are not added to the active Three.js scene.
+- On-demand idle rendering; continuous animation frames now run only for the victory dance.
+- Build Health performance budgets covering mode resolution, view caps, light caps, shadow/fog/ring budgets, idle frames, picking, and UI wiring.
 - Taller overlapping cutaway wall runs and internal room partitions so tactical structures read as enclosed buildings rather than isolated wall segments.
 - Denser, purpose-specific interiors: records desks/files, market shelves, workshop tools/workbenches, diner counters/tables, residential beds/sofas, fire-station lockers, farmhouse kitchens, barn hay/racks, and outpost radios.
 - Deterministic sedans, vans, utility vehicles, headlights, and roadside lamp posts on city, small-town, and farm routes.
@@ -1074,6 +1083,8 @@ Completed:
 - Enclosed building silhouettes with internal partitions and purpose-specific furnishing layouts.
 - Street vehicles, lamp posts, headlights, and local interior lighting.
 - Geoscape-clock/location-derived day, twilight, and night tactical conditions with illumination-aware visibility.
+- Persistent Auto/Performance/Quality Three.js modes with conservative hardware-aware defaults.
+- Three.js view-size, pixel-ratio, shadow, light, material, ring, fog-mesh, and idle-frame budgets to prevent tactical timeouts.
 
 Still planned:
 - Tactical event log.
@@ -1206,7 +1217,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Manually play one day or twilight wilderness/farm incident and one night small-town/city incident in both 2D Hex and Three.js modes. Confirm enclosed rooms, doors, partitions, themed furnishings, vehicles, lamp posts, local light pools, darkness visibility, fog of war, and pathfinding remain readable. Also retain the outstanding multi-base relocation queue save/reload validation from build 1830.
+On the affected PC, first run a normal 26x26 Three.js mission in Auto, then select Map while Performance is active and confirm the capped 32x32 view remains responsive through unit selection, movement, firing, End Turn, and a victory. Only test Quality after Performance is stable. Continue the day/night building readability checks and retain the outstanding multi-base relocation queue save/reload validation from build 1830.
 
 Focus verification on:
 - Build New Base placement showing dotted ferry links from the proposed new site to existing bases when current aircraft can fly the one-way leg.
@@ -2852,6 +2863,52 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.13.0030 - Three.js Tactical Performance and Timeout Hardening
+
+Build `v0.26.07.13.0030_TACTICAL_THREEJS_PERFORMANCE_AND_TIMEOUT_HARDENING_INDEX_ONLY_PATCH` preserves save format 4 and targets the timeout/stall risk reported on the player's PC.
+
+Root causes addressed:
+
+- The isometric renderer previously created a ring mesh for every visible cell, including ordinary noninteractive ground.
+- Unseen ground received a second fog mesh even though its base tile was already rendered dark.
+- All tactical building, vehicle, and lamp lights were added even when far outside the current camera window.
+- Dynamic shadows and a 1024px shadow map were always enabled.
+- Device pixel ratio could reach 2x, multiplying fragment workload.
+- The 64x64 Map view could attempt thousands of separate tile/ring/fog objects.
+- A permanent requestAnimationFrame loop traversed and rendered the entire scene at roughly 60fps even while idle.
+
+Implemented changes:
+
+- Added persistent `Auto`, `Performance`, and `Quality` controls to manual Three.js tactical missions.
+- Auto resolves to Performance for lower/unknown hardware hints and to Auto Balanced only when both reported CPU and memory hints are strong.
+- Performance caps the 3D overview at 32x32, uses 1x pixel ratio, disables antialiasing/shadows/redundant fog meshes, uses Lambert materials, limits local lights to six, and lowers ring geometry detail.
+- Auto Balanced caps at 40x40 with 1.2x pixel ratio, no shadows, and ten local lights.
+- Quality remains opt-in and preserves the full 64x64 overview, higher pixel density, shadows, standard materials, more lights, and fog meshes.
+- Ordinary cell rings are no longer created. Rings remain for map edges, reachable cells, and the selected unit cell.
+- Local tactical lights are filtered to the visible map window, sorted by camera proximity, and capped by quality mode.
+- Static scenes render once and again on resize/state rebuild. Continuous frame animation is reserved for the victory dance.
+- Ray picking remains attached to ground tiles, preserving click-to-select/move behavior.
+- The Three.js status identifies the resolved quality mode and the displayed Hexes count reveals any overview cap.
+
+Verification checklist:
+
+- Static app-script parsing passed.
+- `node tools\\check-aegis-build.cjs` passed for the 0030 manifest/build seams.
+- Browser Build Health passed `246/246`, including `Three.js tactical performance mode caps expensive rendering and idles on demand`.
+- A live manual tactical mission loaded as `Auto Performance` with no console errors.
+- Selecting the 64x64 Map control in Performance produced a responsive `Hexes: 32 x 32` Three.js view with a visible 648x600 canvas.
+- Deterministic coverage confirms Performance has zero normal rings, zero redundant fog meshes, zero idle animation frames, six lights, no shadows, and a 1x pixel ratio.
+
+Manual validation still required:
+
+- Reproduce the formerly timing-out mission on the affected PC using Auto/Performance.
+- Select, move, rotate, and fire with several soldiers; run alien turns and confirm responsiveness does not degrade over time.
+- Test the capped Map overview, then return to Near/Close and confirm camera/selection behavior remains correct.
+- Complete a victory and confirm the temporary animation loop stops when leaving the mission.
+- Compare Performance lighting/building readability against Quality only if the optimized mode is stable.
+
+Next recommended patch: `TACTICAL_THREEJS_INSTANCED_GROUND_AND_SCENE_TELEMETRY_INDEX_ONLY` only if Performance still stalls on the affected PC; it would batch ground tiles into instanced draw calls and add a compact renderer-object/draw-call readout. Otherwise resume `TACTICAL_CIVILIANS_RESCUE_BREACH_AND_POWER_FEEDBACK_INDEX_ONLY`.
 
 ## v0.26.07.12.1940 - Tactical Enclosures, Vehicles, and Local Lighting
 

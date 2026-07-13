@@ -39,6 +39,7 @@ const required = [
   "Procedural tactical biomes generate wilderness streams city roads farms and small towns",
   "Tactical building archetypes share passable interiors across 2D and Three.js maps",
   "Tactical enclosures vehicles and local lights shape shared battlefield visibility",
+  "Three.js tactical performance mode caps expensive rendering and idles on demand",
   "Three.js isometric tactical framing preserves vertical proportions",
   "All tactical battle views animate surviving soldiers after victory",
   "Classic lineup victory dance moves paper dolls without moving soldier cards",
