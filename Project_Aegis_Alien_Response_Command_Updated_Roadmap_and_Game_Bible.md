@@ -2877,6 +2877,43 @@ Verification checklist:
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
 
+## v0.26.07.13.0123 - Tactical Rescue State, Rewards, and Objective Variants
+
+Build `v0.26.07.13.0123_TACTICAL_RESCUE_STATE_REWARDS_AND_OBJECTIVES_INDEX_ONLY_PATCH` preserves save format 4, fixes extracted-civilian state rendering, and implements the safest contained portion of the rescue outcome and mission-objective roadmap item.
+
+Gameplay scope implemented:
+
+- Rescuing a civilian now records a living `rescued`/`extracted` state instead of setting HP to zero. Extracted civilians leave both tactical renderers, no longer occupy movement cells, and cannot be selected or targeted as battlefield casualties.
+- Civilian casualty counts remain based on actual zero HP without the rescued flag, keeping rescued and killed outcomes separate.
+- Terror and abduction incidents use a Critical Rescue objective requiring two thirds of civilians, paying $40k per extraction plus a $100k completion bonus after primary mission success.
+- Port, urban, farmstead, harvest, prairie, and town incidents use an Area Evacuation objective requiring half of civilians, paying $30k per extraction plus a $60k completion bonus after primary mission success.
+- Other incident types keep civilian rescue optional and pay $25k per extraction. Rescue earnings remain available after an abort, but objective completion bonuses require primary mission success.
+- The tactical objective panel reports the mission-intent requirement and current rescue bonus. Manual mission results carry the civilian outcome into campaign funds, mission summaries, logs, and stored mission reports.
+- Primary tactical victory rules remain unchanged: civilian objectives are secondary and cannot convert an alien-elimination failure into mission success.
+
+Verification checklist:
+
+- Static app-script parsing passed 6/6.
+- `node tools\check-aegis-build.cjs` passed, including the build-label seam and required Build Health rows.
+- Browser Build Health passed 251/251, including the rescue extraction-state and mission-intent reward row.
+- Localhost start screen displayed build 0123 and a new campaign loaded through first-base placement into the Geoscape.
+- A six-soldier 64 x 64 safe-2D Red River Signal mission launched with two living civilians and the Civilian Assistance objective visible. Three End Turn cycles returned to human control in 731ms, 770ms, and 734ms without a runtime banner; all six soldiers and both awaiting-rescue civilians remained active.
+- Browser console inspection found no errors. The only warnings were the existing Tailwind CDN production advisory.
+
+Manual validation still required:
+
+- Reveal a civilian, move adjacent, and click them. Confirm 8 TU is spent, the civilian disappears from the battlefield without turning red, the extracted count increments, and the movement cell becomes available.
+- Complete and abort separate manual missions after extracting civilians. Confirm per-rescue funding is credited in both cases and the requirement completion bonus is credited only after primary victory.
+- Load the affected campaign without overwriting it and run the exact high-threat Port Attack in safe 2D through selection, movement highlighting, rescue interaction if available, and at least three End Turn cycles.
+
+Remaining risks:
+
+- Auto-resolved/classic missions do not simulate the manual civilian layer, so they retain the base mission reward with no rescue bonus.
+- The exact high-threat Port Attack save remains the authoritative performance case and still requires player-side validation.
+- Reward amounts and rescue requirement ratios are deliberately conservative first-pass values and may need economy tuning after real campaign play.
+
+Next recommended patch: `TACTICAL_CIVILIAN_ESCORT_INTERACTION_AND_OBJECTIVE_BALANCE_INDEX_ONLY`, only after hands-on rescue pacing and reward validation. Fire/smoke and building power-loss remain deferred while tactical lighting is parked and Port performance remains under observation. Parallel strategic work remains `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY` after its existing manual reservation-flow validation.
+
 ## v0.26.07.13.0122 - Tactical Lighting Removal, Civilian Rescue, and Breach Feedback
 
 Build `v0.26.07.13.0122_TACTICAL_LIGHTING_REMOVAL_CIVILIAN_RESCUE_BREACH_FEEDBACK_INDEX_ONLY_PATCH` preserves save format 4, removes tactical illumination from active gameplay/render hot paths, and implements the first contained civilian/rescue and structural-breach roadmap slice.

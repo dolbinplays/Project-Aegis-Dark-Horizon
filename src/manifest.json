@@ -1,7 +1,7 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.07.13.0122_TACTICAL_LIGHTING_REMOVAL_CIVILIAN_RESCUE_BREACH_FEEDBACK_INDEX_ONLY_PATCH",
+  "currentBuild": "v0.26.07.13.0123_TACTICAL_RESCUE_STATE_REWARDS_AND_OBJECTIVES_INDEX_ONLY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
@@ -26,5 +26,5 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.07.13.0122_TACTICAL_LIGHTING_REMOVAL_CIVILIAN_RESCUE_BREACH_FEEDBACK_INDEX_ONLY_PATCH"
+  "lastInspectedBuild": "v0.26.07.13.0123_TACTICAL_RESCUE_STATE_REWARDS_AND_OBJECTIVES_INDEX_ONLY_PATCH"
 }
