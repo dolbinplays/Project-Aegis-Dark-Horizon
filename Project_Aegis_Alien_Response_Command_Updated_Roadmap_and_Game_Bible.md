@@ -2877,6 +2877,49 @@ Verification checklist:
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
 
+## v0.26.07.13.0126 - Escort Formation Collision and Panic Balance
+
+Build `v0.26.07.13.0126_TACTICAL_ESCORT_FORMATION_COLLISION_AND_PANIC_BALANCE_INDEX_ONLY_PATCH` preserves save format 4 and hardens the bounded civilian escort and panic systems introduced in build 0124.
+
+Gameplay scope implemented:
+
+- Escort chains now distinguish civilians still forming up from civilians joined to the single-file route. Newly contacted civilians can take bounded one-hex catch-up steps until they reach their predecessor's trail.
+- Once joined, each civilian moves only into the exact hex vacated by the soldier or preceding follower. A link that cannot advance holds every follower behind it instead of compressing, overlapping, or cutting around the obstruction.
+- Destination reservation includes every non-chain unit and each committed chain destination. The movement remains limited to one soldier and at most four followers, with no full-map path search.
+- Civilian badges now distinguish `FORM`, `FOLLOW`, `HOLD`, and `PANIC` states in both tactical views through the shared unit glyph.
+- Panicked civilians still move at most two hexes per alien turn, but candidate cells now rank fewer visible aliens ahead of raw distance. One indexed visibility context is reused for the bounded candidate checks.
+- Panic balance is centralized and deterministic for tests: surviving civilian break chance is 65% after a hit and 20% after a miss; loss of an escort uses 75%; contact attempts remain 55%, 80%, then 95%; recovery out of sight is 55% on the first turn and reaches 95% by the third.
+- Build Health controls now open on a normal click instead of pointer-down, preventing the newly mounted Close button from consuming the same click.
+
+Performance and compatibility:
+
+- Save format remains 4 because escort formation and panic state are transient to an active manual tactical battle.
+- The optimization budget remains bounded to four followers, six neighboring cells per forming follower, and two panic steps. Panic candidate line-of-sight checks reuse one cover index per civilian move.
+- Port visibility indexing, reachable-cell flood fill, lighting removal, safe-2D default, and the shared 2D/Three.js tactical state remain unchanged.
+
+Verification checklist:
+
+- Static app-script parsing passed 6/6 and `node tools\check-aegis-build.cjs` passed for build 0126; the checker also passed `node --check`.
+- Browser Build Health passed 255/255, including `Escort chains reserve single-file cells and panic favors broken sightlines`.
+- Localhost start screen displayed build 0126, first-base confirmation reached the Geoscape, and a six-soldier Red River Signal safe-2D mission launched on the 64 x 64 battlefield with 26 Skyranger hull cells and five passable ramp cells.
+- Three End Turn cycles returned to human control in 575ms, 630ms, and 597ms without a runtime banner.
+- Final browser console inspection found no errors. The only current-page messages were the existing Tailwind CDN production advisories emitted on page reload.
+
+Manual validation still required:
+
+- Contact two to four civilians from different sides of a soldier, walk several corners and a one-cell breach, and confirm `FORM` changes to `FOLLOW` without overlap. Block the chain and confirm trailing civilians display `HOLD` until the route clears.
+- Walk the complete chain onto the visible rear ramp and confirm civilians extract in order while every vacated ramp cell remains traversable.
+- Let aliens hit and miss escorted civilians, then kill an escort soldier. Confirm panic frequency feels fair, fleeing favors cells that break alien sightlines, and repeated 8-TU contact attempts can recover a panicked civilian.
+- Repeat the exact affected high-threat Port Attack in safe 2D for the authoritative performance check.
+
+Remaining risks:
+
+- Collision and formation self-tests cover deterministic multi-follower movement and occupied neighboring cells, but dense player-created cross-traffic and multiple chains still need hands-on stress testing.
+- Panic probabilities are intentionally conservative first-pass balance values and may need tuning after repeated real battles.
+- The exact high-threat Port Attack save remains the authoritative performance case.
+
+Next recommended patch: `TACTICAL_CIVILIAN_ESCORT_STATUS_AND_EXTRACTION_ROUTE_FEEDBACK_INDEX_ONLY`, after hands-on formation, ramp traversal, and panic-frequency validation.
+
 ## v0.26.07.13.0125 - Isometric Skyranger Single Craft and Ramp
 
 Build `v0.26.07.13.0125_TACTICAL_ISOMETRIC_SKYRANGER_SINGLE_CRAFT_AND_RAMP_INDEX_ONLY_PATCH` preserves save format 4 and replaces the modular-looking isometric Skyranger hull with one cohesive aircraft and attached rear extraction ramp.
