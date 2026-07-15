@@ -1,7 +1,7 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.07.14.0129_RECORDED_COMMAND_AND_TACTICAL_DIALOGUE_INTEGRATION_AUDIO_ASSET_PATCH",
+  "currentBuild": "v0.26.07.15.0130_TACTICAL_AI_CAMERA_AND_DIALOGUE_TRANSMISSION_FX_INDEX_ONLY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
@@ -26,5 +26,5 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.07.14.0129_RECORDED_COMMAND_AND_TACTICAL_DIALOGUE_INTEGRATION_AUDIO_ASSET_PATCH"
+  "lastInspectedBuild": "v0.26.07.15.0130_TACTICAL_AI_CAMERA_AND_DIALOGUE_TRANSMISSION_FX_INDEX_ONLY_PATCH"
 }

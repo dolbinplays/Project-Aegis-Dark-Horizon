@@ -1,9 +1,9 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-07-14
-Current handoff build: `v0.26.07.14.0129_RECORDED_COMMAND_AND_TACTICAL_DIALOGUE_INTEGRATION_AUDIO_ASSET_PATCH`
-Current patch status: **All 105 supplied PCM WAV recordings are integrated as 87 semantic events and 326 automatically segmented takes. Playback is lazy, cached, rate-limited, and personality-aware for soldier acknowledgements; command, aircraft, save/load, tactical movement, reload, combat-result, and End Turn hooks retain synthesized effects as fallback. Static parsing and the expanded build seam checker pass; browser Build Health passes 259/259; the 0129 start screen, fresh-campaign Geoscape, real save action, six-soldier safe-2D launch, selection, reload, movement, and three End Turn cycles ran without application errors or dialogue fallback warnings. Manual listening is required to judge take boundaries, relative volume, delivery matching, and event frequency. The live spotted-civilian AI rescue and affected high-threat Port Attack also remain hands-on checks.**
+Last updated: 2026-07-15
+Current handoff build: `v0.26.07.15.0130_TACTICAL_AI_CAMERA_AND_DIALOGUE_TRANSMISSION_FX_INDEX_ONLY_PATCH`
+Current patch status: **AI tactical-map takeover now preserves the live battle and follows the active squad movement, rescue, casualty, and shot area instead of leaving the watch camera at its initial position. Recorded base-computer announcements now use a constrained, stepped 1980s computer treatment, while aircraft dialogue uses a narrower, modulated radio chain; both remain governed by the existing Sound Effects volume and mute controls. Static parsing and the expanded build seam checker pass; browser Build Health passes 261/261. A fresh 0130 campaign reached Geoscape, launched six soldiers into the 64 x 64 safe-2D Red River Signal battle, handed the existing battlefield to AI, and advanced through frames 1-5 while the viewport visibly re-centered between hostile action and squad movement. Aircraft launch, touchdown, and ramp dialogue hooks completed without application errors or recorded-dialogue fallback warnings after the corrected reload. Manual listening is still required to judge the computer/radio character and relative levels. A live spotted-civilian rescue, later AI combat frames, and the affected high-threat Port Attack remain hands-on checks.**
 
 ---
 
@@ -48,10 +48,16 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.14.0129_RECORDED_COMMAND_AND_TACTICAL_DIALOGUE_INTEGRATION_AUDIO_ASSET_PATCH`
+`v0.26.07.15.0130_TACTICAL_AI_CAMERA_AND_DIALOGUE_TRANSMISSION_FX_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- Action-aware tactical AI watch-camera anchors for squad movement, civilian rescue, casualties, alien movement, shot midpoints, and quiet-frame squad fallback.
+- Per-frame camera updates during AI tactical-map takeover without rebuilding or resetting the inherited battlefield.
+- A high-pass/low-pass, stepped-wave, compressed, lightly modulated base-computer voice chain for recorded `computer` dialogue.
+- A tighter-band, stronger-modulation aircraft-radio chain for recorded `aircraft` dialogue, while soldier and other voice categories remain clean.
+- Shared Sound Effects volume/mute ownership for all recorded voice categories, preserving the existing audio controls.
+- Build Health and seam-checker coverage for action camera selection and category-specific recorded-dialogue processing.
 - A generated recorded-dialogue manifest covering all 105 supplied WAV files, 87 event keys, four soldier delivery styles, and 326 silence-separated takes without modifying the source recordings.
 - Lazy per-file fetch/decode caching, take-repeat avoidance, category cooldowns, and synthesized SFX fallback so recordings do not add tactical map or turn-processing work.
 - Command alerts for save/load, research/manufacturing/construction/transfer completion, personnel, incidents, UFO contact, mission outcomes, funding/aircraft blockers, council reports, and command attention.
@@ -2882,6 +2888,44 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.15.0130 - Tactical AI Camera and Dialogue Transmission FX
+
+Build `v0.26.07.15.0130_TACTICAL_AI_CAMERA_AND_DIALOGUE_TRANSMISSION_FX_INDEX_ONLY_PATCH` preserves save format 4 and adds action-aware AI tactical-map framing plus category-specific processing for recorded command and aircraft voices.
+
+Root causes:
+
+- AI tactical-map takeover preserved the battlefield state correctly, but later playback frames did not consistently update the watch camera. The simulation advanced while the viewport remained near its initial squad position.
+- Recorded dialogue buffers were routed cleanly into the Sound Effects bus. That preserved the performances, but base-computer and aircraft-pilot clips had no source-specific transmission character.
+
+Implemented changes:
+
+- Every AI playback frame derives a bounded camera anchor from rescued civilians, casualties, moved soldiers, moved civilians, moved aliens, or the first shot midpoint, in that gameplay-first order.
+- Shot playback re-centers on the shooter/target midpoint before the effect runs. Quiet frames fall back to the center of the living squad, then other living units.
+- AI takeover continues from the inherited units, cover damage, explored cells, round, and Skyranger state; camera following does not regenerate the map or alter tactical outcomes.
+- Base-computer recordings use high-pass and low-pass filtering, stepped wave shaping, compression, and light modulation for a constrained 1980s command-computer sound.
+- Aircraft recordings use a narrower band and stronger modulation for radio-transmission character. Soldier and other categories retain clean recorded playback.
+- All recorded voices remain attached to the existing Sound Effects gain, volume, and mute controls.
+- Build Health now covers deterministic movement, shot, rescue, and fallback camera anchors plus distinct computer and aircraft processing profiles.
+
+Verification completed:
+
+- Static parsing passed for all 6 inline app scripts.
+- `node tools/check-aegis-build.cjs` passed for build 0130.
+- Browser smoke confirmed the 0130 start screen and a fresh-campaign Geoscape.
+- Browser Build Health passed `261/261` after the final helper-scope correction.
+- A six-soldier Red River Signal mission launched on the 64 x 64 safe-2D battlefield. AI inherited round 1 and advanced through playback frames 1-5 without resetting the map.
+- Near-zoom screenshots confirmed the viewport moved from the deployment area to hostile action and back to the advancing squad as playback frames changed.
+- Aircraft launch, touchdown, and ramp dialogue events ran after the corrected reload without application errors or recorded-dialogue fallback warnings. The only fresh console warning was the existing Tailwind CDN development warning.
+
+Manual validation still required:
+
+- Listen to several base alerts and confirm the computer treatment is intelligible, appropriately synthetic, and not too harsh at normal Sound Effects volume.
+- Listen to launch, touchdown, ramp, return, and interceptor pilot clips and confirm the radio treatment is distinct without obscuring the words.
+- Watch a complete AI-led incident, especially shots, casualties, and civilian rescue, and confirm the camera changes feel helpful rather than too frequent.
+- Re-test the affected high-threat Port Attack for turn performance and camera pacing.
+
+Next recommended patch: `TACTICAL_ESCORT_EXTRACTION_PROGRESS_AND_RESCUE_OBJECTIVE_BALANCE_INDEX_ONLY`, after the transmission-listening pass plus live AI rescue and Port Attack checks.
 
 ## v0.26.07.14.0129 - Recorded Command and Tactical Dialogue Integration
 
