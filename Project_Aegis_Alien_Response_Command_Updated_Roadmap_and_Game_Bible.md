@@ -1,9 +1,9 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-07-13  
-Current handoff build: `v0.26.07.13.0122_TACTICAL_LIGHTING_REMOVAL_CIVILIAN_RESCUE_BREACH_FEEDBACK_INDEX_ONLY_PATCH`  
-Current patch status: **Tactical illumination simulation is disabled so LOS uses a fixed 20-hex range and neither safe 2D nor Three.js builds local-light workloads. The first bounded civilian/rescue and breach-feedback slice adds neutral civilians, adjacent 8-TU extraction actions, marked extraction cells, civilian danger during alien turns, targetable structural walls/windows, damage-state badges, and passable breach rubble. Browser Build Health passes 250/250; a final six-soldier safe-2D mission showed 180 movement highlights and completed three End Turn cycles in about 1.17-1.20 seconds each without runtime errors.**
+Last updated: 2026-07-14
+Current handoff build: `v0.26.07.14.0129_RECORDED_COMMAND_AND_TACTICAL_DIALOGUE_INTEGRATION_AUDIO_ASSET_PATCH`
+Current patch status: **All 105 supplied PCM WAV recordings are integrated as 87 semantic events and 326 automatically segmented takes. Playback is lazy, cached, rate-limited, and personality-aware for soldier acknowledgements; command, aircraft, save/load, tactical movement, reload, combat-result, and End Turn hooks retain synthesized effects as fallback. Static parsing and the expanded build seam checker pass; browser Build Health passes 259/259; the 0129 start screen, fresh-campaign Geoscape, real save action, six-soldier safe-2D launch, selection, reload, movement, and three End Turn cycles ran without application errors or dialogue fallback warnings. Manual listening is required to judge take boundaries, relative volume, delivery matching, and event frequency. The live spotted-civilian AI rescue and affected high-threat Port Attack also remain hands-on checks.**
 
 ---
 
@@ -48,10 +48,16 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.13.0122_TACTICAL_LIGHTING_REMOVAL_CIVILIAN_RESCUE_BREACH_FEEDBACK_INDEX_ONLY_PATCH`
+`v0.26.07.14.0129_RECORDED_COMMAND_AND_TACTICAL_DIALOGUE_INTEGRATION_AUDIO_ASSET_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- A generated recorded-dialogue manifest covering all 105 supplied WAV files, 87 event keys, four soldier delivery styles, and 326 silence-separated takes without modifying the source recordings.
+- Lazy per-file fetch/decode caching, take-repeat avoidance, category cooldowns, and synthesized SFX fallback so recordings do not add tactical map or turn-processing work.
+- Command alerts for save/load, research/manufacturing/construction/transfer completion, personnel, incidents, UFO contact, mission outcomes, funding/aircraft blockers, council reports, and command attention.
+- Aircraft announcements for Skyranger launch, touchdown, ramp deployment, return, landing, and interceptor launch.
+- Personality-matched soldier selection, movement, reload, combat-result, injury, End Turn, and victory callouts with steady-professional fallback for phrases not recorded in every style.
+- Build Health and checker coverage for recording count, take bounds, required events, source-file existence, personality variants, semantic mapping, and runtime seams.
 - A lighting-free tactical visibility context with fixed 20-hex vision and indexed cover lookups, removing local-light generation and per-cell illumination work from LOS and rendering.
 - A bounded human-visibility pass that visits only cells within observer vision range, deduplicates overlap, and exposes constant-time visible-cell membership to both tactical renderers.
 - A single breadth-first reachable-cell flood fill for soldier selection instead of running a separate path search for every candidate destination.
@@ -1228,9 +1234,9 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Load the affected campaign and launch the Port Attack in safe 2D. Confirm the battlefield becomes interactive without Windows reporting a timeout, selecting each soldier produces movement highlights promptly, and at least three End Turn cycles return control to the player normally. Record whether the slowdown occurs during launch, soldier selection, alien thinking, or 2D redraw if any pause remains. Continue the outstanding multi-base relocation queue save/reload validation from build 1830 after this tactical check.
+In a live tactical battle, empty a ballistic magazine, click Reload, immediately fire, and confirm the shot uses the restored magazine and post-reload TU. Reduce a soldier below Burst cost but keep at least 14 TU, click Burst then Single, and confirm the Single shot resolves instead of reporting Burst's TU requirement. Also confirm the selected-soldier extraction readout updates as civilians form, follow, hold, panic, and extract.
 
-If the exact Port Attack still stalls after tactical lighting removal, the next bounded diagnostic patch is `TACTICAL_AI_TURN_CHUNKING_AND_2D_DOM_VIRTUALIZATION_INDEX_ONLY`, adding phase timings and yielding large AI/render batches without changing tactical outcomes. If the Port Attack is stable, continue `TACTICAL_RESCUE_OUTCOME_REWARDS_AND_MISSION_OBJECTIVE_VARIANTS_INDEX_ONLY`; the first civilian extraction and structural-breach interaction slice is complete in 0122.
+Repeat the exact affected high-threat Port Attack in safe 2D. If it still stalls, use `TACTICAL_AI_TURN_CHUNKING_AND_2D_DOM_VIRTUALIZATION_INDEX_ONLY` with phase timings before changing outcomes. If performance and the new status feedback are stable, continue `TACTICAL_ESCORT_EXTRACTION_PROGRESS_AND_RESCUE_OBJECTIVE_BALANCE_INDEX_ONLY` as the next bounded tactical slice.
 
 Focus verification on:
 - Build New Base placement showing dotted ferry links from the proposed new site to existing bases when current aircraft can fly the one-way leg.
@@ -2876,6 +2882,136 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.14.0129 - Recorded Command and Tactical Dialogue Integration
+
+Build `v0.26.07.14.0129_RECORDED_COMMAND_AND_TACTICAL_DIALOGUE_INTEGRATION_AUDIO_ASSET_PATCH` preserves save format 4 and incorporates the user-recorded command, aircraft, and soldier performances without adding tactical simulation work.
+
+Implemented scope:
+
+- Inventoried 105 mono, 48 kHz, 16-bit PCM WAV source recordings totaling about 22.5 minutes. The original files remain unedited.
+- Added `tools/build-dialogue-manifest.cjs`, which detects silence-separated takes and emits `assets/audio/dialogue/manifest.js`. The current manifest contains 87 semantic events and 326 usable takes; every spoken file resolves to three or four alternatives.
+- Recorded files are fetched and decoded only when their event first occurs, then cached for reuse. Playback avoids immediately repeating the same take and rate-limits computer, aircraft, and soldier channels independently.
+- Soldier acknowledgements select aggressive-hotshot, grim, nervous-but-determined, or steady-professional delivery from the soldier's existing personality trait. Missing style-specific combat phrases fall back to the steady-professional recording.
+- Tactical hooks cover selection, movement, reload, shot outcomes, wounds/armor hits, End Turn, and victory. Existing synthesized shot, impact, click, and Skyranger effects remain active underneath and act as a safe fallback.
+- Strategic hooks cover save/load, research/manufacturing/construction/transfer completion, personnel arrival, UFO/incident contact, mission outcome, council/base warnings where emitted, blocked funding/aircraft actions, Skyranger phases, and interceptor launch.
+- No visibility, line-of-sight, lighting, pathfinding, civilian, AI, map generation, or 2D/3D tactical rule was changed. Save format remains 4.
+
+Verification completed:
+
+- `node tools/build-dialogue-manifest.cjs` completed with 105 recordings, 87 events, and 326 takes. `node --check` passed for the generator and checker.
+- Static parsing passed for all 6 inline app scripts. `node tools/check-aegis-build.cjs` passed for build 0129 and independently validated recording count, source existence, take bounds, required events, and soldier styles.
+- Localhost returned HTTP 200 for `index.html`, the generated dialogue manifest, and a representative encoded WAV URL.
+- Browser Build Health passed 259/259, including `Recorded command aircraft and soldier dialogue uses segmented cached playback`.
+- Browser smoke confirmed short version 0129, first-base setup, Geoscape load, a real Save action, six-soldier Red River Signal safe-2D launch, soldier selection, reload, one-hex movement, and three complete End Turn cycles.
+- Final console inspection found no application errors and no `Recorded dialogue unavailable` fallback warnings. The only console entry was the existing Tailwind CDN warning.
+
+Manual validation still required:
+
+- Listen to several command, aircraft, and each soldier-style acknowledgement in normal play. Confirm the chosen take starts/ends cleanly and that speech volume sits comfortably over SFX and optional music.
+- In tactical combat, sample selection, movement, reload, hit, miss, kill, wound, End Turn, and victory lines. Confirm cooldowns prevent chatter without making the squad feel silent.
+- Launch and recover a Skyranger and perform an interceptor sortie. Confirm touchdown/ramp/return lines occur at natural moments and do not overlap awkwardly.
+- Continue the outstanding spotted-civilian AI rescue and affected high-threat Port Attack tests from build 0128.
+
+Remaining risks:
+
+- Automated tests can prove files decode without fallback warnings, but cannot judge performance quality, trim feel, loudness, or whether a delivery emotionally matches the moment.
+- The source recordings add about 124 MB to a complete build package. Runtime loading is lazy and cached, but first playback of each long source file still transfers that entire WAV.
+- Several strategic alerts depend on the existing report wording; the checker covers current mappings, but future text changes should preserve or explicitly update their semantic audio hooks.
+- One pre-campaign browser remount reported 256/259 because three older procedural tactical-map rows rolled false; the immediate final rerun passed 259/259. Those pre-existing randomized self-tests should eventually use fixed fixtures so Build Health cannot flicker between reloads.
+
+Next recommended patch: `TACTICAL_ESCORT_EXTRACTION_PROGRESS_AND_RESCUE_OBJECTIVE_BALANCE_INDEX_ONLY`, after the dialogue listening pass plus the live AI rescue and Port Attack checks.
+
+## v0.26.07.14.0128 - Tactical AI Continuation and Civilian Rescue Priority
+
+Build `v0.26.07.14.0128_TACTICAL_AI_CONTINUATION_AND_CIVILIAN_RESCUE_PRIORITY_INDEX_ONLY_PATCH` preserves save format 4 and fixes manual-to-AI tactical handoff while adding bounded civilian rescue priorities to the continuation AI.
+
+Gameplay scope implemented:
+
+- AI Command now clones the current tactical units, cover state, round, explored cells, and Skyranger hull/ramp placement before invoking the mission resolver. It no longer asks the resolver to create a fresh deployment.
+- Continuation soldiers preserve identity, position, facing, HP, TU, ammunition, and existing casualties. Aliens preserve identity, position, HP, reveal state, and casualties. Civilians preserve reveal, rescue, escort, formation, and panic state.
+- Playback frames now carry civilians plus live HP, TU, and ammunition. Map playback applies those values instead of restoring pre-handoff values or dropping civilians from the unit array.
+- AI rescue duty considers only living revealed civilians and existing revealed escorts. Hidden civilians remain unknown to the AI.
+- Existing escorts move toward the current Skyranger ramp before their soldier performs combat actions. Available soldiers approach and contact the nearest revealed unescorted civilian, spending the existing 8 TU and using the existing repeated-contact chance for panic.
+- Rescue movement reuses the existing single-file escort mover and remains bounded to six soldiers, four followers per soldier, and four soldier steps per exchange.
+- Alien fire can select a visible civilian when one is exposed. Surviving civilian hits can trigger panic, and civilians whose escort dies can break and use the existing two-step line-of-sight panic movement and recovery rules.
+- AI Command is disabled while a manual movement animation is active, preventing pending movement timers from racing the continuation snapshot.
+- Extracted civilians remain rescued rather than being interpreted as fallen units during playback; they do not trigger death animations or sounds.
+
+Performance and compatibility:
+
+- Save format remains 4 because the continuation snapshot is transient tactical state and does not alter campaign-save structure.
+- Normal instant simulations keep their existing generated-deployment behavior. The live-state branch is used only when AI inherits a manual tactical battle.
+- Rescue decisions examine the small active unit lists and reuse indexed cover/visibility helpers. No full-map scan, per-cell pathfinding loop, local-light calculation, or 2D/3D state fork was added.
+- Safe 2D remains the tactical default. Lighting remains removed from gameplay and render hot paths.
+
+Verification completed:
+
+- Static inline app-script parsing passed 6/6; `node --check tools\check-aegis-build.cjs` passed; `node tools\check-aegis-build.cjs` passed for build 0128.
+- Localhost returned HTTP 200 and the start screen displayed short version 0128. A new checker seam now requires the short version to match the manifest build prefix.
+- Browser Build Health passed 258/258, including `AI tactical handoff preserves the live battlefield and prioritizes spotted civilians`.
+- A fresh campaign confirmed the North America first-base site, loaded the Geoscape, assigned six soldiers, and launched Red River Signal on the safe-2D 64 x 64 battlefield.
+- Orin moved one hex toward the ramp and spent 4 TU. AI Command changed to disabled `Movement Active` during the animation and became available only after movement settled.
+- Tactical Map handoff opened on `Frame 1/25: AI inherited round 1`, not a new `Contact confirmed` deployment. Playback reached Exchange 3A after three A/B exchanges without a tactical error banner.
+- Final browser console inspection found no application errors. Build Health was rerun after the extracted-civilian playback correction and remained 258/258.
+
+Manual validation still required:
+
+- Reveal a civilian, leave them unescorted, then hand the battle to AI Command. Confirm an available soldier approaches, spends 8 TU on contact, and leads the civilian toward the existing rear ramp before taking combat actions.
+- Hand off with one to four civilians already following a soldier. Confirm the exact chain, panic state, current positions, and extraction progress continue without overlap or a map reset.
+- Hand off after damaging a soldier, spending ammunition/TU, killing an alien, and breaching structural cover. Confirm the first playback frame preserves each exact value and the breach remains passable.
+- Let aliens threaten an AI-led civilian and kill an escort. Confirm panic, flight, recovery, and repeated contact feel appropriate during AI continuation.
+- Repeat the affected high-threat Port Attack in safe 2D and confirm the inherited AI turns remain responsive.
+
+Remaining risks:
+
+- Build Health deterministically covers revealed-versus-hidden civilian priority, snapshot preservation, ramp extraction, and source seams, but a live spotted-civilian AI rescue was not reached during browser verification.
+- The continuation resolver computes the remaining fight into playback frames up front. It preserves the inherited state but still uses the existing simulation AI combat model rather than replaying manual click-by-click tactical AI.
+- Dense multi-escort cross-traffic and the exact high-threat Port Attack save remain the authoritative performance and interaction fixtures.
+
+Next recommended patch: `TACTICAL_ESCORT_EXTRACTION_PROGRESS_AND_RESCUE_OBJECTIVE_BALANCE_INDEX_ONLY`, after the live AI rescue and Port Attack checks.
+
+## v0.26.07.14.0127 - Tactical Live Action State and Escort Route Feedback
+
+Build `v0.26.07.14.0127_TACTICAL_LIVE_ACTION_STATE_AND_ESCORT_ROUTE_FEEDBACK_INDEX_ONLY_PATCH` preserves save format 4 and fixes stale tactical action state while completing the safest contained portion of `TACTICAL_CIVILIAN_ESCORT_STATUS_AND_EXTRACTION_ROUTE_FEEDBACK_INDEX_ONLY`.
+
+Gameplay scope implemented:
+
+- Reload, fire-mode selection, alien shots, and structural breach shots now resolve from an immediately current tactical unit and mode snapshot instead of a previous React render closure.
+- Sequential actions cannot restore stale ammo or TU by mapping over an older unit array. Reload writes its updated unit to the live snapshot before the next click can resolve.
+- Fire-mode selection updates the live mode before React completes its visual commit, so a Burst-to-Single switch uses Single's 14-TU cost and one-round profile on the next action.
+- Selected soldiers now show an `Extraction Route` status with direct distance to the nearest rear-ramp hex and counts for assigned, following, forming, and held civilians.
+- Escort feedback is derived from the existing four-civilian bounded chain and direct hex distance. It does not run pathfinding, scan the battlefield, or change escort outcomes.
+
+Performance and compatibility:
+
+- Save format remains 4 because tactical unit refs, selected fire mode, and escort-route summaries are transient manual-battle state.
+- Port visibility indexing, one-pass movement reachability, lighting removal, safe-2D default, and 2D/Three.js parity remain unchanged.
+- The route readout examines only the selected soldier, at most four active followers, and five Skyranger ramp cells.
+
+Verification completed:
+
+- Static inline app-script parsing passed 6/6; `node --check tools/check-aegis-build.cjs` passed; `node tools/check-aegis-build.cjs` passed for build 0127.
+- Localhost returned HTTP 200, the start screen displayed build 0127, and browser Build Health passed 257/257.
+- A fresh campaign reached first-base confirmation and the Geoscape. Range and ferry controls remained combined in the Operational Overlays section.
+- A six-soldier Red River Signal mission launched in safe 2D on the 64 x 64 battlefield. Selecting Greta displayed `Ramp 3 hexes away` and `No civilians assigned`; movement consumed TU and updated ramp distance.
+- Reload changed Greta from 55 to 37 TU with 12 rounds ready. Clicking Burst and then Single left Single visibly selected. Three End Turn cycles returned to human control with the selected soldier restored to full TU.
+- Browser console inspection found no application errors; existing non-error browser advisories remain outside gameplay code.
+
+Manual validation still required:
+
+- Empty a ballistic magazine, reload, and immediately fire at a revealed alien or structural breach target. Confirm the restored ammunition is used and the shot does not report another reload requirement.
+- With 14-23 TU remaining, click Burst, switch to Single, and immediately fire at a valid target. Confirm the shot succeeds at Single cost instead of reporting insufficient Burst TU.
+- Escort civilians and confirm assigned/following/forming/held counts and ramp distance update through corners, blocked chains, panic, recovery, and extraction.
+- Repeat the exact affected high-threat Port Attack in safe 2D for the authoritative performance check.
+
+Remaining risks:
+
+- Build Health covers zero-ammo reload state and the Burst-illegal/Single-legal threshold deterministically, but the exact target-click cadence still needs hands-on confirmation in a battle with a revealed valid target.
+- Ramp distance is intentionally direct hex distance, not a promised traversable path length; blocked-route guidance remains future scope.
+- The exact Port Attack save and dense multi-escort routes remain the authoritative performance and interaction fixtures.
+
+Next recommended patch: `TACTICAL_ESCORT_EXTRACTION_PROGRESS_AND_RESCUE_OBJECTIVE_BALANCE_INDEX_ONLY`, after the reload/fire-mode target-click checks and escort-status playtest pass.
 
 ## v0.26.07.13.0126 - Escort Formation Collision and Panic Balance
 
