@@ -1,7 +1,7 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.07.15.0130_TACTICAL_AI_CAMERA_AND_DIALOGUE_TRANSMISSION_FX_INDEX_ONLY_PATCH",
+  "currentBuild": "v0.26.07.15.0131_AI_TACTICAL_SOLDIER_DIALOGUE_AND_GEOSCAPE_VOICE_QUEUE_INDEX_ONLY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
@@ -26,5 +26,5 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.07.15.0130_TACTICAL_AI_CAMERA_AND_DIALOGUE_TRANSMISSION_FX_INDEX_ONLY_PATCH"
+  "lastInspectedBuild": "v0.26.07.15.0131_AI_TACTICAL_SOLDIER_DIALOGUE_AND_GEOSCAPE_VOICE_QUEUE_INDEX_ONLY_PATCH"
 }

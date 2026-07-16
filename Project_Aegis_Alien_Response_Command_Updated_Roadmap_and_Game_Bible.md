@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-15
-Current handoff build: `v0.26.07.15.0130_TACTICAL_AI_CAMERA_AND_DIALOGUE_TRANSMISSION_FX_INDEX_ONLY_PATCH`
-Current patch status: **AI tactical-map takeover now preserves the live battle and follows the active squad movement, rescue, casualty, and shot area instead of leaving the watch camera at its initial position. Recorded base-computer announcements now use a constrained, stepped 1980s computer treatment, while aircraft dialogue uses a narrower, modulated radio chain; both remain governed by the existing Sound Effects volume and mute controls. Static parsing and the expanded build seam checker pass; browser Build Health passes 261/261. A fresh 0130 campaign reached Geoscape, launched six soldiers into the 64 x 64 safe-2D Red River Signal battle, handed the existing battlefield to AI, and advanced through frames 1-5 while the viewport visibly re-centered between hostile action and squad movement. Aircraft launch, touchdown, and ramp dialogue hooks completed without application errors or recorded-dialogue fallback warnings after the corrected reload. Manual listening is still required to judge the computer/radio character and relative levels. A live spotted-civilian rescue, later AI combat frames, and the affected high-threat Port Attack remain hands-on checks.**
+Current handoff build: `v0.26.07.15.0131_AI_TACTICAL_SOLDIER_DIALOGUE_AND_GEOSCAPE_VOICE_QUEUE_INDEX_ONLY_PATCH`
+Current patch status: **AI-controlled tactical playback now selects one context-aware soldier line per frame for movement, firing, misses, kills, wounds, and final-contact victory instead of limiting recorded soldier chatter to direct player control. Computer and aircraft announcements now share one FIFO queue that waits for each decoded clip plus a short gap before starting the next, preserving call order without strategic voice overlap. Static parsing and the expanded build seam checker pass; browser Build Health passes 263/263. A fresh 0131 campaign reached Geoscape, launched six soldiers into the 64 x 64 safe-2D Red River Signal battle, handed the live battlefield to AI, completed all 17 playback frames at accelerated speed, reached tactical victory, returned to Geoscape, and exercised the paired return-flight announcements without application errors or recorded-dialogue fallback warnings. Manual listening is required to judge soldier chatter frequency and strategic queue pacing. A live spotted-civilian rescue and the affected high-threat Port Attack remain hands-on checks.**
 
 ---
 
@@ -48,10 +48,15 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.15.0130_TACTICAL_AI_CAMERA_AND_DIALOGUE_TRANSMISSION_FX_INDEX_ONLY_PATCH`
+`v0.26.07.15.0131_AI_TACTICAL_SOLDIER_DIALOGUE_AND_GEOSCAPE_VOICE_QUEUE_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- One context-aware recorded soldier callout per AI tactical playback frame, covering movement, fire, misses, kills, wounds, and the final alien defeat in both map and classic playback.
+- Personality-aware AI chatter using each frame soldier's preserved campaign identity and the existing soldier-category cooldown, avoiding a delayed tactical speech backlog.
+- A shared FIFO for all non-soldier recorded announcements so base-computer and aircraft clips cannot overlap or overtake one another.
+- Clip-end waiting with a short inter-announcement gap; existing intentional delays remain relative to each queued phrase.
+- Build Health and checker coverage for AI frame cue selection, soldier identity propagation, strategic queue routing, and tactical/strategic queue separation.
 - Action-aware tactical AI watch-camera anchors for squad movement, civilian rescue, casualties, alien movement, shot midpoints, and quiet-frame squad fallback.
 - Per-frame camera updates during AI tactical-map takeover without rebuilding or resetting the inherited battlefield.
 - A high-pass/low-pass, stepped-wave, compressed, lightly modulated base-computer voice chain for recorded `computer` dialogue.
@@ -2888,6 +2893,44 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.15.0131 - AI Tactical Soldier Dialogue and Geoscape Voice Queue
+
+Build `v0.26.07.15.0131_AI_TACTICAL_SOLDIER_DIALOGUE_AND_GEOSCAPE_VOICE_QUEUE_INDEX_ONLY_PATCH` preserves save format 4 and closes the remaining dialogue gaps in AI tactical playback and strategic announcement ordering.
+
+Root causes:
+
+- Manual tactical actions called the recorded soldier dialogue system directly, but AI playback frames only emitted weapon, impact, and fall effects. The AI simulation retained soldier identities and action data without translating those frames into voice cues.
+- Computer and aircraft categories used independent cooldown clocks. Rapid strategic events could therefore begin simultaneously, and later same-category phrases could be discarded instead of waiting their turn.
+
+Implemented changes:
+
+- AI playback derives at most one soldier cue per frame, prioritizing final-contact victory, a human kill, a wounded soldier, a human shot or miss, then squad movement.
+- Frame coordinates identify the acting or wounded soldier, and the preserved campaign soldier record selects the appropriate recorded personality style.
+- Tactical soldier clips remain immediate and cooldown-limited so accelerated battle playback cannot create a stale queue of old combat lines.
+- All non-soldier recordings share a FIFO Promise chain. Computer and aircraft phrases wait for the preceding clip to end plus a 120 ms gap before beginning.
+- Explicit phrase delays remain intact but begin only after earlier queued announcements finish, preserving sequences such as `all_aboard` followed by `returning_to_base`.
+- Missing or failed clips release the queue and retain synthesized fallback behavior instead of blocking later announcements.
+- Build Health covers kill, wound, movement, and final-contact AI cue selection plus strategic queue routing and soldier exclusion.
+
+Verification completed:
+
+- Static parsing passed for all 6 inline app scripts.
+- `node tools/check-aegis-build.cjs` passed for build 0131.
+- Browser smoke confirmed the 0131 start screen and a fresh-campaign Geoscape.
+- Browser Build Health passed `263/263`.
+- A six-soldier Red River Signal mission launched on the 64 x 64 safe-2D battlefield. AI inherited the live battle, completed all 17 playback frames at 150% speed, and reached tactical victory.
+- The result returned to Geoscape and exercised the paired `all_aboard` / `returning_to_base` path plus landing progression without application errors or recorded-dialogue fallback warnings.
+- The only browser console warning was the existing Tailwind CDN development warning.
+
+Manual validation still required:
+
+- Listen through a complete AI-led incident and confirm soldier lines are frequent enough to add character without talking over important battle sounds.
+- Trigger two or more computer/aircraft announcements close together and confirm every phrase plays once, in event order, with a natural gap and no overlap.
+- Re-test an AI-led spotted-civilian rescue and confirm movement/rescue chatter remains appropriate.
+- Re-test the affected high-threat Port Attack for performance and audio pacing.
+
+Next recommended patch: `TACTICAL_ESCORT_EXTRACTION_PROGRESS_AND_RESCUE_OBJECTIVE_BALANCE_INDEX_ONLY`, after the AI chatter and strategic queue listening pass plus live civilian rescue and Port Attack checks.
 
 ## v0.26.07.15.0130 - Tactical AI Camera and Dialogue Transmission FX
 
