@@ -1,7 +1,7 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.07.15.0132_COMPUTER_VOICE_STATIC_TRANSITION_AND_3D_TERRAIN_COLOR_INDEX_ONLY_PATCH",
+  "currentBuild": "v0.26.07.17.0134_THREEJS_SHARED_CELL_GRADIENT_AND_SEAMLESS_LAYOUT_INDEX_ONLY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
@@ -26,5 +26,5 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.07.15.0132_COMPUTER_VOICE_STATIC_TRANSITION_AND_3D_TERRAIN_COLOR_INDEX_ONLY_PATCH"
+  "lastInspectedBuild": "v0.26.07.17.0134_THREEJS_SHARED_CELL_GRADIENT_AND_SEAMLESS_LAYOUT_INDEX_ONLY_PATCH"
 }

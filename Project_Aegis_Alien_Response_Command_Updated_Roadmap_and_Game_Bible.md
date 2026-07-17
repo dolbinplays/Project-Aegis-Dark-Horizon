@@ -1,9 +1,9 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-07-15
-Current handoff build: `v0.26.07.15.0132_COMPUTER_VOICE_STATIC_TRANSITION_AND_3D_TERRAIN_COLOR_INDEX_ONLY_PATCH`
-Current patch status: **Base-computer recordings now use stronger stepped, modulated, compressed, and short-delay metallic processing. Soldier recordings receive generated radio-static bookends, and their real decode/playback completion promise now gates the first queued computer or aircraft transmission after combat. Three.js tactical ground no longer depends on the failing per-instance color path: the single instanced ground mesh uses a visible biome-specific material for Wilderness, Farmland, Small Town, or Urban District maps, while hidden units, cover, LOS, and exploration rules remain unchanged. Static parsing and the expanded build seam checker pass; browser Build Health passes 266/266. A fresh 0132 campaign reached Geoscape, launched six soldiers into Red River Signal, visually confirmed the green Wilderness isometric ground, handed the live battlefield to AI, reached the final playback frame, returned to Geoscape, and drained the transition queue without application errors or recorded-dialogue fallback warnings. Manual listening is required to judge the new computer character, static level, and exact soldier-to-pilot pacing. Farm, town, city, spotted-civilian rescue, and the affected high-threat Port Attack remain hands-on checks.**
+Last updated: 2026-07-17
+Current handoff build: `v0.26.07.17.0134_THREEJS_SHARED_CELL_GRADIENT_AND_SEAMLESS_LAYOUT_INDEX_ONLY_PATCH`
+Current patch status: **Build 0134 corrects the Urban-map mismatch that remained after the Wilderness-only 0133 verification. The 2D board uses a deliberately square pointy-hex footprint, a 0.755-cell row step, and a half-cell odd-row offset; Three.js had instead used regular-hex `sqrt(3)` by `1.5` center spacing. Both views now share the row-step and offset constants, the same per-cell visual descriptor, and exact base/accent inputs. Three.js uses bounded palette-instanced canvas-gradient materials, a custom flat footprint matching the 2D clip polygon, and one instanced seam underlay to prevent antialiasing from exposing black junction triangles. Static parsing and the seam checker pass, browser Build Health passes 268/268, and a fresh six-soldier Red River battle showed corresponding 2D/3D terrain regions at Near and Close zoom without repeating black junction gaps. Three End Turn cycles returned control normally, and browser diagnostics contained no application or WebGL errors. Save format remains version 4. The exact supplied Urban save and affected high-threat Port Attack remain manual checks.**
 
 ---
 
@@ -48,10 +48,19 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.15.0132_COMPUTER_VOICE_STATIC_TRANSITION_AND_3D_TERRAIN_COLOR_INDEX_ONLY_PATCH`
+`v0.26.07.17.0134_THREEJS_SHARED_CELL_GRADIENT_AND_SEAMLESS_LAYOUT_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- A shared per-cell tactical visual descriptor used by both 2D CSS cells and Three.js terrain palette batches.
+- Shared 0.755 row-step and half-cell odd-row-offset constants matching the actual 2D board layout.
+- Exact base/accent canvas gradients on bounded Three.js instanced palette batches instead of midpoint-only solid colors.
+- A custom flat Three.js hex footprint matching the 2D clip polygon, plus one bounded seam-underlay batch for raster junctions.
+- Build Health and checker coverage for Urban gradient diversity, shared cell centers/footprints, and seam closure.
+- Per-cell Three.js terrain colors sourced from the same `tacticalTerrainForCell` base/accent pairs as the 2D map.
+- Bounded explicit-material palette batches that avoid the failing per-instance tint path while keeping thousands of ground cells instanced.
+- Pointy-top Three.js hex geometry aligned to the existing odd-row tactical coordinate spacing, removing the repeating triangular holes between tiles.
+- Build Health and checker coverage for 2D/3D palette parity, bounded batching, and gapless geometry math.
 - Stronger base-computer processing with coarser stepped-wave quantization, deeper square-wave modulation, compression, and a bounded 22 ms metallic parallel delay.
 - Generated band-limited static before and after soldier recordings without changing the supplied WAV assets or moving voices off the shared Sound Effects volume control.
 - A soldier playback-tail promise that includes decode time, clip duration, and trailing static, and which strategic computer/aircraft FIFO work must await before starting.
@@ -1252,7 +1261,7 @@ Planned:
 ## Immediate Recommendation
 Manually listen to several base-computer announcements and confirm the stronger effect remains intelligible and suitably computer-like. Complete an AI-controlled incident and confirm the final soldier phrase plus trailing static finish before `all_aboard` or the first return-flight pilot phrase begins. Confirm the static bookends do not clip consonants or overpower quiet soldier takes at low and high Sound Effects volume.
 
-Launch at least one Wilderness, Farmland, Small Town, and Urban District incident in `3D Iso`. Confirm each ground plane is visibly green, ochre, muted green-gray, or urban gray instead of black, and confirm fog-of-war still hides unrevealed units and cover. Repeat in Performance mode on the affected machine.
+Load the same Urban District save used for the supplied screenshots without overwriting it. At Near and Close zoom, compare the tan center-right region, dark terrain bands, buildings, Skyranger, soldiers, props, and map-edge cells in 2D and `3D Iso`; confirm each region occupies the same hex coordinates and no repeating black junction triangles remain. Repeat the affected high-threat Port Attack in Performance mode.
 
 In a live tactical battle, empty a ballistic magazine, click Reload, immediately fire, and confirm the shot uses the restored magazine and post-reload TU. Reduce a soldier below Burst cost but keep at least 14 TU, click Burst then Single, and confirm the Single shot resolves instead of reporting Burst's TU requirement. Also confirm the selected-soldier extraction readout updates as civilians form, follow, hold, panic, and extract.
 
@@ -2902,6 +2911,87 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.17.0134 - Shared Cell Gradient and Seamless Three.js Layout
+
+Build `v0.26.07.17.0134_THREEJS_SHARED_CELL_GRADIENT_AND_SEAMLESS_LAYOUT_INDEX_ONLY_PATCH` preserves save format 4 and corrects the remaining Urban District 2D/3D color and placement mismatch.
+
+Root causes:
+
+- The 2D battlefield's pointy hex is intentionally drawn inside a square cell. Its rows advance by 0.755 cell and odd rows shift by half a cell. Build 0133 incorrectly treated the board as a regular pointy-hex grid with `sqrt(3) x radius` horizontal and `1.5 x radius` vertical center spacing.
+- Build 0133 reduced each 2D `base` and `accent` gradient to one midpoint color in Three.js. Similar Urban grays collapsed visually, and the richer 2D road, lane, lot, plaza, and building-floor treatment did not carry across.
+- Mathematically touching polygon edges still exposed the clear/background color at antialiased three-cell junctions.
+
+Implemented changes:
+
+- Added `tacticalCellVisual` as the shared terrain/fog descriptor used by both `tacticalCellStyle` and `tacticalThreeGroundPalette`.
+- Centralized the 0.755 row step and 0.5 odd-row offset. The 2D rows, 2D shot overlay, Three.js world coordinates, and geometry tests now consume those constants.
+- Replaced the regular cylinder floor with a flat custom buffer geometry whose square bounds and 25/75-percent shoulders match the 2D CSS clip polygon.
+- Replaced midpoint-only materials with small cached canvas gradients using each cell palette's exact base/accent pair. Matching palettes remain grouped into bounded instanced batches and retain instance picking.
+- Added a single slightly larger instanced underlay below the colored cells so antialiasing cannot expose black triangular holes. This adds one bounded draw call rather than per-cell DOM or mesh work.
+- Added Build Health and checker seams for shared Urban palette inputs, exact 2D/3D cell-center math, custom footprints, texture cleanup, and the seam-underlay budget.
+
+Verification completed:
+
+- Static app-script parsing passed.
+- `node tools/check-aegis-build.cjs` passed for build 0134.
+- Browser smoke confirmed the 0134 start screen, first-base selection, and fresh-campaign Geoscape.
+- Browser Build Health passed `268/268`, including all three new 2D/3D parity rows.
+- A fresh six-soldier Red River Signal mission launched on the live 64 x 64 Wilderness battlefield.
+- Matched live 2D and Three.js views showed the same orange path, dark unexplored field, bright green clearing, gray stone strip, vegetation, soldiers, and Skyranger regions.
+- Performance-mode Three.js rendered the new gradient palette and custom footprint at Near and Close zoom without repeating black triangular junction gaps.
+- Three.js picking selected Maia, displayed 164 reachable cells, and moved her to a sampled reachable ground hex for 8 TU, confirming instanced cell picking still maps to the authoritative tactical coordinate.
+- Three End Turn cycles completed with control returning to the human turn each time.
+- Browser diagnostics contained no application or WebGL errors; the only warning was the existing Tailwind CDN development notice.
+
+Manual validation still required:
+
+- Compare the same saved Urban District incident in 2D and 3D at Near and Close zoom, paying particular attention to the tan center-right region, dark terrain bands, buildings, Skyranger, and row-edge cells shown in the supplied screenshots. The browser verification used a fresh Wilderness mission because the affected save was not present in the isolated test session.
+- Repeat on the affected high-threat Port Attack in Performance mode and watch for turn-time regression.
+
+Next recommended patch: resume the next bounded roadmap gameplay item after matched Urban and Port Attack hands-on confirmation.
+
+## v0.26.07.16.0133 - Three.js Terrain Palette and Hex Alignment
+
+Build `v0.26.07.16.0133_THREEJS_TERRAIN_PALETTE_AND_HEX_ALIGNMENT_INDEX_ONLY_PATCH` preserves save format 4 and corrects the two isometric-ground regressions shown in matched 2D and 3D screenshots.
+
+Root causes:
+
+- Build 0132 deliberately replaced unreliable per-instance floor colors with one explicit biome material. That prevented black ground but flattened every procedural terrain region into one color.
+- The tactical grid uses pointy-top odd-row coordinates with `sqrt(3) x radius` horizontal spacing and `1.5 x radius` vertical spacing. The Three.js cylinder used a 30-degree start angle, producing a flat-top hex against pointy-top placement math and leaving repeating triangular holes.
+
+Implemented changes:
+
+- Each 3D cell now receives the same deterministic `tacticalTerrainForCell` base/accent pair used by 2D. The representative 3D material color is the midpoint of those two colors.
+- Cells with matching terrain colors are grouped into explicit-material `InstancedMesh` batches. This avoids per-cell meshes and the GPU-dependent per-instance color path while bounding ground batches to 24.
+- Unexplored and explored-but-unseen ground retain tactical dimming; AI playback and resolved battles reveal the underlying terrain palette consistently.
+- The hex cylinder now starts at zero radians, matching the pointy-top tactical coordinate system. A 0.1% radius overlap suppresses subpixel cracks without changing cell centers or picking.
+- Exact per-instance picking remains attached to every palette batch, and tactical simulation, cover, movement, visibility, LOS, civilians, AI, and saves are unchanged.
+- Added Build Health and checker seams for palette variation, 2D palette sourcing, pointy-top geometry, coordinate spacing, and bounded palette batching.
+
+Verification completed:
+
+- Static app-script parsing passed after the renderer rewrite.
+- `node tools/check-aegis-build.cjs` passed for build 0133.
+- Browser smoke confirmed the 0133 start screen, first-base selection, and fresh-campaign Geoscape.
+- Browser Build Health passed `267/267`, including both new terrain-palette and pointy-hex rows.
+- A fresh six-soldier Red River Signal mission launched on the 64 x 64 Wilderness battlefield.
+- Live close-zoom 2D and 3D screenshots showed the same orange path, green vegetation, gray stone/road, bright grass, dark scrub, and unexplored regions in the same generated battlefield.
+- Quality and Performance isometric modes both rendered varied terrain with pointy hex edges meeting cleanly and without the previous repeating triangular holes.
+- Screenshot pixel analysis measured 350 quantized color buckets and 3,851 non-dark terrain-color samples in the isometric battle view.
+- Three End Turn cycles completed with control returning to the player each time.
+- AI inherited the live round-four battlefield, reached frame `21/21`, and produced a fully revealed tactical victory map with blue stream, orange path/dry ground, multiple green terrain families, gray stone/road, brown ground, and building areas.
+- Browser diagnostics contained no application or WebGL errors; the only console entry was the existing Tailwind CDN development warning.
+
+Manual validation still required:
+
+- Repeat the 2D/3D comparison on Farmland, Small Town, and Urban District maps, including Performance mode.
+- Inspect long animated battles for any rare overlap flicker at mixed-color palette boundaries; none appeared in the tested Wilderness mission.
+- Re-test the affected high-threat Port Attack because ground draw calls rise from one biome batch to a bounded terrain-palette set.
+
+Subsequent result: the supplied Urban District screenshots showed that 0133's Wilderness verification was insufficient. Urban colors remained visually flattened and the regular-hex Three.js footprint did not match the square-bounded 2D cell layout. Build 0134 supersedes those two implementation assumptions while retaining the verified instancing and picking recovery.
+
+Next recommended patch: `TACTICAL_ESCORT_EXTRACTION_PROGRESS_AND_RESCUE_OBJECTIVE_BALANCE_INDEX_ONLY`, after cross-biome 3D palette/alignment and Port performance confirmation.
 
 ## v0.26.07.15.0132 - Computer Voice, Soldier Static, Transition Gate, and 3D Terrain Color
 
