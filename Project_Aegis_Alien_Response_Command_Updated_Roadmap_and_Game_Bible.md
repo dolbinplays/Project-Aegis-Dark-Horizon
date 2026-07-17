@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-15
-Current handoff build: `v0.26.07.15.0131_AI_TACTICAL_SOLDIER_DIALOGUE_AND_GEOSCAPE_VOICE_QUEUE_INDEX_ONLY_PATCH`
-Current patch status: **AI-controlled tactical playback now selects one context-aware soldier line per frame for movement, firing, misses, kills, wounds, and final-contact victory instead of limiting recorded soldier chatter to direct player control. Computer and aircraft announcements now share one FIFO queue that waits for each decoded clip plus a short gap before starting the next, preserving call order without strategic voice overlap. Static parsing and the expanded build seam checker pass; browser Build Health passes 263/263. A fresh 0131 campaign reached Geoscape, launched six soldiers into the 64 x 64 safe-2D Red River Signal battle, handed the live battlefield to AI, completed all 17 playback frames at accelerated speed, reached tactical victory, returned to Geoscape, and exercised the paired return-flight announcements without application errors or recorded-dialogue fallback warnings. Manual listening is required to judge soldier chatter frequency and strategic queue pacing. A live spotted-civilian rescue and the affected high-threat Port Attack remain hands-on checks.**
+Current handoff build: `v0.26.07.15.0132_COMPUTER_VOICE_STATIC_TRANSITION_AND_3D_TERRAIN_COLOR_INDEX_ONLY_PATCH`
+Current patch status: **Base-computer recordings now use stronger stepped, modulated, compressed, and short-delay metallic processing. Soldier recordings receive generated radio-static bookends, and their real decode/playback completion promise now gates the first queued computer or aircraft transmission after combat. Three.js tactical ground no longer depends on the failing per-instance color path: the single instanced ground mesh uses a visible biome-specific material for Wilderness, Farmland, Small Town, or Urban District maps, while hidden units, cover, LOS, and exploration rules remain unchanged. Static parsing and the expanded build seam checker pass; browser Build Health passes 266/266. A fresh 0132 campaign reached Geoscape, launched six soldiers into Red River Signal, visually confirmed the green Wilderness isometric ground, handed the live battlefield to AI, reached the final playback frame, returned to Geoscape, and drained the transition queue without application errors or recorded-dialogue fallback warnings. Manual listening is required to judge the new computer character, static level, and exact soldier-to-pilot pacing. Farm, town, city, spotted-civilian rescue, and the affected high-threat Port Attack remain hands-on checks.**
 
 ---
 
@@ -48,10 +48,15 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.15.0131_AI_TACTICAL_SOLDIER_DIALOGUE_AND_GEOSCAPE_VOICE_QUEUE_INDEX_ONLY_PATCH`
+`v0.26.07.15.0132_COMPUTER_VOICE_STATIC_TRANSITION_AND_3D_TERRAIN_COLOR_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- Stronger base-computer processing with coarser stepped-wave quantization, deeper square-wave modulation, compression, and a bounded 22 ms metallic parallel delay.
+- Generated band-limited static before and after soldier recordings without changing the supplied WAV assets or moving voices off the shared Sound Effects volume control.
+- A soldier playback-tail promise that includes decode time, clip duration, and trailing static, and which strategic computer/aircraft FIFO work must await before starting.
+- Explicit Wilderness, Farmland, Small Town, and Urban District ground colors on the existing single Three.js instanced ground mesh, bypassing the browser path that rendered per-instance floor colors black.
+- Build Health and checker coverage for robotic computer processing, soldier static, the tactical-to-strategic audio gate, and visible biome ground materials.
 - One context-aware recorded soldier callout per AI tactical playback frame, covering movement, fire, misses, kills, wounds, and the final alien defeat in both map and classic playback.
 - Personality-aware AI chatter using each frame soldier's preserved campaign identity and the existing soldier-category cooldown, avoiding a delayed tactical speech backlog.
 - A shared FIFO for all non-soldier recorded announcements so base-computer and aircraft clips cannot overlap or overtake one another.
@@ -1245,6 +1250,10 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
+Manually listen to several base-computer announcements and confirm the stronger effect remains intelligible and suitably computer-like. Complete an AI-controlled incident and confirm the final soldier phrase plus trailing static finish before `all_aboard` or the first return-flight pilot phrase begins. Confirm the static bookends do not clip consonants or overpower quiet soldier takes at low and high Sound Effects volume.
+
+Launch at least one Wilderness, Farmland, Small Town, and Urban District incident in `3D Iso`. Confirm each ground plane is visibly green, ochre, muted green-gray, or urban gray instead of black, and confirm fog-of-war still hides unrevealed units and cover. Repeat in Performance mode on the affected machine.
+
 In a live tactical battle, empty a ballistic magazine, click Reload, immediately fire, and confirm the shot uses the restored magazine and post-reload TU. Reduce a soldier below Burst cost but keep at least 14 TU, click Burst then Single, and confirm the Single shot resolves instead of reporting Burst's TU requirement. Also confirm the selected-soldier extraction readout updates as civilians form, follow, hold, panic, and extract.
 
 Repeat the exact affected high-threat Port Attack in safe 2D. If it still stalls, use `TACTICAL_AI_TURN_CHUNKING_AND_2D_DOM_VIRTUALIZATION_INDEX_ONLY` with phase timings before changing outcomes. If performance and the new status feedback are stable, continue `TACTICAL_ESCORT_EXTRACTION_PROGRESS_AND_RESCUE_OBJECTIVE_BALANCE_INDEX_ONLY` as the next bounded tactical slice.
@@ -2893,6 +2902,48 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.15.0132 - Computer Voice, Soldier Static, Transition Gate, and 3D Terrain Color
+
+Build `v0.26.07.15.0132_COMPUTER_VOICE_STATIC_TRANSITION_AND_3D_TERRAIN_COLOR_INDEX_ONLY_PATCH` preserves save format 4 and improves recorded transmission character, post-battle voice ordering, and isometric environment readability.
+
+Root causes:
+
+- The base-computer effect was intentionally light, so the original recording still sounded mostly natural instead of like a 1980s command computer.
+- Soldier clips bypassed the strategic FIFO. Their asynchronous fetch/decode could still be active when the first return-flight aircraft phrase entered the queue, allowing the pilot to begin before the final tactical recording actually ended.
+- Three.js terrain used dark procedural 2D colors as per-instance tints. In the tested browser/GPU path those instance colors rendered effectively black, and scene fog darkened them further.
+
+Implemented changes:
+
+- Base-computer recordings now use 18-step wave shaping, 31 Hz square modulation, stronger compression, and a bounded 22 ms parallel metallic delay.
+- Soldier recordings receive 75 ms of band-limited lead static and 90 ms of trailing static generated through Web Audio; original recordings remain unmodified.
+- Soldier playback now tracks a Promise through decode, playback, and trailing static. Every queued computer or aircraft task awaits the latest soldier tail before starting.
+- Strategic computer and aircraft clips retain the existing FIFO and clip-end gap, while tactical soldier lines remain immediate and cooldown-limited.
+- The single Three.js instanced ground mesh now uses explicit biome material colors: green Wilderness, ochre Farmland, muted green-gray Small Town, and gray Urban District.
+- Ground is unlit and excluded from scene fog so biome color remains visible; models, props, effects, LOS, exploration, and fog-of-war visibility rules are unchanged.
+- Removed per-cell instance-color writes from the 3D ground hot path while preserving one batched ground mesh and exact instance picking.
+- Added three Build Health rows and checker seams for computer metallic processing, soldier static/transition gating, and biome ground materials.
+
+Verification completed:
+
+- Static app-script parsing passed.
+- `node tools/check-aegis-build.cjs` passed for build 0132.
+- Browser smoke confirmed the 0132 start screen and a fresh-campaign Geoscape.
+- Browser Build Health passed `266/266` after a clean reload.
+- A fresh six-soldier Red River Signal mission launched on the 64 x 64 tactical battlefield.
+- The Wilderness `3D Iso` view rendered a clearly green ground plane instead of black while retaining the cohesive Skyranger, soldiers, props, and one instanced ground mesh.
+- AI inherited the live battlefield, reached its final playback frame at accelerated speed, and returned directly to Geoscape.
+- The transition queue was allowed seven seconds to drain. No runtime exception or recorded-dialogue fallback warning appeared; the only console warning was the existing Tailwind CDN development warning.
+
+Manual validation still required:
+
+- Judge base-computer intelligibility and the intended 1980s computer character by ear.
+- Confirm lead/trailing static is audible but does not clip speech or become distracting across varied soldier takes and Sound Effects volume levels.
+- Confirm the final tactical soldier recording and static tail fully end before the first pilot phrase on incident return.
+- Visually confirm Farmland, Small Town, and Urban District isometric ground colors on the affected machine, including Performance mode.
+- Re-test a live spotted-civilian rescue, reload/fire-mode state changes, and the affected high-threat Port Attack.
+
+Next recommended patch: `TACTICAL_ESCORT_EXTRACTION_PROGRESS_AND_RESCUE_OBJECTIVE_BALANCE_INDEX_ONLY`, after the audio listening pass, cross-biome 3D check, live civilian rescue, and Port Attack performance check.
 
 ## v0.26.07.15.0131 - AI Tactical Soldier Dialogue and Geoscape Voice Queue
 
