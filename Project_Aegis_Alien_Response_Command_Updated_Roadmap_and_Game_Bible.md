@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-17
-Current handoff build: `v0.26.07.17.0134_THREEJS_SHARED_CELL_GRADIENT_AND_SEAMLESS_LAYOUT_INDEX_ONLY_PATCH`
-Current patch status: **Build 0134 corrects the Urban-map mismatch that remained after the Wilderness-only 0133 verification. The 2D board uses a deliberately square pointy-hex footprint, a 0.755-cell row step, and a half-cell odd-row offset; Three.js had instead used regular-hex `sqrt(3)` by `1.5` center spacing. Both views now share the row-step and offset constants, the same per-cell visual descriptor, and exact base/accent inputs. Three.js uses bounded palette-instanced canvas-gradient materials, a custom flat footprint matching the 2D clip polygon, and one instanced seam underlay to prevent antialiasing from exposing black junction triangles. Static parsing and the seam checker pass, browser Build Health passes 268/268, and a fresh six-soldier Red River battle showed corresponding 2D/3D terrain regions at Near and Close zoom without repeating black junction gaps. Three End Turn cycles returned control normally, and browser diagnostics contained no application or WebGL errors. Save format remains version 4. The exact supplied Urban save and affected high-threat Port Attack remain manual checks.**
+Current handoff build: `v0.26.07.17.0135_STRATEGIC_ALERT_SCREEN_CONTINUITY_AND_RESCUE_PHASE_INDEX_ONLY_PATCH`
+Current patch status: **Build 0135 keeps the active command screen in place when a strategic UFO speed prompt is resolved. Outside battle, the selected speed starts immediately while the player remains in Base, Soldiers, Research, Workshop, Missions, or the current command section. During a live incident, the selected speed is stored as the post-battle Geoscape speed while the strategic clock remains stopped, then is applied when tactical ownership ends. Mandatory civilian objectives now continue through a bounded area-secure rescue phase after the last alien falls when the requirement is both incomplete and still achievable; completed, optional, and impossible objectives do not trap mission resolution. Tactical status text and the End Turn label expose the remaining rescue work. Deterministic Build Health coverage exercises both state contracts. Save format remains version 4. Static parsing and the build seam checker pass, browser Build Health passes 270/270, and a fresh six-soldier safe-2D mission completed three End Turn cycles without application errors. The exact in-progress UFO-alert save and secure-rescue transition remain manual checks.**
 
 ---
 
@@ -48,10 +48,15 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.17.0134_THREEJS_SHARED_CELL_GRADIENT_AND_SEAMLESS_LAYOUT_INDEX_ONLY_PATCH`
+`v0.26.07.17.0135_STRATEGIC_ALERT_SCREEN_CONTINUITY_AND_RESCUE_PHASE_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- Screen-neutral strategic UFO speed prompts so choosing a speed cannot replace Base, Soldiers, Research, Workshop, Missions, or a live incident battlefield with the Geoscape.
+- Deferred post-battle Geoscape speed application while manual tactical combat keeps the strategic clock paused.
+- A bounded area-secure rescue phase when a mandatory civilian requirement is incomplete but still achievable after the last alien falls.
+- Clear remaining-rescue, completed, optional, and impossible objective feedback without changing tactical outcomes before area security.
+- Build Health and checker coverage for tactical alert ownership, deferred speed, and civilian rescue-phase completion rules.
 - A shared per-cell tactical visual descriptor used by both 2D CSS cells and Three.js terrain palette batches.
 - Shared 0.755 row-step and half-cell odd-row-offset constants matching the actual 2D board layout.
 - Exact base/accent canvas gradients on bounded Three.js instanced palette batches instead of midpoint-only solid colors.
@@ -1259,6 +1264,8 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
+Trigger a UFO speed prompt while working in Base, Soldiers, Research, Workshop, and Missions. Choose a speed and confirm the same command section remains open while Geoscape time advances at the selected rate. Then load an in-progress incident battle with a UFO speed prompt without overwriting the save. Choose a post-battle speed and confirm the same battlefield, selected unit, turn, and map state remain active. Finish the battle and confirm the Geoscape clock resumes at the selected speed. In a mandatory civilian-rescue incident, eliminate the last alien before meeting the rescue requirement; confirm the area-secure rescue phase continues until the remaining civilians are extracted, while an impossible requirement still allows mission resolution.
+
 Manually listen to several base-computer announcements and confirm the stronger effect remains intelligible and suitably computer-like. Complete an AI-controlled incident and confirm the final soldier phrase plus trailing static finish before `all_aboard` or the first return-flight pilot phrase begins. Confirm the static bookends do not clip consonants or overpower quiet soldier takes at low and high Sound Effects volume.
 
 Load the same Urban District save used for the supplied screenshots without overwriting it. At Near and Close zoom, compare the tan center-right region, dark terrain bands, buildings, Skyranger, soldiers, props, and map-edge cells in 2D and `3D Iso`; confirm each region occupies the same hex coordinates and no repeating black junction triangles remain. Repeat the affected high-threat Port Attack in Performance mode.
@@ -2911,6 +2918,44 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.17.0135 - Strategic Alert Screen Continuity and Secure Rescue Phase
+
+Build `v0.26.07.17.0135_STRATEGIC_ALERT_SCREEN_CONTINUITY_AND_RESCUE_PHASE_INDEX_ONLY_PATCH` preserves save format 4, prevents strategic alert choices from replacing the active command screen, and advances the next bounded civilian-objective roadmap slice.
+
+Root causes:
+
+- `resolveTimeSpeedPrompt` treated every UFO prompt as a Geoscape navigation request. Choosing any prompt speed called `setTab("geoscape")`, replacing Base, Soldiers, Research, Workshop, Missions, or a still-active battlefield even though the player had work in progress there.
+- Tactical victory resolved immediately when the final alien was removed. A mandatory rescue objective could therefore end before the player escorted the required civilians to the Skyranger ramp.
+
+Implemented changes:
+
+- `promptResolutionTargetTab` now makes UFO and personnel time prompts screen-neutral. Outside battle, the selected Geoscape speed starts immediately without changing the active command section.
+- Speed choices made during tactical combat are stored as a deferred post-battle setting. The strategic clock stays stopped until tactical ownership ends, then resumes at the selected speed or remains paused when Pause was selected.
+- Tactical alert copy and button labels state that the selection applies after battle, removing ambiguity without adding debug UI.
+- Added `tacticalCivilianObjectiveProgress` to derive required, rescued, active, possible, complete, impossible, and rescue-phase state in one bounded calculation.
+- When the last alien falls and a mandatory rescue remains achievable, End Turn refreshes the human rescue turn instead of resolving victory. Completed, optional, or impossible objectives continue to resolve normally.
+- Added objective-panel progress text, a `Refresh Rescue Turn` command label, and deterministic Build Health rows for command-screen continuity, tactical deferred speed, and civilian rescue-phase completion rules.
+
+Verification completed:
+
+- Static app-script parsing passed after implementation.
+- `node tools/check-aegis-build.cjs` passed for build 0135.
+- Localhost browser smoke confirmed the 0135 start screen, fresh-campaign first-base flow, and main Geoscape.
+- Browser Build Health passed `270/270`, including `UFO alert speed selection retains the active command screen` and `Mandatory civilian objectives continue through a bounded secure rescue phase`.
+- A fresh six-soldier Red River Signal mission launched on the live 64 x 64 safe-2D battlefield. Soldier selection and movement highlighting remained responsive.
+- Three End Turn cycles completed with control returning to the human turn each time; all six soldiers remained active and alien reveals advanced from zero to two.
+- Browser diagnostics contained no application errors; the only warning was the existing Tailwind CDN development notice.
+
+Manual validation still required:
+
+- Trigger a UFO prompt from several non-Geoscape command sections and confirm every speed choice retains the active section while strategic time advances normally.
+- Reproduce the reported UFO prompt from the affected in-progress save and confirm choosing each desired post-battle speed never changes the active battlefield state.
+- Finish that battle and confirm the deferred Geoscape speed starts only after tactical ownership ends.
+- Enter the secure rescue phase in a mandatory civilian incident, extract enough followers at the Skyranger ramp, and confirm victory appears at the requirement boundary.
+- Confirm a mandatory requirement made impossible by civilian losses does not trap the battle.
+
+Next recommended patch: continue the next safest bounded roadmap item after the alert transition and secure-rescue flow pass hands-on validation.
 
 ## v0.26.07.17.0134 - Shared Cell Gradient and Seamless Three.js Layout
 
