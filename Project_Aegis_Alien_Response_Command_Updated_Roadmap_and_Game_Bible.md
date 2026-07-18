@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-17
-Current handoff build: `v0.26.07.17.0135_STRATEGIC_ALERT_SCREEN_CONTINUITY_AND_RESCUE_PHASE_INDEX_ONLY_PATCH`
-Current patch status: **Build 0135 keeps the active command screen in place when a strategic UFO speed prompt is resolved. Outside battle, the selected speed starts immediately while the player remains in Base, Soldiers, Research, Workshop, Missions, or the current command section. During a live incident, the selected speed is stored as the post-battle Geoscape speed while the strategic clock remains stopped, then is applied when tactical ownership ends. Mandatory civilian objectives now continue through a bounded area-secure rescue phase after the last alien falls when the requirement is both incomplete and still achievable; completed, optional, and impossible objectives do not trap mission resolution. Tactical status text and the End Turn label expose the remaining rescue work. Deterministic Build Health coverage exercises both state contracts. Save format remains version 4. Static parsing and the build seam checker pass, browser Build Health passes 270/270, and a fresh six-soldier safe-2D mission completed three End Turn cycles without application errors. The exact in-progress UFO-alert save and secure-rescue transition remain manual checks.**
+Current handoff build: `v0.26.07.17.0136_TACTICAL_AI_MANDATORY_RESCUE_AND_EXTRACTION_PROGRESS_INDEX_ONLY_PATCH`
+Current patch status: **Build 0136 extends inherited tactical AI through the mandatory area-secure civilian rescue phase instead of stopping as soon as the final alien dies. AI rescue turns use the existing bounded four-step escort mover, search for unrevealed survivors only after combat is secure, assign each available rescuer a distinct civilian, and lead chains toward the deepest rear-ramp cell. Playback labels expose rescued/required progress. AI victory now uses the same mandatory objective contract as manual play, while an incomplete bounded extraction no longer converts surviving soldiers into a false squad wipe. Save format remains version 4. Static parsing and the build seam checker pass, browser Build Health passes 271/271, and a fresh six-soldier safe-2D mission completed through inherited AI playback without application errors. The live mandatory-rescue transition and affected Port Attack remain manual checks.**
 
 ---
 
@@ -48,10 +48,13 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.17.0135_STRATEGIC_ALERT_SCREEN_CONTINUITY_AND_RESCUE_PHASE_INDEX_ONLY_PATCH`
+`v0.26.07.17.0136_TACTICAL_AI_MANDATORY_RESCUE_AND_EXTRACTION_PROGRESS_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- AI-controlled continuation through achievable mandatory civilian rescue phases after alien elimination.
+- A bounded area-secure sweep for unrevealed survivors, distinct-rescuer assignment, deepest-ramp routing, and rescued/required playback labels.
+- Shared manual/AI rescue completion rules without falsely killing a surviving squad when the AI extraction budget expires.
 - Screen-neutral strategic UFO speed prompts so choosing a speed cannot replace Base, Soldiers, Research, Workshop, Missions, or a live incident battlefield with the Geoscape.
 - Deferred post-battle Geoscape speed application while manual tactical combat keeps the strategic clock paused.
 - A bounded area-secure rescue phase when a mandatory civilian requirement is incomplete but still achievable after the last alien falls.
@@ -1264,7 +1267,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Trigger a UFO speed prompt while working in Base, Soldiers, Research, Workshop, and Missions. Choose a speed and confirm the same command section remains open while Geoscape time advances at the selected rate. Then load an in-progress incident battle with a UFO speed prompt without overwriting the save. Choose a post-battle speed and confirm the same battlefield, selected unit, turn, and map state remain active. Finish the battle and confirm the Geoscape clock resumes at the selected speed. In a mandatory civilian-rescue incident, eliminate the last alien before meeting the rescue requirement; confirm the area-secure rescue phase continues until the remaining civilians are extracted, while an impossible requirement still allows mission resolution.
+In a mandatory civilian-rescue incident, hand AI Command the live battlefield after the last alien dies or just before AI kills it. Confirm AI enters secure rescue, searches for unrevealed survivors, preserves existing escort chains, reports rescued/required progress, and extracts enough civilians before victory. Confirm an impossible requirement still resolves and an exhausted bounded rescue does not falsely mark surviving soldiers KIA. Then trigger a UFO speed prompt while working in Base, Soldiers, Research, Workshop, and Missions; choose a speed and confirm the same command section remains open while time advances. Repeat from an in-progress incident and confirm the battlefield remains active until the deferred speed applies after battle.
 
 Manually listen to several base-computer announcements and confirm the stronger effect remains intelligible and suitably computer-like. Complete an AI-controlled incident and confirm the final soldier phrase plus trailing static finish before `all_aboard` or the first return-flight pilot phrase begins. Confirm the static bookends do not clip consonants or overpower quiet soldier takes at low and high Sound Effects volume.
 
@@ -2918,6 +2921,51 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.17.0136 - Tactical AI Mandatory Rescue and Extraction Progress
+
+Build `v0.26.07.17.0136_TACTICAL_AI_MANDATORY_RESCUE_AND_EXTRACTION_PROGRESS_INDEX_ONLY_PATCH` preserves save format 4 and carries AI-controlled incident battles through the mandatory civilian rescue phase.
+
+Root causes:
+
+- The continuation resolver's main loop required at least one living alien. AI takeover after area security did not run any rescue turn, and killing the final alien inside the resolver broke out before the next rescue turn.
+- AI rescue duty considered only revealed civilians even after the battlefield was secure, so an achievable mandatory objective could remain unfinished with hidden survivors.
+- Escort AI selected the nearest ramp cell every step rather than the deepest rear-ramp cell, encouraging edge oscillation instead of leading the single-file chain through the extraction lane.
+- Resolver success checked only alien elimination and surviving soldiers. It did not share the manual tactical `canResolveVictory` rescue contract, and the generic failure branch would wipe the squad if success were simply gated without separating area security from squad defeat.
+
+Implemented changes:
+
+- Added shared `tacticalAiRescueProgress`, `tacticalAiShouldContinueRescue`, and `tacticalAiMissionResolution` helpers around the existing civilian objective contract.
+- Inherited AI continues for a maximum of 36 bounded exchanges while combat or an achievable mandatory rescue remains unresolved. Normal generated simulations retain their existing 24-round cap.
+- Once no aliens remain, AI enters an area-secure sweep. Hidden living civilians become eligible search targets, are revealed on contact, and then use the existing 8-TU contact, panic recovery, four-follower capacity, and four-step movement rules.
+- Each available rescuer claims a distinct civilian for the current turn. Existing escorts retain rescue duty and move toward the deepest Skyranger ramp cell so followers traverse extraction cells in order.
+- Secure-rescue playback frames report `rescued/required` progress and continue driving the existing action camera and soldier dialogue paths.
+- Final AI success now requires both area security and `canResolveVictory`. If the bounded extraction phase expires while rescue remains achievable, surviving soldiers are preserved and the result is reported as an incomplete rescue rather than a false squad wipe.
+- Added deterministic Build Health coverage beginning with zero living aliens and one hidden mandatory civilian, then verifying sweep contact, escort, ramp extraction, survivor preservation, final mission success, and the lightweight incomplete-rescue resolution contract.
+
+Performance and compatibility:
+
+- No full-map visibility scan, local-light work, per-cell destination pathfinding, renderer fork, or save-format field was added.
+- Rescue work remains bounded to the small unit list, at most six soldiers, four followers per escort, four movement steps per exchange, and 36 inherited exchanges.
+- Safe 2D remains the default and the same unit/civilian frames continue feeding both tactical playback views.
+
+Verification completed:
+
+- Static app-script parsing passed for all six embedded scripts during implementation.
+- `node --check tools/check-aegis-build.cjs` and `node tools/check-aegis-build.cjs` passed for build 0136.
+- Browser Build Health passed `271/271`, including `AI mandatory rescue phase searches escorts and extracts before resolution`.
+- Localhost browser smoke confirmed the 0136 start screen, first-base selection, fresh-campaign Geoscape, squad assignment, mission confirmation, and Skyranger arrival.
+- A fresh six-soldier Red River Signal safe-2D mission handed its live frame to AI Command. Tactical-map playback began at `AI inherited round 1`, advanced through 11 preserved-state frames, and reached mission success.
+- Browser diagnostics contained no application errors; the only warning was the existing Tailwind CDN development notice.
+
+Manual validation still required:
+
+- Hand AI Command a mandatory rescue incident after the final alien is dead. Confirm it searches for unrevealed survivors, makes contact, and extracts the required number before victory.
+- Let AI kill the final alien while it already has one to four followers. Confirm the exact chain continues through the rear ramp without overlap or a map reset.
+- Confirm secure-rescue playback labels, camera movement, and soldier rescue chatter remain understandable through the transition.
+- Repeat the affected high-threat Port Attack in safe 2D and confirm the inherited 36-exchange ceiling does not create a noticeable performance regression.
+
+Next recommended patch: validate the live AI rescue transition, then continue the next bounded strategic slice, `AIRCRAFT_RELOCATION_QUEUE_CANCELLATION_AND_CONCURRENT_FLIGHT_PREP_INDEX_ONLY`, beginning with safe queued-order cancellation and destination-reservation release.
 
 ## v0.26.07.17.0135 - Strategic Alert Screen Continuity and Secure Rescue Phase
 
