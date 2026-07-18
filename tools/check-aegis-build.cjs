@@ -45,6 +45,7 @@ const required = [
   "Three.js tactical incident battle polish preserves terrain LOS movement and ammo readability",
   "Procedural tactical biomes generate wilderness streams city roads farms and small towns",
   "Tactical building archetypes share passable interiors across 2D and Three.js maps",
+  "Continuous tactical walls open traversable breaches for every unit type",
   "Tactical enclosures and street props remain gameplay-only terrain",
   "Three.js tactical performance mode caps expensive rendering and idles on demand",
   "Three.js tactical instanced ground preserves picking gapless hexes and 2D recovery",
@@ -98,6 +99,8 @@ const required = [
   "tacticalCreateThreeHexGeometry",
   "groundPaletteBatches",
   "tacticalThreeHexGeometrySpec",
+  "tacticalConnectedStructuralWalls",
+  "bridgeScaleY",
   "recordedDialogueStyleForSoldier",
   "data-aegis-recorded-dialogue=\"segmented-takes\"",
   "runSelfTests"

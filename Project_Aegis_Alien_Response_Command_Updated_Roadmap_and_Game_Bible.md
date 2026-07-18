@@ -2,8 +2,8 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-17
-Current handoff build: `v0.26.07.17.0136_TACTICAL_AI_MANDATORY_RESCUE_AND_EXTRACTION_PROGRESS_INDEX_ONLY_PATCH`
-Current patch status: **Build 0136 extends inherited tactical AI through the mandatory area-secure civilian rescue phase instead of stopping as soon as the final alien dies. AI rescue turns use the existing bounded four-step escort mover, search for unrevealed survivors only after combat is secure, assign each available rescuer a distinct civilian, and lead chains toward the deepest rear-ramp cell. Playback labels expose rescued/required progress. AI victory now uses the same mandatory objective contract as manual play, while an incomplete bounded extraction no longer converts surviving soldiers into a false squad wipe. Save format remains version 4. Static parsing and the build seam checker pass, browser Build Health passes 271/271, and a fresh six-soldier safe-2D mission completed through inherited AI playback without application errors. The live mandatory-rescue transition and affected Port Attack remain manual checks.**
+Current handoff build: `v0.26.07.17.0137_TACTICAL_CONTINUOUS_WALLS_AND_TRAVERSABLE_BREACHES_INDEX_ONLY_PATCH`
+Current patch status: **Build 0137 replaces isolated Three.js building-wall blocks with bounded center-to-center wall joins that follow the actual offset-hex layout, meet at solid corner cores, and stop at doors or destroyed segments. Destroyed structural cells remain soft rubble with `block: 0`; Build Health now explicitly proves soldier reachability, alien pathing, and panicked-civilian movement can all cross the opening. Save format remains version 4. Static parsing and the build seam checker pass, browser Build Health passes 272/272, and a fresh six-soldier safe-2D mission completed three End Turn cycles before inherited AI finished the same live battlefield in Three.js. A revealed Ranger Outpost rendered as a continuous wall run. Live breach shooting/traversal and the affected Port Attack remain manual checks.**
 
 ---
 
@@ -48,10 +48,13 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.17.0136_TACTICAL_AI_MANDATORY_RESCUE_AND_EXTRACTION_PROGRESS_INDEX_ONLY_PATCH`
+`v0.26.07.17.0137_TACTICAL_CONTINUOUS_WALLS_AND_TRAVERSABLE_BREACHES_INDEX_ONLY_PATCH`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- Continuous Three.js building walls joined along the true offset-hex neighbor vectors instead of isolated per-cell posts.
+- Solid corner cores with deliberate openings at doors and destroyed wall cells.
+- Explicit all-unit breach traversal coverage for player movement, alien pathing, and panicked civilians.
 - AI-controlled continuation through achievable mandatory civilian rescue phases after alien elimination.
 - A bounded area-secure sweep for unrevealed survivors, distinct-rescuer assignment, deepest-ramp routing, and rescued/required playback labels.
 - Shared manual/AI rescue completion rules without falsely killing a surviving squad when the AI extraction budget expires.
@@ -2921,6 +2924,49 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.17.0137 - Continuous Tactical Walls and Traversable Breaches
+
+Build `v0.26.07.17.0137_TACTICAL_CONTINUOUS_WALLS_AND_TRAVERSABLE_BREACHES_INDEX_ONLY_PATCH` preserves save format 4 while making incident-battle buildings read as connected structures and locking destroyed-wall traversal into the shared tactical movement contract.
+
+Root causes:
+
+- Three.js rendered every structural wall cell as one undersized box. Adjacent pieces did not touch, so building perimeters resembled isolated posts rather than solid walls.
+- Offset hex rows do not share a simple north/south world axis. Enlarging one fixed box orientation could not reliably close both horizontal and diagonal neighbor gaps.
+- Structural destruction already produced soft `breach-rubble` with `block: 0`, but there was no explicit regression test proving every tactical mover accepted that opening.
+
+Implemented changes:
+
+- Added `tacticalConnectedStructuralWalls`, using the existing cover-cell index and at most six neighbor lookups per visible structural cell.
+- Three.js walls now render a larger central joint plus one canonical center-to-center bridge for each adjacent wall, window, or partition belonging to the same building.
+- Bridge direction follows the actual shared offset-hex world coordinates, so straight runs and corners meet without assuming a square-grid axis.
+- Door cells have no structural cover and therefore remain open. Destroyed segments become soft rubble and are excluded from the connector set, causing adjacent bridges to disappear and leaving a visible breach.
+- Intact wall HP, cover, line of sight, and collision rules are unchanged.
+- Added Build Health coverage proving an intact wall blocks the human reachable-cell flood, breached rubble enters it, alien `stepToward` selects it, and a panicked civilian uses it when it is the only available escape cell.
+
+Performance and compatibility:
+
+- No full-map scan, per-cell pathfinding pass, lighting work, or save field was added.
+- Connector discovery is bounded to six indexed lookups per rendered wall and creates one bridge per unique visible neighboring pair.
+- Safe 2D remains the default. Both battle views continue consuming the same cover HP, breach state, and movement rules.
+
+Verification completed:
+
+- Static app-script parsing passed for all six embedded scripts.
+- `node --check tools/check-aegis-build.cjs`, `node tools/check-aegis-build.cjs`, and `git diff --check` passed for build 0137.
+- Browser Build Health passed `272/272`, including `Continuous tactical walls open traversable breaches for every unit type`.
+- Localhost browser smoke confirmed the 0137 start screen, first-base selection, fresh Geoscape, six-soldier response setup, mission confirmation, Skyranger travel, and 64x64 safe-2D tactical launch.
+- The practical mission completed three End Turn cycles, switched to Three.js, and handed the same live turn-4 state to AI Command. Playback reached frame 23 mission success without resetting the battlefield.
+- The revealed Wilderness Ranger Outpost rendered as a continuous joined wall run with a clear doorway interruption in Three.js Performance mode.
+
+Manual validation still required:
+
+- Inspect Urban and Small Town building perimeters in Three.js Near/Close views and confirm straight runs, corners, windows, partitions, and doors all read naturally.
+- Shoot through a wall segment and confirm the joined wall visibly opens at that cell while rubble remains.
+- Move a soldier through the breach, then observe an alien and both calm/escorted and panicked civilians route through the same opening.
+- Repeat the affected high-threat Port Attack in safe 2D and Three.js Performance mode to confirm the bounded wall joins do not create a noticeable performance regression.
+
+Next recommended patch: after live breach and Port validation, continue the bounded strategic roadmap slice `AIRCRAFT_RELOCATION_QUEUE_CANCELLATION_AND_CONCURRENT_FLIGHT_PREP_INDEX_ONLY`, beginning with safe queued-order cancellation and destination-reservation release.
 
 ## v0.26.07.17.0136 - Tactical AI Mandatory Rescue and Extraction Progress
 
