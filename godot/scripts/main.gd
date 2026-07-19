@@ -1,6 +1,6 @@
 extends Control
 
-const NATIVE_BUILD := "v0.26.07.19.GODOT.0006_PERSONNEL_ARRIVALS_AND_RESEARCH_UNLOCK_VERTICAL_SLICE"
+const NATIVE_BUILD := "v0.26.07.19.GODOT.0007_ENGINEERING_STAFFING_AND_MANUFACTURING_QUEUE_VERTICAL_SLICE"
 const MAX_BROWSER_IMPORT_BYTES := 32 * 1024 * 1024
 
 var content: Dictionary = {}
@@ -847,30 +847,117 @@ func _render_workshop() -> void:
 	var root := VBoxContainer.new()
 	root.add_theme_constant_override("separation", 18)
 	_mount_scrollable_command_page(root)
-	root.add_child(_section_title("WORKSHOP", "Engineering and field supply"))
+	root.add_child(_section_title("WORKSHOP", "Engineering production queue"))
 	var stores: Dictionary = campaign.data.get("stores", {})
-	var card := VBoxContainer.new()
-	card.add_theme_constant_override("separation", 14)
-	card.add_child(_status_row("Engineers", "%d / %d" % [campaign.data.get("engineers", 0), campaign.engineer_capacity()], color_text))
-	card.add_child(_status_row("Medkits", str(stores.get("Medkit",0)), color_green))
-	card.add_child(_status_row("Laser Rifles", str(stores.get("Laser Rifle",0)), color_cyan if campaign.has_technology_unlock("laser_rifle_production") else color_muted))
-	card.add_child(_status_row("Available funds", "$%dk" % campaign.data.get("funds",0), color_gold))
-	card.add_child(_separator())
-	var build_button := _action_button("Build Medkit - $40k", func(): _manufacture_item("Medkit", 40), true)
-	build_button.disabled = campaign.engineer_capacity() <= 0
-	build_button.tooltip_text = "A local Workshop is required." if build_button.disabled else "Build one Medkit."
-	card.add_child(build_button)
-	if campaign.has_technology_unlock("laser_rifle_production"):
-		var laser_button := _action_button("Build Laser Rifle - $180k", func(): _manufacture_item("Laser Rifle", 180), true)
-		laser_button.disabled = int(campaign.data.get("funds", 0)) < 180 or campaign.engineer_capacity() <= 0
-		laser_button.tooltip_text = "A local Workshop is required." if campaign.engineer_capacity() <= 0 else "Insufficient funds." if int(campaign.data.get("funds", 0)) < 180 else "Manufacture one unlocked Laser Rifle."
-		card.add_child(laser_button)
+	var queue := campaign.manufacturing_queue()
+	var assigned := campaign.manufacturing_assigned_engineers()
+	var staff_limit := campaign.manufacturing_staff_limit()
+	var daily_progress := campaign.manufacturing_daily_progress()
+	var summary := GridContainer.new()
+	summary.columns = 4
+	summary.add_theme_constant_override("h_separation", 12)
+	for metric_data in [
+		["ENGINEERS", "%d / %d" % [campaign.data.get("engineers", 0), campaign.engineer_capacity()], color_text],
+		["ASSIGNED", str(assigned), color_green if assigned > 0 else color_gold],
+		["OUTPUT / DAY", str(daily_progress), color_cyan],
+		["QUEUE", "%d / %d" % [queue.size(), campaign.MAX_MANUFACTURING_ORDERS], color_text]
+	]:
+		var metric_card := _metric_card(metric_data[0], metric_data[1], metric_data[2])
+		metric_card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		summary.add_child(metric_card)
+	root.add_child(summary)
+	var staffing_card := VBoxContainer.new()
+	staffing_card.add_theme_constant_override("separation", 12)
+	staffing_card.add_child(_label("ENGINEERING STAFFING", 18, color_cyan))
+	var staffing_row := HBoxContainer.new()
+	staffing_row.add_theme_constant_override("separation", 12)
+	staffing_row.add_child(_label("Assigned Engineers", 15, color_text))
+	var staffing := SpinBox.new()
+	staffing.min_value = 0
+	staffing.max_value = staff_limit
+	staffing.step = 1
+	staffing.value = assigned
+	staffing.custom_minimum_size = Vector2(150, 40)
+	staffing.editable = not queue.is_empty()
+	staffing.value_changed.connect(func(value: float): _set_manufacturing_staffing(int(value)))
+	staffing_row.add_child(staffing)
+	staffing_row.add_child(_label("of %d available Workshop positions" % staff_limit, 13, color_muted))
+	staffing_card.add_child(staffing_row)
+	staffing_card.add_child(_label("Each assigned Engineer contributes %d work per strategic day." % campaign.MANUFACTURING_PROGRESS_PER_ENGINEER_DAY, 13, color_muted, true))
+	root.add_child(_panel_with(staffing_card, 20))
+	var catalog := VBoxContainer.new()
+	catalog.add_theme_constant_override("separation", 12)
+	catalog.add_child(_label("PRODUCTION CATALOG", 18, color_cyan))
+	for definition_value in content.get("manufacturing_items", []):
+		var definition: Dictionary = definition_value
+		var item_name := String(definition.get("id", "Item"))
+		var blocker := campaign.manufacturing_order_blocker(item_name)
+		var product_row := HBoxContainer.new()
+		product_row.add_theme_constant_override("separation", 12)
+		var product_text := VBoxContainer.new()
+		product_text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		product_text.add_child(_label(item_name, 17, color_text))
+		product_text.add_child(_label("%d work - %s - Local stores: %d" % [definition.get("work", 0), definition.get("description", ""), stores.get(item_name, 0)], 12, color_muted, true))
+		product_row.add_child(product_text)
+		var queue_button := _action_button("Queue - $%dk" % definition.get("cost", 0), func(): _queue_manufacturing_item(item_name), true)
+		queue_button.disabled = not blocker.is_empty()
+		queue_button.tooltip_text = blocker if queue_button.disabled else "Prepay and append one %s to the local FIFO queue." % item_name
+		product_row.add_child(queue_button)
+		catalog.add_child(product_row)
+	root.add_child(_panel_with(catalog, 20))
+	var queue_card := VBoxContainer.new()
+	queue_card.add_theme_constant_override("separation", 12)
+	queue_card.add_child(_label("MANUFACTURING QUEUE", 18, color_cyan))
+	if queue.is_empty():
+		queue_card.add_child(_label("No orders queued. Engineers are available for reassignment.", 13, color_muted, true))
 	else:
-		card.add_child(_label("Laser Rifle production requires completed Laser Weapons research.", 13, color_muted, true))
-	root.add_child(_panel_with(card, 24))
+		for order_index in range(queue.size()):
+			var order: Dictionary = queue[order_index]
+			var order_row := HBoxContainer.new()
+			order_row.add_theme_constant_override("separation", 12)
+			var order_text := VBoxContainer.new()
+			order_text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			var order_name := String(order.get("item_name", "Item"))
+			order_text.add_child(_label("%s  %s" % ["ACTIVE" if order_index == 0 else "QUEUED", order_name], 15, color_green if order_index == 0 else color_text))
+			var progress := ProgressBar.new()
+			progress.max_value = maxi(1, int(order.get("work_required", 1)))
+			progress.value = int(order.get("progress", 0))
+			progress.custom_minimum_size = Vector2(480, 26)
+			order_text.add_child(progress)
+			var days_remaining := campaign.manufacturing_queue_days_remaining(String(order.get("id", "")))
+			var eta_text := "%d day%s through FIFO" % [days_remaining, "" if days_remaining == 1 else "s"] if days_remaining >= 0 else "Paused - assign Engineers"
+			order_text.add_child(_label("%d work remaining - %s" % [campaign.manufacturing_order_remaining_work(order), eta_text], 12, color_muted, true))
+			order_row.add_child(order_text)
+			var order_id := String(order.get("id", ""))
+			var refund := campaign.manufacturing_order_cancel_refund(order)
+			var cancel_button := _small_button("Cancel +$%dk" % refund, func(): _cancel_manufacturing_order(order_id))
+			cancel_button.tooltip_text = "Cancel this order and recover half of its prepaid cost."
+			order_row.add_child(cancel_button)
+			queue_card.add_child(order_row)
+	var advance_button := _action_button("Advance One Day", _advance_manufacturing_day, true)
+	advance_button.disabled = not campaign.data.get("travel", {}).is_empty() or not campaign.data.get("interception", {}).is_empty()
+	queue_card.add_child(advance_button)
+	if advance_button.disabled:
+		queue_card.add_child(_label("Strategic time advance is unavailable during an active flight operation.", 12, color_gold, true))
+	root.add_child(_panel_with(queue_card, 20))
 
-func _manufacture_item(item_name: String, cost: int) -> void:
-	campaign.manufacture_item(item_name, cost, "laser_rifle_production" if item_name == "Laser Rifle" else "")
+func _queue_manufacturing_item(item_name: String) -> void:
+	campaign.queue_manufacturing(item_name)
+	campaign.save_campaign()
+	_show_command("workshop")
+
+func _cancel_manufacturing_order(order_id: String) -> void:
+	campaign.cancel_manufacturing_order(order_id)
+	campaign.save_campaign()
+	_show_command("workshop")
+
+func _set_manufacturing_staffing(amount: int) -> void:
+	if campaign.set_manufacturing_staffing(amount):
+		campaign.save_campaign()
+		_show_command("workshop")
+
+func _advance_manufacturing_day() -> void:
+	campaign.advance_minutes(24 * 60)
 	campaign.save_campaign()
 	_show_command("workshop")
 
@@ -1153,10 +1240,13 @@ func _run_self_tests() -> Array:
 	var management_legacy := management_campaign.data.duplicate(true)
 	management_legacy.erase("scientists")
 	management_legacy.erase("engineers")
+	management_legacy.erase("manufacturing_queue")
+	management_legacy.erase("manufacturing_assigned_engineers")
+	management_legacy.erase("next_manufacturing_order_id")
 	management_legacy["base"].erase("facility_counts")
 	management_legacy["research"] = {"active": "Laser Weapons", "progress": 8}
 	var management_migrated := management_campaign.normalize_save(management_legacy)
-	var management_migration_ready: bool = int(management_migrated.get("scientists", 0)) == 5 and int(management_migrated.get("engineers", -1)) == 0 and int(management_migrated.get("base", {}).get("facility_counts", {}).get("quarters", 0)) == 1 and int(management_migrated.get("base", {}).get("facility_counts", {}).get("workshop", 0)) == 1 and int(management_migrated.get("research", {}).get("assigned_scientists", 0)) == 5 and management_migrated.get("personnel_orders", []).is_empty()
+	var management_migration_ready: bool = int(management_migrated.get("scientists", 0)) == 5 and int(management_migrated.get("engineers", -1)) == 0 and int(management_migrated.get("base", {}).get("facility_counts", {}).get("quarters", 0)) == 1 and int(management_migrated.get("base", {}).get("facility_counts", {}).get("workshop", 0)) == 1 and int(management_migrated.get("research", {}).get("assigned_scientists", 0)) == 5 and management_migrated.get("personnel_orders", []).is_empty() and management_migrated.get("manufacturing_queue", []).is_empty() and int(management_migrated.get("manufacturing_assigned_engineers", -1)) == 0
 	management_campaign.set_research_staffing(3)
 	var research_staffing_ready: bool = management_campaign.research_assigned_scientists() == 3 and management_campaign.research_daily_progress() == 6
 	var management_progress_before := int(management_campaign.data.get("research", {}).get("progress", 0))
@@ -1167,9 +1257,15 @@ func _run_self_tests() -> Array:
 	management_campaign.set_research_staffing(5)
 	management_campaign.advance_minutes(24 * 60)
 	var research_unlock_ready: bool = management_campaign.completed_research().has("Laser Weapons") and management_campaign.has_technology_unlock("laser_rifle_production") and management_campaign.available_research_projects().any(func(project): return project.get("id", "") == "Laser Power Output 1")
-	var laser_funds_before := int(management_campaign.data.get("funds", 0))
-	var laser_production_ready: bool = management_campaign.manufacture_item("Laser Rifle", 180, "laser_rifle_production") and int(management_campaign.data.get("stores", {}).get("Laser Rifle", 0)) == 1 and int(management_campaign.data.get("funds", 0)) == laser_funds_before - 180
 	var follow_on_research_ready: bool = management_campaign.start_research_project("Laser Power Output 1") and management_campaign.research_required_progress() == 180 and management_campaign.research_assigned_scientists() == 0
+	management_campaign.data["engineers"] = 10
+	var laser_funds_before := int(management_campaign.data.get("funds", 0))
+	var laser_stores_before := int(management_campaign.data.get("stores", {}).get("Laser Rifle", 0))
+	var laser_queued: bool = management_campaign.queue_manufacturing("Laser Rifle") and int(management_campaign.data.get("funds", 0)) == laser_funds_before - 180 and int(management_campaign.data.get("stores", {}).get("Laser Rifle", 0)) == laser_stores_before
+	management_campaign.advance_minutes(24 * 60)
+	var laser_waits_for_work: bool = int(management_campaign.data.get("stores", {}).get("Laser Rifle", 0)) == laser_stores_before and int(management_campaign.manufacturing_queue()[0].get("progress", 0)) == 30
+	management_campaign.advance_minutes(24 * 60)
+	var laser_production_ready: bool = management_campaign.manufacturing_queue().is_empty() and int(management_campaign.data.get("stores", {}).get("Laser Rifle", 0)) == laser_stores_before + 1
 	var personnel_campaign := AegisCampaignState.new()
 	personnel_campaign.configure(content)
 	personnel_campaign.new_campaign("Queue Test", "North America")
@@ -1179,7 +1275,7 @@ func _run_self_tests() -> Array:
 	personnel_campaign.data["base"]["facility_counts"]["quarters"] = 2
 	personnel_campaign.data["base"]["facility_counts"]["workshop"] = 1
 	var personnel_funds_before := int(personnel_campaign.data.get("funds", 0))
-	var locked_laser_production_blocked: bool = not personnel_campaign.manufacture_item("Laser Rifle", 180, "laser_rifle_production") and int(personnel_campaign.data.get("funds", 0)) == personnel_funds_before and int(personnel_campaign.data.get("stores", {}).get("Laser Rifle", 0)) == 0
+	var locked_laser_production_blocked: bool = not personnel_campaign.queue_manufacturing("Laser Rifle") and int(personnel_campaign.data.get("funds", 0)) == personnel_funds_before and int(personnel_campaign.data.get("stores", {}).get("Laser Rifle", 0)) == 0
 	var personnel_orders_ready: bool = personnel_campaign.hire_personnel("soldier") and personnel_campaign.hire_personnel("scientist") and personnel_campaign.hire_personnel("engineer") and personnel_campaign.pending_personnel_count() == 3 and personnel_campaign.projected_personnel_used() == 14 and int(personnel_campaign.data.get("funds", 0)) == personnel_funds_before - 305
 	var engineer_order: Dictionary = personnel_campaign.personnel_orders().filter(func(order): return order.get("type", "") == "engineer")[0]
 	var personnel_cancellation_ready: bool = personnel_campaign.cancel_personnel_order(engineer_order.get("id", "")) and personnel_campaign.pending_personnel_count() == 2 and int(personnel_campaign.data.get("funds", 0)) == personnel_funds_before - 260
@@ -1195,6 +1291,30 @@ func _run_self_tests() -> Array:
 	specialist_campaign.data["scientists"] = 10
 	specialist_campaign.data["engineers"] = 10
 	var specialist_capacity_ready: bool = specialist_campaign.projected_personnel_used() == 26 and specialist_campaign.personnel_capacity() == 36 and specialist_campaign.personnel_hiring_blocker("soldier").is_empty() and specialist_campaign.personnel_hiring_blocker("scientist").contains("Laboratory full") and specialist_campaign.personnel_hiring_blocker("engineer").contains("Workshop full")
+	var manufacturing_campaign := AegisCampaignState.new()
+	manufacturing_campaign.configure(content)
+	manufacturing_campaign.new_campaign("Manufacturing Test", "North America")
+	manufacturing_campaign.data["engineers"] = 4
+	var medkits_before := int(manufacturing_campaign.data.get("stores", {}).get("Medkit", 0))
+	var manufacturing_funds_before := int(manufacturing_campaign.data.get("funds", 0))
+	var manufacturing_queue_ready: bool = manufacturing_campaign.queue_manufacturing("Medkit") and manufacturing_campaign.queue_manufacturing("Medkit") and manufacturing_campaign.manufacturing_queue().size() == 2 and int(manufacturing_campaign.data.get("funds", 0)) == manufacturing_funds_before - 80
+	var manufacturing_staffing_ready: bool = manufacturing_campaign.manufacturing_assigned_engineers() == 4 and manufacturing_campaign.manufacturing_daily_progress() == 12 and not manufacturing_campaign.set_manufacturing_staffing(20)
+	manufacturing_campaign.advance_minutes(24 * 60)
+	var manufacturing_midnight_ready: bool = int(manufacturing_campaign.manufacturing_queue()[0].get("progress", 0)) == 12 and int(manufacturing_campaign.manufacturing_queue()[1].get("progress", 0)) == 0 and int(manufacturing_campaign.data.get("stores", {}).get("Medkit", 0)) == medkits_before
+	manufacturing_campaign.advance_minutes(24 * 60)
+	var manufacturing_fifo_ready: bool = manufacturing_campaign.manufacturing_queue().size() == 1 and int(manufacturing_campaign.manufacturing_queue()[0].get("progress", 0)) == 6 and int(manufacturing_campaign.data.get("stores", {}).get("Medkit", 0)) == medkits_before + 1
+	manufacturing_campaign.set_manufacturing_staffing(2)
+	manufacturing_campaign.advance_minutes(2 * 24 * 60)
+	var manufacturing_completion_ready: bool = manufacturing_campaign.manufacturing_queue().is_empty() and manufacturing_campaign.manufacturing_assigned_engineers() == 0 and int(manufacturing_campaign.data.get("stores", {}).get("Medkit", 0)) == medkits_before + 2
+	var cancellation_funds_before := int(manufacturing_campaign.data.get("funds", 0))
+	manufacturing_campaign.queue_manufacturing("Medkit")
+	var cancellation_order: Dictionary = manufacturing_campaign.manufacturing_queue()[0]
+	var manufacturing_cancellation_ready: bool = manufacturing_campaign.cancel_manufacturing_order(String(cancellation_order.get("id", ""))) and manufacturing_campaign.manufacturing_queue().is_empty() and int(manufacturing_campaign.data.get("funds", 0)) == cancellation_funds_before - 20
+	manufacturing_campaign.queue_manufacturing("Medkit")
+	manufacturing_campaign.set_manufacturing_staffing(2)
+	manufacturing_campaign.advance_minutes(24 * 60)
+	var manufacturing_normalized := manufacturing_campaign.normalize_save(manufacturing_campaign.data)
+	var manufacturing_persistence_ready: bool = manufacturing_normalized.get("manufacturing_queue", []).size() == 1 and int(manufacturing_normalized.get("manufacturing_queue", [])[0].get("progress", 0)) == 6 and int(manufacturing_normalized.get("manufacturing_assigned_engineers", 0)) == 2
 	var checks := [
 		{"name":"Godot content manifest loads", "pass":not content.is_empty()},
 		{"name":"Save format remains version 4", "pass":int(content.get("save_format",0)) == 4 and AegisCampaignState.SAVE_FORMAT == 4},
@@ -1240,7 +1360,14 @@ func _run_self_tests() -> Array:
 		{"name":"Spare quarters do not bypass full Laboratory or Workshop capacity", "pass":specialist_capacity_ready},
 		{"name":"Laser Weapons completion unlocks production and its follow-on project", "pass":research_unlock_ready and follow_on_research_ready},
 		{"name":"Laser Rifle production stays blocked before research completion", "pass":locked_laser_production_blocked},
-		{"name":"Unlocked Laser Rifle production deducts funds and updates local stores", "pass":laser_production_ready}
+		{"name":"Manufacturing staffing clamps to local engineers and Workshop capacity", "pass":manufacturing_staffing_ready},
+		{"name":"Manufacturing orders prepay into a bounded FIFO queue", "pass":manufacturing_queue_ready},
+		{"name":"Strategic midnight advances only the active manufacturing order", "pass":manufacturing_midnight_ready},
+		{"name":"Manufacturing completion carries overflow into the next FIFO order", "pass":manufacturing_fifo_ready},
+		{"name":"Empty manufacturing queues release assigned engineers", "pass":manufacturing_completion_ready},
+		{"name":"Manufacturing cancellation returns half of prepaid cost", "pass":manufacturing_cancellation_ready},
+		{"name":"Partially completed manufacturing state normalizes exactly", "pass":manufacturing_persistence_ready},
+		{"name":"Unlocked Laser Rifle production requires two staffed strategic days", "pass":laser_queued and laser_waits_for_work and laser_production_ready}
 	]
 	test_board.free()
 	dense_map.free()

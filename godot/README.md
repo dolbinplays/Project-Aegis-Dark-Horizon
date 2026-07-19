@@ -1,6 +1,6 @@
 # Project Aegis Godot 4 Vertical Slice
 
-Native build: `v0.26.07.19.GODOT.0006_PERSONNEL_ARRIVALS_AND_RESEARCH_UNLOCK_VERTICAL_SLICE`
+Native build: `v0.26.07.19.GODOT.0007_ENGINEERING_STAFFING_AND_MANUFACTURING_QUEUE_VERTICAL_SLICE`
 
 This is a native Godot 4 vertical slice alongside the verified HTML game. It does not wrap `index.html`, replace the browser build, or write to the browser campaign save.
 
@@ -27,9 +27,11 @@ The project uses the repository root so the native slice can reuse the existing 
 - Adjustable research staffing bounded by available scientists and Laboratory capacity, with deterministic daily research points and completion reports.
 - Base-local Soldier, Scientist, and Engineer hiring orders with established costs, three-day arrival timing, projected capacity reservations, half-refund cancellation, and deterministic recruit identities.
 - Ten Engineer spaces per Workshop, including a conservative Workshop migration for native 0001-0005 campaigns that already exposed the Workshop command screen.
-- Laser Weapons completion unlocking Laser Power Output 1 and state-owned Laser Rifle production in the Workshop.
+- Engineer staffing bounded by local staff and Workshop capacity, with three work points per assigned Engineer at each strategic midnight.
+- A bounded prepaid FIFO manufacturing queue for Medkits and research-gated Laser Rifles, including progress, ETA, local-store delivery, overflow work, half-cost cancellation, and exact save persistence.
+- Laser Weapons completion unlocking Laser Power Output 1 and queued Laser Rifle production in the Workshop.
 - Native JSON save format 4 at `user://project_aegis_godot_save_v4.json`, with imported campaigns isolated at `user://project_aegis_godot_imported_copy_v4.json`.
-- In-game Build Health with 44 checks, including bounded tactical-log trimming, the complete air-operation lifecycle, browser-import isolation, personnel arrivals, research unlocks, manufacturing authorization, large-list scrolling, and dense strategic marker placement.
+- In-game Build Health with 52 checks, including bounded tactical-log trimming, the complete air-operation lifecycle, browser-import isolation, personnel arrivals, research unlocks, manufacturing staffing/FIFO/persistence, large-list scrolling, and dense strategic marker placement.
 
 ## Tactical Controls
 
@@ -58,7 +60,7 @@ The project uses the repository root so the native slice can reuse the existing 
 4. Continue the imported campaign as a native copy. The browser export is opened read only, the regular native campaign is not replaced, and later saves stay in the separate imported-copy slot.
 5. Use **Load Imported Copy** on later launches to resume it.
 
-## Personnel And Research
+## Personnel, Research, And Manufacturing
 
 - The Base screen reports living soldiers, scientists, engineers, and total local Living Quarters occupancy.
 - Each Living Quarters supports 12 personnel; KIA soldiers do not consume capacity.
@@ -69,6 +71,9 @@ The project uses the repository root so the native slice can reuse the existing 
 - Each assigned scientist contributes 2 research points per strategic day; each project retains its own required-point total.
 - Laser Weapons completion releases assigned scientists, unlocks Laser Rifle production, and exposes Laser Power Output 1 as an unstaffed follow-on project.
 - The Research screen exposes assignment, daily rate, ETA, progress, unlocked capabilities, completed topics, and a one-day advance when no flight operation is active.
+- Workshop orders deduct their full cost when queued. Medkits require 18 work and Laser Rifles require 60 work; each assigned Engineer contributes 3 work per strategic day.
+- Only the active FIFO order receives work. Excess midnight output carries into the next order, completed items enter local stores, and an empty queue releases its Engineers.
+- Cancelling any queued order returns half its prepaid cost. Queue order, progress, assignment, and deterministic identifiers survive save/reload without changing save format 4.
 
 ## Automated Verification
 
@@ -79,9 +84,9 @@ godot --headless --path . --editor --quit
 godot --headless --path . --script res://godot/tests/test_runner.gd
 ```
 
-The test runner covers campaign creation and travel, native save round-tripping, Workshop and personnel migration, hiring cost/capacity reservations, specialist-capacity blocking despite spare quarters, cancellation refunds, three-midnight arrivals, deterministic recruits, bounded research assignment, daily research progression/completion, prerequisite inference, follow-on selection, Laser Rifle manufacturing authorization, mid-interception save/resume, deterministic air combat and return service, exact browser-export wrapper parsing, selected-base grid/research/roster/incident normalization, nested soldier stats and identity, six-seat native assignment capacity, source-file preservation, imported-copy round-tripping, dense strategic markers, bounded hex rules, tactical deployment, movement highlighting, three End Turn cycles, civilian contact cost/linking, wall destruction and traversal, and all visible Build Health rows.
+The test runner covers campaign creation and travel, native save round-tripping, Workshop and personnel migration, hiring cost/capacity reservations, specialist-capacity blocking despite spare quarters, cancellation refunds, three-midnight arrivals, deterministic recruits, bounded research assignment, daily research progression/completion, prerequisite inference, follow-on selection, manufacturing research gates, staffing limits, prepaid FIFO progress, overflow, completion, cancellation, partial-order normalization, mid-interception save/resume, deterministic air combat and return service, exact browser-export wrapper parsing, selected-base grid/research/roster/incident normalization, nested soldier stats and identity, six-seat native assignment capacity, source-file preservation, imported-copy round-tripping, dense strategic markers, bounded hex rules, tactical deployment, movement highlighting, three End Turn cycles, civilian contact cost/linking, wall destruction and traversal, and all visible Build Health rows.
 
-Latest verification passes `61/61` native tests and `45/45` visible Build Health rows. Hardware OpenGL 3.3 on the NVIDIA GeForce GTX 960M at 1440x900 verifies the personnel queue, completed-research pipeline, and unlocked Workshop layouts without clipping or horizontal overflow. The unchanged HTML artifact also passes six-of-six inline-script parsing, its static seam checker, localhost Geoscape smoke, and browser Build Health `272/272` with no runtime errors.
+Latest verification passes `70/70` native tests and `52/52` visible Build Health rows. Hardware OpenGL 3.3 on the NVIDIA GeForce GTX 960M at 1440x900 verifies the staffed Workshop catalog and scrolled partial-order queue without clipping or horizontal overflow. The player confirmed the complete 0007 manual queue, staffing, cancellation, completion, and persistence gate passes. The unchanged HTML artifact also passes six-of-six inline-script parsing, its static seam checker, localhost first-base/Geoscape smoke, and browser Build Health `272/272` with no runtime errors; only the existing Tailwind production-CDN warning remains.
 
 ## Deliberate Limits
 
@@ -91,6 +96,6 @@ Latest verification passes `61/61` native tests and `45/45` visible Build Health
 - Native export presets and release packages are not configured yet.
 - Multi-base logistics, soldier relationships, the full research/manufacturing trees, richer aircraft loadouts, and campaign endgame remain in the HTML build.
 
-## Manual Test Gate
+## Verified Manual Gate
 
-Load the native campaign that passed 0005 and confirm Base now shows one Workshop with 10 Engineer spaces while preserving 11/12 occupied quarters. Before filling the final quarters slot, hire and cancel one Scientist, then hire and cancel one Engineer; confirm each half-cost refund. Recruit one Soldier, confirm the $120k deduction and 12/12 projected occupancy, advance two days and verify the order remains pending, then save/reload and advance the third day. Confirm the named recruit appears Ready but unassigned. In the imported Fort Aegis copy, confirm its five spare quarters allow a Soldier order while Scientist and Engineer remain correctly blocked by their full 10/10 Laboratory and Workshop. Complete Laser Weapons, open Laser Power Output 1, and build one $180k Laser Rifle from Workshop. Save/reload and verify the completed topic, unlock, follow-on progress, personnel queue, funds, and local stores persist.
+The player confirmed the 0007 Workshop gate passes: prepaid Medkit and Laser Rifle orders, staffing limits, active-only midnight progress, FIFO overflow, local-store delivery, partial-order save/reload, half-cost cancellation, and isolated imported-copy behavior all worked as expected.

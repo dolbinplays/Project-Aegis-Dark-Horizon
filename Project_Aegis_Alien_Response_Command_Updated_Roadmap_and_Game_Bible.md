@@ -3,8 +3,8 @@
 
 Last updated: 2026-07-19
 Current handoff build: `v0.26.07.17.0137_TACTICAL_CONTINUOUS_WALLS_AND_TRAVERSABLE_BREACHES_INDEX_ONLY_PATCH`
-Native vertical slice: `v0.26.07.19.GODOT.0006_PERSONNEL_ARRIVALS_AND_RESEARCH_UNLOCK_VERTICAL_SLICE`
-Current patch status: **The verified HTML build remains 0137 with save format 4 and its existing browser validation/manual gates unchanged. The player confirmed all native 0005 manual tests passed. Native build 0006 implements the next bounded strategic-management slice: base-local Soldier, Scientist, and Engineer hiring orders using the established $120k/$95k/$90k costs, three-midnight arrivals, projected capacity reservations, half-refund cancellation, deterministic unassigned recruits, 10 Engineer spaces per Workshop, and a conservative Workshop migration for native 0001-0005 campaigns. Laser Weapons completion now unlocks Laser Power Output 1 and state-owned Laser Rifle production; imported follow-on research conservatively infers its prerequisite without changing the browser source. The live imported Fort Aegis correctly has spare quarters but full 10/10 Laboratory and Workshop staffing, so specialist hiring remains blocked while Soldier hiring remains available. Native tests pass 61/61 and all 45/45 native Build Health rows pass. Hardware OpenGL 3.3 renders on the NVIDIA GeForce GTX 960M passed at 1440x900 for Base personnel queues, completed Research, and unlocked Workshop layouts. The unchanged HTML artifact's six inline scripts parse, the seam checker passes, localhost reaches first-base setup and Geoscape, browser Build Health passes 272/272, and browser runtime errors remain empty.**
+Native vertical slice: `v0.26.07.19.GODOT.0007_ENGINEERING_STAFFING_AND_MANUFACTURING_QUEUE_VERTICAL_SLICE`
+Current patch status: **The verified HTML build remains 0137 with save format 4 and its browser validation/manual gates unchanged. Native build 0007 replaces instant Workshop delivery with a bounded base-local production loop: up to 10 assigned Engineers per Workshop, three work points per Engineer at each strategic midnight, prepaid FIFO Medkit and research-gated Laser Rifle orders, overflow work, local-store delivery, half-cost cancellation, exact partial-order persistence, and conservative empty-queue migration for earlier native saves. Native tests pass 70/70 and all 52/52 native Build Health rows pass. Hardware OpenGL 3.3 rendered the staffed Workshop and scrolled queue cleanly at 1440x900. The unchanged HTML build passes six-of-six script parsing, the seam checker, localhost first-base/Geoscape smoke, browser Build Health 272/272, and an empty runtime-error check. The player confirmed all 0007 hands-on tests pass. The live imported Fort Aegis can use its staffed Workshop but remains unable to hire additional Scientists or Engineers until bounded facility construction is implemented in the next native slice.**
 
 ---
 
@@ -52,7 +52,7 @@ The player commands a fledgling global defense organization responding to escala
 `v0.26.07.17.0137_TACTICAL_CONTINUOUS_WALLS_AND_TRAVERSABLE_BREACHES_INDEX_ONLY_PATCH`
 
 ## Native Vertical Slice Build
-`v0.26.07.19.GODOT.0006_PERSONNEL_ARRIVALS_AND_RESEARCH_UNLOCK_VERTICAL_SLICE`
+`v0.26.07.19.GODOT.0007_ENGINEERING_STAFFING_AND_MANUFACTURING_QUEUE_VERTICAL_SLICE`
 
 ## What This Patch Was Intended To Add
 This patch adds:
@@ -1274,7 +1274,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Run native build 0006 from the native campaign that passed the 0005 staffing checks. Confirm the migrated base now has one Workshop and 10 Engineer spaces without changing its six soldiers, five scientists, research progress, funds, incidents, or aircraft. Before filling its last quarters slot, hire/cancel one Scientist and then one Engineer, confirming each half-cost refund. Recruit one Soldier, verify the $120k deduction and projected quarters reservation, advance two days, save/reload, and confirm the same named recruit still has one day remaining. Advance the third midnight and confirm the recruit arrives Ready but unassigned. In imported Fort Aegis, confirm five spare quarters leave Soldier hiring available while its full 10/10 Laboratory and Workshop correctly block Scientists and Engineers. Complete Laser Weapons, verify Laser Power Output 1 and Laser Rifle production unlock, begin the follow-on project unstaffed, manufacture one rifle for $180k, then save/reload and confirm all queue, research, funds, and stores state persists. This is the current native manual-testing gate; do not treat it as a complete campaign port.
+Run native build 0007 from the campaign that passed the 0006 tests. Queue two Medkits, confirm $80k is prepaid, assign Engineers, and verify one midnight advances only the active order. On the second midnight, confirm the first Medkit enters local stores and excess work carries into the second FIFO order. Change staffing, save/reload, and confirm exact order identity, progress, assignment, and ETA. Cancel an order and confirm a half-cost refund. Complete Laser Weapons, queue a $180k Laser Rifle, and confirm it takes 60 work instead of appearing instantly. Repeat a short queue/progress/save cycle in imported Fort Aegis and confirm the browser source export remains unchanged. This is the current native manual-testing gate; do not treat it as a complete campaign port.
 
 In a mandatory civilian-rescue incident, hand AI Command the live battlefield after the last alien dies or just before AI kills it. Confirm AI enters secure rescue, searches for unrevealed survivors, preserves existing escort chains, reports rescued/required progress, and extracts enough civilians before victory. Confirm an impossible requirement still resolves and an exhausted bounded rescue does not falsely mark surviving soldiers KIA. Then trigger a UFO speed prompt while working in Base, Soldiers, Research, Workshop, and Missions; choose a speed and confirm the same command section remains open while time advances. Repeat from an in-progress incident and confirm the battlefield remains active until the deferred speed applies after battle.
 
@@ -2930,6 +2930,43 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.19.GODOT.0007 - Engineering Staffing and Manufacturing Queue Vertical Slice
+
+Native build `v0.26.07.19.GODOT.0007_ENGINEERING_STAFFING_AND_MANUFACTURING_QUEUE_VERTICAL_SLICE` preserves save format 4 and follows the player-confirmed 0006 gate with the next bounded Workshop-management transition.
+
+Implemented scope:
+
+- Replaced instant Medkit and Laser Rifle delivery with a base-local prepaid FIFO queue capped at eight orders.
+- Each assigned Engineer contributes three work points at each crossed strategic midnight, matching the browser campaign's established production rate. Assignment is bounded by both local Engineers and 10 spaces per Workshop.
+- Medkits cost $40k and require 18 work. Research-gated Laser Rifles preserve the native slice's $180k cost and require 60 work.
+- Only the active order receives work. Unused output from a completed order carries into the next FIFO order during the same midnight pass.
+- Completed items enter local stores and release assigned Engineers when the queue empties. Cancelling any queued order returns half its prepaid cost.
+- Workshop now exposes Engineer assignment, daily output, catalog authorization, local inventory, active/queued status, progress, FIFO ETA, cancellation refund, and one-day strategic advancement.
+- Queue identifiers, item snapshots, progress, assignment, base ownership, funds, reports, and stores persist through save normalization without changing save format 4.
+
+Performance and compatibility:
+
+- Manufacturing is bounded to eight orders and advances only at strategic midnight; it adds no tactical or per-frame work.
+- Native 0001-0006 saves receive an empty unstaffed queue. Browser-imported copies preserve their actual Workshop count and never mutate the browser source export.
+- Tactical rules, air operations, personnel/research queues, active save paths, browser build 0137, and the single-file HTML artifact remain unchanged.
+
+Verification completed:
+
+- Godot 4.7.1 strict editor import and GDScript parsing passed.
+- Native tests passed `70/70`; visible native Build Health passed `52/52` through the same run.
+- Coverage includes locked production, Engineer/Workshop staffing clamps, prepaid orders, active-only midnight work, FIFO overflow, local-store completion, automatic staff release, half-cost cancellation, and exact partial-order normalization.
+- Hardware OpenGL 3.3 on the NVIDIA GeForce GTX 960M rendered the staffed Workshop catalog and scrolled partial-order queue at 1440x900 without clipping or horizontal overflow; seeded state read two orders, four assigned Engineers, 12 work per day, and 12/18 active progress.
+- The unchanged HTML artifact's six inline scripts parsed, `node tools\check-aegis-build.cjs` passed, localhost reached first-base setup and Geoscape, and browser Build Health passed `272/272`.
+- Browser runtime errors were empty; the only warning was the existing Tailwind production-CDN notice.
+
+Manual validation completed by player:
+
+- Prepaid Medkit and Laser Rifle orders, Engineer assignment limits, active-only midnight progress, FIFO overflow, local-store completion, and displayed ETA all passed.
+- Partial-order save/reload preserved exact order identity, progress, staffing, funds, and stores.
+- Half-cost cancellation and imported-copy source isolation passed.
+
+Next native step after live validation: `GODOT.0008_BASE_FACILITY_CONSTRUCTION_AND_SPECIALIST_CAPACITY_VERTICAL_SLICE`, adding bounded Laboratory, Workshop, and Living Quarters construction so a staffed campaign can deliberately expand specialist capacity without importing the browser game's complete base-building simulation.
 
 ## v0.26.07.19.GODOT.0006 - Personnel Arrivals and Research Unlock Vertical Slice
 

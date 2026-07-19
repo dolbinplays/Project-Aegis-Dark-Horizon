@@ -31,8 +31,8 @@
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
     "mainScene": "godot/main.tscn",
-    "build": "v0.26.07.19.GODOT.0006_PERSONNEL_ARRIVALS_AND_RESEARCH_UNLOCK_VERTICAL_SLICE",
+    "build": "v0.26.07.19.GODOT.0007_ENGINEERING_STAFFING_AND_MANUFACTURING_QUEUE_VERTICAL_SLICE",
     "saveFormat": 4,
-    "status": "personnel-arrivals-research-unlock-manual-test"
+    "status": "engineering-staffing-manufacturing-queue-manual-test"
   }
 }

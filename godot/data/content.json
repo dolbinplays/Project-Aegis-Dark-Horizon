@@ -1,5 +1,5 @@
 {
-  "build": "v0.26.07.19.GODOT.0006_PERSONNEL_ARRIVALS_AND_RESEARCH_UNLOCK_VERTICAL_SLICE",
+  "build": "v0.26.07.19.GODOT.0007_ENGINEERING_STAFFING_AND_MANUFACTURING_QUEUE_VERTICAL_SLICE",
   "save_format": 4,
   "research_projects": [
     {
@@ -19,6 +19,22 @@
       "unlocks_projects": [],
       "unlocks_capabilities": [],
       "unlock_labels": []
+    }
+  ],
+  "manufacturing_items": [
+    {
+      "id": "Medkit",
+      "cost": 40,
+      "work": 18,
+      "required_unlock": "",
+      "description": "Portable trauma supplies for field response teams."
+    },
+    {
+      "id": "Laser Rifle",
+      "cost": 180,
+      "work": 60,
+      "required_unlock": "laser_rifle_production",
+      "description": "A directed-energy infantry weapon unlocked by Laser Weapons research."
     }
   ],
   "regions": [

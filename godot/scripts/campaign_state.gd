@@ -10,8 +10,10 @@ const PERSONNEL_PER_QUARTERS := 12
 const SCIENTISTS_PER_LAB := 10
 const ENGINEERS_PER_WORKSHOP := 10
 const RESEARCH_PROGRESS_PER_SCIENTIST_DAY := 2
+const MANUFACTURING_PROGRESS_PER_ENGINEER_DAY := 3
 const RESEARCH_REQUIRED_PROGRESS := 100
 const PERSONNEL_ARRIVAL_DAYS := 3
+const MAX_MANUFACTURING_ORDERS := 8
 const PERSONNEL_HIRING := {
 	"soldier": {"label": "Soldier", "cost": 120},
 	"scientist": {"label": "Scientist", "cost": 95},
@@ -66,6 +68,9 @@ func new_campaign(base_name: String, region_name: String) -> void:
 		"engineers": 0,
 		"personnel_orders": [],
 		"next_personnel_order_id": 1,
+		"manufacturing_queue": [],
+		"manufacturing_assigned_engineers": 0,
+		"next_manufacturing_order_id": 1,
 		"incidents": content.get("incidents", []).duplicate(true),
 		"selected_incident_id": "red_river",
 		"travel": {},
@@ -402,22 +407,105 @@ func _apply_research_completion(topic: String) -> void:
 			unlocks.append(unlock_id)
 	data["technology_unlocks"] = unlocks
 
-func manufacture_item(item_name: String, cost: int, required_unlock: String = "") -> bool:
+func manufacturing_queue() -> Array:
+	return data.get("manufacturing_queue", [])
+
+func manufacturing_staff_limit() -> int:
+	return mini(maxi(0, int(data.get("engineers", 0))), engineer_capacity())
+
+func manufacturing_assigned_engineers() -> int:
+	return clampi(int(data.get("manufacturing_assigned_engineers", 0)), 0, manufacturing_staff_limit())
+
+func set_manufacturing_staffing(amount: int) -> bool:
+	var next_amount := clampi(amount, 0, manufacturing_staff_limit())
+	if manufacturing_queue().is_empty():
+		next_amount = 0
+	var changed := manufacturing_assigned_engineers() != next_amount
+	data["manufacturing_assigned_engineers"] = next_amount
+	return changed
+
+func manufacturing_daily_progress() -> int:
+	return manufacturing_assigned_engineers() * MANUFACTURING_PROGRESS_PER_ENGINEER_DAY
+
+func manufacturing_order_blocker(item_name: String) -> String:
+	var definition := _manufacturing_definition(item_name)
+	if definition.is_empty():
+		return "Unknown manufacturing order."
 	if engineer_capacity() <= 0:
-		add_report("Workshop order blocked: no local Workshop is operational.")
-		return false
+		return "No local Workshop is operational."
+	var required_unlock := String(definition.get("required_unlock", ""))
 	if not required_unlock.is_empty() and not has_technology_unlock(required_unlock):
-		add_report("Workshop order blocked: %s production research is incomplete." % item_name)
+		return "%s production research is incomplete." % item_name
+	if manufacturing_queue().size() >= MAX_MANUFACTURING_ORDERS:
+		return "Manufacturing queue is full at %d orders." % MAX_MANUFACTURING_ORDERS
+	if int(data.get("funds", 0)) < int(definition.get("cost", 0)):
+		return "Insufficient funds - $%dk required." % definition.get("cost", 0)
+	return ""
+
+func queue_manufacturing(item_name: String) -> bool:
+	var blocker := manufacturing_order_blocker(item_name)
+	if not blocker.is_empty():
+		add_report("Workshop order blocked: %s" % blocker)
 		return false
-	if int(data.get("funds", 0)) < cost:
-		add_report("Workshop order blocked: insufficient funds for %s." % item_name)
-		return false
-	var stores: Dictionary = data.get("stores", {})
-	data["funds"] = int(data.get("funds", 0)) - cost
-	stores[item_name] = int(stores.get(item_name, 0)) + 1
-	data["stores"] = stores
-	add_report("Workshop completed one %s." % item_name)
+	var definition := _manufacturing_definition(item_name)
+	var sequence := maxi(1, int(data.get("next_manufacturing_order_id", 1)))
+	var order := {
+		"id": "manufacturing_%03d" % sequence,
+		"item_name": item_name,
+		"cost": int(definition.get("cost", 0)),
+		"work_required": maxi(1, int(definition.get("work", 1))),
+		"progress": 0,
+		"base_id": _selected_base_identity()
+	}
+	var queue := manufacturing_queue()
+	queue.append(order)
+	data["manufacturing_queue"] = queue
+	data["next_manufacturing_order_id"] = sequence + 1
+	data["funds"] = int(data.get("funds", 0)) - int(order.get("cost", 0))
+	if manufacturing_assigned_engineers() <= 0 and manufacturing_staff_limit() > 0:
+		data["manufacturing_assigned_engineers"] = manufacturing_staff_limit()
+	add_report("Workshop order queued: %s for $%dk and %d work." % [item_name, order.get("cost", 0), order.get("work_required", 0)])
 	return true
+
+func manufacturing_order_cancel_refund(order: Dictionary) -> int:
+	return int(floor(float(maxi(0, int(order.get("cost", 0)))) * 0.5))
+
+func cancel_manufacturing_order(order_id: String) -> bool:
+	var queue := manufacturing_queue()
+	for order_index in range(queue.size()):
+		var order: Dictionary = queue[order_index]
+		if String(order.get("id", "")) != order_id:
+			continue
+		var refund := manufacturing_order_cancel_refund(order)
+		queue.remove_at(order_index)
+		data["manufacturing_queue"] = queue
+		data["funds"] = int(data.get("funds", 0)) + refund
+		if queue.is_empty():
+			data["manufacturing_assigned_engineers"] = 0
+		add_report("Workshop order cancelled: %s. Refund $%dk." % [order.get("item_name", "Item"), refund])
+		return true
+	return false
+
+func manufacturing_order_remaining_work(order: Dictionary) -> int:
+	return maxi(0, int(order.get("work_required", 1)) - int(order.get("progress", 0)))
+
+func manufacturing_queue_days_remaining(order_id: String) -> int:
+	var daily := manufacturing_daily_progress()
+	if daily <= 0:
+		return -1
+	var work_ahead := 0
+	for order_value in manufacturing_queue():
+		var order: Dictionary = order_value
+		work_ahead += manufacturing_order_remaining_work(order)
+		if String(order.get("id", "")) == order_id:
+			return ceili(float(work_ahead) / float(daily))
+	return -1
+
+func _manufacturing_definition(item_name: String) -> Dictionary:
+	for item_value in content.get("manufacturing_items", []):
+		if item_value is Dictionary and String(item_value.get("id", "")) == item_name:
+			return item_value
+	return {}
 
 func set_soldier_assigned(soldier_id: String, assigned: bool) -> void:
 	for soldier in data.get("soldiers", []):
@@ -447,6 +535,7 @@ func advance_minutes(amount: int) -> bool:
 		days_advanced += 1
 	_advance_personnel_days(days_advanced)
 	_advance_research_days(days_advanced)
+	_advance_manufacturing_days(days_advanced)
 	_advance_aircraft_service(bounded_amount)
 	_advance_interception(bounded_amount)
 	var travel: Dictionary = data.get("travel", {})
@@ -480,6 +569,32 @@ func _advance_research_days(days_advanced: int) -> void:
 		var unlock_text := " UNLOCKED: %s." % ", ".join(unlock_labels) if not unlock_labels.is_empty() else ""
 		add_report("RESEARCH COMPLETE: %s.%s" % [topic, unlock_text])
 	data["research"] = research
+
+func _advance_manufacturing_days(days_advanced: int) -> void:
+	if days_advanced <= 0 or manufacturing_queue().is_empty():
+		return
+	var work_pool := manufacturing_daily_progress() * days_advanced
+	if work_pool <= 0:
+		return
+	var queue := manufacturing_queue()
+	while work_pool > 0 and not queue.is_empty():
+		var order: Dictionary = queue[0]
+		var remaining := manufacturing_order_remaining_work(order)
+		var applied := mini(work_pool, remaining)
+		order["progress"] = int(order.get("progress", 0)) + applied
+		work_pool -= applied
+		if manufacturing_order_remaining_work(order) > 0:
+			queue[0] = order
+			break
+		var stores: Dictionary = data.get("stores", {})
+		var item_name := String(order.get("item_name", "Manufactured item"))
+		stores[item_name] = int(stores.get(item_name, 0)) + 1
+		data["stores"] = stores
+		queue.remove_at(0)
+		add_report("MANUFACTURING COMPLETE: %s delivered to local stores." % item_name)
+	data["manufacturing_queue"] = queue
+	if queue.is_empty():
+		data["manufacturing_assigned_engineers"] = 0
 
 func _advance_personnel_days(days_advanced: int) -> void:
 	if days_advanced <= 0 or personnel_orders().is_empty():
@@ -1052,6 +1167,32 @@ func normalize_save(source: Dictionary) -> Dictionary:
 			normalized_orders.append(order)
 	normalized["personnel_orders"] = normalized_orders
 	normalized["next_personnel_order_id"] = maxi(int(normalized.get("next_personnel_order_id", 1)), normalized_orders.size() + 1)
+	var manufacturing_value: Variant = normalized.get("manufacturing_queue", [])
+	var normalized_manufacturing: Array = []
+	if manufacturing_value is Array:
+		for order_index in range(mini(manufacturing_value.size(), MAX_MANUFACTURING_ORDERS)):
+			var order_value: Variant = manufacturing_value[order_index]
+			if not order_value is Dictionary:
+				continue
+			var order: Dictionary = order_value.duplicate(true)
+			var item_name := String(order.get("item_name", order.get("item", "")))
+			var definition := _manufacturing_definition(item_name)
+			if definition.is_empty():
+				continue
+			var sequence := order_index + 1
+			var required_work := maxi(1, int(order.get("work_required", order.get("work", definition.get("work", 1)))))
+			order["id"] = String(order.get("id", "manufacturing_%03d" % sequence))
+			order["item_name"] = item_name
+			order["cost"] = maxi(0, int(order.get("cost", definition.get("cost", 0))))
+			order["work_required"] = required_work
+			order["progress"] = clampi(int(order.get("progress", 0)), 0, required_work - 1)
+			order["base_id"] = String(order.get("base_id", normalized_base.get("source_id", normalized_base.get("id", normalized_base.get("name", "Fort Aegis")))))
+			normalized_manufacturing.append(order)
+	normalized["manufacturing_queue"] = normalized_manufacturing
+	normalized["next_manufacturing_order_id"] = maxi(int(normalized.get("next_manufacturing_order_id", 1)), normalized_manufacturing.size() + 1)
+	var workshop_capacity := maxi(0, int(facility_counts.get("workshop", 0))) * ENGINEERS_PER_WORKSHOP
+	var manufacturing_staff_limit := mini(int(normalized["engineers"]), workshop_capacity)
+	normalized["manufacturing_assigned_engineers"] = clampi(int(normalized.get("manufacturing_assigned_engineers", 0)), 0, manufacturing_staff_limit) if not normalized_manufacturing.is_empty() else 0
 	var lab_capacity := maxi(0, int(facility_counts.get("lab", 0))) * SCIENTISTS_PER_LAB
 	var staffing_limit := mini(int(normalized["scientists"]), lab_capacity)
 	var assigned := clampi(legacy_assigned, 0, staffing_limit)

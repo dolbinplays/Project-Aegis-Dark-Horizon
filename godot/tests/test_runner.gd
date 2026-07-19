@@ -56,10 +56,13 @@ func _test_campaign(content: Dictionary) -> void:
 	var legacy := campaign.data.duplicate(true)
 	legacy.erase("scientists")
 	legacy.erase("engineers")
+	legacy.erase("manufacturing_queue")
+	legacy.erase("manufacturing_assigned_engineers")
+	legacy.erase("next_manufacturing_order_id")
 	legacy["base"].erase("facility_counts")
 	legacy["research"] = {"active": "Laser Weapons", "progress": 8}
 	var migrated := campaign.normalize_save(legacy)
-	_check(int(migrated.get("scientists", 0)) == 5 and int(migrated.get("engineers", -1)) == 0 and int(migrated.get("base", {}).get("facility_counts", {}).get("quarters", 0)) == 1 and int(migrated.get("base", {}).get("facility_counts", {}).get("workshop", 0)) == 1 and int(migrated.get("research", {}).get("assigned_scientists", 0)) == 5 and migrated.get("personnel_orders", []).is_empty(), "legacy native saves receive conservative personnel staffing defaults")
+	_check(int(migrated.get("scientists", 0)) == 5 and int(migrated.get("engineers", -1)) == 0 and int(migrated.get("base", {}).get("facility_counts", {}).get("quarters", 0)) == 1 and int(migrated.get("base", {}).get("facility_counts", {}).get("workshop", 0)) == 1 and int(migrated.get("research", {}).get("assigned_scientists", 0)) == 5 and migrated.get("personnel_orders", []).is_empty() and migrated.get("manufacturing_queue", []).is_empty() and int(migrated.get("manufacturing_assigned_engineers", -1)) == 0, "legacy native saves receive conservative personnel and manufacturing defaults")
 	var personnel_campaign := AegisCampaignState.new()
 	personnel_campaign.configure(content)
 	personnel_campaign.new_campaign("Queue Test", "North America")
@@ -69,7 +72,7 @@ func _test_campaign(content: Dictionary) -> void:
 	personnel_campaign.data["base"]["facility_counts"]["quarters"] = 2
 	personnel_campaign.data["base"]["facility_counts"]["workshop"] = 1
 	var funds_before := int(personnel_campaign.data.get("funds", 0))
-	_check(not personnel_campaign.manufacture_item("Laser Rifle", 180, "laser_rifle_production") and int(personnel_campaign.data.get("funds", 0)) == funds_before and int(personnel_campaign.data.get("stores", {}).get("Laser Rifle", 0)) == 0, "Laser Rifle production remains blocked before its research unlock")
+	_check(not personnel_campaign.queue_manufacturing("Laser Rifle") and int(personnel_campaign.data.get("funds", 0)) == funds_before and int(personnel_campaign.data.get("stores", {}).get("Laser Rifle", 0)) == 0, "Laser Rifle production remains blocked before its research unlock")
 	_check(personnel_campaign.hire_personnel("soldier") and personnel_campaign.hire_personnel("scientist") and personnel_campaign.hire_personnel("engineer"), "personnel office accepts affordable hires with reserved capacity")
 	_check(personnel_campaign.pending_personnel_count() == 3 and personnel_campaign.projected_personnel_used() == 14 and int(personnel_campaign.data.get("funds", 0)) == funds_before - 305, "pending hires reserve quarters and deduct established costs")
 	var engineer_order: Dictionary = personnel_campaign.personnel_orders().filter(func(order): return order.get("type", "") == "engineer")[0]
@@ -97,9 +100,39 @@ func _test_campaign(content: Dictionary) -> void:
 	campaign.advance_minutes(24 * 60)
 	_check(int(campaign.data.get("research", {}).get("progress", 0)) == 100 and campaign.research_assigned_scientists() == 0 and String(campaign.data.get("reports", [""])[0]).begins_with("RESEARCH COMPLETE"), "completed research releases scientists and records one report")
 	_check(campaign.completed_research().has("Laser Weapons") and campaign.has_technology_unlock("laser_rifle_production") and campaign.available_research_projects().any(func(project): return project.get("id", "") == "Laser Power Output 1"), "Laser Weapons completion unlocks production and its follow-on project")
+	campaign.data["engineers"] = 10
 	var laser_funds_before := int(campaign.data.get("funds", 0))
-	_check(campaign.manufacture_item("Laser Rifle", 180, "laser_rifle_production") and int(campaign.data.get("stores", {}).get("Laser Rifle", 0)) == 1 and int(campaign.data.get("funds", 0)) == laser_funds_before - 180, "unlocked Laser Rifle production deducts funds and updates local stores")
+	var laser_stores_before := int(campaign.data.get("stores", {}).get("Laser Rifle", 0))
+	_check(campaign.queue_manufacturing("Laser Rifle") and int(campaign.data.get("funds", 0)) == laser_funds_before - 180 and int(campaign.data.get("stores", {}).get("Laser Rifle", 0)) == laser_stores_before, "unlocked Laser Rifle production prepays without instant delivery")
+	campaign.advance_minutes(24 * 60)
+	_check(int(campaign.data.get("stores", {}).get("Laser Rifle", 0)) == laser_stores_before and int(campaign.manufacturing_queue()[0].get("progress", 0)) == 30, "Laser Rifle production remains queued after one staffed day")
+	campaign.advance_minutes(24 * 60)
+	_check(campaign.manufacturing_queue().is_empty() and campaign.manufacturing_assigned_engineers() == 0 and int(campaign.data.get("stores", {}).get("Laser Rifle", 0)) == laser_stores_before + 1, "Laser Rifle production completes into local stores after required work")
 	_check(campaign.start_research_project("Laser Power Output 1") and campaign.research_required_progress() == 180 and campaign.research_assigned_scientists() == 0, "follow-on research opens unstaffed with its own point requirement")
+	var manufacturing_campaign := AegisCampaignState.new()
+	manufacturing_campaign.configure(content)
+	manufacturing_campaign.new_campaign("Manufacturing Test", "North America")
+	manufacturing_campaign.data["engineers"] = 4
+	var medkits_before := int(manufacturing_campaign.data.get("stores", {}).get("Medkit", 0))
+	var manufacturing_funds_before := int(manufacturing_campaign.data.get("funds", 0))
+	_check(manufacturing_campaign.queue_manufacturing("Medkit") and manufacturing_campaign.queue_manufacturing("Medkit") and manufacturing_campaign.manufacturing_queue().size() == 2 and int(manufacturing_campaign.data.get("funds", 0)) == manufacturing_funds_before - 80, "manufacturing orders prepay into a FIFO queue")
+	_check(manufacturing_campaign.manufacturing_assigned_engineers() == 4 and manufacturing_campaign.manufacturing_daily_progress() == 12 and not manufacturing_campaign.set_manufacturing_staffing(20), "manufacturing staffing clamps to local engineers and Workshop capacity")
+	manufacturing_campaign.advance_minutes(24 * 60)
+	_check(int(manufacturing_campaign.manufacturing_queue()[0].get("progress", 0)) == 12 and int(manufacturing_campaign.manufacturing_queue()[1].get("progress", 0)) == 0 and int(manufacturing_campaign.data.get("stores", {}).get("Medkit", 0)) == medkits_before, "one strategic midnight advances only the active manufacturing order")
+	manufacturing_campaign.advance_minutes(24 * 60)
+	_check(manufacturing_campaign.manufacturing_queue().size() == 1 and int(manufacturing_campaign.manufacturing_queue()[0].get("progress", 0)) == 6 and int(manufacturing_campaign.data.get("stores", {}).get("Medkit", 0)) == medkits_before + 1, "completed manufacturing carries overflow into the next FIFO order")
+	manufacturing_campaign.set_manufacturing_staffing(2)
+	manufacturing_campaign.advance_minutes(2 * 24 * 60)
+	_check(manufacturing_campaign.manufacturing_queue().is_empty() and manufacturing_campaign.manufacturing_assigned_engineers() == 0 and int(manufacturing_campaign.data.get("stores", {}).get("Medkit", 0)) == medkits_before + 2, "empty manufacturing queues release assigned engineers")
+	var cancellation_funds_before := int(manufacturing_campaign.data.get("funds", 0))
+	manufacturing_campaign.queue_manufacturing("Medkit")
+	var cancellation_order: Dictionary = manufacturing_campaign.manufacturing_queue()[0]
+	_check(manufacturing_campaign.cancel_manufacturing_order(String(cancellation_order.get("id", ""))) and manufacturing_campaign.manufacturing_queue().is_empty() and int(manufacturing_campaign.data.get("funds", 0)) == cancellation_funds_before - 20, "manufacturing cancellation returns half of prepaid cost")
+	manufacturing_campaign.queue_manufacturing("Medkit")
+	manufacturing_campaign.set_manufacturing_staffing(2)
+	manufacturing_campaign.advance_minutes(24 * 60)
+	var manufacturing_normalized := manufacturing_campaign.normalize_save(manufacturing_campaign.data)
+	_check(manufacturing_normalized.get("manufacturing_queue", []).size() == 1 and int(manufacturing_normalized.get("manufacturing_queue", [])[0].get("progress", 0)) == 6 and int(manufacturing_normalized.get("manufacturing_assigned_engineers", 0)) == 2, "partially completed manufacturing state normalizes with exact progress and staffing")
 	_check(campaign.begin_mission_travel(), "selected incident accepts a staffed Skyranger launch")
 	_check(not campaign.advance_minutes(15), "outbound travel remains active at midpoint")
 	_check(campaign.advance_minutes(15), "outbound travel completes after its duration")
@@ -216,9 +249,9 @@ func _test_build_health() -> void:
 	var app: Node = load("res://godot/main.tscn").instantiate()
 	app.content = _load_json("res://godot/data/content.json")
 	var health: Array = app._run_self_tests()
-	if health.size() != 45 or not health.all(func(row): return row.get("pass", false)):
+	if health.size() != 52 or not health.all(func(row): return row.get("pass", false)):
 		print("BUILD HEALTH DETAIL: %s" % JSON.stringify(health))
-	_check(health.size() == 45 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 45 rows")
+	_check(health.size() == 52 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 52 rows")
 	app.free()
 
 func _load_json(path: String) -> Dictionary:
