@@ -1,6 +1,6 @@
 extends Control
 
-const NATIVE_BUILD := "v0.26.07.18.GODOT.0005_BASE_PERSONNEL_AND_RESEARCH_STAFFING_VERTICAL_SLICE"
+const NATIVE_BUILD := "v0.26.07.19.GODOT.0006_PERSONNEL_ARRIVALS_AND_RESEARCH_UNLOCK_VERTICAL_SLICE"
 const MAX_BROWSER_IMPORT_BYTES := 32 * 1024 * 1024
 
 var content: Dictionary = {}
@@ -592,10 +592,10 @@ func _render_base() -> void:
 	summary.columns = 4
 	summary.add_theme_constant_override("h_separation", 12)
 	for metric_data in [
-		["LOCAL PERSONNEL", "%d / %d" % [personnel_used, personnel_capacity], capacity_color],
+		["LOCAL PERSONNEL", "%d / %d%s" % [personnel_used, personnel_capacity, " (+%d)" % campaign.pending_personnel_count() if campaign.pending_personnel_count() > 0 else ""], capacity_color],
 		["SOLDIERS", str(campaign.living_soldier_count()), color_cyan],
 		["SCIENTISTS", "%d / %d" % [campaign.data.get("scientists", 0), campaign.scientist_capacity()], Color("c4b5fd")],
-		["ENGINEERS", str(campaign.data.get("engineers", 0)), color_gold]
+		["ENGINEERS", "%d / %d" % [campaign.data.get("engineers", 0), campaign.engineer_capacity()], color_gold]
 	]:
 		var metric_card := _metric_card(metric_data[0], metric_data[1], metric_data[2])
 		metric_card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -603,6 +603,7 @@ func _render_base() -> void:
 	root.add_child(summary)
 	if personnel_used > personnel_capacity:
 		root.add_child(_label("PERSONNEL CAPACITY EXCEEDED - %d staff require additional Living Quarters." % (personnel_used - personnel_capacity), 13, color_red, true))
+	_render_personnel_office(root)
 	var grid := GridContainer.new()
 	grid.columns = 3
 	grid.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -624,8 +625,9 @@ func _facility_status(facility_id: String) -> String:
 	var research: Dictionary = campaign.data.get("research", {})
 	var statuses := {
 		"access":"Primary surface entry secure.",
-		"quarters":"%d / %d local personnel capacity." % [campaign.personnel_used(), campaign.personnel_capacity()],
-		"lab":"%d / %d Scientists assigned to %s." % [campaign.research_assigned_scientists(), campaign.scientist_capacity(), research.get("active", "research")],
+		"quarters":"%d / %d projected local personnel capacity." % [campaign.projected_personnel_used(), campaign.personnel_capacity()],
+		"lab":"%d active + %d inbound / %d Scientists. %d assigned to %s." % [campaign.data.get("scientists", 0), campaign.pending_personnel_count("scientist"), campaign.scientist_capacity(), campaign.research_assigned_scientists(), research.get("active", "research")],
+		"workshop":"%d active + %d inbound / %d Engineers." % [campaign.data.get("engineers", 0), campaign.pending_personnel_count("engineer"), campaign.engineer_capacity()],
 		"sickbay":"0 / 4 beds occupied.",
 		"stores":"Local equipment accounted for.",
 		"hangar_interceptor":"Saber One ready.",
@@ -633,6 +635,68 @@ func _facility_status(facility_id: String) -> String:
 		"radar":"4,500 km coverage active."
 	}
 	return statuses.get(facility_id, "Facility ready.")
+
+func _render_personnel_office(root: VBoxContainer) -> void:
+	var office := VBoxContainer.new()
+	office.add_theme_constant_override("separation", 12)
+	var projected := campaign.projected_personnel_used()
+	office.add_child(_label("PERSONNEL OFFICE", 18, color_cyan))
+	office.add_child(_label("%d active + %d inbound = %d/%d projected Living Quarters occupancy." % [campaign.personnel_used(), campaign.pending_personnel_count(), projected, campaign.personnel_capacity()], 13, color_muted, true))
+	var hiring_row := HBoxContainer.new()
+	hiring_row.add_theme_constant_override("separation", 10)
+	for type_value in ["soldier", "scientist", "engineer"]:
+		var personnel_type := String(type_value)
+		var definition: Dictionary = AegisCampaignState.PERSONNEL_HIRING[personnel_type]
+		var blocker := campaign.personnel_hiring_blocker(personnel_type)
+		var hire_button := _action_button("%s - $%dk" % ["Recruit Soldier" if personnel_type == "soldier" else "Hire %s" % definition.get("label", "Personnel"), definition.get("cost", 0)], func(): _hire_personnel(personnel_type), personnel_type == "soldier")
+		hire_button.disabled = not blocker.is_empty()
+		hire_button.tooltip_text = blocker if not blocker.is_empty() else "%s arrives in %d strategic days." % [definition.get("label", "Personnel"), AegisCampaignState.PERSONNEL_ARRIVAL_DAYS]
+		hire_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		hiring_row.add_child(hire_button)
+	office.add_child(hiring_row)
+	var shown_blockers := {}
+	for type_value in ["soldier", "scientist", "engineer"]:
+		var personnel_type := String(type_value)
+		var blocker := campaign.personnel_hiring_blocker(personnel_type)
+		if not blocker.is_empty() and not shown_blockers.has(blocker):
+			shown_blockers[blocker] = true
+			office.add_child(_label(blocker, 11, color_gold, true))
+	var orders := campaign.personnel_orders()
+	if orders.is_empty():
+		office.add_child(_label("No personnel currently in transit.", 13, color_green))
+	else:
+		office.add_child(_separator())
+		office.add_child(_label("PENDING ARRIVALS", 12, color_muted))
+		for order_value in orders:
+			var order: Dictionary = order_value
+			var row := HBoxContainer.new()
+			row.add_theme_constant_override("separation", 10)
+			var label := String(order.get("recruit", {}).get("name", AegisCampaignState.PERSONNEL_HIRING.get(order.get("type", ""), {}).get("label", "Personnel")))
+			row.add_child(_label(label, 14, color_text))
+			row.add_child(_label("%d day%s remaining" % [order.get("days_remaining", 0), "" if int(order.get("days_remaining", 0)) == 1 else "s"], 13, color_cyan))
+			row.add_spacer(false)
+			var order_id := String(order.get("id", ""))
+			row.add_child(_small_button("Cancel (+$%dk)" % campaign.personnel_order_cancel_refund(order), func(): _cancel_personnel_order(order_id)))
+			office.add_child(row)
+	var advance_button := _action_button("Advance One Day", _advance_personnel_day)
+	advance_button.disabled = not campaign.data.get("travel", {}).is_empty() or not campaign.data.get("interception", {}).is_empty()
+	office.add_child(advance_button)
+	root.add_child(_panel_with(office, 20))
+
+func _hire_personnel(personnel_type: String) -> void:
+	campaign.hire_personnel(personnel_type)
+	campaign.save_campaign()
+	_show_command("base")
+
+func _cancel_personnel_order(order_id: String) -> void:
+	campaign.cancel_personnel_order(order_id)
+	campaign.save_campaign()
+	_show_command("base")
+
+func _advance_personnel_day() -> void:
+	campaign.advance_minutes(24 * 60)
+	campaign.save_campaign()
+	_show_command("base")
 
 func _render_soldiers() -> void:
 	var root := VBoxContainer.new()
@@ -705,6 +769,9 @@ func _render_research() -> void:
 	var card := VBoxContainer.new()
 	card.add_theme_constant_override("separation", 14)
 	card.add_child(_label(research.get("active", "Laser Weapons"), 28, Color("c4b5fd")))
+	var active_definition := campaign._research_definition(String(research.get("active", "")))
+	if not String(active_definition.get("description", "")).is_empty():
+		card.add_child(_label(active_definition.get("description", ""), 13, color_muted, true))
 	var bar := ProgressBar.new()
 	bar.max_value = required_progress
 	bar.value = int(research.get("progress", 0))
@@ -712,6 +779,10 @@ func _render_research() -> void:
 	card.add_child(bar)
 	var state_text := "PROJECT COMPLETE - laboratory staff released." if completed else "%d research points per day - %s" % [daily_progress, "%d day%s remaining" % [days_remaining, "" if days_remaining == 1 else "s"] if days_remaining >= 0 else "No progress while unstaffed"]
 	card.add_child(_label(state_text, 15, color_green if completed else color_muted, true))
+	if completed:
+		var unlock_labels := campaign.research_completion_unlock_labels(String(research.get("active", "")))
+		if not unlock_labels.is_empty():
+			card.add_child(_label("UNLOCKED: %s" % ", ".join(unlock_labels), 14, color_gold, true))
 	var staffing_row := HBoxContainer.new()
 	staffing_row.add_theme_constant_override("separation", 12)
 	staffing_row.add_child(_label("Assigned Scientists", 15, color_text))
@@ -736,9 +807,39 @@ func _render_research() -> void:
 	if advance_button.disabled:
 		card.add_child(_label("Strategic time advance is unavailable during an active flight operation.", 12, color_gold, true))
 	root.add_child(_panel_with(card, 24))
+	var pipeline := VBoxContainer.new()
+	pipeline.add_theme_constant_override("separation", 12)
+	pipeline.add_child(_label("RESEARCH PIPELINE", 18, color_cyan))
+	var completed_topics := campaign.completed_research()
+	pipeline.add_child(_status_row("Completed", ", ".join(completed_topics) if not completed_topics.is_empty() else "None", color_green if not completed_topics.is_empty() else color_muted))
+	var available_projects := campaign.available_research_projects()
+	if available_projects.is_empty():
+		pipeline.add_child(_label("No additional bounded-slice projects are currently available.", 13, color_muted, true))
+	else:
+		for project_value in available_projects:
+			var project: Dictionary = project_value
+			var project_id := String(project.get("id", ""))
+			var row := HBoxContainer.new()
+			row.add_theme_constant_override("separation", 12)
+			var text := VBoxContainer.new()
+			text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			text.add_child(_label(project_id, 17, Color("c4b5fd")))
+			text.add_child(_label("%d points - %s" % [project.get("required", 0), project.get("description", "")], 12, color_muted, true))
+			row.add_child(text)
+			var begin_button := _action_button("Begin Project", func(): _start_research_project(project_id), true)
+			begin_button.disabled = not completed
+			begin_button.tooltip_text = "Complete the active project first." if not completed else "Open this project with zero assigned scientists."
+			row.add_child(begin_button)
+			pipeline.add_child(row)
+	root.add_child(_panel_with(pipeline, 20))
 
 func _advance_research_day() -> void:
 	campaign.advance_minutes(24 * 60)
+	campaign.save_campaign()
+	_show_command("research")
+
+func _start_research_project(topic: String) -> void:
+	campaign.start_research_project(topic)
 	campaign.save_campaign()
 	_show_command("research")
 
@@ -750,23 +851,28 @@ func _render_workshop() -> void:
 	var stores: Dictionary = campaign.data.get("stores", {})
 	var card := VBoxContainer.new()
 	card.add_theme_constant_override("separation", 14)
-	card.add_child(_status_row("Engineers", "5 / 10", color_text))
+	card.add_child(_status_row("Engineers", "%d / %d" % [campaign.data.get("engineers", 0), campaign.engineer_capacity()], color_text))
 	card.add_child(_status_row("Medkits", str(stores.get("Medkit",0)), color_green))
+	card.add_child(_status_row("Laser Rifles", str(stores.get("Laser Rifle",0)), color_cyan if campaign.has_technology_unlock("laser_rifle_production") else color_muted))
 	card.add_child(_status_row("Available funds", "$%dk" % campaign.data.get("funds",0), color_gold))
 	card.add_child(_separator())
-	var build_button := _action_button("Build Medkit - $40k", func():
-		if int(campaign.data.get("funds",0)) < 40:
-			campaign.add_report("Workshop order blocked: insufficient funds.")
-		else:
-			campaign.data["funds"] = int(campaign.data.get("funds",0)) - 40
-			stores["Medkit"] = int(stores.get("Medkit",0)) + 1
-			campaign.data["stores"] = stores
-			campaign.add_report("Workshop completed one Medkit.")
-		campaign.save_campaign()
-		_show_command("workshop")
-	, true)
+	var build_button := _action_button("Build Medkit - $40k", func(): _manufacture_item("Medkit", 40), true)
+	build_button.disabled = campaign.engineer_capacity() <= 0
+	build_button.tooltip_text = "A local Workshop is required." if build_button.disabled else "Build one Medkit."
 	card.add_child(build_button)
+	if campaign.has_technology_unlock("laser_rifle_production"):
+		var laser_button := _action_button("Build Laser Rifle - $180k", func(): _manufacture_item("Laser Rifle", 180), true)
+		laser_button.disabled = int(campaign.data.get("funds", 0)) < 180 or campaign.engineer_capacity() <= 0
+		laser_button.tooltip_text = "A local Workshop is required." if campaign.engineer_capacity() <= 0 else "Insufficient funds." if int(campaign.data.get("funds", 0)) < 180 else "Manufacture one unlocked Laser Rifle."
+		card.add_child(laser_button)
+	else:
+		card.add_child(_label("Laser Rifle production requires completed Laser Weapons research.", 13, color_muted, true))
 	root.add_child(_panel_with(card, 24))
+
+func _manufacture_item(item_name: String, cost: int) -> void:
+	campaign.manufacture_item(item_name, cost, "laser_rifle_production" if item_name == "Laser Rifle" else "")
+	campaign.save_campaign()
+	_show_command("workshop")
 
 func _render_squads() -> void:
 	var root := VBoxContainer.new()
@@ -1025,7 +1131,7 @@ func _run_self_tests() -> Array:
 	var imported_roster: Array = imported_campaign.data.get("soldiers", [])
 	var imported_incident: Dictionary = imported_campaign.selected_incident()
 	var imported_research: Dictionary = imported_campaign.data.get("research", {})
-	var import_maps_campaign: bool = imported_base.get("name", "") == "Pacific Aegis" and imported_base.get("region", "") == "Oceania" and imported_base.get("facilities", []).has("radar") and imported_base.get("facilities", []).has("hangar_interceptor") and imported_campaign.facility_count("quarters") == 2 and imported_campaign.personnel_capacity() == 24 and imported_campaign.personnel_used() == 20 and imported_campaign.scientist_capacity() == 10 and int(imported_campaign.data.get("month", 0)) == 4 and int(imported_campaign.data.get("day", 0)) == 12 and int(imported_campaign.data.get("funds", 0)) == 3180 and imported_research.get("active", "") == "Laser Power Output 1" and imported_campaign.research_assigned_scientists() == 10 and imported_campaign.research_required_progress() == 180
+	var import_maps_campaign: bool = imported_base.get("name", "") == "Pacific Aegis" and imported_base.get("region", "") == "Oceania" and imported_base.get("facilities", []).has("radar") and imported_base.get("facilities", []).has("hangar_interceptor") and imported_campaign.facility_count("quarters") == 2 and imported_campaign.personnel_capacity() == 24 and imported_campaign.personnel_used() == 20 and imported_campaign.scientist_capacity() == 10 and int(imported_campaign.data.get("month", 0)) == 4 and int(imported_campaign.data.get("day", 0)) == 12 and int(imported_campaign.data.get("funds", 0)) == 3180 and imported_research.get("active", "") == "Laser Power Output 1" and imported_campaign.research_assigned_scientists() == 10 and imported_campaign.research_required_progress() == 180 and imported_campaign.completed_research().has("Laser Weapons") and imported_campaign.has_technology_unlock("laser_rifle_production")
 	var import_maps_roster: bool = imported_roster.size() == 8 and imported_campaign.assigned_soldiers().size() == 6 and int(imported_roster[0].get("accuracy", 0)) == 74 and int(imported_roster[0].get("tu", 0)) == 63 and imported_roster[0].get("callsign", "") == "Nested" and imported_roster[0].get("trait", "") == "Methodical"
 	var import_maps_incident: bool = imported_incident.get("name", "") == "Port Meridian Attack" and int(imported_incident.get("required_rescues", 0)) == 2 and imported_campaign.begin_mission_travel()
 	var import_slot_isolated: bool = imported_campaign.is_imported_copy() and imported_campaign.active_save_path == AegisCampaignState.IMPORTED_SAVE_PATH and AegisCampaignState.IMPORTED_SAVE_PATH != AegisCampaignState.SAVE_PATH and imported_campaign.data.get("save_origin", {}).get("source_name", "") == "health-fixture.project-aegis-save.json"
@@ -1043,19 +1149,52 @@ func _run_self_tests() -> Array:
 	var management_campaign := AegisCampaignState.new()
 	management_campaign.configure(content)
 	management_campaign.new_campaign("Capacity Test", "North America")
-	var personnel_capacity_ready: bool = management_campaign.personnel_capacity() == 12 and management_campaign.personnel_used() == 11 and management_campaign.scientist_capacity() == 10
+	var personnel_capacity_ready: bool = management_campaign.personnel_capacity() == 12 and management_campaign.personnel_used() == 11 and management_campaign.scientist_capacity() == 10 and management_campaign.engineer_capacity() == 10
 	var management_legacy := management_campaign.data.duplicate(true)
 	management_legacy.erase("scientists")
 	management_legacy.erase("engineers")
 	management_legacy["base"].erase("facility_counts")
 	management_legacy["research"] = {"active": "Laser Weapons", "progress": 8}
 	var management_migrated := management_campaign.normalize_save(management_legacy)
-	var management_migration_ready: bool = int(management_migrated.get("scientists", 0)) == 5 and int(management_migrated.get("engineers", -1)) == 0 and int(management_migrated.get("base", {}).get("facility_counts", {}).get("quarters", 0)) == 1 and int(management_migrated.get("research", {}).get("assigned_scientists", 0)) == 5
+	var management_migration_ready: bool = int(management_migrated.get("scientists", 0)) == 5 and int(management_migrated.get("engineers", -1)) == 0 and int(management_migrated.get("base", {}).get("facility_counts", {}).get("quarters", 0)) == 1 and int(management_migrated.get("base", {}).get("facility_counts", {}).get("workshop", 0)) == 1 and int(management_migrated.get("research", {}).get("assigned_scientists", 0)) == 5 and management_migrated.get("personnel_orders", []).is_empty()
 	management_campaign.set_research_staffing(3)
 	var research_staffing_ready: bool = management_campaign.research_assigned_scientists() == 3 and management_campaign.research_daily_progress() == 6
 	var management_progress_before := int(management_campaign.data.get("research", {}).get("progress", 0))
 	management_campaign.advance_minutes(24 * 60)
 	var research_clock_ready: bool = int(management_campaign.data.get("day", 0)) == 2 and int(management_campaign.data.get("research", {}).get("progress", 0)) == management_progress_before + 6
+	management_campaign.data["research"]["progress"] = 99
+	management_campaign.data["research"]["completed"] = false
+	management_campaign.set_research_staffing(5)
+	management_campaign.advance_minutes(24 * 60)
+	var research_unlock_ready: bool = management_campaign.completed_research().has("Laser Weapons") and management_campaign.has_technology_unlock("laser_rifle_production") and management_campaign.available_research_projects().any(func(project): return project.get("id", "") == "Laser Power Output 1")
+	var laser_funds_before := int(management_campaign.data.get("funds", 0))
+	var laser_production_ready: bool = management_campaign.manufacture_item("Laser Rifle", 180, "laser_rifle_production") and int(management_campaign.data.get("stores", {}).get("Laser Rifle", 0)) == 1 and int(management_campaign.data.get("funds", 0)) == laser_funds_before - 180
+	var follow_on_research_ready: bool = management_campaign.start_research_project("Laser Power Output 1") and management_campaign.research_required_progress() == 180 and management_campaign.research_assigned_scientists() == 0
+	var personnel_campaign := AegisCampaignState.new()
+	personnel_campaign.configure(content)
+	personnel_campaign.new_campaign("Queue Test", "North America")
+	personnel_campaign.data["base"]["facility_counts"]["workshop"] = 0
+	var engineer_requires_workshop: bool = not personnel_campaign.personnel_hiring_blocker("engineer").is_empty()
+	personnel_campaign.data["base"]["facilities"].append("quarters")
+	personnel_campaign.data["base"]["facility_counts"]["quarters"] = 2
+	personnel_campaign.data["base"]["facility_counts"]["workshop"] = 1
+	var personnel_funds_before := int(personnel_campaign.data.get("funds", 0))
+	var locked_laser_production_blocked: bool = not personnel_campaign.manufacture_item("Laser Rifle", 180, "laser_rifle_production") and int(personnel_campaign.data.get("funds", 0)) == personnel_funds_before and int(personnel_campaign.data.get("stores", {}).get("Laser Rifle", 0)) == 0
+	var personnel_orders_ready: bool = personnel_campaign.hire_personnel("soldier") and personnel_campaign.hire_personnel("scientist") and personnel_campaign.hire_personnel("engineer") and personnel_campaign.pending_personnel_count() == 3 and personnel_campaign.projected_personnel_used() == 14 and int(personnel_campaign.data.get("funds", 0)) == personnel_funds_before - 305
+	var engineer_order: Dictionary = personnel_campaign.personnel_orders().filter(func(order): return order.get("type", "") == "engineer")[0]
+	var personnel_cancellation_ready: bool = personnel_campaign.cancel_personnel_order(engineer_order.get("id", "")) and personnel_campaign.pending_personnel_count() == 2 and int(personnel_campaign.data.get("funds", 0)) == personnel_funds_before - 260
+	personnel_campaign.advance_minutes(2 * 24 * 60)
+	var personnel_waits_three_days: bool = personnel_campaign.pending_personnel_count() == 2 and personnel_campaign.living_soldier_count() == 6 and int(personnel_campaign.data.get("scientists", 0)) == 5
+	personnel_campaign.advance_minutes(24 * 60)
+	var arrived_recruit: Dictionary = personnel_campaign.data.get("soldiers", [])[-1]
+	var personnel_arrival_ready: bool = personnel_campaign.pending_personnel_count() == 0 and personnel_campaign.living_soldier_count() == 7 and int(personnel_campaign.data.get("scientists", 0)) == 6 and not arrived_recruit.get("assigned", true)
+	var specialist_campaign := AegisCampaignState.new()
+	specialist_campaign.configure(content)
+	specialist_campaign.new_campaign("Specialist Capacity Test", "North America")
+	specialist_campaign.data["base"]["facility_counts"]["quarters"] = 3
+	specialist_campaign.data["scientists"] = 10
+	specialist_campaign.data["engineers"] = 10
+	var specialist_capacity_ready: bool = specialist_campaign.projected_personnel_used() == 26 and specialist_campaign.personnel_capacity() == 36 and specialist_campaign.personnel_hiring_blocker("soldier").is_empty() and specialist_campaign.personnel_hiring_blocker("scientist").contains("Laboratory full") and specialist_campaign.personnel_hiring_blocker("engineer").contains("Workshop full")
 	var checks := [
 		{"name":"Godot content manifest loads", "pass":not content.is_empty()},
 		{"name":"Save format remains version 4", "pass":int(content.get("save_format",0)) == 4 and AegisCampaignState.SAVE_FORMAT == 4},
@@ -1092,7 +1231,16 @@ func _run_self_tests() -> Array:
 		{"name":"Living Quarters and Laboratories expose exact local capacity", "pass":personnel_capacity_ready},
 		{"name":"Legacy native saves receive conservative personnel staffing defaults", "pass":management_migration_ready},
 		{"name":"Research assignments clamp to scientists and laboratory capacity", "pass":research_staffing_ready},
-		{"name":"Strategic midnight advances research by deterministic staff output", "pass":research_clock_ready}
+		{"name":"Strategic midnight advances research by deterministic staff output", "pass":research_clock_ready},
+		{"name":"Engineer hiring requires a local Workshop", "pass":engineer_requires_workshop},
+		{"name":"Personnel orders reserve quarters and deduct established hiring costs", "pass":personnel_orders_ready},
+		{"name":"Pending personnel cancellation releases capacity with bounded refund", "pass":personnel_cancellation_ready},
+		{"name":"Personnel arrivals wait for three strategic midnights", "pass":personnel_waits_three_days},
+		{"name":"Personnel arrivals update local staff and leave recruits unassigned", "pass":personnel_arrival_ready},
+		{"name":"Spare quarters do not bypass full Laboratory or Workshop capacity", "pass":specialist_capacity_ready},
+		{"name":"Laser Weapons completion unlocks production and its follow-on project", "pass":research_unlock_ready and follow_on_research_ready},
+		{"name":"Laser Rifle production stays blocked before research completion", "pass":locked_laser_production_blocked},
+		{"name":"Unlocked Laser Rifle production deducts funds and updates local stores", "pass":laser_production_ready}
 	]
 	test_board.free()
 	dense_map.free()

@@ -1,9 +1,25 @@
 {
-  "build": "v0.26.07.18.GODOT.0005_BASE_PERSONNEL_AND_RESEARCH_STAFFING_VERTICAL_SLICE",
+  "build": "v0.26.07.19.GODOT.0006_PERSONNEL_ARRIVALS_AND_RESEARCH_UNLOCK_VERTICAL_SLICE",
   "save_format": 4,
   "research_projects": [
-    {"id": "Laser Weapons", "required": 100},
-    {"id": "Laser Power Output 1", "required": 180}
+    {
+      "id": "Laser Weapons",
+      "required": 100,
+      "description": "Develop a stable man-portable directed-energy weapon platform.",
+      "prerequisites": [],
+      "unlocks_projects": ["Laser Power Output 1"],
+      "unlocks_capabilities": ["laser_rifle_production"],
+      "unlock_labels": ["Laser Rifle production"]
+    },
+    {
+      "id": "Laser Power Output 1",
+      "required": 180,
+      "description": "Increase the field emitter's sustained power without compromising containment.",
+      "prerequisites": ["Laser Weapons"],
+      "unlocks_projects": [],
+      "unlocks_capabilities": [],
+      "unlock_labels": []
+    }
   ],
   "regions": [
     {"id": "north_america", "name": "North America", "funding": 188, "panic": 18, "map": [0.23, 0.32]},
@@ -17,6 +33,7 @@
     {"id": "access", "name": "Access Lift", "color": "#38bdf8"},
     {"id": "quarters", "name": "Living Quarters", "color": "#22c55e"},
     {"id": "lab", "name": "Laboratory", "color": "#a78bfa"},
+    {"id": "workshop", "name": "Workshop", "color": "#f59e0b"},
     {"id": "sickbay", "name": "Sickbay", "color": "#fb7185"},
     {"id": "stores", "name": "Base Stores", "color": "#f59e0b"},
     {"id": "hangar_interceptor", "name": "Interceptor Hangar", "color": "#64748b"},
@@ -30,6 +47,14 @@
     {"id": "amara", "name": "Amara Alden", "callsign": "Amara", "accuracy": 70, "bravery": 62, "health": 39, "tu": 62, "trait": "Born Scout"},
     {"id": "leif", "name": "Leif Wren", "callsign": "Leif", "accuracy": 59, "bravery": 72, "health": 44, "tu": 55, "trait": "Grim Humor"},
     {"id": "uma", "name": "Uma Vega", "callsign": "Uma", "accuracy": 65, "bravery": 60, "health": 41, "tu": 59, "trait": "Nervous but Determined"}
+  ],
+  "recruits": [
+    {"name": "Morgan Pike", "callsign": "Pike", "accuracy": 62, "bravery": 57, "health": 40, "tu": 59, "trait": "Quiet Professional"},
+    {"name": "Hana Cross", "callsign": "Cross", "accuracy": 66, "bravery": 54, "health": 38, "tu": 62, "trait": "Born Scout"},
+    {"name": "Elias Ward", "callsign": "Ward", "accuracy": 60, "bravery": 68, "health": 43, "tu": 56, "trait": "Grim Humor"},
+    {"name": "Imani Rook", "callsign": "Rook", "accuracy": 64, "bravery": 61, "health": 41, "tu": 60, "trait": "Methodical"},
+    {"name": "Soren Beck", "callsign": "Beck", "accuracy": 59, "bravery": 72, "health": 44, "tu": 57, "trait": "Aggressive Hotshot"},
+    {"name": "Rowan Vale", "callsign": "Vale", "accuracy": 67, "bravery": 56, "health": 39, "tu": 61, "trait": "Steady Professional"}
   ],
   "incidents": [
     {"id": "red_river", "name": "Red River Signal", "region": "North America", "threat": 1, "reward": 440, "intent": "Terror Raid", "biome": "Wilderness", "required_rescues": 1, "seed": 1337},

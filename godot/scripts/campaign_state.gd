@@ -8,8 +8,15 @@ const BROWSER_CAMPAIGN_KIND := "project-aegis-campaign-save"
 const BROWSER_SLOT_BACKUP_KIND := "project-aegis-save-slot-backup"
 const PERSONNEL_PER_QUARTERS := 12
 const SCIENTISTS_PER_LAB := 10
+const ENGINEERS_PER_WORKSHOP := 10
 const RESEARCH_PROGRESS_PER_SCIENTIST_DAY := 2
 const RESEARCH_REQUIRED_PROGRESS := 100
+const PERSONNEL_ARRIVAL_DAYS := 3
+const PERSONNEL_HIRING := {
+	"soldier": {"label": "Soldier", "cost": 120},
+	"scientist": {"label": "Scientist", "cost": 95},
+	"engineer": {"label": "Engineer", "cost": 90}
+}
 const INTERCEPTION_STANCES := {
 	"Cautious": {"accuracy": 66, "incoming": 24, "fuel": 18, "rounds": 2, "damage": 25},
 	"Standard": {"accuracy": 76, "incoming": 38, "fuel": 25, "rounds": 3, "damage": 28},
@@ -25,7 +32,7 @@ func configure(source_content: Dictionary) -> void:
 
 func new_campaign(base_name: String, region_name: String) -> void:
 	active_save_path = SAVE_PATH
-	var starting_facilities := ["access", "quarters", "lab", "sickbay", "stores", "hangar_interceptor", "hangar_skyranger", "radar"]
+	var starting_facilities := ["access", "quarters", "lab", "workshop", "sickbay", "stores", "hangar_interceptor", "hangar_skyranger", "radar"]
 	var roster: Array = []
 	for source in content.get("soldiers", []):
 		var soldier: Dictionary = source.duplicate(true)
@@ -57,6 +64,8 @@ func new_campaign(base_name: String, region_name: String) -> void:
 		"soldiers": roster,
 		"scientists": 5,
 		"engineers": 0,
+		"personnel_orders": [],
+		"next_personnel_order_id": 1,
 		"incidents": content.get("incidents", []).duplicate(true),
 		"selected_incident_id": "red_river",
 		"travel": {},
@@ -68,6 +77,8 @@ func new_campaign(base_name: String, region_name: String) -> void:
 		"last_interception": {},
 		"reports": ["Project Aegis command established at %s." % region_name],
 		"research": {"active": "Laser Weapons", "progress": 8, "required_progress": RESEARCH_REQUIRED_PROGRESS, "assigned_scientists": 5, "scientists": 5, "completed": false},
+		"completed_research": [],
+		"technology_unlocks": [],
 		"stores": {"Ballistic Rifle": 0, "Field Suit": 0, "Medkit": 2},
 		"mission_count": 0,
 		"rescued_civilians": 0
@@ -173,6 +184,9 @@ func personnel_capacity() -> int:
 func scientist_capacity() -> int:
 	return facility_count("lab") * SCIENTISTS_PER_LAB
 
+func engineer_capacity() -> int:
+	return facility_count("workshop") * ENGINEERS_PER_WORKSHOP
+
 func living_soldier_count() -> int:
 	var base: Dictionary = data.get("base", {})
 	var base_id := String(base.get("source_id", base.get("id", "")))
@@ -187,6 +201,102 @@ func living_soldier_count() -> int:
 
 func personnel_used() -> int:
 	return living_soldier_count() + int(data.get("scientists", 0)) + int(data.get("engineers", 0))
+
+func personnel_orders() -> Array:
+	return data.get("personnel_orders", [])
+
+func pending_personnel_count(personnel_type: String = "") -> int:
+	if personnel_type.is_empty():
+		return personnel_orders().size()
+	return personnel_orders().filter(func(order): return String(order.get("type", "")) == personnel_type).size()
+
+func projected_personnel_used() -> int:
+	return personnel_used() + pending_personnel_count()
+
+func personnel_hiring_blocker(personnel_type: String) -> String:
+	if not PERSONNEL_HIRING.has(personnel_type):
+		return "Unknown personnel order."
+	var definition: Dictionary = PERSONNEL_HIRING[personnel_type]
+	if int(data.get("funds", 0)) < int(definition.get("cost", 0)):
+		return "Insufficient funds - $%dk required." % definition.get("cost", 0)
+	if projected_personnel_used() >= personnel_capacity():
+		return "Living Quarters full or reserved - %d/%d projected personnel." % [projected_personnel_used(), personnel_capacity()]
+	if personnel_type == "scientist" and int(data.get("scientists", 0)) + pending_personnel_count("scientist") >= scientist_capacity():
+		return "Laboratory full or reserved - %d/%d Scientists." % [int(data.get("scientists", 0)) + pending_personnel_count("scientist"), scientist_capacity()]
+	if personnel_type == "engineer" and int(data.get("engineers", 0)) + pending_personnel_count("engineer") >= engineer_capacity():
+		return "Workshop full or reserved - %d/%d Engineers." % [int(data.get("engineers", 0)) + pending_personnel_count("engineer"), engineer_capacity()]
+	return ""
+
+func hire_personnel(personnel_type: String) -> bool:
+	var blocker := personnel_hiring_blocker(personnel_type)
+	if not blocker.is_empty():
+		add_report("Personnel order blocked: %s" % blocker)
+		return false
+	var sequence := maxi(1, int(data.get("next_personnel_order_id", 1)))
+	var definition: Dictionary = PERSONNEL_HIRING[personnel_type]
+	var order := {
+		"id": "personnel_%03d" % sequence,
+		"type": personnel_type,
+		"days_remaining": PERSONNEL_ARRIVAL_DAYS,
+		"total_days": PERSONNEL_ARRIVAL_DAYS,
+		"cost": int(definition.get("cost", 0)),
+		"base_id": _selected_base_identity()
+	}
+	if personnel_type == "soldier":
+		order["recruit"] = _recruit_for_sequence(sequence)
+	var orders := personnel_orders()
+	orders.append(order)
+	data["personnel_orders"] = orders
+	data["next_personnel_order_id"] = sequence + 1
+	data["funds"] = int(data.get("funds", 0)) - int(order.get("cost", 0))
+	var subject := String(order.get("recruit", {}).get("name", definition.get("label", "Personnel")))
+	add_report("Personnel order placed: %s arrives in %d days for $%dk." % [subject, PERSONNEL_ARRIVAL_DAYS, order.get("cost", 0)])
+	return true
+
+func personnel_order_cancel_refund(order: Dictionary) -> int:
+	return int(floor(float(maxi(0, int(order.get("cost", 0)))) * 0.5))
+
+func cancel_personnel_order(order_id: String) -> bool:
+	var orders := personnel_orders()
+	for order_index in range(orders.size()):
+		var order: Dictionary = orders[order_index]
+		if String(order.get("id", "")) != order_id:
+			continue
+		var refund := personnel_order_cancel_refund(order)
+		var label := String(order.get("recruit", {}).get("name", PERSONNEL_HIRING.get(order.get("type", ""), {}).get("label", "Personnel")))
+		orders.remove_at(order_index)
+		data["personnel_orders"] = orders
+		data["funds"] = int(data.get("funds", 0)) + refund
+		add_report("Personnel order cancelled: %s. Refund $%dk." % [label, refund])
+		return true
+	return false
+
+func _selected_base_identity() -> String:
+	var base: Dictionary = data.get("base", {})
+	return String(base.get("source_id", base.get("id", base.get("name", "Fort Aegis"))))
+
+func _recruit_for_sequence(sequence: int, base_id_override: String = "") -> Dictionary:
+	var candidates: Array = content.get("recruits", [])
+	var source: Dictionary = candidates[(sequence - 1) % candidates.size()].duplicate(true) if not candidates.is_empty() else {
+		"name": "Aegis Recruit %02d" % sequence,
+		"callsign": "Recruit",
+		"accuracy": 58 + sequence % 8,
+		"bravery": 52 + sequence % 12,
+		"health": 38 + sequence % 6,
+		"tu": 55 + sequence % 7,
+		"trait": "Steady Professional"
+	}
+	source["id"] = "native_recruit_%03d" % sequence
+	source["rank"] = source.get("rank", "Rookie")
+	source["status"] = "Ready"
+	source["missions"] = 0
+	source["kills"] = 0
+	source["wounds"] = 0
+	source["weapon"] = source.get("weapon", "Ballistic Rifle")
+	source["armor"] = source.get("armor", "Field Suit")
+	source["assigned"] = false
+	source["base_id"] = base_id_override if not base_id_override.is_empty() else _selected_base_identity()
+	return source
 
 func research_staff_limit() -> int:
 	return mini(maxi(0, int(data.get("scientists", 0))), scientist_capacity())
@@ -223,6 +333,92 @@ func research_days_remaining() -> int:
 		return -1
 	return ceili(float(remaining) / float(daily))
 
+func completed_research() -> Array:
+	return data.get("completed_research", [])
+
+func technology_unlocks() -> Array:
+	return data.get("technology_unlocks", [])
+
+func has_technology_unlock(unlock_id: String) -> bool:
+	return technology_unlocks().has(unlock_id)
+
+func available_research_projects() -> Array:
+	var available: Array = []
+	var active_topic := String(data.get("research", {}).get("active", ""))
+	for project_value in content.get("research_projects", []):
+		if not project_value is Dictionary:
+			continue
+		var project: Dictionary = project_value
+		var topic := String(project.get("id", ""))
+		if topic.is_empty() or topic == active_topic or completed_research().has(topic):
+			continue
+		var prerequisites: Array = project.get("prerequisites", [])
+		if prerequisites.all(func(prerequisite): return completed_research().has(String(prerequisite))):
+			available.append(project.duplicate(true))
+	return available
+
+func start_research_project(topic: String) -> bool:
+	var current: Dictionary = data.get("research", {})
+	if not bool(current.get("completed", false)) and int(current.get("progress", 0)) < research_required_progress():
+		return false
+	var definition := _research_definition(topic)
+	if definition.is_empty() or not available_research_projects().any(func(project): return String(project.get("id", "")) == topic):
+		return false
+	data["research"] = {
+		"active": topic,
+		"progress": 0,
+		"required_progress": maxi(1, int(definition.get("required", RESEARCH_REQUIRED_PROGRESS))),
+		"assigned_scientists": 0,
+		"scientists": 0,
+		"completed": false
+	}
+	add_report("Research project opened: %s. Assign laboratory staff to begin." % topic)
+	return true
+
+func research_completion_unlock_labels(topic: String) -> Array[String]:
+	var labels: Array[String] = []
+	var definition := _research_definition(topic)
+	for project_name in definition.get("unlocks_projects", []):
+		labels.append(String(project_name))
+	for capability_name in definition.get("unlock_labels", []):
+		labels.append(String(capability_name))
+	return labels
+
+func _research_definition(topic: String) -> Dictionary:
+	for project_value in content.get("research_projects", []):
+		if project_value is Dictionary and String(project_value.get("id", "")) == topic:
+			return project_value
+	return {}
+
+func _apply_research_completion(topic: String) -> void:
+	var completed := completed_research()
+	if not completed.has(topic):
+		completed.append(topic)
+	data["completed_research"] = completed
+	var unlocks := technology_unlocks()
+	var definition := _research_definition(topic)
+	for unlock_id in definition.get("unlocks_capabilities", []):
+		if not unlocks.has(unlock_id):
+			unlocks.append(unlock_id)
+	data["technology_unlocks"] = unlocks
+
+func manufacture_item(item_name: String, cost: int, required_unlock: String = "") -> bool:
+	if engineer_capacity() <= 0:
+		add_report("Workshop order blocked: no local Workshop is operational.")
+		return false
+	if not required_unlock.is_empty() and not has_technology_unlock(required_unlock):
+		add_report("Workshop order blocked: %s production research is incomplete." % item_name)
+		return false
+	if int(data.get("funds", 0)) < cost:
+		add_report("Workshop order blocked: insufficient funds for %s." % item_name)
+		return false
+	var stores: Dictionary = data.get("stores", {})
+	data["funds"] = int(data.get("funds", 0)) - cost
+	stores[item_name] = int(stores.get(item_name, 0)) + 1
+	data["stores"] = stores
+	add_report("Workshop completed one %s." % item_name)
+	return true
+
 func set_soldier_assigned(soldier_id: String, assigned: bool) -> void:
 	for soldier in data.get("soldiers", []):
 		if String(soldier.get("id", "")) == soldier_id:
@@ -249,6 +445,7 @@ func advance_minutes(amount: int) -> bool:
 		data["minutes"] = int(data["minutes"]) - 24 * 60
 		data["day"] = int(data.get("day", 1)) + 1
 		days_advanced += 1
+	_advance_personnel_days(days_advanced)
 	_advance_research_days(days_advanced)
 	_advance_aircraft_service(bounded_amount)
 	_advance_interception(bounded_amount)
@@ -277,8 +474,40 @@ func _advance_research_days(days_advanced: int) -> void:
 		research["completed"] = true
 		research["assigned_scientists"] = 0
 		research["scientists"] = 0
-		add_report("RESEARCH COMPLETE: %s." % research.get("active", "Research project"))
+		var topic := String(research.get("active", "Research project"))
+		_apply_research_completion(topic)
+		var unlock_labels := research_completion_unlock_labels(topic)
+		var unlock_text := " UNLOCKED: %s." % ", ".join(unlock_labels) if not unlock_labels.is_empty() else ""
+		add_report("RESEARCH COMPLETE: %s.%s" % [topic, unlock_text])
 	data["research"] = research
+
+func _advance_personnel_days(days_advanced: int) -> void:
+	if days_advanced <= 0 or personnel_orders().is_empty():
+		return
+	var remaining_orders: Array = []
+	for order_value in personnel_orders():
+		if not order_value is Dictionary:
+			continue
+		var order: Dictionary = order_value
+		order["days_remaining"] = maxi(0, int(order.get("days_remaining", PERSONNEL_ARRIVAL_DAYS)) - days_advanced)
+		if int(order.get("days_remaining", 0)) > 0:
+			remaining_orders.append(order)
+			continue
+		var personnel_type := String(order.get("type", ""))
+		var arrival_label := String(PERSONNEL_HIRING.get(personnel_type, {}).get("label", "Personnel"))
+		match personnel_type:
+			"soldier":
+				var recruit_value: Variant = order.get("recruit", {})
+				var recruit: Dictionary = recruit_value.duplicate(true) if recruit_value is Dictionary else _recruit_for_sequence(int(data.get("next_personnel_order_id", 1)))
+				var roster: Array = data.get("soldiers", [])
+				roster.append(recruit)
+				data["soldiers"] = roster
+				arrival_label = String(recruit.get("name", "Soldier"))
+			"scientist": data["scientists"] = int(data.get("scientists", 0)) + 1
+			"engineer": data["engineers"] = int(data.get("engineers", 0)) + 1
+			_: continue
+		add_report("Personnel arrived: %s reported to %s." % [arrival_label, data.get("base", {}).get("name", "the selected base")])
+	data["personnel_orders"] = remaining_orders
 
 func _advance_interception(amount: int) -> void:
 	var operation: Dictionary = data.get("interception", {})
@@ -569,6 +798,7 @@ func import_browser_save(browser_data: Dictionary, source_label: String = "Brows
 		},
 		"import_warnings": preview.get("warnings", []).duplicate(true)
 	}
+	data = normalize_save(data)
 	interceptor()["base_region"] = first_base.get("region", "North America")
 	if not incidents.is_empty():
 		data["selected_incident_id"] = incidents[0].get("id", "")
@@ -778,12 +1008,16 @@ func normalize_save(source: Dictionary) -> Dictionary:
 	var normalized_base: Dictionary = base_value.duplicate(true) if base_value is Dictionary else {}
 	var facilities_value: Variant = normalized_base.get("facilities", [])
 	var normalized_facilities: Array = facilities_value.duplicate(true) if facilities_value is Array else []
+	var save_origin_value: Variant = normalized.get("save_origin", {})
+	var browser_imported := save_origin_value is Dictionary and String(save_origin_value.get("type", "")) == "browser_import"
+	if not browser_imported and not normalized_facilities.has("workshop"):
+		normalized_facilities.append("workshop")
 	normalized_base["facilities"] = normalized_facilities
 	var counts_value: Variant = normalized_base.get("facility_counts", {})
 	var facility_counts: Dictionary = counts_value.duplicate(true) if counts_value is Dictionary else {}
 	if facility_counts.is_empty():
 		facility_counts = _facility_counts_from_ids(normalized_facilities)
-	for required_facility in ["quarters", "lab"]:
+	for required_facility in ["quarters", "lab", "workshop"]:
 		if not facility_counts.has(required_facility):
 			facility_counts[required_facility] = normalized_facilities.count(required_facility)
 	normalized_base["facility_counts"] = facility_counts
@@ -794,6 +1028,30 @@ func normalize_save(source: Dictionary) -> Dictionary:
 	var default_scientists := legacy_assigned if legacy_assigned > 0 else 5
 	normalized["scientists"] = maxi(0, int(normalized.get("scientists", default_scientists)))
 	normalized["engineers"] = maxi(0, int(normalized.get("engineers", 0)))
+	var orders_value: Variant = normalized.get("personnel_orders", [])
+	var normalized_orders: Array = []
+	if orders_value is Array:
+		for order_index in range(orders_value.size()):
+			var order_value: Variant = orders_value[order_index]
+			if not order_value is Dictionary:
+				continue
+			var order: Dictionary = order_value.duplicate(true)
+			var personnel_type := String(order.get("type", ""))
+			if not PERSONNEL_HIRING.has(personnel_type):
+				continue
+			var sequence := order_index + 1
+			order["id"] = String(order.get("id", "personnel_%03d" % sequence))
+			order["days_remaining"] = clampi(int(order.get("days_remaining", order.get("daysLeft", PERSONNEL_ARRIVAL_DAYS))), 1, PERSONNEL_ARRIVAL_DAYS)
+			order["total_days"] = PERSONNEL_ARRIVAL_DAYS
+			order["cost"] = maxi(0, int(order.get("cost", PERSONNEL_HIRING[personnel_type].get("cost", 0))))
+			order["base_id"] = String(order.get("base_id", normalized_base.get("source_id", normalized_base.get("id", normalized_base.get("name", "Fort Aegis")))))
+			if personnel_type == "soldier":
+				var recruit_value: Variant = order.get("recruit", {})
+				if not recruit_value is Dictionary or recruit_value.is_empty():
+					order["recruit"] = _recruit_for_sequence(sequence, String(order.get("base_id", "")))
+			normalized_orders.append(order)
+	normalized["personnel_orders"] = normalized_orders
+	normalized["next_personnel_order_id"] = maxi(int(normalized.get("next_personnel_order_id", 1)), normalized_orders.size() + 1)
 	var lab_capacity := maxi(0, int(facility_counts.get("lab", 0))) * SCIENTISTS_PER_LAB
 	var staffing_limit := mini(int(normalized["scientists"]), lab_capacity)
 	var assigned := clampi(legacy_assigned, 0, staffing_limit)
@@ -810,6 +1068,22 @@ func normalize_save(source: Dictionary) -> Dictionary:
 	normalized_research["assigned_scientists"] = assigned
 	normalized_research["scientists"] = assigned
 	normalized["research"] = normalized_research
+	var completed_value: Variant = normalized.get("completed_research", [])
+	var normalized_completed: Array = completed_value.duplicate(true) if completed_value is Array else []
+	if bool(normalized_research["completed"]) and not active_topic.is_empty() and not normalized_completed.has(active_topic):
+		normalized_completed.append(active_topic)
+	var active_definition := _research_definition(active_topic)
+	for prerequisite in active_definition.get("prerequisites", []):
+		if not normalized_completed.has(prerequisite):
+			normalized_completed.append(prerequisite)
+	normalized["completed_research"] = normalized_completed
+	var unlocks_value: Variant = normalized.get("technology_unlocks", [])
+	var normalized_unlocks: Array = unlocks_value.duplicate(true) if unlocks_value is Array else []
+	for completed_topic in normalized_completed:
+		for unlock_id in _research_definition(String(completed_topic)).get("unlocks_capabilities", []):
+			if not normalized_unlocks.has(unlock_id):
+				normalized_unlocks.append(unlock_id)
+	normalized["technology_unlocks"] = normalized_unlocks
 	normalized["incidents"] = normalized.get("incidents", []).duplicate(true)
 	normalized["reports"] = normalized.get("reports", []).duplicate(true)
 	normalized["travel"] = normalized.get("travel", {}).duplicate(true)

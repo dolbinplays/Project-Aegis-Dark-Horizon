@@ -1,10 +1,10 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-07-18
+Last updated: 2026-07-19
 Current handoff build: `v0.26.07.17.0137_TACTICAL_CONTINUOUS_WALLS_AND_TRAVERSABLE_BREACHES_INDEX_ONLY_PATCH`
-Native vertical slice: `v0.26.07.18.GODOT.0005_BASE_PERSONNEL_AND_RESEARCH_STAFFING_VERTICAL_SLICE`
-Current patch status: **The verified HTML build remains 0137 with save format 4 and its existing browser validation/manual gates unchanged. The player confirmed native 0004's browser import, isolated native/imported slots, command screens, mission launch, and save/reload checks all worked. Native build 0005 implements the next bounded strategic-management slice: exact 12-person Living Quarters and 10-scientist Laboratory capacity, selected-base repeated facility counts, base-local soldier/scientist/engineer occupancy, bounded research staffing, 2 daily research points per assigned scientist, per-project requirements, completion reporting, and conservative migration for older native/imported copies. Native tests pass 50/50 and all 36/36 native Build Health rows pass. Hardware OpenGL renders of native/imported Base and Research screens passed at 1440x900; the exact July browser export maps Fort Aegis to 43/48 local personnel and Laser Power Output 1 to 170/180 points with a one-day ETA while remaining unchanged. HTML static parsing, the seam checker, localhost startup/Geoscape, browser Build Health 272/272, and runtime-error checks passed.**
+Native vertical slice: `v0.26.07.19.GODOT.0006_PERSONNEL_ARRIVALS_AND_RESEARCH_UNLOCK_VERTICAL_SLICE`
+Current patch status: **The verified HTML build remains 0137 with save format 4 and its existing browser validation/manual gates unchanged. The player confirmed all native 0005 manual tests passed. Native build 0006 implements the next bounded strategic-management slice: base-local Soldier, Scientist, and Engineer hiring orders using the established $120k/$95k/$90k costs, three-midnight arrivals, projected capacity reservations, half-refund cancellation, deterministic unassigned recruits, 10 Engineer spaces per Workshop, and a conservative Workshop migration for native 0001-0005 campaigns. Laser Weapons completion now unlocks Laser Power Output 1 and state-owned Laser Rifle production; imported follow-on research conservatively infers its prerequisite without changing the browser source. The live imported Fort Aegis correctly has spare quarters but full 10/10 Laboratory and Workshop staffing, so specialist hiring remains blocked while Soldier hiring remains available. Native tests pass 61/61 and all 45/45 native Build Health rows pass. Hardware OpenGL 3.3 renders on the NVIDIA GeForce GTX 960M passed at 1440x900 for Base personnel queues, completed Research, and unlocked Workshop layouts. The unchanged HTML artifact's six inline scripts parse, the seam checker passes, localhost reaches first-base setup and Geoscape, browser Build Health passes 272/272, and browser runtime errors remain empty.**
 
 ---
 
@@ -52,7 +52,7 @@ The player commands a fledgling global defense organization responding to escala
 `v0.26.07.17.0137_TACTICAL_CONTINUOUS_WALLS_AND_TRAVERSABLE_BREACHES_INDEX_ONLY_PATCH`
 
 ## Native Vertical Slice Build
-`v0.26.07.18.GODOT.0005_BASE_PERSONNEL_AND_RESEARCH_STAFFING_VERTICAL_SLICE`
+`v0.26.07.19.GODOT.0006_PERSONNEL_ARRIVALS_AND_RESEARCH_UNLOCK_VERTICAL_SLICE`
 
 ## What This Patch Was Intended To Add
 This patch adds:
@@ -1274,7 +1274,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Run native build 0003 from a new or normalized existing campaign. Select Nightglass, compare Cautious/Standard/Aggressive posture feedback, launch Saber One, save at 50% outbound progress, return to the menu, reload, and confirm the same route, posture, fuel, and progress resume. Advance through deterministic combat, inspect the transcript and pilot cues, return to base, advance service to Ready, then launch the generated Scout Crash Site as a tactical recovery mission. This is the current native manual-testing gate; do not treat it as a complete campaign port.
+Run native build 0006 from the native campaign that passed the 0005 staffing checks. Confirm the migrated base now has one Workshop and 10 Engineer spaces without changing its six soldiers, five scientists, research progress, funds, incidents, or aircraft. Before filling its last quarters slot, hire/cancel one Scientist and then one Engineer, confirming each half-cost refund. Recruit one Soldier, verify the $120k deduction and projected quarters reservation, advance two days, save/reload, and confirm the same named recruit still has one day remaining. Advance the third midnight and confirm the recruit arrives Ready but unassigned. In imported Fort Aegis, confirm five spare quarters leave Soldier hiring available while its full 10/10 Laboratory and Workshop correctly block Scientists and Engineers. Complete Laser Weapons, verify Laser Power Output 1 and Laser Rifle production unlock, begin the follow-on project unstaffed, manufacture one rifle for $180k, then save/reload and confirm all queue, research, funds, and stores state persists. This is the current native manual-testing gate; do not treat it as a complete campaign port.
 
 In a mandatory civilian-rescue incident, hand AI Command the live battlefield after the last alien dies or just before AI kills it. Confirm AI enters secure rescue, searches for unrevealed survivors, preserves existing escort chains, reports rescued/required progress, and extracts enough civilians before victory. Confirm an impossible requirement still resolves and an exhausted bounded rescue does not falsely mark surviving soldiers KIA. Then trigger a UFO speed prompt while working in Base, Soldiers, Research, Workshop, and Missions; choose a speed and confirm the same command section remains open while time advances. Repeat from an in-progress incident and confirm the battlefield remains active until the deferred speed applies after battle.
 
@@ -2931,6 +2931,50 @@ Verification checklist:
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
 
+## v0.26.07.19.GODOT.0006 - Personnel Arrivals and Research Unlock Vertical Slice
+
+Native build `v0.26.07.19.GODOT.0006_PERSONNEL_ARRIVALS_AND_RESEARCH_UNLOCK_VERTICAL_SLICE` preserves save format 4 and follows the player-confirmed 0005 staffing gate with the next bounded personnel and technology transition.
+
+Implemented scope:
+
+- Added base-local Soldier, Scientist, and Engineer hiring orders using the browser game's established $120k, $95k, and $90k costs.
+- Every order arrives after three crossed strategic midnights. Pending orders reserve Living Quarters capacity; Scientists also reserve Laboratory capacity and Engineers reserve Workshop capacity.
+- Pending orders can be cancelled for a deterministic half-cost refund, immediately releasing their reserved capacity.
+- Soldier orders capture one of six deterministic recruit records at order time. Delivered soldiers arrive Ready, local to the selected base, and unassigned so they cannot silently displace the active six-seat squad.
+- Added 10 Engineer spaces per Workshop. New native campaigns include one Workshop, and native 0001-0005 saves conservatively gain the Workshop already implied by their functional Workshop command screen.
+- Browser-imported copies preserve their actual Workshop count and remain blocked from Engineer hiring or manufacturing when no local Workshop exists.
+- Laser Weapons completion now records the completed topic, releases assigned scientists, unlocks Laser Power Output 1, and grants the `laser_rifle_production` capability.
+- Laser Power Output 1 opens as a separate unstaffed 180-point follow-on project. Browser imports already working on that topic infer Laser Weapons as completed without mutating the source export.
+- Workshop Laser Rifle production is owned by campaign state: it remains blocked before research, requires a local Workshop, deducts $180k, and adds one rifle to local stores after the unlock.
+- Base, Research, and Workshop screens now expose projected occupancy, pending arrivals, cancellation refund, engineer capacity, completed topics, unlocked capabilities, follow-on selection, and Laser Rifle stores/production.
+
+Performance and compatibility:
+
+- Personnel queues are bounded to the small pending-order list and update only when strategic time crosses midnight; no tactical or per-frame work was added.
+- Capacity reservations prevent a queued batch from overbooking Living Quarters, Laboratories, or Workshops while preserving already over-capacity imported states.
+- Queue identifiers, recruits, arrival timing, completed research, unlocks, follow-on progress, funds, and stores are JSON-friendly and survive normal or isolated imported-copy save round trips.
+- Save format remains 4. HTML `index.html`, browser saves, native slot paths, tactical rules, air operations, and browser-import source isolation are unchanged.
+
+Verification completed:
+
+- Godot 4.7.1 strict editor import and GDScript parsing passed.
+- Native tests passed `61/61`; visible native Build Health passed `45/45` through the same run.
+- Coverage includes established hiring costs, projected quarters/specialist reservations, full specialist facilities remaining authoritative despite spare quarters, missing-Workshop blocking, half-refund cancellation, no early delivery, third-midnight delivery, deterministic unassigned recruits, legacy Workshop/queue migration, research completion, prerequisite inference, follow-on selection, locked/unlocked Laser Rifle production, funds, and stores.
+- Hardware OpenGL 3.3 on the NVIDIA GeForce GTX 960M rendered Base personnel queues, completed Research, and unlocked Workshop screens at 1440x900 without clipping or horizontal overflow.
+- The unchanged HTML artifact's six inline scripts parsed and `node tools\check-aegis-build.cjs` passed for browser build 0137.
+- Localhost browser smoke reached first-base setup and Geoscape; browser Build Health passed `272/272`, runtime error logs were empty, and only the existing Tailwind production-CDN warning remained.
+
+Manual validation completed by player:
+
+- Load the native campaign that passed 0005 and confirm the Workshop migration preserves all prior campaign values while adding 10 Engineer spaces.
+- Recruit one Soldier, advance two days, save/reload, advance the third day, and confirm the same named recruit arrives Ready but unassigned.
+- In the native campaign, use its final open quarters slot to hire/cancel a Scientist and then an Engineer, verifying each half-cost refund before recruiting the Soldier.
+- In imported Fort Aegis, confirm five spare quarters allow Soldier hiring but its full 10/10 Laboratory and Workshop correctly block Scientist and Engineer orders.
+- Complete Laser Weapons, begin Laser Power Output 1, manufacture one Laser Rifle, then save/reload and verify completed research, capability, active follow-on, funds, and local stores.
+- Re-import the current browser campaign read only and confirm its exact Workshop count, inferred Laser Weapons prerequisite, isolated copy save, and unchanged source bytes.
+
+Next native step after live validation: `GODOT.0007_ENGINEERING_STAFFING_AND_MANUFACTURING_QUEUE_VERTICAL_SLICE`, replacing instant Medkit/Laser Rifle construction with a small Engineer-assigned timed production queue while avoiding the full browser manufacturing tree and multi-base logistics.
+
 ## v0.26.07.18.GODOT.0005 - Base Personnel and Research Staffing Vertical Slice
 
 Native build `v0.26.07.18.GODOT.0005_BASE_PERSONNEL_AND_RESEARCH_STAFFING_VERTICAL_SLICE` preserves save format 4 and implements the smallest safe strategic-management subset recommended after live browser-import validation.
@@ -2968,12 +3012,11 @@ Verification completed:
 
 Manual validation still required:
 
-- Load a new campaign and confirm Base reports six soldiers, five scientists, no engineers, and 11/12 local personnel.
-- Change Research staffing from five to three, confirm a 6-point daily rate and updated ETA, advance one day, then save/reload and confirm the same assignment/progress.
-- Set staffing to zero and confirm a day passes without research progress; restore staff and confirm progress resumes.
-- Re-import the current browser campaign and compare selected-base Quarters/Laboratory counts, personnel totals, assigned scientists, progress, and isolated save/reload behavior.
+- New/native Base personnel counts and capacity behaved as expected.
+- Research staffing, daily rates, ETA, zero-staff pause, restored progress, and save/reload behavior passed.
+- Browser-imported repeated facility counts, personnel totals, research staffing/progress, and isolated-copy behavior passed.
 
-Next native step after live validation: add bounded personnel hiring/arrival queues and the first small research-topic completion/unlock transition, still avoiding broad multi-base logistics and the full browser research tree.
+The completed gate authorized native 0006's bounded personnel hiring/arrival queues and first research-topic completion/unlock transition.
 
 ## v0.26.07.18.GODOT.0004 - Browser Save Import Copy Vertical Slice
 

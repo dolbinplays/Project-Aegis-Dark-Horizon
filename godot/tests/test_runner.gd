@@ -52,14 +52,40 @@ func _test_campaign(content: Dictionary) -> void:
 	campaign.new_campaign("Test Aegis", "North America")
 	_check(campaign.has_campaign(), "new campaign creates a valid base")
 	_check(campaign.assigned_soldiers().size() == 6, "opening squad assigns six soldiers")
-	_check(campaign.personnel_capacity() == 12 and campaign.personnel_used() == 11 and campaign.scientist_capacity() == 10, "base capacity counts six soldiers and five scientists against one quarters and lab")
+	_check(campaign.personnel_capacity() == 12 and campaign.personnel_used() == 11 and campaign.scientist_capacity() == 10 and campaign.engineer_capacity() == 10, "base capacity counts six soldiers and five scientists against one quarters lab and workshop")
 	var legacy := campaign.data.duplicate(true)
 	legacy.erase("scientists")
 	legacy.erase("engineers")
 	legacy["base"].erase("facility_counts")
 	legacy["research"] = {"active": "Laser Weapons", "progress": 8}
 	var migrated := campaign.normalize_save(legacy)
-	_check(int(migrated.get("scientists", 0)) == 5 and int(migrated.get("engineers", -1)) == 0 and int(migrated.get("base", {}).get("facility_counts", {}).get("quarters", 0)) == 1 and int(migrated.get("research", {}).get("assigned_scientists", 0)) == 5, "legacy native saves receive conservative personnel staffing defaults")
+	_check(int(migrated.get("scientists", 0)) == 5 and int(migrated.get("engineers", -1)) == 0 and int(migrated.get("base", {}).get("facility_counts", {}).get("quarters", 0)) == 1 and int(migrated.get("base", {}).get("facility_counts", {}).get("workshop", 0)) == 1 and int(migrated.get("research", {}).get("assigned_scientists", 0)) == 5 and migrated.get("personnel_orders", []).is_empty(), "legacy native saves receive conservative personnel staffing defaults")
+	var personnel_campaign := AegisCampaignState.new()
+	personnel_campaign.configure(content)
+	personnel_campaign.new_campaign("Queue Test", "North America")
+	personnel_campaign.data["base"]["facility_counts"]["workshop"] = 0
+	_check(not personnel_campaign.personnel_hiring_blocker("engineer").is_empty(), "engineer hiring requires a local Workshop")
+	personnel_campaign.data["base"]["facilities"].append("quarters")
+	personnel_campaign.data["base"]["facility_counts"]["quarters"] = 2
+	personnel_campaign.data["base"]["facility_counts"]["workshop"] = 1
+	var funds_before := int(personnel_campaign.data.get("funds", 0))
+	_check(not personnel_campaign.manufacture_item("Laser Rifle", 180, "laser_rifle_production") and int(personnel_campaign.data.get("funds", 0)) == funds_before and int(personnel_campaign.data.get("stores", {}).get("Laser Rifle", 0)) == 0, "Laser Rifle production remains blocked before its research unlock")
+	_check(personnel_campaign.hire_personnel("soldier") and personnel_campaign.hire_personnel("scientist") and personnel_campaign.hire_personnel("engineer"), "personnel office accepts affordable hires with reserved capacity")
+	_check(personnel_campaign.pending_personnel_count() == 3 and personnel_campaign.projected_personnel_used() == 14 and int(personnel_campaign.data.get("funds", 0)) == funds_before - 305, "pending hires reserve quarters and deduct established costs")
+	var engineer_order: Dictionary = personnel_campaign.personnel_orders().filter(func(order): return order.get("type", "") == "engineer")[0]
+	_check(personnel_campaign.cancel_personnel_order(engineer_order.get("id", "")) and personnel_campaign.pending_personnel_count() == 2 and int(personnel_campaign.data.get("funds", 0)) == funds_before - 260, "personnel cancellation releases its reservation and returns half cost")
+	personnel_campaign.advance_minutes(2 * 24 * 60)
+	_check(personnel_campaign.pending_personnel_count() == 2 and personnel_campaign.living_soldier_count() == 6 and int(personnel_campaign.data.get("scientists", 0)) == 5, "personnel orders do not arrive before the third midnight")
+	personnel_campaign.advance_minutes(24 * 60)
+	var arrived_recruit: Dictionary = personnel_campaign.data.get("soldiers", [])[-1]
+	_check(personnel_campaign.pending_personnel_count() == 0 and personnel_campaign.living_soldier_count() == 7 and int(personnel_campaign.data.get("scientists", 0)) == 6 and not arrived_recruit.get("assigned", true), "third midnight delivers local staff and leaves new soldiers unassigned")
+	var specialist_campaign := AegisCampaignState.new()
+	specialist_campaign.configure(content)
+	specialist_campaign.new_campaign("Specialist Capacity Test", "North America")
+	specialist_campaign.data["base"]["facility_counts"]["quarters"] = 3
+	specialist_campaign.data["scientists"] = 10
+	specialist_campaign.data["engineers"] = 10
+	_check(specialist_campaign.projected_personnel_used() == 26 and specialist_campaign.personnel_capacity() == 36 and specialist_campaign.personnel_hiring_blocker("soldier").is_empty() and specialist_campaign.personnel_hiring_blocker("scientist").contains("Laboratory full") and specialist_campaign.personnel_hiring_blocker("engineer").contains("Workshop full"), "spare quarters do not bypass full Laboratory or Workshop capacity")
 	campaign.set_research_staffing(3)
 	_check(campaign.research_assigned_scientists() == 3 and campaign.research_daily_progress() == 6, "research staffing remains bounded by available scientists and lab capacity")
 	var research_before := int(campaign.data.get("research", {}).get("progress", 0))
@@ -70,6 +96,10 @@ func _test_campaign(content: Dictionary) -> void:
 	campaign.set_research_staffing(5)
 	campaign.advance_minutes(24 * 60)
 	_check(int(campaign.data.get("research", {}).get("progress", 0)) == 100 and campaign.research_assigned_scientists() == 0 and String(campaign.data.get("reports", [""])[0]).begins_with("RESEARCH COMPLETE"), "completed research releases scientists and records one report")
+	_check(campaign.completed_research().has("Laser Weapons") and campaign.has_technology_unlock("laser_rifle_production") and campaign.available_research_projects().any(func(project): return project.get("id", "") == "Laser Power Output 1"), "Laser Weapons completion unlocks production and its follow-on project")
+	var laser_funds_before := int(campaign.data.get("funds", 0))
+	_check(campaign.manufacture_item("Laser Rifle", 180, "laser_rifle_production") and int(campaign.data.get("stores", {}).get("Laser Rifle", 0)) == 1 and int(campaign.data.get("funds", 0)) == laser_funds_before - 180, "unlocked Laser Rifle production deducts funds and updates local stores")
+	_check(campaign.start_research_project("Laser Power Output 1") and campaign.research_required_progress() == 180 and campaign.research_assigned_scientists() == 0, "follow-on research opens unstaffed with its own point requirement")
 	_check(campaign.begin_mission_travel(), "selected incident accepts a staffed Skyranger launch")
 	_check(not campaign.advance_minutes(15), "outbound travel remains active at midpoint")
 	_check(campaign.advance_minutes(15), "outbound travel completes after its duration")
@@ -105,7 +135,7 @@ func _test_browser_import(content: Dictionary) -> void:
 	var parsed_source: Variant = JSON.parse_string(source_before)
 	_check(parsed_source is Dictionary and importer.import_browser_save(parsed_source, "browser-source-test.json"), "browser export imports into native campaign memory")
 	_check(importer.active_save_path == AegisCampaignState.IMPORTED_SAVE_PATH and AegisCampaignState.IMPORTED_SAVE_PATH != AegisCampaignState.SAVE_PATH, "browser import selects a separate imported-copy save slot")
-	_check(importer.data.get("base", {}).get("name", "") == "Pacific Aegis" and importer.data.get("base", {}).get("facilities", []).has("radar") and importer.facility_count("quarters") == 2 and importer.personnel_capacity() == 24 and importer.personnel_used() == 20 and importer.scientist_capacity() == 10 and importer.research_assigned_scientists() == 10 and importer.research_required_progress() == 180 and int(importer.data.get("month", 0)) == 4 and int(importer.data.get("day", 0)) == 12 and int(importer.data.get("minutes", 0)) == 845 and importer.data.get("research", {}).get("active", "") == "Laser Power Output 1", "browser date clock base capacity personnel and research map into native state")
+	_check(importer.data.get("base", {}).get("name", "") == "Pacific Aegis" and importer.data.get("base", {}).get("facilities", []).has("radar") and importer.facility_count("quarters") == 2 and importer.personnel_capacity() == 24 and importer.personnel_used() == 20 and importer.scientist_capacity() == 10 and importer.research_assigned_scientists() == 10 and importer.research_required_progress() == 180 and int(importer.data.get("month", 0)) == 4 and int(importer.data.get("day", 0)) == 12 and int(importer.data.get("minutes", 0)) == 845 and importer.data.get("research", {}).get("active", "") == "Laser Power Output 1" and importer.completed_research().has("Laser Weapons") and importer.has_technology_unlock("laser_rifle_production"), "browser date clock base capacity personnel and research map into native state")
 	var imported_roster: Array = importer.data.get("soldiers", [])
 	_check(imported_roster.size() == 8 and importer.assigned_soldiers().size() == 6 and int(imported_roster[0].get("accuracy", 0)) == 74 and imported_roster[0].get("callsign", "") == "Nested" and imported_roster[0].get("trait", "") == "Methodical" and imported_roster[5].get("status", "") == "Wounded", "nested browser identity stats and active squad normalize within native transport capacity")
 	_check(importer.selected_incident().get("name", "") == "Port Meridian Attack" and int(importer.selected_incident().get("required_rescues", 0)) == 2 and importer.begin_mission_travel(), "browser incident and rescue requirement remain launchable")
@@ -186,9 +216,9 @@ func _test_build_health() -> void:
 	var app: Node = load("res://godot/main.tscn").instantiate()
 	app.content = _load_json("res://godot/data/content.json")
 	var health: Array = app._run_self_tests()
-	if health.size() != 36 or not health.all(func(row): return row.get("pass", false)):
+	if health.size() != 45 or not health.all(func(row): return row.get("pass", false)):
 		print("BUILD HEALTH DETAIL: %s" % JSON.stringify(health))
-	_check(health.size() == 36 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 36 rows")
+	_check(health.size() == 45 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 45 rows")
 	app.free()
 
 func _load_json(path: String) -> Dictionary:
