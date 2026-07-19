@@ -1,6 +1,52 @@
 {
-  "build": "v0.26.07.19.GODOT.0008_BASE_FACILITY_CONSTRUCTION_AND_SPECIALIST_CAPACITY_VERTICAL_SLICE",
+  "build": "v0.26.07.19.GODOT.0009_LOCAL_BASE_INVENTORY_AND_SOLDIER_LOADOUT_VERTICAL_SLICE",
   "save_format": 4,
+  "weapons": [
+    {
+      "id": "Unarmed",
+      "issued_item": false,
+      "damage": 0,
+      "damage_variance": 0,
+      "range": 0,
+      "tu_cost": 0,
+      "breach_damage": 0,
+      "description": "No weapon issued."
+    },
+    {
+      "id": "Ballistic Rifle",
+      "issued_item": true,
+      "damage": 17,
+      "damage_variance": 8,
+      "range": 7,
+      "tu_cost": 16,
+      "breach_damage": 26,
+      "description": "Reliable conventional rifle issued to the opening response squad."
+    },
+    {
+      "id": "Laser Rifle",
+      "issued_item": true,
+      "damage": 22,
+      "damage_variance": 6,
+      "range": 9,
+      "tu_cost": 14,
+      "breach_damage": 32,
+      "description": "A precise directed-energy rifle with improved range and action economy."
+    }
+  ],
+  "armors": [
+    {
+      "id": "No Armor",
+      "issued_item": false,
+      "damage_reduction": 0,
+      "description": "No protective field equipment issued."
+    },
+    {
+      "id": "Field Suit",
+      "issued_item": true,
+      "damage_reduction": 2,
+      "description": "Standard Aegis field protection reduces incoming damage by two."
+    }
+  ],
   "research_projects": [
     {
       "id": "Laser Weapons",

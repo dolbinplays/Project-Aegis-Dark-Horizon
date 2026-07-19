@@ -17,6 +17,7 @@ const ESCORT_TU := 8
 
 var incident: Dictionary = {}
 var roster: Array = []
+var equipment_catalog: Dictionary = {}
 var units: Array = []
 var covers: Dictionary = {}
 var extraction_cells: Dictionary = {}
@@ -37,9 +38,10 @@ func _ready() -> void:
 	mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	clip_contents = true
 
-func begin_battle(next_incident: Dictionary, next_roster: Array) -> void:
+func begin_battle(next_incident: Dictionary, next_roster: Array, next_equipment_catalog: Dictionary = {}) -> void:
 	incident = next_incident.duplicate(true)
 	roster = next_roster.duplicate(true)
+	equipment_catalog = next_equipment_catalog.duplicate(true)
 	required_rescues = maxi(0, int(incident.get("required_rescues", 1)))
 	units.clear()
 	covers.clear()
@@ -62,6 +64,10 @@ func _generate_field() -> void:
 	var starts := [Vector2i(4,4), Vector2i(4,5), Vector2i(4,6), Vector2i(5,4), Vector2i(5,5), Vector2i(5,6)]
 	for index in range(mini(roster.size(), starts.size())):
 		var source: Dictionary = roster[index]
+		var weapon_name := String(source.get("weapon", "Ballistic Rifle"))
+		var armor_name := String(source.get("armor", "Field Suit"))
+		var weapon_profile := _equipment_definition("weapons", weapon_name, {"damage":17,"damage_variance":8,"range":7,"tu_cost":FIRE_TU,"breach_damage":26})
+		var armor_profile := _equipment_definition("armors", armor_name, {"damage_reduction":0})
 		units.append({
 			"id": source.get("id", "soldier-%d" % index),
 			"name": source.get("name", "Soldier"),
@@ -74,7 +80,14 @@ func _generate_field() -> void:
 			"max_tu": int(source.get("tu", 56)),
 			"accuracy": int(source.get("accuracy", 62)),
 			"kills": 0,
-			"weapon": source.get("weapon", "Ballistic Rifle"),
+			"weapon": weapon_name,
+			"weapon_damage": int(weapon_profile.get("damage", 17)),
+			"weapon_variance": int(weapon_profile.get("damage_variance", 8)),
+			"weapon_range": int(weapon_profile.get("range", 7)),
+			"fire_tu": int(weapon_profile.get("tu_cost", FIRE_TU)),
+			"breach_damage": int(weapon_profile.get("breach_damage", 26)),
+			"armor": armor_name,
+			"damage_reduction": int(armor_profile.get("damage_reduction", 0)),
 			"facing": Vector2i(1, 0),
 			"trail": [starts[index]]
 		})
@@ -105,6 +118,14 @@ func _generate_field() -> void:
 	_generate_cover()
 	for cell in [Vector2i(1,6), Vector2i(2,6), Vector2i(3,6), Vector2i(1,7), Vector2i(2,7), Vector2i(3,7), Vector2i(1,8), Vector2i(2,8), Vector2i(3,8)]:
 		extraction_cells[AegisHexRules.key(cell)] = true
+
+func _equipment_definition(catalog_key: String, item_name: String, fallback: Dictionary) -> Dictionary:
+	for definition_value in equipment_catalog.get(catalog_key, []):
+		if definition_value is Dictionary and String(definition_value.get("id", "")) == item_name:
+			var definition: Dictionary = definition_value.duplicate(true)
+			definition.merge(fallback, false)
+			return definition
+	return fallback.duplicate(true)
 
 func _generate_building() -> void:
 	for x in range(10, 17):
@@ -166,9 +187,7 @@ func _handle_cell_click(cell: Vector2i) -> void:
 
 func _select_unit(unit_id: String) -> void:
 	selected_id = unit_id
-	var selected: Variant = _selected_unit()
 	_rebuild_reachable()
-	selection_changed.emit(selected if selected != null else {})
 	_emit_state()
 	queue_redraw()
 
@@ -246,19 +265,26 @@ func _try_contact_civilian(soldier: Dictionary, civilian: Dictionary) -> void:
 	queue_redraw()
 
 func _try_shoot_unit(shooter: Dictionary, target: Dictionary) -> void:
-	var range := AegisHexRules.distance(shooter.cell, target.cell)
-	if range > 7:
-		_emit_log("Target is outside rifle range.")
+	var weapon_range := maxi(0, int(shooter.get("weapon_range", 7)))
+	var base_damage := maxi(0, int(shooter.get("weapon_damage", 17)))
+	var fire_tu := maxi(0, int(shooter.get("fire_tu", FIRE_TU)))
+	if weapon_range <= 0 or base_damage <= 0:
+		_emit_log("%s is unarmed and cannot fire." % shooter.callsign)
 		return
-	if int(shooter.tu) < FIRE_TU:
-		_emit_log("%s needs %d TU to fire." % [shooter.callsign, FIRE_TU])
+	var shot_range := AegisHexRules.distance(shooter.cell, target.cell)
+	if shot_range > weapon_range:
+		_emit_log("Target is outside %s range." % shooter.get("weapon", "weapon"))
 		return
-	shooter.tu = int(shooter.tu) - FIRE_TU
+	if int(shooter.tu) < fire_tu:
+		_emit_log("%s needs %d TU to fire %s." % [shooter.callsign, fire_tu, shooter.get("weapon", "weapon")])
+		return
+	shooter.tu = int(shooter.tu) - fire_tu
 	action_serial += 1
-	var chance := clampi(int(shooter.accuracy) - range * 4, 18, 92)
+	var chance := clampi(int(shooter.accuracy) - shot_range * 4, 18, 92)
 	var roll := AegisHexRules.deterministic_roll(int(incident.get("seed", 1)), action_serial * 23 + turn_number * 31)
 	if roll <= chance:
-		var damage := 17 + AegisHexRules.deterministic_roll(int(incident.get("seed", 1)), action_serial * 41, 0, 8)
+		var variance := maxi(0, int(shooter.get("weapon_variance", 8)))
+		var damage := base_damage + AegisHexRules.deterministic_roll(int(incident.get("seed", 1)), action_serial * 41, 0, variance)
 		target.hp = maxi(0, int(target.hp) - damage)
 		_emit_log("%s hit %s for %d damage." % [shooter.callsign, target.name, damage])
 		if int(target.hp) <= 0:
@@ -273,13 +299,18 @@ func _try_shoot_unit(shooter: Dictionary, target: Dictionary) -> void:
 	queue_redraw()
 
 func _try_shoot_cover(shooter: Dictionary, cover: Dictionary) -> void:
-	var range := AegisHexRules.distance(shooter.cell, cover.cell)
-	if range > 8 or int(shooter.tu) < FIRE_TU:
-		_emit_log("That breach shot requires rifle range and %d TU." % FIRE_TU)
+	var weapon_range := maxi(0, int(shooter.get("weapon_range", 8)))
+	var breach_damage := maxi(0, int(shooter.get("breach_damage", 26)))
+	var fire_tu := maxi(0, int(shooter.get("fire_tu", FIRE_TU)))
+	if weapon_range <= 0 or breach_damage <= 0:
+		_emit_log("%s is unarmed and cannot breach that wall." % shooter.callsign)
 		return
-	shooter.tu = int(shooter.tu) - FIRE_TU
-	var damage := 26
-	cover.hp = maxi(0, int(cover.hp) - damage)
+	var shot_range := AegisHexRules.distance(shooter.cell, cover.cell)
+	if shot_range > weapon_range or int(shooter.tu) < fire_tu:
+		_emit_log("That breach shot requires %s range and %d TU." % [shooter.get("weapon", "weapon"), fire_tu])
+		return
+	shooter.tu = int(shooter.tu) - fire_tu
+	cover.hp = maxi(0, int(cover.hp) - breach_damage)
 	if int(cover.hp) <= 0:
 		cover.type = "rubble"
 		cover.hard = false
@@ -296,7 +327,6 @@ func end_human_turn() -> void:
 	phase = "alien"
 	selected_id = ""
 	reachable.clear()
-	selection_changed.emit({})
 	_emit_state()
 	queue_redraw()
 	await get_tree().create_timer(0.22).timeout
@@ -340,9 +370,11 @@ func _alien_shoot(alien: Dictionary, target: Dictionary, distance: int) -> void:
 	if roll > chance:
 		_emit_log("%s fires and misses %s." % [alien.name, target.name])
 		return
-	var damage := int(alien.damage) + AegisHexRules.deterministic_roll(int(incident.get("seed", 1)), action_serial * 13, 0, 5)
+	var raw_damage := int(alien.damage) + AegisHexRules.deterministic_roll(int(incident.get("seed", 1)), action_serial * 13, 0, 5)
+	var reduction := maxi(0, int(target.get("damage_reduction", 0)))
+	var damage := maxi(1, raw_damage - reduction)
 	target.hp = maxi(0, int(target.hp) - damage)
-	_emit_log("%s hit %s for %d damage." % [alien.name, target.name, damage])
+	_emit_log("%s hit %s for %d damage%s." % [alien.name, target.name, damage, " after %s protection" % target.get("armor", "armor") if reduction > 0 else ""])
 	if target.get("team", "") == "civilian" and int(target.hp) > 0:
 		target.panic = true
 		target.escort_id = ""
@@ -449,6 +481,8 @@ func _emit_state() -> void:
 	var living_aliens := units.filter(func(unit): return unit.get("team", "") == "alien" and int(unit.get("hp", 0)) > 0).size()
 	var active_civilians := units.filter(func(unit): return unit.get("team", "") == "civilian" and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false)).size()
 	status_changed.emit({"phase":phase,"turn":turn_number,"aliens":living_aliens,"rescued":rescued,"required":required_rescues,"civilians":active_civilians,"resolved":resolved})
+	var selected: Variant = _selected_unit()
+	selection_changed.emit(selected if selected != null else {})
 
 func _inside(cell: Vector2i) -> bool:
 	return cell.x >= 0 and cell.y >= 0 and cell.x < GRID_WIDTH and cell.y < GRID_HEIGHT

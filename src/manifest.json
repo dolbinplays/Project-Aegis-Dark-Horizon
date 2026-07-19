@@ -31,8 +31,8 @@
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
     "mainScene": "godot/main.tscn",
-    "build": "v0.26.07.19.GODOT.0008_BASE_FACILITY_CONSTRUCTION_AND_SPECIALIST_CAPACITY_VERTICAL_SLICE",
+    "build": "v0.26.07.19.GODOT.0009_LOCAL_BASE_INVENTORY_AND_SOLDIER_LOADOUT_VERTICAL_SLICE",
     "saveFormat": 4,
-    "status": "base-facility-construction-specialist-capacity-manual-test"
+    "status": "player-verified-local-base-inventory-soldier-loadout"
   }
 }

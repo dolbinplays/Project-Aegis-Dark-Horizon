@@ -3,8 +3,8 @@
 
 Last updated: 2026-07-19
 Current handoff build: `v0.26.07.17.0137_TACTICAL_CONTINUOUS_WALLS_AND_TRAVERSABLE_BREACHES_INDEX_ONLY_PATCH`
-Native vertical slice: `v0.26.07.19.GODOT.0008_BASE_FACILITY_CONSTRUCTION_AND_SPECIALIST_CAPACITY_VERTICAL_SLICE`
-Current patch status: **The verified HTML build remains 0137 with save format 4 and its browser validation/manual gates unchanged. Verified native 0007 is published on `main` as `37f270d`. Native build 0008 adds the first bounded local facility expansion loop: browser-established $300k Living Quarters, $450k Laboratory, and $400k Workshop costs; three concurrent prepaid project slots; 3/5/4-day midnight countdowns; no capacity before completion; exact partial-project persistence; half-cost cancellation; and immediate hiring-limit refresh when facilities become operational. Native tests pass 79/79 and all 58/58 native Build Health rows pass. Hardware OpenGL 3.3 rendered the exact imported Fort Aegis construction state cleanly at 1440x900. The unchanged HTML build passes six-of-six script parsing, the seam checker, localhost first-base/Geoscape smoke, browser Build Health 272/272, and an empty runtime-error check. The player confirmed the complete 0008 hands-on construction, persistence, capacity, specialist-hiring, cancellation, and imported-copy isolation gate passes.**
+Native vertical slice: `v0.26.07.19.GODOT.0009_LOCAL_BASE_INVENTORY_AND_SOLDIER_LOADOUT_VERTICAL_SLICE`
+Current patch status: **The verified HTML build remains 0137 with save format 4 and its browser validation/manual gates unchanged. Player-verified native 0008 is published on `main` as `a1bb286`. Native build 0009 connects manufactured local-store equipment to authoritative soldier loadouts through atomic weapon/armor exchanges, conservative save migration, unequipped recruit arrivals, KIA equipment recovery/loss rules, content-defined Ballistic/Laser/Unarmed tactical profiles, Field Suit mitigation, and authoritative selected-soldier TU feedback after every tactical state emission. Native tests pass 88/88 and all 63/63 native Build Health rows pass. The player confirmed the corrected live TU feedback and accepted 0009 for progression.**
 
 ---
 
@@ -52,7 +52,7 @@ The player commands a fledgling global defense organization responding to escala
 `v0.26.07.17.0137_TACTICAL_CONTINUOUS_WALLS_AND_TRAVERSABLE_BREACHES_INDEX_ONLY_PATCH`
 
 ## Native Vertical Slice Build
-`v0.26.07.19.GODOT.0008_BASE_FACILITY_CONSTRUCTION_AND_SPECIALIST_CAPACITY_VERTICAL_SLICE`
+`v0.26.07.19.GODOT.0009_LOCAL_BASE_INVENTORY_AND_SOLDIER_LOADOUT_VERTICAL_SLICE`
 
 ## What This Patch Was Intended To Add
 This patch adds:
@@ -2930,6 +2930,49 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.19.GODOT.0009 - Local Base Inventory and Soldier Loadout Vertical Slice
+
+Native build `v0.26.07.19.GODOT.0009_LOCAL_BASE_INVENTORY_AND_SOLDIER_LOADOUT_VERTICAL_SLICE` preserves save format 4 and follows the player-confirmed 0008 construction gate with the smallest usable connection between Workshop output, local stores, soldier records, and tactical combat.
+
+Implemented scope:
+
+- Added content-defined Ballistic Rifle, Laser Rifle, Unarmed, Field Suit, and No Armor profiles. The Ballistic Rifle preserves the established 17-25 damage, seven-hex range, 16 TU shot, and 26 breach damage. The Laser Rifle uses 22-28 damage, nine-hex range, 14 TU shots, and 32 breach damage. Field Suits reduce incoming tactical damage by two.
+- The Soldiers screen now exposes loose Ballistic Rifle, Laser Rifle, and Field Suit counts plus one compact weapon and armor selector per soldier.
+- Loadout changes are atomic and base local: issuing an item consumes exactly one loose unit, while the previous issued item returns to the same stores record. Unavailable items are omitted and rejected by campaign state, preventing UI or direct-call duplication.
+- Soldiers can deliberately return equipment by selecting Unarmed or No Armor. Existing imported equipment names remain preserved until the player chooses a supported native replacement.
+- New recruits now arrive Unarmed and with No Armor so hiring cannot create free equipment outside Workshop/stores ownership.
+- Saved weapon and armor names enter the native tactical unit record. Unarmed soldiers cannot shoot or breach; Laser Rifle range, damage, TU, and breach values affect live tactical actions; Field Suit mitigation affects alien damage.
+- Tactical Control now republishes the authoritative selected-unit record whenever tactical state changes. Movement, shots, breaches, civilian contact, selection changes, and turn transitions therefore refresh displayed TU and HP in step with movement highlights and combat state.
+- Successful missions recover issued weapon and armor from KIA soldiers into local stores. Failed missions remove that equipment as field losses and add explicit report feedback instead of leaving gear stranded on an unusable roster record.
+
+Performance and compatibility:
+
+- Equipment work is bounded to one soldier, two slots, and the small native content catalog per interaction. No tactical per-frame scan, map generation, pathfinding, visibility, civilian, alien-turn, or rendering workload was added.
+- Native and imported-copy saves remain format 4. Soldier weapon/armor records and nonnegative store counts normalize conservatively; known native store keys are supplied without changing issued-item ownership.
+- The browser export remains read only. Full browser Quartermaster rules, arbitrary imported equipment statistics, transfers, ammunition inventory, multiple bases, and body-part armor remain outside this vertical slice.
+
+Verification completed during implementation:
+
+- Godot 4.7.1 strict editor parsing passed.
+- Native tests pass `88/88`; visible native Build Health passes `63/63` through the same runner.
+- Coverage includes stock-conserving weapon/armor exchange, unavailable-item rejection, malformed stock/loadout migration, exact save/reload, unequipped recruits, successful KIA recovery, tactical profile inheritance, Unarmed fire rejection, a real range-eight Laser Rifle shot costing 14 TU, immediate selected-unit TU republishing from 64 to 50 after that shot, and all previous construction, manufacturing, import, aircraft, rescue, breach, and three-turn tactical regressions.
+- Hardware OpenGL 3.3 on the NVIDIA GeForce GTX 960M loaded the 44-soldier imported Fort Aegis roster, displayed local Ballistic Rifle/Laser Rifle/Field Suit stock, exchanged both available Laser Rifles across assigned and unassigned soldiers without duplication, and rendered tactical combat through turn four without a lockup.
+- The imported native-copy save was backed up before the live exchange and restored afterward to its exact original SHA-256 checksum. The browser source export was never written.
+- The unchanged HTML artifact's six inline scripts parsed, `node tools\check-aegis-build.cjs` passed, localhost reached the start screen, first-base setup, and Geoscape, and browser Build Health passed `272/272`. The runtime error overlay remained empty; console inspection found only the existing Tailwind production-CDN warning.
+
+Player gate completed:
+
+- During live tactical validation, the player identified that movement highlighting used the post-shot TU value while Tactical Control retained the selection-time value.
+- Tactical state emission was corrected to republish the authoritative selected unit after every action and turn transition. The player confirmed the displayed TU now updates correctly and accepted 0009 for progression.
+- Automated, Build Health, hardware GPU, and exact imported-copy restoration checks remain the recorded evidence for stock conservation, persistence, tactical profiles, Field Suit mitigation, Unarmed rejection, KIA recovery, and browser-source isolation.
+
+Known risks:
+
+- Native combat uses only the bounded catalog profiles. Unsupported imported equipment names remain display-preserved but use conservative fallback tactical values until exchanged for supported native equipment.
+- Failed-mission KIA equipment is intentionally lost; successful-mission recovery is deterministic and does not yet model corpse access, mission extraction zones, or item-by-item salvage.
+
+Next native step after live validation: `GODOT.0010_TACTICAL_MEDKIT_AND_WOUNDED_STATUS_RECOVERY_VERTICAL_SLICE`, making already manufactured Medkits useful without importing the browser game's full inventory, body-part injury, or Sickbay simulation.
 
 ## v0.26.07.19.GODOT.0008 - Base Facility Construction and Specialist Capacity Vertical Slice
 

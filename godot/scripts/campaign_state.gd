@@ -179,6 +179,50 @@ func begin_interception(stance: String = "Standard") -> bool:
 func assigned_soldiers() -> Array:
 	return data.get("soldiers", []).filter(func(soldier): return soldier.get("assigned", false) and soldier.get("status", "") == "Ready")
 
+func loadout_definitions(slot: String) -> Array:
+	var catalog_key := "weapons" if slot == "weapon" else "armors" if slot == "armor" else ""
+	if catalog_key.is_empty():
+		return []
+	return content.get(catalog_key, []).duplicate(true)
+
+func loadout_empty_item(slot: String) -> String:
+	return "Unarmed" if slot == "weapon" else "No Armor"
+
+func loadout_stock(item_name: String) -> int:
+	return maxi(0, int(data.get("stores", {}).get(item_name, 0)))
+
+func change_soldier_loadout(soldier_id: String, slot: String, item_name: String) -> bool:
+	if slot not in ["weapon", "armor"]:
+		return false
+	var definition := _loadout_definition(slot, item_name)
+	if definition.is_empty():
+		return false
+	for soldier in data.get("soldiers", []):
+		if String(soldier.get("id", "")) != soldier_id or String(soldier.get("status", "Ready")) == "KIA":
+			continue
+		var empty_item := loadout_empty_item(slot)
+		var current_item := String(soldier.get(slot, empty_item))
+		if current_item == item_name:
+			return true
+		var stores: Dictionary = data.get("stores", {}).duplicate(true)
+		if bool(definition.get("issued_item", true)):
+			if int(stores.get(item_name, 0)) <= 0:
+				return false
+			stores[item_name] = int(stores.get(item_name, 0)) - 1
+		if current_item != empty_item and not current_item.is_empty():
+			stores[current_item] = int(stores.get(current_item, 0)) + 1
+		soldier[slot] = item_name
+		data["stores"] = stores
+		add_report("LOADOUT: %s exchanged %s for %s." % [soldier.get("callsign", soldier.get("name", "Soldier")), current_item, item_name])
+		return true
+	return false
+
+func _loadout_definition(slot: String, item_name: String) -> Dictionary:
+	for definition_value in loadout_definitions(slot):
+		if definition_value is Dictionary and String(definition_value.get("id", "")) == item_name:
+			return definition_value
+	return {}
+
 func facility_count(facility_id: String) -> int:
 	var base: Dictionary = data.get("base", {})
 	var counts_value: Variant = base.get("facility_counts", {})
@@ -374,8 +418,8 @@ func _recruit_for_sequence(sequence: int, base_id_override: String = "") -> Dict
 	source["missions"] = 0
 	source["kills"] = 0
 	source["wounds"] = 0
-	source["weapon"] = source.get("weapon", "Ballistic Rifle")
-	source["armor"] = source.get("armor", "Field Suit")
+	source["weapon"] = source.get("weapon", "Unarmed")
+	source["armor"] = source.get("armor", "No Armor")
 	source["assigned"] = false
 	source["base_id"] = base_id_override if not base_id_override.is_empty() else _selected_base_identity()
 	return source
@@ -872,6 +916,8 @@ func complete_mission(result: Dictionary) -> void:
 	data["funds"] = int(data.get("funds", 0)) + reward
 	data["mission_count"] = int(data.get("mission_count", 0)) + 1
 	data["rescued_civilians"] = int(data.get("rescued_civilians", 0)) + int(result.get("rescued", 0))
+	var recovered_items: Array[String] = []
+	var lost_items: Array[String] = []
 	for soldier in data.get("soldiers", []):
 		var tactical_record: Dictionary = result.get("soldiers", {}).get(soldier.get("id", ""), {})
 		if tactical_record.is_empty():
@@ -880,11 +926,26 @@ func complete_mission(result: Dictionary) -> void:
 		soldier["kills"] = int(soldier.get("kills", 0)) + int(tactical_record.get("kills", 0))
 		if int(tactical_record.get("hp", soldier.get("health", 1))) <= 0:
 			soldier["status"] = "KIA"
+			for slot in ["weapon", "armor"]:
+				var empty_item := loadout_empty_item(slot)
+				var item_name := String(soldier.get(slot, empty_item))
+				if success and item_name != empty_item and not item_name.is_empty():
+					var stores: Dictionary = data.get("stores", {})
+					stores[item_name] = int(stores.get(item_name, 0)) + 1
+					data["stores"] = stores
+					recovered_items.append(item_name)
+				elif item_name != empty_item and not item_name.is_empty():
+					lost_items.append(item_name)
+				soldier[slot] = empty_item
 		elif int(tactical_record.get("hp", soldier.get("health", 1))) < int(soldier.get("health", 1)):
 			soldier["status"] = "Wounded"
 			soldier["wounds"] = int(soldier.get("wounds", 0)) + 1
 	if success:
 		data["incidents"] = data.get("incidents", []).filter(func(item): return item.get("id", "") != incident.get("id", ""))
+	if not recovered_items.is_empty():
+		add_report("RECOVERY: %s returned to local stores from fallen personnel." % ", ".join(recovered_items))
+	if not lost_items.is_empty():
+		add_report("FIELD LOSS: %s could not be recovered from fallen personnel." % ", ".join(lost_items))
 	add_report("%s: %s. %d civilian%s rescued. Funds +$%dk." % ["SUCCESS" if success else "FAILURE", incident.get("name", "Incident"), int(result.get("rescued", 0)), "" if int(result.get("rescued", 0)) == 1 else "s", reward])
 	data["travel"] = {}
 
@@ -1223,7 +1284,35 @@ func normalize_save(source: Dictionary) -> Dictionary:
 	normalized["month"] = maxi(1, int(normalized.get("month", 1)))
 	normalized["day"] = maxi(1, int(normalized.get("day", 1)))
 	normalized["minutes"] = clampi(int(normalized.get("minutes", 8 * 60)), 0, 24 * 60 - 1)
-	normalized["soldiers"] = normalized.get("soldiers", []).duplicate(true)
+	var soldiers_value: Variant = normalized.get("soldiers", [])
+	var normalized_soldiers: Array = []
+	if soldiers_value is Array:
+		for soldier_value in soldiers_value:
+			if not soldier_value is Dictionary:
+				continue
+			var soldier: Dictionary = soldier_value.duplicate(true)
+			var weapon_value: Variant = soldier.get("weapon", "Ballistic Rifle")
+			var armor_value: Variant = soldier.get("armor", "Field Suit")
+			soldier["weapon"] = String(weapon_value.get("name", "Ballistic Rifle")) if weapon_value is Dictionary else String(weapon_value)
+			soldier["armor"] = String(armor_value.get("name", "Field Suit")) if armor_value is Dictionary else String(armor_value)
+			if String(soldier["weapon"]).is_empty():
+				soldier["weapon"] = "Unarmed"
+			if String(soldier["armor"]).is_empty():
+				soldier["armor"] = "No Armor"
+			normalized_soldiers.append(soldier)
+	normalized["soldiers"] = normalized_soldiers
+	var stores_value: Variant = normalized.get("stores", {})
+	var normalized_stores := {}
+	if stores_value is Dictionary:
+		for item_name in stores_value:
+			normalized_stores[String(item_name)] = maxi(0, int(stores_value[item_name]))
+	for slot in ["weapon", "armor"]:
+		for definition_value in loadout_definitions(slot):
+			if definition_value is Dictionary and bool(definition_value.get("issued_item", true)):
+				var item_name := String(definition_value.get("id", ""))
+				if not item_name.is_empty() and not normalized_stores.has(item_name):
+					normalized_stores[item_name] = 0
+	normalized["stores"] = normalized_stores
 	var base_value: Variant = normalized.get("base", {})
 	var normalized_base: Dictionary = base_value.duplicate(true) if base_value is Dictionary else {}
 	var facilities_value: Variant = normalized_base.get("facilities", [])

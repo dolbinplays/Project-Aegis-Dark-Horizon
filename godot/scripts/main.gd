@@ -1,6 +1,6 @@
 extends Control
 
-const NATIVE_BUILD := "v0.26.07.19.GODOT.0008_BASE_FACILITY_CONSTRUCTION_AND_SPECIALIST_CAPACITY_VERTICAL_SLICE"
+const NATIVE_BUILD := "v0.26.07.19.GODOT.0009_LOCAL_BASE_INVENTORY_AND_SOLDIER_LOADOUT_VERTICAL_SLICE"
 const MAX_BROWSER_IMPORT_BYTES := 32 * 1024 * 1024
 
 var content: Dictionary = {}
@@ -772,6 +772,13 @@ func _render_soldiers() -> void:
 	root.add_theme_constant_override("separation", 14)
 	_mount_scrollable_command_page(root)
 	root.add_child(_section_title("SOLDIER ROSTER", "Fort Aegis ready personnel"))
+	var armory := HBoxContainer.new()
+	armory.add_theme_constant_override("separation", 24)
+	armory.add_child(_label("LOCAL ARMORY - LOOSE STOCK", 13, color_cyan))
+	for item_name in ["Ballistic Rifle", "Laser Rifle", "Field Suit"]:
+		armory.add_child(_metric(item_name.to_upper(), str(campaign.loadout_stock(item_name)), color_gold if campaign.loadout_stock(item_name) > 0 else color_muted))
+	armory.add_spacer(false)
+	root.add_child(_panel_with(armory, 14))
 	var grid := GridContainer.new()
 	grid.columns = 2
 	grid.add_theme_constant_override("h_separation", 14)
@@ -779,7 +786,7 @@ func _render_soldiers() -> void:
 	root.add_child(grid)
 	for soldier in campaign.data.get("soldiers", []):
 		var row := HBoxContainer.new()
-		row.custom_minimum_size = Vector2(480, 118)
+		row.custom_minimum_size = Vector2(450, 154)
 		row.add_theme_constant_override("separation", 14)
 		var badge := Label.new()
 		badge.text = String(soldier.get("callsign", "A")).left(1)
@@ -798,6 +805,8 @@ func _render_soldiers() -> void:
 		text.add_child(_label("%s - %s - %s" % [soldier.get("rank", "Rookie"), soldier.get("trait", "Steady"), soldier_status], 13, status_color, true))
 		text.add_child(_label("ACC %d   TU %d   HP %d" % [soldier.get("accuracy",0), soldier.get("tu",0), soldier.get("health",0)], 13, color_cyan))
 		row.add_child(text)
+		var controls := VBoxContainer.new()
+		controls.custom_minimum_size.x = 176
 		var assigned := CheckButton.new()
 		assigned.text = "Squad"
 		assigned.button_pressed = soldier.get("assigned", false)
@@ -807,8 +816,42 @@ func _render_soldiers() -> void:
 			campaign.set_soldier_assigned(soldier_id, value)
 			campaign.save_campaign()
 		)
-		row.add_child(assigned)
+		controls.add_child(assigned)
+		controls.add_child(_loadout_picker(soldier, "weapon"))
+		controls.add_child(_loadout_picker(soldier, "armor"))
+		row.add_child(controls)
 		grid.add_child(_panel_with(row, 16))
+
+func _loadout_picker(soldier: Dictionary, slot: String) -> OptionButton:
+	var picker := OptionButton.new()
+	picker.custom_minimum_size = Vector2(174, 34)
+	var current_item := String(soldier.get(slot, campaign.loadout_empty_item(slot)))
+	picker.add_item("%s: %s" % [slot.capitalize(), current_item])
+	picker.set_item_metadata(0, current_item)
+	for definition_value in campaign.loadout_definitions(slot):
+		if not definition_value is Dictionary:
+			continue
+		var item_name := String(definition_value.get("id", ""))
+		if item_name.is_empty() or item_name == current_item:
+			continue
+		var issued_item := bool(definition_value.get("issued_item", true))
+		var stock := campaign.loadout_stock(item_name)
+		if issued_item and stock <= 0:
+			continue
+		var label := "%s: %s" % [slot.capitalize(), item_name]
+		if issued_item:
+			label += " (%d stock)" % stock
+		picker.add_item(label)
+		picker.set_item_metadata(picker.item_count - 1, item_name)
+	picker.disabled = String(soldier.get("status", "Ready")) == "KIA"
+	var soldier_id := String(soldier.get("id", ""))
+	picker.item_selected.connect(func(index):
+		var selected_item := String(picker.get_item_metadata(index))
+		if campaign.change_soldier_loadout(soldier_id, slot, selected_item):
+			campaign.save_campaign()
+			_show_command("soldiers")
+	)
+	return picker
 
 func _render_research() -> void:
 	var root := VBoxContainer.new()
@@ -1168,7 +1211,7 @@ func _show_tactical() -> void:
 	tactical_log_box.add_theme_constant_override("separation", 7)
 	scroll.add_child(tactical_log_box)
 	side.add_child(scroll)
-	tactical_board.begin_battle(campaign.selected_incident(), campaign.assigned_soldiers())
+	tactical_board.begin_battle(campaign.selected_incident(), campaign.assigned_soldiers(), content)
 
 func _on_tactical_selection(unit: Dictionary) -> void:
 	if tactical_selection_label == null:
@@ -1176,7 +1219,7 @@ func _on_tactical_selection(unit: Dictionary) -> void:
 	if unit.is_empty():
 		tactical_selection_label.text = "Select a living soldier to move, escort, breach, or fire."
 	else:
-		tactical_selection_label.text = "%s\n%s\nHP %d/%d   TU %d/%d\nKills %d" % [unit.get("name","Soldier"), unit.get("weapon","Ballistic Rifle"), unit.get("hp",0), unit.get("max_hp",0), unit.get("tu",0), unit.get("max_tu",0), unit.get("kills",0)]
+		tactical_selection_label.text = "%s\n%s | %s\nHP %d/%d   TU %d/%d\nKills %d" % [unit.get("name","Soldier"), unit.get("weapon","Ballistic Rifle"), unit.get("armor","Field Suit"), unit.get("hp",0), unit.get("max_hp",0), unit.get("tu",0), unit.get("max_tu",0), unit.get("kills",0)]
 
 func _on_tactical_status(status: Dictionary) -> void:
 	if tactical_status_label:
@@ -1233,7 +1276,7 @@ func _run_self_tests() -> Array:
 	var closed_path := AegisHexRules.path(Vector2i(2,0), Vector2i(2,1), blocked, {}, 6, 6, 4)
 	var open_path := AegisHexRules.path(Vector2i(2,0), Vector2i(2,1), {}, {}, 6, 6, 4)
 	var test_board := AegisTacticalBoard.new()
-	test_board.begin_battle(test_campaign.selected_incident(), test_campaign.assigned_soldiers())
+	test_board.begin_battle(test_campaign.selected_incident(), test_campaign.assigned_soldiers(), content)
 	var tactical_humans := test_board.units.filter(func(unit): return unit.get("team", "") == "human")
 	var tactical_civilians := test_board.units.filter(func(unit): return unit.get("team", "") == "civilian")
 	var wall_key := AegisHexRules.key(Vector2i(10, 2))
@@ -1337,6 +1380,36 @@ func _run_self_tests() -> Array:
 	var laser_waits_for_work: bool = int(management_campaign.data.get("stores", {}).get("Laser Rifle", 0)) == laser_stores_before and int(management_campaign.manufacturing_queue()[0].get("progress", 0)) == 30
 	management_campaign.advance_minutes(24 * 60)
 	var laser_production_ready: bool = management_campaign.manufacturing_queue().is_empty() and int(management_campaign.data.get("stores", {}).get("Laser Rifle", 0)) == laser_stores_before + 1
+	var loadout_roster: Array = management_campaign.data.get("soldiers", [])
+	var loadout_soldier: Dictionary = loadout_roster[0]
+	var loadout_second: Dictionary = loadout_roster[1]
+	var loadout_exchange_ready: bool = management_campaign.change_soldier_loadout(String(loadout_soldier.get("id", "")), "weapon", "Laser Rifle") and loadout_soldier.get("weapon", "") == "Laser Rifle" and management_campaign.loadout_stock("Laser Rifle") == 0 and management_campaign.loadout_stock("Ballistic Rifle") == 1 and management_campaign.change_soldier_loadout(String(loadout_soldier.get("id", "")), "armor", "No Armor") and management_campaign.loadout_stock("Field Suit") == 1 and management_campaign.change_soldier_loadout(String(loadout_soldier.get("id", "")), "armor", "Field Suit") and management_campaign.loadout_stock("Field Suit") == 0
+	var unavailable_loadout_blocked: bool = not management_campaign.change_soldier_loadout(String(loadout_second.get("id", "")), "weapon", "Laser Rifle") and loadout_second.get("weapon", "") == "Ballistic Rifle" and management_campaign.loadout_stock("Laser Rifle") == 0
+	var loadout_board := AegisTacticalBoard.new()
+	loadout_board.begin_battle(management_campaign.selected_incident(), management_campaign.assigned_soldiers(), content)
+	var loadout_unit: Dictionary = loadout_board.units.filter(func(unit): return unit.get("team", "") == "human")[0]
+	var tactical_loadout_ready: bool = loadout_unit.get("weapon", "") == "Laser Rifle" and int(loadout_unit.get("weapon_damage", 0)) == 22 and int(loadout_unit.get("weapon_range", 0)) == 9 and int(loadout_unit.get("fire_tu", 0)) == 14 and loadout_unit.get("armor", "") == "Field Suit" and int(loadout_unit.get("damage_reduction", 0)) == 2
+	var loadout_tu_updates: Array = []
+	loadout_board.selection_changed.connect(func(unit: Dictionary):
+		if not unit.is_empty():
+			loadout_tu_updates.append(int(unit.get("tu", -1)))
+	)
+	var loadout_target: Dictionary = loadout_board.units.filter(func(unit): return unit.get("team", "") == "alien")[0]
+	loadout_unit["cell"] = Vector2i(8, 2)
+	loadout_target["cell"] = Vector2i(16, 2)
+	loadout_target["revealed"] = true
+	loadout_unit["tu"] = 62
+	loadout_board._select_unit(String(loadout_unit.get("id", "")))
+	loadout_board._try_shoot_unit(loadout_unit, loadout_target)
+	var tactical_tu_feedback_ready: bool = loadout_tu_updates.size() >= 2 and int(loadout_tu_updates[0]) == 62 and int(loadout_tu_updates[-1]) == 48 and int(loadout_unit.get("tu", -1)) == 48
+	var recovery_campaign := AegisCampaignState.new()
+	recovery_campaign.configure(content)
+	recovery_campaign.new_campaign("Recovery Test", "North America")
+	var recovery_soldier: Dictionary = recovery_campaign.data.get("soldiers", [])[0]
+	recovery_campaign.data["stores"]["Laser Rifle"] = 1
+	recovery_campaign.change_soldier_loadout(String(recovery_soldier.get("id", "")), "weapon", "Laser Rifle")
+	recovery_campaign.complete_mission({"success":true,"rescued":1,"soldiers":{String(recovery_soldier.get("id", "")):{"hp":0,"kills":0}}})
+	var mission_recovery_ready: bool = recovery_soldier.get("status", "") == "KIA" and recovery_soldier.get("weapon", "") == "Unarmed" and recovery_soldier.get("armor", "") == "No Armor" and recovery_campaign.loadout_stock("Laser Rifle") == 1 and recovery_campaign.loadout_stock("Field Suit") == 1
 	var personnel_campaign := AegisCampaignState.new()
 	personnel_campaign.configure(content)
 	personnel_campaign.new_campaign("Queue Test", "North America")
@@ -1354,7 +1427,7 @@ func _run_self_tests() -> Array:
 	var personnel_waits_three_days: bool = personnel_campaign.pending_personnel_count() == 2 and personnel_campaign.living_soldier_count() == 6 and int(personnel_campaign.data.get("scientists", 0)) == 5
 	personnel_campaign.advance_minutes(24 * 60)
 	var arrived_recruit: Dictionary = personnel_campaign.data.get("soldiers", [])[-1]
-	var personnel_arrival_ready: bool = personnel_campaign.pending_personnel_count() == 0 and personnel_campaign.living_soldier_count() == 7 and int(personnel_campaign.data.get("scientists", 0)) == 6 and not arrived_recruit.get("assigned", true)
+	var personnel_arrival_ready: bool = personnel_campaign.pending_personnel_count() == 0 and personnel_campaign.living_soldier_count() == 7 and int(personnel_campaign.data.get("scientists", 0)) == 6 and not arrived_recruit.get("assigned", true) and arrived_recruit.get("weapon", "") == "Unarmed" and arrived_recruit.get("armor", "") == "No Armor"
 	var specialist_campaign := AegisCampaignState.new()
 	specialist_campaign.configure(content)
 	specialist_campaign.new_campaign("Specialist Capacity Test", "North America")
@@ -1450,7 +1523,7 @@ func _run_self_tests() -> Array:
 		{"name":"Personnel orders reserve quarters and deduct established hiring costs", "pass":personnel_orders_ready},
 		{"name":"Pending personnel cancellation releases capacity with bounded refund", "pass":personnel_cancellation_ready},
 		{"name":"Personnel arrivals wait for three strategic midnights", "pass":personnel_waits_three_days},
-		{"name":"Personnel arrivals update local staff and leave recruits unassigned", "pass":personnel_arrival_ready},
+		{"name":"Personnel arrivals are unassigned and draw no free equipment", "pass":personnel_arrival_ready},
 		{"name":"Spare quarters do not bypass full Laboratory or Workshop capacity", "pass":specialist_capacity_ready},
 		{"name":"Facility construction prepays established costs into three bounded slots", "pass":construction_queue_ready},
 		{"name":"Pending facilities show future capacity without granting it early", "pass":construction_waits_ready},
@@ -1467,9 +1540,15 @@ func _run_self_tests() -> Array:
 		{"name":"Empty manufacturing queues release assigned engineers", "pass":manufacturing_completion_ready},
 		{"name":"Manufacturing cancellation returns half of prepaid cost", "pass":manufacturing_cancellation_ready},
 		{"name":"Partially completed manufacturing state normalizes exactly", "pass":manufacturing_persistence_ready},
-		{"name":"Unlocked Laser Rifle production requires two staffed strategic days", "pass":laser_queued and laser_waits_for_work and laser_production_ready}
+		{"name":"Unlocked Laser Rifle production requires two staffed strategic days", "pass":laser_queued and laser_waits_for_work and laser_production_ready},
+		{"name":"Local weapon and armor exchanges conserve loose base stock", "pass":loadout_exchange_ready},
+		{"name":"Unavailable local equipment cannot duplicate into another loadout", "pass":unavailable_loadout_blocked},
+		{"name":"Saved weapon and armor profiles enter tactical combat rules", "pass":tactical_loadout_ready},
+		{"name":"Selected soldier TU feedback refreshes after tactical actions", "pass":tactical_tu_feedback_ready},
+		{"name":"Successful missions recover fallen soldier equipment to local stores", "pass":mission_recovery_ready}
 	]
 	test_board.free()
+	loadout_board.free()
 	dense_map.free()
 	return checks
 

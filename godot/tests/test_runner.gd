@@ -53,6 +53,27 @@ func _test_campaign(content: Dictionary) -> void:
 	_check(campaign.has_campaign(), "new campaign creates a valid base")
 	_check(campaign.assigned_soldiers().size() == 6, "opening squad assigns six soldiers")
 	_check(campaign.personnel_capacity() == 12 and campaign.personnel_used() == 11 and campaign.scientist_capacity() == 10 and campaign.engineer_capacity() == 10, "base capacity counts six soldiers and five scientists against one quarters lab and workshop")
+	var opening_roster: Array = campaign.data.get("soldiers", [])
+	var first_soldier: Dictionary = opening_roster[0]
+	var second_soldier: Dictionary = opening_roster[1]
+	campaign.data["stores"]["Laser Rifle"] = 1
+	_check(campaign.change_soldier_loadout(String(first_soldier.get("id", "")), "weapon", "Laser Rifle") and first_soldier.get("weapon", "") == "Laser Rifle" and campaign.loadout_stock("Laser Rifle") == 0 and campaign.loadout_stock("Ballistic Rifle") == 1, "issuing a local Laser Rifle atomically returns the prior rifle to stores")
+	_check(not campaign.change_soldier_loadout(String(second_soldier.get("id", "")), "weapon", "Laser Rifle") and second_soldier.get("weapon", "") == "Ballistic Rifle" and campaign.loadout_stock("Laser Rifle") == 0, "unavailable equipment cannot be issued or duplicate stock")
+	_check(campaign.change_soldier_loadout(String(first_soldier.get("id", "")), "armor", "No Armor") and first_soldier.get("armor", "") == "No Armor" and campaign.loadout_stock("Field Suit") == 1 and campaign.change_soldier_loadout(String(first_soldier.get("id", "")), "armor", "Field Suit") and campaign.loadout_stock("Field Suit") == 0, "armor return and reissue conserve local stock")
+	var malformed_loadout := campaign.data.duplicate(true)
+	malformed_loadout["soldiers"][0].erase("weapon")
+	malformed_loadout["soldiers"][0]["armor"] = ""
+	malformed_loadout["stores"]["Laser Rifle"] = -4
+	var normalized_loadout := campaign.normalize_save(malformed_loadout)
+	_check(normalized_loadout.get("soldiers", [])[0].get("weapon", "") == "Ballistic Rifle" and normalized_loadout.get("soldiers", [])[0].get("armor", "") == "No Armor" and int(normalized_loadout.get("stores", {}).get("Laser Rifle", -1)) == 0, "loadout migration supplies conservative defaults and clamps invalid stock")
+	var recovery_campaign := AegisCampaignState.new()
+	recovery_campaign.configure(content)
+	recovery_campaign.new_campaign("Recovery Test", "North America")
+	var recovery_soldier: Dictionary = recovery_campaign.data.get("soldiers", [])[0]
+	recovery_campaign.data["stores"]["Laser Rifle"] = 1
+	recovery_campaign.change_soldier_loadout(String(recovery_soldier.get("id", "")), "weapon", "Laser Rifle")
+	recovery_campaign.complete_mission({"success":true,"rescued":1,"soldiers":{String(recovery_soldier.get("id", "")):{"hp":0,"kills":0}}})
+	_check(recovery_soldier.get("status", "") == "KIA" and recovery_soldier.get("weapon", "") == "Unarmed" and recovery_soldier.get("armor", "") == "No Armor" and recovery_campaign.loadout_stock("Laser Rifle") == 1 and recovery_campaign.loadout_stock("Field Suit") == 1, "successful mission recovery returns fallen soldier equipment to local stores")
 	var legacy := campaign.data.duplicate(true)
 	legacy.erase("scientists")
 	legacy.erase("engineers")
@@ -83,7 +104,7 @@ func _test_campaign(content: Dictionary) -> void:
 	_check(personnel_campaign.pending_personnel_count() == 2 and personnel_campaign.living_soldier_count() == 6 and int(personnel_campaign.data.get("scientists", 0)) == 5, "personnel orders do not arrive before the third midnight")
 	personnel_campaign.advance_minutes(24 * 60)
 	var arrived_recruit: Dictionary = personnel_campaign.data.get("soldiers", [])[-1]
-	_check(personnel_campaign.pending_personnel_count() == 0 and personnel_campaign.living_soldier_count() == 7 and int(personnel_campaign.data.get("scientists", 0)) == 6 and not arrived_recruit.get("assigned", true), "third midnight delivers local staff and leaves new soldiers unassigned")
+	_check(personnel_campaign.pending_personnel_count() == 0 and personnel_campaign.living_soldier_count() == 7 and int(personnel_campaign.data.get("scientists", 0)) == 6 and not arrived_recruit.get("assigned", true) and arrived_recruit.get("weapon", "") == "Unarmed" and arrived_recruit.get("armor", "") == "No Armor", "third midnight delivers unassigned recruits without creating free equipment")
 	var specialist_campaign := AegisCampaignState.new()
 	specialist_campaign.configure(content)
 	specialist_campaign.new_campaign("Specialist Capacity Test", "North America")
@@ -168,11 +189,13 @@ func _test_campaign(content: Dictionary) -> void:
 	_check(not campaign.advance_minutes(15), "outbound travel remains active at midpoint")
 	_check(campaign.advance_minutes(15), "outbound travel completes after its duration")
 	var save_path := "user://project_aegis_godot_test_save.json"
+	var saved_ballistic_stock := campaign.loadout_stock("Ballistic Rifle")
+	var saved_laser_stock := campaign.loadout_stock("Laser Rifle")
 	_check(campaign.save_campaign(save_path), "native save writes JSON")
 	var loaded := AegisCampaignState.new()
 	loaded.configure(content)
 	_check(loaded.load_campaign(save_path), "native save loads")
-	_check(loaded.data.get("base", {}).get("name", "") == "Test Aegis", "native save round-trip preserves campaign state")
+	_check(loaded.data.get("base", {}).get("name", "") == "Test Aegis" and loaded.data.get("soldiers", [])[0].get("weapon", "") == "Laser Rifle" and loaded.loadout_stock("Ballistic Rifle") == saved_ballistic_stock and loaded.loadout_stock("Laser Rifle") == saved_laser_stock, "native save round-trip preserves campaign and exact loadout stock state")
 	var absolute_path := ProjectSettings.globalize_path(save_path)
 	if FileAccess.file_exists(save_path):
 		DirAccess.remove_absolute(absolute_path)
@@ -215,12 +238,38 @@ func _test_tactical(content: Dictionary) -> void:
 	var board := AegisTacticalBoard.new()
 	get_root().add_child(board)
 	var incident: Dictionary = content.get("incidents", [])[0]
-	board.begin_battle(incident, content.get("soldiers", []))
+	var tactical_roster: Array = content.get("soldiers", []).duplicate(true)
+	tactical_roster[0]["weapon"] = "Laser Rifle"
+	tactical_roster[0]["armor"] = "Field Suit"
+	tactical_roster[1]["weapon"] = "Unarmed"
+	tactical_roster[1]["armor"] = "No Armor"
+	board.begin_battle(incident, tactical_roster, content)
 	_check(board.units.filter(func(unit): return unit.get("team", "") == "human").size() == 6, "tactical deployment includes six soldiers")
 	_check(board.units.filter(func(unit): return unit.get("team", "") == "civilian").size() == 2, "tactical incident includes rescue civilians")
 	var wall_key := AegisHexRules.key(Vector2i(10, 2))
 	var wall: Dictionary = board.covers.get(wall_key, {})
 	var shooter: Dictionary = board.units.filter(func(unit): return unit.get("team", "") == "human")[0]
+	_check(shooter.get("weapon", "") == "Laser Rifle" and int(shooter.get("weapon_damage", 0)) == 22 and int(shooter.get("weapon_range", 0)) == 9 and int(shooter.get("fire_tu", 0)) == 14 and int(shooter.get("damage_reduction", 0)) == 2, "saved Laser Rifle and Field Suit profiles enter tactical deployment")
+	var unarmed_soldier: Dictionary = board.units.filter(func(unit): return unit.get("team", "") == "human")[1]
+	var unarmed_target: Dictionary = board.units.filter(func(unit): return unit.get("team", "") == "alien")[0]
+	unarmed_soldier["cell"] = unarmed_target.get("cell", Vector2i.ZERO) + Vector2i(-1, 0)
+	var unarmed_tu := int(unarmed_soldier.get("tu", 0))
+	board._try_shoot_unit(unarmed_soldier, unarmed_target)
+	_check(int(unarmed_soldier.get("tu", 0)) == unarmed_tu and int(unarmed_target.get("hp", 0)) == int(unarmed_target.get("max_hp", 0)), "unarmed tactical soldiers cannot fire or spend TU")
+	var laser_target: Dictionary = board.units.filter(func(unit): return unit.get("team", "") == "alien")[1]
+	shooter["cell"] = Vector2i(8, 2)
+	laser_target["cell"] = Vector2i(16, 2)
+	laser_target["revealed"] = true
+	shooter["tu"] = 64
+	var selection_tu_updates: Array = []
+	board.selection_changed.connect(func(unit: Dictionary):
+		if not unit.is_empty():
+			selection_tu_updates.append(int(unit.get("tu", -1)))
+	)
+	board._select_unit(String(shooter.get("id", "")))
+	board._try_shoot_unit(shooter, laser_target)
+	_check(int(shooter.get("tu", 0)) == 50, "Laser Rifle fires at range eight for its fourteen TU profile")
+	_check(selection_tu_updates.size() >= 2 and int(selection_tu_updates[0]) == 64 and int(selection_tu_updates[-1]) == 50, "selected soldier feedback republishes current TU after firing")
 	shooter["cell"] = Vector2i(8, 2)
 	shooter["tu"] = 64
 	board._try_shoot_cover(shooter, wall)
@@ -280,9 +329,9 @@ func _test_build_health() -> void:
 	var app: Node = load("res://godot/main.tscn").instantiate()
 	app.content = _load_json("res://godot/data/content.json")
 	var health: Array = app._run_self_tests()
-	if health.size() != 58 or not health.all(func(row): return row.get("pass", false)):
+	if health.size() != 63 or not health.all(func(row): return row.get("pass", false)):
 		print("BUILD HEALTH DETAIL: %s" % JSON.stringify(health))
-	_check(health.size() == 58 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 58 rows")
+	_check(health.size() == 63 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 63 rows")
 	app.free()
 
 func _load_json(path: String) -> Dictionary:

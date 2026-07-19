@@ -1,6 +1,6 @@
 # Project Aegis Godot 4 Vertical Slice
 
-Native build: `v0.26.07.19.GODOT.0008_BASE_FACILITY_CONSTRUCTION_AND_SPECIALIST_CAPACITY_VERTICAL_SLICE`
+Native build: `v0.26.07.19.GODOT.0009_LOCAL_BASE_INVENTORY_AND_SOLDIER_LOADOUT_VERTICAL_SLICE`
 
 This is a native Godot 4 vertical slice alongside the verified HTML game. It does not wrap `index.html`, replace the browser build, or write to the browser campaign save.
 
@@ -32,8 +32,10 @@ The project uses the repository root so the native slice can reuse the existing 
 - Engineer staffing bounded by local staff and Workshop capacity, with three work points per assigned Engineer at each strategic midnight.
 - A bounded prepaid FIFO manufacturing queue for Medkits and research-gated Laser Rifles, including progress, ETA, local-store delivery, overflow work, half-cost cancellation, and exact save persistence.
 - Laser Weapons completion unlocking Laser Power Output 1 and queued Laser Rifle production in the Workshop.
+- Base-local loose weapon and armor stock with atomic soldier exchanges, Unarmed/No Armor states, exact save persistence, unequipped recruit arrivals, and successful-mission recovery from KIA soldiers.
+- Tactical Ballistic Rifle, Laser Rifle, Unarmed, Field Suit, and No Armor profiles sourced from the content catalog; Laser Rifles improve damage, range, and fire TU while Field Suits reduce incoming damage.
 - Native JSON save format 4 at `user://project_aegis_godot_save_v4.json`, with imported campaigns isolated at `user://project_aegis_godot_imported_copy_v4.json`.
-- In-game Build Health with 58 checks, including bounded tactical-log trimming, the complete air-operation lifecycle, browser-import isolation, personnel arrivals, research unlocks, manufacturing staffing/FIFO/persistence, facility construction/capacity activation, large-list scrolling, and dense strategic marker placement.
+- In-game Build Health with 63 checks, including bounded tactical-log trimming, air operations, browser-import isolation, personnel arrivals, research/manufacturing/construction, local-stock conservation, tactical loadout inheritance, live selected-soldier TU feedback, mission equipment recovery, large-list scrolling, and dense strategic marker placement.
 
 ## Tactical Controls
 
@@ -42,6 +44,7 @@ The project uses the repository root so the native slice can reuse the existing 
 - Move adjacent to a civilian and click them to spend 8 TU and begin escorting.
 - Lead escorted civilians through the rear ramp cells to extract them.
 - Click a revealed alien in rifle range to fire.
+- Laser Rifles fire up to nine hexes for 14 TU; Ballistic Rifles fire up to seven hexes for 16 TU. Unarmed soldiers cannot fire.
 - Click an intact wall in rifle range to damage it; destroyed wall rubble is traversable.
 - Use **End Turn** to run the alien phase and refresh soldier TU.
 
@@ -62,7 +65,7 @@ The project uses the repository root so the native slice can reuse the existing 
 4. Continue the imported campaign as a native copy. The browser export is opened read only, the regular native campaign is not replaced, and later saves stay in the separate imported-copy slot.
 5. Use **Load Imported Copy** on later launches to resume it.
 
-## Personnel, Research, And Manufacturing
+## Personnel, Research, Manufacturing, And Loadouts
 
 - The Base screen reports living soldiers, scientists, engineers, and total local Living Quarters occupancy.
 - Each Living Quarters supports 12 personnel; KIA soldiers do not consume capacity.
@@ -79,6 +82,10 @@ The project uses the repository root so the native slice can reuse the existing 
 - Living Quarters cost $300k and take 3 days, Laboratories cost $450k and take 5 days, and Workshops cost $400k and take 4 days. Up to three projects advance concurrently at strategic midnight.
 - Pending facilities show future capacity but cannot accept personnel early. Completed facilities add 12 personnel, 10 Scientist, or 10 Engineer spaces locally and immediately refresh hiring limits.
 - Cancelling construction returns half its prepaid cost. Construction identity, exact days remaining, base ownership, and funds persist in both native and isolated imported-copy saves.
+- The Soldiers screen shows loose Ballistic Rifle, Laser Rifle, and Field Suit stock and provides one weapon and one armor selector for each living soldier.
+- Issuing an item consumes one local-store unit and returns the prior item in the same operation. Unavailable equipment is not offered and cannot be duplicated.
+- New recruits arrive Unarmed and with No Armor. Successful missions recover issued equipment from fallen soldiers; equipment carried by KIA soldiers in failed missions is lost with report feedback.
+- The Tactical Control panel refreshes from the authoritative selected-unit record after movement, firing, breaching, civilian contact, selection changes, and turn transitions, keeping displayed TU aligned with movement highlights.
 
 ## Automated Verification
 
@@ -89,9 +96,9 @@ godot --headless --path . --editor --quit
 godot --headless --path . --script res://godot/tests/test_runner.gd
 ```
 
-The test runner covers campaign creation and travel, native save round-tripping, Workshop and personnel migration, hiring cost/capacity reservations, specialist-capacity blocking despite spare quarters, facility costs and concurrent slots, no-early-capacity rules, staggered completion, construction cancellation and partial-save restoration, three-midnight arrivals, deterministic recruits, bounded research assignment, daily research progression/completion, prerequisite inference, follow-on selection, manufacturing research gates, staffing limits, prepaid FIFO progress, overflow, completion, cancellation, partial-order normalization, mid-interception save/resume, deterministic air combat and return service, exact browser-export wrapper parsing, selected-base grid/research/roster/incident normalization, nested soldier stats and identity, six-seat native assignment capacity, source-file preservation, imported-copy round-tripping, dense strategic markers, bounded hex rules, tactical deployment, movement highlighting, three End Turn cycles, civilian contact cost/linking, wall destruction and traversal, and all visible Build Health rows.
+The test runner covers campaign creation and travel, exact loadout/store save round-tripping, conservative loadout migration, local-stock conservation and unavailable-item rejection, unequipped recruit arrivals, successful KIA equipment recovery, Workshop and personnel migration, hiring/capacity rules, construction, bounded research and manufacturing, air operations, browser-export normalization and source preservation, strategic markers, bounded hex rules, tactical loadout inheritance, Laser Rifle range/TU, selected-unit TU feedback, Unarmed fire rejection, movement highlighting, three End Turn cycles, civilian contact, wall destruction and traversal, and all visible Build Health rows.
 
-Latest verification passes `79/79` native tests and `58/58` visible Build Health rows. Hardware OpenGL 3.3 on the NVIDIA GeForce GTX 960M at 1440x900 rendered imported Fort Aegis with three partial projects, exact operational/projected capacities, progress bars, refunds, blockers, personnel controls, and the shared day control without horizontal overflow. The player confirmed the complete 0008 construction, capacity activation, cancellation, specialist hiring, persistence, and imported-copy isolation gate passes. The unchanged HTML artifact passes six-of-six inline-script parsing, its static seam checker, localhost first-base/Geoscape smoke, and browser Build Health `272/272` with no runtime errors; only the existing Tailwind production-CDN warning remains.
+Latest automated verification passes `88/88` native tests and `63/63` visible Build Health rows. Hardware OpenGL 3.3 smoke on the NVIDIA GeForce GTX 960M loaded the 44-soldier imported roster, exercised assigned and unassigned Laser Rifle exchanges, rendered tactical combat through turn four, and restored the imported-copy save to its exact original checksum. The unchanged HTML artifact still passes its seam checker, six-script static parse, localhost start/Geoscape smoke, and `272/272` browser Build Health with no runtime error. The player confirmed the corrected live TU feedback and accepted 0009 for progression.
 
 ## Deliberate Limits
 
@@ -101,6 +108,10 @@ Latest verification passes `79/79` native tests and `58/58` visible Build Health
 - Native export presets and release packages are not configured yet.
 - Multi-base logistics, soldier relationships, the full research/manufacturing trees, richer aircraft loadouts, and campaign endgame remain in the HTML build.
 
-## Verified Manual Gate
+## Manual Gates
 
 The player confirmed the 0008 gate passes: all three construction costs and slots, no early capacity, exact save/reload countdowns, staggered day 3/4/5 completion, specialist hiring after activation, $150k Living Quarters cancellation refund, and imported-copy source isolation worked as expected.
+
+The player accepted the 0009 gate after confirming that a selected soldier's displayed TU now decreases immediately after firing, in agreement with movement highlighting. Automated, Build Health, GPU, and isolated-save checks cover the remaining bounded loadout contracts recorded above.
+
+Next native patch after this gate: `GODOT.0010_TACTICAL_MEDKIT_AND_WOUNDED_STATUS_RECOVERY_VERTICAL_SLICE`, making already manufactured Medkits useful without importing the browser game's full inventory, body-part injury, or Sickbay simulation.
