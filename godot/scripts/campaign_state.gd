@@ -14,6 +14,7 @@ const MANUFACTURING_PROGRESS_PER_ENGINEER_DAY := 3
 const RESEARCH_REQUIRED_PROGRESS := 100
 const PERSONNEL_ARRIVAL_DAYS := 3
 const MAX_MANUFACTURING_ORDERS := 8
+const MAX_FACILITY_CONSTRUCTION_ORDERS := 3
 const PERSONNEL_HIRING := {
 	"soldier": {"label": "Soldier", "cost": 120},
 	"scientist": {"label": "Scientist", "cost": 95},
@@ -68,6 +69,8 @@ func new_campaign(base_name: String, region_name: String) -> void:
 		"engineers": 0,
 		"personnel_orders": [],
 		"next_personnel_order_id": 1,
+		"facility_construction_orders": [],
+		"next_facility_construction_order_id": 1,
 		"manufacturing_queue": [],
 		"manufacturing_assigned_engineers": 0,
 		"next_manufacturing_order_id": 1,
@@ -191,6 +194,80 @@ func scientist_capacity() -> int:
 
 func engineer_capacity() -> int:
 	return facility_count("workshop") * ENGINEERS_PER_WORKSHOP
+
+func facility_construction_orders() -> Array:
+	return data.get("facility_construction_orders", [])
+
+func pending_facility_count(facility_id: String) -> int:
+	return facility_construction_orders().filter(func(order): return String(order.get("facility_id", "")) == facility_id).size()
+
+func projected_personnel_capacity() -> int:
+	return personnel_capacity() + pending_facility_count("quarters") * PERSONNEL_PER_QUARTERS
+
+func projected_scientist_capacity() -> int:
+	return scientist_capacity() + pending_facility_count("lab") * SCIENTISTS_PER_LAB
+
+func projected_engineer_capacity() -> int:
+	return engineer_capacity() + pending_facility_count("workshop") * ENGINEERS_PER_WORKSHOP
+
+func facility_construction_blocker(facility_id: String) -> String:
+	var definition := _facility_construction_definition(facility_id)
+	if definition.is_empty():
+		return "Facility is not available in this construction slice."
+	if facility_construction_orders().size() >= MAX_FACILITY_CONSTRUCTION_ORDERS:
+		return "Construction queue is full at %d concurrent projects." % MAX_FACILITY_CONSTRUCTION_ORDERS
+	var cost := int(definition.get("build_cost", 0))
+	if int(data.get("funds", 0)) < cost:
+		return "Insufficient funds - $%dk required." % cost
+	return ""
+
+func begin_facility_construction(facility_id: String) -> bool:
+	var blocker := facility_construction_blocker(facility_id)
+	if not blocker.is_empty():
+		add_report("Facility construction blocked: %s" % blocker)
+		return false
+	var definition := _facility_construction_definition(facility_id)
+	var sequence := maxi(1, int(data.get("next_facility_construction_order_id", 1)))
+	var days := maxi(1, int(definition.get("construction_days", 1)))
+	var order := {
+		"id": "facility_%03d" % sequence,
+		"facility_id": facility_id,
+		"label": String(definition.get("name", facility_id)),
+		"cost": maxi(0, int(definition.get("build_cost", 0))),
+		"days_remaining": days,
+		"total_days": days,
+		"base_id": _selected_base_identity()
+	}
+	var orders := facility_construction_orders()
+	orders.append(order)
+	data["facility_construction_orders"] = orders
+	data["next_facility_construction_order_id"] = sequence + 1
+	data["funds"] = int(data.get("funds", 0)) - int(order.get("cost", 0))
+	add_report("Facility construction started: %s for $%dk. Completion in %d days." % [order.get("label", "Facility"), order.get("cost", 0), days])
+	return true
+
+func facility_construction_cancel_refund(order: Dictionary) -> int:
+	return int(floor(float(maxi(0, int(order.get("cost", 0)))) * 0.5))
+
+func cancel_facility_construction(order_id: String) -> bool:
+	var orders := facility_construction_orders()
+	for order_index in range(orders.size()):
+		var order: Dictionary = orders[order_index]
+		if String(order.get("id", "")) != order_id:
+			continue
+		var refund := facility_construction_cancel_refund(order)
+		orders.remove_at(order_index)
+		data["facility_construction_orders"] = orders
+		data["funds"] = int(data.get("funds", 0)) + refund
+		add_report("Facility construction cancelled: %s. Refund $%dk." % [order.get("label", "Facility"), refund])
+		return true
+	return false
+
+func _facility_construction_definition(facility_id: String) -> Dictionary:
+	for definition_value in content.get("facilities", []):
+		if definition_value is Dictionary and String(definition_value.get("id", "")) == facility_id and int(definition_value.get("build_cost", 0)) > 0 and int(definition_value.get("construction_days", 0)) > 0:
+			return definition_value
+	return {}
 
 func living_soldier_count() -> int:
 	var base: Dictionary = data.get("base", {})
@@ -533,6 +610,7 @@ func advance_minutes(amount: int) -> bool:
 		data["minutes"] = int(data["minutes"]) - 24 * 60
 		data["day"] = int(data.get("day", 1)) + 1
 		days_advanced += 1
+	_advance_facility_construction_days(days_advanced)
 	_advance_personnel_days(days_advanced)
 	_advance_research_days(days_advanced)
 	_advance_manufacturing_days(days_advanced)
@@ -569,6 +647,33 @@ func _advance_research_days(days_advanced: int) -> void:
 		var unlock_text := " UNLOCKED: %s." % ", ".join(unlock_labels) if not unlock_labels.is_empty() else ""
 		add_report("RESEARCH COMPLETE: %s.%s" % [topic, unlock_text])
 	data["research"] = research
+
+func _advance_facility_construction_days(days_advanced: int) -> void:
+	if days_advanced <= 0 or facility_construction_orders().is_empty():
+		return
+	var remaining_orders: Array = []
+	for order_value in facility_construction_orders():
+		if not order_value is Dictionary:
+			continue
+		var order: Dictionary = order_value
+		order["days_remaining"] = maxi(0, int(order.get("days_remaining", 1)) - days_advanced)
+		if int(order.get("days_remaining", 0)) > 0:
+			remaining_orders.append(order)
+			continue
+		var facility_id := String(order.get("facility_id", ""))
+		var definition := _facility_construction_definition(facility_id)
+		if definition.is_empty():
+			continue
+		var base: Dictionary = data.get("base", {})
+		var counts: Dictionary = base.get("facility_counts", {}).duplicate(true)
+		counts[facility_id] = int(counts.get(facility_id, 0)) + 1
+		base["facility_counts"] = counts
+		var facilities: Array = base.get("facilities", []).duplicate(true)
+		facilities.append(facility_id)
+		base["facilities"] = facilities
+		data["base"] = base
+		add_report("FACILITY COMPLETE: %s is now operational." % definition.get("name", facility_id))
+	data["facility_construction_orders"] = remaining_orders
 
 func _advance_manufacturing_days(days_advanced: int) -> void:
 	if days_advanced <= 0 or manufacturing_queue().is_empty():
@@ -1167,6 +1272,30 @@ func normalize_save(source: Dictionary) -> Dictionary:
 			normalized_orders.append(order)
 	normalized["personnel_orders"] = normalized_orders
 	normalized["next_personnel_order_id"] = maxi(int(normalized.get("next_personnel_order_id", 1)), normalized_orders.size() + 1)
+	var construction_value: Variant = normalized.get("facility_construction_orders", [])
+	var normalized_construction: Array = []
+	if construction_value is Array:
+		for order_index in range(mini(construction_value.size(), MAX_FACILITY_CONSTRUCTION_ORDERS)):
+			var order_value: Variant = construction_value[order_index]
+			if not order_value is Dictionary:
+				continue
+			var order: Dictionary = order_value.duplicate(true)
+			var facility_id := String(order.get("facility_id", order.get("facility", "")))
+			var definition := _facility_construction_definition(facility_id)
+			if definition.is_empty():
+				continue
+			var sequence := order_index + 1
+			var total_days := maxi(1, int(order.get("total_days", order.get("days", definition.get("construction_days", 1)))))
+			order["id"] = String(order.get("id", "facility_%03d" % sequence))
+			order["facility_id"] = facility_id
+			order["label"] = String(order.get("label", definition.get("name", facility_id)))
+			order["cost"] = maxi(0, int(order.get("cost", definition.get("build_cost", 0))))
+			order["days_remaining"] = clampi(int(order.get("days_remaining", order.get("daysLeft", total_days))), 1, total_days)
+			order["total_days"] = total_days
+			order["base_id"] = String(order.get("base_id", normalized_base.get("source_id", normalized_base.get("id", normalized_base.get("name", "Fort Aegis")))))
+			normalized_construction.append(order)
+	normalized["facility_construction_orders"] = normalized_construction
+	normalized["next_facility_construction_order_id"] = maxi(int(normalized.get("next_facility_construction_order_id", 1)), normalized_construction.size() + 1)
 	var manufacturing_value: Variant = normalized.get("manufacturing_queue", [])
 	var normalized_manufacturing: Array = []
 	if manufacturing_value is Array:

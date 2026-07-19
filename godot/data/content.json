@@ -1,5 +1,5 @@
 {
-  "build": "v0.26.07.19.GODOT.0007_ENGINEERING_STAFFING_AND_MANUFACTURING_QUEUE_VERTICAL_SLICE",
+  "build": "v0.26.07.19.GODOT.0008_BASE_FACILITY_CONSTRUCTION_AND_SPECIALIST_CAPACITY_VERTICAL_SLICE",
   "save_format": 4,
   "research_projects": [
     {
@@ -47,9 +47,9 @@
   ],
   "facilities": [
     {"id": "access", "name": "Access Lift", "color": "#38bdf8"},
-    {"id": "quarters", "name": "Living Quarters", "color": "#22c55e"},
-    {"id": "lab", "name": "Laboratory", "color": "#a78bfa"},
-    {"id": "workshop", "name": "Workshop", "color": "#f59e0b"},
+    {"id": "quarters", "name": "Living Quarters", "color": "#22c55e", "build_cost": 300, "construction_days": 3, "capacity_label": "+12 personnel"},
+    {"id": "lab", "name": "Laboratory", "color": "#a78bfa", "build_cost": 450, "construction_days": 5, "capacity_label": "+10 Scientists"},
+    {"id": "workshop", "name": "Workshop", "color": "#f59e0b", "build_cost": 400, "construction_days": 4, "capacity_label": "+10 Engineers"},
     {"id": "sickbay", "name": "Sickbay", "color": "#fb7185"},
     {"id": "stores", "name": "Base Stores", "color": "#f59e0b"},
     {"id": "hangar_interceptor", "name": "Interceptor Hangar", "color": "#64748b"},

@@ -3,8 +3,8 @@
 
 Last updated: 2026-07-19
 Current handoff build: `v0.26.07.17.0137_TACTICAL_CONTINUOUS_WALLS_AND_TRAVERSABLE_BREACHES_INDEX_ONLY_PATCH`
-Native vertical slice: `v0.26.07.19.GODOT.0007_ENGINEERING_STAFFING_AND_MANUFACTURING_QUEUE_VERTICAL_SLICE`
-Current patch status: **The verified HTML build remains 0137 with save format 4 and its browser validation/manual gates unchanged. Native build 0007 replaces instant Workshop delivery with a bounded base-local production loop: up to 10 assigned Engineers per Workshop, three work points per Engineer at each strategic midnight, prepaid FIFO Medkit and research-gated Laser Rifle orders, overflow work, local-store delivery, half-cost cancellation, exact partial-order persistence, and conservative empty-queue migration for earlier native saves. Native tests pass 70/70 and all 52/52 native Build Health rows pass. Hardware OpenGL 3.3 rendered the staffed Workshop and scrolled queue cleanly at 1440x900. The unchanged HTML build passes six-of-six script parsing, the seam checker, localhost first-base/Geoscape smoke, browser Build Health 272/272, and an empty runtime-error check. The player confirmed all 0007 hands-on tests pass. The live imported Fort Aegis can use its staffed Workshop but remains unable to hire additional Scientists or Engineers until bounded facility construction is implemented in the next native slice.**
+Native vertical slice: `v0.26.07.19.GODOT.0008_BASE_FACILITY_CONSTRUCTION_AND_SPECIALIST_CAPACITY_VERTICAL_SLICE`
+Current patch status: **The verified HTML build remains 0137 with save format 4 and its browser validation/manual gates unchanged. Verified native 0007 is published on `main` as `37f270d`. Native build 0008 adds the first bounded local facility expansion loop: browser-established $300k Living Quarters, $450k Laboratory, and $400k Workshop costs; three concurrent prepaid project slots; 3/5/4-day midnight countdowns; no capacity before completion; exact partial-project persistence; half-cost cancellation; and immediate hiring-limit refresh when facilities become operational. Native tests pass 79/79 and all 58/58 native Build Health rows pass. Hardware OpenGL 3.3 rendered the exact imported Fort Aegis construction state cleanly at 1440x900. The unchanged HTML build passes six-of-six script parsing, the seam checker, localhost first-base/Geoscape smoke, browser Build Health 272/272, and an empty runtime-error check. The player confirmed the complete 0008 hands-on construction, persistence, capacity, specialist-hiring, cancellation, and imported-copy isolation gate passes.**
 
 ---
 
@@ -52,7 +52,7 @@ The player commands a fledgling global defense organization responding to escala
 `v0.26.07.17.0137_TACTICAL_CONTINUOUS_WALLS_AND_TRAVERSABLE_BREACHES_INDEX_ONLY_PATCH`
 
 ## Native Vertical Slice Build
-`v0.26.07.19.GODOT.0007_ENGINEERING_STAFFING_AND_MANUFACTURING_QUEUE_VERTICAL_SLICE`
+`v0.26.07.19.GODOT.0008_BASE_FACILITY_CONSTRUCTION_AND_SPECIALIST_CAPACITY_VERTICAL_SLICE`
 
 ## What This Patch Was Intended To Add
 This patch adds:
@@ -1274,7 +1274,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Run native build 0007 from the campaign that passed the 0006 tests. Queue two Medkits, confirm $80k is prepaid, assign Engineers, and verify one midnight advances only the active order. On the second midnight, confirm the first Medkit enters local stores and excess work carries into the second FIFO order. Change staffing, save/reload, and confirm exact order identity, progress, assignment, and ETA. Cancel an order and confirm a half-cost refund. Complete Laser Weapons, queue a $180k Laser Rifle, and confirm it takes 60 work instead of appearing instantly. Repeat a short queue/progress/save cycle in imported Fort Aegis and confirm the browser source export remains unchanged. This is the current native manual-testing gate; do not treat it as a complete campaign port.
+Run native build 0008 from imported Fort Aegis with its full 10/10 Laboratory and Workshop. Start Living Quarters, Laboratory, and Workshop projects; verify the $1.15M deduction, three-slot limit, no early capacity, and independent countdowns. After two days, save/reload and confirm 1/3, 3/5, and 2/4 days remain. Confirm capacities activate on days 3, 4, and 5, then hire one Scientist and Engineer. Cancel a later Living Quarters project and verify the $150k refund. Save the imported copy and confirm the browser export remains unchanged. This is the current native manual-testing gate; do not treat it as a complete campaign port.
 
 In a mandatory civilian-rescue incident, hand AI Command the live battlefield after the last alien dies or just before AI kills it. Confirm AI enters secure rescue, searches for unrevealed survivors, preserves existing escort chains, reports rescued/required progress, and extracts enough civilians before victory. Confirm an impossible requirement still resolves and an exhausted bounded rescue does not falsely mark surviving soldiers KIA. Then trigger a UFO speed prompt while working in Base, Soldiers, Research, Workshop, and Missions; choose a speed and confirm the same command section remains open while time advances. Repeat from an in-progress incident and confirm the battlefield remains active until the deferred speed applies after battle.
 
@@ -2930,6 +2930,42 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.19.GODOT.0008 - Base Facility Construction and Specialist Capacity Vertical Slice
+
+Native build `v0.26.07.19.GODOT.0008_BASE_FACILITY_CONSTRUCTION_AND_SPECIALIST_CAPACITY_VERTICAL_SLICE` preserves save format 4 and follows the player-confirmed 0007 gate with the smallest local base-expansion loop needed to resolve full specialist facilities.
+
+Implemented scope:
+
+- Added Living Quarters, Laboratory, and Workshop projects using the browser campaign's established $300k, $450k, and $400k costs.
+- Living Quarters take three crossed strategic midnights, Workshops take four, and Laboratories take five. Up to three projects advance concurrently.
+- Construction is prepaid. A project occupies one bounded slot and grants no operational capacity until its exact completion day.
+- Completed Living Quarters add 12 local personnel spaces, Laboratories add 10 Scientist spaces, and Workshops add 10 Engineer spaces. Existing hiring blockers immediately recalculate from the operational counts.
+- Pending projects expose future facility count and capacity without permitting early specialist orders.
+- Projects can be cancelled for half their prepaid cost. Identity, facility type, base ownership, cost, total duration, and exact days remaining persist in native or isolated imported-copy saves.
+- The Base screen now combines construction catalog, operational/projected counts, three-slot status, funds, active progress, cancellation refund, personnel arrivals, and one shared strategic-day control.
+
+Performance and compatibility:
+
+- Construction is bounded to three records and updates only at strategic midnight; no tactical, rendering-loop, pathfinding, or per-frame work was added.
+- Native 0001-0007 saves receive an empty construction list. Existing and imported repeated facility counts remain authoritative and are incremented only by completed local projects.
+- Save format remains 4. Browser exports remain read only, and native/imported-copy slot isolation is unchanged.
+
+Verification completed:
+
+- Godot 4.7.1 strict editor parsing passed during implementation.
+- Native tests pass `79/79`; visible native Build Health passes `58/58` through the same runner.
+- Coverage includes exact established costs, three concurrent slots, full-queue blocking, no early capacity, projected capacity, independent countdowns, partial native save/reload, staggered completion, half-cost cancellation, specialist hiring reopening, and legacy empty-queue migration.
+- Hardware OpenGL 3.3 on the NVIDIA GeForce GTX 960M rendered imported Fort Aegis at 1440x900 with three partial projects, `[1, 3, 2]` days remaining, operational capacities `48/10/10`, and projected capacities `60/20/20`; catalog, progress, refunds, blockers, and personnel controls showed no horizontal overflow.
+- The unchanged HTML artifact's six inline scripts parsed, `node tools\check-aegis-build.cjs` passed, localhost reached first-base setup and Geoscape, browser Build Health passed `272/272`, and runtime errors were empty. The only warning was the existing Tailwind production-CDN notice.
+
+Manual validation completed by player:
+
+- The $1.15M three-project start, full-slot blocker, and no-early-capacity rules passed in imported Fort Aegis.
+- Save/reload preserved exact project identities and 1/3, 3/5, and 2/4 days remaining.
+- Day 3/4/5 capacity activation, reopened Scientist/Engineer hiring, half-cost cancellation, and unchanged browser source bytes all passed.
+
+Next native step after live validation: `GODOT.0009_LOCAL_BASE_INVENTORY_AND_SOLDIER_LOADOUT_VERTICAL_SLICE`, making manufactured local-store equipment usable by native soldiers through a bounded weapon/armor assignment flow without importing the browser game's full Quartermaster, transfer, or multi-base logistics systems.
 
 ## v0.26.07.19.GODOT.0007 - Engineering Staffing and Manufacturing Queue Vertical Slice
 

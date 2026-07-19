@@ -31,8 +31,8 @@
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
     "mainScene": "godot/main.tscn",
-    "build": "v0.26.07.19.GODOT.0007_ENGINEERING_STAFFING_AND_MANUFACTURING_QUEUE_VERTICAL_SLICE",
+    "build": "v0.26.07.19.GODOT.0008_BASE_FACILITY_CONSTRUCTION_AND_SPECIALIST_CAPACITY_VERTICAL_SLICE",
     "saveFormat": 4,
-    "status": "engineering-staffing-manufacturing-queue-manual-test"
+    "status": "base-facility-construction-specialist-capacity-manual-test"
   }
 }

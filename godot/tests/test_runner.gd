@@ -59,10 +59,12 @@ func _test_campaign(content: Dictionary) -> void:
 	legacy.erase("manufacturing_queue")
 	legacy.erase("manufacturing_assigned_engineers")
 	legacy.erase("next_manufacturing_order_id")
+	legacy.erase("facility_construction_orders")
+	legacy.erase("next_facility_construction_order_id")
 	legacy["base"].erase("facility_counts")
 	legacy["research"] = {"active": "Laser Weapons", "progress": 8}
 	var migrated := campaign.normalize_save(legacy)
-	_check(int(migrated.get("scientists", 0)) == 5 and int(migrated.get("engineers", -1)) == 0 and int(migrated.get("base", {}).get("facility_counts", {}).get("quarters", 0)) == 1 and int(migrated.get("base", {}).get("facility_counts", {}).get("workshop", 0)) == 1 and int(migrated.get("research", {}).get("assigned_scientists", 0)) == 5 and migrated.get("personnel_orders", []).is_empty() and migrated.get("manufacturing_queue", []).is_empty() and int(migrated.get("manufacturing_assigned_engineers", -1)) == 0, "legacy native saves receive conservative personnel and manufacturing defaults")
+	_check(int(migrated.get("scientists", 0)) == 5 and int(migrated.get("engineers", -1)) == 0 and int(migrated.get("base", {}).get("facility_counts", {}).get("quarters", 0)) == 1 and int(migrated.get("base", {}).get("facility_counts", {}).get("workshop", 0)) == 1 and int(migrated.get("research", {}).get("assigned_scientists", 0)) == 5 and migrated.get("personnel_orders", []).is_empty() and migrated.get("manufacturing_queue", []).is_empty() and int(migrated.get("manufacturing_assigned_engineers", -1)) == 0 and migrated.get("facility_construction_orders", []).is_empty(), "legacy native saves receive conservative personnel manufacturing and construction defaults")
 	var personnel_campaign := AegisCampaignState.new()
 	personnel_campaign.configure(content)
 	personnel_campaign.new_campaign("Queue Test", "North America")
@@ -89,6 +91,35 @@ func _test_campaign(content: Dictionary) -> void:
 	specialist_campaign.data["scientists"] = 10
 	specialist_campaign.data["engineers"] = 10
 	_check(specialist_campaign.projected_personnel_used() == 26 and specialist_campaign.personnel_capacity() == 36 and specialist_campaign.personnel_hiring_blocker("soldier").is_empty() and specialist_campaign.personnel_hiring_blocker("scientist").contains("Laboratory full") and specialist_campaign.personnel_hiring_blocker("engineer").contains("Workshop full"), "spare quarters do not bypass full Laboratory or Workshop capacity")
+	var construction_campaign := AegisCampaignState.new()
+	construction_campaign.configure(content)
+	construction_campaign.new_campaign("Construction Test", "North America")
+	construction_campaign.data["scientists"] = 10
+	construction_campaign.data["engineers"] = 10
+	var construction_funds_before := int(construction_campaign.data.get("funds", 0))
+	_check(construction_campaign.begin_facility_construction("quarters") and construction_campaign.begin_facility_construction("lab") and construction_campaign.begin_facility_construction("workshop") and construction_campaign.facility_construction_orders().size() == 3 and int(construction_campaign.data.get("funds", 0)) == construction_funds_before - 1150, "facility projects prepay browser-established costs into three concurrent slots")
+	var queue_full_funds := int(construction_campaign.data.get("funds", 0))
+	_check(not construction_campaign.begin_facility_construction("quarters") and int(construction_campaign.data.get("funds", 0)) == queue_full_funds and construction_campaign.personnel_capacity() == 12 and construction_campaign.scientist_capacity() == 10 and construction_campaign.engineer_capacity() == 10 and construction_campaign.projected_personnel_capacity() == 24 and construction_campaign.projected_scientist_capacity() == 20 and construction_campaign.projected_engineer_capacity() == 20, "pending construction is bounded and does not grant operational capacity early")
+	construction_campaign.advance_minutes(2 * 24 * 60)
+	_check(construction_campaign.facility_construction_orders().map(func(order): return int(order.get("days_remaining", 0))) == [1, 3, 2] and construction_campaign.facility_count("quarters") == 1 and construction_campaign.facility_count("lab") == 1 and construction_campaign.facility_count("workshop") == 1, "concurrent facility projects retain independent countdowns")
+	var construction_save_path := "user://project_aegis_godot_construction_test_save.json"
+	_check(construction_campaign.save_campaign(construction_save_path), "partial facility construction writes native save state")
+	var construction_loaded := AegisCampaignState.new()
+	construction_loaded.configure(content)
+	_check(construction_loaded.load_campaign(construction_save_path) and construction_loaded.facility_construction_orders().map(func(order): return int(order.get("days_remaining", 0))) == [1, 3, 2], "partial facility construction reloads exact countdowns")
+	construction_campaign.advance_minutes(24 * 60)
+	_check(construction_campaign.facility_count("quarters") == 2 and construction_campaign.facility_construction_orders().size() == 2 and construction_campaign.personnel_capacity() == 24, "completed Living Quarters activate twelve local personnel spaces")
+	construction_campaign.advance_minutes(2 * 24 * 60)
+	_check(construction_campaign.facility_construction_orders().is_empty() and construction_campaign.scientist_capacity() == 20 and construction_campaign.engineer_capacity() == 20, "Laboratory and Workshop capacity activate only on their completion days")
+	var construction_cancel_funds := int(construction_campaign.data.get("funds", 0))
+	construction_campaign.begin_facility_construction("quarters")
+	var cancelled_construction: Dictionary = construction_campaign.facility_construction_orders()[0]
+	_check(construction_campaign.cancel_facility_construction(String(cancelled_construction.get("id", ""))) and construction_campaign.facility_construction_orders().is_empty() and int(construction_campaign.data.get("funds", 0)) == construction_cancel_funds - 150, "facility cancellation returns half of prepaid construction cost")
+	construction_campaign.begin_facility_construction("quarters")
+	construction_campaign.advance_minutes(3 * 24 * 60)
+	_check(construction_campaign.personnel_capacity() == 36 and construction_campaign.personnel_hiring_blocker("scientist").is_empty() and construction_campaign.personnel_hiring_blocker("engineer").is_empty(), "completed capacity expansion reopens specialist hiring")
+	if FileAccess.file_exists(construction_save_path):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(construction_save_path))
 	campaign.set_research_staffing(3)
 	_check(campaign.research_assigned_scientists() == 3 and campaign.research_daily_progress() == 6, "research staffing remains bounded by available scientists and lab capacity")
 	var research_before := int(campaign.data.get("research", {}).get("progress", 0))
@@ -249,9 +280,9 @@ func _test_build_health() -> void:
 	var app: Node = load("res://godot/main.tscn").instantiate()
 	app.content = _load_json("res://godot/data/content.json")
 	var health: Array = app._run_self_tests()
-	if health.size() != 52 or not health.all(func(row): return row.get("pass", false)):
+	if health.size() != 58 or not health.all(func(row): return row.get("pass", false)):
 		print("BUILD HEALTH DETAIL: %s" % JSON.stringify(health))
-	_check(health.size() == 52 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 52 rows")
+	_check(health.size() == 58 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 58 rows")
 	app.free()
 
 func _load_json(path: String) -> Dictionary:

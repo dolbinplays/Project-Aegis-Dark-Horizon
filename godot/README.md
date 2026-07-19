@@ -1,6 +1,6 @@
 # Project Aegis Godot 4 Vertical Slice
 
-Native build: `v0.26.07.19.GODOT.0007_ENGINEERING_STAFFING_AND_MANUFACTURING_QUEUE_VERTICAL_SLICE`
+Native build: `v0.26.07.19.GODOT.0008_BASE_FACILITY_CONSTRUCTION_AND_SPECIALIST_CAPACITY_VERTICAL_SLICE`
 
 This is a native Godot 4 vertical slice alongside the verified HTML game. It does not wrap `index.html`, replace the browser build, or write to the browser campaign save.
 
@@ -24,6 +24,8 @@ The project uses the repository root so the native slice can reuse the existing 
 - Destructible wall cells that become nonblocking rubble for every tactical mover.
 - Read-only browser campaign export selection, compatibility review, and subset normalization into a separate native imported-copy slot.
 - Base-local personnel occupancy with 12 staff per Living Quarters, 10 scientists per Laboratory, live overflow feedback, and repeated imported facility counts.
+- Prepaid concurrent construction for Living Quarters, Laboratories, and Workshops using the browser campaign's established $300k, $450k, and $400k costs.
+- Three, five, and four-day facility countdowns with operational capacity granted only at completion, three bounded project slots, half-cost cancellation, and exact partial-project persistence.
 - Adjustable research staffing bounded by available scientists and Laboratory capacity, with deterministic daily research points and completion reports.
 - Base-local Soldier, Scientist, and Engineer hiring orders with established costs, three-day arrival timing, projected capacity reservations, half-refund cancellation, and deterministic recruit identities.
 - Ten Engineer spaces per Workshop, including a conservative Workshop migration for native 0001-0005 campaigns that already exposed the Workshop command screen.
@@ -31,7 +33,7 @@ The project uses the repository root so the native slice can reuse the existing 
 - A bounded prepaid FIFO manufacturing queue for Medkits and research-gated Laser Rifles, including progress, ETA, local-store delivery, overflow work, half-cost cancellation, and exact save persistence.
 - Laser Weapons completion unlocking Laser Power Output 1 and queued Laser Rifle production in the Workshop.
 - Native JSON save format 4 at `user://project_aegis_godot_save_v4.json`, with imported campaigns isolated at `user://project_aegis_godot_imported_copy_v4.json`.
-- In-game Build Health with 52 checks, including bounded tactical-log trimming, the complete air-operation lifecycle, browser-import isolation, personnel arrivals, research unlocks, manufacturing staffing/FIFO/persistence, large-list scrolling, and dense strategic marker placement.
+- In-game Build Health with 58 checks, including bounded tactical-log trimming, the complete air-operation lifecycle, browser-import isolation, personnel arrivals, research unlocks, manufacturing staffing/FIFO/persistence, facility construction/capacity activation, large-list scrolling, and dense strategic marker placement.
 
 ## Tactical Controls
 
@@ -74,6 +76,9 @@ The project uses the repository root so the native slice can reuse the existing 
 - Workshop orders deduct their full cost when queued. Medkits require 18 work and Laser Rifles require 60 work; each assigned Engineer contributes 3 work per strategic day.
 - Only the active FIFO order receives work. Excess midnight output carries into the next order, completed items enter local stores, and an empty queue releases its Engineers.
 - Cancelling any queued order returns half its prepaid cost. Queue order, progress, assignment, and deterministic identifiers survive save/reload without changing save format 4.
+- Living Quarters cost $300k and take 3 days, Laboratories cost $450k and take 5 days, and Workshops cost $400k and take 4 days. Up to three projects advance concurrently at strategic midnight.
+- Pending facilities show future capacity but cannot accept personnel early. Completed facilities add 12 personnel, 10 Scientist, or 10 Engineer spaces locally and immediately refresh hiring limits.
+- Cancelling construction returns half its prepaid cost. Construction identity, exact days remaining, base ownership, and funds persist in both native and isolated imported-copy saves.
 
 ## Automated Verification
 
@@ -84,9 +89,9 @@ godot --headless --path . --editor --quit
 godot --headless --path . --script res://godot/tests/test_runner.gd
 ```
 
-The test runner covers campaign creation and travel, native save round-tripping, Workshop and personnel migration, hiring cost/capacity reservations, specialist-capacity blocking despite spare quarters, cancellation refunds, three-midnight arrivals, deterministic recruits, bounded research assignment, daily research progression/completion, prerequisite inference, follow-on selection, manufacturing research gates, staffing limits, prepaid FIFO progress, overflow, completion, cancellation, partial-order normalization, mid-interception save/resume, deterministic air combat and return service, exact browser-export wrapper parsing, selected-base grid/research/roster/incident normalization, nested soldier stats and identity, six-seat native assignment capacity, source-file preservation, imported-copy round-tripping, dense strategic markers, bounded hex rules, tactical deployment, movement highlighting, three End Turn cycles, civilian contact cost/linking, wall destruction and traversal, and all visible Build Health rows.
+The test runner covers campaign creation and travel, native save round-tripping, Workshop and personnel migration, hiring cost/capacity reservations, specialist-capacity blocking despite spare quarters, facility costs and concurrent slots, no-early-capacity rules, staggered completion, construction cancellation and partial-save restoration, three-midnight arrivals, deterministic recruits, bounded research assignment, daily research progression/completion, prerequisite inference, follow-on selection, manufacturing research gates, staffing limits, prepaid FIFO progress, overflow, completion, cancellation, partial-order normalization, mid-interception save/resume, deterministic air combat and return service, exact browser-export wrapper parsing, selected-base grid/research/roster/incident normalization, nested soldier stats and identity, six-seat native assignment capacity, source-file preservation, imported-copy round-tripping, dense strategic markers, bounded hex rules, tactical deployment, movement highlighting, three End Turn cycles, civilian contact cost/linking, wall destruction and traversal, and all visible Build Health rows.
 
-Latest verification passes `70/70` native tests and `52/52` visible Build Health rows. Hardware OpenGL 3.3 on the NVIDIA GeForce GTX 960M at 1440x900 verifies the staffed Workshop catalog and scrolled partial-order queue without clipping or horizontal overflow. The player confirmed the complete 0007 manual queue, staffing, cancellation, completion, and persistence gate passes. The unchanged HTML artifact also passes six-of-six inline-script parsing, its static seam checker, localhost first-base/Geoscape smoke, and browser Build Health `272/272` with no runtime errors; only the existing Tailwind production-CDN warning remains.
+Latest verification passes `79/79` native tests and `58/58` visible Build Health rows. Hardware OpenGL 3.3 on the NVIDIA GeForce GTX 960M at 1440x900 rendered imported Fort Aegis with three partial projects, exact operational/projected capacities, progress bars, refunds, blockers, personnel controls, and the shared day control without horizontal overflow. The player confirmed the complete 0008 construction, capacity activation, cancellation, specialist hiring, persistence, and imported-copy isolation gate passes. The unchanged HTML artifact passes six-of-six inline-script parsing, its static seam checker, localhost first-base/Geoscape smoke, and browser Build Health `272/272` with no runtime errors; only the existing Tailwind production-CDN warning remains.
 
 ## Deliberate Limits
 
@@ -98,4 +103,4 @@ Latest verification passes `70/70` native tests and `52/52` visible Build Health
 
 ## Verified Manual Gate
 
-The player confirmed the 0007 Workshop gate passes: prepaid Medkit and Laser Rifle orders, staffing limits, active-only midnight progress, FIFO overflow, local-store delivery, partial-order save/reload, half-cost cancellation, and isolated imported-copy behavior all worked as expected.
+The player confirmed the 0008 gate passes: all three construction costs and slots, no early capacity, exact save/reload countdowns, staggered day 3/4/5 completion, specialist hiring after activation, $150k Living Quarters cancellation refund, and imported-copy source isolation worked as expected.

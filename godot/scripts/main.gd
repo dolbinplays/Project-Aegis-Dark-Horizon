@@ -1,6 +1,6 @@
 extends Control
 
-const NATIVE_BUILD := "v0.26.07.19.GODOT.0007_ENGINEERING_STAFFING_AND_MANUFACTURING_QUEUE_VERTICAL_SLICE"
+const NATIVE_BUILD := "v0.26.07.19.GODOT.0008_BASE_FACILITY_CONSTRUCTION_AND_SPECIALIST_CAPACITY_VERTICAL_SLICE"
 const MAX_BROWSER_IMPORT_BYTES := 32 * 1024 * 1024
 
 var content: Dictionary = {}
@@ -603,7 +603,12 @@ func _render_base() -> void:
 	root.add_child(summary)
 	if personnel_used > personnel_capacity:
 		root.add_child(_label("PERSONNEL CAPACITY EXCEEDED - %d staff require additional Living Quarters." % (personnel_used - personnel_capacity), 13, color_red, true))
+	_render_facility_construction(root)
 	_render_personnel_office(root)
+	var advance_button := _action_button("Advance One Strategic Day", _advance_base_day, true)
+	advance_button.disabled = not campaign.data.get("travel", {}).is_empty() or not campaign.data.get("interception", {}).is_empty()
+	advance_button.tooltip_text = "Strategic time advance is unavailable during an active flight operation." if advance_button.disabled else "Advance personnel arrivals, construction, research, manufacturing, and aircraft service together."
+	root.add_child(advance_button)
 	var grid := GridContainer.new()
 	grid.columns = 3
 	grid.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -635,6 +640,63 @@ func _facility_status(facility_id: String) -> String:
 		"radar":"4,500 km coverage active."
 	}
 	return statuses.get(facility_id, "Facility ready.")
+
+func _render_facility_construction(root: VBoxContainer) -> void:
+	var construction := VBoxContainer.new()
+	construction.add_theme_constant_override("separation", 12)
+	var orders := campaign.facility_construction_orders()
+	construction.add_child(_label("FACILITY CONSTRUCTION", 18, color_cyan))
+	construction.add_child(_label("%d/%d concurrent projects - Available funds $%dk" % [orders.size(), AegisCampaignState.MAX_FACILITY_CONSTRUCTION_ORDERS, campaign.data.get("funds", 0)], 13, color_muted, true))
+	var catalog := GridContainer.new()
+	catalog.columns = 3
+	catalog.add_theme_constant_override("h_separation", 10)
+	for definition_value in content.get("facilities", []):
+		var definition: Dictionary = definition_value
+		if int(definition.get("build_cost", 0)) <= 0 or int(definition.get("construction_days", 0)) <= 0:
+			continue
+		var facility_id := String(definition.get("id", ""))
+		var blocker := campaign.facility_construction_blocker(facility_id)
+		var card := VBoxContainer.new()
+		card.custom_minimum_size = Vector2(250, 150)
+		card.add_theme_constant_override("separation", 8)
+		card.add_child(_label(definition.get("name", facility_id), 17, Color(definition.get("color", "#67e8f9")), true))
+		card.add_child(_label("%s - %d day%s" % [definition.get("capacity_label", "Capacity expansion"), definition.get("construction_days", 0), "" if int(definition.get("construction_days", 0)) == 1 else "s"], 12, color_muted, true))
+		card.add_child(_label("Operational %d - After projects %d" % [campaign.facility_count(facility_id), campaign.facility_count(facility_id) + campaign.pending_facility_count(facility_id)], 12, color_text, true))
+		card.add_spacer(false)
+		var build_button := _action_button("Build - $%dk" % definition.get("build_cost", 0), func(): _begin_facility_construction(facility_id), true)
+		build_button.disabled = not blocker.is_empty()
+		build_button.tooltip_text = blocker if build_button.disabled else "Prepay and begin this local facility project."
+		card.add_child(build_button)
+		catalog.add_child(_panel_with(card, 16))
+	construction.add_child(catalog)
+	if orders.is_empty():
+		construction.add_child(_label("No facilities currently under construction.", 13, color_green))
+	else:
+		construction.add_child(_separator())
+		construction.add_child(_label("ACTIVE CONSTRUCTION", 12, color_muted))
+		for order_value in orders:
+			var order: Dictionary = order_value
+			var row := HBoxContainer.new()
+			row.add_theme_constant_override("separation", 12)
+			var text := VBoxContainer.new()
+			text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			text.add_child(_label(order.get("label", "Facility"), 15, color_text))
+			var progress := ProgressBar.new()
+			var total_days := maxi(1, int(order.get("total_days", 1)))
+			var days_remaining := clampi(int(order.get("days_remaining", total_days)), 0, total_days)
+			progress.max_value = total_days
+			progress.value = total_days - days_remaining
+			progress.custom_minimum_size = Vector2(520, 26)
+			text.add_child(progress)
+			text.add_child(_label("%d day%s remaining - capacity activates on completion" % [days_remaining, "" if days_remaining == 1 else "s"], 12, color_muted, true))
+			row.add_child(text)
+			var order_id := String(order.get("id", ""))
+			var refund := campaign.facility_construction_cancel_refund(order)
+			var cancel_button := _small_button("Cancel +$%dk" % refund, func(): _cancel_facility_construction(order_id))
+			cancel_button.tooltip_text = "Cancel this project and recover half of its prepaid cost."
+			row.add_child(cancel_button)
+			construction.add_child(row)
+	root.add_child(_panel_with(construction, 20))
 
 func _render_personnel_office(root: VBoxContainer) -> void:
 	var office := VBoxContainer.new()
@@ -678,10 +740,17 @@ func _render_personnel_office(root: VBoxContainer) -> void:
 			var order_id := String(order.get("id", ""))
 			row.add_child(_small_button("Cancel (+$%dk)" % campaign.personnel_order_cancel_refund(order), func(): _cancel_personnel_order(order_id)))
 			office.add_child(row)
-	var advance_button := _action_button("Advance One Day", _advance_personnel_day)
-	advance_button.disabled = not campaign.data.get("travel", {}).is_empty() or not campaign.data.get("interception", {}).is_empty()
-	office.add_child(advance_button)
 	root.add_child(_panel_with(office, 20))
+
+func _begin_facility_construction(facility_id: String) -> void:
+	campaign.begin_facility_construction(facility_id)
+	campaign.save_campaign()
+	_show_command("base")
+
+func _cancel_facility_construction(order_id: String) -> void:
+	campaign.cancel_facility_construction(order_id)
+	campaign.save_campaign()
+	_show_command("base")
 
 func _hire_personnel(personnel_type: String) -> void:
 	campaign.hire_personnel(personnel_type)
@@ -693,7 +762,7 @@ func _cancel_personnel_order(order_id: String) -> void:
 	campaign.save_campaign()
 	_show_command("base")
 
-func _advance_personnel_day() -> void:
+func _advance_base_day() -> void:
 	campaign.advance_minutes(24 * 60)
 	campaign.save_campaign()
 	_show_command("base")
@@ -1243,10 +1312,12 @@ func _run_self_tests() -> Array:
 	management_legacy.erase("manufacturing_queue")
 	management_legacy.erase("manufacturing_assigned_engineers")
 	management_legacy.erase("next_manufacturing_order_id")
+	management_legacy.erase("facility_construction_orders")
+	management_legacy.erase("next_facility_construction_order_id")
 	management_legacy["base"].erase("facility_counts")
 	management_legacy["research"] = {"active": "Laser Weapons", "progress": 8}
 	var management_migrated := management_campaign.normalize_save(management_legacy)
-	var management_migration_ready: bool = int(management_migrated.get("scientists", 0)) == 5 and int(management_migrated.get("engineers", -1)) == 0 and int(management_migrated.get("base", {}).get("facility_counts", {}).get("quarters", 0)) == 1 and int(management_migrated.get("base", {}).get("facility_counts", {}).get("workshop", 0)) == 1 and int(management_migrated.get("research", {}).get("assigned_scientists", 0)) == 5 and management_migrated.get("personnel_orders", []).is_empty() and management_migrated.get("manufacturing_queue", []).is_empty() and int(management_migrated.get("manufacturing_assigned_engineers", -1)) == 0
+	var management_migration_ready: bool = int(management_migrated.get("scientists", 0)) == 5 and int(management_migrated.get("engineers", -1)) == 0 and int(management_migrated.get("base", {}).get("facility_counts", {}).get("quarters", 0)) == 1 and int(management_migrated.get("base", {}).get("facility_counts", {}).get("workshop", 0)) == 1 and int(management_migrated.get("research", {}).get("assigned_scientists", 0)) == 5 and management_migrated.get("personnel_orders", []).is_empty() and management_migrated.get("manufacturing_queue", []).is_empty() and int(management_migrated.get("manufacturing_assigned_engineers", -1)) == 0 and management_migrated.get("facility_construction_orders", []).is_empty()
 	management_campaign.set_research_staffing(3)
 	var research_staffing_ready: bool = management_campaign.research_assigned_scientists() == 3 and management_campaign.research_daily_progress() == 6
 	var management_progress_before := int(management_campaign.data.get("research", {}).get("progress", 0))
@@ -1291,6 +1362,29 @@ func _run_self_tests() -> Array:
 	specialist_campaign.data["scientists"] = 10
 	specialist_campaign.data["engineers"] = 10
 	var specialist_capacity_ready: bool = specialist_campaign.projected_personnel_used() == 26 and specialist_campaign.personnel_capacity() == 36 and specialist_campaign.personnel_hiring_blocker("soldier").is_empty() and specialist_campaign.personnel_hiring_blocker("scientist").contains("Laboratory full") and specialist_campaign.personnel_hiring_blocker("engineer").contains("Workshop full")
+	var construction_campaign := AegisCampaignState.new()
+	construction_campaign.configure(content)
+	construction_campaign.new_campaign("Construction Test", "North America")
+	construction_campaign.data["scientists"] = 10
+	construction_campaign.data["engineers"] = 10
+	var construction_funds_before := int(construction_campaign.data.get("funds", 0))
+	var construction_queue_ready: bool = construction_campaign.begin_facility_construction("quarters") and construction_campaign.begin_facility_construction("lab") and construction_campaign.begin_facility_construction("workshop") and construction_campaign.facility_construction_orders().size() == 3 and int(construction_campaign.data.get("funds", 0)) == construction_funds_before - 1150
+	var construction_queue_funds := int(construction_campaign.data.get("funds", 0))
+	var construction_waits_ready: bool = not construction_campaign.begin_facility_construction("quarters") and int(construction_campaign.data.get("funds", 0)) == construction_queue_funds and construction_campaign.personnel_capacity() == 12 and construction_campaign.scientist_capacity() == 10 and construction_campaign.engineer_capacity() == 10 and construction_campaign.projected_personnel_capacity() == 24 and construction_campaign.projected_scientist_capacity() == 20 and construction_campaign.projected_engineer_capacity() == 20
+	construction_campaign.advance_minutes(2 * 24 * 60)
+	var construction_normalized := construction_campaign.normalize_save(construction_campaign.data)
+	var construction_persistence_ready: bool = construction_normalized.get("facility_construction_orders", []).map(func(order): return int(order.get("days_remaining", 0))) == [1, 3, 2]
+	construction_campaign.advance_minutes(24 * 60)
+	var quarters_completion_ready: bool = construction_campaign.facility_count("quarters") == 2 and construction_campaign.personnel_capacity() == 24 and construction_campaign.facility_construction_orders().size() == 2
+	construction_campaign.advance_minutes(2 * 24 * 60)
+	var specialist_construction_ready: bool = construction_campaign.facility_construction_orders().is_empty() and construction_campaign.scientist_capacity() == 20 and construction_campaign.engineer_capacity() == 20
+	var construction_cancel_funds := int(construction_campaign.data.get("funds", 0))
+	construction_campaign.begin_facility_construction("quarters")
+	var cancelled_construction: Dictionary = construction_campaign.facility_construction_orders()[0]
+	var construction_cancellation_ready: bool = construction_campaign.cancel_facility_construction(String(cancelled_construction.get("id", ""))) and construction_campaign.facility_construction_orders().is_empty() and int(construction_campaign.data.get("funds", 0)) == construction_cancel_funds - 150
+	construction_campaign.begin_facility_construction("quarters")
+	construction_campaign.advance_minutes(3 * 24 * 60)
+	var specialist_hiring_reopens: bool = construction_campaign.personnel_capacity() == 36 and construction_campaign.personnel_hiring_blocker("scientist").is_empty() and construction_campaign.personnel_hiring_blocker("engineer").is_empty()
 	var manufacturing_campaign := AegisCampaignState.new()
 	manufacturing_campaign.configure(content)
 	manufacturing_campaign.new_campaign("Manufacturing Test", "North America")
@@ -1358,6 +1452,12 @@ func _run_self_tests() -> Array:
 		{"name":"Personnel arrivals wait for three strategic midnights", "pass":personnel_waits_three_days},
 		{"name":"Personnel arrivals update local staff and leave recruits unassigned", "pass":personnel_arrival_ready},
 		{"name":"Spare quarters do not bypass full Laboratory or Workshop capacity", "pass":specialist_capacity_ready},
+		{"name":"Facility construction prepays established costs into three bounded slots", "pass":construction_queue_ready},
+		{"name":"Pending facilities show future capacity without granting it early", "pass":construction_waits_ready},
+		{"name":"Concurrent facility countdowns normalize with exact progress", "pass":construction_persistence_ready},
+		{"name":"Facility capacity activates on each exact completion day", "pass":quarters_completion_ready and specialist_construction_ready},
+		{"name":"Facility cancellation returns half of prepaid construction cost", "pass":construction_cancellation_ready},
+		{"name":"Completed expansion reopens Laboratory and Workshop hiring", "pass":specialist_hiring_reopens},
 		{"name":"Laser Weapons completion unlocks production and its follow-on project", "pass":research_unlock_ready and follow_on_research_ready},
 		{"name":"Laser Rifle production stays blocked before research completion", "pass":locked_laser_production_blocked},
 		{"name":"Manufacturing staffing clamps to local engineers and Workshop capacity", "pass":manufacturing_staffing_ready},
