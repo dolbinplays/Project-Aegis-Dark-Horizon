@@ -1,0 +1,49 @@
+{
+  "build": "v0.26.07.18.GODOT.0005_BASE_PERSONNEL_AND_RESEARCH_STAFFING_VERTICAL_SLICE",
+  "save_format": 4,
+  "research_projects": [
+    {"id": "Laser Weapons", "required": 100},
+    {"id": "Laser Power Output 1", "required": 180}
+  ],
+  "regions": [
+    {"id": "north_america", "name": "North America", "funding": 188, "panic": 18, "map": [0.23, 0.32]},
+    {"id": "south_america", "name": "South America", "funding": 172, "panic": 22, "map": [0.34, 0.68]},
+    {"id": "europe", "name": "Europe", "funding": 196, "panic": 16, "map": [0.52, 0.30]},
+    {"id": "north_africa", "name": "North Africa", "funding": 160, "panic": 25, "map": [0.52, 0.53]},
+    {"id": "east_asia", "name": "East Asia", "funding": 180, "panic": 20, "map": [0.75, 0.35]},
+    {"id": "oceania", "name": "Oceania", "funding": 184, "panic": 19, "map": [0.82, 0.72]}
+  ],
+  "facilities": [
+    {"id": "access", "name": "Access Lift", "color": "#38bdf8"},
+    {"id": "quarters", "name": "Living Quarters", "color": "#22c55e"},
+    {"id": "lab", "name": "Laboratory", "color": "#a78bfa"},
+    {"id": "sickbay", "name": "Sickbay", "color": "#fb7185"},
+    {"id": "stores", "name": "Base Stores", "color": "#f59e0b"},
+    {"id": "hangar_interceptor", "name": "Interceptor Hangar", "color": "#64748b"},
+    {"id": "hangar_skyranger", "name": "Skyranger Hangar", "color": "#0ea5e9"},
+    {"id": "radar", "name": "Shortwave Radar", "color": "#06b6d4"}
+  ],
+  "soldiers": [
+    {"id": "cass", "name": "Cass Carver", "callsign": "Cass", "accuracy": 64, "bravery": 52, "health": 38, "tu": 58, "trait": "Steady Professional"},
+    {"id": "dane", "name": "Dane Ivers", "callsign": "Dane", "accuracy": 61, "bravery": 66, "health": 42, "tu": 60, "trait": "Aggressive Hotshot"},
+    {"id": "dimitri", "name": "Dimitri Lang", "callsign": "Dimitri", "accuracy": 67, "bravery": 58, "health": 40, "tu": 56, "trait": "Methodical"},
+    {"id": "amara", "name": "Amara Alden", "callsign": "Amara", "accuracy": 70, "bravery": 62, "health": 39, "tu": 62, "trait": "Born Scout"},
+    {"id": "leif", "name": "Leif Wren", "callsign": "Leif", "accuracy": 59, "bravery": 72, "health": 44, "tu": 55, "trait": "Grim Humor"},
+    {"id": "uma", "name": "Uma Vega", "callsign": "Uma", "accuracy": 65, "bravery": 60, "health": 41, "tu": 59, "trait": "Nervous but Determined"}
+  ],
+  "incidents": [
+    {"id": "red_river", "name": "Red River Signal", "region": "North America", "threat": 1, "reward": 440, "intent": "Terror Raid", "biome": "Wilderness", "required_rescues": 1, "seed": 1337},
+    {"id": "prairie", "name": "Prairie Abduction", "region": "North America", "threat": 1, "reward": 420, "intent": "Abduction", "biome": "Farmland", "required_rescues": 1, "seed": 2417}
+  ],
+  "aircraft": [
+    {"id": "saber_one", "name": "Saber One", "kind": "Interceptor", "hp": 100, "max_hp": 100, "fuel": 100, "max_fuel": 100, "ammo": 6, "max_ammo": 6, "accuracy": 72, "speed": 2400}
+  ],
+  "ufos": [
+    {"id": "nightglass_01", "name": "UFO-01 Nightglass", "class": "Scout", "region": "Europe", "status": "Tracked", "hull": 55, "max_hull": 55, "evasion": 36, "accuracy": 42, "damage": 15, "altitude": "Low", "seed": 4219}
+  ],
+  "aliens": [
+    {"id": "signal_leech", "name": "Signal Leech", "health": 24, "accuracy": 42, "damage": 10},
+    {"id": "glass_wraith", "name": "Glass Wraith", "health": 30, "accuracy": 48, "damage": 12},
+    {"id": "needle_drone", "name": "Needle Drone", "health": 36, "accuracy": 52, "damage": 13}
+  ]
+}

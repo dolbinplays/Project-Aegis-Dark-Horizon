@@ -1,0 +1,7 @@
+.godot/
+*.import
+
+# Native Godot export output stays local unless explicitly packaged.
+godot/export/
+godot/build/
+godot/test_output/

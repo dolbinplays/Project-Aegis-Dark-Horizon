@@ -26,5 +26,13 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.07.17.0137_TACTICAL_CONTINUOUS_WALLS_AND_TRAVERSABLE_BREACHES_INDEX_ONLY_PATCH"
+  "lastInspectedBuild": "v0.26.07.17.0137_TACTICAL_CONTINUOUS_WALLS_AND_TRAVERSABLE_BREACHES_INDEX_ONLY_PATCH",
+  "nativePrototype": {
+    "engine": "Godot 4.7.1",
+    "projectFile": "project.godot",
+    "mainScene": "godot/main.tscn",
+    "build": "v0.26.07.18.GODOT.0005_BASE_PERSONNEL_AND_RESEARCH_STAFFING_VERTICAL_SLICE",
+    "saveFormat": 4,
+    "status": "base-personnel-research-staffing-manual-test"
+  }
 }

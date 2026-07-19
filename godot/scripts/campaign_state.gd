@@ -1,0 +1,835 @@
+class_name AegisCampaignState
+extends RefCounted
+
+const SAVE_PATH := "user://project_aegis_godot_save_v4.json"
+const IMPORTED_SAVE_PATH := "user://project_aegis_godot_imported_copy_v4.json"
+const SAVE_FORMAT := 4
+const BROWSER_CAMPAIGN_KIND := "project-aegis-campaign-save"
+const BROWSER_SLOT_BACKUP_KIND := "project-aegis-save-slot-backup"
+const PERSONNEL_PER_QUARTERS := 12
+const SCIENTISTS_PER_LAB := 10
+const RESEARCH_PROGRESS_PER_SCIENTIST_DAY := 2
+const RESEARCH_REQUIRED_PROGRESS := 100
+const INTERCEPTION_STANCES := {
+	"Cautious": {"accuracy": 66, "incoming": 24, "fuel": 18, "rounds": 2, "damage": 25},
+	"Standard": {"accuracy": 76, "incoming": 38, "fuel": 25, "rounds": 3, "damage": 28},
+	"Aggressive": {"accuracy": 86, "incoming": 56, "fuel": 34, "rounds": 3, "damage": 32}
+}
+
+var content: Dictionary = {}
+var data: Dictionary = {}
+var active_save_path := SAVE_PATH
+
+func configure(source_content: Dictionary) -> void:
+	content = source_content.duplicate(true)
+
+func new_campaign(base_name: String, region_name: String) -> void:
+	active_save_path = SAVE_PATH
+	var starting_facilities := ["access", "quarters", "lab", "sickbay", "stores", "hangar_interceptor", "hangar_skyranger", "radar"]
+	var roster: Array = []
+	for source in content.get("soldiers", []):
+		var soldier: Dictionary = source.duplicate(true)
+		soldier.merge({
+			"rank": "Rookie",
+			"status": "Ready",
+			"missions": 0,
+			"kills": 0,
+			"wounds": 0,
+			"weapon": "Ballistic Rifle",
+			"armor": "Field Suit",
+			"assigned": true
+		}, true)
+		roster.append(soldier)
+	data = {
+		"save_format": SAVE_FORMAT,
+		"native_build": content.get("build", "godot-dev"),
+		"campaign_name": "Project Aegis Campaign",
+		"month": 1,
+		"day": 1,
+		"minutes": 8 * 60,
+		"funds": 2200,
+		"base": {
+			"name": base_name.strip_edges() if not base_name.strip_edges().is_empty() else "Fort Aegis",
+			"region": region_name,
+			"facilities": starting_facilities,
+			"facility_counts": _facility_counts_from_ids(starting_facilities)
+		},
+		"soldiers": roster,
+		"scientists": 5,
+		"engineers": 0,
+		"incidents": content.get("incidents", []).duplicate(true),
+		"selected_incident_id": "red_river",
+		"travel": {},
+		"aircraft": _default_aircraft(),
+		"ufo_contacts": _default_ufos(),
+		"selected_ufo_id": "nightglass_01",
+		"interception_stance": "Standard",
+		"interception": {},
+		"last_interception": {},
+		"reports": ["Project Aegis command established at %s." % region_name],
+		"research": {"active": "Laser Weapons", "progress": 8, "required_progress": RESEARCH_REQUIRED_PROGRESS, "assigned_scientists": 5, "scientists": 5, "completed": false},
+		"stores": {"Ballistic Rifle": 0, "Field Suit": 0, "Medkit": 2},
+		"mission_count": 0,
+		"rescued_civilians": 0
+	}
+	interceptor()["base_region"] = region_name
+
+func has_campaign() -> bool:
+	return not data.is_empty() and data.has("base")
+
+func is_imported_copy() -> bool:
+	return active_save_path == IMPORTED_SAVE_PATH or data.get("save_origin", {}).get("type", "") == "browser_import"
+
+func save_slot_label() -> String:
+	return "Imported Copy" if is_imported_copy() else "Native Campaign"
+
+func selected_incident() -> Dictionary:
+	var selected_id := String(data.get("selected_incident_id", ""))
+	for incident in data.get("incidents", []):
+		if String(incident.get("id", "")) == selected_id:
+			return incident
+	var incidents: Array = data.get("incidents", [])
+	return incidents[0] if not incidents.is_empty() else {}
+
+func select_incident(incident_id: String) -> void:
+	data["selected_incident_id"] = incident_id
+
+func selected_ufo() -> Dictionary:
+	var selected_id := String(data.get("selected_ufo_id", ""))
+	for ufo in data.get("ufo_contacts", []):
+		if String(ufo.get("id", "")) == selected_id and ufo.get("status", "") in ["Tracked", "Damaged"]:
+			return ufo
+	var contacts: Array = active_ufos()
+	return contacts[0] if not contacts.is_empty() else {}
+
+func active_ufos() -> Array:
+	return data.get("ufo_contacts", []).filter(func(ufo): return ufo.get("status", "") in ["Tracked", "Damaged"])
+
+func select_ufo(ufo_id: String) -> void:
+	data["selected_ufo_id"] = ufo_id
+
+func interceptor() -> Dictionary:
+	var aircraft: Dictionary = data.get("aircraft", {})
+	if aircraft.has("saber_one"):
+		return aircraft["saber_one"]
+	var available: Array = aircraft.values()
+	return available[0] if not available.is_empty() else {}
+
+func interception_launch_blocker() -> String:
+	var craft := interceptor()
+	if selected_ufo().is_empty():
+		return "No tracked UFO contact selected."
+	if craft.is_empty():
+		return "No interceptor is assigned to this base."
+	if not data.get("travel", {}).is_empty():
+		return "Aegis One is already committed to an incident."
+	if not data.get("interception", {}).is_empty():
+		return "An interception is already in progress."
+	if craft.get("status", "") != "Ready":
+		return "%s is %s." % [craft.get("name", "Interceptor"), craft.get("status", "unavailable")]
+	var stance := String(data.get("interception_stance", "Standard"))
+	var profile: Dictionary = INTERCEPTION_STANCES.get(stance, INTERCEPTION_STANCES.Standard)
+	if int(craft.get("fuel", 0)) < int(profile.get("fuel", 25)):
+		return "Insufficient interceptor fuel for the selected stance."
+	if int(craft.get("ammo", 0)) <= 0:
+		return "Interceptor weapons require rearming."
+	return ""
+
+func begin_interception(stance: String = "Standard") -> bool:
+	data["interception_stance"] = stance if INTERCEPTION_STANCES.has(stance) else "Standard"
+	if not interception_launch_blocker().is_empty():
+		return false
+	var craft := interceptor()
+	var ufo := selected_ufo()
+	var profile: Dictionary = INTERCEPTION_STANCES[data["interception_stance"]]
+	craft["fuel"] = maxi(0, int(craft.get("fuel", 0)) - int(profile.get("fuel", 25)))
+	craft["status"] = "Outbound"
+	data["interception"] = {
+		"phase": "outbound",
+		"progress": 0,
+		"duration_minutes": 20,
+		"craft_id": craft.get("id", "saber_one"),
+		"ufo_id": ufo.get("id", ""),
+		"stance": data["interception_stance"],
+		"combat_log": [],
+		"success": false
+	}
+	add_report("%s launched against %s using %s posture." % [craft.get("name", "Interceptor"), ufo.get("name", "UFO"), data["interception_stance"]])
+	return true
+
+func assigned_soldiers() -> Array:
+	return data.get("soldiers", []).filter(func(soldier): return soldier.get("assigned", false) and soldier.get("status", "") == "Ready")
+
+func facility_count(facility_id: String) -> int:
+	var base: Dictionary = data.get("base", {})
+	var counts_value: Variant = base.get("facility_counts", {})
+	if counts_value is Dictionary and counts_value.has(facility_id):
+		return maxi(0, int(counts_value.get(facility_id, 0)))
+	return base.get("facilities", []).count(facility_id)
+
+func personnel_capacity() -> int:
+	return facility_count("quarters") * PERSONNEL_PER_QUARTERS
+
+func scientist_capacity() -> int:
+	return facility_count("lab") * SCIENTISTS_PER_LAB
+
+func living_soldier_count() -> int:
+	var base: Dictionary = data.get("base", {})
+	var base_id := String(base.get("source_id", base.get("id", "")))
+	var count := 0
+	for soldier in data.get("soldiers", []):
+		if String(soldier.get("status", "Ready")) == "KIA":
+			continue
+		var soldier_base_id := String(soldier.get("base_id", soldier.get("baseId", "")))
+		if base_id.is_empty() or soldier_base_id.is_empty() or soldier_base_id == base_id:
+			count += 1
+	return count
+
+func personnel_used() -> int:
+	return living_soldier_count() + int(data.get("scientists", 0)) + int(data.get("engineers", 0))
+
+func research_staff_limit() -> int:
+	return mini(maxi(0, int(data.get("scientists", 0))), scientist_capacity())
+
+func research_required_progress() -> int:
+	var research: Dictionary = data.get("research", {})
+	return maxi(1, int(research.get("required_progress", RESEARCH_REQUIRED_PROGRESS)))
+
+func research_assigned_scientists() -> int:
+	var research: Dictionary = data.get("research", {})
+	return clampi(int(research.get("assigned_scientists", research.get("scientists", 0))), 0, research_staff_limit())
+
+func set_research_staffing(amount: int) -> bool:
+	var research: Dictionary = data.get("research", {})
+	var next_amount := clampi(amount, 0, research_staff_limit())
+	if bool(research.get("completed", false)) or int(research.get("progress", 0)) >= research_required_progress():
+		next_amount = 0
+	var changed := research_assigned_scientists() != next_amount
+	research["assigned_scientists"] = next_amount
+	research["scientists"] = next_amount
+	data["research"] = research
+	return changed
+
+func research_daily_progress() -> int:
+	return research_assigned_scientists() * RESEARCH_PROGRESS_PER_SCIENTIST_DAY
+
+func research_days_remaining() -> int:
+	var research: Dictionary = data.get("research", {})
+	var remaining := maxi(0, research_required_progress() - int(research.get("progress", 0)))
+	var daily := research_daily_progress()
+	if remaining <= 0:
+		return 0
+	if daily <= 0:
+		return -1
+	return ceili(float(remaining) / float(daily))
+
+func set_soldier_assigned(soldier_id: String, assigned: bool) -> void:
+	for soldier in data.get("soldiers", []):
+		if String(soldier.get("id", "")) == soldier_id:
+			soldier["assigned"] = assigned
+			break
+
+func begin_mission_travel() -> bool:
+	if assigned_soldiers().is_empty() or selected_incident().is_empty() or not data.get("interception", {}).is_empty():
+		return false
+	data["travel"] = {
+		"phase": "outbound",
+		"progress": 0,
+		"duration_minutes": 30,
+		"incident_id": selected_incident().get("id", "")
+	}
+	add_report("Aegis One launched for %s." % selected_incident().get("name", "incident"))
+	return true
+
+func advance_minutes(amount: int) -> bool:
+	var bounded_amount := maxi(0, amount)
+	data["minutes"] = int(data.get("minutes", 0)) + bounded_amount
+	var days_advanced := 0
+	while int(data["minutes"]) >= 24 * 60:
+		data["minutes"] = int(data["minutes"]) - 24 * 60
+		data["day"] = int(data.get("day", 1)) + 1
+		days_advanced += 1
+	_advance_research_days(days_advanced)
+	_advance_aircraft_service(bounded_amount)
+	_advance_interception(bounded_amount)
+	var travel: Dictionary = data.get("travel", {})
+	if travel.is_empty() or travel.get("phase", "") != "outbound":
+		return false
+	var duration := maxi(1, int(travel.get("duration_minutes", 30)))
+	travel["progress"] = mini(100, int(travel.get("progress", 0)) + int(round(float(amount) / float(duration) * 100.0)))
+	data["travel"] = travel
+	return int(travel["progress"]) >= 100
+
+func _advance_research_days(days_advanced: int) -> void:
+	if days_advanced <= 0:
+		return
+	var research: Dictionary = data.get("research", {})
+	if String(research.get("active", "")).is_empty() or bool(research.get("completed", false)):
+		return
+	var daily := research_daily_progress()
+	if daily <= 0:
+		return
+	var required_progress := research_required_progress()
+	var previous_progress := clampi(int(research.get("progress", 0)), 0, required_progress)
+	var next_progress := mini(required_progress, previous_progress + daily * days_advanced)
+	research["progress"] = next_progress
+	if next_progress >= required_progress:
+		research["completed"] = true
+		research["assigned_scientists"] = 0
+		research["scientists"] = 0
+		add_report("RESEARCH COMPLETE: %s." % research.get("active", "Research project"))
+	data["research"] = research
+
+func _advance_interception(amount: int) -> void:
+	var operation: Dictionary = data.get("interception", {})
+	if operation.is_empty() or amount <= 0:
+		return
+	var duration := maxi(1, int(operation.get("duration_minutes", 20)))
+	operation["progress"] = mini(100, int(operation.get("progress", 0)) + int(round(float(amount) / float(duration) * 100.0)))
+	if int(operation["progress"]) < 100:
+		data["interception"] = operation
+		return
+	if operation.get("phase", "") == "outbound":
+		var craft_survived := _resolve_interception_combat(operation)
+		if craft_survived:
+			operation["phase"] = "returning"
+			operation["progress"] = 0
+			operation["duration_minutes"] = 20
+			interceptor()["status"] = "Returning"
+			data["interception"] = operation
+		else:
+			data["last_interception"] = operation.duplicate(true)
+			data["interception"] = {}
+	elif operation.get("phase", "") == "returning":
+		_complete_interceptor_return(operation)
+
+func _resolve_interception_combat(operation: Dictionary) -> bool:
+	var craft := interceptor()
+	var ufo := _ufo_by_id(operation.get("ufo_id", ""))
+	if craft.is_empty() or ufo.is_empty():
+		operation["combat_log"] = ["Contact solution failed. Interceptor recalled."]
+		return not craft.is_empty()
+	var stance := String(operation.get("stance", "Standard"))
+	var profile: Dictionary = INTERCEPTION_STANCES.get(stance, INTERCEPTION_STANCES.Standard)
+	var combat_log: Array = []
+	var stance_salt := 11 if stance == "Cautious" else 29 if stance == "Standard" else 47
+	for round_index in range(int(profile.get("rounds", 3))):
+		if int(craft.get("ammo", 0)) <= 0 or int(craft.get("hp", 0)) <= 0 or int(ufo.get("hull", 0)) <= 0:
+			break
+		craft["ammo"] = maxi(0, int(craft.get("ammo", 0)) - 1)
+		var shot_roll := AegisHexRules.deterministic_roll(int(ufo.get("seed", 1)), stance_salt + round_index * 37)
+		var hit_chance := clampi(int(profile.get("accuracy", 76)) + int(craft.get("accuracy", 72)) / 10 - int(ufo.get("evasion", 36)) / 3, 18, 94)
+		if shot_roll <= hit_chance:
+			var damage := int(profile.get("damage", 28)) + AegisHexRules.deterministic_roll(int(ufo.get("seed", 1)), 100 + stance_salt + round_index * 19, 0, 8)
+			ufo["hull"] = maxi(0, int(ufo.get("hull", 0)) - damage)
+			combat_log.append("Round %d: Saber One hits for %d. UFO hull %d/%d." % [round_index + 1, damage, ufo.get("hull", 0), ufo.get("max_hull", 1)])
+		else:
+			combat_log.append("Round %d: Saber One firing solution misses." % [round_index + 1])
+		if int(ufo.get("hull", 0)) <= 0:
+			break
+		var return_roll := AegisHexRules.deterministic_roll(int(ufo.get("seed", 1)), 200 + stance_salt + round_index * 23)
+		var incoming_chance := clampi(int(profile.get("incoming", 38)) + int(ufo.get("accuracy", 42)) / 5, 12, 82)
+		if return_roll <= incoming_chance:
+			var incoming_damage := int(ufo.get("damage", 15)) + AegisHexRules.deterministic_roll(int(ufo.get("seed", 1)), 300 + stance_salt + round_index * 31, 0, 7)
+			craft["hp"] = maxi(0, int(craft.get("hp", 0)) - incoming_damage)
+			combat_log.append("Return fire damages Saber One for %d. Hull %d/%d." % [incoming_damage, craft.get("hp", 0), craft.get("max_hp", 1)])
+		else:
+			combat_log.append("Saber One evades return fire.")
+	operation["combat_log"] = combat_log
+	if int(craft.get("hp", 0)) <= 0:
+		craft["status"] = "Lost"
+		ufo["status"] = "Escaped"
+		operation["success"] = false
+		operation["phase"] = "lost"
+		add_report("AIR LOSS: %s was destroyed engaging %s." % [craft.get("name", "Interceptor"), ufo.get("name", "UFO")])
+		return false
+	if int(ufo.get("hull", 0)) <= 0:
+		ufo["status"] = "Downed"
+		operation["success"] = true
+		_create_crash_site(ufo)
+		add_report("AIR VICTORY: %s shot down %s. A recovery site is available." % [craft.get("name", "Interceptor"), ufo.get("name", "UFO")])
+	else:
+		ufo["status"] = "Escaped"
+		operation["success"] = false
+		add_report("AIR CONTACT LOST: %s disengaged from %s." % [craft.get("name", "Interceptor"), ufo.get("name", "UFO")])
+	return true
+
+func _complete_interceptor_return(operation: Dictionary) -> void:
+	var craft := interceptor()
+	if not craft.is_empty():
+		var repair_minutes := maxi(20, int(craft.get("max_hp", 100)) - int(craft.get("hp", 100)) + (int(craft.get("max_ammo", 6)) - int(craft.get("ammo", 6))) * 5)
+		craft["status"] = "Servicing"
+		craft["service_minutes"] = repair_minutes
+		add_report("%s returned to base. Service crews require %d minutes." % [craft.get("name", "Interceptor"), repair_minutes])
+	operation["phase"] = "complete"
+	operation["progress"] = 100
+	data["last_interception"] = operation.duplicate(true)
+	data["interception"] = {}
+
+func _advance_aircraft_service(amount: int) -> void:
+	for craft in data.get("aircraft", {}).values():
+		if craft.get("status", "") != "Servicing":
+			continue
+		craft["service_minutes"] = maxi(0, int(craft.get("service_minutes", 0)) - amount)
+		if int(craft["service_minutes"]) <= 0:
+			craft["hp"] = int(craft.get("max_hp", 100))
+			craft["fuel"] = int(craft.get("max_fuel", 100))
+			craft["ammo"] = int(craft.get("max_ammo", 6))
+			craft["status"] = "Ready"
+			add_report("%s is refueled, repaired, and ready." % craft.get("name", "Interceptor"))
+
+func _create_crash_site(ufo: Dictionary) -> void:
+	var crash_id := "crash_%s" % ufo.get("id", "ufo")
+	for incident in data.get("incidents", []):
+		if incident.get("id", "") == crash_id:
+			return
+	var incidents: Array = data.get("incidents", [])
+	incidents.append({
+		"id": crash_id,
+		"name": "%s Crash Site" % ufo.get("class", "UFO"),
+		"region": ufo.get("region", "Unknown"),
+		"threat": 2,
+		"reward": 560,
+		"intent": "UFO Recovery",
+		"biome": "Crash Site",
+		"required_rescues": 0,
+		"seed": int(ufo.get("seed", 1)) + 91
+	})
+	data["incidents"] = incidents
+
+func _ufo_by_id(ufo_id: String) -> Dictionary:
+	for ufo in data.get("ufo_contacts", []):
+		if ufo.get("id", "") == ufo_id:
+			return ufo
+	return {}
+
+func _default_aircraft() -> Dictionary:
+	var result := {}
+	for source in content.get("aircraft", []):
+		var craft: Dictionary = source.duplicate(true)
+		craft["status"] = "Ready"
+		craft["service_minutes"] = 0
+		craft["base_region"] = "North America"
+		result[craft.get("id", "aircraft-%d" % result.size())] = craft
+	return result
+
+func _default_ufos() -> Array:
+	return content.get("ufos", []).duplicate(true)
+
+func complete_mission(result: Dictionary) -> void:
+	var incident := selected_incident()
+	var success := bool(result.get("success", false))
+	var reward := int(incident.get("reward", 0)) if success else 0
+	data["funds"] = int(data.get("funds", 0)) + reward
+	data["mission_count"] = int(data.get("mission_count", 0)) + 1
+	data["rescued_civilians"] = int(data.get("rescued_civilians", 0)) + int(result.get("rescued", 0))
+	for soldier in data.get("soldiers", []):
+		var tactical_record: Dictionary = result.get("soldiers", {}).get(soldier.get("id", ""), {})
+		if tactical_record.is_empty():
+			continue
+		soldier["missions"] = int(soldier.get("missions", 0)) + 1
+		soldier["kills"] = int(soldier.get("kills", 0)) + int(tactical_record.get("kills", 0))
+		if int(tactical_record.get("hp", soldier.get("health", 1))) <= 0:
+			soldier["status"] = "KIA"
+		elif int(tactical_record.get("hp", soldier.get("health", 1))) < int(soldier.get("health", 1)):
+			soldier["status"] = "Wounded"
+			soldier["wounds"] = int(soldier.get("wounds", 0)) + 1
+	if success:
+		data["incidents"] = data.get("incidents", []).filter(func(item): return item.get("id", "") != incident.get("id", ""))
+	add_report("%s: %s. %d civilian%s rescued. Funds +$%dk." % ["SUCCESS" if success else "FAILURE", incident.get("name", "Incident"), int(result.get("rescued", 0)), "" if int(result.get("rescued", 0)) == 1 else "s", reward])
+	data["travel"] = {}
+
+func add_report(message: String) -> void:
+	var reports: Array = data.get("reports", [])
+	reports.push_front(message)
+	if reports.size() > 30:
+		reports.resize(30)
+	data["reports"] = reports
+
+func clock_text() -> String:
+	var total := int(data.get("minutes", 0))
+	return "%02d:%02d" % [total / 60, total % 60]
+
+func save_campaign(path: String = "") -> bool:
+	if not has_campaign():
+		return false
+	var target_path := path if not path.is_empty() else active_save_path
+	var file := FileAccess.open(target_path, FileAccess.WRITE)
+	if file == null:
+		return false
+	file.store_string(JSON.stringify(data, "  "))
+	return true
+
+func load_campaign(path: String = "") -> bool:
+	var target_path := path if not path.is_empty() else SAVE_PATH
+	if not FileAccess.file_exists(target_path):
+		return false
+	var file := FileAccess.open(target_path, FileAccess.READ)
+	if file == null:
+		return false
+	var parsed = JSON.parse_string(file.get_as_text())
+	if not parsed is Dictionary:
+		return false
+	data = normalize_save(parsed)
+	if not has_campaign():
+		return false
+	active_save_path = target_path
+	return true
+
+func browser_import_preview(browser_data: Dictionary) -> Dictionary:
+	var kind := String(browser_data.get("kind", ""))
+	if kind == BROWSER_SLOT_BACKUP_KIND:
+		return {"valid": false, "error": "This is an all-slots browser backup. Export one campaign or one save slot before importing it into the native slice."}
+	if not kind.is_empty() and kind != BROWSER_CAMPAIGN_KIND:
+		return {"valid": false, "error": "The selected JSON file is not a Project Aegis campaign export."}
+	var source_value: Variant = browser_data.get("data", browser_data.get("game", browser_data))
+	if not source_value is Dictionary:
+		return {"valid": false, "error": "The campaign payload does not contain a readable data object."}
+	var source: Dictionary = source_value
+	var bases_value: Variant = source.get("bases", [])
+	var soldiers_value: Variant = source.get("soldiers", [])
+	if not bases_value is Array or bases_value.is_empty() or not soldiers_value is Array or soldiers_value.is_empty():
+		return {"valid": false, "error": "The selected file does not contain the browser campaign's bases and soldiers."}
+	var source_format := int(browser_data.get("saveFormatVersion", source.get("saveFormatVersion", 0)))
+	if source_format > SAVE_FORMAT:
+		return {"valid": false, "error": "This browser save uses format %d, but this native build supports through format %d." % [source_format, SAVE_FORMAT]}
+	var first_base := _browser_selected_base(source)
+	var incidents := _normalize_browser_incidents(source)
+	var warnings: Array[String] = [
+		"The native vertical slice imports a compatible campaign subset; complex base layouts, relationships, transfers, and browser-only queues stay in the browser save.",
+		"Native aircraft and the tracked Nightglass contact use the vertical slice defaults."
+	]
+	if incidents.is_empty():
+		warnings.append("No compatible active browser incidents were found, so the native opening incidents will be supplied.")
+	return {
+		"valid": true,
+		"name": String(browser_data.get("name", source.get("campaignName", "Imported Aegis Campaign"))),
+		"source_build": String(browser_data.get("gameBuild", source.get("gameBuild", "Unknown browser build"))),
+		"source_format": source_format,
+		"month": maxi(1, int(source.get("month", browser_data.get("month", 1)))),
+		"day": maxi(1, int(source.get("dayOfMonth", browser_data.get("dayOfMonth", 1)))),
+		"funds": int(source.get("funds", browser_data.get("funds", 2200))),
+		"base_name": String(first_base.get("name", "Fort Aegis")),
+		"base_region": String(first_base.get("region", "North America")),
+		"soldier_count": soldiers_value.size(),
+		"incident_count": incidents.size(),
+		"warnings": warnings
+	}
+
+func import_browser_save(browser_data: Dictionary, source_label: String = "Browser export") -> bool:
+	var preview := browser_import_preview(browser_data)
+	if not preview.get("valid", false):
+		return false
+	var source_value: Variant = browser_data.get("data", browser_data.get("game", browser_data))
+	var source: Dictionary = source_value
+	var first_base := _browser_selected_base(source)
+	var roster := _normalize_browser_soldiers(source)
+	var incidents := _normalize_browser_incidents(source)
+	if incidents.is_empty():
+		incidents = content.get("incidents", []).duplicate(true)
+	active_save_path = IMPORTED_SAVE_PATH
+	data = {
+		"save_format": SAVE_FORMAT,
+		"native_build": content.get("build", "godot-dev"),
+		"campaign_name": preview.get("name", "Imported Aegis Campaign"),
+		"month": preview.get("month", 1),
+		"day": preview.get("day", 1),
+		"minutes": clampi(int(source.get("geoscapeMinuteOfDay", source.get("minutes", 8 * 60))), 0, 24 * 60 - 1),
+		"funds": preview.get("funds", 2200),
+		"base": {
+			"name": first_base.get("name", "Fort Aegis"),
+			"region": first_base.get("region", "North America"),
+			"source_id": String(first_base.get("id", "")),
+			"facilities": _normalize_browser_facilities(first_base),
+			"facility_counts": _normalize_browser_facility_counts(first_base)
+		},
+		"soldiers": roster,
+		"scientists": maxi(0, int(source.get("scientists", source.get("research", {}).get("assignedScientists", 5)))),
+		"engineers": maxi(0, int(source.get("engineers", 0))),
+		"incidents": incidents,
+		"selected_incident_id": "",
+		"travel": {},
+		"aircraft": _default_aircraft(),
+		"ufo_contacts": _default_ufos(),
+		"selected_ufo_id": "nightglass_01",
+		"interception_stance": "Standard",
+		"interception": {},
+		"last_interception": {},
+		"reports": ["Browser campaign imported as an isolated native copy."] + _normalize_browser_reports(source),
+		"research": _normalize_browser_research(source),
+		"stores": source.get("gearInventory", source.get("stores", {})),
+		"mission_count": int(source.get("missionCount", source.get("mission_count", 0))),
+		"rescued_civilians": int(source.get("rescuedCivilians", source.get("rescued_civilians", 0))),
+		"save_origin": {
+			"type": "browser_import",
+			"source_name": source_label,
+			"source_build": preview.get("source_build", "Unknown browser build"),
+			"source_format": preview.get("source_format", 0),
+			"imported_at": Time.get_datetime_string_from_system(true)
+		},
+		"import_warnings": preview.get("warnings", []).duplicate(true)
+	}
+	interceptor()["base_region"] = first_base.get("region", "North America")
+	if not incidents.is_empty():
+		data["selected_incident_id"] = incidents[0].get("id", "")
+	return has_campaign()
+
+func _browser_selected_base(source: Dictionary) -> Dictionary:
+	var bases: Array = source.get("bases", [])
+	var selected_base_id := String(source.get("selectedBaseId", ""))
+	for candidate in bases:
+		if candidate is Dictionary and String(candidate.get("id", "")) == selected_base_id:
+			return candidate
+	return bases[0] if not bases.is_empty() and bases[0] is Dictionary else {}
+
+func _normalize_browser_facilities(base_source: Dictionary) -> Array:
+	var known_ids: Array = content.get("facilities", []).map(func(item): return item.get("id", ""))
+	var normalized: Array = []
+	var source_facilities: Variant = base_source.get("facilities", [])
+	if source_facilities is Array:
+		for facility in source_facilities:
+			var facility_id := String(facility.get("type", facility.get("id", ""))) if facility is Dictionary else String(facility)
+			if facility_id in known_ids and facility_id not in normalized:
+				normalized.append(facility_id)
+	var grid_value: Variant = base_source.get("grid", [])
+	if grid_value is Array:
+		for grid_row in grid_value:
+			if not grid_row is Array:
+				continue
+			for grid_cell in grid_row:
+				var grid_id := String(grid_cell)
+				if grid_id == "shortradar":
+					grid_id = "radar"
+				if grid_id.begins_with("hangar"):
+					for hangar_id in ["hangar_interceptor", "hangar_skyranger"]:
+						if hangar_id not in normalized:
+							normalized.append(hangar_id)
+				elif grid_id in known_ids and grid_id not in normalized:
+					normalized.append(grid_id)
+	var defaults := ["access", "quarters", "lab", "sickbay", "stores", "hangar_interceptor", "hangar_skyranger", "radar"]
+	return normalized if not normalized.is_empty() else defaults
+
+func _facility_counts_from_ids(facilities: Array) -> Dictionary:
+	var counts := {}
+	for facility_value in facilities:
+		var facility_id := String(facility_value)
+		if facility_id.is_empty():
+			continue
+		counts[facility_id] = int(counts.get(facility_id, 0)) + 1
+	return counts
+
+func _normalize_browser_facility_counts(base_source: Dictionary) -> Dictionary:
+	var counts := {}
+	var grid_value: Variant = base_source.get("grid", [])
+	if grid_value is Array and not grid_value.is_empty():
+		for grid_row in grid_value:
+			if not grid_row is Array:
+				continue
+			for grid_cell in grid_row:
+				var grid_id := String(grid_cell)
+				if grid_id == "shortradar":
+					grid_id = "radar"
+				if grid_id in ["access", "quarters", "lab", "workshop", "sickbay", "stores", "radar"]:
+					counts[grid_id] = int(counts.get(grid_id, 0)) + 1
+	else:
+		var source_facilities: Variant = base_source.get("facilities", [])
+		if source_facilities is Array:
+			for facility in source_facilities:
+				var facility_id := String(facility.get("type", facility.get("id", ""))) if facility is Dictionary else String(facility)
+				if facility_id == "shortradar":
+					facility_id = "radar"
+				if not facility_id.is_empty():
+					counts[facility_id] = int(counts.get(facility_id, 0)) + 1
+	if counts.is_empty():
+		return _facility_counts_from_ids(["access", "quarters", "lab", "sickbay", "stores", "hangar_interceptor", "hangar_skyranger", "radar"])
+	return counts
+
+func _browser_assigned_ids(source: Dictionary) -> Array[String]:
+	var result: Array[String] = []
+	var active_squad_id := String(source.get("activeSquadId", ""))
+	var squads_value: Variant = source.get("squads", [])
+	if squads_value is Array:
+		for squad in squads_value:
+			if not squad is Dictionary or (not active_squad_id.is_empty() and String(squad.get("id", "")) != active_squad_id):
+				continue
+			var members: Variant = squad.get("soldierIds", squad.get("memberIds", squad.get("members", [])))
+			if members is Array:
+				for member in members:
+					var soldier_id := String(member.get("id", "")) if member is Dictionary else String(member)
+					if not soldier_id.is_empty() and soldier_id not in result:
+						result.append(soldier_id)
+			break
+	return result
+
+func _normalize_browser_soldiers(source: Dictionary) -> Array:
+	var normalized: Array = []
+	var assigned_ids := _browser_assigned_ids(source)
+	var source_soldiers: Array = source.get("soldiers", [])
+	var native_assigned_count := 0
+	for soldier_index in range(source_soldiers.size()):
+		var browser_soldier: Dictionary = source_soldiers[soldier_index]
+		var soldier_id := String(browser_soldier.get("id", "browser_soldier_%d" % soldier_index))
+		var source_status := String(browser_soldier.get("status", "Ready")).to_lower()
+		var status := "KIA" if source_status in ["kia", "dead", "fallen"] else "Wounded" if "wound" in source_status or "sickbay" in source_status or "injur" in source_status else "Ready"
+		var soldier_name := String(browser_soldier.get("name", "Imported Soldier %d" % (soldier_index + 1)))
+		var stat_value: Variant = browser_soldier.get("stats", browser_soldier.get("baseStats", {}))
+		var stats: Dictionary = stat_value if stat_value is Dictionary else {}
+		var identity_value: Variant = browser_soldier.get("identity", {})
+		var identity: Dictionary = identity_value if identity_value is Dictionary else {}
+		var weapon_value: Variant = browser_soldier.get("weapon", "Ballistic Rifle")
+		var armor_value: Variant = browser_soldier.get("armor", "Field Suit")
+		var requested_for_squad := soldier_id in assigned_ids if not assigned_ids.is_empty() else true
+		var assigned := status == "Ready" and requested_for_squad and native_assigned_count < 6
+		if assigned:
+			native_assigned_count += 1
+		normalized.append({
+			"id": soldier_id,
+			"base_id": String(browser_soldier.get("baseId", browser_soldier.get("base_id", ""))),
+			"name": soldier_name,
+			"callsign": String(browser_soldier.get("callsign", browser_soldier.get("nickname", identity.get("callsign", soldier_name.split(" ")[0])))),
+			"rank": String(browser_soldier.get("rank", "Rookie")),
+			"status": status,
+			"missions": int(browser_soldier.get("missions", 0)),
+			"kills": int(browser_soldier.get("kills", 0)),
+			"wounds": int(browser_soldier.get("wounds", browser_soldier.get("wounded", 0))),
+			"accuracy": int(browser_soldier.get("accuracy", browser_soldier.get("aim", stats.get("accuracy", 60)))),
+			"bravery": int(browser_soldier.get("bravery", stats.get("bravery", 55))),
+			"health": int(browser_soldier.get("health", browser_soldier.get("maxHp", browser_soldier.get("hp", stats.get("health", 38))))),
+			"tu": int(browser_soldier.get("tu", browser_soldier.get("timeUnits", browser_soldier.get("maxTu", stats.get("tu", 56))))),
+			"trait": String(browser_soldier.get("trait", browser_soldier.get("personality", identity.get("trait", "Imported Veteran")))),
+			"weapon": String(weapon_value.get("name", "Ballistic Rifle")) if weapon_value is Dictionary else String(weapon_value),
+			"armor": String(armor_value.get("name", "Field Suit")) if armor_value is Dictionary else String(armor_value),
+			"assigned": assigned
+		})
+	return normalized
+
+func _normalize_browser_incidents(source: Dictionary) -> Array:
+	var normalized: Array = []
+	var source_incidents: Variant = source.get("missions", source.get("incidents", []))
+	if not source_incidents is Array:
+		return normalized
+	for incident_index in range(source_incidents.size()):
+		var browser_incident: Variant = source_incidents[incident_index]
+		if not browser_incident is Dictionary:
+			continue
+		var civilian_objective: Variant = browser_incident.get("civilianObjective", {})
+		var required_rescues := int(browser_incident.get("required_rescues", browser_incident.get("requiredRescues", 0)))
+		if civilian_objective is Dictionary:
+			required_rescues = int(civilian_objective.get("required", civilian_objective.get("minimum", required_rescues)))
+		var incident_kind := String(browser_incident.get("kind", browser_incident.get("intent", "Alien Incident")))
+		normalized.append({
+			"id": String(browser_incident.get("id", "browser_incident_%d" % incident_index)),
+			"name": String(browser_incident.get("name", browser_incident.get("title", incident_kind))),
+			"region": String(browser_incident.get("region", "Unknown")),
+			"threat": clampi(int(browser_incident.get("threat", 1)), 1, 5),
+			"reward": maxi(0, int(browser_incident.get("reward", 400))),
+			"intent": incident_kind,
+			"biome": String(browser_incident.get("biome", "Wilderness")),
+			"required_rescues": maxi(0, required_rescues),
+			"seed": int(browser_incident.get("seed", 5000 + incident_index * 97))
+		})
+	return normalized
+
+func _normalize_browser_research(source: Dictionary) -> Dictionary:
+	var browser_research: Variant = source.get("research", {})
+	if browser_research is Dictionary and (browser_research.has("active") or browser_research.has("topic")):
+		var topic := String(browser_research.get("active", browser_research.get("topic", "Laser Weapons")))
+		var assigned := maxi(0, int(browser_research.get("assignedScientists", browser_research.get("assigned_scientists", browser_research.get("scientists", 0)))))
+		var raw_progress := maxi(0, int(browser_research.get("progress", 0)))
+		var required_progress := maxi(1, int(browser_research.get("requiredProgress", browser_research.get("required_progress", browser_research.get("needed", _research_requirement_for_topic(topic, raw_progress))))))
+		var progress := mini(raw_progress, required_progress)
+		return {
+			"active": topic,
+			"progress": progress,
+			"required_progress": required_progress,
+			"assigned_scientists": assigned,
+			"scientists": assigned,
+			"completed": progress >= required_progress
+		}
+	return {"active": "Laser Weapons", "progress": 0, "required_progress": RESEARCH_REQUIRED_PROGRESS, "assigned_scientists": 0, "scientists": 0, "completed": false}
+
+func _research_requirement_for_topic(topic: String, progress: int = 0) -> int:
+	for definition in content.get("research_projects", []):
+		if String(definition.get("id", "")) == topic:
+			return maxi(1, int(definition.get("required", RESEARCH_REQUIRED_PROGRESS)))
+	return maxi(RESEARCH_REQUIRED_PROGRESS, progress + 10 if progress >= RESEARCH_REQUIRED_PROGRESS else RESEARCH_REQUIRED_PROGRESS)
+
+func _normalize_browser_reports(source: Dictionary) -> Array:
+	var normalized: Array = []
+	var source_reports: Variant = source.get("reports", [])
+	if not source_reports is Array:
+		return normalized
+	for report in source_reports.slice(0, 12):
+		if report is Dictionary:
+			normalized.append(String(report.get("message", report.get("summary", report.get("title", "Imported browser report")))))
+		else:
+			normalized.append(String(report))
+	return normalized
+
+func normalize_save(source: Dictionary) -> Dictionary:
+	var normalized := source.duplicate(true)
+	normalized["save_format"] = SAVE_FORMAT
+	normalized["funds"] = int(normalized.get("funds", 2200))
+	normalized["month"] = maxi(1, int(normalized.get("month", 1)))
+	normalized["day"] = maxi(1, int(normalized.get("day", 1)))
+	normalized["minutes"] = clampi(int(normalized.get("minutes", 8 * 60)), 0, 24 * 60 - 1)
+	normalized["soldiers"] = normalized.get("soldiers", []).duplicate(true)
+	var base_value: Variant = normalized.get("base", {})
+	var normalized_base: Dictionary = base_value.duplicate(true) if base_value is Dictionary else {}
+	var facilities_value: Variant = normalized_base.get("facilities", [])
+	var normalized_facilities: Array = facilities_value.duplicate(true) if facilities_value is Array else []
+	normalized_base["facilities"] = normalized_facilities
+	var counts_value: Variant = normalized_base.get("facility_counts", {})
+	var facility_counts: Dictionary = counts_value.duplicate(true) if counts_value is Dictionary else {}
+	if facility_counts.is_empty():
+		facility_counts = _facility_counts_from_ids(normalized_facilities)
+	for required_facility in ["quarters", "lab"]:
+		if not facility_counts.has(required_facility):
+			facility_counts[required_facility] = normalized_facilities.count(required_facility)
+	normalized_base["facility_counts"] = facility_counts
+	normalized["base"] = normalized_base
+	var research_value: Variant = normalized.get("research", {})
+	var normalized_research: Dictionary = research_value.duplicate(true) if research_value is Dictionary else {}
+	var legacy_assigned := maxi(0, int(normalized_research.get("assigned_scientists", normalized_research.get("scientists", 5))))
+	var default_scientists := legacy_assigned if legacy_assigned > 0 else 5
+	normalized["scientists"] = maxi(0, int(normalized.get("scientists", default_scientists)))
+	normalized["engineers"] = maxi(0, int(normalized.get("engineers", 0)))
+	var lab_capacity := maxi(0, int(facility_counts.get("lab", 0))) * SCIENTISTS_PER_LAB
+	var staffing_limit := mini(int(normalized["scientists"]), lab_capacity)
+	var assigned := clampi(legacy_assigned, 0, staffing_limit)
+	var active_topic := String(normalized_research.get("active", normalized_research.get("topic", "Laser Weapons")))
+	var raw_progress := maxi(0, int(normalized_research.get("progress", 0)))
+	var required_progress := maxi(1, int(normalized_research.get("required_progress", normalized_research.get("requiredProgress", _research_requirement_for_topic(active_topic, raw_progress)))))
+	var progress := mini(raw_progress, required_progress)
+	normalized_research["active"] = active_topic
+	normalized_research["progress"] = progress
+	normalized_research["required_progress"] = required_progress
+	normalized_research["completed"] = bool(normalized_research.get("completed", false)) or progress >= required_progress
+	if bool(normalized_research["completed"]):
+		assigned = 0
+	normalized_research["assigned_scientists"] = assigned
+	normalized_research["scientists"] = assigned
+	normalized["research"] = normalized_research
+	normalized["incidents"] = normalized.get("incidents", []).duplicate(true)
+	normalized["reports"] = normalized.get("reports", []).duplicate(true)
+	normalized["travel"] = normalized.get("travel", {}).duplicate(true)
+	var had_aircraft_state := normalized.has("aircraft")
+	var default_aircraft := _default_aircraft()
+	var normalized_aircraft: Dictionary = normalized.get("aircraft", {}).duplicate(true)
+	for craft_id in default_aircraft:
+		if not normalized_aircraft.has(craft_id):
+			normalized_aircraft[craft_id] = default_aircraft[craft_id].duplicate(true)
+		else:
+			normalized_aircraft[craft_id].merge(default_aircraft[craft_id], false)
+		if not had_aircraft_state or String(normalized_aircraft[craft_id].get("base_region", "")).is_empty():
+			normalized_aircraft[craft_id]["base_region"] = normalized.get("base", {}).get("region", "North America")
+	normalized["aircraft"] = normalized_aircraft
+	normalized["ufo_contacts"] = normalized.get("ufo_contacts", _default_ufos()).duplicate(true)
+	normalized["selected_ufo_id"] = normalized.get("selected_ufo_id", "nightglass_01")
+	normalized["interception_stance"] = normalized.get("interception_stance", "Standard")
+	normalized["interception"] = normalized.get("interception", {}).duplicate(true)
+	normalized["last_interception"] = normalized.get("last_interception", {}).duplicate(true)
+	normalized["save_origin"] = normalized.get("save_origin", {}).duplicate(true)
+	normalized["import_warnings"] = normalized.get("import_warnings", []).duplicate(true)
+	normalized["native_build"] = content.get("build", normalized.get("native_build", "godot-dev"))
+	return normalized

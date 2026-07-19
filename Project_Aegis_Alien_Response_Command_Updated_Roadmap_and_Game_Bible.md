@@ -1,9 +1,10 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-07-17
+Last updated: 2026-07-18
 Current handoff build: `v0.26.07.17.0137_TACTICAL_CONTINUOUS_WALLS_AND_TRAVERSABLE_BREACHES_INDEX_ONLY_PATCH`
-Current patch status: **Build 0137 replaces isolated Three.js building-wall blocks with bounded center-to-center wall joins that follow the actual offset-hex layout, meet at solid corner cores, and stop at doors or destroyed segments. Destroyed structural cells remain soft rubble with `block: 0`; Build Health now explicitly proves soldier reachability, alien pathing, and panicked-civilian movement can all cross the opening. Save format remains version 4. Static parsing and the build seam checker pass, browser Build Health passes 272/272, and a fresh six-soldier safe-2D mission completed three End Turn cycles before inherited AI finished the same live battlefield in Three.js. A revealed Ranger Outpost rendered as a continuous wall run. Live breach shooting/traversal and the affected Port Attack remain manual checks.**
+Native vertical slice: `v0.26.07.18.GODOT.0005_BASE_PERSONNEL_AND_RESEARCH_STAFFING_VERTICAL_SLICE`
+Current patch status: **The verified HTML build remains 0137 with save format 4 and its existing browser validation/manual gates unchanged. The player confirmed native 0004's browser import, isolated native/imported slots, command screens, mission launch, and save/reload checks all worked. Native build 0005 implements the next bounded strategic-management slice: exact 12-person Living Quarters and 10-scientist Laboratory capacity, selected-base repeated facility counts, base-local soldier/scientist/engineer occupancy, bounded research staffing, 2 daily research points per assigned scientist, per-project requirements, completion reporting, and conservative migration for older native/imported copies. Native tests pass 50/50 and all 36/36 native Build Health rows pass. Hardware OpenGL renders of native/imported Base and Research screens passed at 1440x900; the exact July browser export maps Fort Aegis to 43/48 local personnel and Laser Power Output 1 to 170/180 points with a one-day ETA while remaining unchanged. HTML static parsing, the seam checker, localhost startup/Geoscape, browser Build Health 272/272, and runtime-error checks passed.**
 
 ---
 
@@ -24,7 +25,7 @@ Single-player strategy / base-management / tactical alien-defense game inspired 
 - Patch distribution: zipped build folder containing `index.html` at the root of the folder.
 - Preferred patch type: `INDEX_ONLY` unless assets are required.
 - Future possibility: paid alpha on itch.io.
-- Possible later sequel or expanded version could move to Godot, but the current project is HTML-first.
+- The verified campaign remains HTML-first; an experimental native Godot 4 vertical slice now lives beside it for direct engine evaluation.
 
 ## Player Fantasy
 The player commands a fledgling global defense organization responding to escalating alien activity. They recruit soldiers, manage a base, research alien threats, shoot down UFOs, deploy squads, endure casualties, and build emotional attachment to soldiers whose personalities, stress, friendships, injuries, commendations, and deaths shape the campaign.
@@ -49,6 +50,9 @@ The player commands a fledgling global defense organization responding to escala
 
 ## Latest Known Build
 `v0.26.07.17.0137_TACTICAL_CONTINUOUS_WALLS_AND_TRAVERSABLE_BREACHES_INDEX_ONLY_PATCH`
+
+## Native Vertical Slice Build
+`v0.26.07.18.GODOT.0005_BASE_PERSONNEL_AND_RESEARCH_STAFFING_VERTICAL_SLICE`
 
 ## What This Patch Was Intended To Add
 This patch adds:
@@ -1270,6 +1274,8 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
+Run native build 0003 from a new or normalized existing campaign. Select Nightglass, compare Cautious/Standard/Aggressive posture feedback, launch Saber One, save at 50% outbound progress, return to the menu, reload, and confirm the same route, posture, fuel, and progress resume. Advance through deterministic combat, inspect the transcript and pilot cues, return to base, advance service to Ready, then launch the generated Scout Crash Site as a tactical recovery mission. This is the current native manual-testing gate; do not treat it as a complete campaign port.
+
 In a mandatory civilian-rescue incident, hand AI Command the live battlefield after the last alien dies or just before AI kills it. Confirm AI enters secure rescue, searches for unrevealed survivors, preserves existing escort chains, reports rescued/required progress, and extracts enough civilians before victory. Confirm an impossible requirement still resolves and an exhausted bounded rescue does not falsely mark surviving soldiers KIA. Then trigger a UFO speed prompt while working in Base, Soldiers, Research, Workshop, and Missions; choose a speed and confirm the same command section remains open while time advances. Repeat from an in-progress incident and confirm the battlefield remains active until the deferred speed applies after battle.
 
 Manually listen to several base-computer announcements and confirm the stronger effect remains intelligible and suitably computer-like. Complete an AI-controlled incident and confirm the final soldier phrase plus trailing static finish before `all_aboard` or the first return-flight pilot phrase begins. Confirm the static bookends do not clip consonants or overpower quiet soldier takes at low and high Sound Effects volume.
@@ -2924,6 +2930,192 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.18.GODOT.0005 - Base Personnel and Research Staffing Vertical Slice
+
+Native build `v0.26.07.18.GODOT.0005_BASE_PERSONNEL_AND_RESEARCH_STAFFING_VERTICAL_SLICE` preserves save format 4 and implements the smallest safe strategic-management subset recommended after live browser-import validation.
+
+Implemented scope:
+
+- Added base-local facility counts without importing or simulating the browser build's complete multi-base layout.
+- Living Quarters provide 12 personnel spaces and Laboratories support 10 scientists, matching the verified HTML rules.
+- Local occupancy counts living soldiers, scientists, and engineers. KIA soldiers do not consume quarters capacity, while over-capacity imported states remain intact and receive visible feedback instead of destructive normalization.
+- New native campaigns begin with six soldiers, five scientists, no engineers, 11/12 occupied personnel spaces, and five scientists assigned to Laser Weapons.
+- Browser imports preserve selected-base repeated Living Quarters and Laboratory cells plus top-level scientist/engineer totals. All imported soldiers remain available, while base identity remains explicit for local occupancy accounting.
+- Research assignment is adjustable from zero through the lower of available scientists and Laboratory capacity. The save stores both the new explicit assignment key and the prior 0004 compatibility alias.
+- Each assigned scientist contributes 2 research points per elapsed strategic day. Projects preserve their own required-point totals; completion caps at that requirement, records one report, and releases the assigned staff.
+- The Base screen now shows live local personnel, soldiers, scientists, engineers, capacity overflow, and facility-specific staffing instead of placeholder values.
+- The Research screen now shows total scientists, lab capacity, assigned/available staff, progress, daily rate, ETA, a numeric staffing control, and a bounded one-day advance disabled during active flight operations.
+- Save normalization supplies conservative scientist, engineer, facility-count, and staffing defaults to native 0001-0004 saves without changing save format or save-slot isolation.
+
+Performance and compatibility:
+
+- Capacity and staffing calculations traverse the bounded local roster only when strategic UI/state changes occur; no tactical or per-frame work was added.
+- Research advances once per crossed strategic midnight rather than on every minute tick.
+- Existing imported copies missing repeated facility counts infer one instance from their preserved facility list. Re-importing the unchanged browser export preserves exact repeated Quarters/Laboratory counts.
+- The HTML artifact, browser saves, regular native save, and isolated imported-copy save paths remain unchanged.
+
+Verification completed:
+
+- Godot 4.7.1 editor import and strict GDScript parsing passed.
+- Native tests passed `50/50`; visible Build Health passed `36/36` through the same run.
+- Coverage includes exact personnel/lab rules, legacy migration, staffing clamps, deterministic daily progress, completion/staff release, repeated browser facility counts, imported personnel totals, and all prior tactical/interception/import checks.
+- Hardware OpenGL 3.3 on the NVIDIA GeForce GTX 960M rendered native and exact-import Base/Research screens at 1440x900. The three-column facility grid removed horizontal overflow and all summary/staffing controls remained readable.
+- The exact July 12 browser export imported read-only in memory as Fort Aegis with four Living Quarters, 48 personnel capacity, 43 living/local personnel, one Laboratory, 10 scientists, 10 engineers, and Laser Power Output 1 at 170/180 points with 10 assigned and one day remaining. Source bytes remained unchanged and neither native save slot was written.
+- Imported project requirements now set the ProgressBar maximum before its value; the exact 170/180 state visibly reports 94% instead of being clamped through the control's default 100-point maximum.
+- The unchanged HTML artifact's six inline scripts parsed and `node tools\check-aegis-build.cjs` passed for browser build 0137.
+- Localhost browser smoke reached first-base setup and the Geoscape; browser Build Health passed `272/272` and runtime error logs were empty. The existing Tailwind production-CDN warning remains non-blocking.
+
+Manual validation still required:
+
+- Load a new campaign and confirm Base reports six soldiers, five scientists, no engineers, and 11/12 local personnel.
+- Change Research staffing from five to three, confirm a 6-point daily rate and updated ETA, advance one day, then save/reload and confirm the same assignment/progress.
+- Set staffing to zero and confirm a day passes without research progress; restore staff and confirm progress resumes.
+- Re-import the current browser campaign and compare selected-base Quarters/Laboratory counts, personnel totals, assigned scientists, progress, and isolated save/reload behavior.
+
+Next native step after live validation: add bounded personnel hiring/arrival queues and the first small research-topic completion/unlock transition, still avoiding broad multi-base logistics and the full browser research tree.
+
+## v0.26.07.18.GODOT.0004 - Browser Save Import Copy Vertical Slice
+
+Native build `v0.26.07.18.GODOT.0004_BROWSER_SAVE_IMPORT_COPY_VERTICAL_SLICE` preserves save format 4 and exposes the first conservative bridge from an exported HTML campaign into the native vertical slice.
+
+Implemented scope:
+
+- Added a start-screen browser-save file picker with a 32 MB input limit, JSON validation, recognized Project Aegis campaign kind, and rejection of future save formats or ambiguous all-slot backups.
+- Corrected the dormant importer to read the actual HTML export contract under the `data` wrapper instead of the unused `game` key.
+- Added a review-before-write dialog showing source file, browser build, save format, campaign date, funds, selected base, soldier count, compatible incident count, and explicit compatibility limits.
+- Normalized the selected browser base, known facilities, soldier identity/stats/readiness/active squad, active incidents and rescue requirements, research summary, inventory, reports, funds, and Geoscape clock into the bounded native data model.
+- The real browser schema's nested `stats`, `identity`, base `grid`, research `topic`, and assigned-scientist fields map directly; KIA and wounded status are visible in the roster.
+- Browser active squads are capped at the native Skyranger's six ready seats, while the complete imported roster remains available through page-owned scrolling.
+- Browser aircraft, complex layout, relationship, transfer, and queue systems remain in the untouched browser file; the native slice supplies its own Saber One and Nightglass defaults.
+- Imported campaigns write only to `user://project_aegis_godot_imported_copy_v4.json`. The regular native slot at `user://project_aegis_godot_save_v4.json` and the selected browser export are never overwritten by this flow.
+- Added **Load Imported Copy**, imported-copy save labeling, a persistent source-build provenance banner, and source metadata that survives save/reload.
+- Dense imported incident sets receive distinct deterministic marker/hit positions; only selected or hovered incident labels render, preventing strategic-map label piles without changing selection outcomes.
+- Fixed command-screen replacement by detaching outgoing UI synchronously before deferred deletion, preserving the new header/navigation while switching among long imported pages.
+
+Performance and compatibility:
+
+- File reads are user-initiated and bounded to 32 MB. Parsing and normalization each traverse the selected campaign data once, with no tactical or per-frame cost.
+- Existing native and browser saves remain unchanged. Save format remains 4 because the imported copy maps into the existing native contract and uses a separate path.
+- Unsupported all-slot backups explain that one individual browser campaign or slot must be exported, avoiding an ambiguous automatic choice.
+
+Verification completed:
+
+- Godot 4.7.1 editor import and strict GDScript parsing passed.
+- Native tests passed `45/45`; visible Build Health passed `32/32` through the same run.
+- The test suite writes a representative 0137 campaign export, reads it through the exact `data` wrapper, maps the selected second base grid, eight-soldier roster, nested identity/stats, six-seat active squad, rescue incident, research, funds, date, and clock, then writes and reloads a separate imported copy.
+- The test suite confirms the browser source file remains byte-for-byte unchanged and the imported path is distinct from the regular native save path.
+- Hardware OpenGL smoke on the NVIDIA GeForce GTX 960M rendered and visually verified the start screen, Downloads-rooted picker, compatibility review, imported-copy Geoscape, full 44-soldier roster, and 11-incident Mission Control at 1440x900.
+- The actual 606,055-byte July 12 build-1500 browser export previewed and normalized as Month 4 Day 1 at Fort Aegis with 44 soldiers, six ready soldiers assigned, 11 launchable incidents, and unchanged source bytes. Its disposable imported-copy file reloaded successfully and was removed after the test.
+- The unchanged HTML artifact's six inline scripts parsed, `node tools\check-aegis-build.cjs` passed for build 0137, and localhost browser smoke reached first-base placement and the Geoscape.
+- Browser Build Health passed `272/272`; browser error logs were empty during the start-screen, base-placement, Geoscape, and diagnostics flow.
+
+Manual validation completed:
+
+- The player imported the current browser campaign through the live picker and confirmed the review/import flow worked.
+- The player confirmed native and imported save slots remained distinct and save/reload behavior worked.
+- The player confirmed the imported command screens and mapped incident mission flow worked at the normal display scaling.
+
+Next native step completed in native build 0005: base-local personnel capacity and research staffing now follow the verified HTML rules without broad multi-base logistics.
+
+## v0.26.07.18.GODOT.0003 - Native Air Interception Vertical Slice
+
+Native build `v0.26.07.18.GODOT.0003_AIR_INTERCEPTION_VERTICAL_SLICE` preserves save format 4 and adds the first bounded strategic aircraft-combat loop.
+
+Implemented scope:
+
+- Added one save-compatible Saber One interceptor and one tracked Nightglass Scout UFO contact to new and normalized native campaigns.
+- Added clickable UFO markers, contact selection, Cautious/Standard/Aggressive posture controls, and mutually exclusive Skyranger/interceptor launch commitments.
+- Added 20-minute outbound and return legs, map route/craft visualization, fuel commitment, missile expenditure, hull damage, reports, and recorded pilot cues.
+- Air combat is deterministic and bounded to at most three exchanges; it cannot create an unbounded simulation loop.
+- A destroyed UFO creates a selectable Scout Crash Site tactical incident. Escaped contacts and lost interceptors resolve without leaving an active-flight lock.
+- Surviving craft return to bounded service time, then restore hull, fuel, missiles, and Ready status through Geoscape clock advancement.
+- Save normalization preserves exact mid-interception phase, progress, posture, craft state, UFO state, combat log, and return/service state without changing save format.
+- Added seven visible Build Health rows covering the complete air-operation lifecycle and ten headless checks including a real save/reload at 50% outbound progress.
+
+Performance and compatibility:
+
+- The strategic map still uses one custom-drawn control; UFO and aircraft route rendering add no per-marker scene-node churn.
+- Combat executes at most three deterministic rounds only when outbound progress reaches 100%.
+- Existing native saves receive missing aircraft/contact defaults through normalization. Browser saves and `index.html` remain untouched.
+
+Verification completed:
+
+- Godot 4.7.1 editor import and strict GDScript parsing passed.
+- Native headless tests passed `33/33`; visible Build Health passed `23/23` through the same run.
+- The test suite saved at 50% outbound travel, loaded that save into a new campaign object, resumed combat, created a crash site, returned, serviced, and restored Saber One readiness.
+- Hardware-rendered OpenGL smoke produced and visually verified tracked-contact, outbound-route, and post-combat return states at 1440x900.
+
+Manual validation completed:
+
+- The player selected Nightglass, used the interception controls, and advanced through outbound combat, return, and service without a reported issue.
+- The player confirmed native save continuity and the generated Scout Crash Site recovery flow work as expected.
+- The player confirmed the pilot audio and complete native interception update work as expected.
+
+Next native step completed in native build 0004: conservative browser-save import now uses a review-first picker and an isolated imported-copy slot without overwriting the browser export or regular native campaign.
+
+## v0.26.07.18.GODOT.0002 - Tactical Battle Log Trim Fix
+
+Native build `v0.26.07.18.GODOT.0002_TACTICAL_LOG_TRIM_FIX` preserves save format 4 and fixes the hard lock reported during an incident battle.
+
+Root cause:
+
+- The tactical sidebar retains at most ten battle-log labels.
+- When an eleventh label arrived, the trimming loop called `queue_free()` on the oldest child and immediately checked `get_child_count()` again.
+- Godot defers `queue_free()` until the frame ends, so the count remained eleven inside the synchronous loop. The same child was queued repeatedly without a terminating state change, driving CPU and memory growth until the window stopped responding.
+
+Implemented fix:
+
+- Excess log entries are now removed from the container before being freed, so the visible child count decreases synchronously on every loop iteration.
+- The ten-entry display cap and newest-first message order are unchanged.
+- Added native Build Health coverage that sends 24 consecutive tactical messages and requires the container to finish at exactly ten entries.
+
+Verification completed:
+
+- Godot 4.7.1 editor import and GDScript parsing passed.
+- Native headless tests passed `22/22`.
+- Native Build Health passed `16/16`, including `Tactical battle log trims immediately at ten entries`.
+- The tactical test completed soldier movement highlighting, civilian contact, wall destruction, breach traversal, and three asynchronous End Turn cycles.
+
+Manual validation completed:
+
+- The player completed a full native incident mission without another lockup or reported issue.
+- The tactical log passed its real sustained-play gate through mission completion and return to command.
+
+## v0.26.07.18.GODOT.0001 - Native Godot 4 Vertical Slice
+
+The first native Godot 4.7.1 slice lives beside the verified HTML artifact. It deliberately reuses save format 4 as a data-contract version while writing to a separate native JSON save, so browser campaigns are not overwritten.
+
+Implemented scope:
+
+- Added a native project, main scene, restrained command UI, data catalog, campaign state model, deterministic hex helpers, strategic map, and tactical board under `godot/`.
+- Added first-base placement, Geoscape incidents, Skyranger travel, six-soldier roster management, research/workshop actions, mission and report views, and native save/load.
+- Added a 20x14 tactical incident with terrain, connected building walls, cover, a single readable Skyranger and nine-cell rear ramp, six soldiers, three aliens, and two civilians.
+- Added bounded reachable-cell/path calculations, TU movement and firing, alien turns, civilian contact/following/panic/recontact, mandatory extraction, mission resolution, and campaign rewards/casualty updates.
+- Destroyed wall cells become soft rubble and are excluded from the shared blocker index, allowing human, alien, and civilian paths through the breach.
+- Added an in-game 15-row Build Health checker plus a 22-check headless test suite covering campaign, save, hex, movement highlighting, three End Turn cycles, rescue, and breach contracts.
+
+Performance and compatibility:
+
+- Tactical rendering is one custom Godot control rather than one scene node per hex; movement highlighting uses one bounded reachable flood and paths are calculated only for chosen destinations.
+- The sample battlefield is fixed at 20x14 and does not port the HTML lighting system, avoiding the browser build's former full-map lighting/DOM costs.
+- `index.html`, its build label, and browser save remain unchanged. Godot stores native state separately at `user://project_aegis_godot_save_v4.json`.
+
+Verification completed:
+
+- Godot 4.7.1 headless editor import and GDScript parsing completed with all native classes registered.
+- Native headless tests passed `22/22`; this run invokes and passes all `15/15` visible Build Health rows and completes three tactical End Turn cycles.
+- A hardware-rendered OpenGL smoke run produced and visually verified the native start, Geoscape, and tactical states at 1440x900.
+- The visual pass found and fixed zero-width/zero-height label behavior in wrapped command text and the tactical header; the rerender shows the title, live turn summary, and multiline battle log.
+
+Manual validation still required:
+
+- Complete one full native campaign loop from base placement through tactical victory and return to command.
+- Select and move multiple soldiers, run at least three alien turns, destroy and cross a wall breach, and rescue a civilian through the rear ramp.
+- Save, return to the menu, load the native campaign, and confirm funds, base, roster, reports, incidents, and mission outcome persist.
+- Check music transitions, input feel, tactical readability, and display scaling on the player's normal setup.
+
+Next native step: after this hands-on gate, port a bounded aircraft interception loop and expose a conservative browser-save import UI without overwriting the original save.
 
 ## v0.26.07.17.0137 - Continuous Tactical Walls and Traversable Breaches
 
