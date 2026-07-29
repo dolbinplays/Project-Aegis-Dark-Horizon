@@ -1,6 +1,6 @@
 extends Control
 
-const NATIVE_BUILD := "v0.26.07.28.GODOT.0011_TACTICAL_AI_DOCTRINE_AND_REACTION_FIRE_VERTICAL_SLICE"
+const NATIVE_BUILD := "v0.26.07.28.GODOT.0012_TACTICAL_HAND_SLOTS_TARGETING_AND_GRENADE_VERTICAL_SLICE"
 const MAX_BROWSER_IMPORT_BYTES := 32 * 1024 * 1024
 
 var content: Dictionary = {}
@@ -22,6 +22,10 @@ var tactical_end_turn_button: Button
 var tactical_return_button: Button
 var tactical_ai_button: Button
 var tactical_stance_button: Button
+var tactical_right_hand_button: Button
+var tactical_left_hand_button: Button
+var tactical_prime_button: Button
+var tactical_cancel_target_button: Button
 var command_content: Control
 
 var color_bg := Color("071317")
@@ -1217,16 +1221,33 @@ func _show_tactical() -> void:
 	scroll.add_child(tactical_log_box)
 	side.add_child(scroll)
 	var console := HBoxContainer.new()
-	console.custom_minimum_size.y = 142
+	console.custom_minimum_size.y = 174
 	console.add_theme_constant_override("separation", 12)
 	var unit_controls := VBoxContainer.new()
-	unit_controls.custom_minimum_size.x = 260
+	unit_controls.custom_minimum_size.x = 340
 	unit_controls.add_child(_label("UNIT", 11, color_cyan))
 	var cycle_row := HBoxContainer.new()
 	cycle_row.add_child(_small_button("Previous", func(): tactical_board.select_relative_soldier(-1)))
 	cycle_row.add_child(_small_button("Next", func(): tactical_board.select_relative_soldier(1)))
 	cycle_row.add_child(_small_button("Map", _show_tactical_map))
 	unit_controls.add_child(cycle_row)
+	unit_controls.add_child(_label("HANDS", 10, color_muted))
+	var hands_row := HBoxContainer.new()
+	tactical_right_hand_button = _small_button("RIGHT: WEAPON", func(): tactical_board.set_selected_active_hand("right"))
+	tactical_right_hand_button.disabled = true
+	hands_row.add_child(tactical_right_hand_button)
+	tactical_left_hand_button = _small_button("LEFT: FRAG x1", func(): tactical_board.set_selected_active_hand("left"))
+	tactical_left_hand_button.disabled = true
+	hands_row.add_child(tactical_left_hand_button)
+	unit_controls.add_child(hands_row)
+	var target_row := HBoxContainer.new()
+	tactical_prime_button = _small_button("Prime 4 TU", func(): tactical_board.prime_selected_grenade())
+	tactical_prime_button.disabled = true
+	target_row.add_child(tactical_prime_button)
+	tactical_cancel_target_button = _small_button("Cancel Target", func(): tactical_board.cancel_selected_targeting())
+	tactical_cancel_target_button.disabled = true
+	target_row.add_child(tactical_cancel_target_button)
+	unit_controls.add_child(target_row)
 	var equipment_row := HBoxContainer.new()
 	equipment_row.add_child(_small_button("Inventory", _show_tactical_inventory))
 	tactical_stance_button = _small_button("Kneel", func(): tactical_board.toggle_selected_kneeling())
@@ -1281,7 +1302,8 @@ func _on_tactical_selection(unit: Dictionary) -> void:
 		var medkit_status := "Medkit ready" if int(unit.get("medkit_charges", 0)) > 0 else "No medkit"
 		var stance := "Kneeling" if unit.get("kneeling", false) else "Standing"
 		var reserve := String(unit.get("reserve_mode", "none")).capitalize()
-		tactical_selection_label.text = "%s | %s\n%s | %s\nHP %d/%d  TU %d/%d  REA %d\n%s | Reserve %s | Kills %d" % [unit.get("name","Soldier"), unit.get("rank","Rookie"), unit.get("weapon","Ballistic Rifle"), unit.get("armor","Field Suit"), unit.get("hp",0), unit.get("max_hp",0), unit.get("tu",0), unit.get("max_tu",0), unit.get("reactions",0), stance, reserve, unit.get("kills",0)]
+		var targeting := String(unit.get("targeting_mode", "move")).capitalize()
+		tactical_selection_label.text = "%s | %s\n%s | %s\nHP %d/%d  TU %d/%d  REA %d\n%s | Reserve %s | %s | Kills %d" % [unit.get("name","Soldier"), unit.get("rank","Rookie"), unit.get("weapon","Ballistic Rifle"), unit.get("armor","Field Suit"), unit.get("hp",0), unit.get("max_hp",0), unit.get("tu",0), unit.get("max_tu",0), unit.get("reactions",0), stance, reserve, targeting, unit.get("kills",0)]
 	if tactical_medkit_button:
 		var blocker := tactical_board.selected_medkit_blocker() if tactical_board else "Select a living soldier."
 		tactical_medkit_button.disabled = not blocker.is_empty()
@@ -1289,6 +1311,20 @@ func _on_tactical_selection(unit: Dictionary) -> void:
 	if tactical_stance_button:
 		tactical_stance_button.disabled = unit.is_empty()
 		tactical_stance_button.text = "Stand" if unit.get("kneeling", false) else "Kneel"
+	if tactical_right_hand_button:
+		tactical_right_hand_button.disabled = unit.is_empty()
+		tactical_right_hand_button.text = "RIGHT: %s" % String(unit.get("weapon", "Weapon")).to_upper() if not unit.is_empty() else "RIGHT: WEAPON"
+	if tactical_left_hand_button:
+		var grenade_count := int(unit.get("grenade_charges", 0))
+		tactical_left_hand_button.disabled = unit.is_empty() or grenade_count <= 0
+		tactical_left_hand_button.text = "LEFT: %s" % ("PRIMED FRAG" if unit.get("grenade_primed", false) else "FRAG x%d" % grenade_count)
+	if tactical_prime_button:
+		var grenade_blocker := tactical_board.selected_grenade_blocker() if tactical_board else "Select a living soldier."
+		tactical_prime_button.disabled = unit.is_empty() or not grenade_blocker.is_empty() and not unit.get("grenade_primed", false)
+		tactical_prime_button.text = "Target Grenade" if unit.get("grenade_primed", false) else "Prime 4 TU"
+		tactical_prime_button.tooltip_text = grenade_blocker if not grenade_blocker.is_empty() else "Prime the left-hand Frag Grenade for 4 TU, then select a hex within six."
+	if tactical_cancel_target_button:
+		tactical_cancel_target_button.disabled = unit.is_empty() or String(unit.get("targeting_mode", "move")) == "move"
 
 func _on_tactical_status(status: Dictionary) -> void:
 	if tactical_status_label:
@@ -1308,6 +1344,9 @@ func _on_tactical_ai_command_changed(active: bool) -> void:
 		tactical_medkit_button.disabled = active or not tactical_board.selected_medkit_blocker().is_empty()
 	if tactical_stance_button:
 		tactical_stance_button.disabled = active or tactical_board.selected_inventory().is_empty()
+	for button in [tactical_right_hand_button, tactical_left_hand_button, tactical_prime_button, tactical_cancel_target_button]:
+		if button:
+			button.disabled = active or button.disabled
 
 func _show_tactical_inventory() -> void:
 	if tactical_board == null:
@@ -1315,17 +1354,19 @@ func _show_tactical_inventory() -> void:
 	var inventory := tactical_board.selected_inventory()
 	var dialog := AcceptDialog.new()
 	dialog.title = "Field Equipment"
-	dialog.dialog_text = "Select a living soldier to inspect equipment." if inventory.is_empty() else "%s - %s\n\nRIGHT HAND  %s\nBODY        %s\nBELT        %s\n\nTU %d   Accuracy %d   Reactions %d\nStance %s   Reserve %s" % [
+	dialog.dialog_text = "Select a living soldier to inspect equipment." if inventory.is_empty() else "%s - %s\n\nRIGHT HAND  %s\nLEFT HAND   %s\nBODY        %s\nBELT        %s\n\nTU %d   Accuracy %d   Reactions %d\nStance %s   Reserve %s   Targeting %s" % [
 		inventory.get("name", "Soldier"),
 		inventory.get("rank", "Rookie"),
-		inventory.get("weapon", "Unarmed"),
+		inventory.get("right_hand", "Unarmed"),
+		inventory.get("left_hand", "Empty"),
 		inventory.get("armor", "No Armor"),
 		"Medkit (%d)" % inventory.get("medkit_charges", 0) if int(inventory.get("medkit_charges", 0)) > 0 else "Empty",
 		inventory.get("tu", 0),
 		inventory.get("accuracy", 0),
 		inventory.get("reactions", 0),
 		"Kneeling" if inventory.get("kneeling", false) else "Standing",
-		String(inventory.get("reserve_mode", "none")).capitalize()
+		String(inventory.get("reserve_mode", "none")).capitalize(),
+		String(inventory.get("targeting_mode", "move")).capitalize()
 	]
 	dialog.min_size = Vector2i(520, 330)
 	ui_root.add_child(dialog)
@@ -1378,6 +1419,9 @@ func _on_tactical_finished(result: Dictionary) -> void:
 		tactical_ai_button.disabled = true
 	if tactical_stance_button:
 		tactical_stance_button.disabled = true
+	for button in [tactical_right_hand_button, tactical_left_hand_button, tactical_prime_button, tactical_cancel_target_button]:
+		if button:
+			button.disabled = true
 
 func _request_tactical_dust_off() -> void:
 	if not tactical_result.is_empty():
@@ -1476,6 +1520,22 @@ func _run_self_tests() -> Array:
 	var classic_console_ready := doctrine_board.set_selected_reserve_mode("snap") and doctrine_board.toggle_selected_kneeling()
 	var console_inventory := doctrine_board.selected_inventory()
 	classic_console_ready = classic_console_ready and int(console_soldier.get("tu", 0)) == console_tu_before - 4 and console_inventory.get("reserve_mode", "") == "snap" and console_inventory.get("kneeling", false) and doctrine_board.bleed_selected_tu()
+	console_soldier["tu"] = 60
+	console_soldier["reserve_mode"] = "none"
+	console_soldier["reserve_tu"] = 0
+	doctrine_board._select_unit(String(console_soldier.get("id", "")))
+	var hand_inventory := doctrine_board.selected_inventory()
+	var hand_slots_ready: bool = hand_inventory.get("right_hand", "") == console_soldier.get("weapon", "") and hand_inventory.get("left_hand", "") == "Frag Grenade" and int(hand_inventory.get("grenade_charges", 0)) == 1
+	var grenade_prime_tu_before := int(console_soldier.get("tu", 0))
+	var grenade_prime_ready: bool = doctrine_board.prime_selected_grenade() and int(console_soldier.get("tu", 0)) == grenade_prime_tu_before - doctrine_board.GRENADE_PRIME_TU and console_soldier.get("grenade_primed", false) and console_soldier.get("targeting_mode", "") == "grenade"
+	var grenade_target := Vector2i(8, 8)
+	var grenade_wall_key := AegisHexRules.key(grenade_target)
+	doctrine_board.covers[grenade_wall_key] = {"cell":grenade_target,"type":"wall","hard":true,"hp":30,"max_hp":30,"building":"health"}
+	var grenade_alien: Dictionary = doctrine_aliens[1]
+	grenade_alien["cell"] = Vector2i(8, 9)
+	grenade_alien["hp"] = 30
+	var grenade_throw_tu_before := int(console_soldier.get("tu", 0))
+	var grenade_blast_ready: bool = doctrine_board.grenade_blast_cells(grenade_target).size() == 7 and doctrine_board._try_throw_grenade(console_soldier, grenade_target) and int(console_soldier.get("tu", 0)) == grenade_throw_tu_before - doctrine_board.GRENADE_THROW_TU and int(console_soldier.get("grenade_charges", -1)) == 0 and int(grenade_alien.get("hp", 0)) < 30 and not doctrine_board._blocked_cells().has(grenade_wall_key)
 	for alien in test_board.units.filter(func(unit): return unit.get("team", "") == "alien"):
 		alien["hp"] = 0
 	var rescue_gate_holds := not test_board._check_resolution() and not test_board.resolved
@@ -1722,6 +1782,9 @@ func _run_self_tests() -> Array:
 		{"name":"Reaction stat drives TU-consuming fire during alien movement", "pass":reaction_fire_ready},
 		{"name":"AI-command tactical contacts preserve live fog of war", "pass":ai_fog_ready},
 		{"name":"Classic reserve stance inventory and Done controls mutate tactical state", "pass":classic_console_ready},
+		{"name":"Tactical deployment exposes functional right and left hand slots", "pass":hand_slots_ready},
+		{"name":"Frag Grenade preparation spends four TU and enters explicit targeting", "pass":grenade_prime_ready},
+		{"name":"Frag Grenade blast is seven-hex bounded and opens traversable rubble", "pass":grenade_blast_ready},
 		{"name":"Native campaign starts with interceptor and tracked UFO", "pass":air_defaults_ready},
 		{"name":"Interception launch commits stance fuel and outbound state", "pass":air_launch_ready},
 		{"name":"Mid-interception save state normalizes at exact progress", "pass":air_midflight_normalizes},

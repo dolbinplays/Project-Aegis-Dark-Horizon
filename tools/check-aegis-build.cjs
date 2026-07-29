@@ -67,6 +67,9 @@ const required = [
   "Fire-mode reaction shots use Reaction stat ammo and reserved TU",
   "Alien AI hunts humans through bounded cover while AI playback preserves fog",
   "Classic battlescape console exposes real map inventory stance reserve done and dust-off controls",
+  "Tactical deployment exposes functional right and left hand slots",
+  "Frag Grenade preparation spends four TU and enters explicit targeting",
+  "Frag Grenade blast is seven-hex bounded and opens traversable rubble",
   "AI tactical playback emits bounded context-aware soldier dialogue",
   "Three.js Skyranger renders one cohesive craft with attached extraction ramp",
   "Geoscape range and ferry controls share one operational overlay section",
@@ -106,6 +109,10 @@ const required = [
   "tacticalAiMovePlan",
   "tacticalReactionShotResult",
   "tacticalReserveTuForMode",
+  "tacticalGrenadePrimeResult",
+  "tacticalGrenadeThrowResult",
+  "tacticalGrenadeBlastCells",
+  "Hands / Targeting",
   "connectRecordedDialogueVoiceFx",
   "enqueueRecordedDialogue",
   "dialogueSoldierTail",
@@ -163,6 +170,10 @@ const nativeMedkit = nativeContent.field_items?.find((item) => item.id === "Medk
 if (nativeMedkit?.heal !== 12 || nativeMedkit?.tu_cost !== 12) {
   missing.push("native Medkit must preserve the paired 12 HP / 12 TU contract");
 }
+const nativeGrenade = nativeContent.field_items?.find((item) => item.id === "Frag Grenade");
+if (nativeGrenade?.prime_tu !== 4 || nativeGrenade?.throw_tu !== 12 || nativeGrenade?.range !== 6 || nativeGrenade?.damage !== 28 || nativeGrenade?.edge_damage !== 16) {
+  missing.push("native Frag Grenade must preserve the paired prime throw range and damage contract");
+}
 
 for (const system of [
   "base-local-medkit-issue-return",
@@ -179,6 +190,10 @@ for (const system of [
   "alien-human-priority-cover-advance",
   "ai-command-live-fog-of-war",
   "classic-map-inventory-stance-reserve-done-dustoff-controls",
+  "tactical-right-left-hand-slots",
+  "explicit-fire-grenade-targeting",
+  "standard-frag-prime-throw-tu",
+  "bounded-seven-hex-blast-breach",
 ]) {
   if (!manifest.gameplayParity?.requiredSystems?.includes(system)) {
     missing.push(`gameplay parity system missing: ${system}`);

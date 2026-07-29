@@ -358,6 +358,22 @@ func _test_tactical(content: Dictionary) -> void:
 	var console_ready := ai_board.set_selected_reserve_mode("snap") and ai_board.toggle_selected_kneeling()
 	var console_inventory := ai_board.selected_inventory()
 	_check(console_ready and int(console_soldier.get("tu", 0)) == console_tu_before - 4 and console_inventory.get("reserve_mode", "") == "snap" and console_inventory.get("kneeling", false) and ai_board.bleed_selected_tu(), "classic reserve stance inventory and Done controls mutate live tactical state")
+	console_soldier["tu"] = 60
+	console_soldier["reserve_mode"] = "none"
+	console_soldier["reserve_tu"] = 0
+	ai_board._select_unit(String(console_soldier.get("id", "")))
+	var hand_inventory := ai_board.selected_inventory()
+	_check(hand_inventory.get("right_hand", "") == console_soldier.get("weapon", "") and hand_inventory.get("left_hand", "") == "Frag Grenade" and int(hand_inventory.get("grenade_charges", 0)) == 1, "tactical deployment exposes functional right and left hand slots")
+	var prime_tu_before := int(console_soldier.get("tu", 0))
+	_check(ai_board.prime_selected_grenade() and int(console_soldier.get("tu", 0)) == prime_tu_before - ai_board.GRENADE_PRIME_TU and console_soldier.get("grenade_primed", false) and console_soldier.get("targeting_mode", "") == "grenade", "grenade preparation spends four TU and enters explicit targeting")
+	var grenade_target := Vector2i(8, 8)
+	var grenade_wall_key := AegisHexRules.key(grenade_target)
+	ai_board.covers[grenade_wall_key] = {"cell":grenade_target,"type":"wall","hard":true,"hp":30,"max_hp":30,"building":"test"}
+	var grenade_alien: Dictionary = ai_aliens[1]
+	grenade_alien["cell"] = Vector2i(8, 9)
+	grenade_alien["hp"] = 30
+	var throw_tu_before := int(console_soldier.get("tu", 0))
+	_check(ai_board.grenade_blast_cells(grenade_target).size() == 7 and ai_board._try_throw_grenade(console_soldier, grenade_target) and int(console_soldier.get("tu", 0)) == throw_tu_before - ai_board.GRENADE_THROW_TU and int(console_soldier.get("grenade_charges", -1)) == 0 and int(grenade_alien.get("hp", 0)) < 30 and not ai_board._blocked_cells().has(grenade_wall_key), "grenade throw uses a bounded seven-hex blast damages units and opens traversable rubble")
 	ai_board.queue_free()
 	board._select_unit(shooter.get("id", ""))
 	_check(not board.reachable.is_empty(), "soldier selection produces bounded movement highlights")
@@ -405,9 +421,9 @@ func _test_build_health() -> void:
 	var app: Node = load("res://godot/main.tscn").instantiate()
 	app.content = _load_json("res://godot/data/content.json")
 	var health: Array = app._run_self_tests()
-	if health.size() != 74 or not health.all(func(row): return row.get("pass", false)):
+	if health.size() != 77 or not health.all(func(row): return row.get("pass", false)):
 		print("BUILD HEALTH DETAIL: %s" % JSON.stringify(health))
-	_check(health.size() == 74 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 74 rows")
+	_check(health.size() == 77 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 77 rows")
 	app.free()
 
 func _load_json(path: String) -> Dictionary:

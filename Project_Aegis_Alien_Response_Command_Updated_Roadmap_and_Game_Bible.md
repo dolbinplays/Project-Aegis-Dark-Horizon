@@ -2,9 +2,55 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-07-28
-Current handoff build: `v0.26.07.28.0140_TACTICAL_AI_DOCTRINE_REACTION_FOG_AND_CLASSIC_COMMAND_CONSOLE_PARITY_PATCH`
-Native vertical slice: `v0.26.07.28.GODOT.0011_TACTICAL_AI_DOCTRINE_AND_REACTION_FIRE_VERTICAL_SLICE`
-Current patch status: **Paired browser 0140/native 0011 add rank-gated commander doctrine, commander-centered formations, bounded cover/flank movement, selected-shot TU reserves, Reaction-stat interruption fire, human-priority cover-aware aliens, observation-safe AI fog, and the first functional classic battlescape command-console slice. Save format remains 4. Static parsing, seam checking, native 102/102 tests, native Build Health 74/74, browser Build Health 281/281, and a live seven-exchange AI-command tactical victory pass without runtime errors. Hands-on formation, rescue, reaction, fog, and normal-resolution console validation is now the publication gate; no pending build is published yet.**
+Current handoff build: `v0.26.07.28.0141_TACTICAL_CLASSIC_HAND_SLOTS_TARGETING_AND_GRENADE_PARITY_PATCH`
+Native vertical slice: `v0.26.07.28.GODOT.0012_TACTICAL_HAND_SLOTS_TARGETING_AND_GRENADE_VERTICAL_SLICE`
+Current patch status: **Paired browser 0141/native 0012 add functional right/left hand slots, explicit movement/weapon/grenade targeting, and one mission-issued Frag Grenade per soldier. Priming costs 4 TU, throwing costs 12 TU at up to six hexes, and the deterministic blast is bounded to the target plus six neighbors while damaging units and opening traversable structural rubble. Save format remains 4. Static parsing, seam checking, native 105/105 tests, native Build Health 77/77, browser Build Health 284/284, a live browser prime/throw sequence, and three complete tactical turn cycles pass without current runtime errors. Hands-on grenade balance, friendly/civilian danger, and 2D/3D targeting readability are now the manual publication gate.**
+
+---
+
+# v0.26.07.28.0141 / GODOT.0012 - Classic Hand Slots, Targeting, and Grenades
+
+Browser build `v0.26.07.28.0141_TACTICAL_CLASSIC_HAND_SLOTS_TARGETING_AND_GRENADE_PARITY_PATCH` and native build `v0.26.07.28.GODOT.0012_TACTICAL_HAND_SLOTS_TARGETING_AND_GRENADE_VERTICAL_SLICE` preserve save format 4 and advance the classic battlescape command surface in both clients.
+
+Root causes addressed:
+
+- Tactical inventory reported a right-hand weapon but did not expose functional hand selection or a left-hand field item.
+- Clicking an alien, structure, or movement cell shared one implicit action path, leaving no persistent targeting state or readable cancellation step.
+- The command console listed throwable preparation as a future exception because no bounded grenade gameplay contract existed.
+
+Implemented roadmap scope:
+
+- Each deployed soldier receives one mission-local Frag Grenade in the left hand; the equipped weapon remains in the right hand. Campaign saves and strategic stores are unchanged.
+- Right-hand selection enters weapon targeting. Left-hand selection reports preparation state; priming costs 4 TU and enters grenade targeting. Cancel Target restores movement.
+- Grenade throws cost 12 TU, have a six-hex range, consume the one charge, and return the active hand and mode to normal movement.
+- The deterministic blast examines at most seven cells: 28 base damage at the center and 16 on neighboring cells, with small armor reduction and deterministic variance.
+- Blast damage affects aliens, soldiers, and civilians. Alien kills are credited to the thrower, while civilian danger is reported honestly.
+- Center and edge breach damage reuse structural destruction rules. Destroyed walls remain visible rubble with no hard blocker, so soldiers, aliens, and civilians can traverse the opening.
+- Browser 2D cells and Three.js canvas use explicit fire/grenade cursors; the native board shows ranged target outlines and a line to the hovered target.
+- Browser Build Health gains three hand/preparation/blast rows. Native Build Health gains the matching three rows, and the native automated suite gains three direct tactical checks.
+
+Verification checklist:
+
+- Static parsing passed for all six inline browser scripts.
+- `node tools\check-aegis-build.cjs` passed with paired 0141/0012 labels and hand/grenade parity seams.
+- Godot 4.7.1 strict editor parsing passed.
+- Native tests passed `105/105`, including three practical End Turn cycles.
+- Native Build Health passed `77/77`.
+- Browser Build Health passed `284/284`.
+- Localhost browser smoke passed through start screen, first-base confirmation, Geoscape, mission selection, Skyranger flight, and safe-2D tactical launch.
+- In a live browser battle Caleb primed at `59 -> 55 TU`, threw at `55 -> 43 TU`, consumed `Frag x1 -> x0`, applied a seven-cell blast, and returned to movement mode.
+- The same live battle completed three additional End Turn cycles and returned to the human phase each time.
+- Current-load browser diagnostics contain only the existing Tailwind CDN development warning; no current patch runtime error was recorded.
+
+Manual validation still required:
+
+- Throw grenades near mixed aliens, soldiers, and civilians to judge center/edge damage, friendly-fire clarity, and whether the 4 TU plus 12 TU cost feels fair.
+- Destroy exterior walls and partitions with grenades, then path a soldier, alien, escorted civilian, and panicked civilian through the resulting rubble.
+- Compare fire and grenade targeting in 2D Hex and Three.js Iso at normal display resolution, including cancellation and out-of-range feedback.
+- Prime a grenade, end the turn, and confirm preserving preparation into the next human turn is understandable.
+- Exercise the Godot hand buttons and grenade cursor at the player's normal window size to check console spacing and target-line readability.
+
+Next recommended paired patch after this gate: `TACTICAL_CLASSIC_INVENTORY_TRANSFERS_AND_ELEVATION_FOUNDATION_PARITY_PATCH`, beginning with bounded adjacent-unit hand/belt transfers and floor-state data before any multi-level renderer rewrite.
 
 ---
 
@@ -99,13 +145,22 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.28.0140_TACTICAL_AI_DOCTRINE_REACTION_FOG_AND_CLASSIC_COMMAND_CONSOLE_PARITY_PATCH`
+`v0.26.07.28.0141_TACTICAL_CLASSIC_HAND_SLOTS_TARGETING_AND_GRENADE_PARITY_PATCH`
 
 ## Native Vertical Slice Build
-`v0.26.07.28.GODOT.0011_TACTICAL_AI_DOCTRINE_AND_REACTION_FIRE_VERTICAL_SLICE`
+`v0.26.07.28.GODOT.0012_TACTICAL_HAND_SLOTS_TARGETING_AND_GRENADE_VERTICAL_SLICE`
 
 ## What This Patch Was Intended To Add
-This patch adds:
+This paired patch adds:
+- Functional right- and left-hand tactical slots in the browser game and Godot vertical slice.
+- Explicit movement, weapon-fire, and grenade-targeting modes with a visible cancellation path.
+- One mission-issued Frag Grenade per deployed soldier without changing campaign inventory or save format 4.
+- A 4-TU prime action and 12-TU throw action with a deterministic six-hex range.
+- A bounded seven-cell blast that can injure aliens, soldiers, and civilians.
+- Structural blast damage that opens visible, traversable rubble for soldiers, aliens, and civilians.
+- Matching browser and native Build Health coverage plus direct native tactical tests.
+
+The current release line also preserves this cumulative implemented scope:
 - A save-compatible hangar-occupancy correction so Outbound and Returning aircraft no longer occupy the physical hangar they already departed.
 - Preserved destination/home reservations, keeping real hangar capacity and staged-route overbooking protections intact.
 - A supplied-save regression covering Fort Aegis to S. America staging and the final S. America incident round trip.

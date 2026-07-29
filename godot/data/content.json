@@ -1,5 +1,5 @@
 {
-  "build": "v0.26.07.28.GODOT.0011_TACTICAL_AI_DOCTRINE_AND_REACTION_FIRE_VERTICAL_SLICE",
+  "build": "v0.26.07.28.GODOT.0012_TACTICAL_HAND_SLOTS_TARGETING_AND_GRENADE_VERTICAL_SLICE",
   "save_format": 4,
   "weapons": [
     {
@@ -54,6 +54,18 @@
       "heal": 12,
       "tu_cost": 12,
       "description": "Single-use trauma supplies that restore up to twelve HP for twelve TU."
+    },
+    {
+      "id": "Frag Grenade",
+      "issued_item": true,
+      "damage": 28,
+      "edge_damage": 16,
+      "range": 6,
+      "prime_tu": 4,
+      "throw_tu": 12,
+      "breach_damage": 42,
+      "edge_breach_damage": 24,
+      "description": "One mission-issued grenade with a bounded seven-hex blast and structural breach damage."
     }
   ],
   "research_projects": [

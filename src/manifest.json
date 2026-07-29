@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.07.28.0140_TACTICAL_AI_DOCTRINE_REACTION_FOG_AND_CLASSIC_COMMAND_CONSOLE_PARITY_PATCH",
+  "currentBuild": "v0.26.07.28.0141_TACTICAL_CLASSIC_HAND_SLOTS_TARGETING_AND_GRENADE_PARITY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "paired-tactical-ai-doctrine-reaction-fog-classic-console-manual-test",
+  "status": "paired-tactical-hand-slots-targeting-grenade-manual-test",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,19 +26,19 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.07.28.0140_TACTICAL_AI_DOCTRINE_REACTION_FOG_AND_CLASSIC_COMMAND_CONSOLE_PARITY_PATCH",
+  "lastInspectedBuild": "v0.26.07.28.0141_TACTICAL_CLASSIC_HAND_SLOTS_TARGETING_AND_GRENADE_PARITY_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
     "mainScene": "godot/main.tscn",
-    "build": "v0.26.07.28.GODOT.0011_TACTICAL_AI_DOCTRINE_AND_REACTION_FIRE_VERTICAL_SLICE",
+    "build": "v0.26.07.28.GODOT.0012_TACTICAL_HAND_SLOTS_TARGETING_AND_GRENADE_VERTICAL_SLICE",
     "saveFormat": 4,
-    "status": "tactical-ai-doctrine-reaction-fog-classic-console-manual-test"
+    "status": "tactical-hand-slots-targeting-grenade-manual-test"
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.07.28.0140_TACTICAL_AI_DOCTRINE_REACTION_FOG_AND_CLASSIC_COMMAND_CONSOLE_PARITY_PATCH",
-    "nativeBuild": "v0.26.07.28.GODOT.0011_TACTICAL_AI_DOCTRINE_AND_REACTION_FIRE_VERTICAL_SLICE",
+    "browserBuild": "v0.26.07.28.0141_TACTICAL_CLASSIC_HAND_SLOTS_TARGETING_AND_GRENADE_PARITY_PATCH",
+    "nativeBuild": "v0.26.07.28.GODOT.0012_TACTICAL_HAND_SLOTS_TARGETING_AND_GRENADE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
       "base-local-medkit-issue-return",
@@ -54,7 +54,11 @@
       "civilian-escort-reaction-reservation",
       "alien-human-priority-cover-advance",
       "ai-command-live-fog-of-war",
-      "classic-map-inventory-stance-reserve-done-dustoff-controls"
+      "classic-map-inventory-stance-reserve-done-dustoff-controls",
+      "tactical-right-left-hand-slots",
+      "explicit-fire-grenade-targeting",
+      "standard-frag-prime-throw-tu",
+      "bounded-seven-hex-blast-breach"
     ],
     "temporaryExceptions": [
       {
@@ -63,7 +67,7 @@
       },
       {
         "system": "complete-classic-battlescape-command-set",
-        "reason": "This patch ships the first functional command-console slice. Hand-slot item transfers, throwable preparation, targeting cursors, and elevation controls require bounded gameplay systems before their controls can be added honestly."
+        "reason": "The command console now includes functional hand slots, targeting cursors, and one prepared throwable. General inventory transfers, additional throwable types, and elevation controls still require bounded gameplay systems before their controls can be added honestly."
       }
     ]
   }
