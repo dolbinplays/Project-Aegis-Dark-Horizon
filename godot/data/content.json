@@ -1,5 +1,5 @@
 {
-  "build": "v0.26.07.19.GODOT.0009_LOCAL_BASE_INVENTORY_AND_SOLDIER_LOADOUT_VERTICAL_SLICE",
+  "build": "v0.26.07.28.GODOT.0011_TACTICAL_AI_DOCTRINE_AND_REACTION_FIRE_VERTICAL_SLICE",
   "save_format": 4,
   "weapons": [
     {
@@ -45,6 +45,15 @@
       "issued_item": true,
       "damage_reduction": 2,
       "description": "Standard Aegis field protection reduces incoming damage by two."
+    }
+  ],
+  "field_items": [
+    {
+      "id": "Medkit",
+      "issued_item": true,
+      "heal": 12,
+      "tu_cost": 12,
+      "description": "Single-use trauma supplies that restore up to twelve HP for twelve TU."
     }
   ],
   "research_projects": [
@@ -103,20 +112,20 @@
     {"id": "radar", "name": "Shortwave Radar", "color": "#06b6d4"}
   ],
   "soldiers": [
-    {"id": "cass", "name": "Cass Carver", "callsign": "Cass", "accuracy": 64, "bravery": 52, "health": 38, "tu": 58, "trait": "Steady Professional"},
-    {"id": "dane", "name": "Dane Ivers", "callsign": "Dane", "accuracy": 61, "bravery": 66, "health": 42, "tu": 60, "trait": "Aggressive Hotshot"},
-    {"id": "dimitri", "name": "Dimitri Lang", "callsign": "Dimitri", "accuracy": 67, "bravery": 58, "health": 40, "tu": 56, "trait": "Methodical"},
-    {"id": "amara", "name": "Amara Alden", "callsign": "Amara", "accuracy": 70, "bravery": 62, "health": 39, "tu": 62, "trait": "Born Scout"},
-    {"id": "leif", "name": "Leif Wren", "callsign": "Leif", "accuracy": 59, "bravery": 72, "health": 44, "tu": 55, "trait": "Grim Humor"},
-    {"id": "uma", "name": "Uma Vega", "callsign": "Uma", "accuracy": 65, "bravery": 60, "health": 41, "tu": 59, "trait": "Nervous but Determined"}
+    {"id": "cass", "name": "Cass Carver", "callsign": "Cass", "accuracy": 64, "bravery": 52, "reactions": 58, "health": 38, "tu": 58, "trait": "Steady Professional"},
+    {"id": "dane", "name": "Dane Ivers", "callsign": "Dane", "accuracy": 61, "bravery": 66, "reactions": 64, "health": 42, "tu": 60, "trait": "Aggressive Hotshot"},
+    {"id": "dimitri", "name": "Dimitri Lang", "callsign": "Dimitri", "accuracy": 67, "bravery": 58, "reactions": 55, "health": 40, "tu": 56, "trait": "Methodical"},
+    {"id": "amara", "name": "Amara Alden", "callsign": "Amara", "accuracy": 70, "bravery": 62, "reactions": 68, "health": 39, "tu": 62, "trait": "Born Scout"},
+    {"id": "leif", "name": "Leif Wren", "callsign": "Leif", "accuracy": 59, "bravery": 72, "reactions": 52, "health": 44, "tu": 55, "trait": "Grim Humor"},
+    {"id": "uma", "name": "Uma Vega", "callsign": "Uma", "accuracy": 65, "bravery": 60, "reactions": 61, "health": 41, "tu": 59, "trait": "Nervous but Determined"}
   ],
   "recruits": [
-    {"name": "Morgan Pike", "callsign": "Pike", "accuracy": 62, "bravery": 57, "health": 40, "tu": 59, "trait": "Quiet Professional"},
-    {"name": "Hana Cross", "callsign": "Cross", "accuracy": 66, "bravery": 54, "health": 38, "tu": 62, "trait": "Born Scout"},
-    {"name": "Elias Ward", "callsign": "Ward", "accuracy": 60, "bravery": 68, "health": 43, "tu": 56, "trait": "Grim Humor"},
-    {"name": "Imani Rook", "callsign": "Rook", "accuracy": 64, "bravery": 61, "health": 41, "tu": 60, "trait": "Methodical"},
-    {"name": "Soren Beck", "callsign": "Beck", "accuracy": 59, "bravery": 72, "health": 44, "tu": 57, "trait": "Aggressive Hotshot"},
-    {"name": "Rowan Vale", "callsign": "Vale", "accuracy": 67, "bravery": 56, "health": 39, "tu": 61, "trait": "Steady Professional"}
+    {"name": "Morgan Pike", "callsign": "Pike", "accuracy": 62, "bravery": 57, "reactions": 59, "health": 40, "tu": 59, "trait": "Quiet Professional"},
+    {"name": "Hana Cross", "callsign": "Cross", "accuracy": 66, "bravery": 54, "reactions": 67, "health": 38, "tu": 62, "trait": "Born Scout"},
+    {"name": "Elias Ward", "callsign": "Ward", "accuracy": 60, "bravery": 68, "reactions": 54, "health": 43, "tu": 56, "trait": "Grim Humor"},
+    {"name": "Imani Rook", "callsign": "Rook", "accuracy": 64, "bravery": 61, "reactions": 60, "health": 41, "tu": 60, "trait": "Methodical"},
+    {"name": "Soren Beck", "callsign": "Beck", "accuracy": 59, "bravery": 72, "reactions": 65, "health": 44, "tu": 57, "trait": "Aggressive Hotshot"},
+    {"name": "Rowan Vale", "callsign": "Vale", "accuracy": 67, "bravery": 56, "reactions": 62, "health": 39, "tu": 61, "trait": "Steady Professional"}
   ],
   "incidents": [
     {"id": "red_river", "name": "Red River Signal", "region": "North America", "threat": 1, "reward": 440, "intent": "Terror Raid", "biome": "Wilderness", "required_rescues": 1, "seed": 1337},

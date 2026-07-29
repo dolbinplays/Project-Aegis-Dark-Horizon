@@ -27,6 +27,38 @@ static func distance(a: Vector2i, b: Vector2i) -> int:
 	var bc := offset_to_cube(b)
 	return maxi(abs(ac.x - bc.x), maxi(abs(ac.y - bc.y), abs(ac.z - bc.z)))
 
+static func cube_to_offset(cube: Vector3i) -> Vector2i:
+	var row := cube.z
+	var column := cube.x + (row - (row & 1)) / 2
+	return Vector2i(column, row)
+
+static func _cube_round(value: Vector3) -> Vector3i:
+	var rounded := Vector3i(roundi(value.x), roundi(value.y), roundi(value.z))
+	var x_difference := absf(float(rounded.x) - value.x)
+	var y_difference := absf(float(rounded.y) - value.y)
+	var z_difference := absf(float(rounded.z) - value.z)
+	if x_difference > y_difference and x_difference > z_difference:
+		rounded.x = -rounded.y - rounded.z
+	elif y_difference > z_difference:
+		rounded.y = -rounded.x - rounded.z
+	else:
+		rounded.z = -rounded.x - rounded.y
+	return rounded
+
+static func line(start: Vector2i, target: Vector2i) -> Array[Vector2i]:
+	var length := distance(start, target)
+	if length <= 0:
+		return [start]
+	var start_cube := Vector3(offset_to_cube(start))
+	var target_cube := Vector3(offset_to_cube(target))
+	var result: Array[Vector2i] = []
+	for index in range(length + 1):
+		var amount := float(index) / float(length)
+		var cell := cube_to_offset(_cube_round(start_cube.lerp(target_cube, amount)))
+		if result.is_empty() or result[-1] != cell:
+			result.append(cell)
+	return result
+
 static func reachable(start: Vector2i, max_steps: int, blocked: Dictionary, occupied: Dictionary, width: int, height: int) -> Dictionary:
 	var result := {}
 	var visited := {key(start): true}

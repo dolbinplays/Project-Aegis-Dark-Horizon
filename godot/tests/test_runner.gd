@@ -60,20 +60,52 @@ func _test_campaign(content: Dictionary) -> void:
 	_check(campaign.change_soldier_loadout(String(first_soldier.get("id", "")), "weapon", "Laser Rifle") and first_soldier.get("weapon", "") == "Laser Rifle" and campaign.loadout_stock("Laser Rifle") == 0 and campaign.loadout_stock("Ballistic Rifle") == 1, "issuing a local Laser Rifle atomically returns the prior rifle to stores")
 	_check(not campaign.change_soldier_loadout(String(second_soldier.get("id", "")), "weapon", "Laser Rifle") and second_soldier.get("weapon", "") == "Ballistic Rifle" and campaign.loadout_stock("Laser Rifle") == 0, "unavailable equipment cannot be issued or duplicate stock")
 	_check(campaign.change_soldier_loadout(String(first_soldier.get("id", "")), "armor", "No Armor") and first_soldier.get("armor", "") == "No Armor" and campaign.loadout_stock("Field Suit") == 1 and campaign.change_soldier_loadout(String(first_soldier.get("id", "")), "armor", "Field Suit") and campaign.loadout_stock("Field Suit") == 0, "armor return and reissue conserve local stock")
+	var opening_medkits := campaign.loadout_stock("Medkit")
+	_check(campaign.change_soldier_medkit(String(first_soldier.get("id", "")), true) and campaign.loadout_stock("Medkit") == opening_medkits - 1 and campaign.change_soldier_medkit(String(first_soldier.get("id", "")), true) and campaign.loadout_stock("Medkit") == opening_medkits - 1 and campaign.change_soldier_medkit(String(first_soldier.get("id", "")), false) and campaign.loadout_stock("Medkit") == opening_medkits and campaign.change_soldier_medkit(String(first_soldier.get("id", "")), true), "Medkit issue return and idempotent reissue conserve local stock")
 	var malformed_loadout := campaign.data.duplicate(true)
 	malformed_loadout["soldiers"][0].erase("weapon")
 	malformed_loadout["soldiers"][0]["armor"] = ""
+	malformed_loadout["soldiers"][0]["status"] = "Sickbay - 3 days"
+	malformed_loadout["soldiers"][0]["medkit"] = 1
+	malformed_loadout["soldiers"][0].erase("recovery_days")
 	malformed_loadout["stores"]["Laser Rifle"] = -4
+	malformed_loadout["stores"]["Medkit"] = -2
 	var normalized_loadout := campaign.normalize_save(malformed_loadout)
 	_check(normalized_loadout.get("soldiers", [])[0].get("weapon", "") == "Ballistic Rifle" and normalized_loadout.get("soldiers", [])[0].get("armor", "") == "No Armor" and int(normalized_loadout.get("stores", {}).get("Laser Rifle", -1)) == 0, "loadout migration supplies conservative defaults and clamps invalid stock")
+	_check(normalized_loadout.get("soldiers", [])[0].get("status", "") == "Wounded" and int(normalized_loadout.get("soldiers", [])[0].get("recovery_days", 0)) == 3 and normalized_loadout.get("soldiers", [])[0].get("medkit", false) and int(normalized_loadout.get("stores", {}).get("Medkit", -1)) == 0, "legacy wound text and Medkit ownership migrate conservatively")
 	var recovery_campaign := AegisCampaignState.new()
 	recovery_campaign.configure(content)
 	recovery_campaign.new_campaign("Recovery Test", "North America")
 	var recovery_soldier: Dictionary = recovery_campaign.data.get("soldiers", [])[0]
 	recovery_campaign.data["stores"]["Laser Rifle"] = 1
 	recovery_campaign.change_soldier_loadout(String(recovery_soldier.get("id", "")), "weapon", "Laser Rifle")
-	recovery_campaign.complete_mission({"success":true,"rescued":1,"soldiers":{String(recovery_soldier.get("id", "")):{"hp":0,"kills":0}}})
-	_check(recovery_soldier.get("status", "") == "KIA" and recovery_soldier.get("weapon", "") == "Unarmed" and recovery_soldier.get("armor", "") == "No Armor" and recovery_campaign.loadout_stock("Laser Rifle") == 1 and recovery_campaign.loadout_stock("Field Suit") == 1, "successful mission recovery returns fallen soldier equipment to local stores")
+	recovery_campaign.change_soldier_medkit(String(recovery_soldier.get("id", "")), true)
+	recovery_campaign.complete_mission({"success":true,"rescued":1,"soldiers":{String(recovery_soldier.get("id", "")):{"hp":0,"kills":0,"medkit_charges":1}}})
+	_check(recovery_soldier.get("status", "") == "KIA" and recovery_soldier.get("weapon", "") == "Unarmed" and recovery_soldier.get("armor", "") == "No Armor" and not recovery_soldier.get("medkit", true) and recovery_campaign.loadout_stock("Laser Rifle") == 1 and recovery_campaign.loadout_stock("Field Suit") == 1 and recovery_campaign.loadout_stock("Medkit") == 2, "successful mission recovery returns fallen soldier equipment and unused Medkit to local stores")
+	var loss_campaign := AegisCampaignState.new()
+	loss_campaign.configure(content)
+	loss_campaign.new_campaign("Loss Test", "North America")
+	var lost_soldier: Dictionary = loss_campaign.data.get("soldiers", [])[0]
+	loss_campaign.change_soldier_medkit(String(lost_soldier.get("id", "")), true)
+	loss_campaign.complete_mission({"success":false,"rescued":0,"soldiers":{String(lost_soldier.get("id", "")):{"hp":0,"kills":0,"medkit_charges":1}}})
+	_check(not lost_soldier.get("medkit", true) and loss_campaign.loadout_stock("Medkit") == 1 and loss_campaign.data.get("reports", []).any(func(report): return String(report).contains("FIELD LOSS") and String(report).contains("Medkit")), "failed missions lose an unused Medkit carried by fallen personnel")
+	var wound_campaign := AegisCampaignState.new()
+	wound_campaign.configure(content)
+	wound_campaign.new_campaign("Wound Test", "North America")
+	var wounded_soldier: Dictionary = wound_campaign.data.get("soldiers", [])[0]
+	wound_campaign.change_soldier_medkit(String(wounded_soldier.get("id", "")), true)
+	wound_campaign.complete_mission({"success":true,"rescued":1,"soldiers":{String(wounded_soldier.get("id", "")):{"hp":int(wounded_soldier.get("health", 1)) - 11,"kills":0,"medkit_charges":0}}})
+	_check(wounded_soldier.get("status", "") == "Wounded" and int(wounded_soldier.get("recovery_days", 0)) == 2 and not wounded_soldier.get("medkit", true) and wound_campaign.assigned_soldiers().size() == 5, "mission injury creates bounded unavailable recovery and consumes a used Medkit")
+	wound_campaign.advance_minutes(24 * 60)
+	_check(wounded_soldier.get("status", "") == "Wounded" and int(wounded_soldier.get("recovery_days", 0)) == 1, "one strategic midnight advances wound recovery by one day")
+	var wound_save_path := "user://project_aegis_godot_wound_test_save.json"
+	var wound_loaded := AegisCampaignState.new()
+	wound_loaded.configure(content)
+	_check(wound_campaign.save_campaign(wound_save_path) and wound_loaded.load_campaign(wound_save_path) and int(wound_loaded.data.get("soldiers", [])[0].get("recovery_days", 0)) == 1, "wound recovery persists at its exact remaining day")
+	wound_loaded.advance_minutes(24 * 60)
+	_check(wound_loaded.data.get("soldiers", [])[0].get("status", "") == "Ready" and int(wound_loaded.data.get("soldiers", [])[0].get("recovery_days", -1)) == 0 and wound_loaded.assigned_soldiers().size() == 6, "final recovery midnight returns the soldier to active duty")
+	if FileAccess.file_exists(wound_save_path):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(wound_save_path))
 	var legacy := campaign.data.duplicate(true)
 	legacy.erase("scientists")
 	legacy.erase("engineers")
@@ -191,11 +223,12 @@ func _test_campaign(content: Dictionary) -> void:
 	var save_path := "user://project_aegis_godot_test_save.json"
 	var saved_ballistic_stock := campaign.loadout_stock("Ballistic Rifle")
 	var saved_laser_stock := campaign.loadout_stock("Laser Rifle")
+	var saved_medkit_stock := campaign.loadout_stock("Medkit")
 	_check(campaign.save_campaign(save_path), "native save writes JSON")
 	var loaded := AegisCampaignState.new()
 	loaded.configure(content)
 	_check(loaded.load_campaign(save_path), "native save loads")
-	_check(loaded.data.get("base", {}).get("name", "") == "Test Aegis" and loaded.data.get("soldiers", [])[0].get("weapon", "") == "Laser Rifle" and loaded.loadout_stock("Ballistic Rifle") == saved_ballistic_stock and loaded.loadout_stock("Laser Rifle") == saved_laser_stock, "native save round-trip preserves campaign and exact loadout stock state")
+	_check(loaded.data.get("base", {}).get("name", "") == "Test Aegis" and loaded.data.get("soldiers", [])[0].get("weapon", "") == "Laser Rifle" and loaded.data.get("soldiers", [])[0].get("medkit", false) and loaded.loadout_stock("Ballistic Rifle") == saved_ballistic_stock and loaded.loadout_stock("Laser Rifle") == saved_laser_stock and loaded.loadout_stock("Medkit") == saved_medkit_stock, "native save round-trip preserves campaign and exact loadout stock state")
 	var absolute_path := ProjectSettings.globalize_path(save_path)
 	if FileAccess.file_exists(save_path):
 		DirAccess.remove_absolute(absolute_path)
@@ -224,7 +257,7 @@ func _test_browser_import(content: Dictionary) -> void:
 	_check(importer.active_save_path == AegisCampaignState.IMPORTED_SAVE_PATH and AegisCampaignState.IMPORTED_SAVE_PATH != AegisCampaignState.SAVE_PATH, "browser import selects a separate imported-copy save slot")
 	_check(importer.data.get("base", {}).get("name", "") == "Pacific Aegis" and importer.data.get("base", {}).get("facilities", []).has("radar") and importer.facility_count("quarters") == 2 and importer.personnel_capacity() == 24 and importer.personnel_used() == 20 and importer.scientist_capacity() == 10 and importer.research_assigned_scientists() == 10 and importer.research_required_progress() == 180 and int(importer.data.get("month", 0)) == 4 and int(importer.data.get("day", 0)) == 12 and int(importer.data.get("minutes", 0)) == 845 and importer.data.get("research", {}).get("active", "") == "Laser Power Output 1" and importer.completed_research().has("Laser Weapons") and importer.has_technology_unlock("laser_rifle_production"), "browser date clock base capacity personnel and research map into native state")
 	var imported_roster: Array = importer.data.get("soldiers", [])
-	_check(imported_roster.size() == 8 and importer.assigned_soldiers().size() == 6 and int(imported_roster[0].get("accuracy", 0)) == 74 and imported_roster[0].get("callsign", "") == "Nested" and imported_roster[0].get("trait", "") == "Methodical" and imported_roster[5].get("status", "") == "Wounded", "nested browser identity stats and active squad normalize within native transport capacity")
+	_check(imported_roster.size() == 8 and importer.assigned_soldiers().size() == 6 and int(imported_roster[0].get("accuracy", 0)) == 74 and imported_roster[0].get("callsign", "") == "Nested" and imported_roster[0].get("trait", "") == "Methodical" and imported_roster[5].get("status", "") == "Wounded" and int(imported_roster[5].get("recovery_days", 0)) == 3 and not imported_roster[5].get("medkit", true), "nested browser identity stats wounds and active squad normalize within native transport capacity")
 	_check(importer.selected_incident().get("name", "") == "Port Meridian Attack" and int(importer.selected_incident().get("required_rescues", 0)) == 2 and importer.begin_mission_travel(), "browser incident and rescue requirement remain launchable")
 	_check(importer.save_campaign(imported_path) and FileAccess.get_file_as_string(source_path) == source_before, "saving the imported copy leaves the browser source file unchanged")
 	var reloaded := AegisCampaignState.new()
@@ -241,6 +274,7 @@ func _test_tactical(content: Dictionary) -> void:
 	var tactical_roster: Array = content.get("soldiers", []).duplicate(true)
 	tactical_roster[0]["weapon"] = "Laser Rifle"
 	tactical_roster[0]["armor"] = "Field Suit"
+	tactical_roster[0]["medkit"] = true
 	tactical_roster[1]["weapon"] = "Unarmed"
 	tactical_roster[1]["armor"] = "No Armor"
 	board.begin_battle(incident, tactical_roster, content)
@@ -249,7 +283,7 @@ func _test_tactical(content: Dictionary) -> void:
 	var wall_key := AegisHexRules.key(Vector2i(10, 2))
 	var wall: Dictionary = board.covers.get(wall_key, {})
 	var shooter: Dictionary = board.units.filter(func(unit): return unit.get("team", "") == "human")[0]
-	_check(shooter.get("weapon", "") == "Laser Rifle" and int(shooter.get("weapon_damage", 0)) == 22 and int(shooter.get("weapon_range", 0)) == 9 and int(shooter.get("fire_tu", 0)) == 14 and int(shooter.get("damage_reduction", 0)) == 2, "saved Laser Rifle and Field Suit profiles enter tactical deployment")
+	_check(shooter.get("weapon", "") == "Laser Rifle" and int(shooter.get("weapon_damage", 0)) == 22 and int(shooter.get("weapon_range", 0)) == 9 and int(shooter.get("fire_tu", 0)) == 14 and int(shooter.get("damage_reduction", 0)) == 2 and int(shooter.get("medkit_charges", 0)) == 1, "saved Laser Rifle Field Suit and Medkit profiles enter tactical deployment")
 	var unarmed_soldier: Dictionary = board.units.filter(func(unit): return unit.get("team", "") == "human")[1]
 	var unarmed_target: Dictionary = board.units.filter(func(unit): return unit.get("team", "") == "alien")[0]
 	unarmed_soldier["cell"] = unarmed_target.get("cell", Vector2i.ZERO) + Vector2i(-1, 0)
@@ -257,8 +291,8 @@ func _test_tactical(content: Dictionary) -> void:
 	board._try_shoot_unit(unarmed_soldier, unarmed_target)
 	_check(int(unarmed_soldier.get("tu", 0)) == unarmed_tu and int(unarmed_target.get("hp", 0)) == int(unarmed_target.get("max_hp", 0)), "unarmed tactical soldiers cannot fire or spend TU")
 	var laser_target: Dictionary = board.units.filter(func(unit): return unit.get("team", "") == "alien")[1]
-	shooter["cell"] = Vector2i(8, 2)
-	laser_target["cell"] = Vector2i(16, 2)
+	shooter["cell"] = Vector2i(6, 10)
+	laser_target["cell"] = Vector2i(14, 10)
 	laser_target["revealed"] = true
 	shooter["tu"] = 64
 	var selection_tu_updates: Array = []
@@ -270,6 +304,10 @@ func _test_tactical(content: Dictionary) -> void:
 	board._try_shoot_unit(shooter, laser_target)
 	_check(int(shooter.get("tu", 0)) == 50, "Laser Rifle fires at range eight for its fourteen TU profile")
 	_check(selection_tu_updates.size() >= 2 and int(selection_tu_updates[0]) == 64 and int(selection_tu_updates[-1]) == 50, "selected soldier feedback republishes current TU after firing")
+	shooter["hp"] = int(shooter.get("max_hp", 1)) - 20
+	_check(board.use_selected_medkit() and int(shooter.get("hp", 0)) == int(shooter.get("max_hp", 0)) - 8 and int(shooter.get("tu", 0)) == 38 and int(shooter.get("medkit_charges", -1)) == 0, "issued Medkit restores twelve HP spends twelve TU and is consumed")
+	var post_medkit_state := [int(shooter.get("hp", 0)), int(shooter.get("tu", 0))]
+	_check(not board.use_selected_medkit() and [int(shooter.get("hp", 0)), int(shooter.get("tu", 0))] == post_medkit_state, "consumed Medkit cannot be reused or spend additional TU")
 	shooter["cell"] = Vector2i(8, 2)
 	shooter["tu"] = 64
 	board._try_shoot_cover(shooter, wall)
@@ -283,6 +321,44 @@ func _test_tactical(content: Dictionary) -> void:
 	shooter["tu"] = 16
 	board._try_contact_civilian(shooter, civilian)
 	_check(civilian.get("escort_id", "") == shooter.get("id", "") and int(shooter.get("tu", 0)) == 8, "civilian contact establishes escort and spends eight TU")
+	var ai_board := AegisTacticalBoard.new()
+	get_root().add_child(ai_board)
+	ai_board.begin_battle(incident, tactical_roster, content)
+	var ai_humans: Array = ai_board.units.filter(func(unit): return unit.get("team", "") == "human")
+	var ai_aliens: Array = ai_board.units.filter(func(unit): return unit.get("team", "") == "alien")
+	ai_humans[0]["rank"] = "Captain"
+	ai_humans[0]["missions"] = 12
+	var doctrine_summary := ai_board.ai_command_summary()
+	var rookie_doctrine: Dictionary = ai_board.ai_doctrine_for_commander({"rank":"Rookie","missions":0})
+	var veteran_doctrine: Dictionary = ai_board.ai_doctrine_for_commander({"rank":"Captain","missions":12})
+	_check(rookie_doctrine.get("key", "") == "wedge" and veteran_doctrine.get("key", "") == "diamond" and doctrine_summary.contains("Diamond Security"), "rank and mission experience unlock advanced commander doctrine")
+	ai_humans[1]["tu"] = 62
+	var movement_plan: Dictionary = ai_board._ai_movement_plan(ai_humans[1], ai_aliens[0].cell, int(ai_humans[1].get("fire_tu", 14)), String(ai_humans[1].get("ai_role", "")))
+	_check(int(movement_plan.get("steps", 0)) <= ai_board.AI_MAX_MOVE_STEPS and int(movement_plan.get("steps", 0)) * ai_board.MOVE_TU <= 62 - int(ai_humans[1].get("fire_tu", 14)) and not String(ai_humans[1].get("ai_role", "")).is_empty(), "formation movement is bounded and preserves selected-shot TU")
+	var reaction_shooter: Dictionary = ai_humans[1]
+	var reaction_target: Dictionary = ai_aliens[0]
+	reaction_shooter["cell"] = Vector2i(6, 10)
+	reaction_target["cell"] = Vector2i(7, 10)
+	reaction_shooter["tu"] = 62
+	reaction_shooter["reactions"] = 100
+	reaction_shooter["accuracy"] = 100
+	for serial in range(100):
+		if AegisHexRules.deterministic_roll(int(incident.get("seed", 1)), 900 + (serial + 1) * 31 + ai_board.turn_number * 47) <= 95:
+			ai_board.action_serial = serial
+			break
+	var reaction_tu_before := int(reaction_shooter.get("tu", 0))
+	ai_board._reaction_fire_for_move(reaction_target, {})
+	_check(int(reaction_shooter.get("tu", 0)) == reaction_tu_before - int(reaction_shooter.get("fire_tu", 14)), "Reaction stat can trigger a TU-consuming shot during alien movement")
+	for hidden_alien in ai_aliens:
+		hidden_alien["visible"] = false
+	_check(ai_board.tactical_map_contacts().get("aliens", []).is_empty(), "AI-command tactical contacts preserve live fog of war")
+	var console_soldier: Dictionary = ai_humans[2]
+	ai_board._select_unit(String(console_soldier.get("id", "")))
+	var console_tu_before := int(console_soldier.get("tu", 0))
+	var console_ready := ai_board.set_selected_reserve_mode("snap") and ai_board.toggle_selected_kneeling()
+	var console_inventory := ai_board.selected_inventory()
+	_check(console_ready and int(console_soldier.get("tu", 0)) == console_tu_before - 4 and console_inventory.get("reserve_mode", "") == "snap" and console_inventory.get("kneeling", false) and ai_board.bleed_selected_tu(), "classic reserve stance inventory and Done controls mutate live tactical state")
+	ai_board.queue_free()
 	board._select_unit(shooter.get("id", ""))
 	_check(not board.reachable.is_empty(), "soldier selection produces bounded movement highlights")
 	for cycle in range(3):
@@ -329,9 +405,9 @@ func _test_build_health() -> void:
 	var app: Node = load("res://godot/main.tscn").instantiate()
 	app.content = _load_json("res://godot/data/content.json")
 	var health: Array = app._run_self_tests()
-	if health.size() != 63 or not health.all(func(row): return row.get("pass", false)):
+	if health.size() != 74 or not health.all(func(row): return row.get("pass", false)):
 		print("BUILD HEALTH DETAIL: %s" % JSON.stringify(health))
-	_check(health.size() == 63 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 63 rows")
+	_check(health.size() == 74 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 74 rows")
 	app.free()
 
 func _load_json(path: String) -> Dictionary:

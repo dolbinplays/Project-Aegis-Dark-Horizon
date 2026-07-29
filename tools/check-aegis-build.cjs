@@ -5,11 +5,13 @@ const vm = require("vm");
 const root = path.resolve(__dirname, "..");
 const indexPath = path.join(root, "index.html");
 const manifestPath = path.join(root, "src", "manifest.json");
+const nativeContentPath = path.join(root, "godot", "data", "content.json");
 const dialogueDirectory = path.join(root, "assets", "audio", "dialogue");
 const dialogueManifestPath = path.join(dialogueDirectory, "manifest.js");
 
 const html = fs.readFileSync(indexPath, "utf8");
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+const nativeContent = JSON.parse(fs.readFileSync(nativeContentPath, "utf8"));
 const dialogueBox = { window: {} };
 vm.runInNewContext(fs.readFileSync(dialogueManifestPath, "utf8"), dialogueBox, { filename: dialogueManifestPath });
 const dialogue = dialogueBox.window.PROJECT_AEGIS_RECORDED_DIALOGUE;
@@ -29,6 +31,7 @@ const required = [
   "Interceptor UFO tracking recognizes ferry-staged reach",
   "Loaded saves preserve interceptor eligibility and active travel",
   "Attached save supports reserved-home and multi-hop interceptor ferry routes",
+  "Returning interceptors release departed staging hangars without losing home reservations",
   "Ready aircraft can ferry home or rebase through clock-tracked routes",
   "Aircraft relocation reserves destination hangars across save resume",
   "Aircraft relocation queue preserves reservations and unavailable status",
@@ -60,6 +63,10 @@ const required = [
   "Selected escorts report bounded formation state and ramp distance",
   "AI tactical handoff preserves the live battlefield and prioritizes spotted civilians",
   "AI tactical map playback follows squad movement rescue and combat action",
+  "AI commanders unlock experienced doctrine and bounded formation roles",
+  "Fire-mode reaction shots use Reaction stat ammo and reserved TU",
+  "Alien AI hunts humans through bounded cover while AI playback preserves fog",
+  "Classic battlescape console exposes real map inventory stance reserve done and dust-off controls",
   "AI tactical playback emits bounded context-aware soldier dialogue",
   "Three.js Skyranger renders one cohesive craft with attached extraction ramp",
   "Geoscape range and ferry controls share one operational overlay section",
@@ -77,12 +84,28 @@ const required = [
   "Three.js tactical ground shares exact 2D cell gradients",
   "Three.js tactical hex centers and footprints match the 2D board",
   "Three.js tactical seam underlay closes raster junctions",
+  "Medkit issue and return conserve local Base Inventory",
+  "Tactical Medkit use spends 12 TU heals 12 HP and consumes one charge",
+  "Manual tactical final HP drives bounded wounded recovery",
+  "Browser and native medical gameplay share an explicit parity contract",
+  "paired-browser-godot",
+  "aircraftOccupiesHangarSlot",
+  "changeSoldierMedkitState",
+  "tacticalMedkitUseResult",
+  "applyTacticalMedicalGrowth",
+  "recoverUnusedKiaMedkits",
+  "Use Medkit - 12 TU",
   "PROJECT_AEGIS_RECORDED_DIALOGUE",
   "playRecordedDialogue",
   "recordedDialogueFxProfile",
   "recordedDialogueStaticBookends",
   "recordedDialogueShouldQueue",
   "tacticalAiFrameDialogueCue",
+  "tacticalAiCommanderForUnits",
+  "tacticalAiDoctrineForCommander",
+  "tacticalAiMovePlan",
+  "tacticalReactionShotResult",
+  "tacticalReserveTuForMode",
   "connectRecordedDialogueVoiceFx",
   "enqueueRecordedDialogue",
   "dialogueSoldierTail",
@@ -114,6 +137,60 @@ if (manifest.playableArtifact !== "index.html") {
 
 if (manifest.preserveSingleFileArtifact !== true) {
   missing.push("manifest preserveSingleFileArtifact must be true");
+}
+
+if (manifest.gameplayParity?.policy !== "paired-browser-godot") {
+  missing.push("manifest gameplayParity policy must require paired browser/Godot gameplay patches");
+}
+
+if (manifest.gameplayParity?.browserBuild !== manifest.currentBuild) {
+  missing.push("manifest gameplayParity browserBuild must match currentBuild");
+}
+
+if (manifest.gameplayParity?.nativeBuild !== manifest.nativePrototype?.build || nativeContent.build !== manifest.nativePrototype?.build) {
+  missing.push("manifest and Godot content native build labels must match");
+}
+
+if (manifest.gameplayParity?.saveFormat !== manifest.saveFormat || nativeContent.save_format !== manifest.saveFormat) {
+  missing.push("browser/native gameplay parity must preserve the shared save format");
+}
+
+if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "multi-base-aircraft-ferry-routing" && entry?.reason)) {
+  missing.push("browser-only multi-base ferry routing must be recorded as a temporary gameplay parity exception");
+}
+
+const nativeMedkit = nativeContent.field_items?.find((item) => item.id === "Medkit");
+if (nativeMedkit?.heal !== 12 || nativeMedkit?.tu_cost !== 12) {
+  missing.push("native Medkit must preserve the paired 12 HP / 12 TU contract");
+}
+
+for (const system of [
+  "base-local-medkit-issue-return",
+  "tactical-self-treatment-12hp-12tu",
+  "one-charge-consumption",
+  "final-hp-wounded-recovery",
+  "victory-recovery-defeat-loss",
+  "rank-experience-commander-doctrine",
+  "commander-centered-formation-roles",
+  "bounded-cover-aware-movement",
+  "fire-mode-tu-reservation",
+  "reaction-fire-during-alien-movement",
+  "civilian-escort-reaction-reservation",
+  "alien-human-priority-cover-advance",
+  "ai-command-live-fog-of-war",
+  "classic-map-inventory-stance-reserve-done-dustoff-controls",
+]) {
+  if (!manifest.gameplayParity?.requiredSystems?.includes(system)) {
+    missing.push(`gameplay parity system missing: ${system}`);
+  }
+}
+
+if (!nativeContent.soldiers?.every((soldier) => Number.isFinite(soldier.reactions))) {
+  missing.push("native soldiers must expose Reaction stats for tactical interruption fire");
+}
+
+if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "complete-classic-battlescape-command-set" && entry?.reason)) {
+  missing.push("remaining classic battlescape command depth must be recorded as a temporary gameplay parity exception");
 }
 
 const dialogueWavFiles = fs.readdirSync(dialogueDirectory).filter((name) => name.toLowerCase().endsWith(".wav"));

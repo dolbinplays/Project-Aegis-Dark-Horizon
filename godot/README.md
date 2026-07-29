@@ -1,8 +1,14 @@
 # Project Aegis Godot 4 Vertical Slice
 
-Native build: `v0.26.07.19.GODOT.0009_LOCAL_BASE_INVENTORY_AND_SOLDIER_LOADOUT_VERTICAL_SLICE`
+Native build: `v0.26.07.28.GODOT.0011_TACTICAL_AI_DOCTRINE_AND_REACTION_FIRE_VERTICAL_SLICE`
+
+Paired browser build: `v0.26.07.28.0140_TACTICAL_AI_DOCTRINE_REACTION_FOG_AND_CLASSIC_COMMAND_CONSOLE_PARITY_PATCH`
 
 This is a native Godot 4 vertical slice alongside the verified HTML game. It does not wrap `index.html`, replace the browser build, or write to the browser campaign save.
+
+Gameplay additions now follow a paired browser/Godot parity policy. Platform-specific presentation may differ, but player-facing rules, ownership, save migration, and bounded simulation outcomes must ship together or be explicitly recorded as a temporary exception.
+
+The browser's multi-base aircraft ferry network is currently an explicit temporary exception: the native vertical slice does not implement multi-base ferry routing yet, so browser hangar occupancy and route fixes remain reference behavior for that later port.
 
 ## Open And Run
 
@@ -22,6 +28,10 @@ The project uses the repository root so the native slice can reuse the existing 
 - Native 20x14 hex tactical incident with terrain, six soldiers, aliens, civilians, a Skyranger and nine-cell rear ramp, connected walls, cover, TU movement, rifle attacks, alien turns, and mission resolution.
 - Civilian contact for 8 TU, up to four followers per escort, single-file trail following, panic/recontact behavior, and mandatory ramp extraction.
 - Destructible wall cells that become nonblocking rubble for every tactical mover.
+- Rank- and mission-gated commander doctrine, commander-centered formations, bounded flanking, cover/LOS/range scoring, and selected-shot TU reserves during AI command.
+- Reaction fire during alien movement driven by each soldier's Reaction stat, current weapon TU profile, range, line of sight, and available ammunition.
+- Human-priority alien movement that seeks cover while preserving attack TU, plus live fog of war that hides unobserved alien movement during AI command.
+- A classic battlescape-style command console with previous/next soldier, tactical map, field inventory, kneel/stand, shot reserves, TU bleed/Done, End Turn, AI Command, and Dust Off.
 - Read-only browser campaign export selection, compatibility review, and subset normalization into a separate native imported-copy slot.
 - Base-local personnel occupancy with 12 staff per Living Quarters, 10 scientists per Laboratory, live overflow feedback, and repeated imported facility counts.
 - Prepaid concurrent construction for Living Quarters, Laboratories, and Workshops using the browser campaign's established $300k, $450k, and $400k costs.
@@ -32,10 +42,11 @@ The project uses the repository root so the native slice can reuse the existing 
 - Engineer staffing bounded by local staff and Workshop capacity, with three work points per assigned Engineer at each strategic midnight.
 - A bounded prepaid FIFO manufacturing queue for Medkits and research-gated Laser Rifles, including progress, ETA, local-store delivery, overflow work, half-cost cancellation, and exact save persistence.
 - Laser Weapons completion unlocking Laser Power Output 1 and queued Laser Rifle production in the Workshop.
-- Base-local loose weapon and armor stock with atomic soldier exchanges, Unarmed/No Armor states, exact save persistence, unequipped recruit arrivals, and successful-mission recovery from KIA soldiers.
-- Tactical Ballistic Rifle, Laser Rifle, Unarmed, Field Suit, and No Armor profiles sourced from the content catalog; Laser Rifles improve damage, range, and fire TU while Field Suits reduce incoming damage.
+- Base-local loose weapon, armor, and Medkit stock with atomic soldier exchanges, Unarmed/No Armor states, exact save persistence, unequipped recruit arrivals, and mission recovery/loss ownership for KIA soldiers.
+- Tactical Ballistic Rifle, Laser Rifle, Unarmed, Field Suit, No Armor, and Medkit profiles sourced from the content catalog; one issued Medkit restores up to 12 HP for 12 TU and is consumed after use.
+- Final mission HP creates a bounded one-to-five-day wound-recovery record. Wounded soldiers remain unavailable until strategic midnights reduce the timer to zero and medical clearance returns them to duty.
 - Native JSON save format 4 at `user://project_aegis_godot_save_v4.json`, with imported campaigns isolated at `user://project_aegis_godot_imported_copy_v4.json`.
-- In-game Build Health with 63 checks, including bounded tactical-log trimming, air operations, browser-import isolation, personnel arrivals, research/manufacturing/construction, local-stock conservation, tactical loadout inheritance, live selected-soldier TU feedback, mission equipment recovery, large-list scrolling, and dense strategic marker placement.
+- In-game Build Health with 74 checks, including bounded tactical-log trimming, air operations, browser-import isolation, personnel arrivals, research/manufacturing/construction, local-stock conservation, tactical loadout inheritance, Medkit consumption, wound recovery, commander doctrine, TU reserves, reaction fire, AI fog, classic command controls, mission equipment recovery/loss, large-list scrolling, and dense strategic marker placement.
 
 ## Tactical Controls
 
@@ -46,6 +57,11 @@ The project uses the repository root so the native slice can reuse the existing 
 - Click a revealed alien in rifle range to fire.
 - Laser Rifles fire up to nine hexes for 14 TU; Ballistic Rifles fire up to seven hexes for 16 TU. Unarmed soldiers cannot fire.
 - Click an intact wall in rifle range to damage it; destroyed wall rubble is traversable.
+- Select an injured soldier with an issued Medkit and use **Use Medkit - 12 TU** to restore up to 12 HP. The single charge is consumed immediately.
+- Use **Prev/Next**, **Map**, and **Inventory** to inspect the squad and observation-safe battlefield contacts.
+- Use **Kneel/Stand**, **None/Snap/Aimed/Auto/Kneel** TU reserves, and **Done** to control stance and protected action economy.
+- Use **AI Command** to hand off the current battlefield without resetting it; current fog remains authoritative throughout the AI turn.
+- Use **Dust Off** to abandon an unresolved incident after confirmation.
 - Use **End Turn** to run the alien phase and refresh soldier TU.
 
 ## Air Interception Controls
@@ -82,10 +98,11 @@ The project uses the repository root so the native slice can reuse the existing 
 - Living Quarters cost $300k and take 3 days, Laboratories cost $450k and take 5 days, and Workshops cost $400k and take 4 days. Up to three projects advance concurrently at strategic midnight.
 - Pending facilities show future capacity but cannot accept personnel early. Completed facilities add 12 personnel, 10 Scientist, or 10 Engineer spaces locally and immediately refresh hiring limits.
 - Cancelling construction returns half its prepaid cost. Construction identity, exact days remaining, base ownership, and funds persist in both native and isolated imported-copy saves.
-- The Soldiers screen shows loose Ballistic Rifle, Laser Rifle, and Field Suit stock and provides one weapon and one armor selector for each living soldier.
+- The Soldiers screen shows loose Ballistic Rifle, Laser Rifle, Field Suit, and Medkit stock and provides weapon, armor, and one-charge Medkit controls for each living soldier.
 - Issuing an item consumes one local-store unit and returns the prior item in the same operation. Unavailable equipment is not offered and cannot be duplicated.
 - New recruits arrive Unarmed and with No Armor. Successful missions recover issued equipment from fallen soldiers; equipment carried by KIA soldiers in failed missions is lost with report feedback.
 - The Tactical Control panel refreshes from the authoritative selected-unit record after movement, firing, breaching, civilian contact, selection changes, and turn transitions, keeping displayed TU aligned with movement highlights.
+- Mission injuries use final post-treatment HP to assign one to five recovery days. Strategic midnights persistently decrement that timer, and the roster displays the exact remaining days until return to duty.
 
 ## Automated Verification
 
@@ -96,9 +113,9 @@ godot --headless --path . --editor --quit
 godot --headless --path . --script res://godot/tests/test_runner.gd
 ```
 
-The test runner covers campaign creation and travel, exact loadout/store save round-tripping, conservative loadout migration, local-stock conservation and unavailable-item rejection, unequipped recruit arrivals, successful KIA equipment recovery, Workshop and personnel migration, hiring/capacity rules, construction, bounded research and manufacturing, air operations, browser-export normalization and source preservation, strategic markers, bounded hex rules, tactical loadout inheritance, Laser Rifle range/TU, selected-unit TU feedback, Unarmed fire rejection, movement highlighting, three End Turn cycles, civilian contact, wall destruction and traversal, and all visible Build Health rows.
+The test runner covers campaign creation and travel, exact loadout/store save round-tripping, conservative loadout and wound migration, local-stock conservation and unavailable-item rejection, Medkit issue/return/consumption, mission recovery and loss, one-to-five-day wounds, exact recovery persistence, unequipped recruit arrivals, Workshop and personnel migration, hiring/capacity rules, construction, bounded research and manufacturing, air operations, browser-export normalization and source preservation, strategic markers, bounded hex rules, tactical loadout inheritance, Laser Rifle range/TU, selected-unit feedback, Unarmed fire rejection, movement highlighting, three End Turn cycles, civilian contact, wall destruction and traversal, and all visible Build Health rows.
 
-Latest automated verification passes `88/88` native tests and `63/63` visible Build Health rows. Hardware OpenGL 3.3 smoke on the NVIDIA GeForce GTX 960M loaded the 44-soldier imported roster, exercised assigned and unassigned Laser Rifle exchanges, rendered tactical combat through turn four, and restored the imported-copy save to its exact original checksum. The unchanged HTML artifact still passes its seam checker, six-script static parse, localhost start/Geoscape smoke, and `272/272` browser Build Health with no runtime error. The player confirmed the corrected live TU feedback and accepted 0009 for progression.
+Latest automated verification passes `102/102` native tests and `74/74` visible Build Health rows. Godot 4.7.1 strict editor parsing passes. The paired HTML build reaches the start screen, Geoscape, squad assignment, Skyranger travel, and a live 64x64 safe-2D incident; browser Build Health passes `281/281`. A practical AI handoff inherited the live battlefield at round 1, preserved unrevealed-contact fog, played through fifteen frames and seven exchanges, and reached tactical victory without a browser runtime error.
 
 ## Deliberate Limits
 
@@ -114,4 +131,10 @@ The player confirmed the 0008 gate passes: all three construction costs and slot
 
 The player accepted the 0009 gate after confirming that a selected soldier's displayed TU now decreases immediately after firing, in agreement with movement highlighting. Automated, Build Health, GPU, and isolated-save checks cover the remaining bounded loadout contracts recorded above.
 
-Next native patch after this gate: `GODOT.0010_TACTICAL_MEDKIT_AND_WOUNDED_STATUS_RECOVERY_VERTICAL_SLICE`, making already manufactured Medkits useful without importing the browser game's full inventory, body-part injury, or Sickbay simulation.
+The paired 0010/0138 gate requires live issue/return stock checks in both versions, one wounded self-treatment with exact HP/TU/charge feedback in both tactical clients, mission wound admission, exact save/reload of remaining recovery days, strategic-midnight clearance, KIA Medkit recovery/loss ownership, and imported-copy source isolation.
+
+Browser build 0139 additionally requires loading the supplied slot-10 export without overwriting it, confirming a Fort Aegis Skyranger can stage through the departed S. America hangar to reach the active abduction incident, and confirming Saber One retains its Fort Aegis recovery reservation.
+
+The paired 0011/0140 gate requires hands-on tactical confirmation that AI formations keep the commander protected without bunching, flank through cover without stalling, reserve the correct selected-mode TU, reaction-fire only on observed valid movement, hide unobserved aliens, prioritize mandatory rescue, and expose every new classic command-console control at the player's normal resolution.
+
+Next paired patch after this gate: `TACTICAL_CLASSIC_HAND_SLOTS_TARGETING_AND_THROWABLE_PREP_PARITY_PATCH`, adding bounded functional hand-slot transfers, targeting cursors, and throwable preparation before deeper elevation controls.

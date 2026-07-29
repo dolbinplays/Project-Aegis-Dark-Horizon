@@ -1,10 +1,60 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-07-19
-Current handoff build: `v0.26.07.17.0137_TACTICAL_CONTINUOUS_WALLS_AND_TRAVERSABLE_BREACHES_INDEX_ONLY_PATCH`
-Native vertical slice: `v0.26.07.19.GODOT.0009_LOCAL_BASE_INVENTORY_AND_SOLDIER_LOADOUT_VERTICAL_SLICE`
-Current patch status: **The verified HTML build remains 0137 with save format 4 and its browser validation/manual gates unchanged. Player-verified native 0008 is published on `main` as `a1bb286`. Native build 0009 connects manufactured local-store equipment to authoritative soldier loadouts through atomic weapon/armor exchanges, conservative save migration, unequipped recruit arrivals, KIA equipment recovery/loss rules, content-defined Ballistic/Laser/Unarmed tactical profiles, Field Suit mitigation, and authoritative selected-soldier TU feedback after every tactical state emission. Native tests pass 88/88 and all 63/63 native Build Health rows pass. The player confirmed the corrected live TU feedback and accepted 0009 for progression.**
+Last updated: 2026-07-28
+Current handoff build: `v0.26.07.28.0140_TACTICAL_AI_DOCTRINE_REACTION_FOG_AND_CLASSIC_COMMAND_CONSOLE_PARITY_PATCH`
+Native vertical slice: `v0.26.07.28.GODOT.0011_TACTICAL_AI_DOCTRINE_AND_REACTION_FIRE_VERTICAL_SLICE`
+Current patch status: **Paired browser 0140/native 0011 add rank-gated commander doctrine, commander-centered formations, bounded cover/flank movement, selected-shot TU reserves, Reaction-stat interruption fire, human-priority cover-aware aliens, observation-safe AI fog, and the first functional classic battlescape command-console slice. Save format remains 4. Static parsing, seam checking, native 102/102 tests, native Build Health 74/74, browser Build Health 281/281, and a live seven-exchange AI-command tactical victory pass without runtime errors. Hands-on formation, rescue, reaction, fog, and normal-resolution console validation is now the publication gate; no pending build is published yet.**
+
+---
+
+# v0.26.07.28.0140 / GODOT.0011 - Tactical AI Doctrine, Reaction Fog, and Classic Command Console
+
+Browser build `v0.26.07.28.0140_TACTICAL_AI_DOCTRINE_REACTION_FOG_AND_CLASSIC_COMMAND_CONSOLE_PARITY_PATCH` and native build `v0.26.07.28.GODOT.0011_TACTICAL_AI_DOCTRINE_AND_REACTION_FIRE_VERTICAL_SLICE` preserve save format 4 and advance the browser game and Godot vertical slice together.
+
+Root causes addressed:
+
+- AI movement previously favored direct pursuit and rescue routing without a shared commander-centered formation or cover/flank score.
+- The Godot commander comparator selected the lowest-scoring candidate; it now selects the highest rank/mission/bravery/Reaction score with deterministic ID tie-breaking.
+- Manual browser alien turns retained an older beeline branch and could target civilians while living soldiers remained.
+- AI takeover could expose frame information beyond the squad's current observation even when direct player control used fog of war.
+- Tactical action controls were distributed through the side panel and did not provide a compact classic battlescape command surface.
+
+Implemented roadmap scope:
+
+- Commanders learn Protected Wedge, Assault Line, Echelon Flank, Support and Maneuver, and Diamond Security doctrine from rank plus completed-mission thresholds.
+- AI assigns commander, left/right flank, base-of-fire, and security roles; non-commanders remain within a bounded command radius while the formation fans toward known threats.
+- One bounded reachable-cell flood supplies each move decision. Scoring considers cover, LOS, weapon range, flank side, commander distance, role, and forward progress without restoring per-cell pathfinding or full-map repeated scans.
+- Exploring soldiers preserve enough TU for their selected fire mode. Civilian escorts preserve the same reaction reserve while advancing toward the ramp.
+- Reaction fire checks each observed alien movement step against the soldier's Reaction stat, range, LOS, TU, current fire mode, and ammunition. Each soldier can interrupt a given alien phase only once.
+- Alien AI targets living humans first, seeks cover and lateral pressure, preserves attack TU, and fires after movement when it gains a valid solution.
+- AI command inherits the live battlefield and current round. Unobserved alien movement and shots remain hidden; map contacts and playback camera anchors use current observation rather than historical reveal.
+- Both clients expose a first functional classic battlescape console: previous/next soldier, tactical map, field inventory, kneel/stand, no/snap/aimed/auto/kneel TU reserves, Done/TU bleed, End Turn, AI Command, and confirmed Dust Off.
+- Remaining original-game command depth is recorded honestly: hand-slot transfers, throwable preparation, dedicated targeting cursors, and elevation controls are not represented until matching gameplay systems exist.
+
+Verification checklist:
+
+- Static parsing passed for all six inline browser scripts.
+- `node tools\check-aegis-build.cjs` passed with paired build labels and required AI/UI seams.
+- Godot 4.7.1 strict editor parsing passed.
+- Native tests passed `102/102`, including three practical End Turn cycles.
+- Native visible Build Health passed `74/74`.
+- Browser Build Health passed `281/281`.
+- Localhost smoke passed through start screen, first-base setup, Geoscape, six-soldier squad assignment, launch confirmation, Skyranger travel, and a live 64x64 safe-2D incident.
+- Snap reserve and Field Inventory were exercised on a selected soldier.
+- AI command inherited round 1, played fifteen frames across seven combat exchanges, and reached tactical victory.
+- Browser console errors were clear. The only warning was Tailwind's existing development-CDN advisory.
+
+Remaining risks and manual validation:
+
+- Observe a veteran-led squad and confirm advanced doctrine produces readable flanks without excessive bunching or separation from the commander.
+- Verify Snap, Aimed, Burst/Auto combinations reserve the expected TU after movement, reload, and fire-mode changes.
+- Watch aliens cross multiple visible hexes and confirm valid Reaction-stat shots consume TU/ammo once; repeat with movement completely outside squad observation and confirm no alien model, movement, shot, or camera jump appears.
+- Run a mandatory civilian rescue under AI command. Confirm the escort keeps a reaction reserve, civilians remain single-file, and rescue takes priority after civilians are spotted.
+- Confirm aliens seek cover and attack soldiers rather than diverting to civilians while any soldier survives.
+- At the player's normal resolution, inspect Map, Inventory, stance, reserves, Done, End Turn, AI Command, and Dust Off in both browser and Godot clients for clipping or ambiguity.
+
+Next recommended paired patch after this gate: `TACTICAL_CLASSIC_HAND_SLOTS_TARGETING_AND_THROWABLE_PREP_PARITY_PATCH`, adding bounded functional hand-slot transfers, targeting cursors, and throwable preparation before deeper elevation controls.
 
 ---
 
@@ -25,7 +75,7 @@ Single-player strategy / base-management / tactical alien-defense game inspired 
 - Patch distribution: zipped build folder containing `index.html` at the root of the folder.
 - Preferred patch type: `INDEX_ONLY` unless assets are required.
 - Future possibility: paid alpha on itch.io.
-- The verified campaign remains HTML-first; an experimental native Godot 4 vertical slice now lives beside it for direct engine evaluation.
+- The browser campaign remains the complete reference game and the Godot 4 build remains a vertical slice, but new player-facing gameplay rules now ship as paired browser/Godot patches unless a temporary exception is explicitly recorded.
 
 ## Player Fantasy
 The player commands a fledgling global defense organization responding to escalating alien activity. They recruit soldiers, manage a base, research alien threats, shoot down UFOs, deploy squads, endure casualties, and build emotional attachment to soldiers whose personalities, stress, friendships, injuries, commendations, and deaths shape the campaign.
@@ -49,13 +99,22 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.17.0137_TACTICAL_CONTINUOUS_WALLS_AND_TRAVERSABLE_BREACHES_INDEX_ONLY_PATCH`
+`v0.26.07.28.0140_TACTICAL_AI_DOCTRINE_REACTION_FOG_AND_CLASSIC_COMMAND_CONSOLE_PARITY_PATCH`
 
 ## Native Vertical Slice Build
-`v0.26.07.19.GODOT.0009_LOCAL_BASE_INVENTORY_AND_SOLDIER_LOADOUT_VERTICAL_SLICE`
+`v0.26.07.28.GODOT.0011_TACTICAL_AI_DOCTRINE_AND_REACTION_FIRE_VERTICAL_SLICE`
 
 ## What This Patch Was Intended To Add
 This patch adds:
+- A save-compatible hangar-occupancy correction so Outbound and Returning aircraft no longer occupy the physical hangar they already departed.
+- Preserved destination/home reservations, keeping real hangar capacity and staged-route overbooking protections intact.
+- A supplied-save regression covering Fort Aegis to S. America staging and the final S. America incident round trip.
+- An explicit browser-only parity exception for multi-base ferry routing until that system exists in the Godot vertical slice.
+- Base-local browser Medkit issue, return, and display using the existing inventory ownership model.
+- One-charge browser tactical self-treatment matching the native 12-HP and 12-TU rule.
+- Final tactical HP and remaining Medkit charge propagation into browser mission resolution.
+- One-to-five-day browser wound recovery derived from final missing HP, with unused KIA Medkit recovery on victory and loss on defeat.
+- An explicit paired browser/Godot gameplay contract in the manifest and checker so future player-facing rules cannot silently diverge.
 - Continuous Three.js building walls joined along the true offset-hex neighbor vectors instead of isolated per-cell posts.
 - Solid corner cores with deliberate openings at doors and destroyed wall cells.
 - Explicit all-unit breach traversal coverage for player movement, alien pathing, and panicked civilians.
@@ -325,6 +384,13 @@ This patch adds:
 
 ## Current Player Verification Needed
 Before moving to the next major feature stage, test:
+
+0c. **Supplied-save staged Skyranger route**
+   - Import or load `Project-Aegis-Campaign_slot_10_v0_26_07_17_0137_2026-07-26T06-25-26.project-aegis-save.json` without overwriting the source export.
+   - Select the active South America Alien Abduction Site from the first base.
+   - Confirm a Fort Aegis Skyranger can stage through the now-empty S. America hangar, refuel, and launch the incident response.
+   - Confirm Saber One continues its existing return to Fort Aegis and still owns its Fort Aegis recovery reservation.
+   - Confirm no occupied staging hangar is treated as open and no aircraft is duplicated or displaced.
 
 0. **New base placement**
    - Click Build New Base from the Geoscape.
@@ -1274,7 +1340,7 @@ Planned:
 # 14. Next Recommended Patch
 
 ## Immediate Recommendation
-Run native build 0008 from imported Fort Aegis with its full 10/10 Laboratory and Workshop. Start Living Quarters, Laboratory, and Workshop projects; verify the $1.15M deduction, three-slot limit, no early capacity, and independent countdowns. After two days, save/reload and confirm 1/3, 3/5, and 2/4 days remain. Confirm capacities activate on days 3, 4, and 5, then hire one Scientist and Engineer. Cancel a later Living Quarters project and verify the $150k refund. Save the imported copy and confirm the browser export remains unchanged. This is the current native manual-testing gate; do not treat it as a complete campaign port.
+First validate browser build 0139 against the supplied slot-10 export without overwriting it. Confirm Fort Aegis can select a staged Skyranger response through S. America, that the S. America hangar is available after Saber One has departed, and that Saber One keeps its Fort Aegis return reservation. Then complete the paired native 0010/browser 0138 medical gate: exact Medkit issue/return stock, 12-HP/12-TU treatment, one-charge consumption, final-HP wound duration, strategic-midnight recovery, KIA ownership, and imported-copy source isolation.
 
 In a mandatory civilian-rescue incident, hand AI Command the live battlefield after the last alien dies or just before AI kills it. Confirm AI enters secure rescue, searches for unrevealed survivors, preserves existing escort chains, reports rescued/required progress, and extracts enough civilians before victory. Confirm an impossible requirement still resolves and an exhausted bounded rescue does not falsely mark surviving soldiers KIA. Then trigger a UFO speed prompt while working in Base, Soldiers, Research, Workshop, and Missions; choose a speed and confirm the same command section remains open while time advances. Repeat from an in-progress incident and confirm the battlefield remains active until the deferred speed applies after battle.
 
@@ -2930,6 +2996,122 @@ Verification checklist:
 - Save during a ferry/interception route, reload, and confirm the active route and original-home return decision remain intact.
 
 Next recommended patch: `AIRCRAFT_RELOCATION_MULTI_FLIGHT_QUEUE_AND_RESERVATION_UI_INDEX_ONLY`, after manual confirmation of the new saved reservation and relocation flow.
+
+## v0.26.07.25.0139 - Skyranger Ferry Airborne Hangar Release Fix
+
+Browser build `v0.26.07.25.0139_SKYRANGER_FERRY_AIRBORNE_HANGAR_RELEASE_FIX_INDEX_ONLY_PATCH` preserves save format 4 and fixes a staged incident route reproduced from the supplied slot-10 browser export.
+
+Root cause and implemented scope:
+
+- Fort Aegis is about 10,820 km from the active South America incident, so the normal 21,640 km Skyranger round trip is correctly outside the standard 16,000 km range.
+- S. America 1 is a valid staging base: the Fort Aegis ferry leg is about 8,792 km one way and the refueled incident round trip is about 7,098 km.
+- Saber One had already departed S. America 1 and was Returning to Fort Aegis, but retained its S. America `hangarKey` for travel continuity. The generic slot lookup treated that stale departure key as physical occupancy while Fort Aegis also correctly held the craft's recovery reservation, blocking two hangars with one airborne craft.
+- `aircraftOccupiesHangarSlot` now excludes only `Outbound` and `Returning` aircraft from physical departure-slot occupancy. Ready, Queued, and Repairing craft remain occupying, and destination/home reservation records continue to block their recovery hangars.
+- The staging planner still requires a real open hangar. Transient staging and occupied-hangar overbooking remain disabled.
+- Build Health now includes `Returning interceptors release departed staging hangars without losing home reservations`, using the supplied base, mission, range, and travel geometry.
+- Multi-base ferry routing is recorded as a temporary browser-only gameplay parity exception because the current Godot vertical slice does not implement that strategic system.
+
+Compatibility and risk:
+
+- The supplied export was inspected read only and was not rewritten. Existing save records and save format 4 remain unchanged.
+- The correction is constant-time inside the existing bounded fleet slot lookup and adds no Geoscape clock, tactical, pathfinding, visibility, rendering, or AI work.
+- Manual validation should confirm the staged response in the exact export and verify that an actually occupied S. America hangar still blocks the route.
+
+Verification completed during implementation:
+
+- All six inline application scripts parsed.
+- `node tools\check-aegis-build.cjs` passed for the 0139 build label and new occupancy seam.
+- Browser Build Health passed `277/277`, including the supplied-save hangar-release regression and every prior ferry, tactical, and medical row.
+- The supplied slot-10 export loaded through localhost without saving over the source file. Incident staging named Aegis One, Fort Aegis, S. America 1, the 8,792 km ferry, and the 7,098 km final round trip.
+- Confirm Launch started the staged route, completed ferry/refuel/mission travel under the Geoscape clock, and opened the exact 12-soldier 64x64 safe-2D incident.
+- Three End Turn cycles completed with control returning to the human turn and no browser application error. The only console warning was the existing Tailwind CDN production advisory.
+
+## v0.26.07.24.0138 - Tactical Medkit and Wounded Recovery Parity Patch
+
+Browser build `v0.26.07.24.0138_TACTICAL_MEDKIT_AND_WOUNDED_RECOVERY_PARITY_PATCH` preserves save format 4 and ports the pending native 0010 medical gameplay contract into the complete HTML campaign.
+
+Implemented scope:
+
+- Soldiers can issue or return one Medkit from the currently selected base. Issue consumes one local-store unit, return restores one, unavailable stock is disabled, repeated issue/return calls are idempotent, and existing weapon/armor mission-confirmation rules remain unchanged.
+- An issued Medkit becomes one tactical charge. A selected injured living soldier can restore up to 12 HP for 12 TU; the charge is consumed immediately and HP, TU, movement highlighting, button state, campaign-soldier health, and tactical feedback update together.
+- Full-health, no-charge, insufficient-TU, non-human-turn, dead/nonhuman, and no-selection attempts are rejected without changing medical state.
+- Manual tactical completion carries each soldier's final HP and remaining Medkit charge into mission resolution. Surviving injured soldiers receive one recovery day per ten missing final HP, rounded up and capped from one to five days, and the after-action casualty line now identifies them instead of reporting no major casualties.
+- Unused Medkits on KIA soldiers are recovered after victory and lost after defeat with mission-report feedback. Used charges remain consumed and surviving unused charges remain issued.
+- Browser and native gameplay parity is now an explicit manifest/checker contract covering base-local ownership, the 12-HP/12-TU action, one-charge consumption, final-HP wound recovery, and victory-recovery/defeat-loss behavior.
+
+Performance and compatibility:
+
+- Medkit use touches only the selected unit and existing movement-preview state. Mission medical resolution scans only the bounded deployed roster. No tactical visibility, light, map-generation, pathfinding, civilian, alien-AI, or render-loop work was added.
+- Save format remains 4. Missing soldier Medkit state defaults to false, existing browser inventory remains authoritative, and no active campaign or tactical save is rewritten during normalization.
+- The browser Sickbay retains its existing bed-capacity and overflow behavior; the shared parity contract governs the player-facing medical action and ownership rules rather than forcing identical platform presentation.
+
+Verification completed during implementation:
+
+- All six inline application scripts parsed.
+- `node tools\check-aegis-build.cjs` passed with matching browser/native labels, save format, medical constants, and parity-system declarations.
+- Browser Build Health passed `276/276`, including four new medical/parity rows and every prior regression.
+- A fresh unsaved localhost campaign bought one Medkit, issued it, returned it, and reissued it while local stock changed by exactly one each time.
+- A six-soldier response launched into a 64x64 safe-2D incident. The carrier showed `Medkit ready`, the `Use Medkit - 12 TU` action correctly remained disabled at full HP, and three End Turn cycles returned control to the human turn without a runtime exception or lockup.
+- Native counterpart verification remains `97/97` tests, `69/69` visible Build Health rows, strict Godot 4.7.1 parsing, and a hardware-rendered treatment plus three-turn tactical smoke.
+- Browser work used a fresh unsaved campaign and native hardware work used an isolated in-memory campaign; no player save or browser export was overwritten.
+
+Manual validation still required:
+
+- Injure a browser Medkit carrier, use the action, and confirm HP rises by up to 12, TU falls by 12, the charge disappears, movement highlighting shrinks, and repeat use is disabled.
+- Complete a browser mission with a surviving injured soldier and verify the final post-treatment HP produces the expected `Wounded - N days` state, save/reload persistence, midnight countdown, and return to duty.
+- Confirm unused KIA Medkits return after victory and are lost after defeat in both versions.
+- Repeat one bounded medical flow in an imported native copy and confirm the original browser export bytes remain unchanged.
+
+Known risks:
+
+- Self-treatment is the current paired scope. Adjacent ally aid, unconscious stabilization, body-part trauma, bleeding, multiple charges, and ground-item interaction remain deferred.
+- Browser and native Sickbay presentation differs because the browser campaign already models bed capacity and overflow. Any future shared rule change must still be implemented and checked in both versions.
+
+Next paired step after live validation: `TACTICAL_ADJACENT_FIELD_AID_AND_SICKBAY_PATIENT_ROSTER_PARITY_PATCH`, adding adjacent ally treatment and a focused patient roster to both versions without broad medical simulation.
+
+## v0.26.07.19.GODOT.0010 - Tactical Medkit and Wounded Status Recovery Vertical Slice
+
+Native build `v0.26.07.19.GODOT.0010_TACTICAL_MEDKIT_AND_WOUNDED_STATUS_RECOVERY_VERTICAL_SLICE` preserves save format 4 and follows player-verified 0009 with the smallest useful medical loop connecting manufactured Medkits, soldier loadouts, tactical damage, mission results, and strategic time.
+
+Implemented scope:
+
+- The Soldiers screen now displays loose Medkit stock and provides one binary Medkit control per living soldier. Issuing consumes one local item, returning restores one, repeated issue calls are idempotent, unavailable stock is disabled and rejected, and new recruits still arrive without free equipment.
+- An issued Medkit becomes one tactical charge. The selected injured soldier can spend 12 TU to restore up to 12 HP; the charge is consumed immediately and authoritative HP, TU, movement range, button state, and Tactical Control feedback refresh together.
+- Full-health, no-charge, insufficient-TU, non-human-turn, and no-selection attempts are rejected without changing HP, TU, or inventory.
+- Tactical mission results preserve unused charges for survivors, consume used charges, recover unused Medkits from KIA soldiers after victory, and lose them with explicit field-loss feedback after defeat.
+- Surviving soldiers below maximum HP enter `Wounded` status for one recovery day per ten missing final HP, rounded up and capped from one to five days. Final post-Medkit HP determines the duration.
+- Wounded soldiers remain excluded from deployable assigned personnel. Each crossed strategic midnight decrements the exact timer; reaching zero restores `Ready` status and adds a medical-clearance report.
+- Soldier cards show exact remaining recovery days. Native and imported-copy saves persist `medkit` ownership and `recovery_days`; legacy strings such as `Sickbay - 3 days` migrate conservatively.
+
+Performance and compatibility:
+
+- Medkit use touches only the selected unit. Wound recovery scans the bounded local roster only when strategic time crosses midnight; no tactical pathfinding, visibility, AI, civilian, map-generation, or render-loop workload was added.
+- Save format remains 4. Missing Medkit ownership defaults to false, missing wounded timers default conservatively, negative loose stock clamps to zero, and issued ownership is not silently returned or duplicated during normalization.
+- Browser imports preserve loose Medkit stock but do not infer issued medical items from ambiguous browser inventory shapes. The browser export remains read only.
+
+Verification completed during implementation:
+
+- Godot 4.7.1 strict editor parsing passed.
+- Native tests pass `97/97`; visible native Build Health passes `69/69` through the same runner.
+- Coverage includes Medkit issue/return/idempotence, save round-trip, legacy wound migration, exact 12-HP/12-TU tactical consumption, repeat-use rejection, post-treatment mission wounds, one-day midnight progression, exact partial recovery persistence, final clearance, successful KIA recovery, failed-mission loss, browser wound normalization, and every previous native regression.
+- A hardware-rendered OpenGL smoke on the native main scene issued a Medkit, mounted the real Tactical Control UI, treated an injured soldier from 18/38 to 30/38 HP for 12 TU, showed `No medkit`, disabled repeat use, refreshed movement highlighting, and completed three End Turn cycles through human turn 4 without a lockup.
+- The paired HTML build loaded through localhost, displayed build 0138, completed first-base setup, conserved Medkit stock across issue/return/reissue, reached Geoscape, launched a six-soldier 64x64 safe-2D incident, completed three End Turn cycles, and passed browser Build Health `276/276`.
+- The hardware smoke used an unsaved in-memory campaign and the browser regression used a fresh unsaved browser campaign, so neither a native save nor a browser export was overwritten.
+
+Manual validation still required:
+
+- Issue and return a Medkit on the Soldiers screen and confirm loose stock changes by exactly one each time. Save/reload with one issued and confirm ownership and stock remain exact.
+- Launch an injured Medkit carrier, use the tactical button, and confirm HP rises by up to 12, TU falls by 12, movement highlights shrink, the charge disappears, and a second use is disabled.
+- Complete a mission with a surviving injured soldier, confirm the exact `Wounded - N days` roster status and deployment exclusion, save/reload, then cross each strategic midnight until medical clearance returns the soldier to duty.
+- Confirm an unused Medkit on a KIA soldier returns after victory but is lost after defeat, with the corresponding command report.
+- Repeat one bounded flow in an imported native copy and confirm the original browser export bytes remain unchanged.
+
+Known risks:
+
+- This slice supports self-treatment only. Adjacent ally treatment, stabilized unconscious soldiers, body-part trauma, bleeding, multiple charges, and item-ground interaction remain deferred.
+- Recovery duration uses final missing HP and does not yet model Sickbay capacity, staff, facility damage, or treatment priority.
+
+Next native step after live validation: `GODOT.0011_ADJACENT_FIELD_AID_AND_SICKBAY_PATIENT_ROSTER_VERTICAL_SLICE`, adding adjacent ally treatment and a focused patient view without broad medical simulation.
 
 ## v0.26.07.19.GODOT.0009 - Local Base Inventory and Soldier Loadout Vertical Slice
 

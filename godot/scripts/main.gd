@@ -1,6 +1,6 @@
 extends Control
 
-const NATIVE_BUILD := "v0.26.07.19.GODOT.0009_LOCAL_BASE_INVENTORY_AND_SOLDIER_LOADOUT_VERTICAL_SLICE"
+const NATIVE_BUILD := "v0.26.07.28.GODOT.0011_TACTICAL_AI_DOCTRINE_AND_REACTION_FIRE_VERTICAL_SLICE"
 const MAX_BROWSER_IMPORT_BYTES := 32 * 1024 * 1024
 
 var content: Dictionary = {}
@@ -17,8 +17,11 @@ var tactical_result: Dictionary = {}
 var tactical_status_label: Label
 var tactical_selection_label: Label
 var tactical_log_box: VBoxContainer
+var tactical_medkit_button: Button
 var tactical_end_turn_button: Button
 var tactical_return_button: Button
+var tactical_ai_button: Button
+var tactical_stance_button: Button
 var command_content: Control
 
 var color_bg := Color("071317")
@@ -775,7 +778,7 @@ func _render_soldiers() -> void:
 	var armory := HBoxContainer.new()
 	armory.add_theme_constant_override("separation", 24)
 	armory.add_child(_label("LOCAL ARMORY - LOOSE STOCK", 13, color_cyan))
-	for item_name in ["Ballistic Rifle", "Laser Rifle", "Field Suit"]:
+	for item_name in ["Ballistic Rifle", "Laser Rifle", "Field Suit", "Medkit"]:
 		armory.add_child(_metric(item_name.to_upper(), str(campaign.loadout_stock(item_name)), color_gold if campaign.loadout_stock(item_name) > 0 else color_muted))
 	armory.add_spacer(false)
 	root.add_child(_panel_with(armory, 14))
@@ -786,7 +789,7 @@ func _render_soldiers() -> void:
 	root.add_child(grid)
 	for soldier in campaign.data.get("soldiers", []):
 		var row := HBoxContainer.new()
-		row.custom_minimum_size = Vector2(450, 154)
+		row.custom_minimum_size = Vector2(450, 184)
 		row.add_theme_constant_override("separation", 14)
 		var badge := Label.new()
 		badge.text = String(soldier.get("callsign", "A")).left(1)
@@ -800,8 +803,8 @@ func _render_soldiers() -> void:
 		var text := VBoxContainer.new()
 		text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		text.add_child(_label(soldier.get("name", "Soldier"), 19, color_text))
-		var soldier_status := String(soldier.get("status", "Ready"))
-		var status_color := color_red if soldier_status == "KIA" else color_gold if soldier_status == "Wounded" else color_muted
+		var soldier_status := campaign.soldier_status_text(soldier)
+		var status_color := color_red if soldier_status == "KIA" else color_gold if soldier_status.begins_with("Wounded") else color_muted
 		text.add_child(_label("%s - %s - %s" % [soldier.get("rank", "Rookie"), soldier.get("trait", "Steady"), soldier_status], 13, status_color, true))
 		text.add_child(_label("ACC %d   TU %d   HP %d" % [soldier.get("accuracy",0), soldier.get("tu",0), soldier.get("health",0)], 13, color_cyan))
 		row.add_child(text)
@@ -817,6 +820,19 @@ func _render_soldiers() -> void:
 			campaign.save_campaign()
 		)
 		controls.add_child(assigned)
+		var medkit := CheckButton.new()
+		medkit.text = "Medkit"
+		medkit.button_pressed = bool(soldier.get("medkit", false))
+		medkit.disabled = soldier.get("status", "") == "KIA" or (not medkit.button_pressed and campaign.loadout_stock("Medkit") <= 0)
+		medkit.tooltip_text = "Return the issued Medkit to local stores." if medkit.button_pressed else "Issue one local Medkit to this soldier." if not medkit.disabled else "No loose Medkits are available."
+		medkit.toggled.connect(func(value):
+			if campaign.change_soldier_medkit(soldier_id, value):
+				campaign.save_campaign()
+				_show_command("soldiers")
+			else:
+				medkit.set_pressed_no_signal(not value)
+		)
+		controls.add_child(medkit)
 		controls.add_child(_loadout_picker(soldier, "weapon"))
 		controls.add_child(_loadout_picker(soldier, "armor"))
 		row.add_child(controls)
@@ -1189,21 +1205,10 @@ func _show_tactical() -> void:
 	tactical_board.battle_finished.connect(_on_tactical_finished)
 	board_panel.add_child(tactical_board)
 	var side := VBoxContainer.new()
-	side.custom_minimum_size.x = 360
+	side.custom_minimum_size.x = 300
 	side.add_theme_constant_override("separation", 12)
 	body.add_child(_panel_with(side, 16))
-	side.add_child(_label("TACTICAL CONTROL", 13, color_cyan))
-	tactical_selection_label = _label("Select a soldier.", 15, color_text, true)
-	tactical_selection_label.custom_minimum_size.y = 105
-	side.add_child(tactical_selection_label)
-	side.add_child(_separator())
-	tactical_end_turn_button = _action_button("End Turn", func(): tactical_board.end_human_turn(), true)
-	side.add_child(tactical_end_turn_button)
-	tactical_return_button = _action_button("Return to Base", _complete_tactical_return, true)
-	tactical_return_button.disabled = true
-	side.add_child(tactical_return_button)
-	side.add_child(_separator())
-	side.add_child(_label("BATTLE LOG", 12, color_muted))
+	side.add_child(_label("BATTLE LOG", 12, color_cyan))
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	tactical_log_box = VBoxContainer.new()
@@ -1211,6 +1216,60 @@ func _show_tactical() -> void:
 	tactical_log_box.add_theme_constant_override("separation", 7)
 	scroll.add_child(tactical_log_box)
 	side.add_child(scroll)
+	var console := HBoxContainer.new()
+	console.custom_minimum_size.y = 142
+	console.add_theme_constant_override("separation", 12)
+	var unit_controls := VBoxContainer.new()
+	unit_controls.custom_minimum_size.x = 260
+	unit_controls.add_child(_label("UNIT", 11, color_cyan))
+	var cycle_row := HBoxContainer.new()
+	cycle_row.add_child(_small_button("Previous", func(): tactical_board.select_relative_soldier(-1)))
+	cycle_row.add_child(_small_button("Next", func(): tactical_board.select_relative_soldier(1)))
+	cycle_row.add_child(_small_button("Map", _show_tactical_map))
+	unit_controls.add_child(cycle_row)
+	var equipment_row := HBoxContainer.new()
+	equipment_row.add_child(_small_button("Inventory", _show_tactical_inventory))
+	tactical_stance_button = _small_button("Kneel", func(): tactical_board.toggle_selected_kneeling())
+	tactical_stance_button.disabled = true
+	equipment_row.add_child(tactical_stance_button)
+	tactical_medkit_button = _small_button("Medkit", func(): tactical_board.use_selected_medkit())
+	tactical_medkit_button.disabled = true
+	equipment_row.add_child(tactical_medkit_button)
+	unit_controls.add_child(equipment_row)
+	console.add_child(_panel_with(unit_controls, 10))
+	var soldier_data := VBoxContainer.new()
+	soldier_data.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	soldier_data.add_child(_label("SOLDIER DATA", 11, color_cyan))
+	tactical_selection_label = _label("Select a soldier.", 14, color_text, true)
+	tactical_selection_label.custom_minimum_size.y = 86
+	soldier_data.add_child(tactical_selection_label)
+	console.add_child(_panel_with(soldier_data, 10))
+	var reserve_controls := VBoxContainer.new()
+	reserve_controls.custom_minimum_size.x = 360
+	reserve_controls.add_child(_label("RESERVE TIME UNITS", 11, color_cyan))
+	var reserve_row := HBoxContainer.new()
+	reserve_row.add_child(_small_button("None", func(): tactical_board.set_selected_reserve_mode("none")))
+	reserve_row.add_child(_small_button("Snap", func(): tactical_board.set_selected_reserve_mode("snap")))
+	reserve_row.add_child(_small_button("Aimed", func(): tactical_board.set_selected_reserve_mode("aimed")))
+	reserve_row.add_child(_small_button("Auto", func(): tactical_board.set_selected_reserve_mode("auto")))
+	reserve_controls.add_child(reserve_row)
+	var turn_row := HBoxContainer.new()
+	turn_row.add_child(_small_button("Reserve Kneel", func(): tactical_board.set_selected_reserve_mode("kneel")))
+	turn_row.add_child(_small_button("Done", func(): tactical_board.bleed_selected_tu()))
+	tactical_end_turn_button = _small_button("End Turn", func(): tactical_board.end_human_turn())
+	turn_row.add_child(tactical_end_turn_button)
+	reserve_controls.add_child(turn_row)
+	console.add_child(_panel_with(reserve_controls, 10))
+	var command_controls := VBoxContainer.new()
+	command_controls.custom_minimum_size.x = 180
+	command_controls.add_child(_label("COMMAND", 11, color_cyan))
+	tactical_ai_button = _action_button("AI Command", func(): tactical_board.take_ai_command(), true)
+	command_controls.add_child(tactical_ai_button)
+	tactical_return_button = _action_button("Dust Off", _request_tactical_dust_off)
+	command_controls.add_child(tactical_return_button)
+	console.add_child(_panel_with(command_controls, 10))
+	outer.add_child(console)
+	tactical_board.ai_command_changed.connect(_on_tactical_ai_command_changed)
 	tactical_board.begin_battle(campaign.selected_incident(), campaign.assigned_soldiers(), content)
 
 func _on_tactical_selection(unit: Dictionary) -> void:
@@ -1219,13 +1278,81 @@ func _on_tactical_selection(unit: Dictionary) -> void:
 	if unit.is_empty():
 		tactical_selection_label.text = "Select a living soldier to move, escort, breach, or fire."
 	else:
-		tactical_selection_label.text = "%s\n%s | %s\nHP %d/%d   TU %d/%d\nKills %d" % [unit.get("name","Soldier"), unit.get("weapon","Ballistic Rifle"), unit.get("armor","Field Suit"), unit.get("hp",0), unit.get("max_hp",0), unit.get("tu",0), unit.get("max_tu",0), unit.get("kills",0)]
+		var medkit_status := "Medkit ready" if int(unit.get("medkit_charges", 0)) > 0 else "No medkit"
+		var stance := "Kneeling" if unit.get("kneeling", false) else "Standing"
+		var reserve := String(unit.get("reserve_mode", "none")).capitalize()
+		tactical_selection_label.text = "%s | %s\n%s | %s\nHP %d/%d  TU %d/%d  REA %d\n%s | Reserve %s | Kills %d" % [unit.get("name","Soldier"), unit.get("rank","Rookie"), unit.get("weapon","Ballistic Rifle"), unit.get("armor","Field Suit"), unit.get("hp",0), unit.get("max_hp",0), unit.get("tu",0), unit.get("max_tu",0), unit.get("reactions",0), stance, reserve, unit.get("kills",0)]
+	if tactical_medkit_button:
+		var blocker := tactical_board.selected_medkit_blocker() if tactical_board else "Select a living soldier."
+		tactical_medkit_button.disabled = not blocker.is_empty()
+		tactical_medkit_button.tooltip_text = blocker if not blocker.is_empty() else "Spend 12 TU and consume the issued Medkit to restore up to 12 HP."
+	if tactical_stance_button:
+		tactical_stance_button.disabled = unit.is_empty()
+		tactical_stance_button.text = "Stand" if unit.get("kneeling", false) else "Kneel"
 
 func _on_tactical_status(status: Dictionary) -> void:
 	if tactical_status_label:
 		tactical_status_label.text = "Turn %d | %s | Aliens %d | Rescue %d/%d" % [status.get("turn",1), String(status.get("phase","human")).capitalize(), status.get("aliens",0), status.get("rescued",0), status.get("required",0)]
 	if tactical_end_turn_button:
 		tactical_end_turn_button.disabled = status.get("phase", "") != "human" or status.get("resolved", false)
+	if tactical_ai_button:
+		tactical_ai_button.disabled = status.get("phase", "") != "human" or status.get("resolved", false)
+
+func _on_tactical_ai_command_changed(active: bool) -> void:
+	if tactical_ai_button:
+		tactical_ai_button.disabled = active
+		tactical_ai_button.text = "AI Running" if active else "AI Command"
+	if tactical_end_turn_button:
+		tactical_end_turn_button.disabled = active
+	if tactical_medkit_button:
+		tactical_medkit_button.disabled = active or not tactical_board.selected_medkit_blocker().is_empty()
+	if tactical_stance_button:
+		tactical_stance_button.disabled = active or tactical_board.selected_inventory().is_empty()
+
+func _show_tactical_inventory() -> void:
+	if tactical_board == null:
+		return
+	var inventory := tactical_board.selected_inventory()
+	var dialog := AcceptDialog.new()
+	dialog.title = "Field Equipment"
+	dialog.dialog_text = "Select a living soldier to inspect equipment." if inventory.is_empty() else "%s - %s\n\nRIGHT HAND  %s\nBODY        %s\nBELT        %s\n\nTU %d   Accuracy %d   Reactions %d\nStance %s   Reserve %s" % [
+		inventory.get("name", "Soldier"),
+		inventory.get("rank", "Rookie"),
+		inventory.get("weapon", "Unarmed"),
+		inventory.get("armor", "No Armor"),
+		"Medkit (%d)" % inventory.get("medkit_charges", 0) if int(inventory.get("medkit_charges", 0)) > 0 else "Empty",
+		inventory.get("tu", 0),
+		inventory.get("accuracy", 0),
+		inventory.get("reactions", 0),
+		"Kneeling" if inventory.get("kneeling", false) else "Standing",
+		String(inventory.get("reserve_mode", "none")).capitalize()
+	]
+	dialog.min_size = Vector2i(520, 330)
+	ui_root.add_child(dialog)
+	dialog.popup_centered()
+	dialog.confirmed.connect(dialog.queue_free)
+
+func _show_tactical_map() -> void:
+	if tactical_board == null:
+		return
+	var contacts := tactical_board.tactical_map_contacts()
+	var human_cells: Array = contacts.get("humans", [])
+	var alien_cells: Array = contacts.get("aliens", [])
+	var civilian_cells: Array = contacts.get("civilians", [])
+	var rows: Array[String] = []
+	for y in range(AegisTacticalBoard.GRID_HEIGHT):
+		var row := ""
+		for x in range(AegisTacticalBoard.GRID_WIDTH):
+			var cell := Vector2i(x, y)
+			row += "H" if human_cells.has(cell) else "A" if alien_cells.has(cell) else "C" if civilian_cells.has(cell) else "."
+		rows.append(row)
+	var dialog := AcceptDialog.new()
+	dialog.title = "Tactical Map - Current Observations"
+	dialog.dialog_text = "%s\n\nH Aegis   A visible alien   C visible civilian\nUnobserved contacts remain hidden." % "\n".join(rows)
+	dialog.min_size = Vector2i(580, 520)
+	ui_root.add_child(dialog)
+	dialog.popup_centered()
+	dialog.confirmed.connect(dialog.queue_free)
 
 func _on_tactical_log(message: String) -> void:
 	if tactical_log_box == null:
@@ -1240,10 +1367,33 @@ func _on_tactical_log(message: String) -> void:
 
 func _on_tactical_finished(result: Dictionary) -> void:
 	tactical_result = result
+	if tactical_medkit_button:
+		tactical_medkit_button.disabled = true
 	if tactical_return_button:
+		tactical_return_button.text = "Return to Base"
 		tactical_return_button.disabled = false
 	if tactical_end_turn_button:
 		tactical_end_turn_button.disabled = true
+	if tactical_ai_button:
+		tactical_ai_button.disabled = true
+	if tactical_stance_button:
+		tactical_stance_button.disabled = true
+
+func _request_tactical_dust_off() -> void:
+	if not tactical_result.is_empty():
+		_complete_tactical_return()
+		return
+	var dialog := ConfirmationDialog.new()
+	dialog.title = "Dust Off"
+	dialog.dialog_text = "Abort this incident and extract the surviving squad?"
+	dialog.ok_button_text = "Dust Off"
+	ui_root.add_child(dialog)
+	dialog.popup_centered()
+	dialog.confirmed.connect(func():
+		tactical_board.abort_battle()
+		dialog.queue_free()
+	)
+	dialog.canceled.connect(dialog.queue_free)
 
 func _complete_tactical_return() -> void:
 	if tactical_result.is_empty():
@@ -1290,6 +1440,42 @@ func _run_self_tests() -> Array:
 	shooter["cell"] = civilian.get("cell", Vector2i.ZERO) + Vector2i(-1, 0)
 	shooter["tu"] = 16
 	test_board._try_contact_civilian(shooter, civilian)
+	var doctrine_board := AegisTacticalBoard.new()
+	doctrine_board.begin_battle(test_campaign.selected_incident(), test_campaign.assigned_soldiers(), content)
+	var doctrine_humans: Array = doctrine_board.units.filter(func(unit): return unit.get("team", "") == "human")
+	var doctrine_aliens: Array = doctrine_board.units.filter(func(unit): return unit.get("team", "") == "alien")
+	doctrine_humans[0]["rank"] = "Captain"
+	doctrine_humans[0]["missions"] = 12
+	var doctrine_summary := doctrine_board.ai_command_summary()
+	var rookie_doctrine: Dictionary = doctrine_board.ai_doctrine_for_commander({"rank":"Rookie","missions":0})
+	var veteran_doctrine: Dictionary = doctrine_board.ai_doctrine_for_commander({"rank":"Captain","missions":12})
+	var commander_doctrine_ready: bool = rookie_doctrine.get("key", "") == "wedge" and veteran_doctrine.get("key", "") == "diamond" and doctrine_summary.contains("Diamond Security")
+	doctrine_humans[1]["tu"] = 62
+	var doctrine_plan: Dictionary = doctrine_board._ai_movement_plan(doctrine_humans[1], doctrine_aliens[0].cell, int(doctrine_humans[1].get("fire_tu", 14)), String(doctrine_humans[1].get("ai_role", "")))
+	var formation_reserve_ready := int(doctrine_plan.get("steps", 0)) <= doctrine_board.AI_MAX_MOVE_STEPS and int(doctrine_plan.get("steps", 0)) * doctrine_board.MOVE_TU <= 62 - int(doctrine_humans[1].get("fire_tu", 14)) and not String(doctrine_humans[1].get("ai_role", "")).is_empty()
+	var reaction_shooter: Dictionary = doctrine_humans[1]
+	var reaction_target: Dictionary = doctrine_aliens[0]
+	reaction_shooter["cell"] = Vector2i(6, 10)
+	reaction_target["cell"] = Vector2i(7, 10)
+	reaction_shooter["tu"] = 62
+	reaction_shooter["reactions"] = 100
+	reaction_shooter["accuracy"] = 100
+	for serial in range(100):
+		if AegisHexRules.deterministic_roll(int(doctrine_board.incident.get("seed", 1)), 900 + (serial + 1) * 31 + doctrine_board.turn_number * 47) <= 95:
+			doctrine_board.action_serial = serial
+			break
+	var reaction_tu_before := int(reaction_shooter.get("tu", 0))
+	doctrine_board._reaction_fire_for_move(reaction_target, {})
+	var reaction_fire_ready := int(reaction_shooter.get("tu", 0)) == reaction_tu_before - int(reaction_shooter.get("fire_tu", 14))
+	for hidden_alien in doctrine_aliens:
+		hidden_alien["visible"] = false
+	var ai_fog_ready: bool = doctrine_board.tactical_map_contacts().get("aliens", []).is_empty()
+	var console_soldier: Dictionary = doctrine_humans[2]
+	doctrine_board._select_unit(String(console_soldier.get("id", "")))
+	var console_tu_before := int(console_soldier.get("tu", 0))
+	var classic_console_ready := doctrine_board.set_selected_reserve_mode("snap") and doctrine_board.toggle_selected_kneeling()
+	var console_inventory := doctrine_board.selected_inventory()
+	classic_console_ready = classic_console_ready and int(console_soldier.get("tu", 0)) == console_tu_before - 4 and console_inventory.get("reserve_mode", "") == "snap" and console_inventory.get("kneeling", false) and doctrine_board.bleed_selected_tu()
 	for alien in test_board.units.filter(func(unit): return unit.get("team", "") == "alien"):
 		alien["hp"] = 0
 	var rescue_gate_holds := not test_board._check_resolution() and not test_board.resolved
@@ -1385,31 +1571,63 @@ func _run_self_tests() -> Array:
 	var loadout_second: Dictionary = loadout_roster[1]
 	var loadout_exchange_ready: bool = management_campaign.change_soldier_loadout(String(loadout_soldier.get("id", "")), "weapon", "Laser Rifle") and loadout_soldier.get("weapon", "") == "Laser Rifle" and management_campaign.loadout_stock("Laser Rifle") == 0 and management_campaign.loadout_stock("Ballistic Rifle") == 1 and management_campaign.change_soldier_loadout(String(loadout_soldier.get("id", "")), "armor", "No Armor") and management_campaign.loadout_stock("Field Suit") == 1 and management_campaign.change_soldier_loadout(String(loadout_soldier.get("id", "")), "armor", "Field Suit") and management_campaign.loadout_stock("Field Suit") == 0
 	var unavailable_loadout_blocked: bool = not management_campaign.change_soldier_loadout(String(loadout_second.get("id", "")), "weapon", "Laser Rifle") and loadout_second.get("weapon", "") == "Ballistic Rifle" and management_campaign.loadout_stock("Laser Rifle") == 0
+	var medkit_stock_before := management_campaign.loadout_stock("Medkit")
+	var medkit_exchange_ready: bool = management_campaign.change_soldier_medkit(String(loadout_soldier.get("id", "")), true) and management_campaign.loadout_stock("Medkit") == medkit_stock_before - 1 and management_campaign.change_soldier_medkit(String(loadout_soldier.get("id", "")), true) and management_campaign.loadout_stock("Medkit") == medkit_stock_before - 1 and management_campaign.change_soldier_medkit(String(loadout_soldier.get("id", "")), false) and management_campaign.loadout_stock("Medkit") == medkit_stock_before and management_campaign.change_soldier_medkit(String(loadout_soldier.get("id", "")), true)
 	var loadout_board := AegisTacticalBoard.new()
 	loadout_board.begin_battle(management_campaign.selected_incident(), management_campaign.assigned_soldiers(), content)
 	var loadout_unit: Dictionary = loadout_board.units.filter(func(unit): return unit.get("team", "") == "human")[0]
-	var tactical_loadout_ready: bool = loadout_unit.get("weapon", "") == "Laser Rifle" and int(loadout_unit.get("weapon_damage", 0)) == 22 and int(loadout_unit.get("weapon_range", 0)) == 9 and int(loadout_unit.get("fire_tu", 0)) == 14 and loadout_unit.get("armor", "") == "Field Suit" and int(loadout_unit.get("damage_reduction", 0)) == 2
+	var tactical_loadout_ready: bool = loadout_unit.get("weapon", "") == "Laser Rifle" and int(loadout_unit.get("weapon_damage", 0)) == 22 and int(loadout_unit.get("weapon_range", 0)) == 9 and int(loadout_unit.get("fire_tu", 0)) == 14 and loadout_unit.get("armor", "") == "Field Suit" and int(loadout_unit.get("damage_reduction", 0)) == 2 and int(loadout_unit.get("medkit_charges", 0)) == 1
 	var loadout_tu_updates: Array = []
 	loadout_board.selection_changed.connect(func(unit: Dictionary):
 		if not unit.is_empty():
 			loadout_tu_updates.append(int(unit.get("tu", -1)))
 	)
 	var loadout_target: Dictionary = loadout_board.units.filter(func(unit): return unit.get("team", "") == "alien")[0]
-	loadout_unit["cell"] = Vector2i(8, 2)
-	loadout_target["cell"] = Vector2i(16, 2)
+	loadout_unit["cell"] = Vector2i(6, 10)
+	loadout_target["cell"] = Vector2i(14, 10)
 	loadout_target["revealed"] = true
 	loadout_unit["tu"] = 62
 	loadout_board._select_unit(String(loadout_unit.get("id", "")))
 	loadout_board._try_shoot_unit(loadout_unit, loadout_target)
 	var tactical_tu_feedback_ready: bool = loadout_tu_updates.size() >= 2 and int(loadout_tu_updates[0]) == 62 and int(loadout_tu_updates[-1]) == 48 and int(loadout_unit.get("tu", -1)) == 48
+	loadout_unit["hp"] = int(loadout_unit.get("max_hp", 1)) - 20
+	var tactical_medkit_ready: bool = loadout_board.use_selected_medkit() and int(loadout_unit.get("hp", 0)) == int(loadout_unit.get("max_hp", 0)) - 8 and int(loadout_unit.get("tu", 0)) == 36 and int(loadout_unit.get("medkit_charges", -1)) == 0 and not loadout_board.use_selected_medkit()
 	var recovery_campaign := AegisCampaignState.new()
 	recovery_campaign.configure(content)
 	recovery_campaign.new_campaign("Recovery Test", "North America")
 	var recovery_soldier: Dictionary = recovery_campaign.data.get("soldiers", [])[0]
 	recovery_campaign.data["stores"]["Laser Rifle"] = 1
 	recovery_campaign.change_soldier_loadout(String(recovery_soldier.get("id", "")), "weapon", "Laser Rifle")
-	recovery_campaign.complete_mission({"success":true,"rescued":1,"soldiers":{String(recovery_soldier.get("id", "")):{"hp":0,"kills":0}}})
-	var mission_recovery_ready: bool = recovery_soldier.get("status", "") == "KIA" and recovery_soldier.get("weapon", "") == "Unarmed" and recovery_soldier.get("armor", "") == "No Armor" and recovery_campaign.loadout_stock("Laser Rifle") == 1 and recovery_campaign.loadout_stock("Field Suit") == 1
+	recovery_campaign.change_soldier_medkit(String(recovery_soldier.get("id", "")), true)
+	recovery_campaign.complete_mission({"success":true,"rescued":1,"soldiers":{String(recovery_soldier.get("id", "")):{"hp":0,"kills":0,"medkit_charges":1}}})
+	var mission_recovery_ready: bool = recovery_soldier.get("status", "") == "KIA" and recovery_soldier.get("weapon", "") == "Unarmed" and recovery_soldier.get("armor", "") == "No Armor" and not recovery_soldier.get("medkit", true) and recovery_campaign.loadout_stock("Laser Rifle") == 1 and recovery_campaign.loadout_stock("Field Suit") == 1 and recovery_campaign.loadout_stock("Medkit") == 2
+	var loss_campaign := AegisCampaignState.new()
+	loss_campaign.configure(content)
+	loss_campaign.new_campaign("Loss Test", "North America")
+	var lost_soldier: Dictionary = loss_campaign.data.get("soldiers", [])[0]
+	loss_campaign.change_soldier_medkit(String(lost_soldier.get("id", "")), true)
+	loss_campaign.complete_mission({"success":false,"rescued":0,"soldiers":{String(lost_soldier.get("id", "")):{"hp":0,"kills":0,"medkit_charges":1}}})
+	var mission_medkit_loss_ready: bool = not lost_soldier.get("medkit", true) and loss_campaign.loadout_stock("Medkit") == 1 and loss_campaign.data.get("reports", []).any(func(report): return String(report).contains("FIELD LOSS") and String(report).contains("Medkit"))
+	var wound_campaign := AegisCampaignState.new()
+	wound_campaign.configure(content)
+	wound_campaign.new_campaign("Wound Test", "North America")
+	var wounded_soldier: Dictionary = wound_campaign.data.get("soldiers", [])[0]
+	wound_campaign.change_soldier_medkit(String(wounded_soldier.get("id", "")), true)
+	wound_campaign.complete_mission({"success":true,"rescued":1,"soldiers":{String(wounded_soldier.get("id", "")):{"hp":int(wounded_soldier.get("health", 1)) - 11,"kills":0,"medkit_charges":0}}})
+	var wound_admission_ready: bool = wounded_soldier.get("status", "") == "Wounded" and int(wounded_soldier.get("recovery_days", 0)) == 2 and not wounded_soldier.get("medkit", true) and wound_campaign.assigned_soldiers().size() == 5
+	wound_campaign.advance_minutes(24 * 60)
+	var wound_midnight_ready: bool = wounded_soldier.get("status", "") == "Wounded" and int(wounded_soldier.get("recovery_days", 0)) == 1
+	var wound_normalized := wound_campaign.normalize_save(wound_campaign.data)
+	var wound_persistence_ready: bool = wound_normalized.get("soldiers", [])[0].get("status", "") == "Wounded" and int(wound_normalized.get("soldiers", [])[0].get("recovery_days", 0)) == 1
+	wound_campaign.advance_minutes(24 * 60)
+	var wound_clearance_ready: bool = wounded_soldier.get("status", "") == "Ready" and int(wounded_soldier.get("recovery_days", -1)) == 0 and wound_campaign.assigned_soldiers().size() == 6
+	var medical_legacy := management_campaign.data.duplicate(true)
+	medical_legacy["soldiers"][0]["status"] = "Sickbay - 3 days"
+	medical_legacy["soldiers"][0].erase("recovery_days")
+	medical_legacy["soldiers"][0]["medkit"] = 1
+	medical_legacy["stores"]["Medkit"] = -4
+	var medical_migrated := management_campaign.normalize_save(medical_legacy)
+	var medical_migration_ready: bool = medical_migrated.get("soldiers", [])[0].get("status", "") == "Wounded" and int(medical_migrated.get("soldiers", [])[0].get("recovery_days", 0)) == 3 and medical_migrated.get("soldiers", [])[0].get("medkit", false) and int(medical_migrated.get("stores", {}).get("Medkit", -1)) == 0
 	var personnel_campaign := AegisCampaignState.new()
 	personnel_campaign.configure(content)
 	personnel_campaign.new_campaign("Queue Test", "North America")
@@ -1499,6 +1717,11 @@ func _run_self_tests() -> Array:
 		{"name":"Area security waits for mandatory rescue", "pass":rescue_gate_holds},
 		{"name":"Mandatory rescue completion resolves victory", "pass":rescue_gate_completes},
 		{"name":"Tactical battle log trims immediately at ten entries", "pass":tactical_log_is_bounded},
+		{"name":"Experienced commanders unlock advanced formation doctrine", "pass":commander_doctrine_ready},
+		{"name":"AI formation movement is bounded and preserves shot TU", "pass":formation_reserve_ready},
+		{"name":"Reaction stat drives TU-consuming fire during alien movement", "pass":reaction_fire_ready},
+		{"name":"AI-command tactical contacts preserve live fog of war", "pass":ai_fog_ready},
+		{"name":"Classic reserve stance inventory and Done controls mutate tactical state", "pass":classic_console_ready},
 		{"name":"Native campaign starts with interceptor and tracked UFO", "pass":air_defaults_ready},
 		{"name":"Interception launch commits stance fuel and outbound state", "pass":air_launch_ready},
 		{"name":"Mid-interception save state normalizes at exact progress", "pass":air_midflight_normalizes},
@@ -1543,11 +1766,18 @@ func _run_self_tests() -> Array:
 		{"name":"Unlocked Laser Rifle production requires two staffed strategic days", "pass":laser_queued and laser_waits_for_work and laser_production_ready},
 		{"name":"Local weapon and armor exchanges conserve loose base stock", "pass":loadout_exchange_ready},
 		{"name":"Unavailable local equipment cannot duplicate into another loadout", "pass":unavailable_loadout_blocked},
-		{"name":"Saved weapon and armor profiles enter tactical combat rules", "pass":tactical_loadout_ready},
+		{"name":"Medkit issue return and idempotent reissue conserve local stock", "pass":medkit_exchange_ready},
+		{"name":"Saved weapon armor and Medkit profiles enter tactical combat rules", "pass":tactical_loadout_ready},
 		{"name":"Selected soldier TU feedback refreshes after tactical actions", "pass":tactical_tu_feedback_ready},
-		{"name":"Successful missions recover fallen soldier equipment to local stores", "pass":mission_recovery_ready}
+		{"name":"Tactical Medkits heal spend TU consume once and refresh selection", "pass":tactical_medkit_ready},
+		{"name":"Mission injuries create bounded unavailable recovery records", "pass":wound_admission_ready},
+		{"name":"Strategic midnights persist and complete wound recovery", "pass":wound_midnight_ready and wound_persistence_ready and wound_clearance_ready},
+		{"name":"Legacy Sickbay text and Medkit ownership migrate conservatively", "pass":medical_migration_ready},
+		{"name":"Successful missions recover fallen equipment and unused Medkits", "pass":mission_recovery_ready},
+		{"name":"Failed missions lose unused Medkits carried by fallen soldiers", "pass":mission_medkit_loss_ready}
 	]
 	test_board.free()
+	doctrine_board.free()
 	loadout_board.free()
 	dense_map.free()
 	return checks

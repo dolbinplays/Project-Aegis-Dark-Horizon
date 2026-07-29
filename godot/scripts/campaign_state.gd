@@ -15,6 +15,8 @@ const RESEARCH_REQUIRED_PROGRESS := 100
 const PERSONNEL_ARRIVAL_DAYS := 3
 const MAX_MANUFACTURING_ORDERS := 8
 const MAX_FACILITY_CONSTRUCTION_ORDERS := 3
+const WOUND_HP_PER_DAY := 10
+const MAX_WOUND_RECOVERY_DAYS := 5
 const PERSONNEL_HIRING := {
 	"soldier": {"label": "Soldier", "cost": 120},
 	"scientist": {"label": "Scientist", "cost": 95},
@@ -47,6 +49,8 @@ func new_campaign(base_name: String, region_name: String) -> void:
 			"wounds": 0,
 			"weapon": "Ballistic Rifle",
 			"armor": "Field Suit",
+			"medkit": false,
+			"recovery_days": 0,
 			"assigned": true
 		}, true)
 		roster.append(soldier)
@@ -216,6 +220,33 @@ func change_soldier_loadout(soldier_id: String, slot: String, item_name: String)
 		add_report("LOADOUT: %s exchanged %s for %s." % [soldier.get("callsign", soldier.get("name", "Soldier")), current_item, item_name])
 		return true
 	return false
+
+func change_soldier_medkit(soldier_id: String, issued: bool) -> bool:
+	for soldier in data.get("soldiers", []):
+		if String(soldier.get("id", "")) != soldier_id or String(soldier.get("status", "Ready")) == "KIA":
+			continue
+		var currently_issued := bool(soldier.get("medkit", false))
+		if currently_issued == issued:
+			return true
+		var stores: Dictionary = data.get("stores", {}).duplicate(true)
+		if issued:
+			if int(stores.get("Medkit", 0)) <= 0:
+				return false
+			stores["Medkit"] = int(stores.get("Medkit", 0)) - 1
+		else:
+			stores["Medkit"] = int(stores.get("Medkit", 0)) + 1
+		soldier["medkit"] = issued
+		data["stores"] = stores
+		add_report("LOADOUT: %s %s a Medkit." % [soldier.get("callsign", soldier.get("name", "Soldier")), "received" if issued else "returned"])
+		return true
+	return false
+
+func soldier_status_text(soldier: Dictionary) -> String:
+	var status := String(soldier.get("status", "Ready"))
+	if status != "Wounded":
+		return status
+	var days := maxi(1, int(soldier.get("recovery_days", 1)))
+	return "Wounded - %d day%s" % [days, "" if days == 1 else "s"]
 
 func _loadout_definition(slot: String, item_name: String) -> Dictionary:
 	for definition_value in loadout_definitions(slot):
@@ -408,6 +439,7 @@ func _recruit_for_sequence(sequence: int, base_id_override: String = "") -> Dict
 		"callsign": "Recruit",
 		"accuracy": 58 + sequence % 8,
 		"bravery": 52 + sequence % 12,
+		"reactions": 54 + sequence % 11,
 		"health": 38 + sequence % 6,
 		"tu": 55 + sequence % 7,
 		"trait": "Steady Professional"
@@ -420,6 +452,8 @@ func _recruit_for_sequence(sequence: int, base_id_override: String = "") -> Dict
 	source["wounds"] = 0
 	source["weapon"] = source.get("weapon", "Unarmed")
 	source["armor"] = source.get("armor", "No Armor")
+	source["medkit"] = false
+	source["recovery_days"] = 0
 	source["assigned"] = false
 	source["base_id"] = base_id_override if not base_id_override.is_empty() else _selected_base_identity()
 	return source
@@ -656,6 +690,7 @@ func advance_minutes(amount: int) -> bool:
 		days_advanced += 1
 	_advance_facility_construction_days(days_advanced)
 	_advance_personnel_days(days_advanced)
+	_advance_wound_recovery_days(days_advanced)
 	_advance_research_days(days_advanced)
 	_advance_manufacturing_days(days_advanced)
 	_advance_aircraft_service(bounded_amount)
@@ -667,6 +702,18 @@ func advance_minutes(amount: int) -> bool:
 	travel["progress"] = mini(100, int(travel.get("progress", 0)) + int(round(float(amount) / float(duration) * 100.0)))
 	data["travel"] = travel
 	return int(travel["progress"]) >= 100
+
+func _advance_wound_recovery_days(days_advanced: int) -> void:
+	if days_advanced <= 0:
+		return
+	for soldier in data.get("soldiers", []):
+		if String(soldier.get("status", "Ready")) != "Wounded":
+			continue
+		var remaining := maxi(0, int(soldier.get("recovery_days", 1)) - days_advanced)
+		soldier["recovery_days"] = remaining
+		if remaining <= 0:
+			soldier["status"] = "Ready"
+			add_report("MEDICAL CLEARANCE: %s returned to active duty." % soldier.get("callsign", soldier.get("name", "Soldier")))
 
 func _advance_research_days(days_advanced: int) -> void:
 	if days_advanced <= 0:
@@ -918,14 +965,18 @@ func complete_mission(result: Dictionary) -> void:
 	data["rescued_civilians"] = int(data.get("rescued_civilians", 0)) + int(result.get("rescued", 0))
 	var recovered_items: Array[String] = []
 	var lost_items: Array[String] = []
+	var medical_admissions: Array[String] = []
 	for soldier in data.get("soldiers", []):
 		var tactical_record: Dictionary = result.get("soldiers", {}).get(soldier.get("id", ""), {})
 		if tactical_record.is_empty():
 			continue
 		soldier["missions"] = int(soldier.get("missions", 0)) + 1
 		soldier["kills"] = int(soldier.get("kills", 0)) + int(tactical_record.get("kills", 0))
-		if int(tactical_record.get("hp", soldier.get("health", 1))) <= 0:
+		var final_hp := int(tactical_record.get("hp", soldier.get("health", 1)))
+		var medkit_remaining := clampi(int(tactical_record.get("medkit_charges", 1 if bool(soldier.get("medkit", false)) else 0)), 0, 1)
+		if final_hp <= 0:
 			soldier["status"] = "KIA"
+			soldier["recovery_days"] = 0
 			for slot in ["weapon", "armor"]:
 				var empty_item := loadout_empty_item(slot)
 				var item_name := String(soldier.get(slot, empty_item))
@@ -937,15 +988,35 @@ func complete_mission(result: Dictionary) -> void:
 				elif item_name != empty_item and not item_name.is_empty():
 					lost_items.append(item_name)
 				soldier[slot] = empty_item
-		elif int(tactical_record.get("hp", soldier.get("health", 1))) < int(soldier.get("health", 1)):
+			if medkit_remaining > 0:
+				if success:
+					var stores: Dictionary = data.get("stores", {})
+					stores["Medkit"] = int(stores.get("Medkit", 0)) + 1
+					data["stores"] = stores
+					recovered_items.append("Medkit")
+				else:
+					lost_items.append("Medkit")
+			soldier["medkit"] = false
+		elif final_hp < int(soldier.get("health", 1)):
+			var hp_lost := int(soldier.get("health", 1)) - final_hp
+			var recovery_days := clampi(ceili(float(hp_lost) / float(WOUND_HP_PER_DAY)), 1, MAX_WOUND_RECOVERY_DAYS)
 			soldier["status"] = "Wounded"
+			soldier["recovery_days"] = recovery_days
 			soldier["wounds"] = int(soldier.get("wounds", 0)) + 1
+			soldier["medkit"] = medkit_remaining > 0
+			medical_admissions.append("%s (%d day%s)" % [soldier.get("callsign", soldier.get("name", "Soldier")), recovery_days, "" if recovery_days == 1 else "s"])
+		else:
+			soldier["status"] = "Ready"
+			soldier["recovery_days"] = 0
+			soldier["medkit"] = medkit_remaining > 0
 	if success:
 		data["incidents"] = data.get("incidents", []).filter(func(item): return item.get("id", "") != incident.get("id", ""))
 	if not recovered_items.is_empty():
 		add_report("RECOVERY: %s returned to local stores from fallen personnel." % ", ".join(recovered_items))
 	if not lost_items.is_empty():
 		add_report("FIELD LOSS: %s could not be recovered from fallen personnel." % ", ".join(lost_items))
+	if not medical_admissions.is_empty():
+		add_report("MEDICAL: %s entered bounded wound recovery." % ", ".join(medical_admissions))
 	add_report("%s: %s. %d civilian%s rescued. Funds +$%dk." % ["SUCCESS" if success else "FAILURE", incident.get("name", "Incident"), int(result.get("rescued", 0)), "" if int(result.get("rescued", 0)) == 1 else "s", reward])
 	data["travel"] = {}
 
@@ -1172,6 +1243,12 @@ func _browser_assigned_ids(source: Dictionary) -> Array[String]:
 			break
 	return result
 
+func _recovery_days_from_status(status_text: String, fallback: int = 3) -> int:
+	for token in status_text.replace("-", " ").split(" ", false):
+		if String(token).is_valid_int():
+			return clampi(int(token), 1, MAX_WOUND_RECOVERY_DAYS)
+	return clampi(fallback, 1, MAX_WOUND_RECOVERY_DAYS)
+
 func _normalize_browser_soldiers(source: Dictionary) -> Array:
 	var normalized: Array = []
 	var assigned_ids := _browser_assigned_ids(source)
@@ -1182,6 +1259,8 @@ func _normalize_browser_soldiers(source: Dictionary) -> Array:
 		var soldier_id := String(browser_soldier.get("id", "browser_soldier_%d" % soldier_index))
 		var source_status := String(browser_soldier.get("status", "Ready")).to_lower()
 		var status := "KIA" if source_status in ["kia", "dead", "fallen"] else "Wounded" if "wound" in source_status or "sickbay" in source_status or "injur" in source_status else "Ready"
+		var recovery_fallback := int(browser_soldier.get("recoveryDays", browser_soldier.get("recovery_days", 3)))
+		var recovery_days := _recovery_days_from_status(source_status, recovery_fallback) if status == "Wounded" else 0
 		var soldier_name := String(browser_soldier.get("name", "Imported Soldier %d" % (soldier_index + 1)))
 		var stat_value: Variant = browser_soldier.get("stats", browser_soldier.get("baseStats", {}))
 		var stats: Dictionary = stat_value if stat_value is Dictionary else {}
@@ -1203,13 +1282,16 @@ func _normalize_browser_soldiers(source: Dictionary) -> Array:
 			"missions": int(browser_soldier.get("missions", 0)),
 			"kills": int(browser_soldier.get("kills", 0)),
 			"wounds": int(browser_soldier.get("wounds", browser_soldier.get("wounded", 0))),
+			"recovery_days": recovery_days,
 			"accuracy": int(browser_soldier.get("accuracy", browser_soldier.get("aim", stats.get("accuracy", 60)))),
 			"bravery": int(browser_soldier.get("bravery", stats.get("bravery", 55))),
+			"reactions": int(browser_soldier.get("reactions", browser_soldier.get("reaction", stats.get("reactions", 55)))),
 			"health": int(browser_soldier.get("health", browser_soldier.get("maxHp", browser_soldier.get("hp", stats.get("health", 38))))),
 			"tu": int(browser_soldier.get("tu", browser_soldier.get("timeUnits", browser_soldier.get("maxTu", stats.get("tu", 56))))),
 			"trait": String(browser_soldier.get("trait", browser_soldier.get("personality", identity.get("trait", "Imported Veteran")))),
 			"weapon": String(weapon_value.get("name", "Ballistic Rifle")) if weapon_value is Dictionary else String(weapon_value),
 			"armor": String(armor_value.get("name", "Field Suit")) if armor_value is Dictionary else String(armor_value),
+			"medkit": false,
 			"assigned": assigned
 		})
 	return normalized
@@ -1291,8 +1373,16 @@ func normalize_save(source: Dictionary) -> Dictionary:
 			if not soldier_value is Dictionary:
 				continue
 			var soldier: Dictionary = soldier_value.duplicate(true)
+			var source_status := String(soldier.get("status", "Ready"))
+			var lowered_status := source_status.to_lower()
+			var status := "KIA" if lowered_status in ["kia", "dead", "fallen"] else "Wounded" if "wound" in lowered_status or "sickbay" in lowered_status or "injur" in lowered_status else "Ready"
 			var weapon_value: Variant = soldier.get("weapon", "Ballistic Rifle")
 			var armor_value: Variant = soldier.get("armor", "Field Suit")
+			var medkit_value: Variant = soldier.get("medkit", false)
+			soldier["status"] = status
+			soldier["recovery_days"] = _recovery_days_from_status(source_status, int(soldier.get("recovery_days", 3))) if status == "Wounded" else 0
+			soldier["medkit"] = medkit_value if medkit_value is bool else int(medkit_value) > 0 if medkit_value is int or medkit_value is float else String(medkit_value).to_lower() in ["true", "yes", "issued", "1"]
+			soldier["reactions"] = clampi(int(soldier.get("reactions", 55)), 1, 100)
 			soldier["weapon"] = String(weapon_value.get("name", "Ballistic Rifle")) if weapon_value is Dictionary else String(weapon_value)
 			soldier["armor"] = String(armor_value.get("name", "Field Suit")) if armor_value is Dictionary else String(armor_value)
 			if String(soldier["weapon"]).is_empty():
@@ -1312,6 +1402,8 @@ func normalize_save(source: Dictionary) -> Dictionary:
 				var item_name := String(definition_value.get("id", ""))
 				if not item_name.is_empty() and not normalized_stores.has(item_name):
 					normalized_stores[item_name] = 0
+	if not normalized_stores.has("Medkit"):
+		normalized_stores["Medkit"] = 0
 	normalized["stores"] = normalized_stores
 	var base_value: Variant = normalized.get("base", {})
 	var normalized_base: Dictionary = base_value.duplicate(true) if base_value is Dictionary else {}

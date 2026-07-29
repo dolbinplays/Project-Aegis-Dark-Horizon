@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.07.17.0137_TACTICAL_CONTINUOUS_WALLS_AND_TRAVERSABLE_BREACHES_INDEX_ONLY_PATCH",
+  "currentBuild": "v0.26.07.28.0140_TACTICAL_AI_DOCTRINE_REACTION_FOG_AND_CLASSIC_COMMAND_CONSOLE_PARITY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "prep-scaffold",
+  "status": "paired-tactical-ai-doctrine-reaction-fog-classic-console-manual-test",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,13 +26,45 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.07.17.0137_TACTICAL_CONTINUOUS_WALLS_AND_TRAVERSABLE_BREACHES_INDEX_ONLY_PATCH",
+  "lastInspectedBuild": "v0.26.07.28.0140_TACTICAL_AI_DOCTRINE_REACTION_FOG_AND_CLASSIC_COMMAND_CONSOLE_PARITY_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
     "mainScene": "godot/main.tscn",
-    "build": "v0.26.07.19.GODOT.0009_LOCAL_BASE_INVENTORY_AND_SOLDIER_LOADOUT_VERTICAL_SLICE",
+    "build": "v0.26.07.28.GODOT.0011_TACTICAL_AI_DOCTRINE_AND_REACTION_FIRE_VERTICAL_SLICE",
     "saveFormat": 4,
-    "status": "player-verified-local-base-inventory-soldier-loadout"
+    "status": "tactical-ai-doctrine-reaction-fog-classic-console-manual-test"
+  },
+  "gameplayParity": {
+    "policy": "paired-browser-godot",
+    "browserBuild": "v0.26.07.28.0140_TACTICAL_AI_DOCTRINE_REACTION_FOG_AND_CLASSIC_COMMAND_CONSOLE_PARITY_PATCH",
+    "nativeBuild": "v0.26.07.28.GODOT.0011_TACTICAL_AI_DOCTRINE_AND_REACTION_FIRE_VERTICAL_SLICE",
+    "saveFormat": 4,
+    "requiredSystems": [
+      "base-local-medkit-issue-return",
+      "tactical-self-treatment-12hp-12tu",
+      "one-charge-consumption",
+      "final-hp-wounded-recovery",
+      "victory-recovery-defeat-loss",
+      "rank-experience-commander-doctrine",
+      "commander-centered-formation-roles",
+      "bounded-cover-aware-movement",
+      "fire-mode-tu-reservation",
+      "reaction-fire-during-alien-movement",
+      "civilian-escort-reaction-reservation",
+      "alien-human-priority-cover-advance",
+      "ai-command-live-fog-of-war",
+      "classic-map-inventory-stance-reserve-done-dustoff-controls"
+    ],
+    "temporaryExceptions": [
+      {
+        "system": "multi-base-aircraft-ferry-routing",
+        "reason": "The Godot vertical slice does not yet implement multi-base ferry routing; browser route fixes remain the reference behavior for the later native port."
+      },
+      {
+        "system": "complete-classic-battlescape-command-set",
+        "reason": "This patch ships the first functional command-console slice. Hand-slot item transfers, throwable preparation, targeting cursors, and elevation controls require bounded gameplay systems before their controls can be added honestly."
+      }
+    ]
   }
 }
