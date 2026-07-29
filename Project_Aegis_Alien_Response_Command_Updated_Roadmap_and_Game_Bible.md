@@ -1,10 +1,101 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-07-28
-Current handoff build: `v0.26.07.28.0141_TACTICAL_CLASSIC_HAND_SLOTS_TARGETING_AND_GRENADE_PARITY_PATCH`
-Native vertical slice: `v0.26.07.28.GODOT.0012_TACTICAL_HAND_SLOTS_TARGETING_AND_GRENADE_VERTICAL_SLICE`
-Current patch status: **Paired browser 0141/native 0012 add functional right/left hand slots, explicit movement/weapon/grenade targeting, and one mission-issued Frag Grenade per soldier. Priming costs 4 TU, throwing costs 12 TU at up to six hexes, and the deterministic blast is bounded to the target plus six neighbors while damaging units and opening traversable structural rubble. Save format remains 4. Static parsing, seam checking, native 105/105 tests, native Build Health 77/77, browser Build Health 284/284, a live browser prime/throw sequence, and three complete tactical turn cycles pass without current runtime errors. Hands-on grenade balance, friendly/civilian danger, and 2D/3D targeting readability are now the manual publication gate.**
+Last updated: 2026-07-29
+Current handoff build: `v0.26.07.29.0143_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_PARITY_PATCH`
+Native vertical slice: `v0.26.07.29.GODOT.0014_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_VERTICAL_SLICE`
+Current patch status: **Paired browser 0143/native 0014 restore recorded dialogue through a dedicated voice bus, persist independent voice mute/volume preferences, unlock and explicitly resume browser audio from player input, and expose a three-category Test Voices command for base-computer, aircraft-radio, and tactical-soldier clips. Save format remains 4. Static browser parsing passes 8/8 executable script assets, the seam checker passes, native tests pass 108/108 with Build Health 81/81, and browser Build Health passes 290/290. Localhost smoke reached the updated start screen and Geoscape, the three-category voice test completed with `passed`, and current browser diagnostics contain no runtime errors. Audible mix quality and natural event-trigger playback remain the manual publication gate.**
+
+---
+
+# v0.26.07.29.0143 / GODOT.0014 - Dedicated Voice Bus, Controls, and Playback Recovery
+
+Browser build `v0.26.07.29.0143_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_PARITY_PATCH` and native build `v0.26.07.29.GODOT.0014_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_VERTICAL_SLICE` preserve save format 4 and repair the shared recorded-dialogue path without changing tactical outcomes.
+
+Root causes addressed:
+
+- Browser dialogue was connected to the low-gain SFX node, so voice level could not be raised independently from clicks and weapon sounds.
+- Audio-context resume was issued without waiting for the browser to accept it. A queued strategic or tactical announcement could therefore reach playback while the context was still suspended.
+- There was no explicit voice mute, voice level, or direct playback test, making a failure across all three voice categories difficult to distinguish from a quiet SFX mix.
+- Native dialogue also reused its SFX player even though a `Voices` bus already existed in the project layout.
+
+Implemented roadmap scope:
+
+- Browser dialogue now routes through a dedicated `voiceGain` node connected directly to the destination. SFX remains on its existing bounded gain.
+- Any pointer or keyboard interaction attempts to unlock the browser audio context; recorded playback explicitly awaits resume and declines cleanly if the context remains suspended.
+- Audio Settings now includes a Voices checkbox, independent 0-100 volume slider, and `Test Voices` command. Enabled state and volume persist in local browser storage without changing campaign saves.
+- `Test Voices` plays a base-computer clip, an aircraft-radio clip, and a soldier clip sequentially through their existing category-specific processing and reports a pass only when all three complete.
+- Godot now uses a dedicated `VoicePlayer` on a `Voices` bus routed to `Master`, persistent voice mute/volume configuration, and matching Audio Settings/Test Voices controls.
+- Browser Build Health gains three dedicated voice-control rows. Native Build Health gains a matching bus/control row, and the seam checker continues to validate all 105 WAV recordings and at least 300 segmented takes.
+
+Verification checklist:
+
+- Static browser parsing passed `8/8` executable script assets.
+- `node tools\check-aegis-build.cjs` passed with paired 0143/0014 labels and dedicated voice seams.
+- Godot 4.7.1 strict editor parsing passed.
+- Native tests passed `108/108`.
+- Native Build Health passed `81/81`.
+- Browser Build Health passed `290/290`.
+- Localhost smoke passed through the updated start screen, first-base confirmation, and Geoscape.
+- Browser `Test Voices` transitioned from `playing` to `passed` after sequential computer, aircraft, and soldier playback.
+- Voice mute disabled the test command and re-enabling voices restored it.
+- Current browser diagnostics contain no runtime errors. The only warning is the existing Tailwind development-CDN advisory.
+
+Manual validation still required:
+
+- Use `Test Voices` at several voice levels and confirm the base-computer, aircraft-radio, and soldier clips are all clearly audible and appropriately processed.
+- Turn Voices off, trigger base, aircraft, and combat events, and confirm all recorded speech remains muted while SFX still plays.
+- Re-enable Voices, reload the page, and confirm enabled state and volume persist.
+- Trigger a UFO detection, Skyranger launch/return, and tactical movement/fire sequence naturally; confirm clips remain ordered and do not overlap.
+
+Next recommended paired patch after this gate: `TACTICAL_CLASSIC_INVENTORY_TRANSFERS_AND_ELEVATION_FOUNDATION_PARITY_PATCH`, beginning with bounded adjacent-unit hand/belt transfers and floor-state data before any multi-level renderer rewrite.
+
+---
+
+# v0.26.07.28.0142 / GODOT.0013 - AI Command Reclaim, Rescue Paths, and Voice Recovery
+
+Browser build `v0.26.07.28.0142_TACTICAL_AI_COMMAND_RECLAIM_RESCUE_PATH_AND_VOICE_RECOVERY_PARITY_PATCH` and native build `v0.26.07.28.GODOT.0013_TACTICAL_AI_RECLAIM_RESCUE_PATH_AND_VOICE_RECOVERY_VERTICAL_SLICE` preserve save format 4 and repair AI-controlled tactical continuity in both clients.
+
+Root causes addressed:
+
+- Browser AI command generated a bounded continuation from the live battle but exposed no way to stop playback and resume direct control.
+- Rescue movement repeatedly chose one locally attractive step. Equal-scoring cells could make one escort oscillate while the rest of the squad was starved of work.
+- A shortest route to the craft interior could approach beside the ramp, leaving a correctly following civilian one cell away from extraction.
+- Browser soldier cues could begin outside the handoff click and be suppressed by soldier cooldown behavior. Native voice requests replaced the current stream instead of waiting their turn.
+
+Implemented roadmap scope:
+
+- `Take Back Control` cancels pending AI playback timers and restores direct human command at the currently displayed frame. Positions, HP, TU, ammunition, civilians, cover damage, breaches, fog, and round state are retained.
+- Native AI command exposes the same reversible control and stops between bounded soldier actions before returning a living soldier selection and reachable cells.
+- Human AI scheduling is deterministic and round-robin, so later soldiers receive rescue/exploration opportunities instead of one soldier monopolizing every turn.
+- Rescue targets use one bounded reachable-cell flood per soldier. A short visited-cell history penalizes reversals, while two stalled escort turns release civilians for squad reassignment.
+- Escort extraction composes the bounded approach path with the ordered ramp centerline and one clear interior egress cell, ensuring single-file followers cross an extraction hex.
+- Combat movement in both clients remembers a bounded recent-cell history and penalizes immediate reversals without changing deterministic attack, LOS, cover, or TU rules.
+- Browser handoff audio is unlocked by the player click and AI soldier cues explicitly join the tactical queue. Godot queues voice files sequentially and emits movement, contact, shot, hit, miss, kill, handoff, and reclaim cues.
+- Browser and native Build Health each gain reclaim, rescue anti-loop, and tactical voice rows. Native automation directly verifies multi-soldier rescue work, unique-cell routing, and state-preserving reclaim.
+
+Verification checklist:
+
+- Static browser parsing passed `8/8` executable script assets.
+- `node tools\check-aegis-build.cjs` passed with paired 0142/0013 labels and all new recovery seams.
+- Godot 4.7.1 strict editor parsing passed.
+- Native tests passed `108/108`, including three practical End Turn cycles.
+- Native Build Health passed `80/80`.
+- Browser Build Health passed `287/287`.
+- Localhost smoke passed through start screen, first-base confirmation, Geoscape, six-soldier squad assignment, launch confirmation, Skyranger travel, and a live 64x64 safe-2D incident.
+- AI command inherited the live incident and exposed `Take Back Control`; reclaim at frame `2/17` restored a human turn and reported that positions, damage, ammunition, TU, civilians, and breached cover were retained.
+- The reclaimed live battle completed three subsequent End Turn cycles and returned to the human phase each time.
+- Current browser diagnostics contain no runtime errors. The only warning is the existing Tailwind development-CDN advisory.
+- All seven native tactical cue files referenced by this patch exist in the dialogue asset directory.
+
+Manual validation still required:
+
+- Reproduce the originally affected mandatory-rescue battle, reveal civilians, hand command to AI, and confirm several soldiers act while escorts reach the ramp without two-cell oscillation.
+- Use `Take Back Control` during movement, after a shot, after a casualty, and during the mandatory secure-rescue phase; verify every visible tactical value remains at the displayed frame.
+- Listen with Voices enabled in both clients and confirm handoff, movement, contact, firing, miss, kill, and reclaim phrases play sequentially at a useful volume.
+- Run an escort with two to four civilians and confirm the whole column follows the same path and extracts through the ramp centerline.
+
+Next recommended paired patch after this gate: `TACTICAL_CLASSIC_INVENTORY_TRANSFERS_AND_ELEVATION_FOUNDATION_PARITY_PATCH`, beginning with bounded adjacent-unit hand/belt transfers and floor-state data before any multi-level renderer rewrite.
 
 ---
 
@@ -145,20 +236,18 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.28.0141_TACTICAL_CLASSIC_HAND_SLOTS_TARGETING_AND_GRENADE_PARITY_PATCH`
+`v0.26.07.29.0143_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_PARITY_PATCH`
 
 ## Native Vertical Slice Build
-`v0.26.07.28.GODOT.0012_TACTICAL_HAND_SLOTS_TARGETING_AND_GRENADE_VERTICAL_SLICE`
+`v0.26.07.29.GODOT.0014_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_VERTICAL_SLICE`
 
 ## What This Patch Was Intended To Add
 This paired patch adds:
-- Functional right- and left-hand tactical slots in the browser game and Godot vertical slice.
-- Explicit movement, weapon-fire, and grenade-targeting modes with a visible cancellation path.
-- One mission-issued Frag Grenade per deployed soldier without changing campaign inventory or save format 4.
-- A 4-TU prime action and 12-TU throw action with a deterministic six-hex range.
-- A bounded seven-cell blast that can injure aliens, soldiers, and civilians.
-- Structural blast damage that opens visible, traversable rubble for soldiers, aliens, and civilians.
-- Matching browser and native Build Health coverage plus direct native tactical tests.
+- Dedicated browser and Godot voice buses independent from ordinary SFX.
+- Persistent voice on/off and 0-100 volume controls.
+- Browser user-gesture audio unlocking and awaited context resume.
+- Sequential base-computer, aircraft-radio, and soldier playback testing.
+- Matching browser/native Build Health and build-checker coverage.
 
 The current release line also preserves this cumulative implemented scope:
 - A save-compatible hangar-occupancy correction so Outbound and Returning aircraft no longer occupy the physical hangar they already departed.

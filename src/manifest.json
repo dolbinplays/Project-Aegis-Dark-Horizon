@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.07.28.0141_TACTICAL_CLASSIC_HAND_SLOTS_TARGETING_AND_GRENADE_PARITY_PATCH",
+  "currentBuild": "v0.26.07.29.0143_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_PARITY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "paired-tactical-hand-slots-targeting-grenade-manual-test",
+  "status": "paired-dedicated-voice-bus-controls-playback-recovery-manual-test",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,19 +26,19 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.07.28.0141_TACTICAL_CLASSIC_HAND_SLOTS_TARGETING_AND_GRENADE_PARITY_PATCH",
+  "lastInspectedBuild": "v0.26.07.29.0143_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_PARITY_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
     "mainScene": "godot/main.tscn",
-    "build": "v0.26.07.28.GODOT.0012_TACTICAL_HAND_SLOTS_TARGETING_AND_GRENADE_VERTICAL_SLICE",
+    "build": "v0.26.07.29.GODOT.0014_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_VERTICAL_SLICE",
     "saveFormat": 4,
-    "status": "tactical-hand-slots-targeting-grenade-manual-test"
+    "status": "dedicated-voice-bus-controls-playback-recovery-manual-test"
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.07.28.0141_TACTICAL_CLASSIC_HAND_SLOTS_TARGETING_AND_GRENADE_PARITY_PATCH",
-    "nativeBuild": "v0.26.07.28.GODOT.0012_TACTICAL_HAND_SLOTS_TARGETING_AND_GRENADE_VERTICAL_SLICE",
+    "browserBuild": "v0.26.07.29.0143_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_PARITY_PATCH",
+    "nativeBuild": "v0.26.07.29.GODOT.0014_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
       "base-local-medkit-issue-return",
@@ -58,7 +58,12 @@
       "tactical-right-left-hand-slots",
       "explicit-fire-grenade-targeting",
       "standard-frag-prime-throw-tu",
-      "bounded-seven-hex-blast-breach"
+      "bounded-seven-hex-blast-breach",
+      "tactical-ai-command-reclaim",
+      "round-robin-ai-soldier-scheduling",
+      "bounded-rescue-route-anti-loop",
+      "queued-tactical-voice-recovery",
+      "dedicated-voice-bus-controls"
     ],
     "temporaryExceptions": [
       {

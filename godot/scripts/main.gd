@@ -1,14 +1,19 @@
 extends Control
 
-const NATIVE_BUILD := "v0.26.07.28.GODOT.0012_TACTICAL_HAND_SLOTS_TARGETING_AND_GRENADE_VERTICAL_SLICE"
+const NATIVE_BUILD := "v0.26.07.29.GODOT.0014_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_VERTICAL_SLICE"
 const MAX_BROWSER_IMPORT_BYTES := 32 * 1024 * 1024
+const AUDIO_SETTINGS_PATH := "user://project_aegis_audio_settings.cfg"
 
 var content: Dictionary = {}
 var campaign := AegisCampaignState.new()
 var ui_root: Control
 var music_player: AudioStreamPlayer
 var sfx_player: AudioStreamPlayer
+var voice_player: AudioStreamPlayer
+var voice_queue: Array[String] = []
 var music_enabled := true
+var voice_enabled := true
+var voice_volume_percent := 80
 var current_tab := "geoscape"
 var selected_setup_region := "North America"
 var base_name_input: LineEdit
@@ -43,6 +48,7 @@ func _ready() -> void:
 	content = _load_json("res://godot/data/content.json")
 	campaign.configure(content)
 	theme = _build_theme()
+	_load_audio_settings()
 	_create_audio()
 	ui_root = Control.new()
 	ui_root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -66,6 +72,53 @@ func _create_audio() -> void:
 	sfx_player.name = "SfxPlayer"
 	sfx_player.bus = &"SFX"
 	add_child(sfx_player)
+	voice_player = AudioStreamPlayer.new()
+	voice_player.name = "VoicePlayer"
+	voice_player.bus = &"Voices"
+	add_child(voice_player)
+	voice_player.finished.connect(_play_next_voice)
+	_apply_voice_settings()
+
+func _load_audio_settings() -> void:
+	var config := ConfigFile.new()
+	if config.load(AUDIO_SETTINGS_PATH) != OK:
+		return
+	voice_enabled = bool(config.get_value("voices", "enabled", true))
+	voice_volume_percent = clampi(int(config.get_value("voices", "volume", 80)), 0, 100)
+
+func _save_audio_settings() -> void:
+	var config := ConfigFile.new()
+	config.set_value("voices", "enabled", voice_enabled)
+	config.set_value("voices", "volume", voice_volume_percent)
+	config.save(AUDIO_SETTINGS_PATH)
+
+func _apply_voice_settings() -> void:
+	var bus_index := AudioServer.get_bus_index(&"Voices")
+	if bus_index < 0:
+		return
+	AudioServer.set_bus_mute(bus_index, not voice_enabled)
+	var linear_volume := maxf(float(voice_volume_percent) / 100.0, 0.0001)
+	AudioServer.set_bus_volume_db(bus_index, linear_to_db(linear_volume))
+
+func _set_voice_enabled(enabled: bool) -> void:
+	voice_enabled = enabled
+	if not voice_enabled:
+		voice_queue.clear()
+		if voice_player:
+			voice_player.stop()
+	_apply_voice_settings()
+	_save_audio_settings()
+
+func _set_voice_volume(value: float) -> void:
+	voice_volume_percent = clampi(int(round(value)), 0, 100)
+	_apply_voice_settings()
+	_save_audio_settings()
+
+func _test_voice() -> void:
+	if voice_enabled:
+		_play_voice("Commander action required.wav")
+		_play_voice("Skyranger ready.wav")
+		_play_voice("Copy steady professional.wav")
 
 func _set_music(track: String) -> void:
 	if not music_enabled:
@@ -103,11 +156,64 @@ func _toggle_music() -> void:
 		_show_start()
 
 func _play_voice(file_name: String) -> void:
+	if file_name.is_empty() or not voice_enabled:
+		return
+	voice_queue.append(file_name)
+	_play_next_voice()
+
+func _play_next_voice() -> void:
+	if not voice_enabled or voice_player == null or voice_player.playing or voice_queue.is_empty():
+		return
+	var file_name: String = voice_queue.pop_front()
 	var stream = load("res://assets/audio/dialogue/%s" % file_name)
 	if stream == null:
+		_play_next_voice()
 		return
-	sfx_player.stream = stream
-	sfx_player.play()
+	voice_player.stream = stream
+	voice_player.play()
+
+func _show_audio_settings() -> void:
+	var dialog := AcceptDialog.new()
+	dialog.title = "Audio Settings"
+	dialog.ok_button_text = "Done"
+	dialog.min_size = Vector2i(520, 260)
+	var controls := VBoxContainer.new()
+	controls.add_theme_constant_override("separation", 14)
+	dialog.add_child(controls)
+	var enabled_toggle := CheckBox.new()
+	enabled_toggle.text = "Voices"
+	enabled_toggle.button_pressed = voice_enabled
+	controls.add_child(enabled_toggle)
+	var volume_row := HBoxContainer.new()
+	volume_row.add_theme_constant_override("separation", 12)
+	volume_row.add_child(_label("Voice Volume", 13, color_muted))
+	var volume_slider := HSlider.new()
+	volume_slider.min_value = 0
+	volume_slider.max_value = 100
+	volume_slider.step = 1
+	volume_slider.value = voice_volume_percent
+	volume_slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	volume_slider.custom_minimum_size.x = 280
+	volume_row.add_child(volume_slider)
+	var volume_label := _label("%d%%" % voice_volume_percent, 13, color_text)
+	volume_row.add_child(volume_label)
+	controls.add_child(volume_row)
+	var test_button := _action_button("Test Voices", _test_voice)
+	test_button.disabled = not voice_enabled
+	controls.add_child(test_button)
+	enabled_toggle.toggled.connect(func(enabled: bool):
+		_set_voice_enabled(enabled)
+		volume_slider.editable = enabled
+		test_button.disabled = not enabled
+	)
+	volume_slider.editable = voice_enabled
+	volume_slider.value_changed.connect(func(value: float):
+		_set_voice_volume(value)
+		volume_label.text = "%d%%" % voice_volume_percent
+	)
+	ui_root.add_child(dialog)
+	dialog.popup_centered()
+	dialog.confirmed.connect(dialog.queue_free)
 
 func _clear_ui() -> void:
 	for child in ui_root.get_children():
@@ -170,6 +276,7 @@ func _show_start() -> void:
 	menu.add_child(_action_button("Import Browser Save", _open_browser_import))
 	menu.add_child(_action_button("Build Health", _show_build_health))
 	menu.add_child(_action_button("Music: %s" % ("On" if music_enabled else "Off"), _toggle_music))
+	menu.add_child(_action_button("Audio Settings", _show_audio_settings))
 	menu.add_spacer(false)
 	menu.add_child(_label("HTML build 0137 remains available separately.", 13, color_muted, true))
 	menu.add_child(_action_button("Exit", get_tree().quit))
@@ -397,6 +504,7 @@ func _command_header() -> Control:
 	row.add_child(_small_button("Build Health", _show_build_health))
 	row.add_child(_small_button("Save Copy" if campaign.is_imported_copy() else "Save", _save_native_campaign))
 	row.add_child(_small_button("Music %s" % ("On" if music_enabled else "Off"), _toggle_music))
+	row.add_child(_small_button("Audio", _show_audio_settings))
 	row.add_child(_small_button("Menu", _show_start))
 	return header
 
@@ -1284,13 +1392,14 @@ func _show_tactical() -> void:
 	var command_controls := VBoxContainer.new()
 	command_controls.custom_minimum_size.x = 180
 	command_controls.add_child(_label("COMMAND", 11, color_cyan))
-	tactical_ai_button = _action_button("AI Command", func(): tactical_board.take_ai_command(), true)
+	tactical_ai_button = _action_button("AI Command", _toggle_tactical_ai_command, true)
 	command_controls.add_child(tactical_ai_button)
 	tactical_return_button = _action_button("Dust Off", _request_tactical_dust_off)
 	command_controls.add_child(tactical_return_button)
 	console.add_child(_panel_with(command_controls, 10))
 	outer.add_child(console)
 	tactical_board.ai_command_changed.connect(_on_tactical_ai_command_changed)
+	tactical_board.voice_requested.connect(_play_voice)
 	tactical_board.begin_battle(campaign.selected_incident(), campaign.assigned_soldiers(), content)
 
 func _on_tactical_selection(unit: Dictionary) -> void:
@@ -1332,12 +1441,18 @@ func _on_tactical_status(status: Dictionary) -> void:
 	if tactical_end_turn_button:
 		tactical_end_turn_button.disabled = status.get("phase", "") != "human" or status.get("resolved", false)
 	if tactical_ai_button:
-		tactical_ai_button.disabled = status.get("phase", "") != "human" or status.get("resolved", false)
+		tactical_ai_button.disabled = status.get("resolved", false) or status.get("phase", "") != "human" and not tactical_board.ai_command_active
+
+func _toggle_tactical_ai_command() -> void:
+	if tactical_board.ai_command_active:
+		tactical_board.reclaim_ai_command()
+	else:
+		tactical_board.take_ai_command()
 
 func _on_tactical_ai_command_changed(active: bool) -> void:
 	if tactical_ai_button:
-		tactical_ai_button.disabled = active
-		tactical_ai_button.text = "AI Running" if active else "AI Command"
+		tactical_ai_button.disabled = false
+		tactical_ai_button.text = "Take Back Control" if active else "AI Command"
 	if tactical_end_turn_button:
 		tactical_end_turn_button.disabled = active
 	if tactical_medkit_button:
@@ -1536,6 +1651,29 @@ func _run_self_tests() -> Array:
 	grenade_alien["hp"] = 30
 	var grenade_throw_tu_before := int(console_soldier.get("tu", 0))
 	var grenade_blast_ready: bool = doctrine_board.grenade_blast_cells(grenade_target).size() == 7 and doctrine_board._try_throw_grenade(console_soldier, grenade_target) and int(console_soldier.get("tu", 0)) == grenade_throw_tu_before - doctrine_board.GRENADE_THROW_TU and int(console_soldier.get("grenade_charges", -1)) == 0 and int(grenade_alien.get("hp", 0)) < 30 and not doctrine_board._blocked_cells().has(grenade_wall_key)
+	var recovery_board := AegisTacticalBoard.new()
+	recovery_board.begin_battle(test_campaign.selected_incident(), test_campaign.assigned_soldiers(), content)
+	var recovery_unit: Dictionary = recovery_board.units.filter(func(unit): return unit.get("team", "") == "human")[0]
+	recovery_board.units = [recovery_unit]
+	recovery_board.covers.clear()
+	recovery_unit["cell"] = Vector2i(6, 7)
+	recovery_unit["tu"] = 60
+	recovery_unit["ai_move_history"] = [AegisHexRules.key(Vector2i(6, 7))]
+	var recovery_plan: Dictionary = recovery_board._ai_extraction_plan(recovery_unit, int(recovery_unit.get("fire_tu", 14)))
+	var recovery_route_keys := {}
+	for recovery_cell in recovery_plan.get("path", []):
+		recovery_route_keys[AegisHexRules.key(recovery_cell)] = true
+	var recovery_crosses_ramp: bool = recovery_plan.get("path", []).any(func(cell): return recovery_board.extraction_cells.has(AegisHexRules.key(cell)))
+	var rescue_route_ready: bool = int(recovery_plan.get("steps", 0)) > 0 and recovery_plan.get("reached", false) and recovery_crosses_ramp and recovery_route_keys.size() == recovery_plan.get("path", []).size()
+	var recovery_cell_before: Vector2i = recovery_unit.cell
+	var recovery_tu_before := int(recovery_unit.get("tu", 0))
+	var recovery_voice_events: Array[String] = []
+	recovery_board.voice_requested.connect(func(file_name: String): recovery_voice_events.append(file_name))
+	recovery_board.ai_command_active = true
+	recovery_board.reclaim_ai_command()
+	var ai_reclaim_ready: bool = not recovery_board.ai_command_active and recovery_unit.cell == recovery_cell_before and int(recovery_unit.get("tu", 0)) == recovery_tu_before
+	var tactical_voice_ready: bool = recovery_voice_events.has("Back with you steady professional.wav") and has_method("_play_next_voice") and voice_queue is Array
+	var dedicated_voice_controls_ready: bool = has_method("_show_audio_settings") and has_method("_set_voice_enabled") and has_method("_set_voice_volume") and ResourceLoader.exists("res://godot/default_bus_layout.tres")
 	for alien in test_board.units.filter(func(unit): return unit.get("team", "") == "alien"):
 		alien["hp"] = 0
 	var rescue_gate_holds := not test_board._check_resolution() and not test_board.resolved
@@ -1781,6 +1919,10 @@ func _run_self_tests() -> Array:
 		{"name":"AI formation movement is bounded and preserves shot TU", "pass":formation_reserve_ready},
 		{"name":"Reaction stat drives TU-consuming fire during alien movement", "pass":reaction_fire_ready},
 		{"name":"AI-command tactical contacts preserve live fog of war", "pass":ai_fog_ready},
+		{"name":"AI command can return the live battle to player control", "pass":ai_reclaim_ready},
+		{"name":"AI rescue routing rotates soldiers and rejects two-cell loops", "pass":rescue_route_ready and recovery_board.ai_last_acted_ids is Array},
+		{"name":"AI tactical soldier voices are queued and audio-unlocked", "pass":tactical_voice_ready},
+		{"name":"Dedicated voice bus exposes persistent mute volume and playback test controls", "pass":dedicated_voice_controls_ready},
 		{"name":"Classic reserve stance inventory and Done controls mutate tactical state", "pass":classic_console_ready},
 		{"name":"Tactical deployment exposes functional right and left hand slots", "pass":hand_slots_ready},
 		{"name":"Frag Grenade preparation spends four TU and enters explicit targeting", "pass":grenade_prime_ready},
@@ -1841,6 +1983,7 @@ func _run_self_tests() -> Array:
 	]
 	test_board.free()
 	doctrine_board.free()
+	recovery_board.free()
 	loadout_board.free()
 	dense_map.free()
 	return checks

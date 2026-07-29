@@ -6,6 +6,7 @@ signal status_changed(status: Dictionary)
 signal log_added(message: String)
 signal battle_finished(result: Dictionary)
 signal ai_command_changed(active: bool)
+signal voice_requested(file_name: String)
 
 const GRID_WIDTH := 20
 const GRID_HEIGHT := 14
@@ -55,6 +56,7 @@ var event_log: Array[String] = []
 var board_origin := Vector2(42, 46)
 var ai_command_active := false
 var ai_command_busy := false
+var ai_last_acted_ids: Array[String] = []
 var commander_id := ""
 var commander_doctrine: Dictionary = {}
 
@@ -81,6 +83,7 @@ func begin_battle(next_incident: Dictionary, next_roster: Array, next_equipment_
 	action_serial = 0
 	ai_command_active = false
 	ai_command_busy = false
+	ai_last_acted_ids.clear()
 	commander_id = ""
 	commander_doctrine = {}
 	_generate_field()
@@ -595,6 +598,8 @@ func _try_shoot_unit(shooter: Dictionary, target: Dictionary) -> void:
 		_emit_log("%s needs %d TU to fire %s." % [shooter.callsign, fire_tu, shooter.get("weapon", "weapon")])
 		return
 	shooter.tu = int(shooter.tu) - fire_tu
+	if shooter.get("team", "") == "human":
+		voice_requested.emit("Taking the shot steady professional.wav")
 	action_serial += 1
 	var chance := clampi(int(shooter.accuracy) + (10 if shooter.get("kneeling", false) else 0) - shot_range * 4, 18, 92)
 	var roll := AegisHexRules.deterministic_roll(int(incident.get("seed", 1)), action_serial * 23 + turn_number * 31)
@@ -606,8 +611,11 @@ func _try_shoot_unit(shooter: Dictionary, target: Dictionary) -> void:
 		if int(target.hp) <= 0:
 			shooter.kills = int(shooter.get("kills", 0)) + 1
 			_emit_log("%s eliminated %s." % [shooter.callsign, target.name])
+			voice_requested.emit("Target down steady professional.wav")
 	else:
 		_emit_log("%s missed %s." % [shooter.callsign, target.name])
+		if shooter.get("team", "") == "human":
+			voice_requested.emit("Missed steady professional.wav")
 	_refresh_visibility()
 	_rebuild_reachable()
 	_emit_state()
@@ -765,6 +773,7 @@ func _ai_movement_plan(unit: Dictionary, target_cell: Vector2i, reserve_tu: int,
 	var target_range := int(unit.get("weapon_range", 5)) if not alien_move else 5
 	var best: Dictionary = candidates[0]
 	var best_score := -100000.0
+	var movement_history: Array = unit.get("ai_move_history", [])
 	for candidate_value in candidates:
 		var candidate: Dictionary = candidate_value
 		var cell: Vector2i = candidate.cell
@@ -772,6 +781,8 @@ func _ai_movement_plan(unit: Dictionary, target_cell: Vector2i, reserve_tu: int,
 		var score := float(_cover_score(cell))
 		score += float(origin_distance - distance_to_target) * (6.0 if target_known else 4.0)
 		score += float(candidate.steps) * (3.0 if not target_known else 0.8)
+		if int(candidate.steps) > 0 and movement_history.has(AegisHexRules.key(cell)):
+			score -= 120.0
 		if target_known and _has_line_of_sight_from(cell, target_cell):
 			score += 28.0
 			if distance_to_target <= target_range:
@@ -805,6 +816,76 @@ func _ai_movement_plan(unit: Dictionary, target_cell: Vector2i, reserve_tu: int,
 	var path := AegisHexRules.path(unit.cell, best.cell, _blocked_cells(), _occupied_cells(String(unit.get("id", ""))), GRID_WIDTH, GRID_HEIGHT, available_steps)
 	return {"cell":best.cell,"path":path,"steps":maxi(0, path.size() - 1),"reserve":reserve_tu,"score":best_score}
 
+func _ai_rescue_plan(unit: Dictionary, target_cells: Array, reserve_tu: int, stop_adjacent: bool) -> Dictionary:
+	var available_steps := clampi((int(unit.get("tu", 0)) - maxi(0, reserve_tu)) / MOVE_TU, 0, AI_MAX_MOVE_STEPS)
+	if target_cells.is_empty() or available_steps <= 0:
+		return {"cell":unit.get("cell", Vector2i.ZERO),"path":[unit.get("cell", Vector2i.ZERO)],"steps":0,"reached":false}
+	var reachable_cells := AegisHexRules.reachable(unit.cell, available_steps, _blocked_cells(), _occupied_cells(String(unit.get("id", ""))), GRID_WIDTH, GRID_HEIGHT)
+	var candidates: Array = [{"cell":unit.cell,"steps":0}]
+	for cell_key in reachable_cells:
+		if candidates.size() >= AI_MAX_CANDIDATES:
+			break
+		candidates.append({"cell":_cell_from_key(String(cell_key)),"steps":int(reachable_cells[cell_key])})
+	var distance_to_target := func(cell: Vector2i) -> int:
+		var nearest := 9999
+		for target_value in target_cells:
+			var target: Vector2i = target_value
+			nearest = mini(nearest, AegisHexRules.distance(cell, target))
+		return nearest
+	var origin_distance: int = distance_to_target.call(unit.cell)
+	var movement_history: Array = unit.get("ai_move_history", [])
+	var best: Dictionary = candidates[0]
+	var best_score := -100000.0
+	var reached := false
+	for candidate_value in candidates:
+		var candidate: Dictionary = candidate_value
+		var cell: Vector2i = candidate.cell
+		var distance: int = distance_to_target.call(cell)
+		var goal: bool = distance <= 1 if stop_adjacent else distance == 0
+		var score := 100000.0 - float(candidate.steps) if goal else float(origin_distance - distance) * 100.0 + float(candidate.steps) * 2.0
+		if not goal and movement_history.has(AegisHexRules.key(cell)):
+			score -= 500.0
+		if int(candidate.steps) == 0 and not goal:
+			score -= 5.0
+		if score > best_score or is_equal_approx(score, best_score) and AegisHexRules.key(cell) < AegisHexRules.key(best.cell):
+			best = candidate
+			best_score = score
+			reached = goal
+	var path := AegisHexRules.path(unit.cell, best.cell, _blocked_cells(), _occupied_cells(String(unit.get("id", ""))), GRID_WIDTH, GRID_HEIGHT, available_steps)
+	return {"cell":best.cell,"path":path,"steps":maxi(0, path.size() - 1),"reserve":reserve_tu,"score":best_score,"reached":reached}
+
+func _ai_extraction_plan(unit: Dictionary, reserve_tu: int) -> Dictionary:
+	var ramp_cells: Array[Vector2i] = []
+	for cell_key in extraction_cells:
+		ramp_cells.append(_cell_from_key(String(cell_key)))
+	if ramp_cells.is_empty():
+		return {"cell":unit.get("cell", Vector2i.ZERO),"path":[unit.get("cell", Vector2i.ZERO)],"steps":0,"reserve":reserve_tu,"reached":false}
+	var entry_x: int = int(ramp_cells.map(func(cell): return cell.x).max())
+	var entry_candidates: Array = ramp_cells.filter(func(cell): return cell.x == entry_x)
+	entry_candidates.sort_custom(func(left, right): return AegisHexRules.distance(unit.cell, left) < AegisHexRules.distance(unit.cell, right) or AegisHexRules.distance(unit.cell, left) == AegisHexRules.distance(unit.cell, right) and AegisHexRules.key(left) < AegisHexRules.key(right))
+	var entry: Vector2i = entry_candidates[0]
+	var plan: Dictionary = _ai_rescue_plan(unit, [entry], reserve_tu, false)
+	var path: Array = plan.get("path", []).duplicate()
+	if not plan.get("reached", false):
+		return plan
+	var available_steps := clampi((int(unit.get("tu", 0)) - maxi(0, reserve_tu)) / MOVE_TU, 0, AI_MAX_MOVE_STEPS)
+	var occupied := _occupied_cells(String(unit.get("id", "")))
+	for x in range(entry.x - 1, -1, -1):
+		if path.size() - 1 >= available_steps:
+			plan.reached = false
+			break
+		var waypoint := Vector2i(x, entry.y)
+		var waypoint_key := AegisHexRules.key(waypoint)
+		if _blocked_cells().has(waypoint_key) or occupied.has(waypoint_key) or AegisHexRules.distance(path[-1], waypoint) > 1:
+			plan.reached = false
+			break
+		if not path.has(waypoint):
+			path.append(waypoint)
+	plan.path = path
+	plan.cell = path[-1]
+	plan.steps = maxi(0, path.size() - 1)
+	return plan
+
 func _apply_ai_movement(unit: Dictionary, plan: Dictionary) -> void:
 	var path: Array = plan.get("path", [])
 	if path.size() < 2:
@@ -814,11 +895,21 @@ func _apply_ai_movement(unit: Dictionary, plan: Dictionary) -> void:
 	unit.tu = maxi(0, int(unit.get("tu", 0)) - int(plan.get("steps", 0)) * MOVE_TU)
 	unit.facing = unit.cell - old_cell
 	var trail: Array = unit.get("trail", [])
+	var movement_history: Array = unit.get("ai_move_history", []).duplicate()
 	for step in path:
 		trail.push_front(step)
+		var step_key := AegisHexRules.key(step)
+		if movement_history.has(step_key):
+			movement_history.erase(step_key)
+		movement_history.append(step_key)
 	if trail.size() > 20:
 		trail.resize(20)
+	while movement_history.size() > 16:
+		movement_history.pop_front()
 	unit.trail = trail
+	unit.ai_move_history = movement_history
+	if ai_command_active and unit.get("team", "") == "human":
+		voice_requested.emit("Moving steady professional.wav")
 	_advance_followers(unit, path)
 	_refresh_visibility()
 	queue_redraw()
@@ -854,6 +945,7 @@ func _ai_contact_civilian(soldier: Dictionary, civilian: Dictionary) -> bool:
 		civilian.panic = false
 		civilian.escort_id = soldier.id
 		_emit_log("%s takes %s into the evacuation column." % [soldier.callsign, civilian.name])
+		voice_requested.emit("On me steady professional.wav")
 	else:
 		_emit_log("%s cannot calm %s on the first attempt." % [soldier.callsign, civilian.name])
 	return follows
@@ -864,36 +956,57 @@ func _run_ai_human_turn() -> void:
 	var commander := _select_ai_commander()
 	_assign_ai_roles(commander)
 	var soldiers := units.filter(func(unit): return unit.get("team", "") == "human" and int(unit.get("hp", 0)) > 0)
-	soldiers.sort_custom(func(left, right):
-		if left.get("id", "") == commander_id:
-			return false
-		if right.get("id", "") == commander_id:
-			return true
-		return String(left.get("id", "")) < String(right.get("id", ""))
-	)
+	soldiers.sort_custom(func(left, right): return String(left.get("id", "")) < String(right.get("id", "")))
+	if soldiers.size() > 1:
+		var rotated: Array = []
+		var offset := (turn_number - 1) % soldiers.size()
+		for index in range(soldiers.size()):
+			rotated.append(soldiers[(offset + index) % soldiers.size()])
+		soldiers = rotated
+	ai_last_acted_ids.clear()
 	var claimed_civilians := {}
 	for soldier in soldiers:
-		if resolved:
+		if resolved or (ai_command_busy and not ai_command_active):
 			break
+		var action_before := action_serial
+		var cell_before: Vector2i = soldier.cell
 		var reserve_tu := maxi(0, int(soldier.get("fire_tu", FIRE_TU)))
 		var followers := units.filter(func(unit): return unit.get("team", "") == "civilian" and unit.get("escort_id", "") == soldier.get("id", "") and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false))
 		var rescue_target: Variant = null
 		if not followers.is_empty():
 			rescue_target = {"cell":_nearest_extraction_cell(soldier.cell),"ramp":true}
 		elif rescued < required_rescues:
-			var civilians := units.filter(func(unit): return unit.get("team", "") == "civilian" and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false) and (unit.get("visible", false) or not units.any(func(alien): return alien.get("team", "") == "alien" and int(alien.get("hp", 0)) > 0)) and not claimed_civilians.has(unit.get("id", "")))
+			var civilians := units.filter(func(unit): return unit.get("team", "") == "civilian" and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false) and (String(unit.get("escort_id", "")).is_empty() or unit.get("escort_id", "") == soldier.get("id", "")) and (unit.get("visible", false) or not units.any(func(alien): return alien.get("team", "") == "alien" and int(alien.get("hp", 0)) > 0)) and not claimed_civilians.has(unit.get("id", "")))
 			civilians.sort_custom(func(left, right): return AegisHexRules.distance(left.cell, soldier.cell) < AegisHexRules.distance(right.cell, soldier.cell))
 			if not civilians.is_empty():
 				rescue_target = civilians[0]
 				claimed_civilians[rescue_target.get("id", "")] = true
 		if rescue_target != null:
+			var contacted := false
 			if not rescue_target.get("ramp", false) and _ai_contact_civilian(soldier, rescue_target):
+				contacted = true
 				followers = [rescue_target]
 				rescue_target = {"cell":_nearest_extraction_cell(soldier.cell),"ramp":true}
-			var rescue_plan := _ai_movement_plan(soldier, rescue_target.cell, reserve_tu, String(soldier.get("ai_role", "")), false, true)
+			var rescue_cells: Array = []
+			if rescue_target.get("ramp", false):
+				for extraction_key in extraction_cells:
+					rescue_cells.append(_cell_from_key(String(extraction_key)))
+			else:
+				rescue_cells.append(rescue_target.cell)
+			var rescue_plan := _ai_extraction_plan(soldier, reserve_tu) if rescue_target.get("ramp", false) else _ai_rescue_plan(soldier, rescue_cells, reserve_tu, true)
 			_apply_ai_movement(soldier, rescue_plan)
 			if not rescue_target.get("ramp", false):
-				_ai_contact_civilian(soldier, rescue_target)
+				contacted = _ai_contact_civilian(soldier, rescue_target) or contacted
+			followers = units.filter(func(unit): return unit.get("team", "") == "civilian" and unit.get("escort_id", "") == soldier.get("id", "") and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false))
+			var rescue_progressed: bool = contacted or int(rescue_plan.get("steps", 0)) > 0
+			var rescue_stalls := 0 if rescue_progressed else int(soldier.get("ai_rescue_stalls", 0)) + 1
+			soldier.ai_rescue_stalls = rescue_stalls
+			if rescue_stalls >= 2 and not followers.is_empty():
+				for follower in followers:
+					follower.escort_id = ""
+				soldier.ai_rescue_stalls = 0
+				soldier.ai_move_history = []
+				_emit_log("%s released a stalled escort column for squad reassignment." % soldier.callsign)
 		var visible_aliens := units.filter(func(unit): return unit.get("team", "") == "alien" and int(unit.get("hp", 0)) > 0 and unit.get("visible", false))
 		var combat_target: Variant = null
 		if not visible_aliens.is_empty():
@@ -912,6 +1025,8 @@ func _run_ai_human_turn() -> void:
 			_apply_ai_movement(soldier, combat_plan)
 		if combat_target != null and int(combat_target.get("hp", 0)) > 0 and AegisHexRules.distance(soldier.cell, combat_target.cell) <= int(soldier.get("weapon_range", 0)) and _has_line_of_sight_from(soldier.cell, combat_target.cell):
 			_try_shoot_unit(soldier, combat_target)
+		if soldier.cell != cell_before or action_serial > action_before:
+			ai_last_acted_ids.append(String(soldier.get("id", "")))
 		await get_tree().create_timer(0.06).timeout
 	selected_id = ""
 	reachable.clear()
@@ -923,10 +1038,13 @@ func take_ai_command() -> void:
 	ai_command_active = true
 	ai_command_busy = true
 	ai_command_changed.emit(true)
+	voice_requested.emit("Copy steady professional.wav")
 	_emit_log("AI COMMAND: %s. Live battlefield state retained." % ai_command_summary())
 	while not resolved and ai_command_active and turn_number <= AI_MAX_TURNS:
 		if phase == "human":
 			await _run_ai_human_turn()
+			if not ai_command_active:
+				break
 			if not resolved:
 				await end_human_turn()
 		else:
@@ -936,7 +1054,19 @@ func take_ai_command() -> void:
 	ai_command_active = false
 	ai_command_busy = false
 	ai_command_changed.emit(false)
+	if not resolved and phase == "human":
+		var living := units.filter(func(unit): return unit.get("team", "") == "human" and int(unit.get("hp", 0)) > 0)
+		selected_id = String(living[0].get("id", "")) if not living.is_empty() else ""
+		_rebuild_reachable()
 	_emit_state()
+
+func reclaim_ai_command() -> void:
+	if not ai_command_active:
+		return
+	ai_command_active = false
+	_emit_log("PLAYER COMMAND: AI control release requested. Current positions, damage, TU, civilians, and breached cover will be retained.")
+	voice_requested.emit("Back with you steady professional.wav")
+	ai_command_changed.emit(false)
 
 func abort_battle() -> void:
 	if resolved:

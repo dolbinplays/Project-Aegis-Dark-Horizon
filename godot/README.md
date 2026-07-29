@@ -1,8 +1,8 @@
 # Project Aegis Godot 4 Vertical Slice
 
-Native build: `v0.26.07.28.GODOT.0011_TACTICAL_AI_DOCTRINE_AND_REACTION_FIRE_VERTICAL_SLICE`
+Native build: `v0.26.07.29.GODOT.0014_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_VERTICAL_SLICE`
 
-Paired browser build: `v0.26.07.28.0140_TACTICAL_AI_DOCTRINE_REACTION_FOG_AND_CLASSIC_COMMAND_CONSOLE_PARITY_PATCH`
+Paired browser build: `v0.26.07.29.0143_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_PARITY_PATCH`
 
 This is a native Godot 4 vertical slice alongside the verified HTML game. It does not wrap `index.html`, replace the browser build, or write to the browser campaign save.
 
@@ -31,6 +31,9 @@ The project uses the repository root so the native slice can reuse the existing 
 - Rank- and mission-gated commander doctrine, commander-centered formations, bounded flanking, cover/LOS/range scoring, and selected-shot TU reserves during AI command.
 - Reaction fire during alien movement driven by each soldier's Reaction stat, current weapon TU profile, range, line of sight, and available ammunition.
 - Human-priority alien movement that seeks cover while preserving attack TU, plus live fog of war that hides unobserved alien movement during AI command.
+- Reversible AI command, round-robin rescue scheduling, bounded anti-loop rescue routes, stalled-escort reassignment, and state-preserving return to direct control.
+- Sequential tactical soldier voice cues for AI handoff, movement, civilian contact, firing, misses, kills, and player reclaim.
+- A dedicated Voices bus with persistent on/off and volume settings plus a three-category playback test for computer, aircraft, and soldier clips.
 - A classic battlescape-style command console with previous/next soldier, tactical map, field inventory, kneel/stand, shot reserves, TU bleed/Done, End Turn, AI Command, and Dust Off.
 - Read-only browser campaign export selection, compatibility review, and subset normalization into a separate native imported-copy slot.
 - Base-local personnel occupancy with 12 staff per Living Quarters, 10 scientists per Laboratory, live overflow feedback, and repeated imported facility counts.
@@ -46,7 +49,7 @@ The project uses the repository root so the native slice can reuse the existing 
 - Tactical Ballistic Rifle, Laser Rifle, Unarmed, Field Suit, No Armor, and Medkit profiles sourced from the content catalog; one issued Medkit restores up to 12 HP for 12 TU and is consumed after use.
 - Final mission HP creates a bounded one-to-five-day wound-recovery record. Wounded soldiers remain unavailable until strategic midnights reduce the timer to zero and medical clearance returns them to duty.
 - Native JSON save format 4 at `user://project_aegis_godot_save_v4.json`, with imported campaigns isolated at `user://project_aegis_godot_imported_copy_v4.json`.
-- In-game Build Health with 74 checks, including bounded tactical-log trimming, air operations, browser-import isolation, personnel arrivals, research/manufacturing/construction, local-stock conservation, tactical loadout inheritance, Medkit consumption, wound recovery, commander doctrine, TU reserves, reaction fire, AI fog, classic command controls, mission equipment recovery/loss, large-list scrolling, and dense strategic marker placement.
+- In-game Build Health with 81 checks, including bounded tactical-log trimming, air operations, browser-import isolation, personnel arrivals, research/manufacturing/construction, local-stock conservation, tactical loadout inheritance, Medkit consumption, wound recovery, commander doctrine, TU reserves, reaction fire, AI fog, AI reclaim, rescue anti-loop routing, queued tactical voices, dedicated voice controls, classic command controls, mission equipment recovery/loss, large-list scrolling, and dense strategic marker placement.
 
 ## Tactical Controls
 
@@ -60,7 +63,7 @@ The project uses the repository root so the native slice can reuse the existing 
 - Select an injured soldier with an issued Medkit and use **Use Medkit - 12 TU** to restore up to 12 HP. The single charge is consumed immediately.
 - Use **Prev/Next**, **Map**, and **Inventory** to inspect the squad and observation-safe battlefield contacts.
 - Use **Kneel/Stand**, **None/Snap/Aimed/Auto/Kneel** TU reserves, and **Done** to control stance and protected action economy.
-- Use **AI Command** to hand off the current battlefield without resetting it; current fog remains authoritative throughout the AI turn.
+- Use **AI Command** to hand off the current battlefield without resetting it; current fog remains authoritative throughout the AI turn. Use **Take Back Control** to resume the same live battle between bounded AI actions.
 - Use **Dust Off** to abandon an unresolved incident after confirmation.
 - Use **End Turn** to run the alien phase and refresh soldier TU.
 
@@ -115,7 +118,7 @@ godot --headless --path . --script res://godot/tests/test_runner.gd
 
 The test runner covers campaign creation and travel, exact loadout/store save round-tripping, conservative loadout and wound migration, local-stock conservation and unavailable-item rejection, Medkit issue/return/consumption, mission recovery and loss, one-to-five-day wounds, exact recovery persistence, unequipped recruit arrivals, Workshop and personnel migration, hiring/capacity rules, construction, bounded research and manufacturing, air operations, browser-export normalization and source preservation, strategic markers, bounded hex rules, tactical loadout inheritance, Laser Rifle range/TU, selected-unit feedback, Unarmed fire rejection, movement highlighting, three End Turn cycles, civilian contact, wall destruction and traversal, and all visible Build Health rows.
 
-Latest automated verification passes `102/102` native tests and `74/74` visible Build Health rows. Godot 4.7.1 strict editor parsing passes. The paired HTML build reaches the start screen, Geoscape, squad assignment, Skyranger travel, and a live 64x64 safe-2D incident; browser Build Health passes `281/281`. A practical AI handoff inherited the live battlefield at round 1, preserved unrevealed-contact fog, played through fifteen frames and seven exchanges, and reached tactical victory without a browser runtime error.
+Latest automated verification passes `108/108` native tests and `81/81` visible Build Health rows. Godot 4.7.1 strict editor parsing passes. The paired HTML build reaches the updated start screen and Geoscape; browser Build Health passes `290/290`. The browser three-category voice test completes with `passed`, the mute toggle disables playback independently from SFX, and current browser diagnostics contain no runtime errors.
 
 ## Deliberate Limits
 
@@ -135,6 +138,8 @@ The paired 0010/0138 gate requires live issue/return stock checks in both versio
 
 Browser build 0139 additionally requires loading the supplied slot-10 export without overwriting it, confirming a Fort Aegis Skyranger can stage through the departed S. America hangar to reach the active abduction incident, and confirming Saber One retains its Fort Aegis recovery reservation.
 
-The paired 0011/0140 gate requires hands-on tactical confirmation that AI formations keep the commander protected without bunching, flank through cover without stalling, reserve the correct selected-mode TU, reaction-fire only on observed valid movement, hide unobserved aliens, prioritize mandatory rescue, and expose every new classic command-console control at the player's normal resolution.
+The paired 0013/0142 gate requires hands-on confirmation in the originally affected rescue battle that multiple soldiers act, escorts do not oscillate, civilians cross the ramp, `Take Back Control` preserves the displayed state, and tactical voices remain audible and sequential.
 
-Next paired patch after this gate: `TACTICAL_CLASSIC_HAND_SLOTS_TARGETING_AND_THROWABLE_PREP_PARITY_PATCH`, adding bounded functional hand-slot transfers, targeting cursors, and throwable preparation before deeper elevation controls.
+The paired 0014/0143 gate requires an audible check of base-computer, aircraft-radio, and soldier processing at several voice levels, persistent mute/volume behavior after relaunch, and natural event-trigger playback during UFO detection, Skyranger operations, and tactical combat.
+
+Next paired patch after this gate: `TACTICAL_CLASSIC_INVENTORY_TRANSFERS_AND_ELEVATION_FOUNDATION_PARITY_PATCH`, beginning with bounded adjacent-unit hand/belt transfers and floor-state data.

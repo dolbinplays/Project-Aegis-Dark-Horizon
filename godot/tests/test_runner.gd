@@ -374,6 +374,39 @@ func _test_tactical(content: Dictionary) -> void:
 	grenade_alien["hp"] = 30
 	var throw_tu_before := int(console_soldier.get("tu", 0))
 	_check(ai_board.grenade_blast_cells(grenade_target).size() == 7 and ai_board._try_throw_grenade(console_soldier, grenade_target) and int(console_soldier.get("tu", 0)) == throw_tu_before - ai_board.GRENADE_THROW_TU and int(console_soldier.get("grenade_charges", -1)) == 0 and int(grenade_alien.get("hp", 0)) < 30 and not ai_board._blocked_cells().has(grenade_wall_key), "grenade throw uses a bounded seven-hex blast damages units and opens traversable rubble")
+	var fair_board := AegisTacticalBoard.new()
+	get_root().add_child(fair_board)
+	fair_board.begin_battle(incident, tactical_roster, content)
+	for fair_alien in fair_board.units.filter(func(unit): return unit.get("team", "") == "alien"):
+		fair_alien["hp"] = 0
+	for fair_civilian in fair_board.units.filter(func(unit): return unit.get("team", "") == "civilian"):
+		fair_civilian["revealed"] = true
+	await fair_board._run_ai_human_turn()
+	_check(fair_board.ai_last_acted_ids.size() >= 2, "AI rescue turn rotates work across multiple available soldiers")
+	fair_board.queue_free()
+	var route_board := AegisTacticalBoard.new()
+	get_root().add_child(route_board)
+	route_board.begin_battle(incident, tactical_roster, content)
+	var route_unit: Dictionary = route_board.units.filter(func(unit): return unit.get("team", "") == "human")[0]
+	route_board.units = [route_unit]
+	route_board.covers.clear()
+	route_unit["cell"] = Vector2i(6, 7)
+	route_unit["tu"] = 60
+	route_unit["ai_move_history"] = [AegisHexRules.key(Vector2i(6, 7))]
+	var rescue_plan: Dictionary = route_board._ai_extraction_plan(route_unit, int(route_unit.get("fire_tu", 14)))
+	var route_keys := {}
+	for route_cell in rescue_plan.get("path", []):
+		route_keys[AegisHexRules.key(route_cell)] = true
+	var crosses_ramp: bool = rescue_plan.get("path", []).any(func(cell): return route_board.extraction_cells.has(AegisHexRules.key(cell)))
+	_check(int(rescue_plan.get("steps", 0)) > 0 and rescue_plan.get("reached", false) and crosses_ramp and route_keys.size() == rescue_plan.get("path", []).size(), "AI rescue route crosses the ramp without repeating a cell")
+	var reclaim_cell: Vector2i = route_unit.cell
+	var reclaim_tu := int(route_unit.get("tu", 0))
+	var reclaim_voices: Array[String] = []
+	route_board.voice_requested.connect(func(file_name: String): reclaim_voices.append(file_name))
+	route_board.ai_command_active = true
+	route_board.reclaim_ai_command()
+	_check(not route_board.ai_command_active and route_unit.cell == reclaim_cell and int(route_unit.get("tu", 0)) == reclaim_tu and reclaim_voices.has("Back with you steady professional.wav"), "player reclaim exits AI command without resetting live tactical state")
+	route_board.queue_free()
 	ai_board.queue_free()
 	board._select_unit(shooter.get("id", ""))
 	_check(not board.reachable.is_empty(), "soldier selection produces bounded movement highlights")
@@ -421,9 +454,9 @@ func _test_build_health() -> void:
 	var app: Node = load("res://godot/main.tscn").instantiate()
 	app.content = _load_json("res://godot/data/content.json")
 	var health: Array = app._run_self_tests()
-	if health.size() != 77 or not health.all(func(row): return row.get("pass", false)):
+	if health.size() != 81 or not health.all(func(row): return row.get("pass", false)):
 		print("BUILD HEALTH DETAIL: %s" % JSON.stringify(health))
-	_check(health.size() == 77 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 77 rows")
+	_check(health.size() == 81 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 81 rows")
 	app.free()
 
 func _load_json(path: String) -> Dictionary:
