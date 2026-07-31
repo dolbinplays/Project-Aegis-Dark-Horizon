@@ -1,8 +1,8 @@
 # Project Aegis Godot 4 Vertical Slice
 
-Native build: `v0.26.07.29.GODOT.0014_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_VERTICAL_SLICE`
+Native build: `v0.26.07.31.GODOT.0015_VOICE_AUDIBILITY_NORMALIZATION_AND_MUSIC_DUCKING_VERTICAL_SLICE`
 
-Paired browser build: `v0.26.07.29.0143_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_PARITY_PATCH`
+Paired browser build: `v0.26.07.31.0145_DIRECT_FILE_RECORDED_VOICE_PLAYBACK_FALLBACK_INDEX_ONLY_PATCH`
 
 This is a native Godot 4 vertical slice alongside the verified HTML game. It does not wrap `index.html`, replace the browser build, or write to the browser campaign save.
 
@@ -34,6 +34,7 @@ The project uses the repository root so the native slice can reuse the existing 
 - Reversible AI command, round-robin rescue scheduling, bounded anti-loop rescue routes, stalled-escort reassignment, and state-preserving return to direct control.
 - Sequential tactical soldier voice cues for AI handoff, movement, civilian contact, firing, misses, kills, and player reclaim.
 - A dedicated Voices bus with persistent on/off and volume settings plus a three-category playback test for computer, aircraft, and soldier clips.
+- Bounded voice makeup gain and automatic music ducking so low-level recordings remain intelligible without changing SFX volume.
 - A classic battlescape-style command console with previous/next soldier, tactical map, field inventory, kneel/stand, shot reserves, TU bleed/Done, End Turn, AI Command, and Dust Off.
 - Read-only browser campaign export selection, compatibility review, and subset normalization into a separate native imported-copy slot.
 - Base-local personnel occupancy with 12 staff per Living Quarters, 10 scientists per Laboratory, live overflow feedback, and repeated imported facility counts.
@@ -49,7 +50,7 @@ The project uses the repository root so the native slice can reuse the existing 
 - Tactical Ballistic Rifle, Laser Rifle, Unarmed, Field Suit, No Armor, and Medkit profiles sourced from the content catalog; one issued Medkit restores up to 12 HP for 12 TU and is consumed after use.
 - Final mission HP creates a bounded one-to-five-day wound-recovery record. Wounded soldiers remain unavailable until strategic midnights reduce the timer to zero and medical clearance returns them to duty.
 - Native JSON save format 4 at `user://project_aegis_godot_save_v4.json`, with imported campaigns isolated at `user://project_aegis_godot_imported_copy_v4.json`.
-- In-game Build Health with 81 checks, including bounded tactical-log trimming, air operations, browser-import isolation, personnel arrivals, research/manufacturing/construction, local-stock conservation, tactical loadout inheritance, Medkit consumption, wound recovery, commander doctrine, TU reserves, reaction fire, AI fog, AI reclaim, rescue anti-loop routing, queued tactical voices, dedicated voice controls, classic command controls, mission equipment recovery/loss, large-list scrolling, and dense strategic marker placement.
+- In-game Build Health with 82 checks, including bounded tactical-log trimming, air operations, browser-import isolation, personnel arrivals, research/manufacturing/construction, local-stock conservation, tactical loadout inheritance, Medkit consumption, wound recovery, commander doctrine, TU reserves, reaction fire, AI fog, AI reclaim, rescue anti-loop routing, queued tactical voices, dedicated voice controls, voice audibility mixing, classic command controls, mission equipment recovery/loss, large-list scrolling, and dense strategic marker placement.
 
 ## Tactical Controls
 
@@ -118,7 +119,7 @@ godot --headless --path . --script res://godot/tests/test_runner.gd
 
 The test runner covers campaign creation and travel, exact loadout/store save round-tripping, conservative loadout and wound migration, local-stock conservation and unavailable-item rejection, Medkit issue/return/consumption, mission recovery and loss, one-to-five-day wounds, exact recovery persistence, unequipped recruit arrivals, Workshop and personnel migration, hiring/capacity rules, construction, bounded research and manufacturing, air operations, browser-export normalization and source preservation, strategic markers, bounded hex rules, tactical loadout inheritance, Laser Rifle range/TU, selected-unit feedback, Unarmed fire rejection, movement highlighting, three End Turn cycles, civilian contact, wall destruction and traversal, and all visible Build Health rows.
 
-Latest automated verification passes `108/108` native tests and `81/81` visible Build Health rows. Godot 4.7.1 strict editor parsing passes. The paired HTML build reaches the updated start screen and Geoscape; browser Build Health passes `290/290`. The browser three-category voice test completes with `passed`, the mute toggle disables playback independently from SFX, and current browser diagnostics contain no runtime errors.
+Latest automated verification passes `108/108` native tests and `82/82` visible Build Health rows. Godot 4.7.1 strict editor parsing passes. The paired HTML build reaches the updated start screen, Geoscape, and a practical six-soldier incident; browser Build Health passes `293/293`, and three End Turn cycles return to the human phase without a runtime error overlay. The localhost three-category voice test completes while music is active, the real Test Voices WAV takes pass the bounded energy floor, and browser build 0145 adds native media playback for direct `file://` launches where WAV fetches are blocked.
 
 ## Deliberate Limits
 
@@ -140,6 +141,6 @@ Browser build 0139 additionally requires loading the supplied slot-10 export wit
 
 The paired 0013/0142 gate requires hands-on confirmation in the originally affected rescue battle that multiple soldiers act, escorts do not oscillate, civilians cross the ramp, `Take Back Control` preserves the displayed state, and tactical voices remain audible and sequential.
 
-The paired 0014/0143 gate requires an audible check of base-computer, aircraft-radio, and soldier processing at several voice levels, persistent mute/volume behavior after relaunch, and natural event-trigger playback during UFO detection, Skyranger operations, and tactical combat.
+The paired 0015/0145 gate requires opening `index.html` directly and confirming all three Test Voices clips play through the direct-file fallback, music audibly ducks and restores, mute/volume behavior persists after relaunch, and natural event-trigger playback remains ordered during UFO detection, Skyranger operations, and tactical combat. Localhost and hosted builds retain the processed Web Audio path from browser build 0144.
 
 Next paired patch after this gate: `TACTICAL_CLASSIC_INVENTORY_TRANSFERS_AND_ELEVATION_FOUNDATION_PARITY_PATCH`, beginning with bounded adjacent-unit hand/belt transfers and floor-state data.

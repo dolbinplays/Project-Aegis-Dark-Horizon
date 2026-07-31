@@ -22,6 +22,49 @@ const dialogueBox = { window: {} };
 vm.runInNewContext(fs.readFileSync(dialogueManifestPath, "utf8"), dialogueBox, { filename: dialogueManifestPath });
 const dialogue = dialogueBox.window.PROJECT_AEGIS_RECORDED_DIALOGUE;
 
+function wavTakeEnergy(filePath, take, sampleLimit = 12000) {
+  const wav = fs.readFileSync(filePath);
+  let cursor = 12;
+  let channels = 0;
+  let sampleRate = 0;
+  let bitsPerSample = 0;
+  let dataOffset = 0;
+  let dataSize = 0;
+  while (cursor + 8 <= wav.length) {
+    const chunkId = wav.toString("ascii", cursor, cursor + 4);
+    const chunkSize = wav.readUInt32LE(cursor + 4);
+    const chunkData = cursor + 8;
+    if (chunkId === "fmt " && chunkSize >= 16) {
+      channels = wav.readUInt16LE(chunkData + 2);
+      sampleRate = wav.readUInt32LE(chunkData + 4);
+      bitsPerSample = wav.readUInt16LE(chunkData + 14);
+    } else if (chunkId === "data") {
+      dataOffset = chunkData;
+      dataSize = Math.min(chunkSize, wav.length - chunkData);
+      break;
+    }
+    cursor = chunkData + chunkSize + (chunkSize % 2);
+  }
+  if (!dataOffset || channels < 1 || sampleRate < 1 || bitsPerSample !== 16) return { rms: 0, peak: 0, samples: 0 };
+  const bytesPerFrame = channels * 2;
+  const frameLength = Math.floor(dataSize / bytesPerFrame);
+  const startFrame = Math.max(0, Math.min(frameLength, Math.floor(Number(take.start || 0) * sampleRate)));
+  const endFrame = Math.max(startFrame, Math.min(frameLength, Math.ceil((Number(take.start || 0) + Number(take.duration || 0)) * sampleRate)));
+  const stride = Math.max(1, Math.ceil((endFrame - startFrame) / sampleLimit));
+  let sumSquares = 0;
+  let peak = 0;
+  let samples = 0;
+  for (let frame = startFrame; frame < endFrame; frame += stride) {
+    for (let channel = 0; channel < channels; channel += 1) {
+      const sample = Math.abs(wav.readInt16LE(dataOffset + frame * bytesPerFrame + channel * 2) / 32768);
+      peak = Math.max(peak, sample);
+      sumSquares += sample * sample;
+      samples += 1;
+    }
+  }
+  return { rms: samples ? Math.sqrt(sumSquares / samples) : 0, peak, samples };
+}
+
 const required = [
   manifest.currentBuild,
   `CURRENT_GAME_VERSION=\"${manifest.currentBuild.match(/^v[^_]+/)?.[0] || ""}\"`,
@@ -80,6 +123,9 @@ const required = [
   "AI rescue routing rotates soldiers and rejects two-cell loops",
   "AI tactical soldier voices are queued and audio-unlocked",
   "Dedicated voice bus has independent volume and mute gain",
+  "Recorded voice takes use bounded energy normalization with a silence floor",
+  "Dialogue music ducking and clean processed speech preserve intelligibility",
+  "Direct-file recorded voice fallback avoids blocked local fetches",
   "Voice preferences normalize and persist independently from SFX",
   "Audio settings expose voice toggle slider and user-gesture playback test",
   "AI tactical playback emits bounded context-aware soldier dialogue",
@@ -116,6 +162,14 @@ const required = [
   "recordedDialogueStaticBookends",
   "recordedDialogueShouldQueue",
   "voiceVolumeToGain",
+  "recordedDialogueTakeEnergy",
+  "recordedDialogueMakeupGain",
+  "dialogueMusicDuckFactor",
+  "DIALOGUE_MUSIC_DUCK_FACTOR",
+  "recordedDialogueNeedsMediaFallback",
+  "directFileDialogueVolume",
+  "playRecordedDialogueMediaFallback",
+  "dialogueMediaPlayers",
   "VOICE_SETTINGS_STORAGE_KEY",
   "data-aegis-voice-control",
   "testVoicePlayback",
@@ -193,6 +247,7 @@ for (const nativeNeedle of [
   "func _show_audio_settings",
   "func _set_voice_enabled",
   "func _set_voice_volume",
+  "func _set_voice_music_duck",
 ]) {
   if (!nativeMain.includes(nativeNeedle) && !nativeTactical.includes(nativeNeedle)) {
     missing.push(`native tactical recovery seam missing: ${nativeNeedle}`);
@@ -243,6 +298,7 @@ for (const system of [
   "bounded-rescue-route-anti-loop",
   "queued-tactical-voice-recovery",
   "dedicated-voice-bus-controls",
+  "voice-take-normalization-music-ducking",
 ]) {
   if (!manifest.gameplayParity?.requiredSystems?.includes(system)) {
     missing.push(`gameplay parity system missing: ${system}`);
@@ -277,6 +333,18 @@ for (const eventKey of ["mission_successful", "ufo_contact_detected", "lifting_o
 }
 for (const style of ["steady_professional", "aggressive_hotshot", "grim", "nervous_but_determined"]) {
   if (!dialogue?.events?.moving?.variants?.[style]) missing.push(`movement dialogue style missing: ${style}`);
+}
+for (const [eventKey, style] of [["commander_action_required", "neutral"], ["skyranger_ready", "neutral"], ["copy", "steady_professional"]]) {
+  const event = dialogue?.events?.[eventKey];
+  const variant = event?.variants?.[style] || event?.variants?.neutral || event?.variants?.steady_professional || Object.values(event?.variants || {})[0];
+  const sourcePath = path.join(dialogueDirectory, variant?.source || "");
+  if (!variant?.takes?.length || !fs.existsSync(sourcePath)) continue;
+  for (const take of variant.takes) {
+    const energy = wavTakeEnergy(sourcePath, take);
+    if (energy.samples > 12000 * 2 || energy.rms < 0.003 || energy.peak < 0.018) {
+      missing.push(`voice test take below audibility floor: ${eventKey} at ${take.start}s`);
+    }
+  }
 }
 
 if (missing.length) {

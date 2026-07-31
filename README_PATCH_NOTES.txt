@@ -1,15 +1,20 @@
 Alien Response Command / Project Aegis
-Patch: v0.26.07.10.0101_INTERCEPTOR_FERRY_STAGED_REACH_REFERENCE_FIX_INDEX_ONLY_PATCH
+Patch: v0.26.07.31.0145_DIRECT_FILE_RECORDED_VOICE_PLAYBACK_FALLBACK_INDEX_ONLY_PATCH
+Native: v0.26.07.31.GODOT.0015_VOICE_AUDIBILITY_NORMALIZATION_AND_MUSIC_DUCKING_VERTICAL_SLICE
 
 Purpose:
-- Fix startup-blocking runtime error: interceptorFerryStagedReachRecognitionTest is not defined.
-- Add the missing Build Health regression test constant instead of removing the Build Health rows.
-- Preserve the interceptor ferry-staged reach recognition feature and related Build Health coverage.
+- Restore recorded voices when index.html is opened directly through file://.
+- Use bounded native media playback for direct-file launches, where browsers block WAV fetches.
+- Preserve the ordered voice queue, volume/mute controls, segmented takes, and music ducking.
+- Keep the normalized Web Audio computer/radio effects path unchanged on localhost and hosted builds.
 
 Validation performed:
-- Extracted all inline scripts from index.html.
-- Ran node --check against every non-empty inline script.
-- Ran a static scan for missing *Test identifiers in the main game script; none remained except Three.js material option property depthTest, which is not a Build Health test identifier.
+- Static browser parsing passed all 8 script assets.
+- Build seam checker passed, including real PCM energy checks for all Test Voices takes.
+- Browser Build Health passed 293/293 through localhost.
+- Godot tests passed 108/108; native Build Health passed 82/82.
+- Localhost start screen, Geoscape, six-soldier tactical launch, movement highlight, and three End Turn cycles passed without a runtime error overlay.
 
-Browser note:
-- Please open index.html locally and confirm the start screen renders, then run the in-browser Build Health panel.
+Manual gate:
+- Open index.html directly, press Test Voices, and confirm all three categories are audible while music dips and restores.
+- Confirm natural base, aircraft, and tactical events remain ordered and audible.

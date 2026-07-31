@@ -454,9 +454,9 @@ func _test_build_health() -> void:
 	var app: Node = load("res://godot/main.tscn").instantiate()
 	app.content = _load_json("res://godot/data/content.json")
 	var health: Array = app._run_self_tests()
-	if health.size() != 81 or not health.all(func(row): return row.get("pass", false)):
+	if health.size() != 82 or not health.all(func(row): return row.get("pass", false)):
 		print("BUILD HEALTH DETAIL: %s" % JSON.stringify(health))
-	_check(health.size() == 81 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 81 rows")
+	_check(health.size() == 82 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 82 rows")
 	app.free()
 
 func _load_json(path: String) -> Dictionary:

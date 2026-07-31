@@ -1,10 +1,84 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-07-29
-Current handoff build: `v0.26.07.29.0143_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_PARITY_PATCH`
-Native vertical slice: `v0.26.07.29.GODOT.0014_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_VERTICAL_SLICE`
-Current patch status: **Paired browser 0143/native 0014 restore recorded dialogue through a dedicated voice bus, persist independent voice mute/volume preferences, unlock and explicitly resume browser audio from player input, and expose a three-category Test Voices command for base-computer, aircraft-radio, and tactical-soldier clips. Save format remains 4. Static browser parsing passes 8/8 executable script assets, the seam checker passes, native tests pass 108/108 with Build Health 81/81, and browser Build Health passes 290/290. Localhost smoke reached the updated start screen and Geoscape, the three-category voice test completed with `passed`, and current browser diagnostics contain no runtime errors. Audible mix quality and natural event-trigger playback remain the manual publication gate.**
+Last updated: 2026-07-31
+Current handoff build: `v0.26.07.31.0145_DIRECT_FILE_RECORDED_VOICE_PLAYBACK_FALLBACK_INDEX_ONLY_PATCH`
+Native vertical slice: `v0.26.07.31.GODOT.0015_VOICE_AUDIBILITY_NORMALIZATION_AND_MUSIC_DUCKING_VERTICAL_SLICE`
+Current patch status: **Browser 0145 preserves paired native 0015 and adds a native HTML media fallback for recorded voices when `index.html` is opened directly through `file://`, where browser security blocks the normal WAV fetch/decode path. Save format remains 4. The direct-file route preserves segmented take boundaries, ordered playback, voice mute/volume controls, and music ducking; localhost and hosted builds retain the normalized Web Audio processing introduced in 0144. Static browser parsing passes all 8 script assets, the seam checker passes, localhost Build Health passes 293/293, and the three-category localhost voice test completes with music active. A practical six-soldier 64x64 safe-2D mission launched and completed three End Turn cycles without a runtime error overlay. Godot 4.7.1 strict parsing and native tests pass 108/108; native Build Health remains 82/82. Direct-file physical-speaker playback remains the exact manual gate because the test harness does not permit `file://` navigation.**
+
+---
+
+# v0.26.07.31.0145 - Direct-File Recorded Voice Playback Fallback
+
+Browser build `v0.26.07.31.0145_DIRECT_FILE_RECORDED_VOICE_PLAYBACK_FALLBACK_INDEX_ONLY_PATCH` preserves save format 4 and native build 0015. It fixes recorded voices for players who open `index.html` directly without changing tactical outcomes or hosted audio behavior.
+
+Root cause addressed:
+
+- Music and synthesized SFX can play from a direct page, but browser security blocks the `fetch()` call used to load local recorded WAV files from a `file://` document.
+
+Implemented roadmap scope:
+
+- Direct-file launches use a native `Audio` element with bounded media-fragment take timing instead of fetching and decoding the WAV.
+- The fallback stays inside the existing ordered dialogue queue and honors the independent Voices toggle, a perceptual volume curve, segmented take endings, active-media cleanup, and music ducking.
+- The initial Test Voices media start remains inside the button gesture. Localhost and hosted pages continue to use the existing per-take normalization, computer/radio processing, limiter, and static bookends.
+- Browser Build Health and the seam checker cover protocol selection, fallback volume bounds, active-player ownership, and the retained HTTP path.
+
+Verification checklist:
+
+- Static app-script parsing passed all `8/8` inline and external script assets.
+- `node tools\\check-aegis-build.cjs` passed with the browser 0145/native 0015 labels and real Test Voices PCM energy checks.
+- Localhost start-screen and Geoscape smoke passed with the new 0145 label.
+- Browser Build Health passed `293/293`, including `Direct-file recorded voice fallback avoids blocked local fetches`.
+- The localhost computer, aircraft, and soldier Test Voices sequence completed with status `passed` while music was active.
+- A practical six-soldier 64x64 safe-2D incident launched, soldier selection exposed current TU and movement controls, and three End Turn cycles returned to the human phase.
+- No browser runtime error overlay appeared during voice, Geoscape, Build Health, launch, or tactical testing.
+- Godot 4.7.1 strict editor parsing passed; the unchanged native 0015 suite passed `108/108`, with Build Health remaining `82/82`.
+
+Manual validation still required:
+
+- Open `index.html` directly, open Audio Settings, leave Voices enabled at 100%, and press `Test Voices`.
+- Confirm computer, aircraft, and soldier clips play in order, music dips and returns, and lowering or muting Voices affects speech without affecting SFX.
+
+---
+
+# v0.26.07.31.0144 / GODOT.0015 - Voice Audibility Normalization and Music Ducking
+
+Browser build `v0.26.07.31.0144_VOICE_AUDIBILITY_NORMALIZATION_AND_MUSIC_DUCKING_PARITY_PATCH` and native build `v0.26.07.31.GODOT.0015_VOICE_AUDIBILITY_NORMALIZATION_AND_MUSIC_DUCKING_VERTICAL_SLICE` preserve save format 4 and repair the inaudible Test Voices mix without changing gameplay state or tactical outcomes.
+
+Root causes addressed:
+
+- The recorded takes are valid but average roughly -21 to -28 dBFS, leaving speech masked by the full-level music bed even with the voice slider raised.
+- Computer and aircraft clips relied entirely on category processing, with no clean reinforcement path to preserve consonants and speech intelligibility.
+- The old Test Voices result proved only that sources were scheduled and ended; it did not reject silent or near-silent take data.
+
+Implemented roadmap scope:
+
+- Browser playback samples at most 12,000 values from the selected take, caches its RMS/peak result, rejects takes below a conservative audibility floor, and applies bounded makeup gain limited by both target RMS and a 0.9 peak ceiling.
+- Processed computer and aircraft voices keep their existing 1980s computer/radio character while adding a low-level clean intelligibility path. A dedicated compressor-limiter controls the combined voice peak.
+- Active dialogue ducks streamed and synthesized music to 16% of its selected level, then restores it smoothly after the final queued clip. SFX volume and tactical behavior are unchanged.
+- Godot voices receive matching +6 dB bounded player makeup and duck the Music player by 16 dB for the duration of the queued voice sequence.
+- Browser Build Health adds actual bounded normalization and intelligibility/ducking rows. Native Build Health adds the paired makeup/ducking row. The seam checker reads the real PCM data for all three Test Voices categories and rejects any test take below the same audibility floor.
+
+Verification checklist:
+
+- Static browser parsing passed all `8/8` script assets.
+- `node tools\check-aegis-build.cjs` passed with paired 0144/0015 labels and real WAV energy checks.
+- Godot 4.7.1 strict editor parsing passed.
+- Native tests passed `108/108`; native Build Health passed `82/82`.
+- Browser Build Health passed `292/292`.
+- Localhost start screen and Geoscape smoke passed with the new 0144 label.
+- The computer, aircraft, and soldier test WAV URLs each returned HTTP 200 and the sequential browser Test Voices command completed while music was active.
+- A practical six-soldier 64x64 safe-2D incident launched, selected-soldier movement highlighting produced 150 cells, and three End Turn cycles returned to the human phase.
+- No browser runtime error overlay appeared during the voice, Geoscape, Build Health, launch, or tactical tests.
+
+Manual validation still required:
+
+- Set Voices to 100%, leave music playing, press `Test Voices`, and confirm all three categories are clearly audible while music dips and then returns.
+- Repeat at 50% and confirm volume changes without muting SFX or music.
+- Trigger a UFO/base announcement, a Skyranger aircraft call, and several tactical soldier lines naturally; confirm they remain ordered and intelligible.
+- Toggle Voices off and confirm recorded speech stops while Test SFX and music remain audible, then reload and verify the preference persists.
+
+Next recommended paired patch after this gate: `TACTICAL_CLASSIC_INVENTORY_TRANSFERS_AND_ELEVATION_FOUNDATION_PARITY_PATCH`, beginning with bounded adjacent-unit hand/belt transfers and floor-state data before any multi-level renderer rewrite.
 
 ---
 
@@ -236,18 +310,17 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.29.0143_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_PARITY_PATCH`
+`v0.26.07.31.0145_DIRECT_FILE_RECORDED_VOICE_PLAYBACK_FALLBACK_INDEX_ONLY_PATCH`
 
 ## Native Vertical Slice Build
-`v0.26.07.29.GODOT.0014_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_VERTICAL_SLICE`
+`v0.26.07.31.GODOT.0015_VOICE_AUDIBILITY_NORMALIZATION_AND_MUSIC_DUCKING_VERTICAL_SLICE`
 
 ## What This Patch Was Intended To Add
-This paired patch adds:
-- Dedicated browser and Godot voice buses independent from ordinary SFX.
-- Persistent voice on/off and 0-100 volume controls.
-- Browser user-gesture audio unlocking and awaited context resume.
-- Sequential base-computer, aircraft-radio, and soldier playback testing.
-- Matching browser/native Build Health and build-checker coverage.
+This browser compatibility patch adds:
+- Native media playback for recorded dialogue on direct `file://` launches.
+- Ordered segmented playback, voice mute/volume control, and music ducking on that fallback route.
+- Protocol and fallback ownership coverage without changing save format 4 or the native 0015 build.
+- The normalized Web Audio computer/radio/soldier path remains active for localhost and hosted builds.
 
 The current release line also preserves this cumulative implemented scope:
 - A save-compatible hangar-occupancy correction so Outbound and Returning aircraft no longer occupy the physical hangar they already departed.

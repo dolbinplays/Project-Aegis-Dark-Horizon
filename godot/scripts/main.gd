@@ -1,8 +1,10 @@
 extends Control
 
-const NATIVE_BUILD := "v0.26.07.29.GODOT.0014_DEDICATED_VOICE_BUS_CONTROLS_AND_PLAYBACK_RECOVERY_VERTICAL_SLICE"
+const NATIVE_BUILD := "v0.26.07.31.GODOT.0015_VOICE_AUDIBILITY_NORMALIZATION_AND_MUSIC_DUCKING_VERTICAL_SLICE"
 const MAX_BROWSER_IMPORT_BYTES := 32 * 1024 * 1024
 const AUDIO_SETTINGS_PATH := "user://project_aegis_audio_settings.cfg"
+const VOICE_MAKEUP_DB := 6.0
+const VOICE_MUSIC_DUCK_DB := -16.0
 
 var content: Dictionary = {}
 var campaign := AegisCampaignState.new()
@@ -75,6 +77,7 @@ func _create_audio() -> void:
 	voice_player = AudioStreamPlayer.new()
 	voice_player.name = "VoicePlayer"
 	voice_player.bus = &"Voices"
+	voice_player.volume_db = VOICE_MAKEUP_DB
 	add_child(voice_player)
 	voice_player.finished.connect(_play_next_voice)
 	_apply_voice_settings()
@@ -106,6 +109,7 @@ func _set_voice_enabled(enabled: bool) -> void:
 		voice_queue.clear()
 		if voice_player:
 			voice_player.stop()
+		_set_voice_music_duck(false)
 	_apply_voice_settings()
 	_save_audio_settings()
 
@@ -162,7 +166,13 @@ func _play_voice(file_name: String) -> void:
 	_play_next_voice()
 
 func _play_next_voice() -> void:
-	if not voice_enabled or voice_player == null or voice_player.playing or voice_queue.is_empty():
+	if not voice_enabled or voice_player == null:
+		_set_voice_music_duck(false)
+		return
+	if voice_player.playing:
+		return
+	if voice_queue.is_empty():
+		_set_voice_music_duck(false)
 		return
 	var file_name: String = voice_queue.pop_front()
 	var stream = load("res://assets/audio/dialogue/%s" % file_name)
@@ -170,7 +180,13 @@ func _play_next_voice() -> void:
 		_play_next_voice()
 		return
 	voice_player.stream = stream
+	voice_player.volume_db = VOICE_MAKEUP_DB
+	_set_voice_music_duck(true)
 	voice_player.play()
+
+func _set_voice_music_duck(active: bool) -> void:
+	if music_player:
+		music_player.volume_db = VOICE_MUSIC_DUCK_DB if active else 0.0
 
 func _show_audio_settings() -> void:
 	var dialog := AcceptDialog.new()
@@ -1674,6 +1690,7 @@ func _run_self_tests() -> Array:
 	var ai_reclaim_ready: bool = not recovery_board.ai_command_active and recovery_unit.cell == recovery_cell_before and int(recovery_unit.get("tu", 0)) == recovery_tu_before
 	var tactical_voice_ready: bool = recovery_voice_events.has("Back with you steady professional.wav") and has_method("_play_next_voice") and voice_queue is Array
 	var dedicated_voice_controls_ready: bool = has_method("_show_audio_settings") and has_method("_set_voice_enabled") and has_method("_set_voice_volume") and ResourceLoader.exists("res://godot/default_bus_layout.tres")
+	var voice_audibility_mix_ready: bool = has_method("_set_voice_music_duck") and VOICE_MAKEUP_DB >= 6.0 and VOICE_MUSIC_DUCK_DB <= -12.0
 	for alien in test_board.units.filter(func(unit): return unit.get("team", "") == "alien"):
 		alien["hp"] = 0
 	var rescue_gate_holds := not test_board._check_resolution() and not test_board.resolved
@@ -1923,6 +1940,7 @@ func _run_self_tests() -> Array:
 		{"name":"AI rescue routing rotates soldiers and rejects two-cell loops", "pass":rescue_route_ready and recovery_board.ai_last_acted_ids is Array},
 		{"name":"AI tactical soldier voices are queued and audio-unlocked", "pass":tactical_voice_ready},
 		{"name":"Dedicated voice bus exposes persistent mute volume and playback test controls", "pass":dedicated_voice_controls_ready},
+		{"name":"Recorded voices receive bounded makeup gain while active speech ducks music", "pass":voice_audibility_mix_ready},
 		{"name":"Classic reserve stance inventory and Done controls mutate tactical state", "pass":classic_console_ready},
 		{"name":"Tactical deployment exposes functional right and left hand slots", "pass":hand_slots_ready},
 		{"name":"Frag Grenade preparation spends four TU and enters explicit targeting", "pass":grenade_prime_ready},
