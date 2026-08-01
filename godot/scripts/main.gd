@@ -1,6 +1,6 @@
 extends Control
 
-const NATIVE_BUILD := "v0.26.07.31.GODOT.0015_VOICE_AUDIBILITY_NORMALIZATION_AND_MUSIC_DUCKING_VERTICAL_SLICE"
+const NATIVE_BUILD := "v0.26.08.01.GODOT.0016_FULL_SQUAD_AI_COMBAT_PRIORITY_THREAT_AVOIDING_ESCORT_AND_SEQUENTIAL_ACTION_VERTICAL_SLICE"
 const MAX_BROWSER_IMPORT_BYTES := 32 * 1024 * 1024
 const AUDIO_SETTINGS_PATH := "user://project_aegis_audio_settings.cfg"
 const VOICE_MAKEUP_DB := 6.0
@@ -1681,6 +1681,12 @@ func _run_self_tests() -> Array:
 		recovery_route_keys[AegisHexRules.key(recovery_cell)] = true
 	var recovery_crosses_ramp: bool = recovery_plan.get("path", []).any(func(cell): return recovery_board.extraction_cells.has(AegisHexRules.key(cell)))
 	var rescue_route_ready: bool = int(recovery_plan.get("steps", 0)) > 0 and recovery_plan.get("reached", false) and recovery_crosses_ramp and recovery_route_keys.size() == recovery_plan.get("path", []).size()
+	recovery_unit["cell"] = Vector2i(2, 8)
+	recovery_unit["tu"] = 60
+	var recovery_threat := {"id":"health-threat","team":"alien","hp":30,"cell":Vector2i(5, 8),"weapon_range":1}
+	recovery_board.units = [recovery_unit, recovery_threat]
+	var safe_recovery_plan: Dictionary = recovery_board._ai_rescue_plan(recovery_unit, [Vector2i(8, 8)], 0, false, [recovery_threat])
+	var threat_aware_escort_ready: bool = int(safe_recovery_plan.get("steps", 0)) > 0 and AegisHexRules.distance(safe_recovery_plan.get("cell", recovery_unit.cell), Vector2i(8, 8)) < AegisHexRules.distance(Vector2i(2, 8), Vector2i(8, 8)) and int(safe_recovery_plan.get("threat_steps", -1)) == 0 and int(safe_recovery_plan.get("reentries", -1)) == 0
 	var recovery_cell_before: Vector2i = recovery_unit.cell
 	var recovery_tu_before := int(recovery_unit.get("tu", 0))
 	var recovery_voice_events: Array[String] = []
@@ -1691,6 +1697,9 @@ func _run_self_tests() -> Array:
 	var tactical_voice_ready: bool = recovery_voice_events.has("Back with you steady professional.wav") and has_method("_play_next_voice") and voice_queue is Array
 	var dedicated_voice_controls_ready: bool = has_method("_show_audio_settings") and has_method("_set_voice_enabled") and has_method("_set_voice_volume") and ResourceLoader.exists("res://godot/default_bus_layout.tres")
 	var voice_audibility_mix_ready: bool = has_method("_set_voice_music_duck") and VOICE_MAKEUP_DB >= 6.0 and VOICE_MUSIC_DUCK_DB <= -12.0
+	var tactical_source := FileAccess.get_file_as_string("res://godot/scripts/tactical_board.gd")
+	var full_squad_priority_ready: bool = tactical_source.contains("for soldier in soldiers") and tactical_source.contains("visible_contacts.is_empty() and rescued < required_rescues") and tactical_source.contains("_ai_patrol_plan(soldier, reserve_tu)") and tactical_source.contains("ai_last_acted_ids.append")
+	var sequential_action_ready: bool = tactical_source.contains("0.38 if soldier.cell != cell_before") and tactical_source.contains("0.18 if alien.get(\"visible\", false) else 0.01") and tactical_source.contains("0.38 if alien.get(\"visible\", false) else 0.02")
 	for alien in test_board.units.filter(func(unit): return unit.get("team", "") == "alien"):
 		alien["hp"] = 0
 	var rescue_gate_holds := not test_board._check_resolution() and not test_board.resolved
@@ -1938,6 +1947,9 @@ func _run_self_tests() -> Array:
 		{"name":"AI-command tactical contacts preserve live fog of war", "pass":ai_fog_ready},
 		{"name":"AI command can return the live battle to player control", "pass":ai_reclaim_ready},
 		{"name":"AI rescue routing rotates soldiers and rejects two-cell loops", "pass":rescue_route_ready and recovery_board.ai_last_acted_ids is Array},
+		{"name":"AI command tasks every viable soldier and prioritizes squad contacts", "pass":full_squad_priority_ready},
+		{"name":"Civilian escorts avoid known alien firing exposure when a safe route exists", "pass":threat_aware_escort_ready},
+		{"name":"Visible AI-controlled soldiers and aliens play one actor at a time", "pass":sequential_action_ready},
 		{"name":"AI tactical soldier voices are queued and audio-unlocked", "pass":tactical_voice_ready},
 		{"name":"Dedicated voice bus exposes persistent mute volume and playback test controls", "pass":dedicated_voice_controls_ready},
 		{"name":"Recorded voices receive bounded makeup gain while active speech ducks music", "pass":voice_audibility_mix_ready},

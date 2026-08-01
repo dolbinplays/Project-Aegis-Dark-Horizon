@@ -121,6 +121,11 @@ const required = [
   "Frag Grenade blast is seven-hex bounded and opens traversable rubble",
   "AI command can return the live battle to player control",
   "AI rescue routing rotates soldiers and rejects two-cell loops",
+  "AI command assigns non-escorts to squad contacts while existing escorts evacuate",
+  "Civilian escorts minimize known alien firing exposure before extraction",
+  "AI playback presents visible soldiers and aliens one actor at a time",
+  "Classic lineup tracers connect exact firing and target units",
+  "Compact base selection recruitment warnings and squad-home recovery preserve base ownership",
   "AI tactical soldier voices are queued and audio-unlocked",
   "Dedicated voice bus has independent volume and mute gain",
   "Recorded voice takes use bounded energy normalization with a silence floor",
@@ -186,6 +191,13 @@ const required = [
   "tacticalAiRescueRoute",
   "tacticalAiExtractionEgress",
   "tacticalAiExtractionRoute",
+  "tacticalAiObservedAliens",
+  "tacticalAiThreatAwareReachablePlan",
+  "tacticalAiFallbackPatrolPlan",
+  "tacticalAiSequentialPlaybackFrames",
+  "shotEndpoints",
+  "has no assigned Skyranger",
+  "squadBaseId||missionContext?.soldierBaseId||missionContext?.originalBaseId||missionContext?.launchBaseId",
   "takeBackAiCommand",
   "cancelAiPlaybackTimers",
   "Hands / Targeting",
@@ -240,6 +252,8 @@ for (const nativeNeedle of [
   "func reclaim_ai_command",
   "func _ai_rescue_plan",
   "func _ai_extraction_plan",
+  "func _ai_threat_reachable",
+  "func _ai_patrol_plan",
   "ai_last_acted_ids",
   "voice_queue",
   "func _play_next_voice",
@@ -263,6 +277,9 @@ if (manifest.gameplayParity?.saveFormat !== manifest.saveFormat || nativeContent
 
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "multi-base-aircraft-ferry-routing" && entry?.reason)) {
   missing.push("browser-only multi-base ferry routing must be recorded as a temporary gameplay parity exception");
+}
+if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "multi-base-recruitment-and-recovery-ownership" && entry?.reason)) {
+  missing.push("browser-only multi-base recruitment and recovery ownership must be recorded as a temporary gameplay parity exception");
 }
 
 const nativeMedkit = nativeContent.field_items?.find((item) => item.id === "Medkit");
@@ -296,6 +313,12 @@ for (const system of [
   "tactical-ai-command-reclaim",
   "round-robin-ai-soldier-scheduling",
   "bounded-rescue-route-anti-loop",
+  "full-squad-ai-turn-utilization",
+  "combat-priority-squad-contact-response",
+  "threat-aware-civilian-extraction-routing",
+  "sequential-visible-ai-action-playback",
+  "classic-lineup-source-target-tracers",
+  "compact-base-selection-and-squad-home-recovery",
   "queued-tactical-voice-recovery",
   "dedicated-voice-bus-controls",
   "voice-take-normalization-music-ducking",

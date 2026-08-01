@@ -1,10 +1,61 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-07-31
-Current handoff build: `v0.26.07.31.0145_DIRECT_FILE_RECORDED_VOICE_PLAYBACK_FALLBACK_INDEX_ONLY_PATCH`
-Native vertical slice: `v0.26.07.31.GODOT.0015_VOICE_AUDIBILITY_NORMALIZATION_AND_MUSIC_DUCKING_VERTICAL_SLICE`
-Current patch status: **Browser 0145 preserves paired native 0015 and adds a native HTML media fallback for recorded voices when `index.html` is opened directly through `file://`, where browser security blocks the normal WAV fetch/decode path. Save format remains 4. The direct-file route preserves segmented take boundaries, ordered playback, voice mute/volume controls, and music ducking; localhost and hosted builds retain the normalized Web Audio processing introduced in 0144. Static browser parsing passes all 8 script assets, the seam checker passes, localhost Build Health passes 293/293, and the three-category localhost voice test completes with music active. A practical six-soldier 64x64 safe-2D mission launched and completed three End Turn cycles without a runtime error overlay. Godot 4.7.1 strict parsing and native tests pass 108/108; native Build Health remains 82/82. Direct-file physical-speaker playback remains the exact manual gate because the test harness does not permit `file://` navigation.**
+Last updated: 2026-08-01
+Current handoff build: `v0.26.08.01.0146_FULL_SQUAD_AI_COMBAT_PRIORITY_AND_THREAT_AVOIDING_ESCORT_PARITY_PATCH`
+Native vertical slice: `v0.26.08.01.GODOT.0016_FULL_SQUAD_AI_COMBAT_PRIORITY_THREAT_AVOIDING_ESCORT_AND_SEQUENTIAL_ACTION_VERTICAL_SLICE`
+Current patch status: **Browser 0146 and native 0016 preserve save format 4 and make AI tactical command use every viable soldier through bounded combat, escort, search, or patrol work. Established escorts keep evacuating while non-escorts answer squad-observed alien contacts first; escort path scoring minimizes known alien firing exposure before distance. Visible AI actors play sequentially, hidden aliens remain hidden, and Classic Lineup tracers use exact shooter/target identity. The browser compact header now includes a Base selector, recruitment into a base without an assigned Skyranger requires explicit confirmation, and successful alien-item/body/equipment recovery resolves to the responding squad's stationing base ahead of any ferry staging point. Static parsing and the seam checker pass; localhost Build Health passes 298/298. A practical six-soldier 64x64 safe-2D mission exposed 151 reachable movement cells, spent TU on movement, and completed three End Turn cycles in roughly 3-4 seconds each with no runtime errors. Native tests pass 111/111 and native Build Health passes 85/85. The remaining gate is hands-on validation in the originally affected mandatory-rescue campaign plus browser multi-base confirmation of recruitment and recovery ownership.**
+
+---
+
+# v0.26.08.01.0146 / GODOT.0016 - Full-Squad AI, Threat-Aware Escorts, and Base Continuity
+
+Browser build `v0.26.08.01.0146_FULL_SQUAD_AI_COMBAT_PRIORITY_AND_THREAT_AVOIDING_ESCORT_PARITY_PATCH` and native build `v0.26.08.01.GODOT.0016_FULL_SQUAD_AI_COMBAT_PRIORITY_THREAT_AVOIDING_ESCORT_AND_SEQUENTIAL_ACTION_VERTICAL_SLICE` preserve save format 4 and close the tactical AI utilization and strategic recovery-ownership gaps.
+
+Root causes addressed:
+
+- AI rescue scheduling could repeatedly consume one soldier's turn while other viable soldiers remained idle, and local contacts were not consistently promoted to squad-wide combat priorities.
+- Escort path scoring favored short extraction routes without measuring how many known alien weapon envelopes the civilians would cross.
+- Multiple state snapshots could become visible together during AI playback, making soldiers and aliens appear to move simultaneously.
+- Classic Lineup shot lines inferred rows from shot order instead of carrying the firing and target unit identities.
+- Successful mission recovery preferred the last launch/ferry base, which could misroute bodies and alien items away from the responding squad's home base.
+- The minimized header had no base switch, and recruitment allowed a no-Skyranger base without an explicit player acknowledgement.
+
+Implemented roadmap scope:
+
+- Each viable AI soldier receives bounded work every turn: active escorts continue evacuation, non-escorts answer squad-observed contacts, and remaining soldiers search unexplored space or take a deterministic patrol step.
+- Contact response remains combat-first unless a soldier already leads civilians. Stalled routes use bounded history resets and fallback cells instead of two-cell oscillation.
+- Threat-aware rescue routing scores exposure steps, entries into danger, and total known firing-range exposure before route length. Searches cap at 192 unique cells and 768 processed states in both clients.
+- AI output frames are split by visible actor. Visible soldiers and aliens move one at a time; alien state outside current observation remains suppressed and cannot pull the camera.
+- Browser simulation shots carry `fromId` and `toId`; Classic Lineup resolves exact source/target endpoints from those identities.
+- Both minimized command headers include the selected-base dropdown.
+- Browser recruitment checks for a Skyranger assigned to the selected base and requires `window.confirm` before ordering a soldier without one.
+- Successful recovery resolves the responding squad's stationing base first, then legacy soldier/original/launch fallbacks for save compatibility.
+- Browser Build Health gains five rows; native Build Health gains three paired tactical rows. Multi-base recruitment/recovery remains an explicit native exception because the Godot vertical slice is still single-base.
+
+Verification checklist:
+
+- Static browser app-script parsing passed.
+- `node tools\check-aegis-build.cjs` passed with paired 0146/0016 labels, bounded tactical seams, and the strategic continuity contract.
+- Localhost start screen and Geoscape smoke passed with the 0146 label.
+- The minimized header exposed both Command Section and Base selectors.
+- Browser Build Health passed `298/298` on a cache-busted load.
+- A practical six-soldier 64x64 safe-2D mission launched; selecting Hana exposed 151 reachable cells and movement reduced TU from 54 to 22.
+- Three End Turn cycles returned to the human phase in approximately 2.7, 4.0, and 2.9 seconds.
+- Browser diagnostics contained no runtime errors. The only warning was Tailwind's existing development-CDN advisory.
+- Native tests passed `111/111`; native Build Health passed `85/85`.
+- Godot 4.7.1 headless editor parsing exited successfully; Windows reported only the environment certificate-store warning and the expected scan-aborted message after the bounded quit.
+
+Remaining risks and manual validation:
+
+- Load the originally affected mandatory-rescue campaign without overwriting it. Give AI command for several turns and confirm every viable soldier acts, escorts progress, combat contacts rally non-escorts, and no unit oscillates indefinitely.
+- Observe a large visible firefight and confirm soldiers and aliens animate one actor at a time while unobserved alien movement remains hidden.
+- Confirm threat-aware civilian routes visibly avoid known alien firing lanes when a safe route exists and minimize exposure when none does.
+- At a second browser base with no assigned Skyranger, recruit a soldier and confirm cancel creates no order while approval creates exactly one local order.
+- Complete a ferry-staged browser mission and confirm alien bodies, alien items, and recovered squad equipment arrive at the squad's stationing base, not the staging base.
+- Inspect Classic Lineup playback and confirm every tracer joins the correct shooter and target through movement and casualties.
+
+Next recommended paired patch after this gate: `TACTICAL_CLASSIC_INVENTORY_TRANSFERS_AND_ELEVATION_FOUNDATION_PARITY_PATCH`, beginning with bounded adjacent-unit hand/belt transfers and floor-state data before any multi-level renderer rewrite.
 
 ---
 
@@ -310,17 +361,18 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.07.31.0145_DIRECT_FILE_RECORDED_VOICE_PLAYBACK_FALLBACK_INDEX_ONLY_PATCH`
+`v0.26.08.01.0146_FULL_SQUAD_AI_COMBAT_PRIORITY_AND_THREAT_AVOIDING_ESCORT_PARITY_PATCH`
 
 ## Native Vertical Slice Build
-`v0.26.07.31.GODOT.0015_VOICE_AUDIBILITY_NORMALIZATION_AND_MUSIC_DUCKING_VERTICAL_SLICE`
+`v0.26.08.01.GODOT.0016_FULL_SQUAD_AI_COMBAT_PRIORITY_THREAT_AVOIDING_ESCORT_AND_SEQUENTIAL_ACTION_VERTICAL_SLICE`
 
 ## What This Patch Was Intended To Add
-This browser compatibility patch adds:
-- Native media playback for recorded dialogue on direct `file://` launches.
-- Ordered segmented playback, voice mute/volume control, and music ducking on that fallback route.
-- Protocol and fallback ownership coverage without changing save format 4 or the native 0015 build.
-- The normalized Web Audio computer/radio/soldier path remains active for localhost and hosted builds.
+This paired tactical/strategic patch adds:
+- Full-squad bounded AI tasking with squad-contact combat priority and retained civilian escort duty.
+- Threat-aware civilian extraction routes and sequential visible-actor playback without exposing hidden aliens.
+- Exact shooter-to-target Classic Lineup tracers.
+- Compact-header base selection, explicit no-Skyranger recruitment confirmation, and squad-home mission recovery ownership in the browser campaign.
+- Five browser Build Health rows and three paired native rows without changing save format 4.
 
 The current release line also preserves this cumulative implemented scope:
 - A save-compatible hangar-occupancy correction so Outbound and Returning aircraft no longer occupy the physical hangar they already departed.

@@ -377,12 +377,33 @@ func _test_tactical(content: Dictionary) -> void:
 	var fair_board := AegisTacticalBoard.new()
 	get_root().add_child(fair_board)
 	fair_board.begin_battle(incident, tactical_roster, content)
-	for fair_alien in fair_board.units.filter(func(unit): return unit.get("team", "") == "alien"):
+	var fair_humans: Array = fair_board.units.filter(func(unit): return unit.get("team", "") == "human")
+	var fair_aliens: Array = fair_board.units.filter(func(unit): return unit.get("team", "") == "alien")
+	var fair_civilians: Array = fair_board.units.filter(func(unit): return unit.get("team", "") == "civilian")
+	fair_board.covers.clear()
+	fair_humans[0]["cell"] = Vector2i(18, 2)
+	for fair_index in range(1, fair_humans.size()):
+		fair_humans[fair_index]["cell"] = Vector2i(6, fair_index * 2)
+	for fair_alien in fair_aliens:
 		fair_alien["hp"] = 0
-	for fair_civilian in fair_board.units.filter(func(unit): return unit.get("team", "") == "civilian"):
+	fair_aliens[0]["hp"] = int(fair_aliens[0].get("max_hp", 30))
+	fair_aliens[0]["cell"] = Vector2i(12, 6)
+	fair_aliens[0]["visible"] = true
+	fair_civilians[0]["cell"] = Vector2i(17, 2)
+	fair_civilians[0]["escort_id"] = fair_humans[0].get("id", "")
+	fair_civilians[0]["escort_order"] = 1
+	fair_civilians[0]["revealed"] = true
+	fair_civilians[1]["cell"] = Vector2i(18, 12)
+	for fair_civilian in fair_civilians:
 		fair_civilian["revealed"] = true
+	var fair_state_frames: Array = []
+	fair_board.status_changed.connect(func(state: Dictionary): fair_state_frames.append(state))
+	fair_board._refresh_visibility()
 	await fair_board._run_ai_human_turn()
-	_check(fair_board.ai_last_acted_ids.size() >= 2, "AI rescue turn rotates work across multiple available soldiers")
+	_check(fair_board.ai_last_acted_ids.size() == fair_humans.size() and String(fair_civilians[1].get("escort_id", "")).is_empty() and fair_civilians[0].get("escort_id", "") == fair_humans[0].get("id", ""), "AI command tasks every viable soldier while existing escorts retain rescue duty during contact")
+	_check(fair_state_frames.size() >= fair_humans.size(), "AI-controlled visible soldier actions publish sequential tactical states")
+	var tactical_source := FileAccess.get_file_as_string("res://godot/scripts/tactical_board.gd")
+	_check(tactical_source.contains("0.18 if alien.get(\"visible\", false) else 0.01") and tactical_source.contains("0.38 if soldier.cell != cell_before"), "visible soldiers and aliens use bounded one-actor playback delays while hidden aliens stay fast")
 	fair_board.queue_free()
 	var route_board := AegisTacticalBoard.new()
 	get_root().add_child(route_board)
@@ -399,6 +420,12 @@ func _test_tactical(content: Dictionary) -> void:
 		route_keys[AegisHexRules.key(route_cell)] = true
 	var crosses_ramp: bool = rescue_plan.get("path", []).any(func(cell): return route_board.extraction_cells.has(AegisHexRules.key(cell)))
 	_check(int(rescue_plan.get("steps", 0)) > 0 and rescue_plan.get("reached", false) and crosses_ramp and route_keys.size() == rescue_plan.get("path", []).size(), "AI rescue route crosses the ramp without repeating a cell")
+	route_unit["cell"] = Vector2i(2, 8)
+	route_unit["tu"] = 60
+	var route_threat := {"id":"route-threat","team":"alien","hp":30,"cell":Vector2i(5, 8),"weapon_range":1}
+	route_board.units = [route_unit, route_threat]
+	var safe_rescue_plan: Dictionary = route_board._ai_rescue_plan(route_unit, [Vector2i(8, 8)], 0, false, [route_threat])
+	_check(int(safe_rescue_plan.get("steps", 0)) > 0 and AegisHexRules.distance(safe_rescue_plan.get("cell", route_unit.cell), Vector2i(8, 8)) < AegisHexRules.distance(Vector2i(2, 8), Vector2i(8, 8)) and int(safe_rescue_plan.get("threat_steps", -1)) == 0 and int(safe_rescue_plan.get("reentries", -1)) == 0, "civilian escort routing advances toward extraction without known alien firing exposure when a safe path exists")
 	var reclaim_cell: Vector2i = route_unit.cell
 	var reclaim_tu := int(route_unit.get("tu", 0))
 	var reclaim_voices: Array[String] = []
@@ -412,7 +439,7 @@ func _test_tactical(content: Dictionary) -> void:
 	_check(not board.reachable.is_empty(), "soldier selection produces bounded movement highlights")
 	for cycle in range(3):
 		board.end_human_turn()
-		for wait_step in range(40):
+		for wait_step in range(140):
 			if board.phase != "alien":
 				break
 			await create_timer(0.05).timeout
@@ -454,9 +481,9 @@ func _test_build_health() -> void:
 	var app: Node = load("res://godot/main.tscn").instantiate()
 	app.content = _load_json("res://godot/data/content.json")
 	var health: Array = app._run_self_tests()
-	if health.size() != 82 or not health.all(func(row): return row.get("pass", false)):
+	if health.size() != 85 or not health.all(func(row): return row.get("pass", false)):
 		print("BUILD HEALTH DETAIL: %s" % JSON.stringify(health))
-	_check(health.size() == 82 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 82 rows")
+	_check(health.size() == 85 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 85 rows")
 	app.free()
 
 func _load_json(path: String) -> Dictionary:
