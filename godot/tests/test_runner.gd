@@ -280,6 +280,7 @@ func _test_tactical(content: Dictionary) -> void:
 	board.begin_battle(incident, tactical_roster, content)
 	_check(board.units.filter(func(unit): return unit.get("team", "") == "human").size() == 6, "tactical deployment includes six soldiers")
 	_check(board.units.filter(func(unit): return unit.get("team", "") == "civilian").size() == 2, "tactical incident includes rescue civilians")
+	_check(board.skyranger_clear_of_buildings(), "Skyranger footprint and ramp remain separated from buildings")
 	var wall_key := AegisHexRules.key(Vector2i(10, 2))
 	var wall: Dictionary = board.covers.get(wall_key, {})
 	var shooter: Dictionary = board.units.filter(func(unit): return unit.get("team", "") == "human")[0]
@@ -326,6 +327,15 @@ func _test_tactical(content: Dictionary) -> void:
 	ai_board.begin_battle(incident, tactical_roster, content)
 	var ai_humans: Array = ai_board.units.filter(func(unit): return unit.get("team", "") == "human")
 	var ai_aliens: Array = ai_board.units.filter(func(unit): return unit.get("team", "") == "alien")
+	var priority_civilian: Dictionary = ai_board.units.filter(func(unit): return unit.get("team", "") == "civilian")[0]
+	priority_civilian["cell"] = ai_humans[0].get("cell", Vector2i.ZERO) + Vector2i(1, 0)
+	ai_board._assign_precontact_civilian_claim(priority_civilian, [ai_humans[0]])
+	_check(priority_civilian.get("priority_escort_id", "") == ai_humans[0].get("id", "") and ai_humans[0].get("priority_civilian_id", "") == priority_civilian.get("id", ""), "pre-contact civilian sighting assigns a persistent soldier rescue priority")
+	ai_aliens[0]["revealed"] = true
+	ai_aliens[0]["visible"] = false
+	ai_aliens[0]["last_known_cell"] = Vector2i(9, 6)
+	var tactical_source := FileAccess.get_file_as_string("res://godot/scripts/tactical_board.gd")
+	_check(ai_board._known_alien_contact_cells().has(Vector2i(9, 6)) and tactical_source.contains("if rescue_target == null and _inside(contact_target_cell)") and tactical_source.contains("_known_alien_contact_cells().is_empty() and rescued < required_rescues"), "non-escort AI soldiers converge on remembered alien contact areas")
 	ai_humans[0]["rank"] = "Captain"
 	ai_humans[0]["missions"] = 12
 	var doctrine_summary := ai_board.ai_command_summary()
@@ -402,7 +412,6 @@ func _test_tactical(content: Dictionary) -> void:
 	await fair_board._run_ai_human_turn()
 	_check(fair_board.ai_last_acted_ids.size() == fair_humans.size() and String(fair_civilians[1].get("escort_id", "")).is_empty() and fair_civilians[0].get("escort_id", "") == fair_humans[0].get("id", ""), "AI command tasks every viable soldier while existing escorts retain rescue duty during contact")
 	_check(fair_state_frames.size() >= fair_humans.size(), "AI-controlled visible soldier actions publish sequential tactical states")
-	var tactical_source := FileAccess.get_file_as_string("res://godot/scripts/tactical_board.gd")
 	_check(tactical_source.contains("0.18 if alien.get(\"visible\", false) else 0.01") and tactical_source.contains("0.38 if soldier.cell != cell_before"), "visible soldiers and aliens use bounded one-actor playback delays while hidden aliens stay fast")
 	fair_board.queue_free()
 	var route_board := AegisTacticalBoard.new()
@@ -481,9 +490,9 @@ func _test_build_health() -> void:
 	var app: Node = load("res://godot/main.tscn").instantiate()
 	app.content = _load_json("res://godot/data/content.json")
 	var health: Array = app._run_self_tests()
-	if health.size() != 85 or not health.all(func(row): return row.get("pass", false)):
+	if health.size() != 87 or not health.all(func(row): return row.get("pass", false)):
 		print("BUILD HEALTH DETAIL: %s" % JSON.stringify(health))
-	_check(health.size() == 85 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 85 rows")
+	_check(health.size() == 87 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 87 rows")
 	app.free()
 
 func _load_json(path: String) -> Dictionary:

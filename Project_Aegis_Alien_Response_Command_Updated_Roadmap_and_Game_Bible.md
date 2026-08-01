@@ -2,9 +2,56 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-01
-Current handoff build: `v0.26.08.01.0146_FULL_SQUAD_AI_COMBAT_PRIORITY_AND_THREAT_AVOIDING_ESCORT_PARITY_PATCH`
-Native vertical slice: `v0.26.08.01.GODOT.0016_FULL_SQUAD_AI_COMBAT_PRIORITY_THREAT_AVOIDING_ESCORT_AND_SEQUENTIAL_ACTION_VERTICAL_SLICE`
-Current patch status: **Browser 0146 and native 0016 preserve save format 4 and make AI tactical command use every viable soldier through bounded combat, escort, search, or patrol work. Established escorts keep evacuating while non-escorts answer squad-observed alien contacts first; escort path scoring minimizes known alien firing exposure before distance. Visible AI actors play sequentially, hidden aliens remain hidden, and Classic Lineup tracers use exact shooter/target identity. The browser compact header now includes a Base selector, recruitment into a base without an assigned Skyranger requires explicit confirmation, and successful alien-item/body/equipment recovery resolves to the responding squad's stationing base ahead of any ferry staging point. Static parsing and the seam checker pass; localhost Build Health passes 298/298. A practical six-soldier 64x64 safe-2D mission exposed 151 reachable movement cells, spent TU on movement, and completed three End Turn cycles in roughly 3-4 seconds each with no runtime errors. Native tests pass 111/111 and native Build Health passes 85/85. The remaining gate is hands-on validation in the originally affected mandatory-rescue campaign plus browser multi-base confirmation of recruitment and recovery ownership.**
+Current handoff build: `v0.26.08.01.0147_TACTICAL_CONTACT_MEMORY_STATE_CONTINUITY_AND_SAFE_LANDING_PARITY_PATCH`
+Native vertical slice: `v0.26.08.01.GODOT.0017_TACTICAL_CONTACT_MEMORY_RESCUE_PRIORITY_AND_SAFE_LANDING_VERTICAL_SLICE`
+Current patch status: **Browser 0147 and native 0017 preserve save format 4. Once an alien has been observed, every viable non-escort soldier converges on the current or last-known contact area while established civilian escorts continue evacuating. A civilian seen before alien contact receives a persistent nearest-soldier rescue claim. Skyranger deployment now performs a bounded full-footprint clearance search and keeps the hull/ramp separated from buildings. Browser manual tactical state survives command-section navigation, Classic Lineup deaths occur after their lethal firing frame, and all-clear resolution waits for action playback. Static parsing and the seam checker pass; localhost Build Health passes 303/303. A practical six-soldier mission preserved Mina's selection and exact battlefield state across Base-to-Missions navigation, completed three End Turn cycles in about 0.9-1.1 seconds, displayed sequential Theo/Mina AI frames, and returned control without runtime errors. Native tests pass 114/114, native Build Health passes 87/87, and Godot 4.7.1 strict parsing passes. The remaining gate is hands-on validation in the originally affected rescue campaign, dense urban landing maps, and lethal Classic Lineup playback.**
+
+---
+
+# v0.26.08.01.0147 / GODOT.0017 - Contact Memory, Tactical Continuity, and Safe Landing
+
+Browser build `v0.26.08.01.0147_TACTICAL_CONTACT_MEMORY_STATE_CONTINUITY_AND_SAFE_LANDING_PARITY_PATCH` and native build `v0.26.08.01.GODOT.0017_TACTICAL_CONTACT_MEMORY_RESCUE_PRIORITY_AND_SAFE_LANDING_VERTICAL_SLICE` preserve save format 4 and close several tactical continuity gaps without restoring unbounded map work.
+
+Root causes addressed:
+
+- AI combat movement depended on currently visible aliens. Once line of sight broke, non-escort soldiers could resume generic search instead of reinforcing the last observed contact area.
+- Civilian discovery did not establish ownership before alien contact, so later combat priority could displace the soldier who had first found an unapproached civilian.
+- Leaving a manual tactical section unmounted `TacticalMission`; returning regenerated deployment, fog, units, damage, rescue progress, and controls from the mission seed.
+- Skyranger placement used its preferred deployment center and then removed overlapping cover, which could erase structure cells and allow the craft to touch a procedural building.
+- Sequential Classic Lineup frames applied lethal HP state in the firing frame, and all-clear dialogue could occur before the final impact/action frame had completed.
+- A delayed alien-turn callback could read stale pre-resolution units after the final alien had already been removed.
+
+Implemented roadmap scope:
+
+- Browser aliens retain `lastKnownX/lastKnownY`; native aliens retain `last_known_cell`. A mission-level contact flag prevents a discovered threat from being forgotten merely because it leaves line of sight.
+- Non-escort AI soldiers use bounded movement toward visible contacts first and remembered contact cells second. Shooting, reaction fire, visibility, and fog still require current observation and line of sight.
+- Before any alien contact, a revealed civilian is claimed by the nearest eligible observing soldier. The civilian and soldier retain reciprocal priority IDs; an active escort remains exempt from combat convergence.
+- Browser live tactical state is cached by mission ID across command-section unmounts, including deployment, cover damage, units/TU, selection, fog, view, fire/reserve/targeting controls, log, round, and AI playback. Cache entries are removed only when the incident finishes.
+- Skyranger placement checks the complete hull/ramp footprint plus one-hex building clearance through a bounded battlefield search. Existing building cover is retained rather than deleted under the craft.
+- Classic Lineup lethal shots keep the target alive in the shot frame and add an immediate impact frame for death. Final resolution and last-alien dialogue are phase-complete gated, and manual alien callbacks re-read authoritative units before acting.
+- Browser Build Health gains five rows and reaches 303. Native Build Health gains two rows and reaches 87; native automation adds three direct checks and reaches 114.
+
+Verification checklist:
+
+- Static browser app-script parsing passed.
+- `node tools\check-aegis-build.cjs` passed with paired 0147/0017 labels and the new tactical seams.
+- Localhost start screen and Geoscape smoke passed with the 0147 label.
+- Browser Build Health passed `303/303` on a cache-busted load.
+- A practical six-soldier 64x64 safe-2D incident launched. Mina's selected state and the original deployment/log survived a visit to Base and return to Missions.
+- Three End Turn cycles returned to the human phase in approximately 0.9, 1.1, and 1.1 seconds.
+- Tactical-map AI playback showed sequential actor frames for Theo and Mina; Take Back Control returned to the same live mission.
+- Browser diagnostics contained no runtime errors. The only warning was Tailwind's existing development-CDN advisory.
+- Native tests passed `114/114`; native Build Health passed `87/87`; Godot 4.7.1 strict editor parsing exited successfully.
+
+Remaining risks and manual validation:
+
+- Load the originally affected rescue campaign without overwriting it. Confirm every non-escort converges on the last observed alien area while current escorts continue to the ramp and no soldier oscillates or idles indefinitely.
+- Spot a civilian before any alien and confirm the discovering soldier retains rescue priority after another soldier reveals a hostile.
+- Inspect several dense urban maps and confirm the complete Skyranger hull and ramp remain at least one hex clear of every building.
+- Damage a wall, move units, and begin civilian rescue; visit another command section and return to confirm every changed cell, TU value, and escort state remains exact.
+- Watch a lethal Classic Lineup exchange and confirm the target remains standing until the shot appears, falls on impact, all-clear follows the final action, and no unit continues firing afterward.
+
+Next recommended paired patch after this gate: `TACTICAL_CLASSIC_INVENTORY_TRANSFERS_AND_ELEVATION_FOUNDATION_PARITY_PATCH`, beginning with bounded adjacent-unit hand/belt transfers and floor-state data before any multi-level renderer rewrite.
 
 ---
 

@@ -1,6 +1,6 @@
 extends Control
 
-const NATIVE_BUILD := "v0.26.08.01.GODOT.0016_FULL_SQUAD_AI_COMBAT_PRIORITY_THREAT_AVOIDING_ESCORT_AND_SEQUENTIAL_ACTION_VERTICAL_SLICE"
+const NATIVE_BUILD := "v0.26.08.01.GODOT.0017_TACTICAL_CONTACT_MEMORY_RESCUE_PRIORITY_AND_SAFE_LANDING_VERTICAL_SLICE"
 const MAX_BROWSER_IMPORT_BYTES := 32 * 1024 * 1024
 const AUDIO_SETTINGS_PATH := "user://project_aegis_audio_settings.cfg"
 const VOICE_MAKEUP_DB := 6.0
@@ -1698,7 +1698,19 @@ func _run_self_tests() -> Array:
 	var dedicated_voice_controls_ready: bool = has_method("_show_audio_settings") and has_method("_set_voice_enabled") and has_method("_set_voice_volume") and ResourceLoader.exists("res://godot/default_bus_layout.tres")
 	var voice_audibility_mix_ready: bool = has_method("_set_voice_music_duck") and VOICE_MAKEUP_DB >= 6.0 and VOICE_MUSIC_DUCK_DB <= -12.0
 	var tactical_source := FileAccess.get_file_as_string("res://godot/scripts/tactical_board.gd")
-	var full_squad_priority_ready: bool = tactical_source.contains("for soldier in soldiers") and tactical_source.contains("visible_contacts.is_empty() and rescued < required_rescues") and tactical_source.contains("_ai_patrol_plan(soldier, reserve_tu)") and tactical_source.contains("ai_last_acted_ids.append")
+	var skyranger_building_clearance_ready := test_board.skyranger_clear_of_buildings()
+	var priority_board := AegisTacticalBoard.new()
+	priority_board.begin_battle(test_campaign.selected_incident(), test_campaign.assigned_soldiers(), content)
+	var priority_soldier: Dictionary = priority_board.units.filter(func(unit): return unit.get("team", "") == "human")[0]
+	var priority_civilian: Dictionary = priority_board.units.filter(func(unit): return unit.get("team", "") == "civilian")[0]
+	priority_civilian.cell = priority_soldier.cell + Vector2i(1, 0)
+	priority_board._assign_precontact_civilian_claim(priority_civilian, [priority_soldier])
+	var remembered_alien: Dictionary = priority_board.units.filter(func(unit): return unit.get("team", "") == "alien")[0]
+	remembered_alien.revealed = true
+	remembered_alien.visible = false
+	remembered_alien.last_known_cell = Vector2i(9, 6)
+	var precontact_contact_memory_ready: bool = priority_civilian.get("priority_escort_id", "") == priority_soldier.get("id", "") and priority_soldier.get("priority_civilian_id", "") == priority_civilian.get("id", "") and priority_board._known_alien_contact_cells().has(Vector2i(9, 6)) and tactical_source.contains("if rescue_target == null and _inside(contact_target_cell)") and tactical_source.contains("_known_alien_contact_cells().is_empty() and rescued < required_rescues")
+	var full_squad_priority_ready: bool = tactical_source.contains("for soldier in soldiers") and tactical_source.contains("_known_alien_contact_cells().is_empty() and rescued < required_rescues") and tactical_source.contains("_ai_patrol_plan(soldier, reserve_tu)") and tactical_source.contains("ai_last_acted_ids.append")
 	var sequential_action_ready: bool = tactical_source.contains("0.38 if soldier.cell != cell_before") and tactical_source.contains("0.18 if alien.get(\"visible\", false) else 0.01") and tactical_source.contains("0.38 if alien.get(\"visible\", false) else 0.02")
 	for alien in test_board.units.filter(func(unit): return unit.get("team", "") == "alien"):
 		alien["hp"] = 0
@@ -1936,6 +1948,7 @@ func _run_self_tests() -> Array:
 		{"name":"Thirty minutes reaches the opening incident", "pass":test_campaign.advance_minutes(30)},
 		{"name":"Tactical board deploys six soldiers and two civilians", "pass":tactical_humans.size() == 6 and tactical_civilians.size() == 2},
 		{"name":"Skyranger exposes a nine-cell rescue ramp", "pass":test_board.extraction_cells.size() == 9},
+		{"name":"Skyranger footprint remains separated from every building", "pass":skyranger_building_clearance_ready},
 		{"name":"Civilian contact links an escort and spends eight TU", "pass":civilian.get("escort_id", "") == shooter.get("id", "") and int(shooter.get("tu", 0)) == 8},
 		{"name":"Destroyed tactical wall becomes nonblocking rubble", "pass":wall.get("type", "") == "rubble" and not test_board._blocked_cells().has(wall_key)},
 		{"name":"Area security waits for mandatory rescue", "pass":rescue_gate_holds},
@@ -1948,6 +1961,7 @@ func _run_self_tests() -> Array:
 		{"name":"AI command can return the live battle to player control", "pass":ai_reclaim_ready},
 		{"name":"AI rescue routing rotates soldiers and rejects two-cell loops", "pass":rescue_route_ready and recovery_board.ai_last_acted_ids is Array},
 		{"name":"AI command tasks every viable soldier and prioritizes squad contacts", "pass":full_squad_priority_ready},
+		{"name":"Pre-contact rescue claims persist while other soldiers converge on remembered alien areas", "pass":precontact_contact_memory_ready},
 		{"name":"Civilian escorts avoid known alien firing exposure when a safe route exists", "pass":threat_aware_escort_ready},
 		{"name":"Visible AI-controlled soldiers and aliens play one actor at a time", "pass":sequential_action_ready},
 		{"name":"AI tactical soldier voices are queued and audio-unlocked", "pass":tactical_voice_ready},
@@ -2014,6 +2028,7 @@ func _run_self_tests() -> Array:
 	test_board.free()
 	doctrine_board.free()
 	recovery_board.free()
+	priority_board.free()
 	loadout_board.free()
 	dense_map.free()
 	return checks
