@@ -281,6 +281,36 @@ func _test_tactical(content: Dictionary) -> void:
 	_check(board.units.filter(func(unit): return unit.get("team", "") == "human").size() == 6, "tactical deployment includes six soldiers")
 	_check(board.units.filter(func(unit): return unit.get("team", "") == "civilian").size() == 2, "tactical incident includes rescue civilians")
 	_check(board.skyranger_clear_of_buildings(), "Skyranger footprint and ramp remain separated from buildings")
+	var multi_roster: Array = tactical_roster.duplicate(true)
+	for multi_source in tactical_roster:
+		var reinforcement: Dictionary = multi_source.duplicate(true)
+		reinforcement["id"] = "%s-bravo" % String(multi_source.get("id", "soldier"))
+		multi_roster.append(reinforcement)
+	var alpha_ids: Array = multi_roster.slice(0, 6).map(func(unit): return unit.get("id", ""))
+	var bravo_ids: Array = multi_roster.slice(6, 12).map(func(unit): return unit.get("id", ""))
+	var multi_incident: Dictionary = incident.duplicate(true)
+	multi_incident["transport_count"] = 2
+	multi_incident["tactical_map_tier"] = "medium"
+	multi_incident["response_squad_deployments"] = [{"squad_id":"alpha","soldier_ids":alpha_ids},{"squad_id":"bravo","soldier_ids":bravo_ids}]
+	var multi_board := AegisTacticalBoard.new()
+	get_root().add_child(multi_board)
+	multi_board.begin_battle(multi_incident, multi_roster, content)
+	var multi_humans: Array = multi_board.units.filter(func(unit): return unit.get("team", "") == "human")
+	var multi_starts: Array = multi_board._soldier_start_cells()
+	var formations_ready := multi_humans.size() == 12
+	for multi_human in multi_humans:
+		var assigned_transport := int(multi_human.get("transport_index", -1))
+		formations_ready = formations_ready and assigned_transport in [0, 1] and multi_starts[assigned_transport].has(multi_human.get("cell", Vector2i.ZERO))
+	_check(multi_board.transport_count == 2 and multi_board.skyranger_placements.size() == 2 and multi_board.extraction_cells.size() == 18 and formations_ready and multi_board.skyranger_clear_of_buildings(), "two dispatched Skyrangers deploy their exact squads at separate ramps")
+	var large_incident: Dictionary = incident.duplicate(true)
+	large_incident["tactical_map_tier"] = "large"
+	var large_board := AegisTacticalBoard.new()
+	get_root().add_child(large_board)
+	large_board.begin_battle(large_incident, tactical_roster, content)
+	_check(board.grid_width == 20 and board.grid_height == 14 and board.units.filter(func(unit): return unit.get("team", "") == "civilian").size() == 2 and multi_board.grid_width == 26 and multi_board.grid_height == 18 and multi_board.units.filter(func(unit): return unit.get("team", "") == "civilian").size() == 4 and large_board.grid_width == 32 and large_board.grid_height == 22 and large_board.units.filter(func(unit): return unit.get("team", "") == "civilian").size() == 6, "small medium and large maps increase battlefield area and civilian capacity")
+	_check(AegisHexRules.path(Vector2i(2, 2), Vector2i(0, 2), {}, {}, multi_board.grid_width, multi_board.grid_height).is_empty() and AegisHexRules.neighbors(Vector2i(1, 1), multi_board.grid_width, multi_board.grid_height).all(func(cell): return multi_board._inside(cell)) and multi_board.units.all(func(unit): return multi_board._inside(unit.get("cell", Vector2i.ZERO))), "pathfinding and deployment reject cells on or beyond the map perimeter")
+	large_board.queue_free()
+	multi_board.queue_free()
 	var wall_key := AegisHexRules.key(Vector2i(10, 2))
 	var wall: Dictionary = board.covers.get(wall_key, {})
 	var shooter: Dictionary = board.units.filter(func(unit): return unit.get("team", "") == "human")[0]
@@ -401,7 +431,7 @@ func _test_tactical(content: Dictionary) -> void:
 	for secure_assignment in secure_assignments.values():
 		assignment_zones[secure_assignment.get("zone_id", "")] = true
 	ai_board._refresh_explored_cells([ai_humans[0]])
-	_check(secure_assignments.size() == ai_humans.size() and tracker_assignments.size() == 2 and tracker_assignments[0].get("tracker_id", "") != tracker_assignments[1].get("tracker_id", "") and building_assignments.size() == 1 and building_assignments[0].get("building_id", "") == "outpost" and assignment_zones.size() == secure_assignments.size() and ai_board._active_vip_tracker_targets().size() == 2 and ai_board.explored_cells.size() > 0 and ai_board.explored_cells.size() <= ai_board.GRID_WIDTH * ai_board.GRID_HEIGHT and tactical_source.contains("var tracker_guidance :=") and tactical_source.contains("secure_rescue or tracker_guidance") and tactical_source.contains("var search_reserve := 0 if secure_rescue"), "tracked VIP pings guide idle AI searchers and split secure searches across buildings and sectors")
+	_check(secure_assignments.size() == ai_humans.size() and tracker_assignments.size() == 2 and tracker_assignments[0].get("tracker_id", "") != tracker_assignments[1].get("tracker_id", "") and building_assignments.size() == 1 and building_assignments[0].get("building_id", "") == "outpost" and assignment_zones.size() == secure_assignments.size() and ai_board._active_vip_tracker_targets().size() == 2 and ai_board.explored_cells.size() > 0 and ai_board.explored_cells.size() <= ai_board.grid_width * ai_board.grid_height and tactical_source.contains("var tracker_guidance :=") and tactical_source.contains("secure_rescue or tracker_guidance") and tactical_source.contains("var search_reserve := 0 if secure_rescue"), "tracked VIP pings guide idle AI searchers and split secure searches across buildings and sectors")
 	var console_soldier: Dictionary = ai_humans[2]
 	ai_board._select_unit(String(console_soldier.get("id", "")))
 	var console_tu_before := int(console_soldier.get("tu", 0))
@@ -530,9 +560,9 @@ func _test_build_health() -> void:
 	var app: Node = load("res://godot/main.tscn").instantiate()
 	app.content = _load_json("res://godot/data/content.json")
 	var health: Array = app._run_self_tests()
-	if health.size() != 89 or not health.all(func(row): return row.get("pass", false)):
+	if health.size() != 92 or not health.all(func(row): return row.get("pass", false)):
 		print("BUILD HEALTH DETAIL: %s" % JSON.stringify(health))
-	_check(health.size() == 89 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 89 rows")
+	_check(health.size() == 92 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 92 rows")
 	app.free()
 
 func _load_json(path: String) -> Dictionary:

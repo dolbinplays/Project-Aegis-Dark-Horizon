@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.01.0149_TACTICAL_VIP_TRACKERS_AND_POST_COMBAT_RESCUE_SEARCH_PARITY_PATCH",
+  "currentBuild": "v0.26.08.02.0150_TACTICAL_MULTI_SKYRANGER_MAP_TIERS_EDGE_GUARDS_AND_3D_VIP_PINGS_PARITY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "tracked-vip-ai-guidance-manual-test",
+  "status": "multi-skyranger-map-tiers-3d-vip-pings-manual-test",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,19 +26,19 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.01.0149_TACTICAL_VIP_TRACKERS_AND_POST_COMBAT_RESCUE_SEARCH_PARITY_PATCH",
+  "lastInspectedBuild": "v0.26.08.02.0150_TACTICAL_MULTI_SKYRANGER_MAP_TIERS_EDGE_GUARDS_AND_3D_VIP_PINGS_PARITY_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
     "mainScene": "godot/main.tscn",
-    "build": "v0.26.08.01.GODOT.0019_VIP_TRACKERS_AND_POST_COMBAT_RESCUE_SEARCH_VERTICAL_SLICE",
+    "build": "v0.26.08.02.GODOT.0020_MULTI_TRANSPORT_MAP_TIERS_AND_EDGE_GUARDS_VERTICAL_SLICE",
     "saveFormat": 4,
-    "status": "tracked-vip-ai-guidance-manual-test"
+    "status": "multi-transport-map-tiers-manual-test"
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.01.0149_TACTICAL_VIP_TRACKERS_AND_POST_COMBAT_RESCUE_SEARCH_PARITY_PATCH",
-    "nativeBuild": "v0.26.08.01.GODOT.0019_VIP_TRACKERS_AND_POST_COMBAT_RESCUE_SEARCH_VERTICAL_SLICE",
+    "browserBuild": "v0.26.08.02.0150_TACTICAL_MULTI_SKYRANGER_MAP_TIERS_EDGE_GUARDS_AND_3D_VIP_PINGS_PARITY_PATCH",
+    "nativeBuild": "v0.26.08.02.GODOT.0020_MULTI_TRANSPORT_MAP_TIERS_AND_EDGE_GUARDS_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
       "base-local-medkit-issue-return",
@@ -75,6 +75,10 @@
       "wounded-downed-squad-distress-response",
       "tracked-vip-pings-and-post-combat-rescue-search-sectors",
       "tracked-vip-precontact-ai-guidance",
+      "multi-skyranger-exact-squad-ramp-deployment",
+      "tactical-small-medium-large-map-profiles",
+      "tactical-playable-perimeter-edge-guards",
+      "visible-vip-tracker-pulses-in-2d-and-3d",
       "skyranger-building-clearance",
       "post-resolution-action-gating",
       "queued-tactical-voice-recovery",

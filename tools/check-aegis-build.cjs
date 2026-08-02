@@ -107,6 +107,9 @@ const required = [
   "Mandatory civilian objectives continue through a bounded secure rescue phase",
   "AI mandatory rescue phase searches escorts and extracts before resolution",
   "Tracked VIP pings guide AI searchers before distinct post-combat building and sector sweeps",
+  "Incident transports deploy one Skyranger and one ramp formation per response squad",
+  "Small medium and large tactical profiles scale civilians while keeping rendered views bounded",
+  "Tactical perimeter guards and Three.js VIP beacons preserve bounded movement and rescue guidance",
   "Skyranger ramp civilian escorts follow bounded paths and recover from panic",
   "Escort chains reserve single-file cells and panic favors broken sightlines",
   "Reload and fire-mode changes are authoritative for the next tactical action",
@@ -209,6 +212,16 @@ const required = [
   "tacticalAiFallbackPatrolPlan",
   "tacticalAiSequentialPlaybackFrames",
   "tacticalVipTrackerPings",
+  "TACTICAL_MAP_PROFILES",
+  "tacticalTransportCountForMission",
+  "tacticalGridSizeForMission",
+  "trackerPulses",
+  "data-aegis-vip-tracker-three",
+  "updateTrackerIndicators",
+  "isTacticalMapEdge",
+  "gridSize:deployment.gridSize||TACTICAL_GRID_SIZE",
+  "const gridSize=tacticalGridSizeFrom(shooter,target)",
+  "const gridSize = tacticalGridSizeFrom(placement, rampCells)",
   "tacticalAiSecureSearchAssignments",
   "tacticalPreContactCivilianClaims",
   "tacticalUpdateAlienContactMemory",
@@ -284,6 +297,11 @@ for (const nativeNeedle of [
   "func _refresh_explored_cells",
   "func _draw_tracker_pings",
   "Tracked VIP pings guide AI searchers before distinct post-combat building and sector sweeps",
+  "Each deployed squad forms at its own matching Skyranger rescue ramp",
+  "Small Medium and Large tactical maps scale terrain and civilian capacity",
+  "Tactical neighbors paths and generated units remain inside the playable perimeter",
+  "func _configure_map_profile",
+  "func _build_skyranger_placements",
   "Non-escort soldiers answer wounded and downed squad distress calls then search the firing direction",
   "ai_last_acted_ids",
   "voice_queue",
@@ -313,6 +331,16 @@ if (!manifest.gameplayParity?.requiredSystems?.includes("tracked-vip-pings-and-p
 }
 if (!manifest.gameplayParity?.requiredSystems?.includes("tracked-vip-precontact-ai-guidance")) {
   missing.push("browser/native gameplay parity must require tracked VIP pre-contact AI guidance");
+}
+for (const system of [
+  "multi-skyranger-exact-squad-ramp-deployment",
+  "tactical-small-medium-large-map-profiles",
+  "tactical-playable-perimeter-edge-guards",
+  "visible-vip-tracker-pulses-in-2d-and-3d",
+]) {
+  if (!manifest.gameplayParity?.requiredSystems?.includes(system)) {
+    missing.push(`browser/native tactical map parity system missing: ${system}`);
+  }
 }
 
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "multi-base-aircraft-ferry-routing" && entry?.reason)) {
@@ -364,6 +392,10 @@ for (const system of [
   "voice-take-normalization-music-ducking",
   "tracked-vip-pings-and-post-combat-rescue-search-sectors",
   "tracked-vip-precontact-ai-guidance",
+  "multi-skyranger-exact-squad-ramp-deployment",
+  "tactical-small-medium-large-map-profiles",
+  "tactical-playable-perimeter-edge-guards",
+  "visible-vip-tracker-pulses-in-2d-and-3d",
 ]) {
   if (!manifest.gameplayParity?.requiredSystems?.includes(system)) {
     missing.push(`gameplay parity system missing: ${system}`);

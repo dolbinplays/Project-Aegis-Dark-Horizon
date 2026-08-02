@@ -1,6 +1,6 @@
 extends Control
 
-const NATIVE_BUILD := "v0.26.08.01.GODOT.0019_VIP_TRACKERS_AND_POST_COMBAT_RESCUE_SEARCH_VERTICAL_SLICE"
+const NATIVE_BUILD := "v0.26.08.02.GODOT.0020_MULTI_TRANSPORT_MAP_TIERS_AND_EDGE_GUARDS_VERTICAL_SLICE"
 const MAX_BROWSER_IMPORT_BYTES := 32 * 1024 * 1024
 const AUDIO_SETTINGS_PATH := "user://project_aegis_audio_settings.cfg"
 const VOICE_MAKEUP_DB := 6.0
@@ -1453,7 +1453,7 @@ func _on_tactical_selection(unit: Dictionary) -> void:
 
 func _on_tactical_status(status: Dictionary) -> void:
 	if tactical_status_label:
-		tactical_status_label.text = "Turn %d | %s | Aliens %d | Rescue %d/%d" % [status.get("turn",1), String(status.get("phase","human")).capitalize(), status.get("aliens",0), status.get("rescued",0), status.get("required",0)]
+		tactical_status_label.text = "%s %dx%d | %d Skyranger%s | Turn %d | %s | Aliens %d | Rescue %d/%d" % [status.get("map_label","Small"),status.get("grid_width",20),status.get("grid_height",14),status.get("transports",1),"" if int(status.get("transports",1)) == 1 else "s",status.get("turn",1),String(status.get("phase","human")).capitalize(),status.get("aliens",0),status.get("rescued",0),status.get("required",0)]
 	if tactical_end_turn_button:
 		tactical_end_turn_button.disabled = status.get("phase", "") != "human" or status.get("resolved", false)
 	if tactical_ai_button:
@@ -1512,9 +1512,9 @@ func _show_tactical_map() -> void:
 	var alien_cells: Array = contacts.get("aliens", [])
 	var civilian_cells: Array = contacts.get("civilians", [])
 	var rows: Array[String] = []
-	for y in range(AegisTacticalBoard.GRID_HEIGHT):
+	for y in range(tactical_board.grid_height):
 		var row := ""
-		for x in range(AegisTacticalBoard.GRID_WIDTH):
+		for x in range(tactical_board.grid_width):
 			var cell := Vector2i(x, y)
 			row += "H" if human_cells.has(cell) else "A" if alien_cells.has(cell) else "C" if civilian_cells.has(cell) else "."
 		rows.append(row)
@@ -1751,7 +1751,39 @@ func _run_self_tests() -> Array:
 	for secure_assignment in secure_search_assignments.values():
 		secure_search_zones[secure_assignment.get("zone_id", "")] = true
 	secure_search_board._refresh_explored_cells([secure_search_humans[0]])
-	var post_combat_search_ready: bool = secure_search_assignments.size() == secure_search_humans.size() and secure_tracker_assignments.size() == 2 and secure_tracker_assignments[0].get("tracker_id", "") != secure_tracker_assignments[1].get("tracker_id", "") and secure_building_assignments.size() == 1 and secure_search_zones.size() == secure_search_assignments.size() and secure_search_board._active_vip_tracker_targets().size() == 2 and secure_search_board.explored_cells.size() > 0 and secure_search_board.explored_cells.size() <= secure_search_board.GRID_WIDTH * secure_search_board.GRID_HEIGHT and tactical_source.contains("var tracker_guidance :=") and tactical_source.contains("secure_rescue or tracker_guidance") and tactical_source.contains("var search_reserve := 0 if secure_rescue")
+	var post_combat_search_ready: bool = secure_search_assignments.size() == secure_search_humans.size() and secure_tracker_assignments.size() == 2 and secure_tracker_assignments[0].get("tracker_id", "") != secure_tracker_assignments[1].get("tracker_id", "") and secure_building_assignments.size() == 1 and secure_search_zones.size() == secure_search_assignments.size() and secure_search_board._active_vip_tracker_targets().size() == 2 and secure_search_board.explored_cells.size() > 0 and secure_search_board.explored_cells.size() <= secure_search_board.grid_width * secure_search_board.grid_height and tactical_source.contains("var tracker_guidance :=") and tactical_source.contains("secure_rescue or tracker_guidance") and tactical_source.contains("var search_reserve := 0 if secure_rescue")
+	var multi_roster: Array = test_campaign.assigned_soldiers().duplicate(true)
+	for multi_source in test_campaign.assigned_soldiers():
+		var reinforcement: Dictionary = multi_source.duplicate(true)
+		reinforcement["id"] = "%s-bravo" % String(multi_source.get("id", "soldier"))
+		reinforcement["name"] = "%s Bravo" % String(multi_source.get("name", "Soldier"))
+		multi_roster.append(reinforcement)
+	var alpha_ids: Array = multi_roster.slice(0, 6).map(func(unit): return unit.get("id", ""))
+	var bravo_ids: Array = multi_roster.slice(6, 12).map(func(unit): return unit.get("id", ""))
+	var multi_incident: Dictionary = test_campaign.selected_incident().duplicate(true)
+	multi_incident["transport_count"] = 2
+	multi_incident["tactical_map_tier"] = "medium"
+	multi_incident["response_squad_deployments"] = [
+		{"squad_id":"alpha","soldier_ids":alpha_ids},
+		{"squad_id":"bravo","soldier_ids":bravo_ids}
+	]
+	var multi_board := AegisTacticalBoard.new()
+	multi_board.begin_battle(multi_incident, multi_roster, content)
+	var multi_humans: Array = multi_board.units.filter(func(unit): return unit.get("team", "") == "human")
+	var multi_starts: Array = multi_board._soldier_start_cells()
+	var transport_formations_ready := multi_humans.size() == 12
+	for multi_human in multi_humans:
+		var assigned_transport := int(multi_human.get("transport_index", -1))
+		transport_formations_ready = transport_formations_ready and assigned_transport in [0, 1] and multi_starts[assigned_transport].has(multi_human.get("cell", Vector2i.ZERO))
+	var multi_transport_ready: bool = multi_board.transport_count == 2 and multi_board.skyranger_placements.size() == 2 and multi_board.extraction_cells.size() == 18 and transport_formations_ready and multi_board.skyranger_clear_of_buildings()
+	var large_incident: Dictionary = test_campaign.selected_incident().duplicate(true)
+	large_incident["tactical_map_tier"] = "large"
+	large_incident["transport_count"] = 1
+	var large_board := AegisTacticalBoard.new()
+	large_board.begin_battle(large_incident, test_campaign.assigned_soldiers(), content)
+	var map_tiers_ready: bool = test_board.grid_width == 20 and test_board.grid_height == 14 and tactical_civilians.size() == 2 and multi_board.grid_width == 26 and multi_board.grid_height == 18 and multi_board.units.filter(func(unit): return unit.get("team", "") == "civilian").size() == 4 and large_board.grid_width == 32 and large_board.grid_height == 22 and large_board.units.filter(func(unit): return unit.get("team", "") == "civilian").size() == 6
+	var edge_neighbors := AegisHexRules.neighbors(Vector2i(1, 1), multi_board.grid_width, multi_board.grid_height)
+	var edge_guard_ready: bool = edge_neighbors.all(func(cell): return multi_board._inside(cell)) and AegisHexRules.path(Vector2i(2, 2), Vector2i(0, 2), {}, {}, multi_board.grid_width, multi_board.grid_height).is_empty() and multi_board._inside(Vector2i(1, 1)) and not multi_board._inside(Vector2i(0, 1)) and multi_board.units.all(func(unit): return multi_board._inside(unit.get("cell", Vector2i.ZERO)))
 	for alien in test_board.units.filter(func(unit): return unit.get("team", "") == "alien"):
 		alien["hp"] = 0
 	var rescue_gate_holds := not test_board._check_resolution() and not test_board.resolved
@@ -2002,6 +2034,9 @@ func _run_self_tests() -> Array:
 		{"name":"AI rescue routing rotates soldiers and rejects two-cell loops", "pass":rescue_route_ready and recovery_board.ai_last_acted_ids is Array},
 		{"name":"AI command tasks every viable soldier and prioritizes squad contacts", "pass":full_squad_priority_ready},
 		{"name":"Tracked VIP pings guide AI searchers before distinct post-combat building and sector sweeps", "pass":post_combat_search_ready},
+		{"name":"Each deployed squad forms at its own matching Skyranger rescue ramp", "pass":multi_transport_ready},
+		{"name":"Small Medium and Large tactical maps scale terrain and civilian capacity", "pass":map_tiers_ready},
+		{"name":"Tactical neighbors paths and generated units remain inside the playable perimeter", "pass":edge_guard_ready},
 		{"name":"Pre-contact rescue claims persist while other soldiers converge on remembered alien areas", "pass":precontact_contact_memory_ready},
 		{"name":"Non-escort soldiers answer wounded and downed squad distress calls then search the firing direction", "pass":distress_response_ready},
 		{"name":"Civilian escorts avoid known alien firing exposure when a safe route exists", "pass":threat_aware_escort_ready},

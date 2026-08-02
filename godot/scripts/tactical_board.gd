@@ -13,6 +13,11 @@ const GRID_HEIGHT := 14
 const HEX_RADIUS := 27.0
 const HEX_WIDTH := 46.765
 const ROW_STEP := 40.5
+const MAP_PROFILES := {
+	"small":{"key":"small","label":"Small","width":20,"height":14,"civilian_count":2},
+	"medium":{"key":"medium","label":"Medium","width":26,"height":18,"civilian_count":4},
+	"large":{"key":"large","label":"Large","width":32,"height":22,"civilian_count":6}
+}
 const MOVE_TU := 4
 const FIRE_TU := 16
 const ESCORT_TU := 8
@@ -67,6 +72,14 @@ var explored_cells: Dictionary = {}
 var tracker_pulse_elapsed := TRACKER_PULSE_INTERVAL - 0.8
 var tracker_pulse_remaining := 0.0
 var tracker_pulse_serial := 0
+var map_profile: Dictionary = MAP_PROFILES.small.duplicate(true)
+var grid_width := GRID_WIDTH
+var grid_height := GRID_HEIGHT
+var hex_radius := HEX_RADIUS
+var hex_width := HEX_WIDTH
+var row_step := ROW_STEP
+var transport_count := 1
+var skyranger_placements: Array[Dictionary] = []
 
 func _ready() -> void:
 	custom_minimum_size = Vector2(990, 650)
@@ -90,6 +103,7 @@ func begin_battle(next_incident: Dictionary, next_roster: Array, next_equipment_
 	roster = next_roster.duplicate(true)
 	equipment_catalog = next_equipment_catalog.duplicate(true)
 	required_rescues = maxi(0, int(incident.get("required_rescues", 1)))
+	_configure_map_profile()
 	units.clear()
 	covers.clear()
 	extraction_cells.clear()
@@ -117,10 +131,29 @@ func begin_battle(next_incident: Dictionary, next_roster: Array, next_equipment_
 	_emit_state()
 	queue_redraw()
 
+func _configure_map_profile() -> void:
+	transport_count = clampi(int(incident.get("transport_count", (incident.get("response_squad_deployments", []) as Array).size())), 1, 2)
+	var explicit := String(incident.get("tactical_map_tier", incident.get("map_size", ""))).to_lower()
+	var threat := int(incident.get("threat", 1))
+	var profile_key := explicit if MAP_PROFILES.has(explicit) else "large" if threat >= 5 else "medium" if threat >= 3 or transport_count > 1 else "small"
+	map_profile = (MAP_PROFILES.get(profile_key, MAP_PROFILES.small) as Dictionary).duplicate(true)
+	grid_width = int(map_profile.width)
+	grid_height = int(map_profile.height)
+	var fit_scale := minf(1.0, minf(900.0 / (float(grid_width) * HEX_WIDTH + HEX_WIDTH * 0.5), 560.0 / (float(grid_height) * ROW_STEP + HEX_RADIUS)))
+	hex_radius = HEX_RADIUS * fit_scale
+	hex_width = HEX_WIDTH * fit_scale
+	row_step = ROW_STEP * fit_scale
+	board_origin = Vector2(34, 38)
+
 func _generate_field() -> void:
-	var starts := [Vector2i(4,4), Vector2i(4,5), Vector2i(4,6), Vector2i(5,4), Vector2i(5,5), Vector2i(5,6)]
-	for index in range(mini(roster.size(), starts.size())):
+	_build_skyranger_placements()
+	var starts := _soldier_start_cells()
+	for index in range(roster.size()):
 		var source: Dictionary = roster[index]
+		var transport_index := _soldier_transport_index(source, index)
+		var transport_starts: Array = starts[transport_index]
+		var transport_member_index := _transport_member_index(source, index, transport_index)
+		var start_cell: Vector2i = transport_starts[transport_member_index % transport_starts.size()]
 		var weapon_name := String(source.get("weapon", "Ballistic Rifle"))
 		var armor_name := String(source.get("armor", "Field Suit"))
 		var weapon_profile := _equipment_definition("weapons", weapon_name, {"damage":17,"damage_variance":8,"range":7,"tu_cost":FIRE_TU,"breach_damage":26})
@@ -132,7 +165,8 @@ func _generate_field() -> void:
 			"name": source.get("name", "Soldier"),
 			"callsign": source.get("callsign", source.get("name", "Soldier")),
 			"team": "human",
-			"cell": starts[index],
+			"cell": start_cell,
+			"transport_index": transport_index,
 			"hp": int(source.get("health", 40)),
 			"max_hp": int(source.get("health", 40)),
 			"tu": int(source.get("tu", 56)),
@@ -166,17 +200,18 @@ func _generate_field() -> void:
 			"active_hand": "right",
 			"targeting_mode": "move",
 			"facing": Vector2i(1, 0),
-			"trail": [starts[index]],
+			"trail": [start_cell],
 			"ai_role": "",
 			"kneeling": false,
 			"reserve_mode": "none",
 			"reserve_tu": 0,
 			"priority_civilian_id": ""
 		})
+	var alien_x := grid_width - 4 if transport_count == 1 else grid_width / 2 + 3
 	var alien_defs: Array = [
-		{"name":"Signal Leech","hp":24,"accuracy":42,"damage":10,"cell":Vector2i(16,3)},
-		{"name":"Glass Wraith","hp":30,"accuracy":48,"damage":12,"cell":Vector2i(17,8)},
-		{"name":"Needle Drone","hp":36,"accuracy":52,"damage":13,"cell":Vector2i(14,11)}
+		{"name":"Signal Leech","hp":24,"accuracy":42,"damage":10,"cell":Vector2i(alien_x,3)},
+		{"name":"Glass Wraith","hp":30,"accuracy":48,"damage":12,"cell":Vector2i(alien_x + 1,grid_height / 2)},
+		{"name":"Needle Drone","hp":36,"accuracy":52,"damage":13,"cell":Vector2i(alien_x - 2,grid_height - 3)}
 	]
 	for index in range(alien_defs.size()):
 		var alien: Dictionary = alien_defs[index]
@@ -198,12 +233,74 @@ func _generate_field() -> void:
 			"facing": Vector2i(-1, 0),
 			"last_known_cell": Vector2i(-1, -1)
 		})
-	units.append({"id":"civilian-0","name":"Mara Venn","team":"civilian","cell":Vector2i(12,5),"hp":20,"max_hp":20,"panic":false,"escort_id":"","priority_escort_id":"","approached_by_id":"","rescued":false,"revealed":false,"visible":false,"vip_tracker":required_rescues > 0})
-	units.append({"id":"civilian-1","name":"Oren Pike","team":"civilian","cell":Vector2i(17,10),"hp":20,"max_hp":20,"panic":false,"escort_id":"","priority_escort_id":"","approached_by_id":"","rescued":false,"revealed":false,"visible":false,"vip_tracker":required_rescues > 0})
 	_generate_building()
-	for cell in [Vector2i(1,6), Vector2i(2,6), Vector2i(3,6), Vector2i(1,7), Vector2i(2,7), Vector2i(3,7), Vector2i(1,8), Vector2i(2,8), Vector2i(3,8)]:
-		extraction_cells[AegisHexRules.key(cell)] = true
+	var civilian_names := ["Mara Venn", "Oren Pike", "Avery Shaw", "Morgan Vale", "Reese Arden", "Sam Calder"]
+	var civilian_positions := _civilian_start_cells(int(map_profile.civilian_count))
+	for civilian_index in range(civilian_positions.size()):
+		units.append({"id":"civilian-%d" % civilian_index,"name":civilian_names[civilian_index % civilian_names.size()],"team":"civilian","cell":civilian_positions[civilian_index],"hp":20,"max_hp":20,"panic":false,"escort_id":"","priority_escort_id":"","approached_by_id":"","rescued":false,"revealed":false,"visible":false,"vip_tracker":required_rescues > 0})
+	for placement in skyranger_placements:
+		for cell in placement.ramp_cells:
+			extraction_cells[AegisHexRules.key(cell)] = true
 	_generate_cover()
+
+func _build_skyranger_placements() -> void:
+	skyranger_placements.clear()
+	var center_y := grid_height / 2
+	for index in range(transport_count):
+		var left_side := index == 0
+		var footprint: Array[Vector2i] = []
+		var ramp_cells: Array[Vector2i] = []
+		for y in range(center_y - 2, center_y + 3):
+			for offset in range(5):
+				footprint.append(Vector2i(offset if left_side else grid_width - 1 - offset, y))
+		for y in range(center_y - 1, center_y + 2):
+			for offset in range(1, 4):
+				ramp_cells.append(Vector2i(offset if left_side else grid_width - 1 - offset, y))
+		skyranger_placements.append({"index":index,"side":"left" if left_side else "right","footprint":footprint,"ramp_cells":ramp_cells})
+
+func _soldier_start_cells() -> Array:
+	var center_y := grid_height / 2
+	var left := [Vector2i(4,center_y-3),Vector2i(4,center_y-2),Vector2i(4,center_y-1),Vector2i(5,center_y-3),Vector2i(5,center_y-2),Vector2i(5,center_y-1)]
+	var right := [Vector2i(grid_width-5,center_y-3),Vector2i(grid_width-5,center_y-2),Vector2i(grid_width-5,center_y-1),Vector2i(grid_width-6,center_y-3),Vector2i(grid_width-6,center_y-2),Vector2i(grid_width-6,center_y-1)]
+	return [left, right]
+
+func _response_deployments() -> Array:
+	var deployments: Variant = incident.get("response_squad_deployments", [])
+	return deployments if deployments is Array else []
+
+func _soldier_transport_index(source: Dictionary, roster_index: int) -> int:
+	var deployments := _response_deployments()
+	for index in range(mini(transport_count, deployments.size())):
+		var deployment: Dictionary = deployments[index]
+		if source.get("id", "") in deployment.get("soldier_ids", []):
+			return index
+	if transport_count <= 1:
+		return 0
+	return clampi(roster_index / maxi(1, int(ceil(float(roster.size()) / float(transport_count)))), 0, transport_count - 1)
+
+func _transport_member_index(source: Dictionary, roster_index: int, transport_index: int) -> int:
+	var deployments := _response_deployments()
+	if transport_index < deployments.size():
+		var soldier_ids: Array = deployments[transport_index].get("soldier_ids", [])
+		var explicit_index := soldier_ids.find(source.get("id", ""))
+		if explicit_index >= 0:
+			return explicit_index
+	var per_transport := maxi(1, int(ceil(float(roster.size()) / float(transport_count))))
+	return roster_index % per_transport
+
+func _civilian_start_cells(count: int) -> Array[Vector2i]:
+	var result: Array[Vector2i] = []
+	var seed_value := int(incident.get("seed", 1337))
+	var occupied := _skyranger_footprint_cells()
+	var attempts := 0
+	while result.size() < count and attempts < grid_width * grid_height:
+		var x := 3 + AegisHexRules.deterministic_roll(seed_value, attempts * 17, 0, maxi(1, grid_width - 6))
+		var y := 3 + AegisHexRules.deterministic_roll(seed_value, attempts * 23, 1, maxi(1, grid_height - 6))
+		var cell := Vector2i(x, y)
+		if _inside(cell) and not occupied.has(cell) and not result.has(cell) and not covers.has(AegisHexRules.key(cell)):
+			result.append(cell)
+		attempts += 1
+	return result
 
 func _equipment_definition(catalog_key: String, item_name: String, fallback: Dictionary) -> Dictionary:
 	for definition_value in equipment_catalog.get(catalog_key, []):
@@ -229,9 +326,10 @@ func _add_wall(cell: Vector2i, wall_type: String) -> void:
 
 func _generate_cover() -> void:
 	var seed_value := int(incident.get("seed", 1337))
-	for index in range(22):
-		var x := 6 + AegisHexRules.deterministic_roll(seed_value, index * 7, 0, 12)
-		var y := AegisHexRules.deterministic_roll(seed_value, index * 11, 1, 12)
+	var cover_count := 22 + (grid_width - GRID_WIDTH) * 2
+	for index in range(cover_count):
+		var x := 3 + AegisHexRules.deterministic_roll(seed_value, index * 7, 0, maxi(1, grid_width - 6))
+		var y := 2 + AegisHexRules.deterministic_roll(seed_value, index * 11, 1, maxi(2, grid_height - 4))
 		var cell := Vector2i(x, y)
 		var key := AegisHexRules.key(cell)
 		if covers.has(key) or _unit_at(cell) != null or _skyranger_footprint_cells().has(cell):
@@ -240,9 +338,10 @@ func _generate_cover() -> void:
 
 func _skyranger_footprint_cells() -> Array[Vector2i]:
 	var cells: Array[Vector2i] = []
-	for y in range(5, 10):
-		for x in range(0, 5):
-			cells.append(Vector2i(x, y))
+	for placement in skyranger_placements:
+		for cell in placement.footprint:
+			if not cells.has(cell):
+				cells.append(cell)
 	return cells
 
 func skyranger_clear_of_buildings() -> bool:
@@ -321,7 +420,7 @@ func _rebuild_reachable() -> void:
 	if String(selected.get("targeting_mode", "move")) != "move":
 		return
 	var steps := maxi(0, int(selected.get("tu", 0)) - int(selected.get("reserve_tu", 0))) / MOVE_TU
-	reachable = AegisHexRules.reachable(selected.cell, steps, _blocked_cells(), _occupied_cells(selected.id), GRID_WIDTH, GRID_HEIGHT)
+	reachable = AegisHexRules.reachable(selected.cell, steps, _blocked_cells(), _occupied_cells(selected.id), grid_width, grid_height)
 
 func select_relative_soldier(direction: int) -> void:
 	if resolved or phase != "human":
@@ -487,7 +586,7 @@ func prime_selected_grenade() -> bool:
 
 func grenade_blast_cells(target: Vector2i) -> Array[Vector2i]:
 	var cells: Array[Vector2i] = [target]
-	for neighbor in AegisHexRules.neighbors(target, GRID_WIDTH, GRID_HEIGHT):
+	for neighbor in AegisHexRules.neighbors(target, grid_width, grid_height):
 		cells.append(neighbor)
 	return cells
 
@@ -560,7 +659,7 @@ func tactical_map_contacts() -> Dictionary:
 	}
 
 func _move_selected_to(selected: Dictionary, target: Vector2i) -> void:
-	var path := AegisHexRules.path(selected.cell, target, _blocked_cells(), _occupied_cells(selected.id), GRID_WIDTH, GRID_HEIGHT, int(selected.tu) / MOVE_TU)
+	var path := AegisHexRules.path(selected.cell, target, _blocked_cells(), _occupied_cells(selected.id), grid_width, grid_height, int(selected.tu) / MOVE_TU)
 	if path.size() < 2:
 		return
 	var cost := (path.size() - 1) * MOVE_TU
@@ -794,7 +893,7 @@ func _has_line_of_sight_from(origin: Vector2i, target: Vector2i) -> bool:
 
 func _cover_score(cell: Vector2i) -> int:
 	var score := 0
-	for neighbor in AegisHexRules.neighbors(cell, GRID_WIDTH, GRID_HEIGHT):
+	for neighbor in AegisHexRules.neighbors(cell, grid_width, grid_height):
 		var cover: Dictionary = covers.get(AegisHexRules.key(neighbor), {})
 		if int(cover.get("hp", 0)) <= 0:
 			continue
@@ -877,7 +976,7 @@ func _ai_threat_reachable(unit: Dictionary, available_steps: int, threats: Array
 		head += 1
 		if int(current.get("steps", 0)) >= available_steps:
 			continue
-		for next_cell in AegisHexRules.neighbors(current.cell, GRID_WIDTH, GRID_HEIGHT):
+		for next_cell in AegisHexRules.neighbors(current.cell, grid_width, grid_height):
 			var next_key := AegisHexRules.key(next_cell)
 			if blocked.has(next_key) or occupied.has(next_key):
 				continue
@@ -900,7 +999,7 @@ func _ai_threat_reachable(unit: Dictionary, available_steps: int, threats: Array
 
 func _ai_patrol_plan(unit: Dictionary, reserve_tu: int) -> Dictionary:
 	var available_steps := clampi((int(unit.get("tu", 0)) - maxi(0, reserve_tu)) / MOVE_TU, 0, AI_MAX_MOVE_STEPS)
-	var reachable_cells := AegisHexRules.reachable(unit.cell, available_steps, _blocked_cells(), _occupied_cells(String(unit.get("id", ""))), GRID_WIDTH, GRID_HEIGHT)
+	var reachable_cells := AegisHexRules.reachable(unit.cell, available_steps, _blocked_cells(), _occupied_cells(String(unit.get("id", ""))), grid_width, grid_height)
 	var history: Array = unit.get("ai_move_history", [])
 	var best_cell: Vector2i = unit.cell
 	var best_score := -100000
@@ -913,14 +1012,14 @@ func _ai_patrol_plan(unit: Dictionary, reserve_tu: int) -> Dictionary:
 		if score > best_score or score == best_score and String(cell_key) < AegisHexRules.key(best_cell):
 			best_cell = cell
 			best_score = score
-	var path := AegisHexRules.path(unit.cell, best_cell, _blocked_cells(), _occupied_cells(String(unit.get("id", ""))), GRID_WIDTH, GRID_HEIGHT, available_steps)
+	var path := AegisHexRules.path(unit.cell, best_cell, _blocked_cells(), _occupied_cells(String(unit.get("id", ""))), grid_width, grid_height, available_steps)
 	return {"cell":best_cell,"path":path,"steps":maxi(0, path.size() - 1),"reserve":reserve_tu}
 
 func _ai_movement_plan(unit: Dictionary, target_cell: Vector2i, reserve_tu: int, role: String, alien_move: bool = false, target_known: bool = true) -> Dictionary:
 	var available_steps := clampi((int(unit.get("tu", 0)) - maxi(0, reserve_tu)) / MOVE_TU, 0, AI_MAX_MOVE_STEPS)
 	if available_steps <= 0:
 		return {"cell":unit.get("cell", Vector2i.ZERO),"path":[unit.get("cell", Vector2i.ZERO)],"steps":0,"reserve":reserve_tu}
-	var reachable_cells := AegisHexRules.reachable(unit.cell, available_steps, _blocked_cells(), _occupied_cells(String(unit.get("id", ""))), GRID_WIDTH, GRID_HEIGHT)
+	var reachable_cells := AegisHexRules.reachable(unit.cell, available_steps, _blocked_cells(), _occupied_cells(String(unit.get("id", ""))), grid_width, grid_height)
 	var candidates: Array = [{"cell":unit.cell,"steps":0}]
 	for cell_key in reachable_cells:
 		if candidates.size() >= AI_MAX_CANDIDATES:
@@ -971,7 +1070,7 @@ func _ai_movement_plan(unit: Dictionary, target_cell: Vector2i, reserve_tu: int,
 		if score > best_score or is_equal_approx(score, best_score) and AegisHexRules.key(cell) < AegisHexRules.key(best.cell):
 			best = candidate
 			best_score = score
-	var path := AegisHexRules.path(unit.cell, best.cell, _blocked_cells(), _occupied_cells(String(unit.get("id", ""))), GRID_WIDTH, GRID_HEIGHT, available_steps)
+	var path := AegisHexRules.path(unit.cell, best.cell, _blocked_cells(), _occupied_cells(String(unit.get("id", ""))), grid_width, grid_height, available_steps)
 	return {"cell":best.cell,"path":path,"steps":maxi(0, path.size() - 1),"reserve":reserve_tu,"score":best_score}
 
 func _ai_rescue_plan(unit: Dictionary, target_cells: Array, reserve_tu: int, stop_adjacent: bool, threats: Array = []) -> Dictionary:
@@ -980,7 +1079,7 @@ func _ai_rescue_plan(unit: Dictionary, target_cells: Array, reserve_tu: int, sto
 		return {"cell":unit.get("cell", Vector2i.ZERO),"path":[unit.get("cell", Vector2i.ZERO)],"steps":0,"reached":false}
 	var candidates: Array = _ai_threat_reachable(unit, available_steps, threats) if not threats.is_empty() else [{"cell":unit.cell,"steps":0,"path":[unit.cell],"threat_steps":0,"reentries":0,"exposure":0}]
 	if threats.is_empty():
-		var reachable_cells := AegisHexRules.reachable(unit.cell, available_steps, _blocked_cells(), _occupied_cells(String(unit.get("id", ""))), GRID_WIDTH, GRID_HEIGHT)
+		var reachable_cells := AegisHexRules.reachable(unit.cell, available_steps, _blocked_cells(), _occupied_cells(String(unit.get("id", ""))), grid_width, grid_height)
 		for cell_key in reachable_cells:
 			if candidates.size() >= AI_MAX_CANDIDATES:
 				break
@@ -1020,7 +1119,7 @@ func _ai_rescue_plan(unit: Dictionary, target_cells: Array, reserve_tu: int, sto
 			best = candidate
 			best_score = score
 			reached = goal
-	var path: Array = best.get("path", AegisHexRules.path(unit.cell, best.cell, _blocked_cells(), _occupied_cells(String(unit.get("id", ""))), GRID_WIDTH, GRID_HEIGHT, available_steps))
+	var path: Array = best.get("path", AegisHexRules.path(unit.cell, best.cell, _blocked_cells(), _occupied_cells(String(unit.get("id", ""))), grid_width, grid_height, available_steps))
 	return {"cell":best.cell,"path":path,"steps":maxi(0, path.size() - 1),"reserve":reserve_tu,"score":best_score,"reached":reached,"threat_steps":best.get("threat_steps", 0),"reentries":best.get("reentries", 0),"exposure":best.get("exposure", 0)}
 
 func _ai_extraction_plan(unit: Dictionary, reserve_tu: int, threats: Array = []) -> Dictionary:
@@ -1100,8 +1199,8 @@ func _nearest_extraction_cell(origin: Vector2i) -> Vector2i:
 func _ai_exploration_cell(unit: Dictionary) -> Vector2i:
 	var role := String(unit.get("ai_role", "wedge_left"))
 	var y_offset := -4 if role.contains("left") else 4 if role.contains("right") else 0
-	var sweep_x := clampi(10 + turn_number * 2, 10, GRID_WIDTH - 2)
-	return Vector2i(sweep_x, clampi(GRID_HEIGHT / 2 + y_offset, 1, GRID_HEIGHT - 2))
+	var sweep_x := clampi(grid_width / 2 + turn_number * 2, grid_width / 2, grid_width - 2)
+	return Vector2i(sweep_x, clampi(grid_height / 2 + y_offset, 1, grid_height - 2))
 
 func _active_vip_tracker_targets() -> Array:
 	if required_rescues <= 0:
@@ -1197,10 +1296,10 @@ func _ai_secure_search_assignments(soldiers: Array) -> Dictionary:
 		var best_cell: Vector2i = soldier.get("cell", Vector2i.ZERO)
 		var best_score: int = 999999
 		var considered: int = 0
-		var start_index: int = absi(turn_number * 37 + String(soldier.get("id", "")).hash()) % (GRID_WIDTH * GRID_HEIGHT)
-		for offset in range(GRID_WIDTH * GRID_HEIGHT):
-			var flat_index := (start_index + offset) % (GRID_WIDTH * GRID_HEIGHT)
-			var candidate := Vector2i(flat_index % GRID_WIDTH, flat_index / GRID_WIDTH)
+		var start_index: int = absi(turn_number * 37 + String(soldier.get("id", "")).hash()) % (grid_width * grid_height)
+		for offset in range(grid_width * grid_height):
+			var flat_index := (start_index + offset) % (grid_width * grid_height)
+			var candidate := Vector2i(flat_index % grid_width, flat_index / grid_width)
 			var candidate_key := AegisHexRules.key(candidate)
 			if not _passable_search_cell(candidate, occupied) or used_target_keys.has(candidate_key):
 				continue
@@ -1532,7 +1631,7 @@ func _move_panicked_civilians() -> void:
 		for alien in aliens:
 			if AegisHexRules.distance(civilian.cell, alien.cell) < AegisHexRules.distance(civilian.cell, nearest.cell):
 				nearest = alien
-		var options := AegisHexRules.neighbors(civilian.cell, GRID_WIDTH, GRID_HEIGHT).filter(func(cell): return not _blocked_cells().has(AegisHexRules.key(cell)) and not _occupied_cells(civilian.id).has(AegisHexRules.key(cell)))
+		var options := AegisHexRules.neighbors(civilian.cell, grid_width, grid_height).filter(func(cell): return not _blocked_cells().has(AegisHexRules.key(cell)) and not _occupied_cells(civilian.id).has(AegisHexRules.key(cell)))
 		options.sort_custom(func(a, b): return AegisHexRules.distance(a, nearest.cell) > AegisHexRules.distance(b, nearest.cell))
 		if not options.is_empty():
 			civilian.cell = options[0]
@@ -1570,8 +1669,8 @@ func _refresh_visibility() -> void:
 
 func _refresh_explored_cells(soldiers: Array) -> void:
 	for soldier in soldiers:
-		for y in range(GRID_HEIGHT):
-			for x in range(GRID_WIDTH):
+		for y in range(grid_height):
+			for x in range(grid_width):
 				var cell := Vector2i(x, y)
 				if AegisHexRules.distance(soldier.cell, cell) <= 7 and _has_line_of_sight_from(soldier.cell, cell):
 					explored_cells[AegisHexRules.key(cell)] = true
@@ -1657,21 +1756,21 @@ func _emit_log(message: String) -> void:
 func _emit_state() -> void:
 	var living_aliens := units.filter(func(unit): return unit.get("team", "") == "alien" and int(unit.get("hp", 0)) > 0).size()
 	var active_civilians := units.filter(func(unit): return unit.get("team", "") == "civilian" and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false)).size()
-	status_changed.emit({"phase":phase,"turn":turn_number,"aliens":living_aliens,"rescued":rescued,"required":required_rescues,"civilians":active_civilians,"resolved":resolved})
+	status_changed.emit({"phase":phase,"turn":turn_number,"aliens":living_aliens,"rescued":rescued,"required":required_rescues,"civilians":active_civilians,"resolved":resolved,"map_label":map_profile.label,"grid_width":grid_width,"grid_height":grid_height,"transports":transport_count})
 	var selected: Variant = _selected_unit()
 	selection_changed.emit(selected if selected != null else {})
 
 func _inside(cell: Vector2i) -> bool:
-	return cell.x >= 0 and cell.y >= 0 and cell.x < GRID_WIDTH and cell.y < GRID_HEIGHT
+	return cell.x > 0 and cell.y > 0 and cell.x < grid_width - 1 and cell.y < grid_height - 1
 
 func _hex_center(cell: Vector2i) -> Vector2:
-	return board_origin + Vector2(cell.x * HEX_WIDTH + (HEX_WIDTH * 0.5 if cell.y % 2 else 0.0), cell.y * ROW_STEP)
+	return board_origin + Vector2(cell.x * hex_width + (hex_width * 0.5 if cell.y % 2 else 0.0), cell.y * row_step)
 
 func _cell_at(point: Vector2) -> Vector2i:
 	var best := Vector2i(-1, -1)
-	var best_distance := HEX_RADIUS
-	for y in range(GRID_HEIGHT):
-		for x in range(GRID_WIDTH):
+	var best_distance := hex_radius
+	for y in range(grid_height):
+		for x in range(grid_width):
 			var cell := Vector2i(x, y)
 			var distance := point.distance_to(_hex_center(cell))
 			if distance < best_distance:
@@ -1679,17 +1778,18 @@ func _cell_at(point: Vector2) -> Vector2i:
 				best_distance = distance
 	return best
 
-func _hex_points(center: Vector2, radius: float = HEX_RADIUS - 1.0) -> PackedVector2Array:
+func _hex_points(center: Vector2, radius: float = -1.0) -> PackedVector2Array:
 	var points := PackedVector2Array()
+	var resolved_radius := hex_radius - 1.0 if radius < 0.0 else radius
 	for index in range(6):
 		var angle := deg_to_rad(60.0 * index - 30.0)
-		points.append(center + Vector2(cos(angle), sin(angle)) * radius)
+		points.append(center + Vector2(cos(angle), sin(angle)) * resolved_radius)
 	return points
 
 func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, size), Color("081418"), true)
-	for y in range(GRID_HEIGHT):
-		for x in range(GRID_WIDTH):
+	for y in range(grid_height):
+		for x in range(grid_width):
 			_draw_hex(Vector2i(x, y))
 	_draw_tracker_pings()
 	_draw_skyranger()
@@ -1723,6 +1823,9 @@ func _draw_hex(cell: Vector2i) -> void:
 	var center := _hex_center(cell)
 	var terrain_roll: int = absi(cell.x * 17 + cell.y * 31 + int(incident.get("seed", 1))) % 9
 	var color := Color("355f3b") if terrain_roll < 4 else Color("426c3b") if terrain_roll < 7 else Color("765f3f")
+	var edge_cell := not _inside(cell)
+	if edge_cell:
+		color = Color("17232a")
 	if cell.x in [7, 8, 9]:
 		color = Color("52606a")
 	if cell.x >= 10 and cell.x <= 16 and cell.y >= 2 and cell.y <= 7:
@@ -1741,7 +1844,7 @@ func _draw_hex(cell: Vector2i) -> void:
 		color = color.lightened(0.12)
 	var points := _hex_points(center)
 	draw_colored_polygon(points, color)
-	draw_polyline(points + PackedVector2Array([points[0]]), Color(0.55,0.72,0.70,0.32), 1.0, true)
+	draw_polyline(points + PackedVector2Array([points[0]]), Color("facc15") if edge_cell else Color(0.55,0.72,0.70,0.32), 1.5 if edge_cell else 1.0, true)
 	if reachable.has(AegisHexRules.key(cell)):
 		draw_polyline(points + PackedVector2Array([points[0]]), Color("a3e635"), 2.0, true)
 	if targetable:
@@ -1750,28 +1853,37 @@ func _draw_hex(cell: Vector2i) -> void:
 		draw_line(_hex_center(selected.cell), center, Color("fbbf24") if targeting_mode == "grenade" else Color("f87171"), 2.0, true)
 
 func _draw_skyranger() -> void:
-	var hull_points := PackedVector2Array([
-		_hex_center(Vector2i(0,5)) + Vector2(-22,-10),
-		_hex_center(Vector2i(3,5)) + Vector2(18,-20),
-		_hex_center(Vector2i(4,7)) + Vector2(12,0),
-		_hex_center(Vector2i(3,9)) + Vector2(18,20),
-		_hex_center(Vector2i(0,9)) + Vector2(-22,10)
-	])
-	draw_colored_polygon(hull_points, Color("334b55"))
-	draw_polyline(hull_points + PackedVector2Array([hull_points[0]]), Color("94a3b8"), 3.0, true)
-	var canopy := PackedVector2Array([_hex_center(Vector2i(0,6)),_hex_center(Vector2i(2,6)),_hex_center(Vector2i(2,8)),_hex_center(Vector2i(0,8))])
-	draw_colored_polygon(canopy, Color("155e75"))
+	var center_y := grid_height / 2
+	var visual_scale := hex_radius / HEX_RADIUS
+	for placement in skyranger_placements:
+		var left_side: bool = placement.side == "left"
+		var outer_x := 0 if left_side else grid_width - 1
+		var shoulder_x := 3 if left_side else grid_width - 4
+		var nose_x := 4 if left_side else grid_width - 5
+		var direction := 1.0 if left_side else -1.0
+		var hull_points := PackedVector2Array([
+			_hex_center(Vector2i(outer_x,center_y-2)) + Vector2(-22.0*direction,-10.0)*visual_scale,
+			_hex_center(Vector2i(shoulder_x,center_y-2)) + Vector2(18.0*direction,-20.0)*visual_scale,
+			_hex_center(Vector2i(nose_x,center_y)) + Vector2(12.0*direction,0.0)*visual_scale,
+			_hex_center(Vector2i(shoulder_x,center_y+2)) + Vector2(18.0*direction,20.0)*visual_scale,
+			_hex_center(Vector2i(outer_x,center_y+2)) + Vector2(-22.0*direction,10.0)*visual_scale
+		])
+		draw_colored_polygon(hull_points, Color("334b55"))
+		draw_polyline(hull_points + PackedVector2Array([hull_points[0]]), Color("94a3b8"), maxf(1.0, 3.0*visual_scale), true)
+		var canopy_x := 2 if left_side else grid_width - 3
+		var canopy := PackedVector2Array([_hex_center(Vector2i(outer_x,center_y-1)),_hex_center(Vector2i(canopy_x,center_y-1)),_hex_center(Vector2i(canopy_x,center_y+1)),_hex_center(Vector2i(outer_x,center_y+1))])
+		draw_colored_polygon(canopy, Color("155e75"))
 	for cell_key in extraction_cells:
 		var parts := String(cell_key).split(",")
 		var cell := Vector2i(int(parts[0]), int(parts[1]))
-		draw_string(get_theme_default_font(), _hex_center(cell) + Vector2(-16, 5), "RAMP", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color("cffafe"))
+		draw_string(get_theme_default_font(), _hex_center(cell) + Vector2(-12, 4), "RAMP", HORIZONTAL_ALIGNMENT_LEFT, -1, maxi(7, int(9.0*visual_scale)), Color("cffafe"))
 
 func _draw_connected_walls() -> void:
 	for key in covers:
 		var cover: Dictionary = covers[key]
 		if not cover.get("hard", false) or cover.get("building", "") != "outpost":
 			continue
-		for neighbor in AegisHexRules.neighbors(cover.cell, GRID_WIDTH, GRID_HEIGHT):
+		for neighbor in AegisHexRules.neighbors(cover.cell, grid_width, grid_height):
 			var neighbor_key := AegisHexRules.key(neighbor)
 			var neighbor_cover: Dictionary = covers.get(neighbor_key, {})
 			if neighbor_cover.get("hard", false) and neighbor_cover.get("building", "") == "outpost" and key < neighbor_key:

@@ -1,8 +1,8 @@
 # Project Aegis Godot 4 Vertical Slice
 
-Native build: `v0.26.08.01.GODOT.0019_VIP_TRACKERS_AND_POST_COMBAT_RESCUE_SEARCH_VERTICAL_SLICE`
+Native build: `v0.26.08.02.GODOT.0020_MULTI_TRANSPORT_MAP_TIERS_AND_EDGE_GUARDS_VERTICAL_SLICE`
 
-Paired browser build: `v0.26.08.01.0149_TACTICAL_VIP_TRACKERS_AND_POST_COMBAT_RESCUE_SEARCH_PARITY_PATCH`
+Paired browser build: `v0.26.08.02.0150_TACTICAL_MULTI_SKYRANGER_MAP_TIERS_EDGE_GUARDS_AND_3D_VIP_PINGS_PARITY_PATCH`
 
 This is a native Godot 4 vertical slice alongside the verified HTML game. It does not wrap `index.html`, replace the browser build, or write to the browser campaign save.
 
@@ -25,7 +25,9 @@ The project uses the repository root so the native slice can reuse the existing 
 - Clickable strategic map with two opening incidents and Skyranger outbound travel.
 - Clickable tracked UFO contact with Cautious, Standard, and Aggressive interception postures.
 - Saber One outbound travel, deterministic bounded air combat, return, repair/refuel/rearm service, combat reports, and crash-site generation.
-- Native 20x14 hex tactical incident with terrain, six soldiers, aliens, civilians, a Skyranger and nine-cell rear ramp, connected walls, cover, TU movement, rifle attacks, alien turns, and mission resolution.
+- Native Small 20x14, Medium 26x18, and Large 32x22 hex tactical incidents with scaled civilian capacity, terrain, soldiers, aliens, connected walls, cover, TU movement, rifle attacks, alien turns, and mission resolution.
+- One Skyranger and nine-cell rear rescue ramp per dispatched squad, with each squad formed beside its own ramp and every craft separated from buildings.
+- Playable-perimeter guards shared by neighbors, paths, movement, AI, and deployment prevent units from entering or walking beyond map-edge cells.
 - Civilian contact for 8 TU, up to four followers per escort, single-file trail following, panic/recontact behavior, and mandatory ramp extraction.
 - Mandatory-rescue civilians carry periodic VIP tracker pulses. Once aliens are eliminated, AI searchers split across distinct tracker contacts, unexplored building interiors, and unexplored map sectors while established escorts continue to the ramp.
 - Destructible wall cells that become nonblocking rubble for every tactical mover.
@@ -54,7 +56,7 @@ The project uses the repository root so the native slice can reuse the existing 
 - Tactical Ballistic Rifle, Laser Rifle, Unarmed, Field Suit, No Armor, and Medkit profiles sourced from the content catalog; one issued Medkit restores up to 12 HP for 12 TU and is consumed after use.
 - Final mission HP creates a bounded one-to-five-day wound-recovery record. Wounded soldiers remain unavailable until strategic midnights reduce the timer to zero and medical clearance returns them to duty.
 - Native JSON save format 4 at `user://project_aegis_godot_save_v4.json`, with imported campaigns isolated at `user://project_aegis_godot_imported_copy_v4.json`.
-- In-game Build Health with 88 checks, including bounded tactical-log trimming, air operations, browser-import isolation, personnel arrivals, research/manufacturing/construction, local-stock conservation, tactical loadout inheritance, Medkit consumption, wound recovery, commander doctrine, TU reserves, reaction fire, AI fog, AI reclaim, full-squad combat priorities, wounded/downed squad distress response, pre-contact civilian claims, remembered-contact convergence, building-clear Skyranger placement, threat-aware rescue routing, sequential visible actors, queued tactical voices, dedicated voice controls, voice audibility mixing, classic command controls, mission equipment recovery/loss, large-list scrolling, and dense strategic marker placement.
+- In-game Build Health with 92 checks, including map tiers, exact multi-Skyranger squad deployment, playable-perimeter guards, bounded tactical-log trimming, air operations, browser-import isolation, personnel arrivals, research/manufacturing/construction, local-stock conservation, tactical loadout inheritance, Medkit consumption, wound recovery, commander doctrine, TU reserves, reaction fire, AI fog, AI reclaim, full-squad combat priorities, tracked VIP guidance, building-clear Skyranger placement, threat-aware rescue routing, sequential visible actors, queued tactical voices, classic command controls, mission equipment recovery/loss, large-list scrolling, and dense strategic marker placement.
 
 ## Tactical Controls
 
@@ -123,7 +125,7 @@ godot --headless --path . --script res://godot/tests/test_runner.gd
 
 The test runner covers campaign creation and travel, exact loadout/store save round-tripping, conservative loadout and wound migration, local-stock conservation and unavailable-item rejection, Medkit issue/return/consumption, mission recovery and loss, one-to-five-day wounds, exact recovery persistence, unequipped recruit arrivals, Workshop and personnel migration, hiring/capacity rules, construction, bounded research and manufacturing, air operations, browser-export normalization and source preservation, strategic markers, bounded hex rules, tactical loadout inheritance, Laser Rifle range/TU, selected-unit feedback, Unarmed fire rejection, movement highlighting, three End Turn cycles, civilian contact, wall destruction and traversal, full-squad contact response, pre-contact civilian claims, remembered alien-contact convergence, building-clear Skyranger placement, tracked VIP pings, pre-contact tracker guidance with shot reservation, distinct post-combat building/sector search assignments, threat-safe civilian paths, sequential visible actions, and all visible Build Health rows.
 
-Latest automated verification passes `116/116` native tests and `89/89` visible Build Health rows. Godot 4.7.1 strict editor parsing passes. The paired HTML build reaches the 0149 start screen and Geoscape; browser Build Health passes `307/307`. A practical six-soldier Prairie Abduction displayed both tracked VIP pulses and completed three End Turn cycles with all six soldiers alive. A second live handoff advanced six AI frames before contact and returned the preserved battle to player control with both pings intact. Browser diagnostics contain no runtime errors; the only warning is Tailwind's existing development-CDN advisory.
+Latest automated verification passes `119/119` native tests and `92/92` visible Build Health rows. Godot 4.7.1 strict editor parsing passes. The paired browser 0150 start screen and Geoscape load, browser Build Health passes `310/310`, and a live six-soldier Small Prairie Abduction displayed its projected Three.js VIP reticle and completed three End Turn cycles without runtime errors.
 
 ## Deliberate Limits
 

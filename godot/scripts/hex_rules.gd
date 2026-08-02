@@ -9,7 +9,7 @@ static func neighbors(cell: Vector2i, width: int = 9999, height: int = 9999) -> 
 	var offsets = ODD_ROW if abs(cell.y) % 2 == 1 else EVEN_ROW
 	for offset in offsets:
 		var next_cell: Vector2i = cell + offset
-		if next_cell.x >= 0 and next_cell.y >= 0 and next_cell.x < width and next_cell.y < height:
+		if next_cell.x > 0 and next_cell.y > 0 and next_cell.x < width - 1 and next_cell.y < height - 1:
 			result.append(next_cell)
 	return result
 
@@ -81,6 +81,8 @@ static func reachable(start: Vector2i, max_steps: int, blocked: Dictionary, occu
 static func path(start: Vector2i, target: Vector2i, blocked: Dictionary, occupied: Dictionary, width: int, height: int, max_steps: int = 64) -> Array[Vector2i]:
 	if start == target:
 		return [start]
+	if target.x <= 0 or target.y <= 0 or target.x >= width - 1 or target.y >= height - 1:
+		return []
 	if blocked.has(key(target)) or occupied.has(key(target)):
 		return []
 	var queue: Array[Vector2i] = [start]

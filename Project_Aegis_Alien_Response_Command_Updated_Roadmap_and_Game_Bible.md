@@ -1,10 +1,55 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-08-01
-Current handoff build: `v0.26.08.01.0149_TACTICAL_VIP_TRACKERS_AND_POST_COMBAT_RESCUE_SEARCH_PARITY_PATCH`
-Native vertical slice: `v0.26.08.01.GODOT.0019_VIP_TRACKERS_AND_POST_COMBAT_RESCUE_SEARCH_VERTICAL_SLICE`
-Current patch status: **Browser 0149 and native 0019 preserve save format 4. Mandatory-rescue civilians now carry periodic VIP map pulses. Before alien contact, AI searchers are drawn toward distinct tracker pings while reserving enough TU for their selected shot; spotted or remembered hostiles and squad distress remain higher priorities. After all aliens are eliminated, spare searchers divide tracked-VIP, unexplored-building, and unexplored-sector assignments while established escorts continue to the ramp. Ordinary hidden civilians remain governed by fog of war. Browser Build Health passes 307/307; fresh 0149 start screen and Geoscape smoke passed; a six-soldier Prairie Abduction displayed both VIP pulses, completed three manual End Turn cycles, and advanced six pre-contact AI frames before returning the unchanged live battle to player control. No browser runtime errors were present. Native tests pass 116/116, native Build Health passes 89/89, and Godot 4.7.1 strict parsing passes. Remaining gates are visually confirming separate searchers follow separate pings and validating active/post-combat priority transitions in a live Godot rescue battle.**
+Last updated: 2026-08-02
+Current handoff build: `v0.26.08.02.0150_TACTICAL_MULTI_SKYRANGER_MAP_TIERS_EDGE_GUARDS_AND_3D_VIP_PINGS_PARITY_PATCH`
+Native vertical slice: `v0.26.08.02.GODOT.0020_MULTI_TRANSPORT_MAP_TIERS_AND_EDGE_GUARDS_VERTICAL_SLICE`
+Current patch status: **Browser 0150 and native 0020 preserve save format 4. Tactical deployment now records the exact response squads and creates one building-clear Skyranger and rear-ramp formation per dispatched squad. The former battlefield is the Small tier; deterministic Medium and Large tiers increase battlefield area and civilian capacity while retaining bounded render windows. Neighbor generation, player paths, AI movement, and generated units reject the non-playable perimeter. Three.js rescue battles now render a persistent projected VIP reticle plus bounded pulsing world geometry. Browser Build Health passes 310/310; the 0150 start screen and Geoscape loaded; a six-soldier Small Prairie Abduction displayed a visible 3D VIP reticle and completed three End Turn cycles with all six soldiers alive. No browser runtime errors were present. Native tests pass 119/119, native Build Health passes 92/92, and Godot 4.7.1 strict parsing passes. Remaining gates are live two-Skyranger deployment, Medium/Large battlefield pacing, and visual validation of the paired Godot tiers.**
+
+---
+
+# v0.26.08.02.0150 / GODOT.0020 - Multi-Skyranger Deployment, Map Tiers, Edge Guards, and 3D VIP Pings
+
+Browser build `v0.26.08.02.0150_TACTICAL_MULTI_SKYRANGER_MAP_TIERS_EDGE_GUARDS_AND_3D_VIP_PINGS_PARITY_PATCH` and native build `v0.26.08.02.GODOT.0020_MULTI_TRANSPORT_MAP_TIERS_AND_EDGE_GUARDS_VERTICAL_SLICE` preserve save format 4.
+
+Root causes addressed:
+
+- Tactical deployment retained only a single Skyranger placement and inferred every soldier from one combined list, so coordinated response squads could not receive separate craft or exact ramp formations.
+- Browser and native tactical dimensions were fixed constants. Mission threat, response size, and civilian capacity could not select a larger battlefield.
+- Neighbor and path rules treated outer cells as playable, allowing player and AI plans to target the visible map boundary.
+- VIP tracker data existed in Three.js battles, but the renderer created no dedicated tracker geometry. The first geometry pass was also too subtle and disappeared completely between pulse windows.
+
+Implemented roadmap scope:
+
+- Strategic browser launches persist `responseSquadDeployments`, exact soldier IDs, transport indexes, and transport count through direct and ferry travel before tactical generation.
+- Browser deployment creates one separated, building-clear Skyranger per response squad and forms each squad beside its own rear ramp. Godot supports the native slice's current one- or two-transport response and preserves exact deployment groups when supplied.
+- Browser map profiles are Small `64x64`, Medium `80x80`, and Large `96x96`; native profiles are Small `20x14`, Medium `26x18`, and Large `32x22`. Higher tiers add deterministic civilian capacity and bounded terrain coverage.
+- Mission threat and coordinated transport count select a profile conservatively, while explicit `tacticalMapTier` or `mapSize` data remains authoritative.
+- Tactical neighbors, direct paths, reachable floods, AI movement plans, search targets, visibility bounds, click handling, and generated units share the live grid size and reject the outer perimeter.
+- 2D and Three.js windows remain capped by their existing performance budgets instead of rendering an entire Medium or Large map at once.
+- Three.js now creates lightweight amber world rings, an elevated locator, and a screen-space `VIP` reticle projected from the correct tactical cell. The locator remains visible between bounded pulse windows and clamps below the tactical status overlay.
+- Browser Build Health adds three rows and reaches 310. Native Build Health adds three rows and reaches 92; native automation adds three direct checks and reaches 119.
+
+Verification checklist:
+
+- Static browser app-script parsing and `node tools\check-aegis-build.cjs` passed with synchronized 0150/0020 labels. `git diff --check` passed aside from informational Windows line-ending notices.
+- Localhost start screen displayed 0150, a fresh campaign reached the Geoscape, and browser Build Health passed `310/310` with no failed rows.
+- A six-soldier Small Prairie Abduction launched in safe 2D with one Skyranger and its rear-ramp formation. The generated mission reported a `64x64` battlefield.
+- The same live mission switched to Three.js Performance mode. One in-window tracked VIP produced a persistent projected `VIP` reticle below the status overlay and reported one active 3D tracker beacon.
+- Three End Turn cycles returned to the human phase. All six soldiers remained alive and the mission continued without a lockup.
+- Browser console inspection found no runtime errors. The only warning was Tailwind's existing development-CDN advisory.
+- Godot 4.7.1 strict editor parsing passed. Native tests passed `119/119`, including exact two-transport squad formation, all three map profiles and civilian counts, and perimeter path rejection. All `92/92` visible native Build Health rows passed inside the suite.
+
+Remaining risks and manual validation:
+
+- Dispatch two staffed squads with two available Skyrangers in the browser. Confirm exactly two craft appear, neither overlaps a building, and each squad begins beside its own rear ramp.
+- Launch a Medium battle and a Large battle. Confirm the reported dimensions, increased civilian population, viewport panning, terrain distribution, frame pacing, and turn duration remain practical.
+- In player and AI control, try to order units onto every outer edge and toward off-map objectives. Confirm no soldier, alien, civilian, path highlight, or AI route enters or crosses the perimeter.
+- In a multi-VIP rescue battle, inspect 3D Close, Near, Wide, and Full views. Confirm each in-window VIP reticle tracks the correct location, remains legible below overlays, and its world rings pulse without obscuring units.
+- In Godot, visually inspect Small, Medium, and Large boards plus a two-transport battle. Confirm both craft, ramp formations, scaled hexes, tracker pulses, and edge outlines remain readable at the native window size.
+- The native vertical slice currently caps tactical transports at two because its strategic response layer does not yet expose the browser game's broader multi-base aircraft roster.
+
+Next recommended paired patch after this gate: `TACTICAL_CLASSIC_INVENTORY_TRANSFERS_AND_ELEVATION_FOUNDATION_PARITY_PATCH`, beginning with bounded adjacent-unit hand/belt transfers and floor-state data before any multi-level renderer rewrite.
 
 ---
 
