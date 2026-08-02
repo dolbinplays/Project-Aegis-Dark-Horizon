@@ -2,9 +2,52 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-01
-Current handoff build: `v0.26.08.01.0147_TACTICAL_CONTACT_MEMORY_STATE_CONTINUITY_AND_SAFE_LANDING_PARITY_PATCH`
-Native vertical slice: `v0.26.08.01.GODOT.0017_TACTICAL_CONTACT_MEMORY_RESCUE_PRIORITY_AND_SAFE_LANDING_VERTICAL_SLICE`
-Current patch status: **Browser 0147 and native 0017 preserve save format 4. Once an alien has been observed, every viable non-escort soldier converges on the current or last-known contact area while established civilian escorts continue evacuating. A civilian seen before alien contact receives a persistent nearest-soldier rescue claim. Skyranger deployment now performs a bounded full-footprint clearance search and keeps the hull/ramp separated from buildings. Browser manual tactical state survives command-section navigation, Classic Lineup deaths occur after their lethal firing frame, and all-clear resolution waits for action playback. Static parsing and the seam checker pass; localhost Build Health passes 303/303. A practical six-soldier mission preserved Mina's selection and exact battlefield state across Base-to-Missions navigation, completed three End Turn cycles in about 0.9-1.1 seconds, displayed sequential Theo/Mina AI frames, and returned control without runtime errors. Native tests pass 114/114, native Build Health passes 87/87, and Godot 4.7.1 strict parsing passes. The remaining gate is hands-on validation in the originally affected rescue campaign, dense urban landing maps, and lethal Classic Lineup playback.**
+Current handoff build: `v0.26.08.01.0148_TACTICAL_SIMULATION_RELIABILITY_AND_SQUAD_REPLACEMENT_INDEX_ONLY_PATCH`
+Native vertical slice: `v0.26.08.01.GODOT.0018_TACTICAL_DISTRESS_RESPONSE_VERTICAL_SLICE`
+Current patch status: **Browser 0148 and native 0018 preserve save format 4. Simulated encounters now refresh every living soldier's TU after round one, preventing survivors from becoming inert while aliens continue firing. Classic Lineup stages moving lethal targets alive through the firing frame and reveals the complete Classic action sequence. Paired A/B squad wipeouts allocate replacements sequentially as C and D instead of independently choosing C. In both clients, alien fire records a bounded squad distress contact: non-escort soldiers converge on a living casualty or a downed soldier's last position, then search toward the shooter's reported firing cell while escorts continue evacuation. Browser Build Health passes 306/306; the 0148 start screen and Geoscape load; a practical six-soldier simulated incident completed after three exchanges with five survivors and all three aliens eliminated; browser diagnostics contain no runtime errors. Native tests pass 115/115, native Build Health passes 88/88, and Godot 4.7.1 strict parsing passes. Remaining gates are hands-on paired-squad wipeout naming, exact Classic lethal playback, and visible distress convergence in an affected campaign.**
+
+---
+
+# v0.26.08.01.0148 / GODOT.0018 - Simulation Reliability, Squad Replacement, and Distress Response
+
+Browser build `v0.26.08.01.0148_TACTICAL_SIMULATION_RELIABILITY_AND_SQUAD_REPLACEMENT_INDEX_ONLY_PATCH` and native build `v0.26.08.01.GODOT.0018_TACTICAL_DISTRESS_RESPONSE_VERTICAL_SLICE` preserve save format 4.
+
+Root causes addressed:
+
+- Fresh simulated encounters refreshed human TU only when inheriting an existing manual battlefield. After round one, a fresh squad could spend all TU and remain inert forever while aliens refreshed normally each turn.
+- Classic sequential playback inherited a lethal target's final dead snapshot before its shooter frame, especially when the target also moved or the firing alien was hidden.
+- Simultaneous squad replacements were generated inside one state map against the same unchanged used-name list, so both wiped A/B squads independently selected the C letter.
+- Tactical AI retained general alien contact memory but did not broadcast a wounded or downed soldier's location and the firing direction as a squad response objective.
+- A randomized building/deployment self-test compared unit positions against pre-landing cover, including props the Skyranger had legitimately removed from the authoritative battlefield, producing intermittent four-row Build Health failures.
+
+Implemented roadmap scope:
+
+- Every living simulated soldier refreshes to `maxTu` after round one; inherited first-round TU remains untouched and dead soldiers are never refreshed.
+- Classic playback stages lethal targets alive at their final moved position through the shot frame, applies death on the following impact frame, and includes hidden firing actions in the all-seeing Classic presentation.
+- Mission cleanup now allocates replacement squad names sequentially in one transaction. A/B wipeouts reserve C before generating D while surviving squads still remove KIA normally.
+- Browser and native alien fire record the casualty position, shooter identity, and firing cell for twelve bounded turns. Non-escort AI soldiers converge on a living wounded soldier or a casualty's last position; once within four hexes they search the shooter's recorded firing direction. Current visible combat still takes priority and established civilian escorts remain on extraction duty.
+- Tactical deployment health checks now validate against the post-placement cover collection used by rendering, pathfinding, and line of sight, removing the randomized false failure without changing map generation.
+- Browser Build Health adds three rows and reaches 306. Native Build Health adds one row and reaches 88; native automation adds one direct check and reaches 115.
+
+Verification checklist:
+
+- Static browser app-script parsing passed through the build checker.
+- `node tools\check-aegis-build.cjs` passed with synchronized browser 0148 and native 0018 labels and the new tactical seams.
+- Localhost start screen displayed 0148 and Geoscape loaded.
+- Browser Build Health passed `306/306` on two final cache-busted loads, including simulated TU refresh, paired C/D replacements, Classic lethal ordering, and squad distress response.
+- A practical six-soldier simulated Red River Signal incident completed after three exchanges: five soldiers survived and all three aliens were eliminated.
+- Browser diagnostics contained no runtime errors. The only warnings were Tailwind's existing development-CDN advisory.
+- Godot 4.7.1 strict editor parsing passed.
+- Native tests passed `115/115`; all `88/88` visible native Build Health rows passed inside the suite.
+
+Remaining risks and manual validation:
+
+- Wipe both A and B squads in one coordinated browser mission and confirm the two empty replacements are labeled C and D with distinct names.
+- Watch a lethal Classic Lineup exchange in which the target moves or the shooter is initially hidden. Confirm the target remains standing through the visible shot and falls only on impact.
+- During AI command, let alien fire hit or miss a soldier. Confirm every available non-escort converges on the living soldier or downed position, then fans toward the reported shooter direction while active civilian escorts continue to the ramp.
+- Repeat a high-threat two-squad Simulate Encounter and confirm every living soldier resumes acting after round one until the final alien is eliminated or the squad is genuinely defeated.
+
+Next recommended paired patch after this gate: `TACTICAL_CLASSIC_INVENTORY_TRANSFERS_AND_ELEVATION_FOUNDATION_PARITY_PATCH`, beginning with bounded adjacent-unit hand/belt transfers and floor-state data before any multi-level renderer rewrite.
 
 ---
 

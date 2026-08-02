@@ -122,10 +122,13 @@ const required = [
   "AI command can return the live battle to player control",
   "AI rescue routing rotates soldiers and rejects two-cell loops",
   "AI command assigns non-escorts to squad contacts while existing escorts evacuate",
+  "Fresh simulated encounters refresh every living soldier's TU after round one",
+  "Paired squad wipeouts allocate distinct sequential C and D replacements",
+  "Non-escort soldiers converge on wounded or downed squad distress calls, then search the firing direction",
   "Civilian escorts minimize known alien firing exposure before extraction",
   "AI playback presents visible soldiers and aliens one actor at a time",
   "Classic lineup tracers connect exact firing and target units",
-  "Classic lethal targets remain standing through the firing frame",
+  "Classic lethal targets remain alive through movement, hidden fire, and firing frames",
   "Pre-contact civilian sightings retain soldier rescue priority",
   "Non-escort soldiers converge on last-known alien contact areas",
   "Skyranger landing footprint stays separated from buildings",
@@ -193,6 +196,10 @@ const required = [
   "tacticalGrenadeThrowResult",
   "tacticalGrenadeBlastCells",
   "tacticalAiRoundRobinUnits",
+  "tacticalAiRefreshHumanTurnUnits",
+  "tacticalAiMarkDistress",
+  "tacticalAiDistressTarget",
+  "rebuildSquadsAfterMission",
   "tacticalAiRescueRoute",
   "tacticalAiExtractionEgress",
   "tacticalAiExtractionRoute",
@@ -267,6 +274,9 @@ for (const nativeNeedle of [
   "func skyranger_clear_of_buildings",
   "func _known_alien_contact_cells",
   "func _assign_precontact_civilian_claim",
+  "func _record_tactical_distress",
+  "func _ai_distress_target",
+  "Non-escort soldiers answer wounded and downed squad distress calls then search the firing direction",
   "ai_last_acted_ids",
   "voice_queue",
   "func _play_next_voice",
@@ -286,6 +296,9 @@ if (!nativeAudioBus.includes('bus/3/name = &"Voices"') || !nativeAudioBus.includ
 
 if (manifest.gameplayParity?.saveFormat !== manifest.saveFormat || nativeContent.save_format !== manifest.saveFormat) {
   missing.push("browser/native gameplay parity must preserve the shared save format");
+}
+if (!manifest.gameplayParity?.requiredSystems?.includes("wounded-downed-squad-distress-response")) {
+  missing.push("browser/native gameplay parity must require wounded and downed squad distress response");
 }
 
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "multi-base-aircraft-ferry-routing" && entry?.reason)) {

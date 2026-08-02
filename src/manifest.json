@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.01.0147_TACTICAL_CONTACT_MEMORY_STATE_CONTINUITY_AND_SAFE_LANDING_PARITY_PATCH",
+  "currentBuild": "v0.26.08.01.0148_TACTICAL_SIMULATION_RELIABILITY_AND_SQUAD_REPLACEMENT_INDEX_ONLY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "contact-memory-state-continuity-safe-landing-browser-manual-test",
+  "status": "tactical-simulation-reliability-squad-replacement-browser-manual-test",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,19 +26,19 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.01.0147_TACTICAL_CONTACT_MEMORY_STATE_CONTINUITY_AND_SAFE_LANDING_PARITY_PATCH",
+  "lastInspectedBuild": "v0.26.08.01.0148_TACTICAL_SIMULATION_RELIABILITY_AND_SQUAD_REPLACEMENT_INDEX_ONLY_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
     "mainScene": "godot/main.tscn",
-    "build": "v0.26.08.01.GODOT.0017_TACTICAL_CONTACT_MEMORY_RESCUE_PRIORITY_AND_SAFE_LANDING_VERTICAL_SLICE",
+    "build": "v0.26.08.01.GODOT.0018_TACTICAL_DISTRESS_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
-    "status": "contact-memory-rescue-priority-safe-landing-manual-test"
+    "status": "tactical-distress-response-manual-test"
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.01.0147_TACTICAL_CONTACT_MEMORY_STATE_CONTINUITY_AND_SAFE_LANDING_PARITY_PATCH",
-    "nativeBuild": "v0.26.08.01.GODOT.0017_TACTICAL_CONTACT_MEMORY_RESCUE_PRIORITY_AND_SAFE_LANDING_VERTICAL_SLICE",
+    "browserBuild": "v0.26.08.01.0148_TACTICAL_SIMULATION_RELIABILITY_AND_SQUAD_REPLACEMENT_INDEX_ONLY_PATCH",
+    "nativeBuild": "v0.26.08.01.GODOT.0018_TACTICAL_DISTRESS_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
       "base-local-medkit-issue-return",
@@ -72,6 +72,7 @@
       "manual-tactical-section-state-continuity",
       "precontact-civilian-rescue-claim",
       "remembered-alien-contact-convergence",
+      "wounded-downed-squad-distress-response",
       "skyranger-building-clearance",
       "post-resolution-action-gating",
       "queued-tactical-voice-recovery",

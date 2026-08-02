@@ -336,6 +336,27 @@ func _test_tactical(content: Dictionary) -> void:
 	ai_aliens[0]["last_known_cell"] = Vector2i(9, 6)
 	var tactical_source := FileAccess.get_file_as_string("res://godot/scripts/tactical_board.gd")
 	_check(ai_board._known_alien_contact_cells().has(Vector2i(9, 6)) and tactical_source.contains("if rescue_target == null and _inside(contact_target_cell)") and tactical_source.contains("_known_alien_contact_cells().is_empty() and rescued < required_rescues"), "non-escort AI soldiers converge on remembered alien contact areas")
+	var distress_board := AegisTacticalBoard.new()
+	get_root().add_child(distress_board)
+	distress_board.begin_battle(incident, tactical_roster, content)
+	var distress_humans: Array = distress_board.units.filter(func(unit): return unit.get("team", "") == "human")
+	var distress_aliens: Array = distress_board.units.filter(func(unit): return unit.get("team", "") == "alien")
+	var distress_victim: Dictionary = distress_humans[0]
+	var distress_responder: Dictionary = distress_humans[1]
+	var distress_attacker: Dictionary = distress_aliens[0]
+	distress_board.turn_number = 3
+	distress_victim.cell = Vector2i(10, 10)
+	distress_responder.cell = Vector2i(2, 2)
+	distress_attacker.cell = Vector2i(16, 10)
+	distress_board._record_tactical_distress(distress_victim, distress_attacker, true)
+	var far_distress: Dictionary = distress_board._ai_distress_target(distress_responder)
+	distress_responder.cell = Vector2i(9, 10)
+	var near_distress: Dictionary = distress_board._ai_distress_target(distress_responder)
+	distress_victim.hp = 0
+	distress_responder.cell = Vector2i(2, 2)
+	var down_distress: Dictionary = distress_board._ai_distress_target(distress_responder)
+	_check(far_distress.get("stage", "") == "converge" and far_distress.get("cell", Vector2i.ZERO) == Vector2i(10, 10) and near_distress.get("stage", "") == "search" and near_distress.get("cell", Vector2i.ZERO) == Vector2i(16, 10) and down_distress.get("stage", "") == "converge" and tactical_source.contains("_record_tactical_distress(target, alien, roll <= chance)"), "non-escort AI soldiers answer wounded and downed squad distress calls then search the firing direction")
+	distress_board.queue_free()
 	ai_humans[0]["rank"] = "Captain"
 	ai_humans[0]["missions"] = 12
 	var doctrine_summary := ai_board.ai_command_summary()
@@ -490,9 +511,9 @@ func _test_build_health() -> void:
 	var app: Node = load("res://godot/main.tscn").instantiate()
 	app.content = _load_json("res://godot/data/content.json")
 	var health: Array = app._run_self_tests()
-	if health.size() != 87 or not health.all(func(row): return row.get("pass", false)):
+	if health.size() != 88 or not health.all(func(row): return row.get("pass", false)):
 		print("BUILD HEALTH DETAIL: %s" % JSON.stringify(health))
-	_check(health.size() == 87 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 87 rows")
+	_check(health.size() == 88 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 88 rows")
 	app.free()
 
 func _load_json(path: String) -> Dictionary:

@@ -1,6 +1,6 @@
 extends Control
 
-const NATIVE_BUILD := "v0.26.08.01.GODOT.0017_TACTICAL_CONTACT_MEMORY_RESCUE_PRIORITY_AND_SAFE_LANDING_VERTICAL_SLICE"
+const NATIVE_BUILD := "v0.26.08.01.GODOT.0018_TACTICAL_DISTRESS_RESPONSE_VERTICAL_SLICE"
 const MAX_BROWSER_IMPORT_BYTES := 32 * 1024 * 1024
 const AUDIO_SETTINGS_PATH := "user://project_aegis_audio_settings.cfg"
 const VOICE_MAKEUP_DB := 6.0
@@ -1710,6 +1710,25 @@ func _run_self_tests() -> Array:
 	remembered_alien.visible = false
 	remembered_alien.last_known_cell = Vector2i(9, 6)
 	var precontact_contact_memory_ready: bool = priority_civilian.get("priority_escort_id", "") == priority_soldier.get("id", "") and priority_soldier.get("priority_civilian_id", "") == priority_civilian.get("id", "") and priority_board._known_alien_contact_cells().has(Vector2i(9, 6)) and tactical_source.contains("if rescue_target == null and _inside(contact_target_cell)") and tactical_source.contains("_known_alien_contact_cells().is_empty() and rescued < required_rescues")
+	var distress_board := AegisTacticalBoard.new()
+	distress_board.begin_battle(test_campaign.selected_incident(), test_campaign.assigned_soldiers(), content)
+	var distress_humans: Array = distress_board.units.filter(func(unit): return unit.get("team", "") == "human")
+	var distress_aliens: Array = distress_board.units.filter(func(unit): return unit.get("team", "") == "alien")
+	var distress_victim: Dictionary = distress_humans[0]
+	var distress_responder: Dictionary = distress_humans[1]
+	var distress_attacker: Dictionary = distress_aliens[0]
+	distress_board.turn_number = 3
+	distress_victim.cell = Vector2i(10, 10)
+	distress_responder.cell = Vector2i(2, 2)
+	distress_attacker.cell = Vector2i(16, 10)
+	distress_board._record_tactical_distress(distress_victim, distress_attacker, true)
+	var far_distress: Dictionary = distress_board._ai_distress_target(distress_responder)
+	distress_responder.cell = Vector2i(9, 10)
+	var near_distress: Dictionary = distress_board._ai_distress_target(distress_responder)
+	distress_victim.hp = 0
+	distress_responder.cell = Vector2i(2, 2)
+	var down_distress: Dictionary = distress_board._ai_distress_target(distress_responder)
+	var distress_response_ready: bool = far_distress.get("stage", "") == "converge" and far_distress.get("cell", Vector2i.ZERO) == Vector2i(10, 10) and near_distress.get("stage", "") == "search" and near_distress.get("cell", Vector2i.ZERO) == Vector2i(16, 10) and down_distress.get("stage", "") == "converge" and tactical_source.contains("_record_tactical_distress(target, alien, roll <= chance)")
 	var full_squad_priority_ready: bool = tactical_source.contains("for soldier in soldiers") and tactical_source.contains("_known_alien_contact_cells().is_empty() and rescued < required_rescues") and tactical_source.contains("_ai_patrol_plan(soldier, reserve_tu)") and tactical_source.contains("ai_last_acted_ids.append")
 	var sequential_action_ready: bool = tactical_source.contains("0.38 if soldier.cell != cell_before") and tactical_source.contains("0.18 if alien.get(\"visible\", false) else 0.01") and tactical_source.contains("0.38 if alien.get(\"visible\", false) else 0.02")
 	for alien in test_board.units.filter(func(unit): return unit.get("team", "") == "alien"):
@@ -1962,6 +1981,7 @@ func _run_self_tests() -> Array:
 		{"name":"AI rescue routing rotates soldiers and rejects two-cell loops", "pass":rescue_route_ready and recovery_board.ai_last_acted_ids is Array},
 		{"name":"AI command tasks every viable soldier and prioritizes squad contacts", "pass":full_squad_priority_ready},
 		{"name":"Pre-contact rescue claims persist while other soldiers converge on remembered alien areas", "pass":precontact_contact_memory_ready},
+		{"name":"Non-escort soldiers answer wounded and downed squad distress calls then search the firing direction", "pass":distress_response_ready},
 		{"name":"Civilian escorts avoid known alien firing exposure when a safe route exists", "pass":threat_aware_escort_ready},
 		{"name":"Visible AI-controlled soldiers and aliens play one actor at a time", "pass":sequential_action_ready},
 		{"name":"AI tactical soldier voices are queued and audio-unlocked", "pass":tactical_voice_ready},

@@ -28,6 +28,7 @@ const GRENADE_EDGE_BREACH := 24
 const AI_MAX_MOVE_STEPS := 8
 const AI_MAX_CANDIDATES := 192
 const AI_MAX_TURNS := 24
+const AI_DISTRESS_TURNS := 12
 const RANK_ORDER := ["Rookie", "Squaddie", "Corporal", "Sergeant", "Lieutenant", "Captain", "Major", "Colonel"]
 const COMMAND_DOCTRINES := [
 	{"key":"wedge","label":"Protected Wedge","rank":"Rookie","missions":0},
@@ -793,6 +794,44 @@ func _known_alien_contact_cells() -> Array[Vector2i]:
 			cells.append(remembered)
 	return cells
 
+func _record_tactical_distress(victim: Dictionary, attacker: Dictionary, hit: bool) -> void:
+	if victim.get("team", "") != "human":
+		return
+	victim.distress_turn = turn_number
+	victim.distress_cell = victim.get("cell", Vector2i(-1, -1))
+	victim.distress_attacker_id = attacker.get("id", "")
+	victim.distress_attacker_cell = attacker.get("cell", Vector2i(-1, -1))
+	victim.distress_hit = hit
+
+func _ai_distress_target(soldier: Dictionary) -> Dictionary:
+	var contacts := units.filter(func(unit):
+		var age := turn_number - int(unit.get("distress_turn", -99))
+		return unit.get("team", "") == "human" and age >= 0 and age <= AI_DISTRESS_TURNS
+	)
+	contacts.sort_custom(func(left, right):
+		var left_turn := int(left.get("distress_turn", -99))
+		var right_turn := int(right.get("distress_turn", -99))
+		if left_turn != right_turn:
+			return left_turn > right_turn
+		var left_distance := AegisHexRules.distance(soldier.cell, left.get("cell", Vector2i(-1, -1)))
+		var right_distance := AegisHexRules.distance(soldier.cell, right.get("cell", Vector2i(-1, -1)))
+		return left_distance < right_distance or left_distance == right_distance and String(left.get("id", "")) < String(right.get("id", ""))
+	)
+	if contacts.is_empty():
+		return {}
+	var contact: Dictionary = contacts[0]
+	var casualty_cell: Vector2i = contact.get("cell", Vector2i(-1, -1)) if int(contact.get("hp", 0)) > 0 else contact.get("distress_cell", Vector2i(-1, -1))
+	if not _inside(casualty_cell):
+		return {}
+	if AegisHexRules.distance(soldier.cell, casualty_cell) > 4:
+		return {"cell":casualty_cell,"stage":"converge","victim_id":contact.get("id", "")}
+	var attacker_id := String(contact.get("distress_attacker_id", ""))
+	var attacker_alive := units.any(func(unit): return unit.get("id", "") == attacker_id and unit.get("team", "") == "alien" and int(unit.get("hp", 0)) > 0)
+	var attacker_cell: Vector2i = contact.get("distress_attacker_cell", Vector2i(-1, -1))
+	if not attacker_alive or not _inside(attacker_cell):
+		return {}
+	return {"cell":attacker_cell,"stage":"search","victim_id":contact.get("id", ""),"attacker_id":attacker_id}
+
 func _alien_threat_exposure(cell: Vector2i, threats: Array) -> int:
 	var exposure := 0
 	for threat_value in threats:
@@ -1129,10 +1168,13 @@ func _run_ai_human_turn() -> void:
 		var visible_aliens := _visible_alien_contacts()
 		var combat_target: Variant = null
 		var contact_target_cell := Vector2i(-1, -1)
+		var distress_target: Dictionary = _ai_distress_target(soldier) if rescue_target == null else {}
 		if not visible_aliens.is_empty():
 			visible_aliens.sort_custom(func(left, right): return AegisHexRules.distance(left.cell, soldier.cell) < AegisHexRules.distance(right.cell, soldier.cell))
 			combat_target = visible_aliens[0]
 			contact_target_cell = combat_target.cell
+		elif not distress_target.is_empty():
+			contact_target_cell = distress_target.get("cell", Vector2i(-1, -1))
 		elif alien_contact_seen:
 			var remembered_cells := _known_alien_contact_cells()
 			remembered_cells.sort_custom(func(left, right): return AegisHexRules.distance(left, soldier.cell) < AegisHexRules.distance(right, soldier.cell))
@@ -1305,6 +1347,7 @@ func _alien_shoot(alien: Dictionary, target: Dictionary, distance: int) -> void:
 	action_serial += 1
 	var chance := clampi(int(alien.accuracy) - distance * 4 - (8 if target.get("kneeling", false) else 0), 14, 84)
 	var roll := AegisHexRules.deterministic_roll(int(incident.get("seed", 1)), 700 + action_serial * 29 + turn_number * 43)
+	_record_tactical_distress(target, alien, roll <= chance)
 	if roll > chance:
 		_emit_log("%s fires and misses %s." % [alien.name, target.name])
 		return

@@ -1,6 +1,6 @@
 # Project Aegis Godot 4 Vertical Slice
 
-Native build: `v0.26.08.01.GODOT.0017_TACTICAL_CONTACT_MEMORY_RESCUE_PRIORITY_AND_SAFE_LANDING_VERTICAL_SLICE`
+Native build: `v0.26.08.01.GODOT.0018_TACTICAL_DISTRESS_RESPONSE_VERTICAL_SLICE`
 
 Paired browser build: `v0.26.08.01.0147_TACTICAL_CONTACT_MEMORY_STATE_CONTINUITY_AND_SAFE_LANDING_PARITY_PATCH`
 
@@ -53,7 +53,7 @@ The project uses the repository root so the native slice can reuse the existing 
 - Tactical Ballistic Rifle, Laser Rifle, Unarmed, Field Suit, No Armor, and Medkit profiles sourced from the content catalog; one issued Medkit restores up to 12 HP for 12 TU and is consumed after use.
 - Final mission HP creates a bounded one-to-five-day wound-recovery record. Wounded soldiers remain unavailable until strategic midnights reduce the timer to zero and medical clearance returns them to duty.
 - Native JSON save format 4 at `user://project_aegis_godot_save_v4.json`, with imported campaigns isolated at `user://project_aegis_godot_imported_copy_v4.json`.
-- In-game Build Health with 87 checks, including bounded tactical-log trimming, air operations, browser-import isolation, personnel arrivals, research/manufacturing/construction, local-stock conservation, tactical loadout inheritance, Medkit consumption, wound recovery, commander doctrine, TU reserves, reaction fire, AI fog, AI reclaim, full-squad combat priorities, pre-contact civilian claims, remembered-contact convergence, building-clear Skyranger placement, threat-aware rescue routing, sequential visible actors, queued tactical voices, dedicated voice controls, voice audibility mixing, classic command controls, mission equipment recovery/loss, large-list scrolling, and dense strategic marker placement.
+- In-game Build Health with 88 checks, including bounded tactical-log trimming, air operations, browser-import isolation, personnel arrivals, research/manufacturing/construction, local-stock conservation, tactical loadout inheritance, Medkit consumption, wound recovery, commander doctrine, TU reserves, reaction fire, AI fog, AI reclaim, full-squad combat priorities, wounded/downed squad distress response, pre-contact civilian claims, remembered-contact convergence, building-clear Skyranger placement, threat-aware rescue routing, sequential visible actors, queued tactical voices, dedicated voice controls, voice audibility mixing, classic command controls, mission equipment recovery/loss, large-list scrolling, and dense strategic marker placement.
 
 ## Tactical Controls
 
@@ -122,7 +122,7 @@ godot --headless --path . --script res://godot/tests/test_runner.gd
 
 The test runner covers campaign creation and travel, exact loadout/store save round-tripping, conservative loadout and wound migration, local-stock conservation and unavailable-item rejection, Medkit issue/return/consumption, mission recovery and loss, one-to-five-day wounds, exact recovery persistence, unequipped recruit arrivals, Workshop and personnel migration, hiring/capacity rules, construction, bounded research and manufacturing, air operations, browser-export normalization and source preservation, strategic markers, bounded hex rules, tactical loadout inheritance, Laser Rifle range/TU, selected-unit feedback, Unarmed fire rejection, movement highlighting, three End Turn cycles, civilian contact, wall destruction and traversal, full-squad contact response, pre-contact civilian claims, remembered alien-contact convergence, building-clear Skyranger placement, threat-safe civilian paths, sequential visible actions, and all visible Build Health rows.
 
-Latest automated verification passes `114/114` native tests and `87/87` visible Build Health rows. Godot 4.7.1 strict editor parsing passes. The paired HTML build reaches the 0147 start screen, Geoscape, and a practical six-soldier incident; browser Build Health passes `303/303`, selected Mina survives a Base-to-Missions navigation round trip, and three End Turn cycles return to the human phase in about 0.9-1.1 seconds. Sequential AI playback and Take Back Control also pass. Browser diagnostics contain no runtime errors; the only warning is Tailwind's existing development-CDN advisory.
+Latest automated verification passes `115/115` native tests and `88/88` visible Build Health rows. Godot 4.7.1 strict editor parsing passes. The paired HTML build reaches the 0148 start screen and Geoscape; browser Build Health passes `306/306`. A practical six-soldier simulated incident completed after three exchanges with five survivors and all three aliens eliminated. Browser diagnostics contain no runtime errors; the only warning is Tailwind's existing development-CDN advisory.
 
 ## Deliberate Limits
 
