@@ -383,6 +383,25 @@ func _test_tactical(content: Dictionary) -> void:
 	for hidden_alien in ai_aliens:
 		hidden_alien["visible"] = false
 	_check(ai_board.tactical_map_contacts().get("aliens", []).is_empty(), "AI-command tactical contacts preserve live fog of war")
+	for secure_alien in ai_aliens:
+		secure_alien["hp"] = 0
+	var tracked_civilians: Array = ai_board.units.filter(func(unit): return unit.get("team", "") == "civilian")
+	tracked_civilians[0]["cell"] = Vector2i(18, 1)
+	tracked_civilians[1]["cell"] = Vector2i(18, 12)
+	for tracked_civilian in tracked_civilians:
+		tracked_civilian["vip_tracker"] = true
+		tracked_civilian["revealed"] = false
+		tracked_civilian["visible"] = false
+		tracked_civilian["escort_id"] = ""
+	ai_board.explored_cells.clear()
+	var secure_assignments: Dictionary = ai_board._ai_secure_search_assignments(ai_humans)
+	var tracker_assignments: Array = secure_assignments.values().filter(func(assignment): return assignment.get("kind", "") == "tracker")
+	var building_assignments: Array = secure_assignments.values().filter(func(assignment): return assignment.get("kind", "") == "building")
+	var assignment_zones := {}
+	for secure_assignment in secure_assignments.values():
+		assignment_zones[secure_assignment.get("zone_id", "")] = true
+	ai_board._refresh_explored_cells([ai_humans[0]])
+	_check(secure_assignments.size() == ai_humans.size() and tracker_assignments.size() == 2 and tracker_assignments[0].get("tracker_id", "") != tracker_assignments[1].get("tracker_id", "") and building_assignments.size() == 1 and building_assignments[0].get("building_id", "") == "outpost" and assignment_zones.size() == secure_assignments.size() and ai_board._active_vip_tracker_targets().size() == 2 and ai_board.explored_cells.size() > 0 and ai_board.explored_cells.size() <= ai_board.GRID_WIDTH * ai_board.GRID_HEIGHT and tactical_source.contains("var tracker_guidance :=") and tactical_source.contains("secure_rescue or tracker_guidance") and tactical_source.contains("var search_reserve := 0 if secure_rescue"), "tracked VIP pings guide idle AI searchers and split secure searches across buildings and sectors")
 	var console_soldier: Dictionary = ai_humans[2]
 	ai_board._select_unit(String(console_soldier.get("id", "")))
 	var console_tu_before := int(console_soldier.get("tu", 0))
@@ -511,9 +530,9 @@ func _test_build_health() -> void:
 	var app: Node = load("res://godot/main.tscn").instantiate()
 	app.content = _load_json("res://godot/data/content.json")
 	var health: Array = app._run_self_tests()
-	if health.size() != 88 or not health.all(func(row): return row.get("pass", false)):
+	if health.size() != 89 or not health.all(func(row): return row.get("pass", false)):
 		print("BUILD HEALTH DETAIL: %s" % JSON.stringify(health))
-	_check(health.size() == 88 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 88 rows")
+	_check(health.size() == 89 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 89 rows")
 	app.free()
 
 func _load_json(path: String) -> Dictionary:

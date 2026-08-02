@@ -29,6 +29,8 @@ const AI_MAX_MOVE_STEPS := 8
 const AI_MAX_CANDIDATES := 192
 const AI_MAX_TURNS := 24
 const AI_DISTRESS_TURNS := 12
+const TRACKER_PULSE_INTERVAL := 5.5
+const TRACKER_PULSE_DURATION := 1.4
 const RANK_ORDER := ["Rookie", "Squaddie", "Corporal", "Sergeant", "Lieutenant", "Captain", "Major", "Colonel"]
 const COMMAND_DOCTRINES := [
 	{"key":"wedge","label":"Protected Wedge","rank":"Rookie","missions":0},
@@ -61,11 +63,27 @@ var ai_last_acted_ids: Array[String] = []
 var commander_id := ""
 var commander_doctrine: Dictionary = {}
 var alien_contact_seen := false
+var explored_cells: Dictionary = {}
+var tracker_pulse_elapsed := TRACKER_PULSE_INTERVAL - 0.8
+var tracker_pulse_remaining := 0.0
+var tracker_pulse_serial := 0
 
 func _ready() -> void:
 	custom_minimum_size = Vector2(990, 650)
 	mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	clip_contents = true
+
+func _process(delta: float) -> void:
+	if resolved or _active_vip_tracker_targets().is_empty():
+		return
+	tracker_pulse_elapsed += delta
+	if tracker_pulse_elapsed >= TRACKER_PULSE_INTERVAL:
+		tracker_pulse_elapsed = 0.0
+		tracker_pulse_remaining = TRACKER_PULSE_DURATION
+		tracker_pulse_serial += 1
+	if tracker_pulse_remaining > 0.0:
+		tracker_pulse_remaining = maxf(0.0, tracker_pulse_remaining - delta)
+		queue_redraw()
 
 func begin_battle(next_incident: Dictionary, next_roster: Array, next_equipment_catalog: Dictionary = {}) -> void:
 	incident = next_incident.duplicate(true)
@@ -89,6 +107,10 @@ func begin_battle(next_incident: Dictionary, next_roster: Array, next_equipment_
 	commander_id = ""
 	commander_doctrine = {}
 	alien_contact_seen = false
+	explored_cells.clear()
+	tracker_pulse_elapsed = TRACKER_PULSE_INTERVAL - 0.8
+	tracker_pulse_remaining = 0.0
+	tracker_pulse_serial = 0
 	_generate_field()
 	_emit_log("Aegis One deployed. Secure the incident and rescue at least %d civilian%s." % [required_rescues, "" if required_rescues == 1 else "s"])
 	_refresh_visibility()
@@ -176,8 +198,8 @@ func _generate_field() -> void:
 			"facing": Vector2i(-1, 0),
 			"last_known_cell": Vector2i(-1, -1)
 		})
-	units.append({"id":"civilian-0","name":"Mara Venn","team":"civilian","cell":Vector2i(12,5),"hp":20,"max_hp":20,"panic":false,"escort_id":"","priority_escort_id":"","approached_by_id":"","rescued":false,"revealed":false,"visible":false})
-	units.append({"id":"civilian-1","name":"Oren Pike","team":"civilian","cell":Vector2i(17,10),"hp":20,"max_hp":20,"panic":false,"escort_id":"","priority_escort_id":"","approached_by_id":"","rescued":false,"revealed":false,"visible":false})
+	units.append({"id":"civilian-0","name":"Mara Venn","team":"civilian","cell":Vector2i(12,5),"hp":20,"max_hp":20,"panic":false,"escort_id":"","priority_escort_id":"","approached_by_id":"","rescued":false,"revealed":false,"visible":false,"vip_tracker":required_rescues > 0})
+	units.append({"id":"civilian-1","name":"Oren Pike","team":"civilian","cell":Vector2i(17,10),"hp":20,"max_hp":20,"panic":false,"escort_id":"","priority_escort_id":"","approached_by_id":"","rescued":false,"revealed":false,"visible":false,"vip_tracker":required_rescues > 0})
 	_generate_building()
 	for cell in [Vector2i(1,6), Vector2i(2,6), Vector2i(3,6), Vector2i(1,7), Vector2i(2,7), Vector2i(3,7), Vector2i(1,8), Vector2i(2,8), Vector2i(3,8)]:
 		extraction_cells[AegisHexRules.key(cell)] = true
@@ -1081,6 +1103,123 @@ func _ai_exploration_cell(unit: Dictionary) -> Vector2i:
 	var sweep_x := clampi(10 + turn_number * 2, 10, GRID_WIDTH - 2)
 	return Vector2i(sweep_x, clampi(GRID_HEIGHT / 2 + y_offset, 1, GRID_HEIGHT - 2))
 
+func _active_vip_tracker_targets() -> Array:
+	if required_rescues <= 0:
+		return []
+	return units.filter(func(unit): return unit.get("team", "") == "civilian" and bool(unit.get("vip_tracker", true)) and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false))
+
+func _passable_search_cell(cell: Vector2i, occupied: Dictionary) -> bool:
+	var key := AegisHexRules.key(cell)
+	return _inside(cell) and not _blocked_cells().has(key) and not occupied.has(key)
+
+func _ai_secure_search_assignments(soldiers: Array) -> Dictionary:
+	var assignments := {}
+	var occupied := _occupied_cells()
+	var available: Array = soldiers.filter(func(soldier):
+		return not units.any(func(unit): return unit.get("team", "") == "civilian" and unit.get("escort_id", "") == soldier.get("id", "") and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false))
+	)
+	available.sort_custom(func(left, right): return String(left.get("id", "")) < String(right.get("id", "")))
+	var trackers: Array = _active_vip_tracker_targets().filter(func(civilian): return not civilian.get("revealed", false) and String(civilian.get("escort_id", "")).is_empty())
+	trackers.sort_custom(func(left, right): return String(left.get("id", "")) < String(right.get("id", "")))
+	while not available.is_empty() and not trackers.is_empty():
+		var best_soldier_index := -1
+		var best_tracker_index := -1
+		var best_distance := 9999
+		var best_pair_key := ""
+		for soldier_index in range(available.size()):
+			for tracker_index in range(trackers.size()):
+				var distance := AegisHexRules.distance(available[soldier_index].cell, trackers[tracker_index].cell)
+				var pair_key := "%s:%s" % [available[soldier_index].get("id", ""), trackers[tracker_index].get("id", "")]
+				if distance < best_distance or distance == best_distance and (best_pair_key.is_empty() or pair_key < best_pair_key):
+					best_distance = distance
+					best_pair_key = pair_key
+					best_soldier_index = soldier_index
+					best_tracker_index = tracker_index
+		var tracker: Dictionary = trackers[best_tracker_index]
+		var tracker_soldier: Dictionary = available[best_soldier_index]
+		assignments[tracker_soldier.get("id", "")] = {"kind":"tracker","cell":tracker.cell,"tracker_id":tracker.get("id", ""),"zone_id":"tracker:%s" % tracker.get("id", "")}
+		available.remove_at(best_soldier_index)
+		trackers.remove_at(best_tracker_index)
+
+	var building_bounds := {}
+	for cover_value in covers.values():
+		var cover: Dictionary = cover_value
+		var building_id := String(cover.get("building", ""))
+		if building_id.is_empty() or not cover.get("hard", false) or int(cover.get("hp", 0)) <= 0:
+			continue
+		var cell: Vector2i = cover.cell
+		if not building_bounds.has(building_id):
+			building_bounds[building_id] = {"min_x":cell.x,"max_x":cell.x,"min_y":cell.y,"max_y":cell.y}
+		else:
+			var bounds: Dictionary = building_bounds[building_id]
+			bounds.min_x = mini(int(bounds.min_x), cell.x)
+			bounds.max_x = maxi(int(bounds.max_x), cell.x)
+			bounds.min_y = mini(int(bounds.min_y), cell.y)
+			bounds.max_y = maxi(int(bounds.max_y), cell.y)
+	var building_ids: Array = building_bounds.keys()
+	building_ids.sort()
+	for building_id_value in building_ids:
+		if available.is_empty():
+			break
+		var building_id := String(building_id_value)
+		var bounds: Dictionary = building_bounds[building_id]
+		var interior_cells: Array[Vector2i] = []
+		for y in range(int(bounds.min_y) + 1, int(bounds.max_y)):
+			for x in range(int(bounds.min_x) + 1, int(bounds.max_x)):
+				var interior := Vector2i(x, y)
+				if _passable_search_cell(interior, occupied) and not explored_cells.has(AegisHexRules.key(interior)):
+					interior_cells.append(interior)
+		if interior_cells.is_empty():
+			continue
+		var chosen_soldier_index := 0
+		var chosen_cell := interior_cells[0]
+		var chosen_distance := 9999
+		for soldier_index in range(available.size()):
+			for interior in interior_cells:
+				var distance := AegisHexRules.distance(available[soldier_index].cell, interior)
+				if distance < chosen_distance:
+					chosen_distance = distance
+					chosen_soldier_index = soldier_index
+					chosen_cell = interior
+		var building_soldier: Dictionary = available[chosen_soldier_index]
+		assignments[building_soldier.get("id", "")] = {"kind":"building","cell":chosen_cell,"building_id":building_id,"zone_id":"building:%s" % building_id}
+		available.remove_at(chosen_soldier_index)
+
+	var used_target_keys := {}
+	var used_sectors := {}
+	for assignment_value in assignments.values():
+		var assignment: Dictionary = assignment_value
+		var target_cell: Vector2i = assignment.cell
+		used_target_keys[AegisHexRules.key(target_cell)] = true
+		used_sectors["%d,%d" % [target_cell.x / 5, target_cell.y / 4]] = true
+	for soldier_value in available:
+		var soldier: Dictionary = soldier_value
+		var best_cell: Vector2i = soldier.get("cell", Vector2i.ZERO)
+		var best_score: int = 999999
+		var considered: int = 0
+		var start_index: int = absi(turn_number * 37 + String(soldier.get("id", "")).hash()) % (GRID_WIDTH * GRID_HEIGHT)
+		for offset in range(GRID_WIDTH * GRID_HEIGHT):
+			var flat_index := (start_index + offset) % (GRID_WIDTH * GRID_HEIGHT)
+			var candidate := Vector2i(flat_index % GRID_WIDTH, flat_index / GRID_WIDTH)
+			var candidate_key := AegisHexRules.key(candidate)
+			if not _passable_search_cell(candidate, occupied) or used_target_keys.has(candidate_key):
+				continue
+			considered += 1
+			if considered > AI_MAX_CANDIDATES:
+				break
+			var sector_id := "%d,%d" % [candidate.x / 5, candidate.y / 4]
+			var score := (10000 if explored_cells.has(candidate_key) else 0) + (2500 if used_sectors.has(sector_id) else 0) + AegisHexRules.distance(soldier.cell, candidate) * 10
+			if score < best_score:
+				best_score = score
+				best_cell = candidate
+		if best_cell == soldier.cell:
+			continue
+		var best_sector := "%d,%d" % [best_cell.x / 5, best_cell.y / 4]
+		assignments[soldier.get("id", "")] = {"kind":"sector","cell":best_cell,"sector_id":best_sector,"zone_id":"sector:%s" % best_sector}
+		used_target_keys[AegisHexRules.key(best_cell)] = true
+		used_sectors[best_sector] = true
+	return assignments
+
 func _ai_contact_civilian(soldier: Dictionary, civilian: Dictionary) -> bool:
 	if AegisHexRules.distance(soldier.cell, civilian.cell) > 1 or int(soldier.get("tu", 0)) < ESCORT_TU:
 		return false
@@ -1118,6 +1257,9 @@ func _run_ai_human_turn() -> void:
 		soldiers = rotated
 	ai_last_acted_ids.clear()
 	var claimed_civilians := {}
+	var secure_rescue := not units.any(func(unit): return unit.get("team", "") == "alien" and int(unit.get("hp", 0)) > 0) and rescued < required_rescues
+	var tracker_guidance := rescued < required_rescues and not _active_vip_tracker_targets().is_empty() and _visible_alien_contacts().is_empty() and _known_alien_contact_cells().is_empty()
+	var tactical_search_assignments: Dictionary = _ai_secure_search_assignments(soldiers) if secure_rescue or tracker_guidance else {}
 	for soldier in soldiers:
 		if resolved or (ai_command_busy and not ai_command_active):
 			break
@@ -1127,6 +1269,7 @@ func _run_ai_human_turn() -> void:
 		var followers := units.filter(func(unit): return unit.get("team", "") == "civilian" and unit.get("escort_id", "") == soldier.get("id", "") and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false))
 		var visible_contacts := _visible_alien_contacts()
 		var rescue_target: Variant = null
+		var search_assignment: Dictionary = {}
 		if not followers.is_empty():
 			rescue_target = {"cell":_nearest_extraction_cell(soldier.cell),"ramp":true}
 		else:
@@ -1136,14 +1279,24 @@ func _run_ai_human_turn() -> void:
 				rescue_target = priority_civilians[0]
 				claimed_civilians[rescue_target.get("id", "")] = true
 		if rescue_target == null and visible_contacts.is_empty() and _known_alien_contact_cells().is_empty() and rescued < required_rescues:
-			var civilians := units.filter(func(unit): return unit.get("team", "") == "civilian" and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false) and (String(unit.get("escort_id", "")).is_empty() or unit.get("escort_id", "") == soldier.get("id", "")) and (unit.get("visible", false) or not units.any(func(alien): return alien.get("team", "") == "alien" and int(alien.get("hp", 0)) > 0)) and not claimed_civilians.has(unit.get("id", "")))
+			var civilians := units.filter(func(unit): return unit.get("team", "") == "civilian" and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false) and (String(unit.get("escort_id", "")).is_empty() or unit.get("escort_id", "") == soldier.get("id", "")) and (unit.get("visible", false) or unit.get("revealed", false)) and not claimed_civilians.has(unit.get("id", "")))
 			civilians.sort_custom(func(left, right): return AegisHexRules.distance(left.cell, soldier.cell) < AegisHexRules.distance(right.cell, soldier.cell))
 			if not civilians.is_empty():
 				rescue_target = civilians[0]
 				claimed_civilians[rescue_target.get("id", "")] = true
+		if rescue_target == null and tactical_search_assignments.has(soldier.get("id", "")) and (secure_rescue or _ai_distress_target(soldier).is_empty()):
+			search_assignment = tactical_search_assignments[soldier.get("id", "")]
+			if search_assignment.get("kind", "") == "tracker":
+				for civilian in units:
+					if civilian.get("id", "") == search_assignment.get("tracker_id", "") and int(civilian.get("hp", 0)) > 0 and not civilian.get("rescued", false):
+						rescue_target = civilian
+						claimed_civilians[civilian.get("id", "")] = true
+						break
+			else:
+				rescue_target = {"cell":search_assignment.get("cell", soldier.cell),"search":true,"kind":search_assignment.get("kind", "sector")}
 		if rescue_target != null:
 			var contacted := false
-			if not rescue_target.get("ramp", false) and _ai_contact_civilian(soldier, rescue_target):
+			if not rescue_target.get("ramp", false) and not rescue_target.get("search", false) and _ai_contact_civilian(soldier, rescue_target):
 				contacted = true
 				followers = [rescue_target]
 				rescue_target = {"cell":_nearest_extraction_cell(soldier.cell),"ramp":true}
@@ -1153,9 +1306,12 @@ func _run_ai_human_turn() -> void:
 					rescue_cells.append(_cell_from_key(String(extraction_key)))
 			else:
 				rescue_cells.append(rescue_target.cell)
-			var rescue_plan := _ai_extraction_plan(soldier, reserve_tu, visible_contacts) if rescue_target.get("ramp", false) else _ai_rescue_plan(soldier, rescue_cells, reserve_tu, true, visible_contacts)
+			var search_reserve := 0 if secure_rescue and rescue_target.get("search", false) else reserve_tu
+			var rescue_plan := _ai_extraction_plan(soldier, reserve_tu, visible_contacts) if rescue_target.get("ramp", false) else _ai_rescue_plan(soldier, rescue_cells, search_reserve, not rescue_target.get("search", false), visible_contacts)
 			_apply_ai_movement(soldier, rescue_plan)
-			if not rescue_target.get("ramp", false):
+			if rescue_target.get("search", false) and int(rescue_plan.get("steps", 0)) > 0:
+				_emit_log("%s sweeps an unexplored %s zone for tracked civilians." % [soldier.callsign, rescue_target.get("kind", "search")])
+			if not rescue_target.get("ramp", false) and not rescue_target.get("search", false):
 				contacted = _ai_contact_civilian(soldier, rescue_target) or contacted
 			followers = units.filter(func(unit): return unit.get("team", "") == "civilian" and unit.get("escort_id", "") == soldier.get("id", "") and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false))
 			var rescue_progressed: bool = contacted or int(rescue_plan.get("steps", 0)) > 0
@@ -1387,6 +1543,7 @@ func _move_panicked_civilians() -> void:
 
 func _refresh_visibility() -> void:
 	var soldiers := units.filter(func(unit): return unit.get("team", "") == "human" and int(unit.get("hp", 0)) > 0)
+	_refresh_explored_cells(soldiers)
 	var newly_spotted_civilians: Array = []
 	var alien_visible_now := false
 	for unit in units:
@@ -1410,6 +1567,14 @@ func _refresh_visibility() -> void:
 	elif not alien_contact_seen:
 		for civilian in newly_spotted_civilians:
 			_assign_precontact_civilian_claim(civilian, soldiers)
+
+func _refresh_explored_cells(soldiers: Array) -> void:
+	for soldier in soldiers:
+		for y in range(GRID_HEIGHT):
+			for x in range(GRID_WIDTH):
+				var cell := Vector2i(x, y)
+				if AegisHexRules.distance(soldier.cell, cell) <= 7 and _has_line_of_sight_from(soldier.cell, cell):
+					explored_cells[AegisHexRules.key(cell)] = true
 
 func _assign_precontact_civilian_claim(civilian: Dictionary, soldiers: Array) -> void:
 	if not String(civilian.get("escort_id", "")).is_empty() or not String(civilian.get("approached_by_id", "")).is_empty() or not String(civilian.get("priority_escort_id", "")).is_empty():
@@ -1526,6 +1691,7 @@ func _draw() -> void:
 	for y in range(GRID_HEIGHT):
 		for x in range(GRID_WIDTH):
 			_draw_hex(Vector2i(x, y))
+	_draw_tracker_pings()
 	_draw_skyranger()
 	_draw_connected_walls()
 	for cover in covers.values():
@@ -1537,6 +1703,21 @@ func _draw() -> void:
 		draw_rect(Rect2(Vector2(250, 265), Vector2(520, 115)), Color("67e8f9"), false, 2.0)
 		draw_string(get_theme_default_font(), Vector2(350, 315), "TACTICAL %s" % ("VICTORY" if rescued >= required_rescues else "DEFEAT"), HORIZONTAL_ALIGNMENT_LEFT, -1, 26, Color("fef3c7"))
 		draw_string(get_theme_default_font(), Vector2(325, 350), "%d civilian%s rescued - %d turns" % [rescued, "" if rescued == 1 else "s", turn_number], HORIZONTAL_ALIGNMENT_LEFT, -1, 17, Color("d1fae5"))
+
+func _draw_tracker_pings() -> void:
+	if tracker_pulse_remaining <= 0.0:
+		return
+	var progress := clampf(1.0 - tracker_pulse_remaining / TRACKER_PULSE_DURATION, 0.0, 1.0)
+	for civilian in _active_vip_tracker_targets():
+		var center := _hex_center(civilian.cell)
+		var pulse_color := Color("facc15")
+		pulse_color.a = 0.95 * (1.0 - progress)
+		draw_circle(center, 7.0, Color(0.98, 0.77, 0.08, 0.24))
+		draw_arc(center, 10.0 + progress * 27.0, 0.0, TAU, 32, pulse_color, 3.0, true)
+		var echo_color := pulse_color
+		echo_color.a *= 0.5
+		draw_arc(center, 6.0 + progress * 16.0, 0.0, TAU, 24, echo_color, 2.0, true)
+		draw_string(get_theme_default_font(), center + Vector2(-9, -12), "VIP", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("fef3c7"))
 
 func _draw_hex(cell: Vector2i) -> void:
 	var center := _hex_center(cell)

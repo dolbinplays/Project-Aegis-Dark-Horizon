@@ -1,6 +1,6 @@
 extends Control
 
-const NATIVE_BUILD := "v0.26.08.01.GODOT.0018_TACTICAL_DISTRESS_RESPONSE_VERTICAL_SLICE"
+const NATIVE_BUILD := "v0.26.08.01.GODOT.0019_VIP_TRACKERS_AND_POST_COMBAT_RESCUE_SEARCH_VERTICAL_SLICE"
 const MAX_BROWSER_IMPORT_BYTES := 32 * 1024 * 1024
 const AUDIO_SETTINGS_PATH := "user://project_aegis_audio_settings.cfg"
 const VOICE_MAKEUP_DB := 6.0
@@ -1731,6 +1731,27 @@ func _run_self_tests() -> Array:
 	var distress_response_ready: bool = far_distress.get("stage", "") == "converge" and far_distress.get("cell", Vector2i.ZERO) == Vector2i(10, 10) and near_distress.get("stage", "") == "search" and near_distress.get("cell", Vector2i.ZERO) == Vector2i(16, 10) and down_distress.get("stage", "") == "converge" and tactical_source.contains("_record_tactical_distress(target, alien, roll <= chance)")
 	var full_squad_priority_ready: bool = tactical_source.contains("for soldier in soldiers") and tactical_source.contains("_known_alien_contact_cells().is_empty() and rescued < required_rescues") and tactical_source.contains("_ai_patrol_plan(soldier, reserve_tu)") and tactical_source.contains("ai_last_acted_ids.append")
 	var sequential_action_ready: bool = tactical_source.contains("0.38 if soldier.cell != cell_before") and tactical_source.contains("0.18 if alien.get(\"visible\", false) else 0.01") and tactical_source.contains("0.38 if alien.get(\"visible\", false) else 0.02")
+	var secure_search_board := AegisTacticalBoard.new()
+	secure_search_board.begin_battle(test_campaign.selected_incident(), test_campaign.assigned_soldiers(), content)
+	var secure_search_humans: Array = secure_search_board.units.filter(func(unit): return unit.get("team", "") == "human")
+	var secure_search_civilians: Array = secure_search_board.units.filter(func(unit): return unit.get("team", "") == "civilian")
+	for secure_alien in secure_search_board.units.filter(func(unit): return unit.get("team", "") == "alien"):
+		secure_alien["hp"] = 0
+	secure_search_civilians[0]["cell"] = Vector2i(18, 1)
+	secure_search_civilians[1]["cell"] = Vector2i(18, 12)
+	for secure_civilian in secure_search_civilians:
+		secure_civilian["vip_tracker"] = true
+		secure_civilian["revealed"] = false
+		secure_civilian["visible"] = false
+	secure_search_board.explored_cells.clear()
+	var secure_search_assignments: Dictionary = secure_search_board._ai_secure_search_assignments(secure_search_humans)
+	var secure_tracker_assignments: Array = secure_search_assignments.values().filter(func(assignment): return assignment.get("kind", "") == "tracker")
+	var secure_building_assignments: Array = secure_search_assignments.values().filter(func(assignment): return assignment.get("kind", "") == "building")
+	var secure_search_zones := {}
+	for secure_assignment in secure_search_assignments.values():
+		secure_search_zones[secure_assignment.get("zone_id", "")] = true
+	secure_search_board._refresh_explored_cells([secure_search_humans[0]])
+	var post_combat_search_ready: bool = secure_search_assignments.size() == secure_search_humans.size() and secure_tracker_assignments.size() == 2 and secure_tracker_assignments[0].get("tracker_id", "") != secure_tracker_assignments[1].get("tracker_id", "") and secure_building_assignments.size() == 1 and secure_search_zones.size() == secure_search_assignments.size() and secure_search_board._active_vip_tracker_targets().size() == 2 and secure_search_board.explored_cells.size() > 0 and secure_search_board.explored_cells.size() <= secure_search_board.GRID_WIDTH * secure_search_board.GRID_HEIGHT and tactical_source.contains("var tracker_guidance :=") and tactical_source.contains("secure_rescue or tracker_guidance") and tactical_source.contains("var search_reserve := 0 if secure_rescue")
 	for alien in test_board.units.filter(func(unit): return unit.get("team", "") == "alien"):
 		alien["hp"] = 0
 	var rescue_gate_holds := not test_board._check_resolution() and not test_board.resolved
@@ -1980,6 +2001,7 @@ func _run_self_tests() -> Array:
 		{"name":"AI command can return the live battle to player control", "pass":ai_reclaim_ready},
 		{"name":"AI rescue routing rotates soldiers and rejects two-cell loops", "pass":rescue_route_ready and recovery_board.ai_last_acted_ids is Array},
 		{"name":"AI command tasks every viable soldier and prioritizes squad contacts", "pass":full_squad_priority_ready},
+		{"name":"Tracked VIP pings guide AI searchers before distinct post-combat building and sector sweeps", "pass":post_combat_search_ready},
 		{"name":"Pre-contact rescue claims persist while other soldiers converge on remembered alien areas", "pass":precontact_contact_memory_ready},
 		{"name":"Non-escort soldiers answer wounded and downed squad distress calls then search the firing direction", "pass":distress_response_ready},
 		{"name":"Civilian escorts avoid known alien firing exposure when a safe route exists", "pass":threat_aware_escort_ready},
@@ -2049,6 +2071,7 @@ func _run_self_tests() -> Array:
 	doctrine_board.free()
 	recovery_board.free()
 	priority_board.free()
+	secure_search_board.free()
 	loadout_board.free()
 	dense_map.free()
 	return checks

@@ -106,6 +106,7 @@ const required = [
   "Tactical rescue extraction state and mission-intent rewards stay distinct from casualties",
   "Mandatory civilian objectives continue through a bounded secure rescue phase",
   "AI mandatory rescue phase searches escorts and extracts before resolution",
+  "Tracked VIP pings guide AI searchers before distinct post-combat building and sector sweeps",
   "Skyranger ramp civilian escorts follow bounded paths and recover from panic",
   "Escort chains reserve single-file cells and panic favors broken sightlines",
   "Reload and fire-mode changes are authoritative for the next tactical action",
@@ -207,6 +208,8 @@ const required = [
   "tacticalAiThreatAwareReachablePlan",
   "tacticalAiFallbackPatrolPlan",
   "tacticalAiSequentialPlaybackFrames",
+  "tacticalVipTrackerPings",
+  "tacticalAiSecureSearchAssignments",
   "tacticalPreContactCivilianClaims",
   "tacticalUpdateAlienContactMemory",
   "tacticalFindSkyrangerPlacement",
@@ -276,6 +279,11 @@ for (const nativeNeedle of [
   "func _assign_precontact_civilian_claim",
   "func _record_tactical_distress",
   "func _ai_distress_target",
+  "func _active_vip_tracker_targets",
+  "func _ai_secure_search_assignments",
+  "func _refresh_explored_cells",
+  "func _draw_tracker_pings",
+  "Tracked VIP pings guide AI searchers before distinct post-combat building and sector sweeps",
   "Non-escort soldiers answer wounded and downed squad distress calls then search the firing direction",
   "ai_last_acted_ids",
   "voice_queue",
@@ -299,6 +307,12 @@ if (manifest.gameplayParity?.saveFormat !== manifest.saveFormat || nativeContent
 }
 if (!manifest.gameplayParity?.requiredSystems?.includes("wounded-downed-squad-distress-response")) {
   missing.push("browser/native gameplay parity must require wounded and downed squad distress response");
+}
+if (!manifest.gameplayParity?.requiredSystems?.includes("tracked-vip-pings-and-post-combat-rescue-search-sectors")) {
+  missing.push("browser/native gameplay parity must require tracked VIP pings and post-combat rescue search sectors");
+}
+if (!manifest.gameplayParity?.requiredSystems?.includes("tracked-vip-precontact-ai-guidance")) {
+  missing.push("browser/native gameplay parity must require tracked VIP pre-contact AI guidance");
 }
 
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "multi-base-aircraft-ferry-routing" && entry?.reason)) {
@@ -348,6 +362,8 @@ for (const system of [
   "queued-tactical-voice-recovery",
   "dedicated-voice-bus-controls",
   "voice-take-normalization-music-ducking",
+  "tracked-vip-pings-and-post-combat-rescue-search-sectors",
+  "tracked-vip-precontact-ai-guidance",
 ]) {
   if (!manifest.gameplayParity?.requiredSystems?.includes(system)) {
     missing.push(`gameplay parity system missing: ${system}`);

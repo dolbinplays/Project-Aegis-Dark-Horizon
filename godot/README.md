@@ -1,8 +1,8 @@
 # Project Aegis Godot 4 Vertical Slice
 
-Native build: `v0.26.08.01.GODOT.0018_TACTICAL_DISTRESS_RESPONSE_VERTICAL_SLICE`
+Native build: `v0.26.08.01.GODOT.0019_VIP_TRACKERS_AND_POST_COMBAT_RESCUE_SEARCH_VERTICAL_SLICE`
 
-Paired browser build: `v0.26.08.01.0147_TACTICAL_CONTACT_MEMORY_STATE_CONTINUITY_AND_SAFE_LANDING_PARITY_PATCH`
+Paired browser build: `v0.26.08.01.0149_TACTICAL_VIP_TRACKERS_AND_POST_COMBAT_RESCUE_SEARCH_PARITY_PATCH`
 
 This is a native Godot 4 vertical slice alongside the verified HTML game. It does not wrap `index.html`, replace the browser build, or write to the browser campaign save.
 
@@ -27,6 +27,7 @@ The project uses the repository root so the native slice can reuse the existing 
 - Saber One outbound travel, deterministic bounded air combat, return, repair/refuel/rearm service, combat reports, and crash-site generation.
 - Native 20x14 hex tactical incident with terrain, six soldiers, aliens, civilians, a Skyranger and nine-cell rear ramp, connected walls, cover, TU movement, rifle attacks, alien turns, and mission resolution.
 - Civilian contact for 8 TU, up to four followers per escort, single-file trail following, panic/recontact behavior, and mandatory ramp extraction.
+- Mandatory-rescue civilians carry periodic VIP tracker pulses. Once aliens are eliminated, AI searchers split across distinct tracker contacts, unexplored building interiors, and unexplored map sectors while established escorts continue to the ramp.
 - Destructible wall cells that become nonblocking rubble for every tactical mover.
 - Rank- and mission-gated commander doctrine, commander-centered formations, bounded flanking, cover/LOS/range scoring, and selected-shot TU reserves during AI command.
 - Reaction fire during alien movement driven by each soldier's Reaction stat, current weapon TU profile, range, line of sight, and available ammunition.
@@ -120,9 +121,9 @@ godot --headless --path . --editor --quit
 godot --headless --path . --script res://godot/tests/test_runner.gd
 ```
 
-The test runner covers campaign creation and travel, exact loadout/store save round-tripping, conservative loadout and wound migration, local-stock conservation and unavailable-item rejection, Medkit issue/return/consumption, mission recovery and loss, one-to-five-day wounds, exact recovery persistence, unequipped recruit arrivals, Workshop and personnel migration, hiring/capacity rules, construction, bounded research and manufacturing, air operations, browser-export normalization and source preservation, strategic markers, bounded hex rules, tactical loadout inheritance, Laser Rifle range/TU, selected-unit feedback, Unarmed fire rejection, movement highlighting, three End Turn cycles, civilian contact, wall destruction and traversal, full-squad contact response, pre-contact civilian claims, remembered alien-contact convergence, building-clear Skyranger placement, threat-safe civilian paths, sequential visible actions, and all visible Build Health rows.
+The test runner covers campaign creation and travel, exact loadout/store save round-tripping, conservative loadout and wound migration, local-stock conservation and unavailable-item rejection, Medkit issue/return/consumption, mission recovery and loss, one-to-five-day wounds, exact recovery persistence, unequipped recruit arrivals, Workshop and personnel migration, hiring/capacity rules, construction, bounded research and manufacturing, air operations, browser-export normalization and source preservation, strategic markers, bounded hex rules, tactical loadout inheritance, Laser Rifle range/TU, selected-unit feedback, Unarmed fire rejection, movement highlighting, three End Turn cycles, civilian contact, wall destruction and traversal, full-squad contact response, pre-contact civilian claims, remembered alien-contact convergence, building-clear Skyranger placement, tracked VIP pings, pre-contact tracker guidance with shot reservation, distinct post-combat building/sector search assignments, threat-safe civilian paths, sequential visible actions, and all visible Build Health rows.
 
-Latest automated verification passes `115/115` native tests and `88/88` visible Build Health rows. Godot 4.7.1 strict editor parsing passes. The paired HTML build reaches the 0148 start screen and Geoscape; browser Build Health passes `306/306`. A practical six-soldier simulated incident completed after three exchanges with five survivors and all three aliens eliminated. Browser diagnostics contain no runtime errors; the only warning is Tailwind's existing development-CDN advisory.
+Latest automated verification passes `116/116` native tests and `89/89` visible Build Health rows. Godot 4.7.1 strict editor parsing passes. The paired HTML build reaches the 0149 start screen and Geoscape; browser Build Health passes `307/307`. A practical six-soldier Prairie Abduction displayed both tracked VIP pulses and completed three End Turn cycles with all six soldiers alive. A second live handoff advanced six AI frames before contact and returned the preserved battle to player control with both pings intact. Browser diagnostics contain no runtime errors; the only warning is Tailwind's existing development-CDN advisory.
 
 ## Deliberate Limits
 

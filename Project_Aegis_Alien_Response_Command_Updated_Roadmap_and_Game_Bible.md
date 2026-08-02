@@ -2,9 +2,55 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-01
-Current handoff build: `v0.26.08.01.0148_TACTICAL_SIMULATION_RELIABILITY_AND_SQUAD_REPLACEMENT_INDEX_ONLY_PATCH`
-Native vertical slice: `v0.26.08.01.GODOT.0018_TACTICAL_DISTRESS_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0148 and native 0018 preserve save format 4. Simulated encounters now refresh every living soldier's TU after round one, preventing survivors from becoming inert while aliens continue firing. Classic Lineup stages moving lethal targets alive through the firing frame and reveals the complete Classic action sequence. Paired A/B squad wipeouts allocate replacements sequentially as C and D instead of independently choosing C. In both clients, alien fire records a bounded squad distress contact: non-escort soldiers converge on a living casualty or a downed soldier's last position, then search toward the shooter's reported firing cell while escorts continue evacuation. Browser Build Health passes 306/306; the 0148 start screen and Geoscape load; a practical six-soldier simulated incident completed after three exchanges with five survivors and all three aliens eliminated; browser diagnostics contain no runtime errors. Native tests pass 115/115, native Build Health passes 88/88, and Godot 4.7.1 strict parsing passes. Remaining gates are hands-on paired-squad wipeout naming, exact Classic lethal playback, and visible distress convergence in an affected campaign.**
+Current handoff build: `v0.26.08.01.0149_TACTICAL_VIP_TRACKERS_AND_POST_COMBAT_RESCUE_SEARCH_PARITY_PATCH`
+Native vertical slice: `v0.26.08.01.GODOT.0019_VIP_TRACKERS_AND_POST_COMBAT_RESCUE_SEARCH_VERTICAL_SLICE`
+Current patch status: **Browser 0149 and native 0019 preserve save format 4. Mandatory-rescue civilians now carry periodic VIP map pulses. Before alien contact, AI searchers are drawn toward distinct tracker pings while reserving enough TU for their selected shot; spotted or remembered hostiles and squad distress remain higher priorities. After all aliens are eliminated, spare searchers divide tracked-VIP, unexplored-building, and unexplored-sector assignments while established escorts continue to the ramp. Ordinary hidden civilians remain governed by fog of war. Browser Build Health passes 307/307; fresh 0149 start screen and Geoscape smoke passed; a six-soldier Prairie Abduction displayed both VIP pulses, completed three manual End Turn cycles, and advanced six pre-contact AI frames before returning the unchanged live battle to player control. No browser runtime errors were present. Native tests pass 116/116, native Build Health passes 89/89, and Godot 4.7.1 strict parsing passes. Remaining gates are visually confirming separate searchers follow separate pings and validating active/post-combat priority transitions in a live Godot rescue battle.**
+
+---
+
+# v0.26.08.01.0149 / GODOT.0019 - VIP Trackers and Post-Combat Rescue Search
+
+Browser build `v0.26.08.01.0149_TACTICAL_VIP_TRACKERS_AND_POST_COMBAT_RESCUE_SEARCH_PARITY_PATCH` and native build `v0.26.08.01.GODOT.0019_VIP_TRACKERS_AND_POST_COMBAT_RESCUE_SEARCH_VERTICAL_SLICE` preserve save format 4.
+
+Root causes addressed:
+
+- Once aliens were defeated, secure-rescue AI could read every hidden civilian position directly instead of using authorized mission intelligence or conducting a real search.
+- Rescue searchers did not retain explored coverage or divide responsibility across separate building interiors and map sectors, encouraging redundant movement.
+- Mandatory rescue targets had no periodic locator cue, so finding the final civilians could become a slow blind sweep.
+- The first browser marker draft calculated tracker data inside every rendered hex; it was replaced before release with one indexed tracker map per tactical render.
+- Fresh startup smoke exposed that tracker polling could pass an explicit null mission into the older objective helper. The helper now normalizes null mission context before reading mission intent, preventing non-tactical screens from failing.
+
+Implemented roadmap scope:
+
+- All civilians counted by a mandatory rescue objective are treated as tracked VIPs. Browser safe-2D and the Godot board draw periodic amber map pulses at their current cells until rescue or death.
+- While no alien is visible or remembered, AI searchers follow distinct tracker pings and retain the selected firing mode's TU reserve. Alien contact and squad distress override tracker guidance; active civilian escorts keep their extraction assignment.
+- Secure-area AI assigns one searcher to each unclaimed tracker first, then one searcher per unexplored building interior, then spreads remaining soldiers across distinct unexplored sectors.
+- Existing civilian escorts remain assigned to extraction and are excluded from search reassignment.
+- Browser and native visibility refreshes retain bounded explored-cell memory. Ordinary untracked hidden civilians are not selected through hidden-position omniscience.
+- Browser objective lookup accepts absent or null mission context, so start-screen and Geoscape tracker polling remains inert and safe outside battle.
+- Search assignment stays deterministic and bounded by the existing tactical candidate limits; no full-map repeated pathfinding or per-cell tracker filtering was introduced.
+- Browser Build Health adds one row and reaches 307. Native Build Health adds one row and reaches 89; native automation adds one direct check and reaches 116.
+
+Verification checklist:
+
+- Static browser app-script parsing and `node tools\\check-aegis-build.cjs` passed with synchronized 0149/0019 labels.
+- Localhost start screen displayed 0149, Geoscape loaded, and browser Build Health passed `307/307` after a cache-busted reload.
+- A six-soldier Prairie Abduction launched in safe 2D. The 64x64 overview displayed two VIP tracker pulses; three End Turn cycles returned to the human phase with all six soldiers alive.
+- A second cache-busted Prairie Abduction handoff generated 188 bounded AI playback frames. With zero aliens revealed, playback advanced through frame 6; taking back control preserved all six soldiers, rescue progress 0/2, round 1, both VIP pulses, and the live battlefield.
+- The in-battle UFO alert retained tactical command while recording the selected post-battle Geoscape speed.
+- Browser diagnostics contained no runtime errors. The only warning was Tailwind's existing development-CDN advisory.
+- Godot 4.7.1 strict editor parsing passed. Native tests passed `116/116`, including distinct tracker/building/sector assignments, and all `89/89` visible native Build Health rows passed inside the suite.
+
+Remaining risks and manual validation:
+
+- Before alien contact in browser and Godot mandatory-rescue missions, hand control to AI and confirm separate available soldiers move toward separate tracker pulses while preserving enough TU for their selected shot.
+- Reveal an alien or trigger a squad distress call and confirm non-escorts immediately leave tracker search for the higher-priority contact while active escorts continue toward extraction.
+- In browser and Godot mandatory-rescue missions, eliminate every alien before finding every VIP. Hand control to AI and confirm separate soldiers head toward separate pulses/buildings instead of stacking or oscillating.
+- Let one soldier retain an active civilian column during that sweep and confirm the escort continues to the Skyranger ramp while other soldiers search.
+- Watch several pulse cycles at Near, Wide, and Full zoom and confirm both the location and visual cadence remain readable without obscuring units.
+- Confirm a non-mandatory mission does not expose unrevealed ordinary civilians through tracker markers or AI targeting.
+
+Next recommended paired patch after this gate: `TACTICAL_CLASSIC_INVENTORY_TRANSFERS_AND_ELEVATION_FOUNDATION_PARITY_PATCH`, beginning with bounded adjacent-unit hand/belt transfers and floor-state data before any multi-level renderer rewrite.
 
 ---
 
