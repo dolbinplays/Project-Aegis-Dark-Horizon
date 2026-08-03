@@ -1,6 +1,6 @@
 extends Control
 
-const NATIVE_BUILD := "v0.26.08.02.GODOT.0024_NEAREST_VIP_ESCORT_AND_ALIEN_REINFORCEMENT_DROPSHIP_VERTICAL_SLICE"
+const NATIVE_BUILD := "v0.26.08.03.GODOT.0025_ALIEN_COMMANDER_MISSED_CHECKIN_REINFORCEMENT_VERTICAL_SLICE"
 const MAX_BROWSER_IMPORT_BYTES := 32 * 1024 * 1024
 const AUDIO_SETTINGS_PATH := "user://project_aegis_audio_settings.cfg"
 const VOICE_MAKEUP_DB := 6.0
@@ -1867,6 +1867,19 @@ func _run_self_tests() -> Array:
 	reinforcement_board._advance_alien_reinforcements()
 	var reinforcement_units: Array = reinforcement_board.units.filter(func(unit): return unit.get("is_reinforcement", false))
 	var alien_reinforcement_ready: bool = dead_commander_blocks_call and reinforcement_call_ready and reinforcement_clear_of_buildings and reinforcement_clear_of_skyrangers and reinforcement_board.alien_reinforcement_arrived and reinforcement_units.size() >= 2 and reinforcement_units.size() <= 4 and not reinforcement_board._try_call_alien_reinforcements(1)
+	var missed_checkin_board := AegisTacticalBoard.new()
+	missed_checkin_board.begin_battle(test_campaign.selected_incident(), test_campaign.assigned_soldiers(), content)
+	missed_checkin_board.turn_number = 3
+	for missed_alien in missed_checkin_board.units.filter(func(unit): return unit.get("team", "") == "alien"):
+		missed_alien.hp = 0
+	var missed_death_recorded: bool = missed_checkin_board._record_alien_commander_death()
+	var missed_delay := missed_checkin_board.alien_missed_checkin_turn - missed_checkin_board.alien_commander_death_turn
+	missed_checkin_board.turn_number = missed_checkin_board.alien_missed_checkin_turn - 1
+	var missed_early_blocked: bool = not missed_checkin_board._try_missed_checkin_reinforcements()
+	missed_checkin_board.turn_number = missed_checkin_board.alien_missed_checkin_turn
+	var missed_triggered: bool = missed_checkin_board._try_missed_checkin_reinforcements()
+	var missed_checkin_ready: bool = missed_death_recorded and missed_delay >= missed_checkin_board.ALIEN_MISSED_CHECKIN_MIN_ROUNDS and missed_delay <= missed_checkin_board.ALIEN_MISSED_CHECKIN_MAX_ROUNDS and missed_early_blocked and missed_triggered and missed_checkin_board.alien_reinforcement_called and missed_checkin_board.alien_reinforcement_arrival_turn == missed_checkin_board.turn_number and missed_checkin_board.alien_reinforcement_reason == "missed_checkin" and not missed_checkin_board._try_missed_checkin_reinforcements()
+	var alien_saucer_ready: bool = tactical_source.contains("var saucer_disc") and tactical_source.contains("var saucer_dome") and tactical_source.contains("Color(\"6b21a8\")") and tactical_source.contains("func _ellipse_points")
 	var distress_board := AegisTacticalBoard.new()
 	distress_board.begin_battle(test_campaign.selected_incident(), test_campaign.assigned_soldiers(), content)
 	var distress_humans: Array = distress_board.units.filter(func(unit): return unit.get("team", "") == "human")
@@ -2229,6 +2242,8 @@ func _run_self_tests() -> Array:
 		{"name":"AI escorts use doors or breaches and continue through the ramp until the full civilian column extracts", "pass":health_egress_ready and full_column_extraction_ready},
 		{"name":"AI routes through real doors and assigns each free soldier to the nearest unescorted VIP", "pass":door_entry_ready and nearest_vip_routing_ready},
 		{"name":"One living alien commander can call a delayed dropship into a building- and Skyranger-clear footprint", "pass":alien_reinforcement_ready},
+		{"name":"A wiped alien force draws one investigation dropship 5 to 15 rounds after its dead commander misses check-in", "pass":missed_checkin_ready},
+		{"name":"Alien reinforcement craft renders as a purple flying saucer with a rear deployment ramp", "pass":alien_saucer_ready},
 		{"name":"AI command tasks every viable soldier and gives squad-wide alien contact combat priority", "pass":full_squad_priority_ready},
 		{"name":"Tracked VIP pings direct every free AI soldier until contact before area sweeps resume", "pass":post_combat_search_ready},
 		{"name":"Alien contact pauses new VIP claims while preserving remembered civilian assignments", "pass":precontact_contact_memory_ready},

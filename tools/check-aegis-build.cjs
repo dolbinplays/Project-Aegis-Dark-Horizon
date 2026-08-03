@@ -176,6 +176,8 @@ const required = [
   "Fit Map frames complete Small Medium and Large grids in 2D and isometric views",
   "Out-of-combat soldiers approach and contact their nearest unescorted VIP",
   "Living alien commanders can call one delayed reinforcement dropship into a clear landing footprint",
+  "A wiped alien force draws one investigation dropship 5 to 15 rounds after its dead commander misses check-in",
+  "Alien reinforcement craft renders as a purple flying saucer with a rear deployment ramp",
   "Medkit issue and return conserve local Base Inventory",
   "Tactical Medkit use spends 12 TU heals 12 HP and consumes one charge",
   "Manual tactical final HP drives bounded wounded recovery",
@@ -251,6 +253,9 @@ const required = [
   "tacticalFitMap2dMetrics",
   "tacticalNearestVipEscortContractTest",
   "tacticalAlienReinforcementTurn",
+  "tacticalAlienMissedCheckinContractTest",
+  "tacticalAlienSaucerRenderContractTest",
+  "tacticalOptionalRound",
   "tacticalAlienDropshipPlacement",
   "alien-reinforcement-dropship-group",
   "TACTICAL_LIVE_STATE_CACHE",
@@ -334,6 +339,8 @@ for (const nativeNeedle of [
   "AI escorts use doors or breaches and continue through the ramp until the full civilian column extracts",
   "AI routes through real doors and assigns each free soldier to the nearest unescorted VIP",
   "One living alien commander can call a delayed dropship into a building- and Skyranger-clear footprint",
+  "A wiped alien force draws one investigation dropship 5 to 15 rounds after its dead commander misses check-in",
+  "Alien reinforcement craft renders as a purple flying saucer with a rear deployment ramp",
   "Tactical neighbors paths and generated units remain inside the playable perimeter",
   "func _configure_map_profile",
   "func fit_entire_map",
@@ -353,6 +360,9 @@ for (const nativeNeedle of [
   "func _set_voice_music_duck",
   "func _closest_unescorted_vip",
   "func _try_call_alien_reinforcements",
+  "func _try_missed_checkin_reinforcements",
+  "alien_missed_checkin_turn",
+  "func _ellipse_points",
   "func _find_alien_dropship_placement",
   "alien_reinforcement_called",
 ]) {
@@ -398,6 +408,8 @@ for (const system of [
   "nearest-unescorted-vip-contact-routing",
   "single-use-alien-commander-reinforcement-call",
   "building-and-skyranger-clear-alien-dropship-placement",
+  "alien-commander-missed-checkin-investigation-reinforcement",
+  "purple-alien-flying-saucer-rendering",
 ]) {
   if (!manifest.gameplayParity?.requiredSystems?.includes(system)) {
     missing.push(`browser/native tactical map parity system missing: ${system}`);

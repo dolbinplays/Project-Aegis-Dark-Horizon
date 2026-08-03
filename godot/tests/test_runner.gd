@@ -407,10 +407,32 @@ func _test_tactical(content: Dictionary) -> void:
 	var reinforcement_units: Array = reinforcement_board.units.filter(func(unit): return unit.get("is_reinforcement", false))
 	_check(reinforcement_board.alien_reinforcement_arrived and reinforcement_units.size() >= 2 and reinforcement_units.size() <= 4, "alien dropship arrival deploys two to four reinforcements")
 	_check(not reinforcement_board._try_call_alien_reinforcements(1), "alien commander cannot call a second reinforcement dropship")
+	var missed_checkin_board := AegisTacticalBoard.new()
+	get_root().add_child(missed_checkin_board)
+	missed_checkin_board.begin_battle(incident, tactical_roster, content)
+	missed_checkin_board.turn_number = 4
+	var missed_commander: Dictionary = missed_checkin_board._alien_field_commander()
+	missed_commander.hp = 0
+	var missed_recorded := missed_checkin_board._record_alien_commander_death()
+	var missed_delay := missed_checkin_board.alien_missed_checkin_turn - missed_checkin_board.alien_commander_death_turn
+	_check(missed_recorded and missed_delay >= missed_checkin_board.ALIEN_MISSED_CHECKIN_MIN_ROUNDS and missed_delay <= missed_checkin_board.ALIEN_MISSED_CHECKIN_MAX_ROUNDS, "commander death starts a deterministic five-to-fifteen-round missed-check-in window")
+	missed_checkin_board.turn_number = missed_checkin_board.alien_missed_checkin_turn - 1
+	_check(not missed_checkin_board._try_missed_checkin_reinforcements(), "missed check-in cannot summon an investigation force before its deadline")
+	missed_checkin_board.turn_number = missed_checkin_board.alien_missed_checkin_turn
+	_check(not missed_checkin_board._try_missed_checkin_reinforcements(), "a surviving original alien prevents the wiped-force investigation trigger")
+	for missed_alien in missed_checkin_board.units.filter(func(unit): return unit.get("team", "") == "alien"):
+		missed_alien.hp = 0
+	var missed_triggered := missed_checkin_board._try_missed_checkin_reinforcements()
+	_check(missed_triggered and missed_checkin_board.alien_reinforcement_called and missed_checkin_board.alien_reinforcement_arrival_turn == missed_checkin_board.turn_number and missed_checkin_board.alien_reinforcement_reason == "missed_checkin", "wiped alien force draws an immediate investigation dropship at the missed check-in deadline")
+	_check(not missed_checkin_board._try_missed_checkin_reinforcements(), "missed check-in shares the mission's one-reinforcement allowance")
+	missed_checkin_board.queue_free()
+	reinforcement_board.queue_free()
+	nearest_vip_board.queue_free()
 	ai_aliens[0]["revealed"] = true
 	ai_aliens[0]["visible"] = false
 	ai_aliens[0]["last_known_cell"] = Vector2i(9, 6)
 	var tactical_source := FileAccess.get_file_as_string("res://godot/scripts/tactical_board.gd")
+	_check(tactical_source.contains("var saucer_disc") and tactical_source.contains("var saucer_dome") and tactical_source.contains("Color(\"6b21a8\")") and tactical_source.contains("func _ellipse_points"), "alien reinforcement craft renders as a purple flying saucer with a rear deployment ramp")
 	_check(ai_board._known_alien_contact_cells().has(Vector2i(9, 6)) and not ai_board._soldier_engaged_with_alien(ai_humans[0]) and tactical_source.contains("var combat_priority :=") and tactical_source.contains("not combat_priority and not soldier_engaged"), "squad-wide remembered alien contact pauses new VIP claims while non-escorts converge on combat")
 	var engagement_cell_before: Vector2i = ai_aliens[0].cell
 	ai_aliens[0]["cell"] = ai_humans[0].cell + Vector2i(1, 0)
@@ -694,9 +716,9 @@ func _test_build_health() -> void:
 	var app: Node = load("res://godot/main.tscn").instantiate()
 	app.content = _load_json("res://godot/data/content.json")
 	var health: Array = app._run_self_tests()
-	if health.size() != 101 or not health.all(func(row): return row.get("pass", false)):
+	if health.size() != 103 or not health.all(func(row): return row.get("pass", false)):
 		print("BUILD HEALTH DETAIL: %s" % JSON.stringify(health))
-	_check(health.size() == 101 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 101 rows")
+	_check(health.size() == 103 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 103 rows")
 	app.free()
 
 func _load_json(path: String) -> Dictionary:

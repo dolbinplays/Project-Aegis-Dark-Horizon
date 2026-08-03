@@ -41,6 +41,8 @@ const ALIEN_REINFORCEMENT_BASE_CHANCE := 4
 const ALIEN_REINFORCEMENT_CHANCE_PER_CONTACT_ROUND := 7
 const ALIEN_REINFORCEMENT_MAX_CHANCE := 46
 const ALIEN_REINFORCEMENT_DELAY_ROUNDS := 2
+const ALIEN_MISSED_CHECKIN_MIN_ROUNDS := 5
+const ALIEN_MISSED_CHECKIN_MAX_ROUNDS := 15
 const ALIEN_REINFORCEMENT_MAX_LANDING_CANDIDATES := 32
 const RANK_ORDER := ["Rookie", "Squaddie", "Corporal", "Sergeant", "Lieutenant", "Captain", "Major", "Colonel"]
 const COMMAND_DOCTRINES := [
@@ -91,6 +93,9 @@ var alien_reinforcement_called := false
 var alien_reinforcement_arrived := false
 var alien_reinforcement_contact_rounds := 0
 var alien_reinforcement_arrival_turn := -1
+var alien_reinforcement_reason := ""
+var alien_commander_death_turn := -1
+var alien_missed_checkin_turn := -1
 var alien_dropship_placement: Dictionary = {}
 
 func _ready() -> void:
@@ -142,6 +147,9 @@ func begin_battle(next_incident: Dictionary, next_roster: Array, next_equipment_
 	alien_reinforcement_arrived = false
 	alien_reinforcement_contact_rounds = 0
 	alien_reinforcement_arrival_turn = -1
+	alien_reinforcement_reason = ""
+	alien_commander_death_turn = -1
+	alien_missed_checkin_turn = -1
 	alien_dropship_placement.clear()
 	_generate_field()
 	_emit_log("Aegis One deployed. Secure the incident and rescue at least %d civilian%s." % [required_rescues, "" if required_rescues == 1 else "s"])
@@ -2038,6 +2046,9 @@ func _reaction_fire_for_move(alien: Dictionary, reacted_ids: Dictionary) -> bool
 func alien_reinforcement_chance(contact_rounds: int) -> int:
 	return clampi(ALIEN_REINFORCEMENT_BASE_CHANCE + maxi(0, contact_rounds - 1) * ALIEN_REINFORCEMENT_CHANCE_PER_CONTACT_ROUND, ALIEN_REINFORCEMENT_BASE_CHANCE, ALIEN_REINFORCEMENT_MAX_CHANCE)
 
+func alien_missed_checkin_delay() -> int:
+	return AegisHexRules.deterministic_roll(int(incident.get("seed", 1)), 3917, ALIEN_MISSED_CHECKIN_MIN_ROUNDS, ALIEN_MISSED_CHECKIN_MAX_ROUNDS)
+
 func _alien_field_commander() -> Dictionary:
 	var originals: Array = units.filter(func(unit): return unit.get("team", "") == "alien" and not unit.get("is_reinforcement", false))
 	var explicit: Array = originals.filter(func(unit): return unit.get("is_alien_commander", false) or "commander" in String(unit.get("name", "")).to_lower())
@@ -2064,7 +2075,32 @@ func _try_call_alien_reinforcements(roll_override := -1) -> bool:
 		return false
 	alien_reinforcement_called = true
 	alien_reinforcement_arrival_turn = turn_number + ALIEN_REINFORCEMENT_DELAY_ROUNDS
+	alien_reinforcement_reason = "commander_call"
 	_emit_log("%s transmits for alien reinforcements. Purple dropship ETA: %d rounds." % [commander.get("name", "Alien commander"), ALIEN_REINFORCEMENT_DELAY_ROUNDS])
+	return true
+
+func _record_alien_commander_death() -> bool:
+	if alien_reinforcement_called or alien_reinforcement_arrived or alien_commander_death_turn >= 0:
+		return false
+	var commander := _alien_field_commander()
+	if commander.is_empty() or int(commander.get("hp", 0)) > 0:
+		return false
+	alien_commander_death_turn = turn_number
+	alien_missed_checkin_turn = turn_number + alien_missed_checkin_delay()
+	_emit_log("Alien commander signal lost. A missed check-in will draw an investigation force in %d rounds if the operation remains active." % (alien_missed_checkin_turn - alien_commander_death_turn))
+	return true
+
+func _try_missed_checkin_reinforcements() -> bool:
+	if alien_reinforcement_called or alien_reinforcement_arrived or alien_commander_death_turn < 0:
+		return false
+	if units.any(func(unit): return unit.get("team", "") == "alien" and int(unit.get("hp", 0)) > 0):
+		return false
+	if turn_number < alien_missed_checkin_turn:
+		return false
+	alien_reinforcement_called = true
+	alien_reinforcement_arrival_turn = turn_number
+	alien_reinforcement_reason = "missed_checkin"
+	_emit_log("Alien command detected the commander's missed check-in. An investigation dropship is arriving now.")
 	return true
 
 func _alien_dropship_craft(anchor: Vector2i, body_sign: int) -> Dictionary:
@@ -2160,9 +2196,12 @@ func _spawn_alien_reinforcements(placement: Dictionary) -> Array:
 func _advance_alien_reinforcements(roll_override := -1) -> void:
 	if alien_reinforcement_arrived:
 		return
+	_record_alien_commander_death()
 	if not alien_reinforcement_called:
-		_try_call_alien_reinforcements(roll_override)
-		return
+		if _try_call_alien_reinforcements(roll_override):
+			return
+		if not _try_missed_checkin_reinforcements():
+			return
 	if turn_number < alien_reinforcement_arrival_turn:
 		return
 	var placement := _find_alien_dropship_placement()
@@ -2395,7 +2434,7 @@ func _emit_log(message: String) -> void:
 func _emit_state() -> void:
 	var living_aliens := units.filter(func(unit): return unit.get("team", "") == "alien" and int(unit.get("hp", 0)) > 0).size()
 	var active_civilians := units.filter(func(unit): return unit.get("team", "") == "civilian" and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false)).size()
-	status_changed.emit({"phase":phase,"turn":turn_number,"aliens":living_aliens,"rescued":rescued,"required":required_rescues,"civilians":active_civilians,"resolved":resolved,"map_label":map_profile.label,"grid_width":grid_width,"grid_height":grid_height,"transports":transport_count,"alien_reinforcement_called":alien_reinforcement_called,"alien_reinforcement_arrived":alien_reinforcement_arrived,"alien_reinforcement_eta":maxi(0, alien_reinforcement_arrival_turn - turn_number) if alien_reinforcement_called and not alien_reinforcement_arrived else 0})
+	status_changed.emit({"phase":phase,"turn":turn_number,"aliens":living_aliens,"rescued":rescued,"required":required_rescues,"civilians":active_civilians,"resolved":resolved,"map_label":map_profile.label,"grid_width":grid_width,"grid_height":grid_height,"transports":transport_count,"alien_reinforcement_called":alien_reinforcement_called,"alien_reinforcement_arrived":alien_reinforcement_arrived,"alien_reinforcement_reason":alien_reinforcement_reason,"alien_reinforcement_eta":maxi(0, alien_reinforcement_arrival_turn - turn_number) if alien_reinforcement_called and not alien_reinforcement_arrived else 0,"alien_commander_death_turn":alien_commander_death_turn,"alien_missed_checkin_turn":alien_missed_checkin_turn})
 	var selected: Variant = _selected_unit()
 	selection_changed.emit(selected if selected != null else {})
 
@@ -2540,22 +2579,29 @@ func _draw_alien_dropship() -> void:
 	var sign_value := int(alien_dropship_placement.body_sign)
 	var body_center := _hex_center(ramp_center + Vector2i(0, sign_value * 2))
 	var visual_scale := hex_radius / HEX_RADIUS
-	var hull := PackedVector2Array([
-		body_center + Vector2(-44, -54 * sign_value) * visual_scale,
-		body_center + Vector2(44, -54 * sign_value) * visual_scale,
-		body_center + Vector2(56, 10 * sign_value) * visual_scale,
-		body_center + Vector2(30, 54 * sign_value) * visual_scale,
-		body_center + Vector2(-30, 54 * sign_value) * visual_scale,
-		body_center + Vector2(-56, 10 * sign_value) * visual_scale
-	])
-	draw_colored_polygon(hull, Color("581c87"))
-	draw_polyline(hull + PackedVector2Array([hull[0]]), Color("e9d5ff"), maxf(1.0, 3.0 * visual_scale), true)
-	draw_circle(body_center, 22.0 * visual_scale, Color("7e22ce"))
-	draw_circle(body_center - Vector2(0, 8 * sign_value) * visual_scale, 9.0 * visual_scale, Color("f0abfc"))
+	var saucer_lower := _ellipse_points(body_center + Vector2(0, 5 * sign_value) * visual_scale, 62.0 * visual_scale, 27.0 * visual_scale)
+	var saucer_disc := _ellipse_points(body_center, 57.0 * visual_scale, 25.0 * visual_scale)
+	var saucer_dome := _ellipse_points(body_center - Vector2(0, 7 * sign_value) * visual_scale, 29.0 * visual_scale, 19.0 * visual_scale)
+	draw_colored_polygon(saucer_lower, Color("3b0764"))
+	draw_colored_polygon(saucer_disc, Color("6b21a8"))
+	draw_polyline(saucer_disc + PackedVector2Array([saucer_disc[0]]), Color("e9d5ff"), maxf(1.0, 3.0 * visual_scale), true)
+	draw_colored_polygon(saucer_dome, Color("7e22ce"))
+	draw_polyline(saucer_dome + PackedVector2Array([saucer_dome[0]]), Color("f0abfc"), maxf(1.0, 2.0 * visual_scale), true)
+	for light_index in range(8):
+		var light_angle := float(light_index) / 8.0 * TAU
+		var light_center := body_center + Vector2(cos(light_angle) * 47.0, sin(light_angle) * 18.0) * visual_scale
+		draw_circle(light_center, maxf(1.5, 3.0 * visual_scale), Color("f5d0fe"))
 	for ramp_cell in alien_dropship_placement.get("ramp_cells", []):
 		var ramp_center_pixel := _hex_center(ramp_cell)
 		draw_colored_polygon(_hex_points(ramp_center_pixel, hex_radius * 0.78), Color("6d28d9"))
 		draw_string(get_theme_default_font(), ramp_center_pixel + Vector2(-13, 4), "DROP", HORIZONTAL_ALIGNMENT_LEFT, -1, maxi(7, int(9.0 * visual_scale)), Color("f5d0fe"))
+
+func _ellipse_points(center: Vector2, radius_x: float, radius_y: float, segments := 32) -> PackedVector2Array:
+	var points := PackedVector2Array()
+	for index in range(maxi(12, segments)):
+		var angle := float(index) / float(maxi(12, segments)) * TAU
+		points.append(center + Vector2(cos(angle) * radius_x, sin(angle) * radius_y))
+	return points
 
 func _draw_connected_walls() -> void:
 	for key in covers:

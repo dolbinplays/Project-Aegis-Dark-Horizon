@@ -1,10 +1,53 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-08-02
-Current handoff build: `v0.26.08.02.0154_TACTICAL_AI_CAMERA_FIT_MAP_NEAREST_VIP_AND_ALIEN_REINFORCEMENT_PARITY_PATCH`
-Native vertical slice: `v0.26.08.02.GODOT.0024_NEAREST_VIP_ESCORT_AND_ALIEN_REINFORCEMENT_DROPSHIP_VERTICAL_SLICE`
-Current patch status: **Browser 0154 and native 0024 preserve save format 4. AI playback now anchors every visible action to its acting unit, Fit Map reserves a full perimeter, and each free soldier independently targets the closest unescorted VIP. A living original alien commander can make one low, escalating reinforcement call while aliens observe soldiers; arrival is delayed two rounds and deploys two to four aliens from a small purple craft. The landing search is bounded to 32 deterministic perimeter candidates and rejects every footprint that touches a building or any Skyranger hull/ramp. Browser static parsing and the seam checker pass, localhost Build Health passes 324/324, and a live six-soldier 64x64 battle completed three confirmed End Turn cycles. That battle naturally produced a two-alien reinforcement arrival visibly clear in both 2D and Three.js, and AI control was reclaimed with no browser runtime errors. Native tests pass 138/138, native Build Health passes 101/101, and Godot 4.7.1 strict parsing passes. Commander-death suppression, multi-Skyranger landing clearance, and separated-VIP pursuit remain hands-on gates.**
+Last updated: 2026-08-03
+Current handoff build: `v0.26.08.03.0155_ALIEN_COMMANDER_MISSED_CHECKIN_INVESTIGATION_REINFORCEMENT_PARITY_PATCH`
+Native vertical slice: `v0.26.08.03.GODOT.0025_ALIEN_COMMANDER_MISSED_CHECKIN_REINFORCEMENT_VERTICAL_SLICE`
+Current patch status: **Browser 0155 and native 0025 preserve save format 4. Killing the original alien commander before a call now starts a deterministic 5-to-15-round missed-check-in deadline. If the original force is wiped while the mission remains unresolved, one investigation force becomes due at that deadline and uses the same one-wave allowance, bounded clear-landing search, and two-to-four-alien deployment as a normal commander call. The landing craft now reads as a layered purple flying saucer with a rear opening and ramp in browser 2D, Three.js, and Godot. Browser static parsing and the seam checker pass, localhost Build Health passes 326/326, and a live six-soldier 64x64 battle completed three confirmed End Turn cycles before initializing the Three.js tactical canvas with no runtime errors. Native tests pass 144/144, native Build Health passes 103/103, and Godot 4.7.1 strict parsing passes. The exact missed-check-in arrival, shared one-wave ownership, multi-craft landing clearance, and live saucer appearance remain hands-on gates.**
+
+---
+
+# v0.26.08.03.0155 / GODOT.0025 - Missed Check-In Investigation Reinforcements and Purple Saucer
+
+Browser build `v0.26.08.03.0155_ALIEN_COMMANDER_MISSED_CHECKIN_INVESTIGATION_REINFORCEMENT_PARITY_PATCH` and native build `v0.26.08.03.GODOT.0025_ALIEN_COMMANDER_MISSED_CHECKIN_REINFORCEMENT_VERTICAL_SLICE` preserve save format 4.
+
+Root causes addressed:
+
+- Killing the original commander before a successful call permanently disabled reinforcement logic. An unresolved rescue could therefore continue indefinitely after the original force was wiped without triggering the missed check-in response requested by the campaign fiction.
+- Legacy optional-round normalization treated `null` as round zero because `Number(null)` is zero. That could make a missing deadline appear immediately due in test or migrated state.
+- The alien landing craft reused an angular dropship silhouette that did not read clearly as a distinct alien flying saucer, especially in the Three.js isometric view.
+
+Implemented roadmap scope:
+
+- Commander death before a call records the death round and derives a deterministic delay from 5 through 15 rounds. The value is stable for that incident and survives the existing tactical-state lifecycle without changing save format 4.
+- The fallback remains dormant while any original alien survives. Once that force is wiped, an unresolved mission reaching the deadline schedules an immediate missed-check-in investigation arrival.
+- Commander calls and missed-check-in investigations share the existing `called` and `arrived` guards, so only one reinforcement wave can ever be created per incident.
+- Investigation arrivals reuse the two-to-four-alien deployment, 32 deterministic perimeter candidates, map-edge guards, occupied-cell rejection, building and Skyranger separation, and one-round landing retry when no valid footprint exists.
+- Browser 2D now draws a layered purple disc, dome, rim lights, rear opening, and ramp. Three.js builds one flattened saucer body with an upper dome, illuminated rim, rear opening, rails, and ramp instead of assembling the alien craft from Skyranger-like boxes and wings.
+- Godot draws the same saucer language with layered ellipses, dome, rim lights, and rear deployment ramp.
+- Browser Build Health and native direct tests cover optional-round normalization, deterministic deadline bounds, no early trigger, surviving-alien suppression, wiped-force activation, one-wave ownership, and the purple saucer rendering contract.
+
+Verification checklist:
+
+- Godot 4.7.1 strict editor parsing passed with all native classes registered.
+- Native tests passed `144/144`. All `103/103` native Build Health rows passed inside the suite.
+- All six browser app scripts parsed and `node tools\check-aegis-build.cjs` passed with synchronized 0155/0025 labels and required seams.
+- The localhost start screen displayed build 0155, a fresh campaign reached the Geoscape, and browser Build Health passed `326/326` with no failed rows.
+- A six-soldier Small 64x64 mission completed three confirmed End Turn cycles, returning to the human phase each time with all six soldiers alive.
+- The same live mission switched to Three.js, reported a 26x26 tactical view, and initialized one canvas.
+- Browser console/runtime errors: none.
+
+Remaining risks and manual validation:
+
+- Kill the original commander before any call, wipe the original force while a mandatory rescue remains unresolved, and confirm the displayed deadline falls 5 to 15 rounds after commander death.
+- Keep that mission active through the deadline and confirm exactly one investigation saucer lands with two to four aliens. Confirm its rear ramp is visible and usable for deployment.
+- Complete an equivalent mission before the deadline and confirm no investigation craft arrives after returning to the Geoscape.
+- Allow a normal commander call in a separate battle, then defeat that force and wait past the theoretical missed-check-in window to confirm a second wave cannot occur.
+- Repeat on Medium and Large maps, including a two-Skyranger deployment, and confirm the saucer never contacts a building or either Skyranger.
+- Inspect the craft in browser 2D, browser Three.js, and Godot. Automated contracts verify construction and placement, but the exact live missed-check-in presentation remains the hands-on gate.
+
+Next recommended paired patch after this gate: `TACTICAL_CLASSIC_INVENTORY_CONTAINER_LOADOUT_AND_ELEVATION_RENDER_FOUNDATION_PARITY_PATCH`, expanding the bounded inventory foundation without beginning a broad multi-level tactical rewrite.
 
 ---
 
