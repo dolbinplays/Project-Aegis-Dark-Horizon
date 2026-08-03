@@ -1184,37 +1184,190 @@ func _ai_rescue_plan(unit: Dictionary, target_cells: Array, reserve_tu: int, sto
 	var path: Array = best.get("path", AegisHexRules.path(unit.cell, best.cell, _blocked_cells(), _occupied_cells(String(unit.get("id", ""))), grid_width, grid_height, available_steps))
 	return {"cell":best.cell,"path":path,"steps":maxi(0, path.size() - 1),"reserve":reserve_tu,"score":best_score,"reached":reached,"threat_steps":best.get("threat_steps", 0),"reentries":best.get("reentries", 0),"exposure":best.get("exposure", 0)}
 
-func _ai_extraction_plan(unit: Dictionary, reserve_tu: int, threats: Array = []) -> Dictionary:
+func _building_bounds_for_cell(cell: Vector2i) -> Dictionary:
+	var grouped := {}
+	for cover_value in covers.values():
+		var cover: Dictionary = cover_value
+		var building_id := String(cover.get("building", ""))
+		if building_id.is_empty():
+			continue
+		var cover_cell: Vector2i = cover.get("cell", Vector2i(-1, -1))
+		if not grouped.has(building_id):
+			grouped[building_id] = {"id":building_id,"min_x":cover_cell.x,"max_x":cover_cell.x,"min_y":cover_cell.y,"max_y":cover_cell.y}
+		else:
+			var bounds: Dictionary = grouped[building_id]
+			bounds.min_x = mini(int(bounds.min_x), cover_cell.x)
+			bounds.max_x = maxi(int(bounds.max_x), cover_cell.x)
+			bounds.min_y = mini(int(bounds.min_y), cover_cell.y)
+			bounds.max_y = maxi(int(bounds.max_y), cover_cell.y)
+	for bounds_value in grouped.values():
+		var bounds: Dictionary = bounds_value
+		if cell.x >= int(bounds.min_x) and cell.x <= int(bounds.max_x) and cell.y >= int(bounds.min_y) and cell.y <= int(bounds.max_y):
+			return bounds
+	return {}
+
+func _cell_inside_building_bounds(cell: Vector2i, bounds: Dictionary) -> bool:
+	return not bounds.is_empty() and cell.x >= int(bounds.min_x) and cell.x <= int(bounds.max_x) and cell.y >= int(bounds.min_y) and cell.y <= int(bounds.max_y)
+
+func _building_exit_candidates(bounds: Dictionary, unit: Dictionary) -> Array:
+	var candidates: Array = []
+	var seen_outside := {}
+	var occupied := _occupied_cells(String(unit.get("id", "")))
+	for follower in units.filter(func(other): return other.get("team", "") == "civilian" and other.get("escort_id", "") == unit.get("id", "")):
+		occupied.erase(AegisHexRules.key(follower.cell))
+	for y in range(int(bounds.min_y), int(bounds.max_y) + 1):
+		for x in range(int(bounds.min_x), int(bounds.max_x) + 1):
+			if x != int(bounds.min_x) and x != int(bounds.max_x) and y != int(bounds.min_y) and y != int(bounds.max_y):
+				continue
+			var opening := Vector2i(x, y)
+			var cover: Dictionary = covers.get(AegisHexRules.key(opening), {})
+			var is_door: bool = cover.is_empty()
+			var is_breach: bool = not cover.is_empty() and (not bool(cover.get("hard", false)) or int(cover.get("hp", 0)) <= 0)
+			if not is_door and not is_breach:
+				continue
+			for outside in AegisHexRules.neighbors(opening, grid_width, grid_height):
+				var outside_key := AegisHexRules.key(outside)
+				if _cell_inside_building_bounds(outside, bounds) or _blocked_cells().has(outside_key) or occupied.has(outside_key) or seen_outside.has(outside_key):
+					continue
+				seen_outside[outside_key] = true
+				candidates.append({"opening":opening,"outside":outside,"exit_kind":"door" if is_door else "breach"})
+	return candidates
+
+func _ai_route_threat_stats(path: Array, threats: Array) -> Dictionary:
+	if path.is_empty():
+		return {"threat_steps":0,"reentries":0,"exposure":0}
+	var previous_exposure := _alien_threat_exposure(path[0], threats)
+	var threat_steps := 0
+	var reentries := 0
+	for index in range(1, path.size()):
+		var exposure := _alien_threat_exposure(path[index], threats)
+		if exposure > 0:
+			threat_steps += 1
+		if previous_exposure == 0 and exposure > 0:
+			reentries += 1
+		previous_exposure = exposure
+	return {"threat_steps":threat_steps,"reentries":reentries,"exposure":previous_exposure}
+
+func _ai_building_egress_plan(unit: Dictionary, reserve_tu: int, threats: Array = []) -> Dictionary:
+	var available_steps := clampi((int(unit.get("tu", 0)) - maxi(0, reserve_tu)) / MOVE_TU, 0, AI_MAX_MOVE_STEPS)
+	var bounds := _building_bounds_for_cell(unit.cell)
+	if bounds.is_empty() or available_steps <= 0:
+		return {"cell":unit.cell,"path":[unit.cell],"steps":0,"reserve":reserve_tu,"reached":bounds.is_empty(),"cleared_building":bounds.is_empty(),"building_id":bounds.get("id", "")}
+	var occupied := _occupied_cells(String(unit.get("id", "")))
+	for follower in units.filter(func(other): return other.get("team", "") == "civilian" and other.get("escort_id", "") == unit.get("id", "")):
+		occupied.erase(AegisHexRules.key(follower.cell))
 	var ramp_cells: Array[Vector2i] = []
-	for cell_key in extraction_cells:
-		ramp_cells.append(_cell_from_key(String(cell_key)))
-	if ramp_cells.is_empty():
+	for ramp_key in extraction_cells:
+		ramp_cells.append(_cell_from_key(String(ramp_key)))
+	var candidates: Array = []
+	for exit_value in _building_exit_candidates(bounds, unit).slice(0, 24):
+		var exit: Dictionary = exit_value
+		var route: Array[Vector2i] = AegisHexRules.path(unit.cell, exit.outside, _blocked_cells(), occupied, grid_width, grid_height, 32)
+		if route.is_empty():
+			continue
+		var stats := _ai_route_threat_stats(route, threats)
+		var ramp_distance := 0
+		if not ramp_cells.is_empty():
+			ramp_distance = 9999
+			for ramp_cell in ramp_cells:
+				ramp_distance = mini(ramp_distance, AegisHexRules.distance(route[-1], ramp_cell))
+		candidates.append({"path":route,"opening":exit.opening,"outside":exit.outside,"exit_kind":exit.exit_kind,"ramp_distance":ramp_distance,"threat_steps":stats.threat_steps,"reentries":stats.reentries,"exposure":stats.exposure})
+	candidates.sort_custom(func(left, right):
+		if int(left.reentries) != int(right.reentries): return int(left.reentries) < int(right.reentries)
+		if int(left.threat_steps) != int(right.threat_steps): return int(left.threat_steps) < int(right.threat_steps)
+		if int(left.exposure) != int(right.exposure): return int(left.exposure) < int(right.exposure)
+		if left.path.size() != right.path.size(): return left.path.size() < right.path.size()
+		if int(left.ramp_distance) != int(right.ramp_distance): return int(left.ramp_distance) < int(right.ramp_distance)
+		return AegisHexRules.key(left.outside) < AegisHexRules.key(right.outside)
+	)
+	if candidates.is_empty():
+		return {"cell":unit.cell,"path":[unit.cell],"steps":0,"reserve":reserve_tu,"reached":false,"cleared_building":false,"building_id":bounds.id}
+	var best: Dictionary = candidates[0]
+	var path: Array = best.path.slice(0, available_steps + 1)
+	var cell: Vector2i = path[-1]
+	var cleared := not _cell_inside_building_bounds(cell, bounds)
+	var path_stats := _ai_route_threat_stats(path, threats)
+	return {"cell":cell,"path":path,"steps":path.size() - 1,"reserve":reserve_tu,"reached":cleared,"cleared_building":cleared,"building_id":bounds.id,"exit_kind":best.exit_kind,"opening":best.opening,"threat_steps":path_stats.threat_steps,"reentries":path_stats.reentries,"exposure":path_stats.exposure}
+
+func _ai_extraction_corridors(unit: Dictionary) -> Array:
+	var corridors: Array = []
+	for placement_value in skyranger_placements:
+		var placement: Dictionary = placement_value
+		var ramp_cells: Array = placement.get("ramp_cells", [])
+		if ramp_cells.is_empty():
+			continue
+		var left_side: bool = String(placement.get("side", "left")) == "left"
+		var entry_x := int(ramp_cells.map(func(cell): return cell.x).max() if left_side else ramp_cells.map(func(cell): return cell.x).min())
+		var rows: Array = ramp_cells.map(func(cell): return cell.y)
+		rows = rows.reduce(func(result: Array, row):
+			if not result.has(row): result.append(row)
+			return result
+		, [])
+		rows.sort()
+		if rows.size() > 1 and AegisHexRules.distance(unit.cell, Vector2i(entry_x, rows[-1])) < AegisHexRules.distance(unit.cell, Vector2i(entry_x, rows[0])):
+			rows.reverse()
+		var corridor: Array[Vector2i] = []
+		for row_index in range(rows.size()):
+			var row_cells: Array = ramp_cells.filter(func(cell): return cell.y == rows[row_index])
+			row_cells.sort_custom(func(left, right): return left.x > right.x if left_side == (row_index % 2 == 0) else left.x < right.x)
+			for ramp_cell in row_cells:
+				corridor.append(ramp_cell)
+		corridors.append({"placement":placement,"path":corridor,"entry":corridor[0],"distance":AegisHexRules.distance(unit.cell, corridor[0])})
+	corridors.sort_custom(func(left, right): return int(left.distance) < int(right.distance) or int(left.distance) == int(right.distance) and AegisHexRules.key(left.entry) < AegisHexRules.key(right.entry))
+	return corridors
+
+func _ai_direct_extraction_plan(unit: Dictionary, reserve_tu: int, threats: Array = []) -> Dictionary:
+	var corridors := _ai_extraction_corridors(unit)
+	if corridors.is_empty():
 		return {"cell":unit.get("cell", Vector2i.ZERO),"path":[unit.get("cell", Vector2i.ZERO)],"steps":0,"reserve":reserve_tu,"reached":false}
-	var entry_x: int = int(ramp_cells.map(func(cell): return cell.x).max())
-	var entry_candidates: Array = ramp_cells.filter(func(cell): return cell.x == entry_x)
-	entry_candidates.sort_custom(func(left, right): return AegisHexRules.distance(unit.cell, left) < AegisHexRules.distance(unit.cell, right) or AegisHexRules.distance(unit.cell, left) == AegisHexRules.distance(unit.cell, right) and AegisHexRules.key(left) < AegisHexRules.key(right))
-	var entry: Vector2i = entry_candidates[0]
-	var plan: Dictionary = _ai_rescue_plan(unit, [entry], reserve_tu, false, threats)
+	var corridor: Array = corridors[0].path
+	var corridor_index := corridor.find(unit.cell)
+	var plan: Dictionary = {"cell":unit.cell,"path":[unit.cell],"steps":0,"reserve":reserve_tu,"reached":true} if corridor_index >= 0 else _ai_rescue_plan(unit, [corridor[0]], reserve_tu, false, threats)
 	var path: Array = plan.get("path", []).duplicate()
 	if not plan.get("reached", false):
 		return plan
 	var available_steps := clampi((int(unit.get("tu", 0)) - maxi(0, reserve_tu)) / MOVE_TU, 0, AI_MAX_MOVE_STEPS)
 	var occupied := _occupied_cells(String(unit.get("id", "")))
-	for x in range(entry.x - 1, -1, -1):
+	for follower in units.filter(func(other): return other.get("team", "") == "civilian" and other.get("escort_id", "") == unit.get("id", "")):
+		occupied.erase(AegisHexRules.key(follower.cell))
+	var remaining: Array = corridor.slice(corridor_index + 1 if corridor_index >= 0 else 1)
+	for waypoint_value in remaining:
 		if path.size() - 1 >= available_steps:
 			plan.reached = false
 			break
-		var waypoint := Vector2i(x, entry.y)
+		var waypoint: Vector2i = waypoint_value
 		var waypoint_key := AegisHexRules.key(waypoint)
 		if _blocked_cells().has(waypoint_key) or occupied.has(waypoint_key) or AegisHexRules.distance(path[-1], waypoint) > 1:
 			plan.reached = false
 			break
 		if not path.has(waypoint):
 			path.append(waypoint)
+	plan.reached = plan.get("reached", false) and path[-1] == corridor[-1]
 	plan.path = path
 	plan.cell = path[-1]
 	plan.steps = maxi(0, path.size() - 1)
+	plan.merge(_ai_route_threat_stats(path, threats), true)
 	return plan
+
+func _ai_extraction_plan(unit: Dictionary, reserve_tu: int, threats: Array = []) -> Dictionary:
+	var available_steps := clampi((int(unit.get("tu", 0)) - maxi(0, reserve_tu)) / MOVE_TU, 0, AI_MAX_MOVE_STEPS)
+	var egress := _ai_building_egress_plan(unit, reserve_tu, threats)
+	if int(egress.get("steps", 0)) >= available_steps or not egress.get("cleared_building", false):
+		return egress
+	var staged_unit: Dictionary = unit.duplicate(true)
+	staged_unit.cell = egress.cell
+	staged_unit.tu = int(unit.get("tu", 0)) - int(egress.steps) * MOVE_TU
+	var direct := _ai_direct_extraction_plan(staged_unit, reserve_tu, threats)
+	var path: Array = egress.path.duplicate()
+	path.append_array(direct.get("path", []).slice(1))
+	direct.path = path
+	direct.cell = path[-1]
+	direct.steps = path.size() - 1
+	direct.cleared_building = true
+	direct.building_id = egress.get("building_id", "")
+	direct.exit_kind = egress.get("exit_kind", "")
+	direct.merge(_ai_route_threat_stats(path, threats), true)
+	return direct
 
 func _apply_ai_movement(unit: Dictionary, plan: Dictionary) -> void:
 	var path: Array[Vector2i] = []

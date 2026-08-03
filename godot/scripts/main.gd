@@ -1,6 +1,6 @@
 extends Control
 
-const NATIVE_BUILD := "v0.26.08.02.GODOT.0021_VIP_PRIORITY_GUARDS_VISIBILITY_AND_BUILDING_DENSITY_VERTICAL_SLICE"
+const NATIVE_BUILD := "v0.26.08.02.GODOT.0022_ESCORT_BUILDING_EGRESS_AND_FULL_COLUMN_EXTRACTION_VERTICAL_SLICE"
 const MAX_BROWSER_IMPORT_BYTES := 32 * 1024 * 1024
 const AUDIO_SETTINGS_PATH := "user://project_aegis_audio_settings.cfg"
 const VOICE_MAKEUP_DB := 6.0
@@ -1680,7 +1680,34 @@ func _run_self_tests() -> Array:
 	for recovery_cell in recovery_plan.get("path", []):
 		recovery_route_keys[AegisHexRules.key(recovery_cell)] = true
 	var recovery_crosses_ramp: bool = recovery_plan.get("path", []).any(func(cell): return recovery_board.extraction_cells.has(AegisHexRules.key(cell)))
-	var rescue_route_ready: bool = int(recovery_plan.get("steps", 0)) > 0 and recovery_plan.get("reached", false) and recovery_crosses_ramp and recovery_route_keys.size() == recovery_plan.get("path", []).size()
+	var rescue_route_ready: bool = int(recovery_plan.get("steps", 0)) > 0 and int(recovery_plan.get("steps", 0)) <= recovery_board.AI_MAX_MOVE_STEPS and recovery_crosses_ramp and recovery_route_keys.size() == recovery_plan.get("path", []).size()
+	var egress_board := AegisTacticalBoard.new()
+	egress_board.begin_battle(test_campaign.selected_incident(), test_campaign.assigned_soldiers(), content)
+	var egress_unit: Dictionary = egress_board.units.filter(func(unit): return unit.get("team", "") == "human")[0]
+	egress_board.units = [egress_unit]
+	egress_board.covers.clear()
+	egress_board._add_building_rectangle(Vector2i(8, 3), 7, 6, "health-egress")
+	var health_door := Vector2i(11, 8)
+	egress_board.covers[AegisHexRules.key(health_door)] = {"cell":health_door,"type":"wall","hard":true,"hp":50,"max_hp":50,"building":"health-egress"}
+	var health_breach := Vector2i(8, 6)
+	egress_board.covers[AegisHexRules.key(health_breach)] = {"cell":health_breach,"type":"rubble","hard":false,"hp":0,"max_hp":50,"building":"health-egress"}
+	egress_unit.cell = Vector2i(10, 6)
+	egress_unit.tu = 60
+	var health_egress_plan: Dictionary = egress_board._ai_extraction_plan(egress_unit, int(egress_unit.get("fire_tu", 14)))
+	var health_egress_ready: bool = health_egress_plan.get("exit_kind", "") == "breach" and health_egress_plan.get("cleared_building", false) and health_egress_plan.get("path", []).has(health_breach)
+	egress_board.covers.clear()
+	var health_corridor: Array = egress_board._ai_extraction_corridors(egress_unit)[0].path
+	egress_unit.cell = health_corridor[0]
+	egress_unit.tu = 60
+	egress_unit.trail = [egress_unit.cell]
+	var health_followers: Array = []
+	for health_follower_index in range(4):
+		health_followers.append({"id":"health-follower-%d" % health_follower_index,"name":"Health Follower %d" % health_follower_index,"team":"civilian","hp":18,"cell":egress_unit.cell + Vector2i(health_follower_index + 1, 0),"escort_id":egress_unit.get("id", ""),"rescued":false})
+	egress_board.units = [egress_unit]
+	egress_board.units.append_array(health_followers)
+	var health_column_plan: Dictionary = egress_board._ai_extraction_plan(egress_unit, int(egress_unit.get("fire_tu", 14)))
+	egress_board._apply_ai_movement(egress_unit, health_column_plan)
+	var full_column_extraction_ready: bool = health_column_plan.get("reached", false) and health_column_plan.get("path", []).size() >= 5 and health_followers.all(func(civilian): return civilian.get("rescued", false))
 	recovery_unit["cell"] = Vector2i(2, 8)
 	recovery_unit["tu"] = 60
 	var recovery_threat := {"id":"health-threat","team":"alien","hp":30,"cell":Vector2i(5, 8),"weapon_range":1}
@@ -2057,6 +2084,7 @@ func _run_self_tests() -> Array:
 		{"name":"AI-command tactical contacts preserve live fog of war", "pass":ai_fog_ready},
 		{"name":"AI command can return the live battle to player control", "pass":ai_reclaim_ready},
 		{"name":"AI rescue routing rotates soldiers and rejects two-cell loops", "pass":rescue_route_ready and recovery_board.ai_last_acted_ids is Array},
+		{"name":"AI escorts use doors or breaches and continue through the ramp until the full civilian column extracts", "pass":health_egress_ready and full_column_extraction_ready},
 		{"name":"AI command tasks every viable soldier and prioritizes squad contacts", "pass":full_squad_priority_ready},
 		{"name":"Tracked VIP pings guide AI searchers before distinct post-combat building and sector sweeps", "pass":post_combat_search_ready},
 		{"name":"Unengaged soldiers keep immediate VIP contact priority despite remote squad contacts", "pass":precontact_contact_memory_ready},

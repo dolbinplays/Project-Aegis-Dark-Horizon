@@ -530,7 +530,30 @@ func _test_tactical(content: Dictionary) -> void:
 	for route_cell in rescue_plan.get("path", []):
 		route_keys[AegisHexRules.key(route_cell)] = true
 	var crosses_ramp: bool = rescue_plan.get("path", []).any(func(cell): return route_board.extraction_cells.has(AegisHexRules.key(cell)))
-	_check(int(rescue_plan.get("steps", 0)) > 0 and rescue_plan.get("reached", false) and crosses_ramp and route_keys.size() == rescue_plan.get("path", []).size(), "AI rescue route crosses the ramp without repeating a cell")
+	_check(int(rescue_plan.get("steps", 0)) > 0 and int(rescue_plan.get("steps", 0)) <= route_board.AI_MAX_MOVE_STEPS and crosses_ramp and route_keys.size() == rescue_plan.get("path", []).size(), "AI rescue route crosses the ramp without repeating a cell")
+	route_board.covers.clear()
+	route_board._add_building_rectangle(Vector2i(8, 3), 7, 6, "egress-test")
+	var blocked_door := Vector2i(11, 8)
+	route_board.covers[AegisHexRules.key(blocked_door)] = {"cell":blocked_door,"type":"wall","hard":true,"hp":50,"max_hp":50,"building":"egress-test"}
+	var breach_cell := Vector2i(8, 6)
+	route_board.covers[AegisHexRules.key(breach_cell)] = {"cell":breach_cell,"type":"rubble","hard":false,"hp":0,"max_hp":50,"building":"egress-test"}
+	route_unit["cell"] = Vector2i(10, 6)
+	route_unit["tu"] = 60
+	var egress_plan: Dictionary = route_board._ai_extraction_plan(route_unit, int(route_unit.get("fire_tu", 14)))
+	_check(egress_plan.get("exit_kind", "") == "breach" and egress_plan.get("cleared_building", false) and egress_plan.get("path", []).has(breach_cell) and not route_board._cell_inside_building_bounds(egress_plan.get("cell", route_unit.cell), {"min_x":8,"max_x":14,"min_y":3,"max_y":8}), "AI civilian escorts leave buildings through a real door or destroyed-wall breach before routing to extraction")
+	route_board.covers.clear()
+	var ramp_corridor: Array = route_board._ai_extraction_corridors(route_unit)[0].path
+	route_unit["cell"] = ramp_corridor[0]
+	route_unit["tu"] = 60
+	route_unit["trail"] = [route_unit.cell]
+	var ramp_followers: Array = []
+	for follower_index in range(4):
+		ramp_followers.append({"id":"route-follower-%d" % follower_index,"name":"Route Follower %d" % follower_index,"team":"civilian","hp":18,"cell":route_unit.cell + Vector2i(follower_index + 1, 0),"escort_id":route_unit.get("id", ""),"rescued":false})
+	route_board.units = [route_unit]
+	route_board.units.append_array(ramp_followers)
+	var column_plan: Dictionary = route_board._ai_extraction_plan(route_unit, int(route_unit.get("fire_tu", 14)))
+	route_board._apply_ai_movement(route_unit, column_plan)
+	_check(column_plan.get("reached", false) and column_plan.get("path", []).size() >= 5 and ramp_followers.all(func(civilian): return civilian.get("rescued", false)), "AI escort already on the ramp continues into the craft until a four-civilian column is extracted")
 	route_unit["cell"] = Vector2i(2, 8)
 	route_unit["tu"] = 60
 	var route_threat := {"id":"route-threat","team":"alien","hp":30,"cell":Vector2i(5, 8),"weapon_range":1}
@@ -592,9 +615,9 @@ func _test_build_health() -> void:
 	var app: Node = load("res://godot/main.tscn").instantiate()
 	app.content = _load_json("res://godot/data/content.json")
 	var health: Array = app._run_self_tests()
-	if health.size() != 95 or not health.all(func(row): return row.get("pass", false)):
+	if health.size() != 96 or not health.all(func(row): return row.get("pass", false)):
 		print("BUILD HEALTH DETAIL: %s" % JSON.stringify(health))
-	_check(health.size() == 95 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 95 rows")
+	_check(health.size() == 96 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 96 rows")
 	app.free()
 
 func _load_json(path: String) -> Dictionary:

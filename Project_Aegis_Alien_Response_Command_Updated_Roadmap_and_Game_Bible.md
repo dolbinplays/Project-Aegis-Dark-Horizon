@@ -2,9 +2,53 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-02
-Current handoff build: `v0.26.08.02.0151_TACTICAL_VIP_PRIORITY_GUARDS_CAMERA_VISIBILITY_AND_BUILDING_DENSITY_PARITY_PATCH`
-Native vertical slice: `v0.26.08.02.GODOT.0021_VIP_PRIORITY_GUARDS_VISIBILITY_AND_BUILDING_DENSITY_VERTICAL_SLICE`
-Current patch status: **Browser 0151 and native 0021 preserve save format 4. Mandatory-rescue AI now evaluates local alien engagement per soldier, allowing an unengaged soldier to contact a visible VIP despite remote squad contact memory while preserving immediate combat priority for soldiers with a visible in-range alien and line of sight. Escorted VIPs remain visible through fog. Once all living VIPs are found and escorted after alien defeat, non-escorts take distinct guard positions around the evacuation column and Skyranger ramps. Manual browser tactical cameras center the selected soldier. Building generation remains deterministic and bounded while map tiers add placement opportunities and city/town terrain raises the probability above farm/wilderness terrain. Browser Build Health passes 314/314; the 0151 start screen and Geoscape loaded; a live six-soldier Small Red River Signal battle selected Bryn with authoritative 51/51 TU and completed three End Turn cycles with all six soldiers alive. No browser runtime errors were present. Native tests pass 123/123, native Build Health passes 95/95, and Godot 4.7.1 strict parsing passes. Remaining gates are hands-on rescue-perimeter behavior, selected-camera and escort-visibility inspection, and repeated biome/tier density sampling.**
+Current handoff build: `v0.26.08.02.0152_TACTICAL_ESCORT_BUILDING_EGRESS_FULL_COLUMN_EXTRACTION_AND_ISOMETRIC_FRAMING_PARITY_PATCH`
+Native vertical slice: `v0.26.08.02.GODOT.0022_ESCORT_BUILDING_EGRESS_AND_FULL_COLUMN_EXTRACTION_VERTICAL_SLICE`
+Current patch status: **Browser 0152 and native 0022 preserve save format 4. AI escorts inside structures now select a real doorway or destroyed-wall breach through a bounded building-local route before continuing toward extraction. Escorts already on a ramp continue into their own Skyranger instead of retargeting the ramp entrance, and trailing civilians close extraction gaps until the complete four-person column is aboard. Medium and Large browser maps retain their live grid bounds during egress searches. The browser Three.js frustum preserves aspect ratio while adding lower-edge clearance. Browser Build Health passes 316/316; the 0152 start screen and Geoscape loaded; a live six-soldier Small Red River Signal battle selected Jace at 48/48 TU and completed three End Turn cycles with all six soldiers alive. Near and Full Performance isometric views displayed the complete lower map edge. Native tests pass 125/125, native Build Health passes 96/96, and Godot 4.7.1 strict parsing passes. Remaining gates are hands-on door/breach evacuation with an existing rescue save, full-column extraction in both clients, and repeated isometric framing checks at every zoom and map tier.**
+
+---
+
+# v0.26.08.02.0152 / GODOT.0022 - Escort Building Egress, Full-Column Extraction, and Isometric Framing
+
+Browser build `v0.26.08.02.0152_TACTICAL_ESCORT_BUILDING_EGRESS_FULL_COLUMN_EXTRACTION_AND_ISOMETRIC_FRAMING_PARITY_PATCH` and native build `v0.26.08.02.GODOT.0022_ESCORT_BUILDING_EGRESS_AND_FULL_COLUMN_EXTRACTION_VERTICAL_SLICE` preserve save format 4.
+
+Root causes addressed:
+
+- Rescue AI selected each turn's reachable cell by straight-line distance to the distant ramp. Inside a building, the correct route can initially move sideways or farther away to reach a door or breach, so escorts could settle against an intact wall or oscillate.
+- Browser building egress initially inherited the old 64-cell neighbor default even on Medium and Large maps, leaving interiors beyond row or column 63 with no candidates.
+- Extraction routing always targeted the first ramp cell. On the following turn, an escort already standing on that cell could move back outside instead of continuing into the craft.
+- In browser step-by-step movement, removing the first extracted civilian left a one-cell gap. Remaining civilians kept their joined state and refused the fallback move needed to close the column.
+- The Three.js orthographic framing used a symmetric fixed span with map-scaled zoom. The tilted ground projection could extend below the lower clip edge, especially in overview framing.
+
+Implemented roadmap scope:
+
+- Browser and Godot detect the procedural building containing an escort, inspect only that building's bounded perimeter, and accept declared doors or nonblocking destroyed-wall rubble as exits. Actual paths are ranked by known alien exposure, route length, and onward ramp distance.
+- Browser egress is capped at 192 queued cells and a 32-step building-local search, then truncated to the existing eight-step per-turn movement budget. Native routing keeps its existing bounded path and eight-step movement limits. Shot-mode TU reservation remains authoritative.
+- After reaching the exterior, the same plan spends any remaining movement toward extraction without crossing intact walls. A turn that cannot clear the structure resumes from the exact live cell next turn.
+- Ramp routing recognizes an escort already on the corridor and continues inward through unique ramp cells. Coordinated missions select the current or nearest Skyranger's own corridor instead of concatenating separate craft ramps.
+- Browser civilian columns may close a one-cell gap left by an extracted lead follower. The existing single-file, occupancy, capacity, panic, and wall rules remain intact.
+- Native Skyranger ramps use a deterministic bounded path through their nine extraction cells, giving a four-civilian column enough trailing movement without sending any unit onto the unplayable map edge.
+- Three.js camera bounds remain aspect-correct while reserving additional projected space above tall objects and below the near ground edge. Near and Full Performance views retain visible margin below the battlefield.
+- Browser Build Health adds two rows and reaches 316. Native Build Health adds one row and reaches 96; native automation adds two direct checks and reaches 125.
+
+Verification checklist:
+
+- Static browser app-script parsing and `node tools\check-aegis-build.cjs` passed with synchronized 0152/0022 labels.
+- Localhost 0152 start screen displayed, a fresh campaign reached the Geoscape, and browser Build Health passed `316/316` with no failed rows.
+- A six-soldier Small Red River Signal launched in safe 2D. Selecting Jace displayed authoritative `48/48` TU. Three End Turn cycles returned to the human phase with all six soldiers alive; revealed contacts progressed from one to three.
+- The same live battle switched to Three.js Performance. Near `26x26` and Full capped `32x32` views rendered the complete lower battlefield edge with visible margin.
+- Godot 4.7.1 strict editor parsing passed. Native tests passed `125/125`, including forced destroyed-wall egress and a four-civilian ramp column. All `96/96` visible native Build Health rows passed inside the suite.
+- No browser runtime-error surface appeared during startup, Build Health, tactical turns, or Three.js switching. The available in-app browser interface did not expose a separate historical console-message feed.
+
+Remaining risks and manual validation:
+
+- Load the affected rescue campaign without overwriting it. Place an AI-controlled escort column inside a building and confirm it uses the nearest practical door rather than pressing against a wall.
+- Destroy a different exterior wall, block or avoid the normal door, and confirm soldiers plus all escorted civilians pass through the rubble before turning toward extraction.
+- Test one through four followers. Confirm the escort continues inward on subsequent turns until every civilian or VIP enters the ramp and the rescue counter increments for each one.
+- Repeat with two dispatched squads and two Skyrangers. Confirm each escort uses its own nearest craft and neither column crosses to the other ramp.
+- Inspect Three.js Close, Near, Wide, Full, and Performance-capped Map views on Small, Medium, and Large missions. Confirm the lower map edge, Skyrangers, and units remain visible while panning to southern cells.
+
+Next recommended paired patch after this gate: `TACTICAL_CLASSIC_INVENTORY_TRANSFERS_AND_ELEVATION_FOUNDATION_PARITY_PATCH`, beginning with bounded adjacent-unit hand/belt transfers and floor-state data before any multi-level renderer rewrite.
 
 ---
 
