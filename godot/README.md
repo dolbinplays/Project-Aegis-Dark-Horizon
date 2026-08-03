@@ -1,8 +1,8 @@
 # Project Aegis Godot 4 Vertical Slice
 
-Native build: `v0.26.08.02.GODOT.0022_ESCORT_BUILDING_EGRESS_AND_FULL_COLUMN_EXTRACTION_VERTICAL_SLICE`
+Native build: `v0.26.08.02.GODOT.0023_INVENTORY_VIP_PRIORITY_DOOR_ROUTING_FIT_MAP_AND_BASE_FACILITY_DROPDOWN_VERTICAL_SLICE`
 
-Paired browser build: `v0.26.08.02.0152_TACTICAL_ESCORT_BUILDING_EGRESS_FULL_COLUMN_EXTRACTION_AND_ISOMETRIC_FRAMING_PARITY_PATCH`
+Paired browser build: `v0.26.08.02.0153_TACTICAL_INVENTORY_VIP_PRIORITY_DOOR_ROUTING_FIT_MAP_AND_BASE_FACILITY_DROPDOWN_PARITY_PATCH`
 
 This is a native Godot 4 vertical slice alongside the verified HTML game. It does not wrap `index.html`, replace the browser build, or write to the browser campaign save.
 
@@ -30,8 +30,8 @@ The project uses the repository root so the native slice can reuse the existing 
 - Playable-perimeter guards shared by neighbors, paths, movement, AI, and deployment prevent units from entering or walking beyond map-edge cells.
 - Civilian contact for 8 TU, up to four followers per escort, single-file trail following, panic/recontact behavior, and mandatory ramp extraction.
 - Building-aware escort routing selects a real door or destroyed-wall breach before heading to extraction, then continues through the ramp until the full trailing civilian column is aboard.
-- Mandatory-rescue civilians carry periodic VIP tracker pulses. Once aliens are eliminated, AI searchers split across distinct tracker contacts, unexplored building interiors, and unexplored map sectors while established escorts continue to the ramp.
-- An unengaged soldier gives a visible, uncontacted VIP immediate priority even when another squad member remembers a remote alien contact. A visible in-range alien with line of sight still takes local combat priority.
+- Mandatory-rescue civilians carry periodic VIP tracker pulses. Before alien contact, every free AI soldier is distributed across active tracker pings; after all tracked civilians are located, searchers resume distinct building-interior and map-sector sweeps.
+- Any squad-known alien contact pauses new civilian claims and redirects every non-escort to combat. Established escorts continue evacuating, while a free soldier that reaches an adjacent civilian immediately spends the contact TU and locks the escort instead of orbiting the target.
 - Escorted VIPs remain visible through fog until extraction. After alien defeat and contact with every surviving VIP, non-escort soldiers form distinct guard positions around the evacuation column and Skyranger ramps.
 - Building generation scales deterministic opportunities by map tier and raises the placement chance from wilderness through farmland and town to city terrain.
 - Destructible wall cells that become nonblocking rubble for every tactical mover.
@@ -46,9 +46,11 @@ The project uses the repository root so the native slice can reuse the existing 
 - A dedicated Voices bus with persistent on/off and volume settings plus a three-category playback test for computer, aircraft, and soldier clips.
 - Bounded voice makeup gain and automatic music ducking so low-level recordings remain intelligible without changing SFX volume.
 - A classic battlescape-style command console with previous/next soldier, tactical map, field inventory, kneel/stand, shot reserves, TU bleed/Done, End Turn, AI Command, and Dust Off.
+- Functional field inventory transfers hand and belt items between adjacent same-elevation soldiers for 4 TU, preserves exact floor cell/elevation on drop and pickup, and blocks primed-grenade or cross-elevation transfers.
+- Fit Map reframes the complete Small, Medium, or Large battlefield inside the tactical board.
 - Read-only browser campaign export selection, compatibility review, and subset normalization into a separate native imported-copy slot.
 - Base-local personnel occupancy with 12 staff per Living Quarters, 10 scientists per Laboratory, live overflow feedback, and repeated imported facility counts.
-- Prepaid concurrent construction for Living Quarters, Laboratories, and Workshops using the browser campaign's established $300k, $450k, and $400k costs.
+- Prepaid concurrent construction for Living Quarters, Laboratories, and Workshops using one compact facility dropdown and the browser campaign's established $300k, $450k, and $400k costs.
 - Three, five, and four-day facility countdowns with operational capacity granted only at completion, three bounded project slots, half-cost cancellation, and exact partial-project persistence.
 - Adjustable research staffing bounded by available scientists and Laboratory capacity, with deterministic daily research points and completion reports.
 - Base-local Soldier, Scientist, and Engineer hiring orders with established costs, three-day arrival timing, projected capacity reservations, half-refund cancellation, and deterministic recruit identities.
@@ -60,7 +62,7 @@ The project uses the repository root so the native slice can reuse the existing 
 - Tactical Ballistic Rifle, Laser Rifle, Unarmed, Field Suit, No Armor, and Medkit profiles sourced from the content catalog; one issued Medkit restores up to 12 HP for 12 TU and is consumed after use.
 - Final mission HP creates a bounded one-to-five-day wound-recovery record. Wounded soldiers remain unavailable until strategic midnights reduce the timer to zero and medical clearance returns them to duty.
 - Native JSON save format 4 at `user://project_aegis_godot_save_v4.json`, with imported campaigns isolated at `user://project_aegis_godot_imported_copy_v4.json`.
-- In-game Build Health with 96 checks, including building-aware escort egress and full-column ramp extraction, per-soldier VIP priority, escorted-VIP visibility, rescue perimeter guards, biome/tier building density, map tiers, exact multi-Skyranger squad deployment, playable-perimeter guards, bounded tactical-log trimming, air operations, browser-import isolation, personnel arrivals, research/manufacturing/construction, local-stock conservation, tactical loadout inheritance, Medkit consumption, wound recovery, commander doctrine, TU reserves, reaction fire, AI fog, AI reclaim, full-squad combat priorities, tracked VIP guidance, building-clear Skyranger placement, threat-aware rescue routing, sequential visible actors, queued tactical voices, classic command controls, mission equipment recovery/loss, large-list scrolling, and dense strategic marker placement.
+- In-game Build Health with 100 checks, including doorway ingress without VIP circling, building-aware escort egress, full-column ramp extraction, squad-wide rescue/combat handoff, all-soldier tracker guidance, Fit Map framing, adjacent inventory transfer/floor elevation, compact facility construction, escorted-VIP visibility, rescue perimeter guards, biome/tier building density, map tiers, exact multi-Skyranger squad deployment, playable-perimeter guards, air operations, browser-import isolation, personnel, research/manufacturing/construction, local-stock conservation, Medkits, wounds, commander doctrine, reaction fire, fog, AI reclaim, sequential visible actors, queued voices, classic command controls, and mission recovery/loss.
 
 ## Tactical Controls
 
@@ -72,7 +74,7 @@ The project uses the repository root so the native slice can reuse the existing 
 - Laser Rifles fire up to nine hexes for 14 TU; Ballistic Rifles fire up to seven hexes for 16 TU. Unarmed soldiers cannot fire.
 - Click an intact wall in rifle range to damage it; destroyed wall rubble is traversable.
 - Select an injured soldier with an issued Medkit and use **Use Medkit - 12 TU** to restore up to 12 HP. The single charge is consumed immediately.
-- Use **Prev/Next**, **Map**, and **Inventory** to inspect the squad and observation-safe battlefield contacts.
+- Use **Prev/Next**, **Map**, **Fit Map**, and **Inventory** to inspect the squad and observation-safe battlefield contacts. Inventory can give, drop, and pick up eligible equipment from the selected soldier's exact cell and elevation.
 - Use **Kneel/Stand**, **None/Snap/Aimed/Auto/Kneel** TU reserves, and **Done** to control stance and protected action economy.
 - Use **AI Command** to hand off the current battlefield without resetting it; current fog remains authoritative throughout the AI turn. Use **Take Back Control** to resume the same live battle between bounded AI actions.
 - Use **Dust Off** to abandon an unresolved incident after confirmation.
@@ -129,7 +131,7 @@ godot --headless --path . --script res://godot/tests/test_runner.gd
 
 The test runner covers campaign creation and travel, exact loadout/store save round-tripping, conservative loadout and wound migration, local-stock conservation and unavailable-item rejection, Medkit issue/return/consumption, mission recovery and loss, one-to-five-day wounds, exact recovery persistence, unequipped recruit arrivals, Workshop and personnel migration, hiring/capacity rules, construction, bounded research and manufacturing, air operations, browser-export normalization and source preservation, strategic markers, bounded hex rules, tactical loadout inheritance, Laser Rifle range/TU, selected-unit feedback, Unarmed fire rejection, movement highlighting, three End Turn cycles, civilian contact, wall destruction and traversal, full-squad contact response, per-soldier VIP priority, escorted-VIP visibility, distinct rescue guards, biome/tier building density, remembered alien-contact convergence, building-clear Skyranger placement, tracked VIP pings, pre-contact tracker guidance with shot reservation, distinct post-combat building/sector search assignments, threat-safe civilian paths, sequential visible actions, and all visible Build Health rows.
 
-Latest automated verification passes `125/125` native tests and `96/96` visible Build Health rows. Godot 4.7.1 strict editor parsing passes. The paired browser 0152 start screen and Geoscape load, and browser Build Health passes `316/316`. A final live tactical mission and visual isometric framing check remain manual gates for this patch.
+Latest automated verification passes `131/131` native tests and `100/100` visible Build Health rows. Godot 4.7.1 strict editor parsing passes. Paired browser build 0153 passes six-script static parsing, the build seam checker, `320/320` localhost Build Health, and a six-soldier 64x64 rescue smoke with Fit Map and three End Turn cycles.
 
 ## Deliberate Limits
 
@@ -159,6 +161,6 @@ The paired 0017/0147 gate requires the originally affected rescue campaign plus 
 
 The paired 0021/0151 gate requires a mandatory-rescue battle with a remote remembered alien contact: confirm an unengaged soldier still contacts an adjacent VIP, a locally threatened soldier retains combat priority, the camera centers each manually selected soldier, blue escorted VIPs stay visible through fog, and idle soldiers form around VIPs or ramps after every survivor is escorted. Repeated Small, Medium, and Large wilderness, farm, town, and city launches should also be compared for expected building-density progression and practical pacing.
 
-The paired 0022/0152 gate requires an escorted civilian or VIP column that begins inside a building: under AI command, confirm the escort uses a door or destroyed wall, does not oscillate against intact walls, preserves shot TU, and leads all followers through the Skyranger ramp. In browser Three.js, inspect Full, Wide, Near, and Close views and confirm the complete lower map edge remains visible.
+The paired 0023/0153 gate requires a rescue battle with at least one VIP inside a building. Before alien contact, confirm free soldiers follow tracker pings, use a real doorway, and contact an adjacent VIP without circling. After alien contact, confirm new claims pause while existing escorts continue. Exercise Fit Map on every map tier and transfer, drop, and recover one item between adjacent soldiers on the same elevation.
 
 Next paired patch after this gate: `TACTICAL_CLASSIC_INVENTORY_TRANSFERS_AND_ELEVATION_FOUNDATION_PARITY_PATCH`, beginning with bounded adjacent-unit hand/belt transfers and floor-state data.

@@ -1,6 +1,6 @@
 extends Control
 
-const NATIVE_BUILD := "v0.26.08.02.GODOT.0022_ESCORT_BUILDING_EGRESS_AND_FULL_COLUMN_EXTRACTION_VERTICAL_SLICE"
+const NATIVE_BUILD := "v0.26.08.02.GODOT.0023_INVENTORY_VIP_PRIORITY_DOOR_ROUTING_FIT_MAP_AND_BASE_FACILITY_DROPDOWN_VERTICAL_SLICE"
 const MAX_BROWSER_IMPORT_BYTES := 32 * 1024 * 1024
 const AUDIO_SETTINGS_PATH := "user://project_aegis_audio_settings.cfg"
 const VOICE_MAKEUP_DB := 6.0
@@ -772,34 +772,51 @@ func _facility_status(facility_id: String) -> String:
 	}
 	return statuses.get(facility_id, "Facility ready.")
 
+func _buildable_facility_definitions() -> Array[Dictionary]:
+	var definitions: Array[Dictionary] = []
+	for definition_value in content.get("facilities", []):
+		if definition_value is not Dictionary:
+			continue
+		var definition: Dictionary = definition_value
+		if int(definition.get("build_cost", 0)) > 0 and int(definition.get("construction_days", 0)) > 0:
+			definitions.append(definition)
+	definitions.sort_custom(func(left, right): return String(left.get("name", "")) < String(right.get("name", "")))
+	return definitions
+
 func _render_facility_construction(root: VBoxContainer) -> void:
 	var construction := VBoxContainer.new()
 	construction.add_theme_constant_override("separation", 12)
 	var orders := campaign.facility_construction_orders()
 	construction.add_child(_label("FACILITY CONSTRUCTION", 18, color_cyan))
 	construction.add_child(_label("%d/%d concurrent projects - Available funds $%dk" % [orders.size(), AegisCampaignState.MAX_FACILITY_CONSTRUCTION_ORDERS, campaign.data.get("funds", 0)], 13, color_muted, true))
-	var catalog := GridContainer.new()
-	catalog.columns = 3
-	catalog.add_theme_constant_override("h_separation", 10)
-	for definition_value in content.get("facilities", []):
-		var definition: Dictionary = definition_value
-		if int(definition.get("build_cost", 0)) <= 0 or int(definition.get("construction_days", 0)) <= 0:
-			continue
+	var definitions := _buildable_facility_definitions()
+	var picker := OptionButton.new()
+	picker.custom_minimum_size = Vector2(520, 42)
+	for definition in definitions:
+		picker.add_item("%s - $%dk" % [definition.get("name", definition.get("id", "Facility")), definition.get("build_cost", 0)])
+		picker.set_item_metadata(picker.item_count - 1, definition.get("id", ""))
+	construction.add_child(picker)
+	var detail := _label("Choose a facility to review capacity, schedule, and local cost.", 13, color_muted, true)
+	detail.custom_minimum_size.y = 56
+	construction.add_child(detail)
+	var begin_selected := func() -> void:
+		if picker.selected >= 0:
+			_begin_facility_construction(String(picker.get_item_metadata(picker.selected)))
+	var build_button := _action_button("Build Selected Facility", begin_selected, true)
+	construction.add_child(build_button)
+	var refresh_selection := func(index: int) -> void:
+		if index < 0 or index >= definitions.size():
+			build_button.disabled = true
+			return
+		var definition: Dictionary = definitions[index]
 		var facility_id := String(definition.get("id", ""))
 		var blocker := campaign.facility_construction_blocker(facility_id)
-		var card := VBoxContainer.new()
-		card.custom_minimum_size = Vector2(250, 150)
-		card.add_theme_constant_override("separation", 8)
-		card.add_child(_label(definition.get("name", facility_id), 17, Color(definition.get("color", "#67e8f9")), true))
-		card.add_child(_label("%s - %d day%s" % [definition.get("capacity_label", "Capacity expansion"), definition.get("construction_days", 0), "" if int(definition.get("construction_days", 0)) == 1 else "s"], 12, color_muted, true))
-		card.add_child(_label("Operational %d - After projects %d" % [campaign.facility_count(facility_id), campaign.facility_count(facility_id) + campaign.pending_facility_count(facility_id)], 12, color_text, true))
-		card.add_spacer(false)
-		var build_button := _action_button("Build - $%dk" % definition.get("build_cost", 0), func(): _begin_facility_construction(facility_id), true)
+		detail.text = "%s - %d day%s\nOperational %d - After projects %d" % [definition.get("capacity_label", "Capacity expansion"), definition.get("construction_days", 0), "" if int(definition.get("construction_days", 0)) == 1 else "s", campaign.facility_count(facility_id), campaign.facility_count(facility_id) + campaign.pending_facility_count(facility_id)]
+		build_button.text = "Build %s - $%dk" % [definition.get("name", facility_id), definition.get("build_cost", 0)]
 		build_button.disabled = not blocker.is_empty()
 		build_button.tooltip_text = blocker if build_button.disabled else "Prepay and begin this local facility project."
-		card.add_child(build_button)
-		catalog.add_child(_panel_with(card, 16))
-	construction.add_child(catalog)
+	picker.item_selected.connect(refresh_selection)
+	refresh_selection.call(0 if not definitions.is_empty() else -1)
 	if orders.is_empty():
 		construction.add_child(_label("No facilities currently under construction.", 13, color_green))
 	else:
@@ -1354,6 +1371,7 @@ func _show_tactical() -> void:
 	cycle_row.add_child(_small_button("Previous", func(): tactical_board.select_relative_soldier(-1)))
 	cycle_row.add_child(_small_button("Next", func(): tactical_board.select_relative_soldier(1)))
 	cycle_row.add_child(_small_button("Map", _show_tactical_map))
+	cycle_row.add_child(_small_button("Fit Map", func(): tactical_board.fit_entire_map()))
 	unit_controls.add_child(cycle_row)
 	unit_controls.add_child(_label("HANDS", 10, color_muted))
 	var hands_row := HBoxContainer.new()
@@ -1485,22 +1503,64 @@ func _show_tactical_inventory() -> void:
 	var inventory := tactical_board.selected_inventory()
 	var dialog := AcceptDialog.new()
 	dialog.title = "Field Equipment"
-	dialog.dialog_text = "Select a living soldier to inspect equipment." if inventory.is_empty() else "%s - %s\n\nRIGHT HAND  %s\nLEFT HAND   %s\nBODY        %s\nBELT        %s\n\nTU %d   Accuracy %d   Reactions %d\nStance %s   Reserve %s   Targeting %s" % [
-		inventory.get("name", "Soldier"),
-		inventory.get("rank", "Rookie"),
-		inventory.get("right_hand", "Unarmed"),
-		inventory.get("left_hand", "Empty"),
-		inventory.get("armor", "No Armor"),
-		"Medkit (%d)" % inventory.get("medkit_charges", 0) if int(inventory.get("medkit_charges", 0)) > 0 else "Empty",
-		inventory.get("tu", 0),
-		inventory.get("accuracy", 0),
-		inventory.get("reactions", 0),
-		"Kneeling" if inventory.get("kneeling", false) else "Standing",
-		String(inventory.get("reserve_mode", "none")).capitalize(),
-		String(inventory.get("targeting_mode", "move")).capitalize()
-	]
-	dialog.min_size = Vector2i(520, 330)
+	dialog.dialog_text = "Select a living soldier to inspect equipment." if inventory.is_empty() else ""
+	dialog.min_size = Vector2i(620, 520)
 	ui_root.add_child(dialog)
+	if not inventory.is_empty():
+		var body := VBoxContainer.new()
+		body.add_theme_constant_override("separation", 9)
+		body.add_child(_label("%s - %s - Elevation %d" % [inventory.get("name", "Soldier"), inventory.get("rank", "Rookie"), inventory.get("level", 0)], 17, color_cyan, true))
+		body.add_child(_label("TU %d - Accuracy %d - Reactions %d - %s - Reserve %s" % [inventory.get("tu", 0), inventory.get("accuracy", 0), inventory.get("reactions", 0), "Kneeling" if inventory.get("kneeling", false) else "Standing", String(inventory.get("reserve_mode", "none")).capitalize()], 12, color_muted, true))
+		var target_picker := OptionButton.new()
+		var adjacent_allies: Array = inventory.get("adjacent_allies", [])
+		for ally_value in adjacent_allies:
+			var ally: Dictionary = ally_value
+			target_picker.add_item("%s - TU %d" % [ally.get("name", "Soldier"), ally.get("tu", 0)])
+			target_picker.set_item_metadata(target_picker.item_count - 1, ally.get("id", ""))
+		if adjacent_allies.is_empty():
+			target_picker.add_item("No adjacent same-elevation soldier")
+			target_picker.disabled = true
+		body.add_child(target_picker)
+		var slot_labels := {"right":inventory.get("right_hand", "Empty"), "left":inventory.get("left_hand", "Empty"), "belt":"Medkit (%d)" % inventory.get("medkit_charges", 0) if int(inventory.get("medkit_charges", 0)) > 0 else "Empty"}
+		for slot_value in ["right", "left", "belt"]:
+			var slot_key := String(slot_value)
+			var row := HBoxContainer.new()
+			var item_label := String(slot_labels.get(slot_key, "Empty"))
+			var label := _label("%s  %s" % [slot_key.replace("_", " ").to_upper(), item_label], 13, color_text, true)
+			label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			row.add_child(label)
+			var give_button := _small_button("Give 4 TU", func():
+				if target_picker.selected >= 0 and tactical_board.transfer_selected_inventory_item(String(target_picker.get_item_metadata(target_picker.selected)), slot_key):
+					dialog.queue_free()
+			)
+			give_button.disabled = item_label == "Empty" or adjacent_allies.is_empty() or inventory.get("tu", 0) < tactical_board.INVENTORY_ACTION_TU or slot_key == "left" and inventory.get("grenade_primed", false)
+			row.add_child(give_button)
+			var drop_button := _small_button("Drop 4 TU", func():
+				if tactical_board.drop_selected_inventory_item(slot_key):
+					dialog.queue_free()
+			)
+			drop_button.disabled = item_label == "Empty" or inventory.get("tu", 0) < tactical_board.INVENTORY_ACTION_TU or slot_key == "left" and inventory.get("grenade_primed", false)
+			row.add_child(drop_button)
+			body.add_child(row)
+		body.add_child(_separator())
+		body.add_child(_label("FLOOR - CURRENT HEX", 11, color_gold))
+		var floor_items: Array = inventory.get("floor_items", [])
+		if floor_items.is_empty():
+			body.add_child(_label("No equipment on this hex.", 12, color_muted))
+		else:
+			for item_value in floor_items:
+				var item: Dictionary = item_value
+				var floor_row := HBoxContainer.new()
+				var floor_label := _label("%s - %s" % [item.get("item_name", "Equipment"), String(item.get("slot", "slot")).to_upper()], 12, color_text, true)
+				floor_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+				floor_row.add_child(floor_label)
+				var item_id := String(item.get("id", ""))
+				floor_row.add_child(_small_button("Pick Up 4 TU", func():
+					if tactical_board.pickup_selected_floor_item(item_id):
+						dialog.queue_free()
+				))
+				body.add_child(floor_row)
+		dialog.add_child(body)
 	dialog.popup_centered()
 	dialog.confirmed.connect(dialog.queue_free)
 
@@ -1657,6 +1717,26 @@ func _run_self_tests() -> Array:
 	doctrine_board._select_unit(String(console_soldier.get("id", "")))
 	var hand_inventory := doctrine_board.selected_inventory()
 	var hand_slots_ready: bool = hand_inventory.get("right_hand", "") == console_soldier.get("weapon", "") and hand_inventory.get("left_hand", "") == "Frag Grenade" and int(hand_inventory.get("grenade_charges", 0)) == 1
+	var inventory_target: Dictionary = doctrine_humans[3]
+	console_soldier.cell = Vector2i(6, 6)
+	inventory_target.cell = Vector2i(7, 6)
+	console_soldier.level = 0
+	inventory_target.level = 0
+	inventory_target.grenade_charges = 0
+	var inventory_transfer_tu_before := int(console_soldier.get("tu", 0))
+	var inventory_transfer_ok: bool = doctrine_board.transfer_selected_inventory_item(String(inventory_target.get("id", "")), "left") and int(console_soldier.get("tu", 0)) == inventory_transfer_tu_before - doctrine_board.INVENTORY_ACTION_TU and int(console_soldier.get("grenade_charges", 0)) == 0 and int(inventory_target.get("grenade_charges", 0)) == 1
+	doctrine_board._select_unit(String(inventory_target.get("id", "")))
+	var inventory_drop_tu_before := int(inventory_target.get("tu", 0))
+	var inventory_drop_ok: bool = doctrine_board.drop_selected_inventory_item("left") and doctrine_board.floor_items.size() == 1 and doctrine_board.floor_items[0].get("cell", Vector2i.ZERO) == inventory_target.cell and int(doctrine_board.floor_items[0].get("level", -1)) == 0 and int(inventory_target.get("tu", 0)) == inventory_drop_tu_before - doctrine_board.INVENTORY_ACTION_TU
+	var inventory_floor_item_id := String(doctrine_board.floor_items[0].get("id", "")) if not doctrine_board.floor_items.is_empty() else ""
+	var inventory_pickup_ok: bool = not inventory_floor_item_id.is_empty() and doctrine_board.pickup_selected_floor_item(inventory_floor_item_id) and doctrine_board.floor_items.is_empty() and int(inventory_target.get("grenade_charges", 0)) == 1
+	console_soldier.grenade_charges = 1
+	inventory_target.grenade_charges = 0
+	console_soldier.level = 1
+	doctrine_board._select_unit(String(console_soldier.get("id", "")))
+	var inventory_elevation_blocked: bool = not doctrine_board.transfer_selected_inventory_item(String(inventory_target.get("id", "")), "left")
+	console_soldier.level = 0
+	var inventory_transfer_ready: bool = inventory_transfer_ok and inventory_drop_ok and inventory_pickup_ok and inventory_elevation_blocked
 	var grenade_prime_tu_before := int(console_soldier.get("tu", 0))
 	var grenade_prime_ready: bool = doctrine_board.prime_selected_grenade() and int(console_soldier.get("tu", 0)) == grenade_prime_tu_before - doctrine_board.GRENADE_PRIME_TU and console_soldier.get("grenade_primed", false) and console_soldier.get("targeting_mode", "") == "grenade"
 	var grenade_target := Vector2i(8, 8)
@@ -1695,6 +1775,14 @@ func _run_self_tests() -> Array:
 	egress_unit.tu = 60
 	var health_egress_plan: Dictionary = egress_board._ai_extraction_plan(egress_unit, int(egress_unit.get("fire_tu", 14)))
 	var health_egress_ready: bool = health_egress_plan.get("exit_kind", "") == "breach" and health_egress_plan.get("cleared_building", false) and health_egress_plan.get("path", []).has(health_breach)
+	egress_board.covers.clear()
+	egress_board._add_building_rectangle(Vector2i(8, 3), 7, 6, "health-door-entry")
+	egress_board.covers.erase(AegisHexRules.key(health_door))
+	egress_unit.cell = Vector2i(11, 11)
+	egress_unit.tu = 60
+	var health_indoor_target := Vector2i(11, 5)
+	var health_door_plan: Dictionary = egress_board._ai_rescue_plan(egress_unit, [health_indoor_target], 0, true)
+	var door_entry_ready: bool = health_door_plan.get("door_route", false) and health_door_plan.get("path", []).has(health_door) and AegisHexRules.distance(health_door_plan.get("cell", egress_unit.cell), health_indoor_target) <= 1
 	egress_board.covers.clear()
 	var health_corridor: Array = egress_board._ai_extraction_corridors(egress_unit)[0].path
 	egress_unit.cell = health_corridor[0]
@@ -1736,7 +1824,7 @@ func _run_self_tests() -> Array:
 	remembered_alien.revealed = true
 	remembered_alien.visible = false
 	remembered_alien.last_known_cell = Vector2i(9, 6)
-	var precontact_contact_memory_ready: bool = priority_civilian.get("priority_escort_id", "") == priority_soldier.get("id", "") and priority_soldier.get("priority_civilian_id", "") == priority_civilian.get("id", "") and priority_board._known_alien_contact_cells().has(Vector2i(9, 6)) and not priority_board._soldier_engaged_with_alien(priority_soldier) and tactical_source.contains("if rescue_target == null and _inside(contact_target_cell)") and tactical_source.contains("not soldier_engaged and rescued < required_rescues")
+	var precontact_contact_memory_ready: bool = priority_civilian.get("priority_escort_id", "") == priority_soldier.get("id", "") and priority_soldier.get("priority_civilian_id", "") == priority_civilian.get("id", "") and priority_board._known_alien_contact_cells().has(Vector2i(9, 6)) and not priority_board._soldier_engaged_with_alien(priority_soldier) and tactical_source.contains("if rescue_target == null and _inside(contact_target_cell)") and tactical_source.contains("not combat_priority and not soldier_engaged and rescued < required_rescues")
 	var distress_board := AegisTacticalBoard.new()
 	distress_board.begin_battle(test_campaign.selected_incident(), test_campaign.assigned_soldiers(), content)
 	var distress_humans: Array = distress_board.units.filter(func(unit): return unit.get("team", "") == "human")
@@ -1756,7 +1844,7 @@ func _run_self_tests() -> Array:
 	distress_responder.cell = Vector2i(2, 2)
 	var down_distress: Dictionary = distress_board._ai_distress_target(distress_responder)
 	var distress_response_ready: bool = far_distress.get("stage", "") == "converge" and far_distress.get("cell", Vector2i.ZERO) == Vector2i(10, 10) and near_distress.get("stage", "") == "search" and near_distress.get("cell", Vector2i.ZERO) == Vector2i(16, 10) and down_distress.get("stage", "") == "converge" and tactical_source.contains("_record_tactical_distress(target, alien, roll <= chance)")
-	var full_squad_priority_ready: bool = tactical_source.contains("for soldier in soldiers") and tactical_source.contains("var soldier_engaged := _soldier_engaged_with_alien(soldier)") and tactical_source.contains("not soldier_engaged and rescued < required_rescues") and tactical_source.contains("_ai_patrol_plan(soldier, reserve_tu)") and tactical_source.contains("ai_last_acted_ids.append")
+	var full_squad_priority_ready: bool = tactical_source.contains("for soldier in soldiers") and tactical_source.contains("var combat_priority :=") and tactical_source.contains("not combat_priority and not soldier_engaged and rescued < required_rescues") and tactical_source.contains("_ai_patrol_plan(soldier, reserve_tu)") and tactical_source.contains("ai_last_acted_ids.append")
 	var sequential_action_ready: bool = tactical_source.contains("0.38 if soldier.cell != cell_before") and tactical_source.contains("0.18 if alien.get(\"visible\", false) else 0.01") and tactical_source.contains("0.38 if alien.get(\"visible\", false) else 0.02")
 	var secure_search_board := AegisTacticalBoard.new()
 	secure_search_board.begin_battle(test_campaign.selected_incident(), test_campaign.assigned_soldiers(), content)
@@ -1775,10 +1863,13 @@ func _run_self_tests() -> Array:
 	var secure_tracker_assignments: Array = secure_search_assignments.values().filter(func(assignment): return assignment.get("kind", "") == "tracker")
 	var secure_building_assignments: Array = secure_search_assignments.values().filter(func(assignment): return assignment.get("kind", "") == "building")
 	var secure_search_zones := {}
+	var secure_tracker_ids := {}
 	for secure_assignment in secure_search_assignments.values():
 		secure_search_zones[secure_assignment.get("zone_id", "")] = true
+		if secure_assignment.get("kind", "") == "tracker":
+			secure_tracker_ids[secure_assignment.get("tracker_id", "")] = true
 	secure_search_board._refresh_explored_cells([secure_search_humans[0]])
-	var post_combat_search_ready: bool = secure_search_assignments.size() == secure_search_humans.size() and secure_tracker_assignments.size() == 2 and secure_tracker_assignments[0].get("tracker_id", "") != secure_tracker_assignments[1].get("tracker_id", "") and secure_building_assignments.size() == 1 and secure_search_zones.size() == secure_search_assignments.size() and secure_search_board._active_vip_tracker_targets().size() == 2 and secure_search_board.explored_cells.size() > 0 and secure_search_board.explored_cells.size() <= secure_search_board.grid_width * secure_search_board.grid_height and tactical_source.contains("var tracker_guidance :=") and tactical_source.contains("secure_rescue or tracker_guidance") and tactical_source.contains("var search_reserve := 0 if secure_rescue")
+	var post_combat_search_ready: bool = secure_search_assignments.size() == secure_search_humans.size() and secure_tracker_assignments.size() == secure_search_humans.size() and secure_tracker_ids.size() == 2 and secure_building_assignments.is_empty() and secure_search_zones.size() == secure_search_assignments.size() and secure_search_board._active_vip_tracker_targets().size() == 2 and secure_search_board.explored_cells.size() > 0 and secure_search_board.explored_cells.size() <= secure_search_board.grid_width * secure_search_board.grid_height and tactical_source.contains("var tracker_guidance :=") and tactical_source.contains("not combat_priority") and tactical_source.contains("var search_reserve := 0 if secure_rescue")
 	for secure_civilian in secure_search_civilians:
 		secure_civilian["revealed"] = true
 		secure_civilian["visible"] = false
@@ -1834,6 +1925,10 @@ func _run_self_tests() -> Array:
 	var large_board := AegisTacticalBoard.new()
 	large_board.begin_battle(large_incident, test_campaign.assigned_soldiers(), content)
 	var map_tiers_ready: bool = test_board.grid_width == 20 and test_board.grid_height == 14 and tactical_civilians.size() == 2 and multi_board.grid_width == 26 and multi_board.grid_height == 18 and multi_board.units.filter(func(unit): return unit.get("team", "") == "civilian").size() == 4 and large_board.grid_width == 32 and large_board.grid_height == 22 and large_board.units.filter(func(unit): return unit.get("team", "") == "civilian").size() == 6
+	large_board.size = Vector2(990, 650)
+	large_board.fit_entire_map()
+	var fitted_large_corner := large_board._hex_center(Vector2i(large_board.grid_width - 1, large_board.grid_height - 1))
+	var fit_map_ready: bool = large_board.board_origin.x >= 0.0 and large_board.board_origin.y >= 0.0 and fitted_large_corner.x + large_board.hex_radius <= large_board.size.x and fitted_large_corner.y + large_board.hex_radius <= large_board.size.y
 	var edge_neighbors := AegisHexRules.neighbors(Vector2i(1, 1), multi_board.grid_width, multi_board.grid_height)
 	var edge_guard_ready: bool = edge_neighbors.all(func(cell): return multi_board._inside(cell)) and AegisHexRules.path(Vector2i(2, 2), Vector2i(0, 2), {}, {}, multi_board.grid_width, multi_board.grid_height).is_empty() and multi_board._inside(Vector2i(1, 1)) and not multi_board._inside(Vector2i(0, 1)) and multi_board.units.all(func(unit): return multi_board._inside(unit.get("cell", Vector2i.ZERO)))
 	for alien in test_board.units.filter(func(unit): return unit.get("team", "") == "alien"):
@@ -2060,6 +2155,8 @@ func _run_self_tests() -> Array:
 	manufacturing_campaign.advance_minutes(24 * 60)
 	var manufacturing_normalized := manufacturing_campaign.normalize_save(manufacturing_campaign.data)
 	var manufacturing_persistence_ready: bool = manufacturing_normalized.get("manufacturing_queue", []).size() == 1 and int(manufacturing_normalized.get("manufacturing_queue", [])[0].get("progress", 0)) == 6 and int(manufacturing_normalized.get("manufacturing_assigned_engineers", 0)) == 2
+	var main_source := FileAccess.get_file_as_string("res://godot/scripts/main.gd")
+	var facility_dropdown_ready := main_source.contains("func _buildable_facility_definitions()") and main_source.contains("var picker := OptionButton.new()") and main_source.contains("picker.item_selected.connect")
 	var checks := [
 		{"name":"Godot content manifest loads", "pass":not content.is_empty()},
 		{"name":"Save format remains version 4", "pass":int(content.get("save_format",0)) == 4 and AegisCampaignState.SAVE_FORMAT == 4},
@@ -2085,14 +2182,16 @@ func _run_self_tests() -> Array:
 		{"name":"AI command can return the live battle to player control", "pass":ai_reclaim_ready},
 		{"name":"AI rescue routing rotates soldiers and rejects two-cell loops", "pass":rescue_route_ready and recovery_board.ai_last_acted_ids is Array},
 		{"name":"AI escorts use doors or breaches and continue through the ramp until the full civilian column extracts", "pass":health_egress_ready and full_column_extraction_ready},
-		{"name":"AI command tasks every viable soldier and prioritizes squad contacts", "pass":full_squad_priority_ready},
-		{"name":"Tracked VIP pings guide AI searchers before distinct post-combat building and sector sweeps", "pass":post_combat_search_ready},
-		{"name":"Unengaged soldiers keep immediate VIP contact priority despite remote squad contacts", "pass":precontact_contact_memory_ready},
+		{"name":"AI routes through real doors to reach indoor VIPs without circling", "pass":door_entry_ready},
+		{"name":"AI command tasks every viable soldier and gives squad-wide alien contact combat priority", "pass":full_squad_priority_ready},
+		{"name":"Tracked VIP pings direct every free AI soldier until contact before area sweeps resume", "pass":post_combat_search_ready},
+		{"name":"Alien contact pauses new VIP claims while preserving remembered civilian assignments", "pass":precontact_contact_memory_ready},
 		{"name":"Escorted VIPs remain visible through fog until extraction", "pass":escorted_vip_visibility_ready},
 		{"name":"Idle soldiers form distinct rescue perimeter positions after every VIP is escorted", "pass":rescue_guard_phase_ready},
 		{"name":"Building probability scales by wilderness town city and tactical map size", "pass":building_density_ready},
 		{"name":"Each deployed squad forms at its own matching Skyranger rescue ramp", "pass":multi_transport_ready},
 		{"name":"Small Medium and Large tactical maps scale terrain and civilian capacity", "pass":map_tiers_ready},
+		{"name":"Fit Map frames the complete large tactical battlefield", "pass":fit_map_ready},
 		{"name":"Tactical neighbors paths and generated units remain inside the playable perimeter", "pass":edge_guard_ready},
 		{"name":"Non-escort soldiers answer wounded and downed squad distress calls then search the firing direction", "pass":distress_response_ready},
 		{"name":"Civilian escorts avoid known alien firing exposure when a safe route exists", "pass":threat_aware_escort_ready},
@@ -2102,6 +2201,7 @@ func _run_self_tests() -> Array:
 		{"name":"Recorded voices receive bounded makeup gain while active speech ducks music", "pass":voice_audibility_mix_ready},
 		{"name":"Classic reserve stance inventory and Done controls mutate tactical state", "pass":classic_console_ready},
 		{"name":"Tactical deployment exposes functional right and left hand slots", "pass":hand_slots_ready},
+		{"name":"Adjacent inventory transfer drop pickup and elevation rules preserve tactical state", "pass":inventory_transfer_ready},
 		{"name":"Frag Grenade preparation spends four TU and enters explicit targeting", "pass":grenade_prime_ready},
 		{"name":"Frag Grenade blast is seven-hex bounded and opens traversable rubble", "pass":grenade_blast_ready},
 		{"name":"Native campaign starts with interceptor and tracked UFO", "pass":air_defaults_ready},
@@ -2130,6 +2230,7 @@ func _run_self_tests() -> Array:
 		{"name":"Personnel arrivals wait for three strategic midnights", "pass":personnel_waits_three_days},
 		{"name":"Personnel arrivals are unassigned and draw no free equipment", "pass":personnel_arrival_ready},
 		{"name":"Spare quarters do not bypass full Laboratory or Workshop capacity", "pass":specialist_capacity_ready},
+		{"name":"Base facility construction uses one compact dropdown catalog", "pass":facility_dropdown_ready},
 		{"name":"Facility construction prepays established costs into three bounded slots", "pass":construction_queue_ready},
 		{"name":"Pending facilities show future capacity without granting it early", "pass":construction_waits_ready},
 		{"name":"Concurrent facility countdowns normalize with exact progress", "pass":construction_persistence_ready},

@@ -2,9 +2,54 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-02
-Current handoff build: `v0.26.08.02.0152_TACTICAL_ESCORT_BUILDING_EGRESS_FULL_COLUMN_EXTRACTION_AND_ISOMETRIC_FRAMING_PARITY_PATCH`
-Native vertical slice: `v0.26.08.02.GODOT.0022_ESCORT_BUILDING_EGRESS_AND_FULL_COLUMN_EXTRACTION_VERTICAL_SLICE`
-Current patch status: **Browser 0152 and native 0022 preserve save format 4. AI escorts inside structures now select a real doorway or destroyed-wall breach through a bounded building-local route before continuing toward extraction. Escorts already on a ramp continue into their own Skyranger instead of retargeting the ramp entrance, and trailing civilians close extraction gaps until the complete four-person column is aboard. Medium and Large browser maps retain their live grid bounds during egress searches. The browser Three.js frustum preserves aspect ratio while adding lower-edge clearance. Browser Build Health passes 316/316; the 0152 start screen and Geoscape loaded; a live six-soldier Small Red River Signal battle selected Jace at 48/48 TU and completed three End Turn cycles with all six soldiers alive. Near and Full Performance isometric views displayed the complete lower map edge. Native tests pass 125/125, native Build Health passes 96/96, and Godot 4.7.1 strict parsing passes. Remaining gates are hands-on door/breach evacuation with an existing rescue save, full-column extraction in both clients, and repeated isometric framing checks at every zoom and map tier.**
+Current handoff build: `v0.26.08.02.0153_TACTICAL_INVENTORY_VIP_PRIORITY_DOOR_ROUTING_FIT_MAP_AND_BASE_FACILITY_DROPDOWN_PARITY_PATCH`
+Native vertical slice: `v0.26.08.02.GODOT.0023_INVENTORY_VIP_PRIORITY_DOOR_ROUTING_FIT_MAP_AND_BASE_FACILITY_DROPDOWN_VERTICAL_SLICE`
+Current patch status: **Browser 0153 and native 0023 preserve save format 4. Rescue AI now assigns every free soldier to active VIP tracker pings before alien contact, suspends new claims for squad-wide alien contact, routes through real doors, and converts adjacency into immediate contact instead of circling. Existing escorts continue evacuation. Both clients add Fit Map, a functional adjacent-unit/floor inventory foundation, and compact facility construction selection. Browser static parsing and the seam checker pass, localhost Build Health passes 320/320, and a six-soldier 64x64 rescue mission completed three End Turn cycles after using Fit Map with no runtime or console errors. Native tests pass 131/131, native Build Health passes 100/100, and Godot 4.7.1 strict parsing passes. Hands-on indoor rescue AI, all-tier Fit Map presentation, and inventory interaction remain the final manual tests.**
+
+---
+
+# v0.26.08.02.0153 / GODOT.0023 - Inventory, VIP Priority, Door Routing, Fit Map, and Facility Dropdown
+
+Browser build `v0.26.08.02.0153_TACTICAL_INVENTORY_VIP_PRIORITY_DOOR_ROUTING_FIT_MAP_AND_BASE_FACILITY_DROPDOWN_PARITY_PATCH` and native build `v0.26.08.02.GODOT.0023_INVENTORY_VIP_PRIORITY_DOOR_ROUTING_FIT_MAP_AND_BASE_FACILITY_DROPDOWN_VERTICAL_SLICE` preserve save format 4.
+
+Root causes addressed:
+
+- A tracker-search move could end beside a civilian without running the contact action. On the next turn, target scoring could choose a different adjacent hex, producing repeated circles around the VIP.
+- Tracker assignment reserved one searcher per ping and sent the rest into general area sweeps even though tracked rescue was still the primary objective.
+- Local soldier engagement checks allowed new rescue claims while another squad member had already confirmed alien contact, splitting non-escort combat response.
+- Several browser tactical helpers retained the original 64-cell boundary. Large-map doorway and visibility routes could therefore reject valid cells outside the old bounds.
+- Native building ingress and both clients' overview controls did not have explicit direct regression coverage.
+- Base facility construction rendered the complete catalog as a long button list, and the classic inventory display had no bounded adjacent-transfer or floor-state actions.
+
+Implemented roadmap scope:
+
+- Before alien contact, all free AI soldiers receive deterministic tracker assignments. Multiple soldiers may approach the same tracked VIP from distinct zones when there are fewer pings than soldiers.
+- Any visible or remembered alien contact creates squad-wide combat priority for non-escorts. Existing escorts continue along threat-aware extraction routes; new claims resume when contact is cleared.
+- Reaching adjacency during tracker movement immediately spends the established 8 TU contact cost and assigns the escort in the same AI action. Stale tracker assignments are invalidated after reveal or contact.
+- Browser and native rescue plans use the actual doorway or destroyed-wall breach path when a target is inside a building. Browser path, reachable, neighbor, edge, and visibility bounds derive from the live Small, Medium, or Large grid while retaining indexed queues and bounded movement slices.
+- Fit Map shows the entire tactical grid in browser 2D/Three.js and native tactical views. Existing zoom indices remain compatible with current saves.
+- Field inventory now supports 4 TU adjacent same-elevation hand/belt transfers plus exact-cell, exact-elevation drop and pickup. Primed grenades and incompatible or occupied target slots remain blocked.
+- Base construction uses one compact facility dropdown with current cost, duration, capacity effect, and blocker feedback.
+- Browser Build Health adds four rows. Native Build Health adds four rows and reaches 100; native automation adds six checks and reaches 131.
+
+Verification checklist:
+
+- Godot 4.7.1 strict project parsing passed with all native classes registered.
+- Native tests passed `131/131`, including Fit Map framing, four inventory state checks, real-door ingress, tracker assignment, and three practical End Turn cycles.
+- All `100/100` native Build Health rows passed inside the suite.
+- All six browser app scripts parsed, and `node tools\check-aegis-build.cjs` passed with synchronized 0153/0023 labels and required seams.
+- The localhost start screen displayed build 0153, a fresh campaign reached the Geoscape, and the compact Base facility selector exposed all 12 build choices. Browser Build Health passed `320/320` with no failed rows.
+- A six-soldier Small 64x64 Red River Signal rescue mission launched in safe 2D. Fit Map retained the complete tactical state, and three End Turn cycles returned to the human phase without a tactical runtime surface or console error. The existing Tailwind CDN development warning was the only console warning.
+
+Remaining risks and manual validation:
+
+- Run a mandatory-rescue mission with an indoor VIP under AI command. Confirm soldiers enter through a doorway, contact the VIP immediately on adjacency, and do not circle.
+- Reveal an alien before contact. Confirm all non-escorts break toward combat while an existing escort continues taking a threat-aware route to the Skyranger.
+- On Small, Medium, and Large missions, switch between normal zooms and Fit Map in 2D and Three.js. Confirm the complete playable perimeter is visible and selection remains accurate.
+- Transfer a grenade or Medkit between adjacent soldiers, drop it, pick it up, and verify 4 TU per action. Confirm transfer is blocked across different elevations and for a primed grenade.
+- Open Base construction and verify every facility remains selectable from the dropdown with correct cost, duration, blocker, and project-slot behavior.
+
+Next recommended paired patch after this gate: `TACTICAL_CLASSIC_INVENTORY_CONTAINER_LOADOUT_AND_ELEVATION_RENDER_FOUNDATION_PARITY_PATCH`, expanding the bounded inventory foundation without beginning a broad multi-level tactical rewrite.
 
 ---
 

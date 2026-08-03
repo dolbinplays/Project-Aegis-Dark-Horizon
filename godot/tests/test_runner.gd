@@ -309,6 +309,10 @@ func _test_tactical(content: Dictionary) -> void:
 	large_board.begin_battle(large_incident, tactical_roster, content)
 	_check(board.grid_width == 20 and board.grid_height == 14 and board.units.filter(func(unit): return unit.get("team", "") == "civilian").size() == 2 and multi_board.grid_width == 26 and multi_board.grid_height == 18 and multi_board.units.filter(func(unit): return unit.get("team", "") == "civilian").size() == 4 and large_board.grid_width == 32 and large_board.grid_height == 22 and large_board.units.filter(func(unit): return unit.get("team", "") == "civilian").size() == 6, "small medium and large maps increase battlefield area and civilian capacity")
 	_check(AegisHexRules.path(Vector2i(2, 2), Vector2i(0, 2), {}, {}, multi_board.grid_width, multi_board.grid_height).is_empty() and AegisHexRules.neighbors(Vector2i(1, 1), multi_board.grid_width, multi_board.grid_height).all(func(cell): return multi_board._inside(cell)) and multi_board.units.all(func(unit): return multi_board._inside(unit.get("cell", Vector2i.ZERO))), "pathfinding and deployment reject cells on or beyond the map perimeter")
+	large_board.size = Vector2(990, 650)
+	large_board.fit_entire_map()
+	var fitted_corner := large_board._hex_center(Vector2i(large_board.grid_width - 1, large_board.grid_height - 1))
+	_check(large_board.board_origin.x >= 0.0 and large_board.board_origin.y >= 0.0 and fitted_corner.x + large_board.hex_radius <= large_board.size.x and fitted_corner.y + large_board.hex_radius <= large_board.size.y, "Fit Map keeps the complete large tactical battlefield inside the visible board")
 	large_board.queue_free()
 	multi_board.queue_free()
 	var wall_key := AegisHexRules.key(Vector2i(10, 2))
@@ -365,7 +369,7 @@ func _test_tactical(content: Dictionary) -> void:
 	ai_aliens[0]["visible"] = false
 	ai_aliens[0]["last_known_cell"] = Vector2i(9, 6)
 	var tactical_source := FileAccess.get_file_as_string("res://godot/scripts/tactical_board.gd")
-	_check(ai_board._known_alien_contact_cells().has(Vector2i(9, 6)) and not ai_board._soldier_engaged_with_alien(ai_humans[0]) and tactical_source.contains("if rescue_target == null and _inside(contact_target_cell)") and tactical_source.contains("not soldier_engaged and rescued < required_rescues"), "remote alien memory does not block a free soldier's VIP priority while other soldiers converge on the contact area")
+	_check(ai_board._known_alien_contact_cells().has(Vector2i(9, 6)) and not ai_board._soldier_engaged_with_alien(ai_humans[0]) and tactical_source.contains("var combat_priority :=") and tactical_source.contains("not combat_priority and not soldier_engaged"), "squad-wide remembered alien contact pauses new VIP claims while non-escorts converge on combat")
 	var engagement_cell_before: Vector2i = ai_aliens[0].cell
 	ai_aliens[0]["cell"] = ai_humans[0].cell + Vector2i(1, 0)
 	ai_aliens[0]["visible"] = true
@@ -437,7 +441,10 @@ func _test_tactical(content: Dictionary) -> void:
 	for secure_assignment in secure_assignments.values():
 		assignment_zones[secure_assignment.get("zone_id", "")] = true
 	ai_board._refresh_explored_cells([ai_humans[0]])
-	_check(secure_assignments.size() == ai_humans.size() and tracker_assignments.size() == 2 and tracker_assignments[0].get("tracker_id", "") != tracker_assignments[1].get("tracker_id", "") and building_assignments.size() == 1 and building_assignments[0].get("building_id", "") == "outpost" and assignment_zones.size() == secure_assignments.size() and ai_board._active_vip_tracker_targets().size() == 2 and ai_board.explored_cells.size() > 0 and ai_board.explored_cells.size() <= ai_board.grid_width * ai_board.grid_height and tactical_source.contains("var tracker_guidance :=") and tactical_source.contains("secure_rescue or tracker_guidance") and tactical_source.contains("var search_reserve := 0 if secure_rescue"), "tracked VIP pings guide idle AI searchers and split secure searches across buildings and sectors")
+	var tracker_ids := {}
+	for tracker_assignment in tracker_assignments:
+		tracker_ids[tracker_assignment.get("tracker_id", "")] = true
+	_check(secure_assignments.size() == ai_humans.size() and tracker_assignments.size() == ai_humans.size() and tracker_ids.size() == 2 and building_assignments.is_empty() and assignment_zones.size() == secure_assignments.size() and ai_board._active_vip_tracker_targets().size() == 2 and ai_board.explored_cells.size() > 0 and ai_board.explored_cells.size() <= ai_board.grid_width * ai_board.grid_height and tactical_source.contains("var tracker_guidance :=") and tactical_source.contains("not combat_priority") and tactical_source.contains("var search_reserve := 0 if secure_rescue"), "tracked VIP pings direct every free AI soldier until contact before building and sector sweeps resume")
 	for tracked_civilian in tracked_civilians:
 		tracked_civilian["revealed"] = true
 		tracked_civilian["visible"] = false
@@ -476,6 +483,25 @@ func _test_tactical(content: Dictionary) -> void:
 	ai_board._select_unit(String(console_soldier.get("id", "")))
 	var hand_inventory := ai_board.selected_inventory()
 	_check(hand_inventory.get("right_hand", "") == console_soldier.get("weapon", "") and hand_inventory.get("left_hand", "") == "Frag Grenade" and int(hand_inventory.get("grenade_charges", 0)) == 1, "tactical deployment exposes functional right and left hand slots")
+	var inventory_target: Dictionary = ai_humans[3]
+	console_soldier.cell = Vector2i(6, 6)
+	inventory_target.cell = Vector2i(7, 6)
+	console_soldier.level = 0
+	inventory_target.level = 0
+	inventory_target.grenade_charges = 0
+	var transfer_tu_before := int(console_soldier.get("tu", 0))
+	_check(ai_board.transfer_selected_inventory_item(String(inventory_target.get("id", "")), "left") and int(console_soldier.get("tu", 0)) == transfer_tu_before - ai_board.INVENTORY_ACTION_TU and int(console_soldier.get("grenade_charges", 0)) == 0 and int(inventory_target.get("grenade_charges", 0)) == 1, "adjacent same-elevation soldiers transfer a hand item for four TU")
+	ai_board._select_unit(String(inventory_target.get("id", "")))
+	var drop_tu_before := int(inventory_target.get("tu", 0))
+	_check(ai_board.drop_selected_inventory_item("left") and ai_board.floor_items.size() == 1 and ai_board.floor_items[0].get("cell", Vector2i.ZERO) == inventory_target.cell and int(ai_board.floor_items[0].get("level", -1)) == 0 and int(inventory_target.get("tu", 0)) == drop_tu_before - ai_board.INVENTORY_ACTION_TU, "dropped tactical equipment preserves exact floor cell and elevation")
+	var floor_item_id := String(ai_board.floor_items[0].get("id", ""))
+	_check(ai_board.pickup_selected_floor_item(floor_item_id) and ai_board.floor_items.is_empty() and int(inventory_target.get("grenade_charges", 0)) == 1, "floor equipment returns to its matching empty slot for four TU")
+	console_soldier.grenade_charges = 1
+	inventory_target.grenade_charges = 0
+	console_soldier.level = 1
+	ai_board._select_unit(String(console_soldier.get("id", "")))
+	_check(not ai_board.transfer_selected_inventory_item(String(inventory_target.get("id", "")), "left"), "inventory transfers reject adjacent units on different elevations")
+	console_soldier.level = 0
 	var prime_tu_before := int(console_soldier.get("tu", 0))
 	_check(ai_board.prime_selected_grenade() and int(console_soldier.get("tu", 0)) == prime_tu_before - ai_board.GRENADE_PRIME_TU and console_soldier.get("grenade_primed", false) and console_soldier.get("targeting_mode", "") == "grenade", "grenade preparation spends four TU and enters explicit targeting")
 	var grenade_target := Vector2i(8, 8)
@@ -541,6 +567,14 @@ func _test_tactical(content: Dictionary) -> void:
 	route_unit["tu"] = 60
 	var egress_plan: Dictionary = route_board._ai_extraction_plan(route_unit, int(route_unit.get("fire_tu", 14)))
 	_check(egress_plan.get("exit_kind", "") == "breach" and egress_plan.get("cleared_building", false) and egress_plan.get("path", []).has(breach_cell) and not route_board._cell_inside_building_bounds(egress_plan.get("cell", route_unit.cell), {"min_x":8,"max_x":14,"min_y":3,"max_y":8}), "AI civilian escorts leave buildings through a real door or destroyed-wall breach before routing to extraction")
+	route_board.covers.clear()
+	route_board._add_building_rectangle(Vector2i(8, 3), 7, 6, "entry-test")
+	var entry_door := Vector2i(11, 8)
+	var indoor_target := Vector2i(11, 5)
+	route_unit.cell = Vector2i(11, 11)
+	route_unit.tu = 60
+	var entry_plan: Dictionary = route_board._ai_rescue_plan(route_unit, [indoor_target], int(route_unit.get("fire_tu", 14)), false)
+	_check(entry_plan.get("door_route", false) and entry_plan.get("path", []).has(entry_door) and route_board._cell_inside_building_bounds(entry_plan.get("cell", route_unit.cell), {"min_x":8,"max_x":14,"min_y":3,"max_y":8}), "AI routes to indoor objectives through the building door instead of orbiting intact walls")
 	route_board.covers.clear()
 	var ramp_corridor: Array = route_board._ai_extraction_corridors(route_unit)[0].path
 	route_unit["cell"] = ramp_corridor[0]
@@ -617,7 +651,7 @@ func _test_build_health() -> void:
 	var health: Array = app._run_self_tests()
 	if health.size() != 96 or not health.all(func(row): return row.get("pass", false)):
 		print("BUILD HEALTH DETAIL: %s" % JSON.stringify(health))
-	_check(health.size() == 96 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 96 rows")
+	_check(health.size() == 100 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 100 rows")
 	app.free()
 
 func _load_json(path: String) -> Dictionary:
