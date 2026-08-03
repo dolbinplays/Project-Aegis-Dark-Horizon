@@ -178,6 +178,7 @@ const required = [
   "Living alien commanders can call one delayed reinforcement dropship into a clear landing footprint",
   "A wiped alien force draws one investigation dropship 5 to 15 rounds after its dead commander misses check-in",
   "Alien reinforcement craft renders as a purple flying saucer with a rear deployment ramp",
+  "Cross-squad responders advance directly to reported contacts before switching to cover and engagement",
   "Medkit issue and return conserve local Base Inventory",
   "Tactical Medkit use spends 12 TU heals 12 HP and consumes one charge",
   "Manual tactical final HP drives bounded wounded recovery",
@@ -226,6 +227,9 @@ const required = [
   "tacticalAiDirectExtractionRoute",
   "tacticalAiExtractionRoute",
   "tacticalAiObservedAliens",
+  "tacticalAiPersonallyObservedAliens",
+  "tacticalAiDirectContactPlan",
+  "tacticalAiDirectReportedContactResponseTest",
   "tacticalAiThreatAwareReachablePlan",
   "tacticalAiFallbackPatrolPlan",
   "tacticalAiSequentialPlaybackFrames",
@@ -341,6 +345,7 @@ for (const nativeNeedle of [
   "One living alien commander can call a delayed dropship into a building- and Skyranger-clear footprint",
   "A wiped alien force draws one investigation dropship 5 to 15 rounds after its dead commander misses check-in",
   "Alien reinforcement craft renders as a purple flying saucer with a rear deployment ramp",
+  "Cross-squad responders advance directly to reports before switching to cover and engagement",
   "Tactical neighbors paths and generated units remain inside the playable perimeter",
   "func _configure_map_profile",
   "func fit_entire_map",
@@ -359,6 +364,8 @@ for (const nativeNeedle of [
   "func _set_voice_volume",
   "func _set_voice_music_duck",
   "func _closest_unescorted_vip",
+  "func _personally_visible_alien_contacts",
+  "func _ai_direct_contact_plan",
   "func _try_call_alien_reinforcements",
   "func _try_missed_checkin_reinforcements",
   "alien_missed_checkin_turn",
@@ -410,6 +417,7 @@ for (const system of [
   "building-and-skyranger-clear-alien-dropship-placement",
   "alien-commander-missed-checkin-investigation-reinforcement",
   "purple-alien-flying-saucer-rendering",
+  "cross-squad-direct-reported-contact-response",
 ]) {
   if (!manifest.gameplayParity?.requiredSystems?.includes(system)) {
     missing.push(`browser/native tactical map parity system missing: ${system}`);

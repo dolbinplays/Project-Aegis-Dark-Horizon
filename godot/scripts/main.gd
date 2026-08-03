@@ -1,6 +1,6 @@
 extends Control
 
-const NATIVE_BUILD := "v0.26.08.03.GODOT.0025_ALIEN_COMMANDER_MISSED_CHECKIN_REINFORCEMENT_VERTICAL_SLICE"
+const NATIVE_BUILD := "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE"
 const MAX_BROWSER_IMPORT_BYTES := 32 * 1024 * 1024
 const AUDIO_SETTINGS_PATH := "user://project_aegis_audio_settings.cfg"
 const VOICE_MAKEUP_DB := 6.0
@@ -1840,6 +1840,19 @@ func _run_self_tests() -> Array:
 	var nearest_alpha_target: Dictionary = nearest_vip_board._closest_unescorted_vip(nearest_vip_humans[0])
 	var nearest_bravo_target: Dictionary = nearest_vip_board._closest_unescorted_vip(nearest_vip_humans[1])
 	var nearest_vip_routing_ready: bool = nearest_alpha_target.get("id", "") == nearest_vip_civilians[0].get("id", "") and nearest_bravo_target.get("id", "") == nearest_vip_civilians[1].get("id", "")
+	var direct_response_board := AegisTacticalBoard.new()
+	var direct_incident: Dictionary = test_campaign.selected_incident().duplicate(true)
+	direct_incident.tactical_map_tier = "medium"
+	direct_response_board.begin_battle(direct_incident, test_campaign.assigned_soldiers(), content)
+	direct_response_board.covers.clear()
+	var direct_responder := {"id":"health-bravo","team":"human","hp":40,"tu":60,"fire_tu":16,"cell":Vector2i(2, 8)}
+	var direct_spotter := {"id":"health-alpha","team":"human","hp":40,"tu":60,"fire_tu":16,"cell":Vector2i(22, 8)}
+	var direct_alien := {"id":"health-reported-alien","team":"alien","hp":30,"cell":Vector2i(23, 8),"revealed":true,"visible":true,"last_known_cell":Vector2i(23, 8)}
+	direct_response_board.units = [direct_responder, direct_spotter, direct_alien]
+	var direct_plan: Dictionary = direct_response_board._ai_direct_contact_plan(direct_responder, direct_alien.cell, 16)
+	direct_responder.cell = Vector2i(15, 8)
+	var acquire_plan: Dictionary = direct_response_board._ai_direct_contact_plan(direct_responder, direct_alien.cell, 16)
+	var direct_cross_squad_response_ready: bool = direct_response_board._personally_visible_alien_contacts({"id":"health-far","team":"human","hp":40,"cell":Vector2i(2, 8)}).is_empty() and int(direct_plan.get("steps", 0)) == direct_response_board.AI_MAX_MOVE_STEPS and not direct_plan.get("acquired_contact", false) and acquire_plan.get("acquired_contact", false) and int(acquire_plan.get("steps", 0)) < direct_response_board.AI_MAX_MOVE_STEPS and tactical_source.contains("direct_contact_response = combat_target == null") and tactical_source.contains("var engage_plan := _ai_movement_plan") and tactical_source.contains("if rescue_target == null and _inside(contact_target_cell)")
 	var reinforcement_board := AegisTacticalBoard.new()
 	reinforcement_board.begin_battle(test_campaign.selected_incident(), test_campaign.assigned_soldiers(), content)
 	reinforcement_board.covers.clear()
@@ -2245,6 +2258,7 @@ func _run_self_tests() -> Array:
 		{"name":"A wiped alien force draws one investigation dropship 5 to 15 rounds after its dead commander misses check-in", "pass":missed_checkin_ready},
 		{"name":"Alien reinforcement craft renders as a purple flying saucer with a rear deployment ramp", "pass":alien_saucer_ready},
 		{"name":"AI command tasks every viable soldier and gives squad-wide alien contact combat priority", "pass":full_squad_priority_ready},
+		{"name":"Cross-squad responders advance directly to reports before switching to cover and engagement", "pass":direct_cross_squad_response_ready},
 		{"name":"Tracked VIP pings direct every free AI soldier until contact before area sweeps resume", "pass":post_combat_search_ready},
 		{"name":"Alien contact pauses new VIP claims while preserving remembered civilian assignments", "pass":precontact_contact_memory_ready},
 		{"name":"Escorted VIPs remain visible through fog until extraction", "pass":escorted_vip_visibility_ready},

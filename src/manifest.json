@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.03.0155_ALIEN_COMMANDER_MISSED_CHECKIN_INVESTIGATION_REINFORCEMENT_PARITY_PATCH",
+  "currentBuild": "v0.26.08.03.0156_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_PARITY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "alien-commander-missed-checkin-investigation-reinforcement-manual-test",
+  "status": "cross-squad-direct-contact-response-manual-test",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,19 +26,19 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.03.0155_ALIEN_COMMANDER_MISSED_CHECKIN_INVESTIGATION_REINFORCEMENT_PARITY_PATCH",
+  "lastInspectedBuild": "v0.26.08.03.0156_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_PARITY_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
     "mainScene": "godot/main.tscn",
-    "build": "v0.26.08.03.GODOT.0025_ALIEN_COMMANDER_MISSED_CHECKIN_REINFORCEMENT_VERTICAL_SLICE",
+    "build": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
-    "status": "alien-commander-missed-checkin-reinforcement-manual-test"
+    "status": "cross-squad-direct-contact-response-manual-test"
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.03.0155_ALIEN_COMMANDER_MISSED_CHECKIN_INVESTIGATION_REINFORCEMENT_PARITY_PATCH",
-    "nativeBuild": "v0.26.08.03.GODOT.0025_ALIEN_COMMANDER_MISSED_CHECKIN_REINFORCEMENT_VERTICAL_SLICE",
+    "browserBuild": "v0.26.08.03.0156_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_PARITY_PATCH",
+    "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
       "base-local-medkit-issue-return",
@@ -64,6 +64,7 @@
       "bounded-rescue-route-anti-loop",
       "full-squad-ai-turn-utilization",
       "combat-priority-squad-contact-response",
+      "cross-squad-direct-reported-contact-response",
       "threat-aware-civilian-extraction-routing",
       "sequential-visible-ai-action-playback",
       "classic-lineup-source-target-tracers",

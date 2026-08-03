@@ -1159,6 +1159,22 @@ func _cell_from_key(cell_key: String) -> Vector2i:
 func _visible_alien_contacts() -> Array:
 	return units.filter(func(unit): return unit.get("team", "") == "alien" and int(unit.get("hp", 0)) > 0 and unit.get("visible", false))
 
+func _personally_visible_alien_contacts(soldier: Dictionary) -> Array:
+	return units.filter(func(unit):
+		return (unit.get("team", "") == "alien"
+			and int(unit.get("hp", 0)) > 0
+			and AegisHexRules.distance(soldier.cell, unit.cell) <= 7
+			and _has_line_of_sight_from(soldier.cell, unit.cell))
+	)
+
+func _alien_contacts_visible_from(cell: Vector2i) -> Array:
+	return units.filter(func(unit):
+		return (unit.get("team", "") == "alien"
+			and int(unit.get("hp", 0)) > 0
+			and AegisHexRules.distance(cell, unit.cell) <= 7
+			and _has_line_of_sight_from(cell, unit.cell))
+	)
+
 func _known_alien_contact_cells() -> Array[Vector2i]:
 	var cells: Array[Vector2i] = []
 	for alien in units.filter(func(unit): return unit.get("team", "") == "alien" and int(unit.get("hp", 0)) > 0 and unit.get("revealed", false)):
@@ -1266,6 +1282,46 @@ func _ai_patrol_plan(unit: Dictionary, reserve_tu: int) -> Dictionary:
 			best_score = score
 	var path := AegisHexRules.path(unit.cell, best_cell, _blocked_cells(), _occupied_cells(String(unit.get("id", ""))), grid_width, grid_height, available_steps)
 	return {"cell":best_cell,"path":path,"steps":maxi(0, path.size() - 1),"reserve":reserve_tu}
+
+func _ai_direct_contact_plan(unit: Dictionary, target_cell: Vector2i, reserve_tu: int) -> Dictionary:
+	var available_steps := clampi((int(unit.get("tu", 0)) - maxi(0, reserve_tu)) / MOVE_TU, 0, AI_MAX_MOVE_STEPS)
+	if available_steps <= 0:
+		return {"cell":unit.cell,"path":[unit.cell],"steps":0,"reserve":reserve_tu,"direct_contact":true,"acquired_contact":false}
+	var target_unit: Variant = _unit_at(target_cell)
+	var allow_id := String(target_unit.get("id", "")) if target_unit != null else ""
+	var route: Array[Vector2i] = AegisHexRules.path(unit.cell, target_cell, _blocked_cells(), _occupied_cells(String(unit.get("id", "")), allow_id), grid_width, grid_height, grid_width + grid_height)
+	if target_unit != null and route.size() > 1:
+		route.pop_back()
+	if route.size() <= 1:
+		var reachable_cells := AegisHexRules.reachable(unit.cell, available_steps, _blocked_cells(), _occupied_cells(String(unit.get("id", ""))), grid_width, grid_height)
+		var origin_distance := AegisHexRules.distance(unit.cell, target_cell)
+		var best_cell: Vector2i = unit.cell
+		var best_gain := 0
+		var best_steps := 0
+		for cell_key in reachable_cells:
+			var candidate := _cell_from_key(String(cell_key))
+			var candidate_steps := int(reachable_cells[cell_key])
+			var gain := origin_distance - AegisHexRules.distance(candidate, target_cell)
+			if gain > best_gain or gain == best_gain and (candidate_steps > best_steps or candidate_steps == best_steps and String(cell_key) < AegisHexRules.key(best_cell)):
+				best_cell = candidate
+				best_gain = gain
+				best_steps = candidate_steps
+		route = AegisHexRules.path(unit.cell, best_cell, _blocked_cells(), _occupied_cells(String(unit.get("id", ""))), grid_width, grid_height, available_steps)
+	if route.is_empty():
+		route = [unit.cell]
+	var end_index := mini(available_steps, route.size() - 1)
+	var acquired_contact := false
+	for path_index in range(1, end_index + 1):
+		if not _alien_contacts_visible_from(route[path_index]).is_empty():
+			end_index = path_index
+			acquired_contact = true
+			break
+	var direct_path: Array[Vector2i] = []
+	for path_value in route.slice(0, end_index + 1):
+		direct_path.append(path_value)
+	if direct_path.is_empty():
+		direct_path = [unit.cell]
+	return {"cell":direct_path[-1],"path":direct_path,"steps":maxi(0, direct_path.size() - 1),"reserve":reserve_tu,"direct_contact":true,"acquired_contact":acquired_contact}
 
 func _ai_movement_plan(unit: Dictionary, target_cell: Vector2i, reserve_tu: int, role: String, alien_move: bool = false, target_known: bool = true) -> Dictionary:
 	var available_steps := clampi((int(unit.get("tu", 0)) - maxi(0, reserve_tu)) / MOVE_TU, 0, AI_MAX_MOVE_STEPS)
@@ -1917,10 +1973,11 @@ func _run_ai_human_turn() -> void:
 				soldier.ai_rescue_stalls = 0
 				soldier.ai_move_history = [AegisHexRules.key(soldier.cell)]
 				_emit_log("%s retained the civilian column and reset its bounded route search." % soldier.callsign)
-		var visible_aliens := _visible_alien_contacts()
+		var visible_aliens := _personally_visible_alien_contacts(soldier)
 		var combat_target: Variant = null
 		var contact_target_cell := Vector2i(-1, -1)
 		var distress_target: Dictionary = _ai_distress_target(soldier) if rescue_target == null else {}
+		var direct_contact_response := false
 		if not visible_aliens.is_empty():
 			visible_aliens.sort_custom(func(left, right): return AegisHexRules.distance(left.cell, soldier.cell) < AegisHexRules.distance(right.cell, soldier.cell))
 			combat_target = visible_aliens[0]
@@ -1933,12 +1990,16 @@ func _run_ai_human_turn() -> void:
 			if not remembered_cells.is_empty():
 				contact_target_cell = remembered_cells[0]
 		if rescue_target == null and _inside(contact_target_cell):
-			var contact_plan := _ai_movement_plan(soldier, contact_target_cell, reserve_tu, String(soldier.get("ai_role", "")), false, combat_target != null)
+			direct_contact_response = combat_target == null
+			var contact_plan := _ai_direct_contact_plan(soldier, contact_target_cell, reserve_tu) if direct_contact_response else _ai_movement_plan(soldier, contact_target_cell, reserve_tu, String(soldier.get("ai_role", "")), false, true)
 			_apply_ai_movement(soldier, contact_plan)
-			visible_aliens = _visible_alien_contacts()
+			visible_aliens = _personally_visible_alien_contacts(soldier)
 			if not visible_aliens.is_empty():
 				visible_aliens.sort_custom(func(left, right): return AegisHexRules.distance(left.cell, soldier.cell) < AegisHexRules.distance(right.cell, soldier.cell))
 				combat_target = visible_aliens[0]
+				if direct_contact_response:
+					var engage_plan := _ai_movement_plan(soldier, combat_target.cell, reserve_tu, String(soldier.get("ai_role", "")), false, true)
+					_apply_ai_movement(soldier, engage_plan)
 		elif combat_target == null and rescue_target == null:
 			var exploration_cell := _ai_exploration_cell(soldier)
 			var explore_plan := _ai_movement_plan(soldier, exploration_cell, reserve_tu, String(soldier.get("ai_role", "")), false, false)
@@ -1946,7 +2007,7 @@ func _run_ai_human_turn() -> void:
 		if combat_target != null and int(combat_target.get("hp", 0)) > 0 and AegisHexRules.distance(soldier.cell, combat_target.cell) <= int(soldier.get("weapon_range", 0)) and _has_line_of_sight_from(soldier.cell, combat_target.cell):
 			_try_shoot_unit(soldier, combat_target)
 		followers = units.filter(func(unit): return unit.get("team", "") == "civilian" and unit.get("escort_id", "") == soldier.get("id", "") and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false))
-		if soldier.cell == cell_before and action_serial == action_before and followers.is_empty():
+		if soldier.cell == cell_before and action_serial == action_before and followers.is_empty() and not direct_contact_response:
 			var patrol_plan := _ai_patrol_plan(soldier, reserve_tu)
 			_apply_ai_movement(soldier, patrol_plan)
 		if soldier.cell != cell_before or action_serial > action_before:

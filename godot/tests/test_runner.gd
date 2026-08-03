@@ -381,6 +381,23 @@ func _test_tactical(content: Dictionary) -> void:
 	var nearest_alpha_target: Dictionary = nearest_vip_board._closest_unescorted_vip(nearest_vip_humans[0])
 	var nearest_bravo_target: Dictionary = nearest_vip_board._closest_unescorted_vip(nearest_vip_humans[1])
 	_check(nearest_alpha_target.get("id", "") == nearest_vip_civilians[0].get("id", "") and nearest_bravo_target.get("id", "") == nearest_vip_civilians[1].get("id", ""), "each out-of-combat soldier independently targets the nearest unescorted VIP")
+	var direct_response_board := AegisTacticalBoard.new()
+	get_root().add_child(direct_response_board)
+	var direct_incident: Dictionary = incident.duplicate(true)
+	direct_incident.tactical_map_tier = "medium"
+	direct_response_board.begin_battle(direct_incident, tactical_roster, content)
+	direct_response_board.covers.clear()
+	var direct_responder := {"id":"bravo-responder","callsign":"Bravo","team":"human","hp":40,"max_hp":40,"tu":60,"max_tu":60,"fire_tu":16,"weapon_range":7,"cell":Vector2i(2, 8)}
+	var direct_spotter := {"id":"alpha-spotter","callsign":"Alpha","team":"human","hp":40,"max_hp":40,"tu":60,"max_tu":60,"fire_tu":16,"weapon_range":7,"cell":Vector2i(22, 8)}
+	var direct_alien := {"id":"reported-alien","name":"Glass Wraith","team":"alien","hp":30,"max_hp":30,"cell":Vector2i(23, 8),"revealed":true,"visible":true,"last_known_cell":Vector2i(23, 8)}
+	direct_response_board.units = [direct_responder, direct_spotter, direct_alien]
+	_check(direct_response_board._personally_visible_alien_contacts(direct_responder).is_empty() and direct_response_board._visible_alien_contacts().size() == 1, "cross-squad contact remains a report until the responding soldier gains personal sight")
+	var direct_plan: Dictionary = direct_response_board._ai_direct_contact_plan(direct_responder, direct_alien.cell, 16)
+	_check(int(direct_plan.get("steps", 0)) == direct_response_board.AI_MAX_MOVE_STEPS and not direct_plan.get("acquired_contact", false) and AegisHexRules.distance(direct_plan.cell, direct_alien.cell) < AegisHexRules.distance(direct_responder.cell, direct_alien.cell), "distant non-escort advances directly toward the squad-reported alien position")
+	direct_responder.cell = Vector2i(15, 8)
+	var acquire_plan: Dictionary = direct_response_board._ai_direct_contact_plan(direct_responder, direct_alien.cell, 16)
+	_check(acquire_plan.get("acquired_contact", false) and int(acquire_plan.get("steps", 0)) > 0 and int(acquire_plan.get("steps", 0)) < direct_response_board.AI_MAX_MOVE_STEPS, "direct response stops when personal sight is acquired so cover-and-engage logic can take over")
+	direct_response_board.queue_free()
 	var reinforcement_board := AegisTacticalBoard.new()
 	get_root().add_child(reinforcement_board)
 	reinforcement_board.begin_battle(incident, tactical_roster, content)
@@ -716,9 +733,9 @@ func _test_build_health() -> void:
 	var app: Node = load("res://godot/main.tscn").instantiate()
 	app.content = _load_json("res://godot/data/content.json")
 	var health: Array = app._run_self_tests()
-	if health.size() != 103 or not health.all(func(row): return row.get("pass", false)):
+	if health.size() != 104 or not health.all(func(row): return row.get("pass", false)):
 		print("BUILD HEALTH DETAIL: %s" % JSON.stringify(health))
-	_check(health.size() == 103 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 103 rows")
+	_check(health.size() == 104 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 104 rows")
 	app.free()
 
 func _load_json(path: String) -> Dictionary:

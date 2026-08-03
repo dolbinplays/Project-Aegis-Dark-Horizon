@@ -2,9 +2,51 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-03
-Current handoff build: `v0.26.08.03.0155_ALIEN_COMMANDER_MISSED_CHECKIN_INVESTIGATION_REINFORCEMENT_PARITY_PATCH`
-Native vertical slice: `v0.26.08.03.GODOT.0025_ALIEN_COMMANDER_MISSED_CHECKIN_REINFORCEMENT_VERTICAL_SLICE`
-Current patch status: **Browser 0155 and native 0025 preserve save format 4. Killing the original alien commander before a call now starts a deterministic 5-to-15-round missed-check-in deadline. If the original force is wiped while the mission remains unresolved, one investigation force becomes due at that deadline and uses the same one-wave allowance, bounded clear-landing search, and two-to-four-alien deployment as a normal commander call. The landing craft now reads as a layered purple flying saucer with a rear opening and ramp in browser 2D, Three.js, and Godot. Browser static parsing and the seam checker pass, localhost Build Health passes 326/326, and a live six-soldier 64x64 battle completed three confirmed End Turn cycles before initializing the Three.js tactical canvas with no runtime errors. Native tests pass 144/144, native Build Health passes 103/103, and Godot 4.7.1 strict parsing passes. The exact missed-check-in arrival, shared one-wave ownership, multi-craft landing clearance, and live saucer appearance remain hands-on gates.**
+Current handoff build: `v0.26.08.03.0156_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_PARITY_PATCH`
+Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
+Current patch status: **Browser 0156 and native 0026 preserve save format 4. Mission-wide alien reports are now distinct from each soldier's personal sight. Every non-escort without personal sight takes the shortest practical bounded route toward the nearest reported or last-known alien position without commander-formation, cover, or flank detours. Direct convergence stops when that soldier personally sees an alien, and remaining TU returns to the established cover, formation, line-of-sight, range, and firing logic. Civilian and VIP escorts retain extraction priority. Browser static parsing and the seam checker pass, localhost Build Health passes 327/327, and a six-soldier 64x64 battle completed three confirmed End Turn cycles before a 33-frame AI continuation was started and safely reclaimed with no runtime errors. Native tests pass 147/147, native Build Health passes 104/104, and Godot 4.7.1 strict parsing passes. The exact widely separated two-squad response remains the hands-on gate.**
+
+---
+
+# v0.26.08.03.0156 / GODOT.0026 - Cross-Squad Direct Contact Response
+
+Browser build `v0.26.08.03.0156_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_PARITY_PATCH` and native build `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE` preserve save format 4.
+
+Root causes addressed:
+
+- The tactical AI used mission-wide alien visibility as though every soldier personally saw the contact. A distant second-squad responder therefore entered commander-protection, cover, line-of-sight, and flank scoring immediately.
+- Those tactical scores could outweigh direct distance gain, causing a responder to hold near its commander, take a lateral position, or make only limited progress even though another squad had reported an exact alien position.
+- Reported and last-known contacts did not have an explicit transition point from direct response to ordinary cover-and-engage behavior.
+
+Implemented roadmap scope:
+
+- Browser and Godot now calculate personal alien sight for each responding soldier separately from the mission-wide contact report.
+- A non-escort with no personal sight follows a shortest practical route toward the nearest current report, distress position, or last-known alien cell. Movement remains capped at eight steps and preserves the selected firing-mode TU reserve.
+- The direct route uses existing blocked-cell, occupied-cell, map-edge, doorway, and bounded path rules. If a complete route cannot be produced, a bounded reachable-cell fallback selects maximum distance gain rather than cover or formation position.
+- Each route is inspected in order and ends on the first cell from which that soldier personally sees a living alien. If TU remains, the same turn immediately runs the existing cover, commander formation, flank, line-of-sight, weapon-range, and firing plan.
+- Established civilian and VIP escorts retain their rescue target and never enter cross-squad convergence. A responder that cannot advance toward the report no longer substitutes an unrelated patrol move.
+- Browser Build Health and native direct tests cover report-versus-personal-sight separation, full bounded direct movement, early stop on acquired sight, the cover-and-engage handoff, and escort exclusion.
+
+Verification checklist:
+
+- Godot 4.7.1 strict editor parsing passed with all native classes registered.
+- Native tests passed `147/147`. All `104/104` native Build Health rows passed inside the suite.
+- All six browser app scripts parsed and `node tools\check-aegis-build.cjs` passed with synchronized 0156/0026 labels and required seams.
+- The localhost start screen displayed build 0156, a fresh campaign reached the Geoscape, and browser Build Health passed `327/327` with no failed rows.
+- A six-soldier Small 64x64 mission completed three confirmed End Turn cycles, returning to the human phase each time with all six soldiers alive.
+- Tactical-map AI command inherited round 4 and generated a 33-frame continuation. `Take Back Control` restored the same human-phase battle.
+- Browser console/runtime errors: none.
+
+Remaining risks and manual validation:
+
+- Send two squads to a Medium or Large incident with their Skyrangers widely separated. Let Squad A spot and fire on aliens before Squad B has personal sight.
+- Confirm every Squad B soldier without an escort advances directly toward the nearest reported position, rather than staying near the Squad B commander or detouring for cover.
+- Watch each responder cross its personal sight boundary. Confirm direct movement stops, then cover, formation, flanking, weapon range, line of sight, and firing behavior resume using any remaining TU.
+- Assign a civilian or VIP to one Squad B soldier before contact. Confirm that escort continues on the threat-aware extraction route while the other Squad B soldiers respond.
+- Let the alien leave observation. Confirm responders continue to the last-known position and then search locally without exposing unseen alien movement through fog of war.
+- Automated fixtures use controlled open routes. Dense multi-building cross-squad pacing and the visual clarity of the transition remain the hands-on gate.
+
+Next recommended paired patch after this gate: `TACTICAL_CLASSIC_INVENTORY_CONTAINER_LOADOUT_AND_ELEVATION_RENDER_FOUNDATION_PARITY_PATCH`, expanding the bounded inventory foundation without beginning a broad multi-level tactical rewrite.
 
 ---
 
