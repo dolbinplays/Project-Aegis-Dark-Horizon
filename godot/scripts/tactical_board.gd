@@ -37,6 +37,11 @@ const AI_MAX_TURNS := 24
 const AI_DISTRESS_TURNS := 12
 const TRACKER_PULSE_INTERVAL := 5.5
 const TRACKER_PULSE_DURATION := 1.4
+const ALIEN_REINFORCEMENT_BASE_CHANCE := 4
+const ALIEN_REINFORCEMENT_CHANCE_PER_CONTACT_ROUND := 7
+const ALIEN_REINFORCEMENT_MAX_CHANCE := 46
+const ALIEN_REINFORCEMENT_DELAY_ROUNDS := 2
+const ALIEN_REINFORCEMENT_MAX_LANDING_CANDIDATES := 32
 const RANK_ORDER := ["Rookie", "Squaddie", "Corporal", "Sergeant", "Lieutenant", "Captain", "Major", "Colonel"]
 const COMMAND_DOCTRINES := [
 	{"key":"wedge","label":"Protected Wedge","rank":"Rookie","missions":0},
@@ -82,6 +87,11 @@ var hex_width := HEX_WIDTH
 var row_step := ROW_STEP
 var transport_count := 1
 var skyranger_placements: Array[Dictionary] = []
+var alien_reinforcement_called := false
+var alien_reinforcement_arrived := false
+var alien_reinforcement_contact_rounds := 0
+var alien_reinforcement_arrival_turn := -1
+var alien_dropship_placement: Dictionary = {}
 
 func _ready() -> void:
 	custom_minimum_size = Vector2(990, 650)
@@ -128,6 +138,11 @@ func begin_battle(next_incident: Dictionary, next_roster: Array, next_equipment_
 	tracker_pulse_elapsed = TRACKER_PULSE_INTERVAL - 0.8
 	tracker_pulse_remaining = 0.0
 	tracker_pulse_serial = 0
+	alien_reinforcement_called = false
+	alien_reinforcement_arrived = false
+	alien_reinforcement_contact_rounds = 0
+	alien_reinforcement_arrival_turn = -1
+	alien_dropship_placement.clear()
 	_generate_field()
 	_emit_log("Aegis One deployed. Secure the incident and rescue at least %d civilian%s." % [required_rescues, "" if required_rescues == 1 else "s"])
 	_refresh_visibility()
@@ -224,7 +239,7 @@ func _generate_field() -> void:
 		})
 	var alien_x := grid_width - 4 if transport_count == 1 else grid_width / 2 + 3
 	var alien_defs: Array = [
-		{"name":"Signal Leech","hp":24,"accuracy":42,"damage":10,"cell":Vector2i(alien_x,3)},
+		{"name":"Pale Commander","hp":34,"accuracy":48,"damage":12,"cell":Vector2i(alien_x,3),"commander":true},
 		{"name":"Glass Wraith","hp":30,"accuracy":48,"damage":12,"cell":Vector2i(alien_x + 1,grid_height / 2)},
 		{"name":"Needle Drone","hp":36,"accuracy":52,"damage":13,"cell":Vector2i(alien_x - 2,grid_height - 3)}
 	]
@@ -245,6 +260,8 @@ func _generate_field() -> void:
 			"fire_tu": FIRE_TU,
 			"revealed": false,
 			"visible": false,
+			"is_alien_commander": bool(alien.get("commander", false)),
+			"is_reinforcement": false,
 			"facing": Vector2i(-1, 0),
 			"last_known_cell": Vector2i(-1, -1)
 		})
@@ -1626,6 +1643,21 @@ func _active_vip_tracker_targets() -> Array:
 		return []
 	return units.filter(func(unit): return unit.get("team", "") == "civilian" and bool(unit.get("vip_tracker", true)) and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false))
 
+func _closest_unescorted_vip(soldier: Dictionary, require_revealed := true) -> Dictionary:
+	var candidates: Array = units.filter(func(unit):
+		return (unit.get("team", "") == "civilian"
+			and int(unit.get("hp", 0)) > 0
+			and not unit.get("rescued", false)
+			and String(unit.get("escort_id", "")).is_empty()
+			and (not require_revealed or unit.get("visible", false) or unit.get("revealed", false)))
+	)
+	candidates.sort_custom(func(left, right):
+		var left_distance := AegisHexRules.distance(soldier.cell, left.cell)
+		var right_distance := AegisHexRules.distance(soldier.cell, right.cell)
+		return left_distance < right_distance or left_distance == right_distance and String(left.get("id", "")) < String(right.get("id", ""))
+	)
+	return {} if candidates.is_empty() else candidates[0]
+
 func _passable_search_cell(cell: Vector2i, occupied: Dictionary) -> bool:
 	var key := AegisHexRules.key(cell)
 	return _inside(cell) and not _blocked_cells().has(key) and not occupied.has(key)
@@ -1639,37 +1671,17 @@ func _ai_secure_search_assignments(soldiers: Array) -> Dictionary:
 	available.sort_custom(func(left, right): return String(left.get("id", "")) < String(right.get("id", "")))
 	var trackers: Array = _active_vip_tracker_targets().filter(func(civilian): return not civilian.get("revealed", false) and String(civilian.get("escort_id", "")).is_empty())
 	trackers.sort_custom(func(left, right): return String(left.get("id", "")) < String(right.get("id", "")))
-	var tracker_targets: Array = trackers.duplicate()
-	while not available.is_empty() and not trackers.is_empty():
-		var best_soldier_index := -1
-		var best_tracker_index := -1
-		var best_distance := 9999
-		var best_pair_key := ""
-		for soldier_index in range(available.size()):
-			for tracker_index in range(trackers.size()):
-				var distance := AegisHexRules.distance(available[soldier_index].cell, trackers[tracker_index].cell)
-				var pair_key := "%s:%s" % [available[soldier_index].get("id", ""), trackers[tracker_index].get("id", "")]
-				if distance < best_distance or distance == best_distance and (best_pair_key.is_empty() or pair_key < best_pair_key):
-					best_distance = distance
-					best_pair_key = pair_key
-					best_soldier_index = soldier_index
-					best_tracker_index = tracker_index
-		var tracker: Dictionary = trackers[best_tracker_index]
-		var tracker_soldier: Dictionary = available[best_soldier_index]
-		assignments[tracker_soldier.get("id", "")] = {"kind":"tracker","cell":tracker.cell,"tracker_id":tracker.get("id", ""),"zone_id":"tracker:%s" % tracker.get("id", "")}
-		available.remove_at(best_soldier_index)
-		trackers.remove_at(best_tracker_index)
-	if not tracker_targets.is_empty():
+	if not trackers.is_empty():
 		for soldier_value in available:
 			var soldier: Dictionary = soldier_value
-			var ordered_trackers: Array = tracker_targets.duplicate()
+			var ordered_trackers: Array = trackers.duplicate()
 			ordered_trackers.sort_custom(func(left, right):
 				var left_distance := AegisHexRules.distance(soldier.cell, left.cell)
 				var right_distance := AegisHexRules.distance(soldier.cell, right.cell)
 				return left_distance < right_distance or left_distance == right_distance and String(left.get("id", "")) < String(right.get("id", ""))
 			)
 			var tracker: Dictionary = ordered_trackers[0]
-			assignments[soldier.get("id", "")] = {"kind":"tracker","cell":tracker.cell,"tracker_id":tracker.get("id", ""),"zone_id":"tracker-support:%s:%s" % [tracker.get("id", ""), soldier.get("id", "")]}
+			assignments[soldier.get("id", "")] = {"kind":"tracker","cell":tracker.cell,"tracker_id":tracker.get("id", ""),"zone_id":"tracker-nearest:%s:%s" % [tracker.get("id", ""), soldier.get("id", "")]}
 		return assignments
 
 	var building_bounds := {}
@@ -1833,7 +1845,6 @@ func _run_ai_human_turn() -> void:
 			rotated.append(soldiers[(offset + index) % soldiers.size()])
 		soldiers = rotated
 	ai_last_acted_ids.clear()
-	var claimed_civilians := {}
 	var secure_rescue := not units.any(func(unit): return unit.get("team", "") == "alien" and int(unit.get("hp", 0)) > 0) and rescued < required_rescues
 	var active_vips := units.filter(func(unit): return unit.get("team", "") == "civilian" and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false))
 	var rescue_guard_phase := secure_rescue and not active_vips.is_empty() and active_vips.all(func(unit): return unit.get("revealed", false) and not String(unit.get("escort_id", "")).is_empty())
@@ -1853,25 +1864,16 @@ func _run_ai_human_turn() -> void:
 		var search_assignment: Dictionary = {}
 		if not followers.is_empty():
 			rescue_target = {"cell":_nearest_extraction_cell(soldier.cell),"ramp":true}
-		else:
-			var priority_civilians := units.filter(func(unit): return not combat_priority and not soldier_engaged and unit.get("team", "") == "civilian" and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false) and unit.get("priority_escort_id", "") == soldier.get("id", "") and (String(unit.get("approached_by_id", "")).is_empty() or unit.get("approached_by_id", "") == soldier.get("id", "")) and not claimed_civilians.has(unit.get("id", "")))
-			priority_civilians.sort_custom(func(left, right): return AegisHexRules.distance(left.cell, soldier.cell) < AegisHexRules.distance(right.cell, soldier.cell))
-			if not priority_civilians.is_empty():
-				rescue_target = priority_civilians[0]
-				claimed_civilians[rescue_target.get("id", "")] = true
 		if rescue_target == null and not combat_priority and not soldier_engaged and rescued < required_rescues:
-			var civilians := units.filter(func(unit): return unit.get("team", "") == "civilian" and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false) and (String(unit.get("escort_id", "")).is_empty() or unit.get("escort_id", "") == soldier.get("id", "")) and (unit.get("visible", false) or unit.get("revealed", false)) and not claimed_civilians.has(unit.get("id", "")))
-			civilians.sort_custom(func(left, right): return AegisHexRules.distance(left.cell, soldier.cell) < AegisHexRules.distance(right.cell, soldier.cell))
-			if not civilians.is_empty():
-				rescue_target = civilians[0]
-				claimed_civilians[rescue_target.get("id", "")] = true
+			var nearest_vip := _closest_unescorted_vip(soldier)
+			if not nearest_vip.is_empty():
+				rescue_target = nearest_vip
 		if rescue_target == null and tactical_search_assignments.has(soldier.get("id", "")) and (secure_rescue or _ai_distress_target(soldier).is_empty()):
 			search_assignment = tactical_search_assignments[soldier.get("id", "")]
 			if search_assignment.get("kind", "") == "tracker":
 				for civilian in units:
 					if civilian.get("id", "") == search_assignment.get("tracker_id", "") and int(civilian.get("hp", 0)) > 0 and not civilian.get("rescued", false) and not civilian.get("revealed", false) and String(civilian.get("escort_id", "")).is_empty():
 						rescue_target = civilian
-						claimed_civilians[civilian.get("id", "")] = true
 						break
 			else:
 				rescue_target = {"cell":search_assignment.get("cell", soldier.cell),"search":true,"kind":search_assignment.get("kind", "sector")}
@@ -2033,7 +2035,150 @@ func _reaction_fire_for_move(alien: Dictionary, reacted_ids: Dictionary) -> bool
 			_emit_log("%s reaction fires and misses %s." % [shooter.callsign, alien.name])
 	return int(alien.get("hp", 0)) > 0
 
+func alien_reinforcement_chance(contact_rounds: int) -> int:
+	return clampi(ALIEN_REINFORCEMENT_BASE_CHANCE + maxi(0, contact_rounds - 1) * ALIEN_REINFORCEMENT_CHANCE_PER_CONTACT_ROUND, ALIEN_REINFORCEMENT_BASE_CHANCE, ALIEN_REINFORCEMENT_MAX_CHANCE)
+
+func _alien_field_commander() -> Dictionary:
+	var originals: Array = units.filter(func(unit): return unit.get("team", "") == "alien" and not unit.get("is_reinforcement", false))
+	var explicit: Array = originals.filter(func(unit): return unit.get("is_alien_commander", false) or "commander" in String(unit.get("name", "")).to_lower())
+	return explicit[0] if not explicit.is_empty() else originals[0] if not originals.is_empty() else {}
+
+func _aliens_have_soldiers_in_view() -> bool:
+	var soldiers: Array = units.filter(func(unit): return unit.get("team", "") == "human" and int(unit.get("hp", 0)) > 0)
+	for alien in units.filter(func(unit): return unit.get("team", "") == "alien" and int(unit.get("hp", 0)) > 0):
+		for soldier in soldiers:
+			if AegisHexRules.distance(alien.cell, soldier.cell) <= 20 and _has_line_of_sight_from(alien.cell, soldier.cell):
+				return true
+	return false
+
+func _try_call_alien_reinforcements(roll_override := -1) -> bool:
+	if alien_reinforcement_called or alien_reinforcement_arrived:
+		return false
+	var commander := _alien_field_commander()
+	if commander.is_empty() or int(commander.get("hp", 0)) <= 0 or not _aliens_have_soldiers_in_view():
+		return false
+	alien_reinforcement_contact_rounds += 1
+	var chance := alien_reinforcement_chance(alien_reinforcement_contact_rounds)
+	var roll := roll_override if roll_override >= 0 else AegisHexRules.deterministic_roll(int(incident.get("seed", 1)), 2800 + turn_number * 53 + alien_reinforcement_contact_rounds * 29)
+	if roll > chance:
+		return false
+	alien_reinforcement_called = true
+	alien_reinforcement_arrival_turn = turn_number + ALIEN_REINFORCEMENT_DELAY_ROUNDS
+	_emit_log("%s transmits for alien reinforcements. Purple dropship ETA: %d rounds." % [commander.get("name", "Alien commander"), ALIEN_REINFORCEMENT_DELAY_ROUNDS])
+	return true
+
+func _alien_dropship_craft(anchor: Vector2i, body_sign: int) -> Dictionary:
+	var sign_value := -1 if body_sign < 0 else 1
+	var ramp_center := Vector2i(clampi(anchor.x, 3, grid_width - 4), clampi(anchor.y, 4, grid_height - 5))
+	var ramp_cells: Array[Vector2i] = [ramp_center, ramp_center + Vector2i(0, sign_value)]
+	var hull_cells: Array[Vector2i] = []
+	for distance in range(1, 4):
+		for dx in range(-1, 2):
+			if dx == 0 and distance <= 2:
+				continue
+			hull_cells.append(ramp_center + Vector2i(dx, sign_value * distance))
+	return {"ramp_center":ramp_center,"ramp_cells":ramp_cells,"hull_cells":hull_cells,"body_sign":sign_value,"alien_craft":true}
+
+func _alien_dropship_footprint(placement: Dictionary) -> Array[Vector2i]:
+	var footprint: Array[Vector2i] = []
+	for cell in placement.get("hull_cells", []):
+		footprint.append(cell)
+	for cell in placement.get("ramp_cells", []):
+		footprint.append(cell)
+	return footprint
+
+func _alien_dropship_landing_clear(placement: Dictionary) -> bool:
+	var footprint := _alien_dropship_footprint(placement)
+	if footprint.is_empty() or not footprint.all(func(cell): return _inside(cell)):
+		return false
+	var structures: Array = covers.values().filter(func(cover): return int(cover.get("hp", 0)) > 0 and not String(cover.get("building", "")).is_empty())
+	if footprint.any(func(cell): return structures.any(func(structure): return AegisHexRules.distance(cell, structure.cell) <= 1)):
+		return false
+	for skyranger in skyranger_placements:
+		var skyranger_cells: Array = []
+		skyranger_cells.append_array(skyranger.get("footprint", []))
+		skyranger_cells.append_array(skyranger.get("ramp_cells", []))
+		if footprint.any(func(cell): return skyranger_cells.any(func(craft_cell): return AegisHexRules.distance(cell, craft_cell) <= 1)):
+			return false
+	var occupied: Array = units.filter(func(unit): return int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false)).map(func(unit): return unit.cell)
+	return not footprint.any(func(cell): return occupied.has(cell))
+
+func _find_alien_dropship_placement() -> Dictionary:
+	var seed_value := int(incident.get("seed", 1)) + turn_number * 17
+	var horizontal_span := maxi(1, grid_width - 8)
+	var vertical_span := maxi(1, grid_height - 8)
+	for index in range(ALIEN_REINFORCEMENT_MAX_LANDING_CANDIDATES):
+		var edge := index % 4
+		var lane_index := index / 4
+		var x := 4 + absi(seed_value * 19 + lane_index * 5) % horizontal_span
+		var y := 4 + absi(seed_value * 13 + lane_index * 5) % vertical_span
+		var anchor := Vector2i(x, 4)
+		if edge == 1:
+			anchor = Vector2i(grid_width - 4, y)
+		elif edge == 2:
+			anchor = Vector2i(x, grid_height - 5)
+		elif edge == 3:
+			anchor = Vector2i(3, y)
+		var body_sign := -1 if edge == 2 or anchor.y > grid_height / 2 else 1
+		var placement := _alien_dropship_craft(anchor, body_sign)
+		if _alien_dropship_landing_clear(placement):
+			return placement
+	return {}
+
+func _install_alien_dropship_covers(placement: Dictionary) -> void:
+	var prefix := "alien-dropship-%d-%d" % [placement.ramp_center.x, placement.ramp_center.y]
+	for index in range(placement.get("hull_cells", []).size()):
+		var hull_cell: Vector2i = placement.hull_cells[index]
+		covers[AegisHexRules.key(hull_cell)] = {"id":"%s-hull-%d" % [prefix, index],"cell":hull_cell,"type":"alien_dropship","hard":true,"hp":9999,"max_hp":9999,"alien_dropship_part":"hull"}
+	for index in range(placement.get("ramp_cells", []).size()):
+		var ramp_cell: Vector2i = placement.ramp_cells[index]
+		covers[AegisHexRules.key(ramp_cell)] = {"id":"%s-ramp-%d" % [prefix, index],"cell":ramp_cell,"type":"alien_dropship","hard":false,"hp":1,"max_hp":1,"alien_dropship_part":"ramp"}
+
+func _spawn_alien_reinforcements(placement: Dictionary) -> Array:
+	var wanted := clampi(2 + int(incident.get("threat", 1)) / 3, 2, 4)
+	var candidates: Array[Vector2i] = []
+	for ramp_cell in placement.get("ramp_cells", []):
+		candidates.append(ramp_cell)
+		for neighbor in AegisHexRules.neighbors(ramp_cell, grid_width, grid_height):
+			if not candidates.has(neighbor):
+				candidates.append(neighbor)
+	var occupied := _occupied_cells()
+	var spawned: Array = []
+	for cell in candidates:
+		if spawned.size() >= wanted:
+			break
+		if not _inside(cell) or _blocked_cells().has(AegisHexRules.key(cell)) or occupied.has(AegisHexRules.key(cell)):
+			continue
+		var reinforcement_index := spawned.size()
+		var hp := 24 + int(incident.get("threat", 1)) * 5
+		var reinforcement := {"id":"alien-reinforcement-%d-%d" % [turn_number, reinforcement_index],"name":"Void Lancer" if reinforcement_index == 0 else "Void Raider %d" % (reinforcement_index + 1),"team":"alien","cell":cell,"hp":hp,"max_hp":hp,"tu":48,"max_tu":48,"accuracy":42 + int(incident.get("threat", 1)) * 4,"damage":11 + int(incident.get("threat", 1)) * 2,"weapon_range":5,"fire_tu":FIRE_TU,"revealed":false,"visible":false,"facing":Vector2i(0, placement.body_sign),"last_known_cell":Vector2i(-1, -1),"is_alien_commander":false,"is_reinforcement":true}
+		units.append(reinforcement)
+		spawned.append(reinforcement)
+		occupied[AegisHexRules.key(cell)] = true
+	return spawned
+
+func _advance_alien_reinforcements(roll_override := -1) -> void:
+	if alien_reinforcement_arrived:
+		return
+	if not alien_reinforcement_called:
+		_try_call_alien_reinforcements(roll_override)
+		return
+	if turn_number < alien_reinforcement_arrival_turn:
+		return
+	var placement := _find_alien_dropship_placement()
+	if placement.is_empty():
+		alien_reinforcement_arrival_turn = turn_number + 1
+		_emit_log("Alien dropship found no building- and Skyranger-clear landing footprint and remains inbound.")
+		return
+	alien_dropship_placement = placement
+	_install_alien_dropship_covers(placement)
+	var reinforcements := _spawn_alien_reinforcements(placement)
+	alien_reinforcement_arrived = true
+	_emit_log("Purple alien dropship landed clear of buildings and Skyrangers. %d reinforcements deployed." % reinforcements.size())
+	_refresh_visibility()
+
 func _run_alien_turn() -> void:
+	_advance_alien_reinforcements()
 	var reacted_ids := {}
 	for alien in units.filter(func(unit): return unit.get("team", "") == "alien" and int(unit.get("hp", 0)) > 0):
 		alien.tu = int(alien.get("max_tu", 48))
@@ -2189,6 +2334,9 @@ func _check_resolution() -> bool:
 	if living_humans.is_empty():
 		_finish_battle(false)
 		return true
+	if living_aliens.is_empty() and alien_reinforcement_called and not alien_reinforcement_arrived:
+		_emit_log("Area temporarily secure. Alien reinforcements remain inbound for turn %d." % alien_reinforcement_arrival_turn)
+		return false
 	if living_aliens.is_empty() and rescued >= required_rescues:
 		_finish_battle(true)
 		return true
@@ -2247,7 +2395,7 @@ func _emit_log(message: String) -> void:
 func _emit_state() -> void:
 	var living_aliens := units.filter(func(unit): return unit.get("team", "") == "alien" and int(unit.get("hp", 0)) > 0).size()
 	var active_civilians := units.filter(func(unit): return unit.get("team", "") == "civilian" and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false)).size()
-	status_changed.emit({"phase":phase,"turn":turn_number,"aliens":living_aliens,"rescued":rescued,"required":required_rescues,"civilians":active_civilians,"resolved":resolved,"map_label":map_profile.label,"grid_width":grid_width,"grid_height":grid_height,"transports":transport_count})
+	status_changed.emit({"phase":phase,"turn":turn_number,"aliens":living_aliens,"rescued":rescued,"required":required_rescues,"civilians":active_civilians,"resolved":resolved,"map_label":map_profile.label,"grid_width":grid_width,"grid_height":grid_height,"transports":transport_count,"alien_reinforcement_called":alien_reinforcement_called,"alien_reinforcement_arrived":alien_reinforcement_arrived,"alien_reinforcement_eta":maxi(0, alien_reinforcement_arrival_turn - turn_number) if alien_reinforcement_called and not alien_reinforcement_arrived else 0})
 	var selected: Variant = _selected_unit()
 	selection_changed.emit(selected if selected != null else {})
 
@@ -2284,6 +2432,7 @@ func _draw() -> void:
 			_draw_hex(Vector2i(x, y))
 	_draw_tracker_pings()
 	_draw_skyranger()
+	_draw_alien_dropship()
 	_draw_connected_walls()
 	for cover in covers.values():
 		_draw_cover(cover)
@@ -2384,6 +2533,30 @@ func _draw_skyranger() -> void:
 		var cell := Vector2i(int(parts[0]), int(parts[1]))
 		draw_string(get_theme_default_font(), _hex_center(cell) + Vector2(-12, 4), "RAMP", HORIZONTAL_ALIGNMENT_LEFT, -1, maxi(7, int(9.0*visual_scale)), Color("cffafe"))
 
+func _draw_alien_dropship() -> void:
+	if alien_dropship_placement.is_empty():
+		return
+	var ramp_center: Vector2i = alien_dropship_placement.ramp_center
+	var sign_value := int(alien_dropship_placement.body_sign)
+	var body_center := _hex_center(ramp_center + Vector2i(0, sign_value * 2))
+	var visual_scale := hex_radius / HEX_RADIUS
+	var hull := PackedVector2Array([
+		body_center + Vector2(-44, -54 * sign_value) * visual_scale,
+		body_center + Vector2(44, -54 * sign_value) * visual_scale,
+		body_center + Vector2(56, 10 * sign_value) * visual_scale,
+		body_center + Vector2(30, 54 * sign_value) * visual_scale,
+		body_center + Vector2(-30, 54 * sign_value) * visual_scale,
+		body_center + Vector2(-56, 10 * sign_value) * visual_scale
+	])
+	draw_colored_polygon(hull, Color("581c87"))
+	draw_polyline(hull + PackedVector2Array([hull[0]]), Color("e9d5ff"), maxf(1.0, 3.0 * visual_scale), true)
+	draw_circle(body_center, 22.0 * visual_scale, Color("7e22ce"))
+	draw_circle(body_center - Vector2(0, 8 * sign_value) * visual_scale, 9.0 * visual_scale, Color("f0abfc"))
+	for ramp_cell in alien_dropship_placement.get("ramp_cells", []):
+		var ramp_center_pixel := _hex_center(ramp_cell)
+		draw_colored_polygon(_hex_points(ramp_center_pixel, hex_radius * 0.78), Color("6d28d9"))
+		draw_string(get_theme_default_font(), ramp_center_pixel + Vector2(-13, 4), "DROP", HORIZONTAL_ALIGNMENT_LEFT, -1, maxi(7, int(9.0 * visual_scale)), Color("f5d0fe"))
+
 func _draw_connected_walls() -> void:
 	for key in covers:
 		var cover: Dictionary = covers[key]
@@ -2398,6 +2571,8 @@ func _draw_connected_walls() -> void:
 func _draw_cover(cover: Dictionary) -> void:
 	var center := _hex_center(cover.cell)
 	match cover.get("type", ""):
+		"alien_dropship":
+			pass
 		"wall":
 			draw_circle(center, 10.0, Color("b08968"))
 			draw_circle(center, 10.0, Color("e7c8a0"), false, 2.0)

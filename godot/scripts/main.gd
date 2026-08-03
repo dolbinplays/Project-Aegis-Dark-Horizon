@@ -1,6 +1,6 @@
 extends Control
 
-const NATIVE_BUILD := "v0.26.08.02.GODOT.0023_INVENTORY_VIP_PRIORITY_DOOR_ROUTING_FIT_MAP_AND_BASE_FACILITY_DROPDOWN_VERTICAL_SLICE"
+const NATIVE_BUILD := "v0.26.08.02.GODOT.0024_NEAREST_VIP_ESCORT_AND_ALIEN_REINFORCEMENT_DROPSHIP_VERTICAL_SLICE"
 const MAX_BROWSER_IMPORT_BYTES := 32 * 1024 * 1024
 const AUDIO_SETTINGS_PATH := "user://project_aegis_audio_settings.cfg"
 const VOICE_MAKEUP_DB := 6.0
@@ -1825,6 +1825,48 @@ func _run_self_tests() -> Array:
 	remembered_alien.visible = false
 	remembered_alien.last_known_cell = Vector2i(9, 6)
 	var precontact_contact_memory_ready: bool = priority_civilian.get("priority_escort_id", "") == priority_soldier.get("id", "") and priority_soldier.get("priority_civilian_id", "") == priority_civilian.get("id", "") and priority_board._known_alien_contact_cells().has(Vector2i(9, 6)) and not priority_board._soldier_engaged_with_alien(priority_soldier) and tactical_source.contains("if rescue_target == null and _inside(contact_target_cell)") and tactical_source.contains("not combat_priority and not soldier_engaged and rescued < required_rescues")
+	var nearest_vip_board := AegisTacticalBoard.new()
+	nearest_vip_board.begin_battle(test_campaign.selected_incident(), test_campaign.assigned_soldiers(), content)
+	var nearest_vip_humans: Array = nearest_vip_board.units.filter(func(unit): return unit.get("team", "") == "human")
+	var nearest_vip_civilians: Array = nearest_vip_board.units.filter(func(unit): return unit.get("team", "") == "civilian")
+	nearest_vip_humans[0].cell = Vector2i(8, 8)
+	nearest_vip_humans[1].cell = Vector2i(34, 28)
+	nearest_vip_civilians[0].cell = Vector2i(10, 8)
+	nearest_vip_civilians[1].cell = Vector2i(36, 28)
+	for nearest_vip in nearest_vip_civilians:
+		nearest_vip.revealed = true
+		nearest_vip.visible = true
+		nearest_vip.escort_id = ""
+	var nearest_alpha_target: Dictionary = nearest_vip_board._closest_unescorted_vip(nearest_vip_humans[0])
+	var nearest_bravo_target: Dictionary = nearest_vip_board._closest_unescorted_vip(nearest_vip_humans[1])
+	var nearest_vip_routing_ready: bool = nearest_alpha_target.get("id", "") == nearest_vip_civilians[0].get("id", "") and nearest_bravo_target.get("id", "") == nearest_vip_civilians[1].get("id", "")
+	var reinforcement_board := AegisTacticalBoard.new()
+	reinforcement_board.begin_battle(test_campaign.selected_incident(), test_campaign.assigned_soldiers(), content)
+	reinforcement_board.covers.clear()
+	reinforcement_board._add_building_rectangle(Vector2i(10, 2), 7, 6, "reinforcement-health-building")
+	var reinforcement_commander: Dictionary = reinforcement_board._alien_field_commander()
+	var reinforcement_soldier: Dictionary = reinforcement_board.units.filter(func(unit): return unit.get("team", "") == "human")[0]
+	reinforcement_commander.cell = Vector2i(12, 10)
+	reinforcement_soldier.cell = Vector2i(10, 10)
+	var reinforcement_commander_hp := int(reinforcement_commander.get("hp", 0))
+	reinforcement_commander.hp = 0
+	var dead_commander_blocks_call: bool = not reinforcement_board._try_call_alien_reinforcements(1)
+	reinforcement_commander.hp = reinforcement_commander_hp
+	var reinforcement_call_ready: bool = reinforcement_board._try_call_alien_reinforcements(1) and reinforcement_board.alien_reinforcement_arrival_turn == reinforcement_board.turn_number + reinforcement_board.ALIEN_REINFORCEMENT_DELAY_ROUNDS
+	var clear_reinforcement_placement: Dictionary = reinforcement_board._find_alien_dropship_placement()
+	var clear_reinforcement_footprint: Array[Vector2i] = reinforcement_board._alien_dropship_footprint(clear_reinforcement_placement)
+	var reinforcement_structures: Array = reinforcement_board.covers.values().filter(func(cover): return int(cover.get("hp", 0)) > 0 and not String(cover.get("building", "")).is_empty())
+	var reinforcement_clear_of_buildings: bool = not clear_reinforcement_placement.is_empty() and clear_reinforcement_footprint.all(func(cell): return reinforcement_structures.all(func(structure): return AegisHexRules.distance(cell, structure.cell) > 1))
+	var reinforcement_clear_of_skyrangers := true
+	for reinforcement_skyranger in reinforcement_board.skyranger_placements:
+		var reinforcement_skyranger_cells: Array = reinforcement_skyranger.get("footprint", []).duplicate()
+		reinforcement_skyranger_cells.append_array(reinforcement_skyranger.get("ramp_cells", []))
+		if clear_reinforcement_footprint.any(func(cell): return reinforcement_skyranger_cells.any(func(craft_cell): return AegisHexRules.distance(cell, craft_cell) <= 1)):
+			reinforcement_clear_of_skyrangers = false
+	reinforcement_board.alien_reinforcement_arrival_turn = reinforcement_board.turn_number
+	reinforcement_board._advance_alien_reinforcements()
+	var reinforcement_units: Array = reinforcement_board.units.filter(func(unit): return unit.get("is_reinforcement", false))
+	var alien_reinforcement_ready: bool = dead_commander_blocks_call and reinforcement_call_ready and reinforcement_clear_of_buildings and reinforcement_clear_of_skyrangers and reinforcement_board.alien_reinforcement_arrived and reinforcement_units.size() >= 2 and reinforcement_units.size() <= 4 and not reinforcement_board._try_call_alien_reinforcements(1)
 	var distress_board := AegisTacticalBoard.new()
 	distress_board.begin_battle(test_campaign.selected_incident(), test_campaign.assigned_soldiers(), content)
 	var distress_humans: Array = distress_board.units.filter(func(unit): return unit.get("team", "") == "human")
@@ -1863,13 +1905,16 @@ func _run_self_tests() -> Array:
 	var secure_tracker_assignments: Array = secure_search_assignments.values().filter(func(assignment): return assignment.get("kind", "") == "tracker")
 	var secure_building_assignments: Array = secure_search_assignments.values().filter(func(assignment): return assignment.get("kind", "") == "building")
 	var secure_search_zones := {}
-	var secure_tracker_ids := {}
 	for secure_assignment in secure_search_assignments.values():
 		secure_search_zones[secure_assignment.get("zone_id", "")] = true
-		if secure_assignment.get("kind", "") == "tracker":
-			secure_tracker_ids[secure_assignment.get("tracker_id", "")] = true
+	var secure_nearest_tracker_ready := true
+	for secure_soldier in secure_search_humans:
+		var secure_assignment: Dictionary = secure_search_assignments.get(secure_soldier.get("id", ""), {})
+		var assigned_distance := AegisHexRules.distance(secure_soldier.cell, secure_assignment.get("cell", Vector2i(-1, -1)))
+		for secure_tracker in secure_search_board._active_vip_tracker_targets():
+			secure_nearest_tracker_ready = secure_nearest_tracker_ready and assigned_distance <= AegisHexRules.distance(secure_soldier.cell, secure_tracker.cell)
 	secure_search_board._refresh_explored_cells([secure_search_humans[0]])
-	var post_combat_search_ready: bool = secure_search_assignments.size() == secure_search_humans.size() and secure_tracker_assignments.size() == secure_search_humans.size() and secure_tracker_ids.size() == 2 and secure_building_assignments.is_empty() and secure_search_zones.size() == secure_search_assignments.size() and secure_search_board._active_vip_tracker_targets().size() == 2 and secure_search_board.explored_cells.size() > 0 and secure_search_board.explored_cells.size() <= secure_search_board.grid_width * secure_search_board.grid_height and tactical_source.contains("var tracker_guidance :=") and tactical_source.contains("not combat_priority") and tactical_source.contains("var search_reserve := 0 if secure_rescue")
+	var post_combat_search_ready: bool = secure_search_assignments.size() == secure_search_humans.size() and secure_tracker_assignments.size() == secure_search_humans.size() and secure_nearest_tracker_ready and secure_building_assignments.is_empty() and secure_search_zones.size() == secure_search_assignments.size() and secure_search_board._active_vip_tracker_targets().size() == 2 and secure_search_board.explored_cells.size() > 0 and secure_search_board.explored_cells.size() <= secure_search_board.grid_width * secure_search_board.grid_height and tactical_source.contains("var tracker_guidance :=") and tactical_source.contains("not combat_priority") and tactical_source.contains("var search_reserve := 0 if secure_rescue")
 	for secure_civilian in secure_search_civilians:
 		secure_civilian["revealed"] = true
 		secure_civilian["visible"] = false
@@ -2182,7 +2227,8 @@ func _run_self_tests() -> Array:
 		{"name":"AI command can return the live battle to player control", "pass":ai_reclaim_ready},
 		{"name":"AI rescue routing rotates soldiers and rejects two-cell loops", "pass":rescue_route_ready and recovery_board.ai_last_acted_ids is Array},
 		{"name":"AI escorts use doors or breaches and continue through the ramp until the full civilian column extracts", "pass":health_egress_ready and full_column_extraction_ready},
-		{"name":"AI routes through real doors to reach indoor VIPs without circling", "pass":door_entry_ready},
+		{"name":"AI routes through real doors and assigns each free soldier to the nearest unescorted VIP", "pass":door_entry_ready and nearest_vip_routing_ready},
+		{"name":"One living alien commander can call a delayed dropship into a building- and Skyranger-clear footprint", "pass":alien_reinforcement_ready},
 		{"name":"AI command tasks every viable soldier and gives squad-wide alien contact combat priority", "pass":full_squad_priority_ready},
 		{"name":"Tracked VIP pings direct every free AI soldier until contact before area sweeps resume", "pass":post_combat_search_ready},
 		{"name":"Alien contact pauses new VIP claims while preserving remembered civilian assignments", "pass":precontact_contact_memory_ready},

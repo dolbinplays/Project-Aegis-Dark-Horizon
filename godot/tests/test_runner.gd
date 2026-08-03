@@ -365,6 +365,48 @@ func _test_tactical(content: Dictionary) -> void:
 	priority_civilian["cell"] = ai_humans[0].get("cell", Vector2i.ZERO) + Vector2i(1, 0)
 	ai_board._assign_precontact_civilian_claim(priority_civilian, [ai_humans[0]])
 	_check(priority_civilian.get("priority_escort_id", "") == ai_humans[0].get("id", "") and ai_humans[0].get("priority_civilian_id", "") == priority_civilian.get("id", ""), "pre-contact civilian sighting assigns a persistent soldier rescue priority")
+	var nearest_vip_board := AegisTacticalBoard.new()
+	get_root().add_child(nearest_vip_board)
+	nearest_vip_board.begin_battle(incident, tactical_roster, content)
+	var nearest_vip_humans: Array = nearest_vip_board.units.filter(func(unit): return unit.get("team", "") == "human")
+	var nearest_vip_civilians: Array = nearest_vip_board.units.filter(func(unit): return unit.get("team", "") == "civilian")
+	nearest_vip_humans[0].cell = Vector2i(8, 8)
+	nearest_vip_humans[1].cell = Vector2i(34, 28)
+	nearest_vip_civilians[0].cell = Vector2i(10, 8)
+	nearest_vip_civilians[1].cell = Vector2i(36, 28)
+	for nearest_vip in nearest_vip_civilians:
+		nearest_vip.revealed = true
+		nearest_vip.visible = true
+		nearest_vip.escort_id = ""
+	var nearest_alpha_target: Dictionary = nearest_vip_board._closest_unescorted_vip(nearest_vip_humans[0])
+	var nearest_bravo_target: Dictionary = nearest_vip_board._closest_unescorted_vip(nearest_vip_humans[1])
+	_check(nearest_alpha_target.get("id", "") == nearest_vip_civilians[0].get("id", "") and nearest_bravo_target.get("id", "") == nearest_vip_civilians[1].get("id", ""), "each out-of-combat soldier independently targets the nearest unescorted VIP")
+	var reinforcement_board := AegisTacticalBoard.new()
+	get_root().add_child(reinforcement_board)
+	reinforcement_board.begin_battle(incident, tactical_roster, content)
+	reinforcement_board.covers.clear()
+	reinforcement_board._add_building_rectangle(Vector2i(10, 2), 7, 6, "reinforcement-test-building")
+	var reinforcement_commander: Dictionary = reinforcement_board._alien_field_commander()
+	var reinforcement_soldier: Dictionary = reinforcement_board.units.filter(func(unit): return unit.get("team", "") == "human")[0]
+	reinforcement_commander.cell = Vector2i(12, 10)
+	reinforcement_soldier.cell = Vector2i(10, 10)
+	var reinforcement_commander_hp := int(reinforcement_commander.get("hp", 0))
+	reinforcement_commander.hp = 0
+	var dead_commander_blocked := not reinforcement_board._try_call_alien_reinforcements(1)
+	_check(dead_commander_blocked, "dead alien commander suppresses the reinforcement call")
+	reinforcement_commander.hp = reinforcement_commander_hp
+	var reinforcement_called := reinforcement_board._try_call_alien_reinforcements(1)
+	_check(reinforcement_called, "living alien commander schedules one delayed reinforcement call")
+	var reinforcement_placement: Dictionary = reinforcement_board._find_alien_dropship_placement()
+	var reinforcement_footprint: Array[Vector2i] = reinforcement_board._alien_dropship_footprint(reinforcement_placement)
+	var reinforcement_clear := not reinforcement_placement.is_empty() and reinforcement_board._alien_dropship_landing_clear(reinforcement_placement)
+	_check(not reinforcement_placement.is_empty(), "alien dropship finds a bounded perimeter landing candidate")
+	_check(reinforcement_clear and reinforcement_footprint.size() > 0, "alien dropship footprint stays separated from buildings and Skyrangers without overlapping units")
+	reinforcement_board.alien_reinforcement_arrival_turn = reinforcement_board.turn_number
+	reinforcement_board._advance_alien_reinforcements()
+	var reinforcement_units: Array = reinforcement_board.units.filter(func(unit): return unit.get("is_reinforcement", false))
+	_check(reinforcement_board.alien_reinforcement_arrived and reinforcement_units.size() >= 2 and reinforcement_units.size() <= 4, "alien dropship arrival deploys two to four reinforcements")
+	_check(not reinforcement_board._try_call_alien_reinforcements(1), "alien commander cannot call a second reinforcement dropship")
 	ai_aliens[0]["revealed"] = true
 	ai_aliens[0]["visible"] = false
 	ai_aliens[0]["last_known_cell"] = Vector2i(9, 6)
@@ -441,10 +483,13 @@ func _test_tactical(content: Dictionary) -> void:
 	for secure_assignment in secure_assignments.values():
 		assignment_zones[secure_assignment.get("zone_id", "")] = true
 	ai_board._refresh_explored_cells([ai_humans[0]])
-	var tracker_ids := {}
-	for tracker_assignment in tracker_assignments:
-		tracker_ids[tracker_assignment.get("tracker_id", "")] = true
-	_check(secure_assignments.size() == ai_humans.size() and tracker_assignments.size() == ai_humans.size() and tracker_ids.size() == 2 and building_assignments.is_empty() and assignment_zones.size() == secure_assignments.size() and ai_board._active_vip_tracker_targets().size() == 2 and ai_board.explored_cells.size() > 0 and ai_board.explored_cells.size() <= ai_board.grid_width * ai_board.grid_height and tactical_source.contains("var tracker_guidance :=") and tactical_source.contains("not combat_priority") and tactical_source.contains("var search_reserve := 0 if secure_rescue"), "tracked VIP pings direct every free AI soldier until contact before building and sector sweeps resume")
+	var nearest_tracker_assignments_ready := true
+	for search_soldier in ai_humans:
+		var search_assignment: Dictionary = secure_assignments.get(search_soldier.get("id", ""), {})
+		var assigned_tracker_distance := AegisHexRules.distance(search_soldier.cell, search_assignment.get("cell", Vector2i(-1, -1)))
+		for active_tracker in ai_board._active_vip_tracker_targets():
+			nearest_tracker_assignments_ready = nearest_tracker_assignments_ready and assigned_tracker_distance <= AegisHexRules.distance(search_soldier.cell, active_tracker.cell)
+	_check(secure_assignments.size() == ai_humans.size() and tracker_assignments.size() == ai_humans.size() and nearest_tracker_assignments_ready and building_assignments.is_empty() and assignment_zones.size() == secure_assignments.size() and ai_board._active_vip_tracker_targets().size() == 2 and ai_board.explored_cells.size() > 0 and ai_board.explored_cells.size() <= ai_board.grid_width * ai_board.grid_height and tactical_source.contains("var tracker_guidance :=") and tactical_source.contains("not combat_priority") and tactical_source.contains("var search_reserve := 0 if secure_rescue"), "tracked VIP pings direct every free AI soldier to the nearest target before building and sector sweeps resume")
 	for tracked_civilian in tracked_civilians:
 		tracked_civilian["revealed"] = true
 		tracked_civilian["visible"] = false
@@ -649,9 +694,9 @@ func _test_build_health() -> void:
 	var app: Node = load("res://godot/main.tscn").instantiate()
 	app.content = _load_json("res://godot/data/content.json")
 	var health: Array = app._run_self_tests()
-	if health.size() != 96 or not health.all(func(row): return row.get("pass", false)):
+	if health.size() != 101 or not health.all(func(row): return row.get("pass", false)):
 		print("BUILD HEALTH DETAIL: %s" % JSON.stringify(health))
-	_check(health.size() == 100 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 100 rows")
+	_check(health.size() == 101 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 101 rows")
 	app.free()
 
 func _load_json(path: String) -> Dictionary:

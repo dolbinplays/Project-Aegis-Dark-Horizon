@@ -2,9 +2,55 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-02
-Current handoff build: `v0.26.08.02.0153_TACTICAL_INVENTORY_VIP_PRIORITY_DOOR_ROUTING_FIT_MAP_AND_BASE_FACILITY_DROPDOWN_PARITY_PATCH`
-Native vertical slice: `v0.26.08.02.GODOT.0023_INVENTORY_VIP_PRIORITY_DOOR_ROUTING_FIT_MAP_AND_BASE_FACILITY_DROPDOWN_VERTICAL_SLICE`
-Current patch status: **Browser 0153 and native 0023 preserve save format 4. Rescue AI now assigns every free soldier to active VIP tracker pings before alien contact, suspends new claims for squad-wide alien contact, routes through real doors, and converts adjacency into immediate contact instead of circling. Existing escorts continue evacuation. Both clients add Fit Map, a functional adjacent-unit/floor inventory foundation, and compact facility construction selection. Browser static parsing and the seam checker pass, localhost Build Health passes 320/320, and a six-soldier 64x64 rescue mission completed three End Turn cycles after using Fit Map with no runtime or console errors. Native tests pass 131/131, native Build Health passes 100/100, and Godot 4.7.1 strict parsing passes. Hands-on indoor rescue AI, all-tier Fit Map presentation, and inventory interaction remain the final manual tests.**
+Current handoff build: `v0.26.08.02.0154_TACTICAL_AI_CAMERA_FIT_MAP_NEAREST_VIP_AND_ALIEN_REINFORCEMENT_PARITY_PATCH`
+Native vertical slice: `v0.26.08.02.GODOT.0024_NEAREST_VIP_ESCORT_AND_ALIEN_REINFORCEMENT_DROPSHIP_VERTICAL_SLICE`
+Current patch status: **Browser 0154 and native 0024 preserve save format 4. AI playback now anchors every visible action to its acting unit, Fit Map reserves a full perimeter, and each free soldier independently targets the closest unescorted VIP. A living original alien commander can make one low, escalating reinforcement call while aliens observe soldiers; arrival is delayed two rounds and deploys two to four aliens from a small purple craft. The landing search is bounded to 32 deterministic perimeter candidates and rejects every footprint that touches a building or any Skyranger hull/ramp. Browser static parsing and the seam checker pass, localhost Build Health passes 324/324, and a live six-soldier 64x64 battle completed three confirmed End Turn cycles. That battle naturally produced a two-alien reinforcement arrival visibly clear in both 2D and Three.js, and AI control was reclaimed with no browser runtime errors. Native tests pass 138/138, native Build Health passes 101/101, and Godot 4.7.1 strict parsing passes. Commander-death suppression, multi-Skyranger landing clearance, and separated-VIP pursuit remain hands-on gates.**
+
+---
+
+# v0.26.08.02.0154 / GODOT.0024 - AI Camera, Fit Map Perimeter, Nearest VIP, and Alien Reinforcements
+
+Browser build `v0.26.08.02.0154_TACTICAL_AI_CAMERA_FIT_MAP_NEAREST_VIP_AND_ALIEN_REINFORCEMENT_PARITY_PATCH` and native build `v0.26.08.02.GODOT.0024_NEAREST_VIP_ESCORT_AND_ALIEN_REINFORCEMENT_DROPSHIP_VERTICAL_SLICE` preserve save format 4.
+
+Root causes addressed:
+
+- AI map playback could fall back to a squad or battlefield center between frames instead of retaining the active actor's camera anchor.
+- Fit Map used the exact calculated battlefield extents, leaving no presentation perimeter and allowing the lower corner to appear clipped.
+- Tracker assignment and stale civilian claims could steer a free soldier toward a reserved or farther VIP instead of the closest currently unescorted target.
+- Incident battles had no bounded reinforcement state, commander suppression rule, delayed arrival, one-call guard, or landing-craft clearance contract.
+- The first native landing candidate pattern sampled only alternating top and bottom lanes and imposed an unnecessary one-cell buffer around every moving unit. On a crowded Small map it could reject every candidate even when a non-overlapping side/perimeter footprint existed.
+
+Implemented roadmap scope:
+
+- AI playback frames carry an acting-unit ID. Camera handoff centers that visible actor, uses observable shot endpoints when appropriate, and retains the last anchor on phase-complete frames rather than cutting to map center.
+- Browser 2D and Three.js Fit Map calculations reserve roughly ten percent perimeter space and validate every Small, Medium, and Large corner against live viewport/camera metrics.
+- Before combat priority, each free soldier independently selects the nearest revealed unescorted VIP. Hidden tracker guidance uses the same per-soldier nearest-target rule, and adjacency still performs the established 8 TU contact action.
+- The original alien force marks one commander. Each alien turn with soldier observation increments a capped call chance from 4 percent; killing that commander before a successful call permanently prevents that force from summoning reinforcements.
+- One successful call schedules arrival two rounds later. A delayed craft deploys two to four non-commander aliens and cannot be called again during that incident.
+- Browser and Godot render one small purple alien craft with a rear ramp. Placement inspects at most 32 deterministic perimeter candidates, keeps every hull/ramp cell inside the map, requires more than one hex of separation from live building cells and every Skyranger hull/ramp cell, and forbids direct overlap with living units.
+- If no safe candidate exists at ETA, arrival waits one round and retries the same bounded search. Tactical victory waits while a called craft remains inbound.
+- Build Health and native direct tests cover camera ownership, Fit Map perimeter framing, nearest-VIP selection, commander-death suppression, forced call, delayed clear landing, two-to-four-unit deployment, and the one-call limit.
+
+Verification checklist:
+
+- Godot 4.7.1 strict editor parsing passed with all native classes registered.
+- Native tests passed `138/138`. All `101/101` native Build Health rows passed inside the suite.
+- All six browser app scripts parsed, `node tools\check-aegis-build.cjs` passed, and `git diff --check` reported no whitespace errors.
+- The localhost start screen displayed build 0154, a fresh campaign reached the Geoscape, and browser Build Health passed `324/324` with no failed rows.
+- A six-soldier Small 64x64 Red River Signal mission launched in safe 2D, used Fit Map in 2D and Three.js, and completed three confirmed End Turn cycles with all six soldiers alive.
+- The live commander naturally called reinforcements. Two hostiles arrived after the delay; the alien craft was visibly clear of the Ranger Outpost and Skyranger in 2D and appeared as one purple craft in Three.js.
+- AI tactical playback reached a named active-actor frame and `Take Back Control` restored the same human-phase battle.
+- Browser console/runtime errors: none. The existing Tailwind CDN development warning was the only console warning.
+
+Remaining risks and manual validation:
+
+- Kill the original alien commander before any successful call, then maintain alien observation for several rounds and confirm no reinforcement countdown begins.
+- In separate Medium and Large missions, including one with two Skyrangers, allow a natural arrival and confirm no alien hull or ramp cell contacts a building or either Skyranger.
+- Confirm a called craft with no valid landing footprint remains inbound and later lands only after a valid footprint opens.
+- In a rescue mission with VIPs separated across the map or inside different buildings, confirm each unengaged free soldier approaches and contacts the closest unescorted VIP without circling.
+- The natural trigger is intentionally rare and deterministic per incident/round; balance of the 4-to-46-percent escalation and two-round warning still needs longer campaign play.
+
+Next recommended paired patch after this gate: `TACTICAL_CLASSIC_INVENTORY_CONTAINER_LOADOUT_AND_ELEVATION_RENDER_FOUNDATION_PARITY_PATCH`, expanding the bounded inventory foundation without beginning a broad multi-level tactical rewrite.
 
 ---
 

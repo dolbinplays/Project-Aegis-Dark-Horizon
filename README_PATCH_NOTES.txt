@@ -1,25 +1,29 @@
 Alien Response Command / Project Aegis
-Patch: v0.26.08.02.0153_TACTICAL_INVENTORY_VIP_PRIORITY_DOOR_ROUTING_FIT_MAP_AND_BASE_FACILITY_DROPDOWN_PARITY_PATCH
-Native: v0.26.08.02.GODOT.0023_INVENTORY_VIP_PRIORITY_DOOR_ROUTING_FIT_MAP_AND_BASE_FACILITY_DROPDOWN_VERTICAL_SLICE
+Patch: v0.26.08.02.0154_TACTICAL_AI_CAMERA_FIT_MAP_NEAREST_VIP_AND_ALIEN_REINFORCEMENT_PARITY_PATCH
+Native: v0.26.08.02.GODOT.0024_NEAREST_VIP_ESCORT_AND_ALIEN_REINFORCEMENT_DROPSHIP_VERTICAL_SLICE
 
 Purpose:
-- Stop AI soldiers from circling tracked civilians or VIPs by making adjacent arrival perform the contact action immediately.
-- Send every free soldier toward active tracker pings before alien contact, then give squad-wide alien contact priority to all non-escorts while established escorts continue evacuation.
-- Route soldiers through actual building doors or destroyed-wall breaches on every tactical map size.
-- Add Fit Map for complete Small, Medium, and Large battlefield framing.
-- Add bounded 4 TU adjacent inventory transfers plus exact-cell and elevation-aware floor drop/pickup state.
-- Replace the Base facility button list with one compact construction dropdown.
+- Keep AI tactical playback centered on each active actor and retain the last camera anchor between actions.
+- Reserve a visible perimeter in 2D and Three.js Fit Map views so no battlefield corner is clipped.
+- Send every out-of-combat soldier to that soldier's closest unescorted VIP and perform contact on arrival.
+- Allow one living alien commander to make a low, escalating reinforcement call while aliens observe soldiers.
+- Delay arrival by two rounds and deploy two to four aliens from one small purple landing craft.
+- Keep every alien hull and ramp cell inside the battlefield, more than one hex from buildings and all Skyranger hull/ramp cells, and off occupied unit cells.
+- Preserve save format 4 and bounded tactical work; landing search examines at most 32 deterministic perimeter candidates.
 
 Validation performed:
 - Godot 4.7.1 strict project parsing passed.
-- Native tests passed 131/131, including a practical mission with three End Turn cycles.
-- Native Build Health passed 100/100 inside the automated suite.
+- Native tests passed 138/138, including commander-death suppression, forced call, clear landing placement, delayed arrival, two-to-four-unit deployment, one-call-only behavior, and practical turn cycles.
+- Native Build Health passed 101/101 inside the automated suite.
 - All six browser app scripts parsed and the build seam checker passed.
-- Localhost start screen and Geoscape loading passed; Browser Build Health passed 320/320.
-- A six-soldier Small 64x64 rescue mission used Fit Map and completed three End Turn cycles with no runtime or console errors.
+- Localhost start screen and Geoscape loading passed; Browser Build Health passed 324/324.
+- A six-soldier Small 64x64 mission completed three confirmed End Turn cycles with all soldiers alive.
+- The live commander naturally called reinforcements; two hostiles arrived from a craft visibly clear of the building and Skyranger in both 2D and Three.js Fit Map views.
+- AI tactical map playback reached a named active-actor frame and Take Back Control restored the human phase.
+- Browser console contained no runtime errors. The existing Tailwind CDN development warning remains.
 
 Manual gate:
-- In an indoor VIP mission, confirm AI soldiers follow tracker pings, use a doorway, contact an adjacent VIP without circling, and continue the escort to the Skyranger.
-- Reveal an alien and confirm all non-escorts switch to combat while current escorts continue evacuation.
-- Exercise Fit Map in 2D and Three.js on every map tier.
-- Transfer, drop, and pick up one item between adjacent same-elevation soldiers and verify the 4 TU cost.
+- Kill the alien commander before any call, preserve alien sight of soldiers for several rounds, and confirm no reinforcement call occurs.
+- On Medium and Large maps with one and two Skyrangers, allow a reinforcement arrival and confirm the alien craft never touches a building or either Skyranger.
+- Confirm the two-round countdown, purple craft, two-to-four reinforcements, and one-call maximum in a longer natural battle.
+- In a rescue mission with separated VIPs, confirm each free soldier approaches and contacts the closest unescorted VIP.

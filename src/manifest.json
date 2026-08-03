@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.02.0153_TACTICAL_INVENTORY_VIP_PRIORITY_DOOR_ROUTING_FIT_MAP_AND_BASE_FACILITY_DROPDOWN_PARITY_PATCH",
+  "currentBuild": "v0.26.08.02.0154_TACTICAL_AI_CAMERA_FIT_MAP_NEAREST_VIP_AND_ALIEN_REINFORCEMENT_PARITY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "inventory-vip-priority-door-routing-fit-map-facility-dropdown-manual-test",
+  "status": "ai-camera-fit-map-nearest-vip-alien-reinforcement-manual-test",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,19 +26,19 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.02.0153_TACTICAL_INVENTORY_VIP_PRIORITY_DOOR_ROUTING_FIT_MAP_AND_BASE_FACILITY_DROPDOWN_PARITY_PATCH",
+  "lastInspectedBuild": "v0.26.08.02.0154_TACTICAL_AI_CAMERA_FIT_MAP_NEAREST_VIP_AND_ALIEN_REINFORCEMENT_PARITY_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
     "mainScene": "godot/main.tscn",
-    "build": "v0.26.08.02.GODOT.0023_INVENTORY_VIP_PRIORITY_DOOR_ROUTING_FIT_MAP_AND_BASE_FACILITY_DROPDOWN_VERTICAL_SLICE",
+    "build": "v0.26.08.02.GODOT.0024_NEAREST_VIP_ESCORT_AND_ALIEN_REINFORCEMENT_DROPSHIP_VERTICAL_SLICE",
     "saveFormat": 4,
-    "status": "inventory-vip-priority-door-routing-fit-map-facility-dropdown-manual-test"
+    "status": "nearest-vip-alien-reinforcement-dropship-manual-test"
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.02.0153_TACTICAL_INVENTORY_VIP_PRIORITY_DOOR_ROUTING_FIT_MAP_AND_BASE_FACILITY_DROPDOWN_PARITY_PATCH",
-    "nativeBuild": "v0.26.08.02.GODOT.0023_INVENTORY_VIP_PRIORITY_DOOR_ROUTING_FIT_MAP_AND_BASE_FACILITY_DROPDOWN_VERTICAL_SLICE",
+    "browserBuild": "v0.26.08.02.0154_TACTICAL_AI_CAMERA_FIT_MAP_NEAREST_VIP_AND_ALIEN_REINFORCEMENT_PARITY_PATCH",
+    "nativeBuild": "v0.26.08.02.GODOT.0024_NEAREST_VIP_ESCORT_AND_ALIEN_REINFORCEMENT_DROPSHIP_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
       "base-local-medkit-issue-return",
@@ -93,6 +93,11 @@
       "door-aware-building-ingress",
       "immediate-adjacent-vip-contact-lock",
       "tactical-fit-map-all-tiers",
+      "active-actor-tactical-camera-handoff",
+      "fit-map-perimeter-framing",
+      "nearest-unescorted-vip-contact-routing",
+      "single-use-alien-commander-reinforcement-call",
+      "building-and-skyranger-clear-alien-dropship-placement",
       "skyranger-building-clearance",
       "post-resolution-action-gating",
       "queued-tactical-voice-recovery",
