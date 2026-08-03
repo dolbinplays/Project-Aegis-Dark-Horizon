@@ -2,9 +2,52 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-02
-Current handoff build: `v0.26.08.02.0150_TACTICAL_MULTI_SKYRANGER_MAP_TIERS_EDGE_GUARDS_AND_3D_VIP_PINGS_PARITY_PATCH`
-Native vertical slice: `v0.26.08.02.GODOT.0020_MULTI_TRANSPORT_MAP_TIERS_AND_EDGE_GUARDS_VERTICAL_SLICE`
-Current patch status: **Browser 0150 and native 0020 preserve save format 4. Tactical deployment now records the exact response squads and creates one building-clear Skyranger and rear-ramp formation per dispatched squad. The former battlefield is the Small tier; deterministic Medium and Large tiers increase battlefield area and civilian capacity while retaining bounded render windows. Neighbor generation, player paths, AI movement, and generated units reject the non-playable perimeter. Three.js rescue battles now render a persistent projected VIP reticle plus bounded pulsing world geometry. Browser Build Health passes 310/310; the 0150 start screen and Geoscape loaded; a six-soldier Small Prairie Abduction displayed a visible 3D VIP reticle and completed three End Turn cycles with all six soldiers alive. No browser runtime errors were present. Native tests pass 119/119, native Build Health passes 92/92, and Godot 4.7.1 strict parsing passes. Remaining gates are live two-Skyranger deployment, Medium/Large battlefield pacing, and visual validation of the paired Godot tiers.**
+Current handoff build: `v0.26.08.02.0151_TACTICAL_VIP_PRIORITY_GUARDS_CAMERA_VISIBILITY_AND_BUILDING_DENSITY_PARITY_PATCH`
+Native vertical slice: `v0.26.08.02.GODOT.0021_VIP_PRIORITY_GUARDS_VISIBILITY_AND_BUILDING_DENSITY_VERTICAL_SLICE`
+Current patch status: **Browser 0151 and native 0021 preserve save format 4. Mandatory-rescue AI now evaluates local alien engagement per soldier, allowing an unengaged soldier to contact a visible VIP despite remote squad contact memory while preserving immediate combat priority for soldiers with a visible in-range alien and line of sight. Escorted VIPs remain visible through fog. Once all living VIPs are found and escorted after alien defeat, non-escorts take distinct guard positions around the evacuation column and Skyranger ramps. Manual browser tactical cameras center the selected soldier. Building generation remains deterministic and bounded while map tiers add placement opportunities and city/town terrain raises the probability above farm/wilderness terrain. Browser Build Health passes 314/314; the 0151 start screen and Geoscape loaded; a live six-soldier Small Red River Signal battle selected Bryn with authoritative 51/51 TU and completed three End Turn cycles with all six soldiers alive. No browser runtime errors were present. Native tests pass 123/123, native Build Health passes 95/95, and Godot 4.7.1 strict parsing passes. Remaining gates are hands-on rescue-perimeter behavior, selected-camera and escort-visibility inspection, and repeated biome/tier density sampling.**
+
+---
+
+# v0.26.08.02.0151 / GODOT.0021 - VIP Priority, Rescue Guards, Camera Visibility, and Building Density
+
+Browser build `v0.26.08.02.0151_TACTICAL_VIP_PRIORITY_GUARDS_CAMERA_VISIBILITY_AND_BUILDING_DENSITY_PARITY_PATCH` and native build `v0.26.08.02.GODOT.0021_VIP_PRIORITY_GUARDS_VISIBILITY_AND_BUILDING_DENSITY_VERTICAL_SLICE` preserve save format 4.
+
+Root causes addressed:
+
+- A remembered alien contact acted as a global combat gate, so soldiers who were nowhere near that threat could ignore an adjacent tracked VIP.
+- Escorted civilians still depended on ordinary fog visibility and could disappear even though the player had already established and was actively guiding the rescue column.
+- Secure rescue AI kept assigning map-search destinations after every VIP had been found and escorted instead of forming a protective evacuation perimeter.
+- The browser tactical camera let recent shot playback override the player's current soldier selection.
+- Building counts used fixed biome baselines. Map size did not create additional building opportunities, and terrain categories did not expose a clear wilderness-to-town-to-city density progression.
+
+Implemented roadmap scope:
+
+- Browser and Godot AI use a bounded per-soldier local-engagement test requiring a living visible alien, current weapon range, and line of sight. Unengaged soldiers can take immediate contact responsibility for a visible unclaimed VIP while squadmates continue toward remembered contacts.
+- Living, unrescued escorted civilians stay visible in browser 2D, browser Three.js, and Godot tactical presentation without revealing unrelated civilians or unseen aliens.
+- Once aliens are defeated and every active VIP is revealed and assigned an escort, deterministic guard assignment gives non-escorts distinct passable cells around escorted civilians and Skyranger ramps. Active escorts retain extraction duty.
+- Manual browser 2D and Three.js camera centers use the selected living soldier before any historical shot effect; AI playback continues using its current action anchor.
+- Browser and Godot building-density profiles preserve deterministic seeds and bounded candidate lists. Browser Small, Medium, and Large tiers expose zero, one, and two bonus opportunities on top of biome baselines; the more compact native boards use one, two, and three optional rolls after their fixed primary structure. Both use descending city, town, farm, and wilderness placement chances.
+- Browser Build Health adds four rows and reaches 314. Native Build Health adds three rows and reaches 95; native automation adds four direct checks and reaches 123.
+
+Verification checklist:
+
+- Static browser app-script parsing and `node tools\check-aegis-build.cjs` passed with synchronized 0151/0021 labels.
+- Localhost 0151 start screen displayed, a fresh campaign reached the Geoscape, and browser Build Health passed `314/314` with no failed rows.
+- A six-soldier Small Red River Signal launched in safe 2D on a `64x64` battlefield with one Skyranger and one Ranger Outpost. Selecting Bryn displayed authoritative `51/51` TU and a three-hex route to the extraction ramp.
+- Three End Turn cycles returned to the human phase. All six soldiers remained alive; visible alien contacts advanced from zero to one and then three without a lockup.
+- Browser console inspection found no runtime errors. The only warning was Tailwind's existing development-CDN advisory.
+- Godot 4.7.1 strict editor parsing passed. Native tests passed `123/123`, including remote-contact VIP priority, local-engagement override, escorted-VIP visibility, unique rescue guards, and biome/tier density scaling. All `95/95` visible native Build Health rows passed inside the suite.
+
+Remaining risks and manual validation:
+
+- In a mandatory rescue battle, keep one revealed alien contact beyond a soldier's local range and place that soldier beside an uncontacted VIP. Confirm AI contacts the VIP while other available soldiers converge on the remembered threat.
+- Repeat with a visible alien in range and line of sight of that soldier. Confirm the threatened soldier fights while another available soldier assumes VIP duty.
+- Select several widely separated soldiers in browser 2D and Three.js. Confirm each selection recenters the camera and a prior shot does not pull focus away.
+- Escort a blue VIP through explored and currently unobserved cells. Confirm the civilian remains visible until reaching a rear ramp.
+- After killing every alien and contacting every surviving VIP, confirm established escorts keep extracting while idle soldiers spread into distinct nearby guard positions without blocking ramps.
+- Compare repeated Small, Medium, and Large wilderness, farm, town, and city maps. Confirm larger and more urban maps trend toward more structures while deterministic mission seeds reproduce the same layout.
+
+Next recommended paired patch after this gate: `TACTICAL_CLASSIC_INVENTORY_TRANSFERS_AND_ELEVATION_FOUNDATION_PARITY_PATCH`, beginning with bounded adjacent-unit hand/belt transfers and floor-state data before any multi-level renderer rewrite.
 
 ---
 

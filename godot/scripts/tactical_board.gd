@@ -14,9 +14,9 @@ const HEX_RADIUS := 27.0
 const HEX_WIDTH := 46.765
 const ROW_STEP := 40.5
 const MAP_PROFILES := {
-	"small":{"key":"small","label":"Small","width":20,"height":14,"civilian_count":2},
-	"medium":{"key":"medium","label":"Medium","width":26,"height":18,"civilian_count":4},
-	"large":{"key":"large","label":"Large","width":32,"height":22,"civilian_count":6}
+	"small":{"key":"small","label":"Small","width":20,"height":14,"civilian_count":2,"structure_bonus":0},
+	"medium":{"key":"medium","label":"Medium","width":26,"height":18,"civilian_count":4,"structure_bonus":1},
+	"large":{"key":"large","label":"Large","width":32,"height":22,"civilian_count":6,"structure_bonus":2}
 }
 const MOVE_TU := 4
 const FIRE_TU := 16
@@ -311,18 +311,80 @@ func _equipment_definition(catalog_key: String, item_name: String, fallback: Dic
 	return fallback.duplicate(true)
 
 func _generate_building() -> void:
-	for x in range(10, 17):
-		_add_wall(Vector2i(x, 2), "window" if x in [11, 14] else "wall")
-		if x != 13:
-			_add_wall(Vector2i(x, 7), "window" if x == 15 else "wall")
-	for y in range(3, 7):
-		_add_wall(Vector2i(10, y), "window" if y == 4 else "wall")
-		_add_wall(Vector2i(16, y), "window" if y == 5 else "wall")
-	for cell in [Vector2i(12,4), Vector2i(14,5), Vector2i(11,6)]:
-		covers[AegisHexRules.key(cell)] = {"cell":cell,"type":"furnishing","hard":false,"hp":18,"max_hp":18}
+	_add_building_rectangle(Vector2i(10, 2), 7, 6, "outpost")
+	var candidates := [
+		{"origin":Vector2i(10, grid_height - 6),"width":6,"height":5},
+		{"origin":Vector2i(grid_width - 8, 2),"width":6,"height":4},
+		{"origin":Vector2i(grid_width - 8, grid_height - 6),"width":6,"height":5}
+	]
+	var wanted: int = int(_building_density_profile().get("wanted", 1))
+	var created := 1
+	for candidate_value in candidates:
+		if created >= wanted:
+			break
+		var candidate: Dictionary = candidate_value
+		var origin: Vector2i = candidate.origin
+		var width := int(candidate.width)
+		var height := int(candidate.height)
+		if not _building_site_clear(origin, width, height):
+			continue
+		_add_building_rectangle(origin, width, height, "structure-%d" % created)
+		created += 1
 
-func _add_wall(cell: Vector2i, wall_type: String) -> void:
-	covers[AegisHexRules.key(cell)] = {"cell":cell,"type":wall_type,"hard":true,"hp":50 if wall_type == "wall" else 34,"max_hp":50 if wall_type == "wall" else 34,"building":"outpost"}
+func _tactical_biome_key() -> String:
+	var kind := String(incident.get("kind", incident.get("mission_intent", ""))).to_lower()
+	if "terror" in kind or "city" in kind or "urban" in kind or "base assault" in kind:
+		return "city"
+	if "abduction" in kind or "town" in kind or "supply" in kind or "scout" in kind:
+		return "town"
+	if "harvest" in kind or "farm" in kind or "rural" in kind:
+		return "farm"
+	return "wilderness"
+
+func _building_density_profile() -> Dictionary:
+	var biome := _tactical_biome_key()
+	var chance: int = int({"city":90,"town":70,"farm":42,"wilderness":24}.get(biome, 20))
+	var opportunities := 1 + int(map_profile.get("structure_bonus", 0))
+	var bonus := 0
+	var seed_value := int(incident.get("seed", 1337))
+	for slot in range(opportunities):
+		if AegisHexRules.deterministic_roll(seed_value, 3300 + slot * 97, 0, 99) < chance:
+			bonus += 1
+	return {"biome":biome,"chance":chance,"opportunities":opportunities,"bonus":bonus,"wanted":1 + bonus}
+
+func generated_building_count() -> int:
+	var ids := {}
+	for cover_value in covers.values():
+		var building_id := String((cover_value as Dictionary).get("building", ""))
+		if not building_id.is_empty():
+			ids[building_id] = true
+	return ids.size()
+
+func _building_site_clear(origin: Vector2i, width: int, height: int) -> bool:
+	for y in range(origin.y, origin.y + height):
+		for x in range(origin.x, origin.x + width):
+			var cell := Vector2i(x, y)
+			if not _inside(cell) or covers.has(AegisHexRules.key(cell)):
+				return false
+			for craft_cell in _skyranger_footprint_cells():
+				if AegisHexRules.distance(cell, craft_cell) <= 1:
+					return false
+	return true
+
+func _add_building_rectangle(origin: Vector2i, width: int, height: int, building_id: String) -> void:
+	var door_x := origin.x + width / 2
+	for x in range(origin.x, origin.x + width):
+		_add_wall(Vector2i(x, origin.y), "window" if (x - origin.x) % 3 == 1 else "wall", building_id)
+		if x != door_x:
+			_add_wall(Vector2i(x, origin.y + height - 1), "window" if (x - origin.x) % 4 == 1 else "wall", building_id)
+	for y in range(origin.y + 1, origin.y + height - 1):
+		_add_wall(Vector2i(origin.x, y), "window" if (y - origin.y) % 3 == 1 else "wall", building_id)
+		_add_wall(Vector2i(origin.x + width - 1, y), "window" if (y - origin.y) % 3 == 2 else "wall", building_id)
+	var furnishing := origin + Vector2i(maxi(1, width / 2 - 1), maxi(1, height / 2))
+	covers[AegisHexRules.key(furnishing)] = {"cell":furnishing,"type":"furnishing","hard":false,"hp":18,"max_hp":18,"building":building_id}
+
+func _add_wall(cell: Vector2i, wall_type: String, building_id: String = "outpost") -> void:
+	covers[AegisHexRules.key(cell)] = {"cell":cell,"type":wall_type,"hard":true,"hp":50 if wall_type == "wall" else 34,"max_hp":50 if wall_type == "wall" else 34,"building":building_id}
 
 func _generate_cover() -> void:
 	var seed_value := int(incident.get("seed", 1337))
@@ -1319,6 +1381,52 @@ func _ai_secure_search_assignments(soldiers: Array) -> Dictionary:
 		used_sectors[best_sector] = true
 	return assignments
 
+func _soldier_engaged_with_alien(soldier: Dictionary) -> bool:
+	var weapon_range := maxi(1, int(soldier.get("weapon_range", 0)))
+	return units.any(func(unit):
+		return unit.get("team", "") == "alien" and int(unit.get("hp", 0)) > 0 and unit.get("visible", false) and AegisHexRules.distance(soldier.cell, unit.cell) <= weapon_range and _has_line_of_sight_from(soldier.cell, unit.cell)
+	)
+
+func _ai_rescue_guard_assignments(soldiers: Array) -> Dictionary:
+	var escorted_vips := units.filter(func(unit): return unit.get("team", "") == "civilian" and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false) and unit.get("revealed", false) and not String(unit.get("escort_id", "")).is_empty())
+	if escorted_vips.is_empty():
+		return {}
+	var escort_ids := {}
+	for civilian in escorted_vips:
+		escort_ids[String(civilian.get("escort_id", ""))] = true
+	var guards: Array = soldiers.filter(func(soldier): return not escort_ids.has(String(soldier.get("id", ""))))
+	guards.sort_custom(func(left, right): return String(left.get("id", "")) < String(right.get("id", "")))
+	var occupied := _occupied_cells()
+	var candidates := {}
+	var anchors: Array[Vector2i] = []
+	for civilian in escorted_vips:
+		anchors.append(civilian.cell)
+	for extraction_key in extraction_cells:
+		anchors.append(_cell_from_key(String(extraction_key)))
+	for anchor in anchors:
+		var first_ring := AegisHexRules.neighbors(anchor, grid_width, grid_height)
+		var guard_cells: Array = first_ring.duplicate()
+		for first_cell in first_ring:
+			guard_cells.append_array(AegisHexRules.neighbors(first_cell, grid_width, grid_height))
+		for cell_value in guard_cells:
+			var cell: Vector2i = cell_value
+			if _passable_search_cell(cell, occupied):
+				candidates[AegisHexRules.key(cell)] = cell
+	var assignments := {}
+	for guard in guards:
+		var available: Array = candidates.values()
+		if available.is_empty():
+			break
+		available.sort_custom(func(left, right):
+			var distance_difference := AegisHexRules.distance(guard.cell, left) - AegisHexRules.distance(guard.cell, right)
+			var cover_difference := _cover_score(right) - _cover_score(left)
+			return distance_difference < 0 or distance_difference == 0 and (cover_difference < 0 or cover_difference == 0 and AegisHexRules.key(left) < AegisHexRules.key(right))
+		)
+		var target: Vector2i = available[0]
+		candidates.erase(AegisHexRules.key(target))
+		assignments[guard.get("id", "")] = {"kind":"guard","cell":target,"zone_id":"guard:%s" % guard.get("id", "")}
+	return assignments
+
 func _ai_contact_civilian(soldier: Dictionary, civilian: Dictionary) -> bool:
 	if AegisHexRules.distance(soldier.cell, civilian.cell) > 1 or int(soldier.get("tu", 0)) < ESCORT_TU:
 		return false
@@ -1357,8 +1465,10 @@ func _run_ai_human_turn() -> void:
 	ai_last_acted_ids.clear()
 	var claimed_civilians := {}
 	var secure_rescue := not units.any(func(unit): return unit.get("team", "") == "alien" and int(unit.get("hp", 0)) > 0) and rescued < required_rescues
+	var active_vips := units.filter(func(unit): return unit.get("team", "") == "civilian" and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false))
+	var rescue_guard_phase := secure_rescue and not active_vips.is_empty() and active_vips.all(func(unit): return unit.get("revealed", false) and not String(unit.get("escort_id", "")).is_empty())
 	var tracker_guidance := rescued < required_rescues and not _active_vip_tracker_targets().is_empty() and _visible_alien_contacts().is_empty() and _known_alien_contact_cells().is_empty()
-	var tactical_search_assignments: Dictionary = _ai_secure_search_assignments(soldiers) if secure_rescue or tracker_guidance else {}
+	var tactical_search_assignments: Dictionary = _ai_rescue_guard_assignments(soldiers) if rescue_guard_phase else _ai_secure_search_assignments(soldiers) if secure_rescue or tracker_guidance else {}
 	for soldier in soldiers:
 		if resolved or (ai_command_busy and not ai_command_active):
 			break
@@ -1367,17 +1477,18 @@ func _run_ai_human_turn() -> void:
 		var reserve_tu := maxi(0, int(soldier.get("fire_tu", FIRE_TU)))
 		var followers := units.filter(func(unit): return unit.get("team", "") == "civilian" and unit.get("escort_id", "") == soldier.get("id", "") and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false))
 		var visible_contacts := _visible_alien_contacts()
+		var soldier_engaged := _soldier_engaged_with_alien(soldier)
 		var rescue_target: Variant = null
 		var search_assignment: Dictionary = {}
 		if not followers.is_empty():
 			rescue_target = {"cell":_nearest_extraction_cell(soldier.cell),"ramp":true}
 		else:
-			var priority_civilians := units.filter(func(unit): return unit.get("team", "") == "civilian" and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false) and unit.get("priority_escort_id", "") == soldier.get("id", "") and (String(unit.get("approached_by_id", "")).is_empty() or unit.get("approached_by_id", "") == soldier.get("id", "")) and not claimed_civilians.has(unit.get("id", "")))
+			var priority_civilians := units.filter(func(unit): return not soldier_engaged and unit.get("team", "") == "civilian" and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false) and unit.get("priority_escort_id", "") == soldier.get("id", "") and (String(unit.get("approached_by_id", "")).is_empty() or unit.get("approached_by_id", "") == soldier.get("id", "")) and not claimed_civilians.has(unit.get("id", "")))
 			priority_civilians.sort_custom(func(left, right): return AegisHexRules.distance(left.cell, soldier.cell) < AegisHexRules.distance(right.cell, soldier.cell))
 			if not priority_civilians.is_empty():
 				rescue_target = priority_civilians[0]
 				claimed_civilians[rescue_target.get("id", "")] = true
-		if rescue_target == null and visible_contacts.is_empty() and _known_alien_contact_cells().is_empty() and rescued < required_rescues:
+		if rescue_target == null and not soldier_engaged and rescued < required_rescues:
 			var civilians := units.filter(func(unit): return unit.get("team", "") == "civilian" and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false) and (String(unit.get("escort_id", "")).is_empty() or unit.get("escort_id", "") == soldier.get("id", "")) and (unit.get("visible", false) or unit.get("revealed", false)) and not claimed_civilians.has(unit.get("id", "")))
 			civilians.sort_custom(func(left, right): return AegisHexRules.distance(left.cell, soldier.cell) < AegisHexRules.distance(right.cell, soldier.cell))
 			if not civilians.is_empty():
@@ -1409,7 +1520,10 @@ func _run_ai_human_turn() -> void:
 			var rescue_plan := _ai_extraction_plan(soldier, reserve_tu, visible_contacts) if rescue_target.get("ramp", false) else _ai_rescue_plan(soldier, rescue_cells, search_reserve, not rescue_target.get("search", false), visible_contacts)
 			_apply_ai_movement(soldier, rescue_plan)
 			if rescue_target.get("search", false) and int(rescue_plan.get("steps", 0)) > 0:
-				_emit_log("%s sweeps an unexplored %s zone for tracked civilians." % [soldier.callsign, rescue_target.get("kind", "search")])
+				if rescue_target.get("kind", "") == "guard":
+					_emit_log("%s forms up on the VIP and Skyranger rescue perimeter." % soldier.callsign)
+				else:
+					_emit_log("%s sweeps an unexplored %s zone for tracked civilians." % [soldier.callsign, rescue_target.get("kind", "search")])
 			if not rescue_target.get("ramp", false) and not rescue_target.get("search", false):
 				contacted = _ai_contact_civilian(soldier, rescue_target) or contacted
 			followers = units.filter(func(unit): return unit.get("team", "") == "civilian" and unit.get("escort_id", "") == soldier.get("id", "") and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false))
@@ -1648,6 +1762,10 @@ func _refresh_visibility() -> void:
 	for unit in units:
 		if unit.get("team", "") == "human":
 			unit.visible = true
+			continue
+		if unit.get("team", "") == "civilian" and int(unit.get("hp", 0)) > 0 and not unit.get("rescued", false) and not String(unit.get("escort_id", "")).is_empty():
+			unit.visible = true
+			unit.revealed = true
 			continue
 		var was_revealed := bool(unit.get("revealed", false))
 		unit.visible = false

@@ -1,8 +1,8 @@
 # Project Aegis Godot 4 Vertical Slice
 
-Native build: `v0.26.08.02.GODOT.0020_MULTI_TRANSPORT_MAP_TIERS_AND_EDGE_GUARDS_VERTICAL_SLICE`
+Native build: `v0.26.08.02.GODOT.0021_VIP_PRIORITY_GUARDS_VISIBILITY_AND_BUILDING_DENSITY_VERTICAL_SLICE`
 
-Paired browser build: `v0.26.08.02.0150_TACTICAL_MULTI_SKYRANGER_MAP_TIERS_EDGE_GUARDS_AND_3D_VIP_PINGS_PARITY_PATCH`
+Paired browser build: `v0.26.08.02.0151_TACTICAL_VIP_PRIORITY_GUARDS_CAMERA_VISIBILITY_AND_BUILDING_DENSITY_PARITY_PATCH`
 
 This is a native Godot 4 vertical slice alongside the verified HTML game. It does not wrap `index.html`, replace the browser build, or write to the browser campaign save.
 
@@ -30,6 +30,9 @@ The project uses the repository root so the native slice can reuse the existing 
 - Playable-perimeter guards shared by neighbors, paths, movement, AI, and deployment prevent units from entering or walking beyond map-edge cells.
 - Civilian contact for 8 TU, up to four followers per escort, single-file trail following, panic/recontact behavior, and mandatory ramp extraction.
 - Mandatory-rescue civilians carry periodic VIP tracker pulses. Once aliens are eliminated, AI searchers split across distinct tracker contacts, unexplored building interiors, and unexplored map sectors while established escorts continue to the ramp.
+- An unengaged soldier gives a visible, uncontacted VIP immediate priority even when another squad member remembers a remote alien contact. A visible in-range alien with line of sight still takes local combat priority.
+- Escorted VIPs remain visible through fog until extraction. After alien defeat and contact with every surviving VIP, non-escort soldiers form distinct guard positions around the evacuation column and Skyranger ramps.
+- Building generation scales deterministic opportunities by map tier and raises the placement chance from wilderness through farmland and town to city terrain.
 - Destructible wall cells that become nonblocking rubble for every tactical mover.
 - Rank- and mission-gated commander doctrine, commander-centered formations, bounded flanking, cover/LOS/range scoring, and selected-shot TU reserves during AI command.
 - Reaction fire during alien movement driven by each soldier's Reaction stat, current weapon TU profile, range, line of sight, and available ammunition.
@@ -56,7 +59,7 @@ The project uses the repository root so the native slice can reuse the existing 
 - Tactical Ballistic Rifle, Laser Rifle, Unarmed, Field Suit, No Armor, and Medkit profiles sourced from the content catalog; one issued Medkit restores up to 12 HP for 12 TU and is consumed after use.
 - Final mission HP creates a bounded one-to-five-day wound-recovery record. Wounded soldiers remain unavailable until strategic midnights reduce the timer to zero and medical clearance returns them to duty.
 - Native JSON save format 4 at `user://project_aegis_godot_save_v4.json`, with imported campaigns isolated at `user://project_aegis_godot_imported_copy_v4.json`.
-- In-game Build Health with 92 checks, including map tiers, exact multi-Skyranger squad deployment, playable-perimeter guards, bounded tactical-log trimming, air operations, browser-import isolation, personnel arrivals, research/manufacturing/construction, local-stock conservation, tactical loadout inheritance, Medkit consumption, wound recovery, commander doctrine, TU reserves, reaction fire, AI fog, AI reclaim, full-squad combat priorities, tracked VIP guidance, building-clear Skyranger placement, threat-aware rescue routing, sequential visible actors, queued tactical voices, classic command controls, mission equipment recovery/loss, large-list scrolling, and dense strategic marker placement.
+- In-game Build Health with 95 checks, including per-soldier VIP priority, escorted-VIP visibility, rescue perimeter guards, biome/tier building density, map tiers, exact multi-Skyranger squad deployment, playable-perimeter guards, bounded tactical-log trimming, air operations, browser-import isolation, personnel arrivals, research/manufacturing/construction, local-stock conservation, tactical loadout inheritance, Medkit consumption, wound recovery, commander doctrine, TU reserves, reaction fire, AI fog, AI reclaim, full-squad combat priorities, tracked VIP guidance, building-clear Skyranger placement, threat-aware rescue routing, sequential visible actors, queued tactical voices, classic command controls, mission equipment recovery/loss, large-list scrolling, and dense strategic marker placement.
 
 ## Tactical Controls
 
@@ -123,9 +126,9 @@ godot --headless --path . --editor --quit
 godot --headless --path . --script res://godot/tests/test_runner.gd
 ```
 
-The test runner covers campaign creation and travel, exact loadout/store save round-tripping, conservative loadout and wound migration, local-stock conservation and unavailable-item rejection, Medkit issue/return/consumption, mission recovery and loss, one-to-five-day wounds, exact recovery persistence, unequipped recruit arrivals, Workshop and personnel migration, hiring/capacity rules, construction, bounded research and manufacturing, air operations, browser-export normalization and source preservation, strategic markers, bounded hex rules, tactical loadout inheritance, Laser Rifle range/TU, selected-unit feedback, Unarmed fire rejection, movement highlighting, three End Turn cycles, civilian contact, wall destruction and traversal, full-squad contact response, pre-contact civilian claims, remembered alien-contact convergence, building-clear Skyranger placement, tracked VIP pings, pre-contact tracker guidance with shot reservation, distinct post-combat building/sector search assignments, threat-safe civilian paths, sequential visible actions, and all visible Build Health rows.
+The test runner covers campaign creation and travel, exact loadout/store save round-tripping, conservative loadout and wound migration, local-stock conservation and unavailable-item rejection, Medkit issue/return/consumption, mission recovery and loss, one-to-five-day wounds, exact recovery persistence, unequipped recruit arrivals, Workshop and personnel migration, hiring/capacity rules, construction, bounded research and manufacturing, air operations, browser-export normalization and source preservation, strategic markers, bounded hex rules, tactical loadout inheritance, Laser Rifle range/TU, selected-unit feedback, Unarmed fire rejection, movement highlighting, three End Turn cycles, civilian contact, wall destruction and traversal, full-squad contact response, per-soldier VIP priority, escorted-VIP visibility, distinct rescue guards, biome/tier building density, remembered alien-contact convergence, building-clear Skyranger placement, tracked VIP pings, pre-contact tracker guidance with shot reservation, distinct post-combat building/sector search assignments, threat-safe civilian paths, sequential visible actions, and all visible Build Health rows.
 
-Latest automated verification passes `119/119` native tests and `92/92` visible Build Health rows. Godot 4.7.1 strict editor parsing passes. The paired browser 0150 start screen and Geoscape load, browser Build Health passes `310/310`, and a live six-soldier Small Prairie Abduction displayed its projected Three.js VIP reticle and completed three End Turn cycles without runtime errors.
+Latest automated verification passes `123/123` native tests and `95/95` visible Build Health rows. Godot 4.7.1 strict editor parsing passes. The paired browser 0151 start screen and Geoscape load, browser Build Health passes `314/314`, and a live six-soldier Small Red River Signal battle selected Bryn with authoritative `51/51` TU and completed three End Turn cycles with all six soldiers alive and no runtime errors.
 
 ## Deliberate Limits
 
@@ -152,5 +155,7 @@ The paired 0015/0145 gate requires opening `index.html` directly and confirming 
 The paired 0016/0146 gate requires the originally affected mandatory-rescue battle under AI command: confirm every viable soldier acts, existing escorts keep evacuating, non-escorts converge on squad-observed aliens, civilian routes avoid known firing lanes when possible, and visible soldiers/aliens animate one at a time. Browser-only multi-base checks must also confirm the no-Skyranger recruitment prompt and squad-home recovery after a ferry-staged victory.
 
 The paired 0017/0147 gate requires the originally affected rescue campaign plus dense urban maps: confirm pre-contact civilian claims persist, non-escorts converge on the last observed alien area, Skyranger hull/ramp cells never touch buildings, damaged/rescue-progressed maps survive command-section navigation, and Classic Lineup targets fall only after their lethal shot is displayed with no post-resolution firing.
+
+The paired 0021/0151 gate requires a mandatory-rescue battle with a remote remembered alien contact: confirm an unengaged soldier still contacts an adjacent VIP, a locally threatened soldier retains combat priority, the camera centers each manually selected soldier, blue escorted VIPs stay visible through fog, and idle soldiers form around VIPs or ramps after every survivor is escorted. Repeated Small, Medium, and Large wilderness, farm, town, and city launches should also be compared for expected building-density progression and practical pacing.
 
 Next paired patch after this gate: `TACTICAL_CLASSIC_INVENTORY_TRANSFERS_AND_ELEVATION_FOUNDATION_PARITY_PATCH`, beginning with bounded adjacent-unit hand/belt transfers and floor-state data.

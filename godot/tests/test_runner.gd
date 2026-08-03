@@ -365,7 +365,13 @@ func _test_tactical(content: Dictionary) -> void:
 	ai_aliens[0]["visible"] = false
 	ai_aliens[0]["last_known_cell"] = Vector2i(9, 6)
 	var tactical_source := FileAccess.get_file_as_string("res://godot/scripts/tactical_board.gd")
-	_check(ai_board._known_alien_contact_cells().has(Vector2i(9, 6)) and tactical_source.contains("if rescue_target == null and _inside(contact_target_cell)") and tactical_source.contains("_known_alien_contact_cells().is_empty() and rescued < required_rescues"), "non-escort AI soldiers converge on remembered alien contact areas")
+	_check(ai_board._known_alien_contact_cells().has(Vector2i(9, 6)) and not ai_board._soldier_engaged_with_alien(ai_humans[0]) and tactical_source.contains("if rescue_target == null and _inside(contact_target_cell)") and tactical_source.contains("not soldier_engaged and rescued < required_rescues"), "remote alien memory does not block a free soldier's VIP priority while other soldiers converge on the contact area")
+	var engagement_cell_before: Vector2i = ai_aliens[0].cell
+	ai_aliens[0]["cell"] = ai_humans[0].cell + Vector2i(1, 0)
+	ai_aliens[0]["visible"] = true
+	_check(ai_board._soldier_engaged_with_alien(ai_humans[0]), "a soldier with a visible in-range alien is locally engaged and may defer an uncontacted VIP")
+	ai_aliens[0]["cell"] = engagement_cell_before
+	ai_aliens[0]["visible"] = false
 	var distress_board := AegisTacticalBoard.new()
 	get_root().add_child(distress_board)
 	distress_board.begin_battle(incident, tactical_roster, content)
@@ -432,6 +438,32 @@ func _test_tactical(content: Dictionary) -> void:
 		assignment_zones[secure_assignment.get("zone_id", "")] = true
 	ai_board._refresh_explored_cells([ai_humans[0]])
 	_check(secure_assignments.size() == ai_humans.size() and tracker_assignments.size() == 2 and tracker_assignments[0].get("tracker_id", "") != tracker_assignments[1].get("tracker_id", "") and building_assignments.size() == 1 and building_assignments[0].get("building_id", "") == "outpost" and assignment_zones.size() == secure_assignments.size() and ai_board._active_vip_tracker_targets().size() == 2 and ai_board.explored_cells.size() > 0 and ai_board.explored_cells.size() <= ai_board.grid_width * ai_board.grid_height and tactical_source.contains("var tracker_guidance :=") and tactical_source.contains("secure_rescue or tracker_guidance") and tactical_source.contains("var search_reserve := 0 if secure_rescue"), "tracked VIP pings guide idle AI searchers and split secure searches across buildings and sectors")
+	for tracked_civilian in tracked_civilians:
+		tracked_civilian["revealed"] = true
+		tracked_civilian["visible"] = false
+		tracked_civilian["escort_id"] = ai_humans[0].get("id", "")
+	ai_board._refresh_visibility()
+	var escorted_contacts: Array = ai_board.tactical_map_contacts().get("civilians", [])
+	_check(tracked_civilians.all(func(unit): return unit.get("visible", false)) and escorted_contacts.size() == tracked_civilians.size(), "escorted VIPs remain visible through fog until extraction")
+	var guard_assignments: Dictionary = ai_board._ai_rescue_guard_assignments(ai_humans)
+	var guard_cells := {}
+	for guard_assignment in guard_assignments.values():
+		guard_cells[AegisHexRules.key(guard_assignment.get("cell", Vector2i.ZERO))] = true
+	_check(guard_assignments.size() == ai_humans.size() - 1 and guard_cells.size() == guard_assignments.size() and guard_assignments.values().all(func(assignment): return assignment.get("kind", "") == "guard"), "after all VIPs are escorted idle soldiers form distinct guard positions around civilians and ramps")
+	var density_board := AegisTacticalBoard.new()
+	density_board.incident = {"seed":7421,"kind":"Wilderness Patrol"}
+	density_board.map_profile = {"structure_bonus":0}
+	var wilderness_small: Dictionary = density_board._building_density_profile()
+	density_board.incident["kind"] = "Town Abduction"
+	var town_small: Dictionary = density_board._building_density_profile()
+	density_board.incident["kind"] = "Urban Terror"
+	var city_small: Dictionary = density_board._building_density_profile()
+	density_board.map_profile = {"structure_bonus":1}
+	var city_medium: Dictionary = density_board._building_density_profile()
+	density_board.map_profile = {"structure_bonus":2}
+	var city_large: Dictionary = density_board._building_density_profile()
+	_check(int(wilderness_small.get("chance", 0)) < int(town_small.get("chance", 0)) and int(town_small.get("chance", 0)) < int(city_small.get("chance", 0)) and int(city_small.get("opportunities", 0)) < int(city_medium.get("opportunities", 0)) and int(city_medium.get("opportunities", 0)) < int(city_large.get("opportunities", 0)), "building probability rises from wilderness to town to city and with each tactical map tier")
+	density_board.free()
 	var console_soldier: Dictionary = ai_humans[2]
 	ai_board._select_unit(String(console_soldier.get("id", "")))
 	var console_tu_before := int(console_soldier.get("tu", 0))
@@ -560,9 +592,9 @@ func _test_build_health() -> void:
 	var app: Node = load("res://godot/main.tscn").instantiate()
 	app.content = _load_json("res://godot/data/content.json")
 	var health: Array = app._run_self_tests()
-	if health.size() != 92 or not health.all(func(row): return row.get("pass", false)):
+	if health.size() != 95 or not health.all(func(row): return row.get("pass", false)):
 		print("BUILD HEALTH DETAIL: %s" % JSON.stringify(health))
-	_check(health.size() == 92 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 92 rows")
+	_check(health.size() == 95 and health.all(func(row): return row.get("pass", false)), "visible Build Health passes all 95 rows")
 	app.free()
 
 func _load_json(path: String) -> Dictionary:

@@ -1,6 +1,6 @@
 extends Control
 
-const NATIVE_BUILD := "v0.26.08.02.GODOT.0020_MULTI_TRANSPORT_MAP_TIERS_AND_EDGE_GUARDS_VERTICAL_SLICE"
+const NATIVE_BUILD := "v0.26.08.02.GODOT.0021_VIP_PRIORITY_GUARDS_VISIBILITY_AND_BUILDING_DENSITY_VERTICAL_SLICE"
 const MAX_BROWSER_IMPORT_BYTES := 32 * 1024 * 1024
 const AUDIO_SETTINGS_PATH := "user://project_aegis_audio_settings.cfg"
 const VOICE_MAKEUP_DB := 6.0
@@ -1709,7 +1709,7 @@ func _run_self_tests() -> Array:
 	remembered_alien.revealed = true
 	remembered_alien.visible = false
 	remembered_alien.last_known_cell = Vector2i(9, 6)
-	var precontact_contact_memory_ready: bool = priority_civilian.get("priority_escort_id", "") == priority_soldier.get("id", "") and priority_soldier.get("priority_civilian_id", "") == priority_civilian.get("id", "") and priority_board._known_alien_contact_cells().has(Vector2i(9, 6)) and tactical_source.contains("if rescue_target == null and _inside(contact_target_cell)") and tactical_source.contains("_known_alien_contact_cells().is_empty() and rescued < required_rescues")
+	var precontact_contact_memory_ready: bool = priority_civilian.get("priority_escort_id", "") == priority_soldier.get("id", "") and priority_soldier.get("priority_civilian_id", "") == priority_civilian.get("id", "") and priority_board._known_alien_contact_cells().has(Vector2i(9, 6)) and not priority_board._soldier_engaged_with_alien(priority_soldier) and tactical_source.contains("if rescue_target == null and _inside(contact_target_cell)") and tactical_source.contains("not soldier_engaged and rescued < required_rescues")
 	var distress_board := AegisTacticalBoard.new()
 	distress_board.begin_battle(test_campaign.selected_incident(), test_campaign.assigned_soldiers(), content)
 	var distress_humans: Array = distress_board.units.filter(func(unit): return unit.get("team", "") == "human")
@@ -1729,7 +1729,7 @@ func _run_self_tests() -> Array:
 	distress_responder.cell = Vector2i(2, 2)
 	var down_distress: Dictionary = distress_board._ai_distress_target(distress_responder)
 	var distress_response_ready: bool = far_distress.get("stage", "") == "converge" and far_distress.get("cell", Vector2i.ZERO) == Vector2i(10, 10) and near_distress.get("stage", "") == "search" and near_distress.get("cell", Vector2i.ZERO) == Vector2i(16, 10) and down_distress.get("stage", "") == "converge" and tactical_source.contains("_record_tactical_distress(target, alien, roll <= chance)")
-	var full_squad_priority_ready: bool = tactical_source.contains("for soldier in soldiers") and tactical_source.contains("_known_alien_contact_cells().is_empty() and rescued < required_rescues") and tactical_source.contains("_ai_patrol_plan(soldier, reserve_tu)") and tactical_source.contains("ai_last_acted_ids.append")
+	var full_squad_priority_ready: bool = tactical_source.contains("for soldier in soldiers") and tactical_source.contains("var soldier_engaged := _soldier_engaged_with_alien(soldier)") and tactical_source.contains("not soldier_engaged and rescued < required_rescues") and tactical_source.contains("_ai_patrol_plan(soldier, reserve_tu)") and tactical_source.contains("ai_last_acted_ids.append")
 	var sequential_action_ready: bool = tactical_source.contains("0.38 if soldier.cell != cell_before") and tactical_source.contains("0.18 if alien.get(\"visible\", false) else 0.01") and tactical_source.contains("0.38 if alien.get(\"visible\", false) else 0.02")
 	var secure_search_board := AegisTacticalBoard.new()
 	secure_search_board.begin_battle(test_campaign.selected_incident(), test_campaign.assigned_soldiers(), content)
@@ -1752,6 +1752,31 @@ func _run_self_tests() -> Array:
 		secure_search_zones[secure_assignment.get("zone_id", "")] = true
 	secure_search_board._refresh_explored_cells([secure_search_humans[0]])
 	var post_combat_search_ready: bool = secure_search_assignments.size() == secure_search_humans.size() and secure_tracker_assignments.size() == 2 and secure_tracker_assignments[0].get("tracker_id", "") != secure_tracker_assignments[1].get("tracker_id", "") and secure_building_assignments.size() == 1 and secure_search_zones.size() == secure_search_assignments.size() and secure_search_board._active_vip_tracker_targets().size() == 2 and secure_search_board.explored_cells.size() > 0 and secure_search_board.explored_cells.size() <= secure_search_board.grid_width * secure_search_board.grid_height and tactical_source.contains("var tracker_guidance :=") and tactical_source.contains("secure_rescue or tracker_guidance") and tactical_source.contains("var search_reserve := 0 if secure_rescue")
+	for secure_civilian in secure_search_civilians:
+		secure_civilian["revealed"] = true
+		secure_civilian["visible"] = false
+		secure_civilian["escort_id"] = secure_search_humans[0].get("id", "")
+	secure_search_board._refresh_visibility()
+	var escorted_vip_visibility_ready: bool = secure_search_civilians.all(func(unit): return unit.get("visible", false)) and secure_search_board.tactical_map_contacts().get("civilians", []).size() == secure_search_civilians.size()
+	var rescue_guard_assignments: Dictionary = secure_search_board._ai_rescue_guard_assignments(secure_search_humans)
+	var rescue_guard_cells := {}
+	for rescue_guard_assignment in rescue_guard_assignments.values():
+		rescue_guard_cells[AegisHexRules.key(rescue_guard_assignment.get("cell", Vector2i.ZERO))] = true
+	var rescue_guard_phase_ready: bool = rescue_guard_assignments.size() == secure_search_humans.size() - 1 and rescue_guard_cells.size() == rescue_guard_assignments.size() and rescue_guard_assignments.values().all(func(assignment): return assignment.get("kind", "") == "guard") and tactical_source.contains("var rescue_guard_phase :=")
+	var density_board := AegisTacticalBoard.new()
+	density_board.incident = {"seed":7421,"kind":"Wilderness Patrol"}
+	density_board.map_profile = {"structure_bonus":0}
+	var wilderness_small_density: Dictionary = density_board._building_density_profile()
+	density_board.incident["kind"] = "Town Abduction"
+	var town_small_density: Dictionary = density_board._building_density_profile()
+	density_board.incident["kind"] = "Urban Terror"
+	var city_small_density: Dictionary = density_board._building_density_profile()
+	density_board.map_profile = {"structure_bonus":1}
+	var city_medium_density: Dictionary = density_board._building_density_profile()
+	density_board.map_profile = {"structure_bonus":2}
+	var city_large_density: Dictionary = density_board._building_density_profile()
+	var building_density_ready: bool = int(wilderness_small_density.get("chance", 0)) < int(town_small_density.get("chance", 0)) and int(town_small_density.get("chance", 0)) < int(city_small_density.get("chance", 0)) and int(city_small_density.get("opportunities", 0)) < int(city_medium_density.get("opportunities", 0)) and int(city_medium_density.get("opportunities", 0)) < int(city_large_density.get("opportunities", 0))
+	density_board.free()
 	var multi_roster: Array = test_campaign.assigned_soldiers().duplicate(true)
 	for multi_source in test_campaign.assigned_soldiers():
 		var reinforcement: Dictionary = multi_source.duplicate(true)
@@ -2034,10 +2059,13 @@ func _run_self_tests() -> Array:
 		{"name":"AI rescue routing rotates soldiers and rejects two-cell loops", "pass":rescue_route_ready and recovery_board.ai_last_acted_ids is Array},
 		{"name":"AI command tasks every viable soldier and prioritizes squad contacts", "pass":full_squad_priority_ready},
 		{"name":"Tracked VIP pings guide AI searchers before distinct post-combat building and sector sweeps", "pass":post_combat_search_ready},
+		{"name":"Unengaged soldiers keep immediate VIP contact priority despite remote squad contacts", "pass":precontact_contact_memory_ready},
+		{"name":"Escorted VIPs remain visible through fog until extraction", "pass":escorted_vip_visibility_ready},
+		{"name":"Idle soldiers form distinct rescue perimeter positions after every VIP is escorted", "pass":rescue_guard_phase_ready},
+		{"name":"Building probability scales by wilderness town city and tactical map size", "pass":building_density_ready},
 		{"name":"Each deployed squad forms at its own matching Skyranger rescue ramp", "pass":multi_transport_ready},
 		{"name":"Small Medium and Large tactical maps scale terrain and civilian capacity", "pass":map_tiers_ready},
 		{"name":"Tactical neighbors paths and generated units remain inside the playable perimeter", "pass":edge_guard_ready},
-		{"name":"Pre-contact rescue claims persist while other soldiers converge on remembered alien areas", "pass":precontact_contact_memory_ready},
 		{"name":"Non-escort soldiers answer wounded and downed squad distress calls then search the firing direction", "pass":distress_response_ready},
 		{"name":"Civilian escorts avoid known alien firing exposure when a safe route exists", "pass":threat_aware_escort_ready},
 		{"name":"Visible AI-controlled soldiers and aliens play one actor at a time", "pass":sequential_action_ready},
