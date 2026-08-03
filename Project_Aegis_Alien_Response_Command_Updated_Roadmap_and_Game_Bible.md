@@ -46,7 +46,20 @@ Remaining risks and manual validation:
 - Let the alien leave observation. Confirm responders continue to the last-known position and then search locally without exposing unseen alien movement through fog of war.
 - Automated fixtures use controlled open routes. Dense multi-building cross-squad pacing and the visual clarity of the transition remain the hands-on gate.
 
-Next recommended paired patch after this gate: `TACTICAL_CLASSIC_INVENTORY_CONTAINER_LOADOUT_AND_ELEVATION_RENDER_FOUNDATION_PARITY_PATCH`, expanding the bounded inventory foundation without beginning a broad multi-level tactical rewrite.
+Next recommended paired patch after this gate: `TACTICAL_VIP_UNBOUNDED_REINFORCEMENT_WAVES_AND_TERMINAL_RESCUE_STATE_PARITY_PATCH`.
+
+Planned scope only - not implemented in build 0156 / GODOT.0026:
+
+- VIP rescue incidents may receive an unlimited number of alien reinforcement waves. The existing mission-wide one-wave guard remains unchanged for non-VIP incidents.
+- After each VIP-mission reinforcement arrival, the alien force may establish a new eligible commander/caller and begin a fresh bounded call-check and arrival cycle. The implementation must prevent overlapping duplicate arrivals, preserve the warning/countdown presentation, and keep each individual turn and landing search bounded even though the total number of waves is uncapped.
+- Killing a current alien commander may suppress or delay that wave's active call opportunity, but it must not permanently disable later VIP-mission reinforcement waves or the missed-check-in investigation cycle.
+- A VIP mission cannot resolve as a tactical victory merely because every currently deployed alien is dead. It remains active while any required VIP is alive and not extracted, including while the battlefield is temporarily clear between waves.
+- The terminal rescue condition is explicit: the mission may conclude only after every required VIP is either extracted or confirmed dead. Extracted VIPs count as rescued; dead VIPs count as resolved but not rescued and must affect the mission result, score, and campaign consequences accurately.
+- AI-controlled soldiers must continue searching for and extracting unresolved living VIPs during clear intervals. Existing escorts retain extraction priority, while free soldiers spread toward tracker pings and unexplored likely locations.
+- Browser and Godot parity coverage must include multiple sequential waves, no one-wave cap in VIP missions, unchanged one-wave behavior in ordinary incidents, no victory during a clear interval with unresolved living VIPs, terminal completion after every VIP is extracted or dead, save/resume continuity, bounded landing placement, and fog-of-war-safe playback.
+- Performance safeguards must cap work per alien turn, reinforcement arrival, path search, render update, and AI playback frame. Unlimited waves must not mean unbounded work in any single browser frame or native process tick.
+
+The inventory/elevation foundation remains queued immediately afterward as `TACTICAL_CLASSIC_INVENTORY_CONTAINER_LOADOUT_AND_ELEVATION_RENDER_FOUNDATION_PARITY_PATCH`.
 
 ---
 
