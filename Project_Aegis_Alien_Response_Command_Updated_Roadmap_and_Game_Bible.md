@@ -2,9 +2,122 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-03
-Current handoff build: `v0.26.08.03.0156_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_PARITY_PATCH`
+Current handoff build: `v0.26.08.03.2032_TACTICAL_VIP_HUNT_PANIC_AND_REINFORCEMENT_SEARCH_INDEX_ONLY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0156 and native 0026 preserve save format 4. Mission-wide alien reports are now distinct from each soldier's personal sight. Every non-escort without personal sight takes the shortest practical bounded route toward the nearest reported or last-known alien position without commander-formation, cover, or flank detours. Direct convergence stops when that soldier personally sees an alien, and remaining TU returns to the established cover, formation, line-of-sight, range, and firing logic. Civilian and VIP escorts retain extraction priority. Browser static parsing and the seam checker pass, localhost Build Health passes 327/327, and a six-soldier 64x64 battle completed three confirmed End Turn cycles before a 33-frame AI continuation was started and safely reclaimed with no runtime errors. Native tests pass 147/147, native Build Health passes 104/104, and Godot 4.7.1 strict parsing passes. The exact widely separated two-squad response remains the hands-on gate.**
+Current patch status: **Browser 2032 preserves save format 4 and adds the first VIP-hunting alien doctrine pass. On mandatory VIP/rescue maps, aliens prioritize VIPs they can personally see, but cannot read the player-only VIP tracker pings or hidden civilian coordinates. Without a visible target they search deterministic building and map sectors in formation. Civilians and VIPs now panic and run when they see an alien or are fired upon. Reinforcements emerge from the purple saucer rear ramp, rally toward the caller's or missing commander's recorded last-known position, and then search the area in formation for VIPs or soldiers while treating visible civilians as targets of opportunity. The purple saucer hull and ramp begin unrevealed and follow normal tactical fog-of-war discovery. Browser script syntax passes, the new dedicated Build Health contract passes, and start-screen/Geoscape smoke passes in the available isolated harness. Full live tactical manual validation and Godot parity remain pending because the Godot project was not included with this patch request.**
+
+---
+
+
+# v0.26.08.03.2032 - Tactical VIP Hunt, Civilian Panic, and Reinforcement Search
+
+Browser build `v0.26.08.03.2032_TACTICAL_VIP_HUNT_PANIC_AND_REINFORCEMENT_SEARCH_INDEX_ONLY_PATCH` preserves save format 4. The native Godot vertical slice remains at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`; matching native behavior is explicitly pending because no Godot project files were supplied in this handoff.
+
+## Design clarification implemented
+
+- Mandatory VIP/rescue missions now give the alien force an explicit objective to find and kill VIPs.
+- The player-visible VIP tracker pulse remains AEGIS-only information. Aliens do not read the pulse, the hidden VIP cell, or any player-only fog-of-war data.
+- Aliens may target a VIP only after a real alien unit has line of sight to that VIP.
+- Visible VIPs take priority over visible soldiers. Visible ordinary civilians remain targets of opportunity after higher-priority targets.
+- When no valid target is visible, original alien forces on VIP missions search deterministic building centers and map sectors in formation instead of moving directly toward hidden VIP coordinates.
+
+## Civilian and VIP panic
+
+- A living civilian or VIP who personally sees an alien enters panic automatically.
+- A civilian or VIP who is fired upon enters panic whether the shot hits or misses.
+- Panic breaks the current escort chain and sends the civilian through the existing bounded two-step threat-avoidance movement.
+- Panic movement still uses real line of sight, occupied-cell checks, hard-cover blockers, map bounds, and the existing recovery logic after the threat is no longer visible.
+
+## Reinforcement arrival and rally behavior
+
+- Commander calls now store the commander's exact position at the moment of the call.
+- Missed-check-in investigations store the dead commander's final position.
+- Reinforcements begin on the purple saucer's rear-ramp cells where practical, rather than appearing as a disconnected cluster beside the craft.
+- Every reinforcement receives a rally position, formation index, caller identity, and `rally` phase.
+- Reinforcements immediately move toward the caller's or missing commander's last-known position.
+- Once the reinforcement group reaches that area, each member transitions into a bounded formation search through nearby buildings and map sectors.
+- During the search, real line-of-sight contact immediately overrides the search order: visible VIP first, visible soldier second, and visible civilian as a target of opportunity.
+- Last-known target positions are retained only after a legitimate sighting; reaching the last-known cell returns the alien to formation search.
+
+## Purple saucer fog of war
+
+- Alien saucer hull and ramp cover cells now initialize with `revealed: false`.
+- The craft is revealed only when AEGIS soldiers can observe its footprint under the same tactical visibility process used for other map objects.
+- The Three.js craft model is created only when at least one craft footprint cell is in the player's visible set.
+- Arrival messages may warn that reinforcements landed, but the craft's map position and model remain hidden until actually observed.
+
+## Technical implementation notes
+
+- Added shared helpers for alien-visible target priority, hidden-information-safe search waypoints, formation search cells, alien objective phases, reinforcement rally behavior, and civilian threat panic.
+- Updated both tactical execution paths:
+  - manual `End Turn` alien behavior;
+  - AI-command / simulated tactical continuation behavior.
+- Added tactical snapshot and AI-frame continuity fields so reinforcement rally/search phases, last-known contacts, and search assignments survive AI playback and `Take Back Control` handoff.
+- Preserved the established 20-hex alien weapon/vision limit, TU costs, reaction fire, blocked-cell rules, map-edge guards, bounded eight-step movement, destructible cover, and save format 4.
+- Non-VIP original alien behavior retains its previous soldier-pursuit fallback; reinforcement squads use the new rally-and-search behavior on all incident types.
+
+## Build Health coverage
+
+Added:
+
+`Alien VIP hunts, civilian panic, fogged saucers, and reinforcement rally searches preserve hidden information`
+
+The contract verifies:
+
+- a visible VIP outranks a visible soldier;
+- a hidden tracked VIP produces a sector-search target rather than direct pursuit;
+- civilian sight of an alien triggers panic and breaks escort ownership;
+- reinforcements first receive a rally target;
+- reinforcements transition to formation search after reaching the rally area;
+- every purple saucer cover cell begins unrevealed;
+- arriving aliens carry rear-ramp emergence and rally metadata;
+- at least one reinforcement begins on the craft's ramp path.
+
+## Validation performed
+
+- Extracted every embedded browser script and ran `node --check`; all scripts passed.
+- Loaded the start screen in the available isolated Chromium harness with a local-storage shim; build `V0.26.08.03.2032` rendered.
+- Started a fresh campaign and reached the main Geoscape with no JavaScript page exceptions.
+- Directly executed the new tactical contract in Chromium; it returned `true`.
+- Direct helper validation confirmed:
+  - visible target result: `vip`;
+  - hidden tracked VIP result: `search` / `alien-search-sector`;
+  - civilian visible-threat result: `panic: true`, escort cleared.
+- Build Health displayed `324/328` in the isolated `set_content` harness. The four failures were pre-existing external-audio/Three.js/Skyranger harness limitations caused by unavailable relative asset loading in that restricted test mode. The new VIP-hunt contract displayed `OK`.
+- Full mission launch, multiple manual alien turns, reinforcement arrival presentation, and browser-with-complete-assets Build Health remain hands-on gates.
+
+## Manual validation gate
+
+1. Launch a mandatory VIP rescue incident and do not reveal any VIPs. Confirm aliens search buildings and sectors rather than moving directly toward tracker pulses.
+2. Let an alien see a VIP and a soldier simultaneously. Confirm it targets the VIP when a legal shot exists.
+3. Keep a VIP hidden behind walls while its tracker pulse is visible to the player. Confirm the aliens do not path directly toward the pulse.
+4. Let a civilian see an alien without being shot. Confirm the civilian panics, leaves any escort, and runs away through a legal route.
+5. Fire at a civilian and miss. Confirm the civilian still panics and runs.
+6. Trigger a normal commander reinforcement call. Confirm the incoming force emerges through the purple saucer's rear ramp and moves toward the commander's call position.
+7. Kill a commander before the call, wipe the original force, and wait for the missed-check-in investigation. Confirm the new force rallies on the dead commander's last position.
+8. After the reinforcements reach the rally area, confirm they spread into a readable formation search for VIPs or soldiers.
+9. During that search, expose an ordinary civilian with no higher-priority visible target. Confirm the aliens may fire at the civilian as a target of opportunity.
+10. Observe the saucer landing outside soldier vision. Confirm no hull, ramp, or 3D craft model appears until a soldier gains line of sight to the footprint.
+11. Repeat under manual control and AI Command, then use `Take Back Control` and confirm reinforcement phase/search memory remains intact.
+12. Repeat on Small, Medium, Large, and two-Skyranger maps to verify bounded pathing and frame pacing.
+
+## Native parity follow-up
+
+The next Codex pass with the Godot project should port the exact hidden-information contract before expanding unlimited VIP reinforcement waves:
+
+- visible-VIP-first alien target priority;
+- no access to tracker pings or hidden VIP coordinates;
+- civilian/VIP panic on sight or incoming fire;
+- rear-ramp emergence;
+- caller/dead-commander rally point;
+- formation search after rally;
+- opportunistic civilian fire;
+- saucer fog-of-war visibility;
+- matching native tests and Build Health rows.
+
+Recommended next paired patch after the browser manual gate and native parity port:
+
+`TACTICAL_VIP_UNBOUNDED_REINFORCEMENT_WAVES_AND_TERMINAL_RESCUE_STATE_PARITY_PATCH`
 
 ---
 
@@ -818,10 +931,10 @@ The player commands a fledgling global defense organization responding to escala
 # 2. Current Build State
 
 ## Latest Known Build
-`v0.26.08.01.0146_FULL_SQUAD_AI_COMBAT_PRIORITY_AND_THREAT_AVOIDING_ESCORT_PARITY_PATCH`
+`v0.26.08.03.2032_TACTICAL_VIP_HUNT_PANIC_AND_REINFORCEMENT_SEARCH_INDEX_ONLY_PATCH`
 
 ## Native Vertical Slice Build
-`v0.26.08.01.GODOT.0016_FULL_SQUAD_AI_COMBAT_PRIORITY_THREAT_AVOIDING_ESCORT_AND_SEQUENTIAL_ACTION_VERTICAL_SLICE`
+`v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
 
 ## What This Patch Was Intended To Add
 This paired tactical/strategic patch adds:
