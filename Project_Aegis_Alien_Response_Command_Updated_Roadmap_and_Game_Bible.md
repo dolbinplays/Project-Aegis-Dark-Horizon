@@ -1,14 +1,1598 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-08-05
-Current handoff build: `v0.26.08.05.1035_TACTICAL_REINFORCEMENT_DIFFICULTY_AND_CASUALTY_PRESSURE_INDEX_ONLY_PATCH`
+Last updated: 2026-08-07
+Current handoff build: `v0.26.08.07.1415_TACTICAL_ALIEN_BEACON_FANOUT_SEARCH_AND_LONE_SURVIVOR_EXFIL_FIX_INDEX_ONLY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1035 adds selectable Alien Reinforcement Difficulty. Easy preserves the 2120 contact-only call pressure and deterministic 5–15-round post-wipe missed check-in. Medium adds one +7-point pressure step per alien casualty, retains the 46% cap, and dispatches a missed-check-in investigation exactly five rounds after the active alien commander dies even when other aliens remain alive. Existing saves migrate to Easy; new campaigns default to Medium; each mission stores its launch-time setting for deterministic save/reload behavior. Browser 0945 tactical timeline and shot feedback, 2345 staged per-leg Skyranger fuel, atomic multi-transport ownership, autosave recovery, survivor preservation, and sequential VIP wave safeguards remain intact. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 1415 fixes alien beacon camping: while two or more original aliens remain alive, no-contact behavior now fans the group outward through deterministic battlefield search instead of sending every alien back to the active Alien Field Beacon. Search targets for original aliens are kept outside the immediate four-hex beacon perimeter. The emergency fallback/call behavior remains available only to a lone surviving original alien, preserving the reinforcement fiction without turning the beacon into a permanent guard post. Browser 1345 escort-support assignment/loop handling, 1300 streamed AI playback, 1215 path coherence, and the 1015 beacon/swarm foundation remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+
+
+
+---
+
+# v0.26.08.07.1415 - Alien Beacon Fan-Out Search + Lone-Survivor Exfil Fix
+
+Browser build `v0.26.08.07.1415_TACTICAL_ALIEN_BEACON_FANOUT_SEARCH_AND_LONE_SURVIVOR_EXFIL_FIX_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Player-reported behavior
+
+A group of living aliens could be found sitting together around their Alien Field Beacon instead of moving across the map to hunt civilians, VIPs, or AEGIS soldiers.
+
+## Root cause
+
+The no-contact objective order for ordinary original aliens was:
+
+1. visible living target;
+2. valid living last-known target;
+3. reinforcement rally (for reinforcement units);
+4. **home/exfil target for every original non-VIP alien**;
+5. battlefield search.
+
+Because the current-build physical Alien Field Beacon is the preferred home target, step 4 intercepted the whole starting force before the search doctrine was reachable. Healthy groups therefore behaved like static beacon guards.
+
+## Corrected hunt/search doctrine
+
+While **two or more original aliens remain alive**, an original alien with no visible or remembered living target now proceeds directly into deterministic battlefield search.
+
+- Search assignments are distributed using the existing mission-seeded/alient-indexed waypoint system, so different aliens naturally fan out toward different sectors.
+- Original-alien search waypoints within four hexes of an active Field Beacon are rejected.
+- Formation offsets are also prevented from pulling a search destination back into that immediate beacon perimeter.
+- Buildings and broad battlefield sectors remain valid search destinations.
+- Acquiring line of sight to a civilian, VIP, or AEGIS soldier immediately overrides search and restores combat targeting.
+- A remembered target is pursued before generic search while that target is still living/unresolved.
+
+The beacon is therefore an insertion/support device, not a permanent defensive post for the whole alien group.
+
+## Lone-survivor fallback preserved
+
+The existing emergency-call behavior remains useful as a late-contact pressure mechanic. When only **one original alien** remains alive in an ordinary non-VIP mission and that alien has no visible or valid remembered target, it may fall back to:
+
+1. the active Alien Field Beacon;
+2. a legacy alien dropship ramp when applicable; or
+3. its recorded insertion point for older/compatibility states.
+
+Reaching that support point may still trigger the established emergency reinforcement call. Seeing a living target immediately overrides withdrawal.
+
+This changes the fiction from “the whole alien squad retreats to the beacon” to “a last surviving straggler tries to get back to communications and call for help.”
+
+## Reinforcement behavior
+
+Reinforcement aliens keep their existing arrival/rally ownership. They may initially converge around the caller/rally position as intended, then transition into their search doctrine. They are not converted into original-alien beacon guards by this patch.
+
+## Validation
+
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Added Build Health coverage: `Alien groups fan out from an active Field Beacon to hunt targets while only a lone original survivor may fall back to call reinforcements`.
+- Direct contract setup places two original aliens adjacent to an active beacon and confirms both receive `search` objectives outside the four-hex beacon perimeter.
+- The same setup removes one alien and confirms the remaining original alien receives the beacon fallback objective.
+- Static test-symbol scan: 356 unique `*Test` symbols / 355 declarations; only the existing Three.js `depthTest` material property is unmatched.
+- Save format remains 4.
+
+## Manual validation gate
+
+1. Observe a fresh alien group before it has seen AEGIS or civilians and verify it leaves the beacon area.
+2. Confirm multiple aliens spread toward distinct sectors rather than stacking on one destination.
+3. Reveal a civilian/VIP/soldier and verify immediate hunt/attack override.
+4. Leave one original alien alive, remove contact, and verify that lone survivor may return to the beacon to call reinforcements.
+5. Confirm reinforcement arrivals still rally/search normally.
+
+
+---
+
+# v0.26.08.07.1345 - Tactical Escort Support Assignment Board + Contact Loop Fix
+
+Browser build `v0.26.08.07.1345_TACTICAL_ESCORT_SUPPORT_ASSIGNMENT_BOARD_AND_CONTACT_LOOP_FIX_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Player-facing escort-support command board
+
+The earlier escort-support decision was global: every currently escorting fire team either kept its supports with the rescue column or every team broke supports off together. That did not give the commander enough control when several fire teams were escorting different civilians/VIPs at the same time.
+
+Build 1345 turns the interrupt into an assignment board:
+
+- **Stay on Escort (left column):** every eligible escort fire team begins here. Supporting soldiers remain with their leader and protect the civilian/VIP column.
+- **Break Off and Engage (right column):** clicking a team on the left moves it here. Its leader retains escort ownership while the supporting soldiers temporarily use normal combat AI to reinforce the visible alien engagement.
+- Clicking a team in the right column moves it back to the left.
+- The board shows the fire-team designation, leader, escorted civilian/VIP count, and support names.
+- Rearranging the board changes only the pending decision; no team starts moving while the commander is still assigning responsibilities.
+- **Apply Escort Decisions** commits the mixed set of choices in one operation and rebuilds only the small streamed AI continuation from the displayed tactical state.
+
+This allows outcomes such as Alpha and Bravo remaining on escort duty while Foxtrot and Golf break off, rather than requiring one answer for the entire response force.
+
+## Foxtrot repeated-popup loop: root cause and fix
+
+The old handler deliberately cleared the current AI playback after a Stay/Break Off choice so the simulator could rebuild from the newly selected support doctrine. The same temporary `aiPlayback = null` transition also reset `escortSupportContactActiveRef`. When the rebuilt playback immediately showed the same still-visible alien, the contact gate concluded that this was a new contact and reopened the popup. A player could therefore choose **Break Off To Support** for Foxtrot repeatedly without ever escaping the decision loop.
+
+Build 1345 separates **playback ownership** from **contact-episode ownership**:
+
+- Clearing/rebuilding streamed AI playback no longer clears the active escort-contact episode.
+- An empty setup frame during the replan does not clear the episode either.
+- The episode is released only when a **phase-complete** AI frame contains no visible living aliens.
+- The active episode and any open assignment board are retained in the live tactical cache across renderer/remount recovery.
+- The same engagement therefore cannot repeatedly re-prompt solely because the AI continuation was invalidated and regenerated.
+- After a genuine clear interval, a later newly spotted contact is allowed to open a new assignment board.
+
+## Break-off return normalization
+
+The 1015 behavior already caused detached supports to move back toward their escort leader once no active alien threat remained, but the stored team mode could remain `breakoff`. Build 1345 normalizes that mode back to `stay` when the escort AI processes a quiet/no-threat state.
+
+This gives the state machine a clean lifecycle:
+
+1. new visible contact -> assignment board;
+2. player commits per-team stay/break-off choices;
+3. break-off supports fight while their leader continues escorting;
+4. visible engagement ends;
+5. affected teams return to `stay` and re-form around their escort leader;
+6. a later genuinely new contact may request a new decision.
+
+## Streaming AI integration
+
+The 1300 one-round streaming architecture remains authoritative.
+
+- The assignment popup pauses frame advancement.
+- Applying decisions invalidates the current one-round look-ahead rather than a long precomputed battle.
+- AI resumes from the currently displayed positions, HP, TU, ammunition, escorts, fire-team identities, cover state, explored cells, reinforcement state, and selected mixed escort-support modes.
+- No future movement is committed while the assignment board is open.
+
+## Validation
+
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Direct mixed-assignment helper validation confirms one team can remain `stay` while another is `breakoff` in the same atomic decision.
+- Build Health adds a regression for the two-column board and contact-loop guard.
+- Static `*Test` scan reports 355 unique symbols and 354 declarations; the only unmatched token remains the existing Three.js `depthTest` material property.
+- Save format remains 4.
+
+## Manual validation gate
+
+1. Start a mission with multiple escorting fire teams and enable Simulation AI.
+2. Spot a living alien and verify all escorting teams appear in the left column.
+3. Move Foxtrot to the right, move another team right and back left, then apply.
+4. Verify only the final right-column teams detach supports.
+5. Verify escort leaders continue their civilian/VIP movement.
+6. Verify the same still-visible contact does not repeatedly reopen the popup after the stream rebuild.
+7. End the engagement and verify supports return/re-form.
+8. Spot aliens in a later new engagement and verify the board can legitimately appear again.
 
 ---
 
 
+# v0.26.08.07.1300 - Tactical AI Streamed Simulation and Playback Fix
+
+Browser build `v0.26.08.07.1300_TACTICAL_AI_STREAMED_SIMULATION_AND_PLAYBACK_FIX_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Design change
+
+Build 1245 made the manual-to-Simulation-AI handoff cooperative by dividing preparation into two-round chunks with browser yields, but it still completed the entire bounded continuation before normal playback began. A battle that eventually needed twenty or forty rounds therefore remained an up-front computation problem even though the browser was allowed to repaint between chunks.
+
+Build 1300 changes the ownership model to **streamed AI simulation**:
+
+1. capture the authoritative live battlefield;
+2. prepare one tactical round;
+3. begin playback immediately;
+4. while the player watches that buffered round, prepare at most one additional round;
+5. append that round to playback only if the same AI stream is still authoritative;
+6. repeat until the mission reaches a real terminal result or the existing safety interval returns command to the player.
+
+The simulator is still deterministic and simulation-side. This is a scheduling/buffering change, not a move toward visual-layer AI or approximate combat.
+
+## One-round batch contract
+
+`resolveMissionAiStreamBatchAsync(...)` requests one round from the existing continuation-capable `resolveMission(...)` implementation.
+
+- Nonterminal intermediate rounds use `simulationChunkOnly` and return `tacticalChunkContinuation` before mission-end growth/casualty processing.
+- The continuation contains current units, HP, TU, ammunition, medkits, fire-team/order state, cover damage, explored cells, reinforcement state, extraction geometry, alien-contact state, and tactical round.
+- The next round starts exclusively from that continuation snapshot.
+- The last allowed safety batch uses the existing final continuation behavior so a still-unresolved battle returns live survivors to player control.
+- A terminal batch performs the normal final result processing exactly once.
+
+## Bounded look-ahead
+
+The player-facing playback queue is intentionally not allowed to become another hidden all-upfront simulation.
+
+- Initial playback contains only the first prepared batch.
+- The next batch may be requested when playback has entered the current batch.
+- Once appended, another batch is not requested until playback reaches the newly appended batch.
+- Therefore the simulator can hold **at most one tactical round ahead of what the player is currently watching**.
+- A no-action/no-visible-frame round is allowed to advance to another one-round batch after a browser yield so an empty batch cannot deadlock the stream.
+
+This reduces initial takeover latency, bounds future-frame memory, and makes Command Map replanning cheaper because only a small amount of predicted future state can be discarded.
+
+## End-of-buffer behavior
+
+A temporary end of buffered playback is not a mission ending.
+
+- `aiResolutionPending` includes `streamPending` and `streamContinuation` ownership in addition to ordinary unplayed frames.
+- Tactical-map playback replaces `Continue Mission Result` with `AI thinking one round ahead...` while future streamed work is pending.
+- The classic overlay applies the same guard.
+- When the appended round arrives, normal playback resumes from the next frame.
+
+## Command ownership and cancellation
+
+Streaming introduces asynchronous work that must never overwrite a newer player decision. Build 1300 adds stream epochs/tokens for that purpose.
+
+- Handing command to AI starts a new authoritative stream token.
+- Take Back Control invalidates the token before restoring human command.
+- Issuing or clearing a Command Map order invalidates the queued future batch and restarts Simulation AI from the currently displayed live battlefield.
+- A completed stale async batch checks its token and is discarded rather than mutating the new state.
+- Pausing may retain the one already-generated look-ahead round, but further round generation is blocked while planning remains paused.
+
+## Save/reload recovery
+
+An async computation itself cannot survive a browser reload. A saved `streamPending: true` value would therefore be stale after restoration.
+
+Cached playback now restores with:
+
+- `streamPending` reset to false;
+- runtime stream token reset to the current session token;
+- the stored authoritative continuation retained.
+
+The streaming effect can then regenerate the next one-round batch from the saved continuation rather than waiting for a vanished Promise.
+
+## Failure recovery
+
+If a future look-ahead batch throws an exception:
+
+- already displayed/buffered tactical state remains valid;
+- the failed future continuation is discarded;
+- the playback is marked for safe tactical continuation rather than mission completion;
+- the tactical log reports the look-ahead failure;
+- control can return to the player without inventing casualties or victory.
+
+## Progress UI
+
+The `Transferring Tactical Command` screen remains but its purpose is narrower and more accurate. It now reports preparation of the **first streamed AI tactical round**. Its explanatory text states that normal playback starts after that first round and the AI keeps at most one round of look-ahead afterward.
+
+Command Map rebuilds use the same short initial-stream preparation path.
+
+## Preserved systems
+
+- 1245 continuation-mode deployment bypass and browser yield before AI work.
+- 1215 one-movement-commit and productive-progress path scoring.
+- 1015 friendly-traffic re-pathing, fire-team cohesion, unique living-soldier occupancy, escort support decisions, and interceptor swarm.
+- 1145 immutable defeated-UFO target snapshot.
+- Event timeline, movement trails, reinforcement arrival staging, Field Beacon rules, VIP terminal-rescue rules, manual control override, and false-total-loss prevention.
+- Save format 4.
+
+## Validation
+
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Build Health retains the 1245 AI handoff optimization test.
+- Build Health adds `Simulation AI streams one-round playback batches with at most one round of look-ahead`.
+- Static test-symbol scan finds 354 `*Test` symbols and 353 declarations; the only unmatched token remains Three.js `depthTest`, which is not a regression-test reference.
+- The obsolete all-upfront `resolveMissionForAiHandoffAsync(...)` helper is absent.
+- The streamed implementation contains one-round batching, continuation snapshots, one-batch prefetch gating, async token invalidation, end-of-buffer result guards, and reload recovery.
+- The start-screen concise version derives from `CURRENT_GAME_BUILD` as `v0.26.08.07.1300`.
+
+## Manual validation gate
+
+The most important test is the previously slow handoff on a large live battle. Playback should begin after roughly one tactical round of calculation rather than after the entire future encounter is known. While watching, occasional short `AI thinking one round ahead...` pauses are acceptable if the simulator cannot keep up with playback; repeated browser timeout/not-responding notifications are not.
+
+Also validate Take Back Control during playback, Command Map pause/replan/resume, save/reload during streamed AI ownership, terminal mission completion, and the 72-round unresolved safety return.
+
+---
+
+# v0.26.08.07.1245 - Tactical AI Handoff Progressive Loading and Chunked Simulation Fix
+
+Browser build `v0.26.08.07.1245_TACTICAL_AI_HANDOFF_PROGRESSIVE_LOADING_AND_CHUNKED_SIMULATION_FIX_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Player-reported behavior
+
+Confirming Simulation AI Command takeover of an already-live tactical battle could cause the browser to present at least two timeout / page-not-responding notifications before AI playback appeared. The existing tactical mission startup already had a yielding preparation screen, but the manual-to-AI handoff still performed its entire continuation simulation synchronously inside the confirmation action.
+
+## Source diagnosis
+
+Two sources of avoidable main-thread blocking were confirmed.
+
+First, `resolveMission(...)` called `tacticalDeployment(...)` before checking whether `initialBattleState` represented a live continuation. During AI takeover the newly generated deployment was discarded because the simulator correctly inherited the current battlefield instead. This meant an expensive deployment-generation pass could occur for no gameplay benefit.
+
+Second, continuation AI used a single synchronous `while` loop with a 72-round safety interval. Complex rescue/search/reinforcement battles could therefore perform pathfinding, visibility, fire-team reconciliation, movement trails, reaction fire, alien turns, and frame construction for many rounds without yielding to the browser.
+
+## Continuation deployment bypass
+
+`resolveMission(...)` now establishes `continuing` before deployment creation.
+
+- Fresh simulations continue to call `tacticalDeployment(...)`.
+- Live tactical continuations set deployment to `null` and derive grid size, units, covers, Skyranger/extraction geometry, round, explored cells, and reinforcement state entirely from `initialBattleState`.
+- No tactical map is regenerated during manual-to-AI ownership transfer.
+
+## Cooperative simulation chunks
+
+`resolveMission(...)` now accepts bounded `maxRoundsOverride` and `simulationChunkOnly` controls used by the AI handoff wrapper. When a chunk reaches its local limit while the battle is still unresolved, it returns an authoritative continuation snapshot before mission-end post-processing.
+
+`resolveMissionForAiHandoffAsync(...)` then:
+
+1. captures the current live battle;
+2. yields to the browser so the progress overlay can paint;
+3. simulates two tactical rounds;
+4. captures the resulting units, cover state, explored cells, reinforcement state, extraction geometry, and next round;
+5. refreshes living AEGIS TU for the next tactical round, matching the previous continuous-loop behavior;
+6. yields again before the next chunk;
+7. repeats until a real terminal result occurs or the existing overall safety interval is reached;
+8. prepares the accumulated sequential playback frames and hands control to the normal playback system.
+
+Intermediate chunks do not roll end-of-mission stat increases, casualty records, or operation results, preventing artificial post-processing between checkpoints. Final mission processing remains on the terminal/final safety chunk.
+
+## AI handoff progress overlay
+
+Confirming AI takeover now displays a full-screen `Transferring Tactical Command` panel with a progress bar and stage text. It reports live-state capture, current tactical-round checkpoint ranges, and final playback preparation.
+
+The same progressive pipeline is used when Simulation AI must be rebuilt after player Command Map orders. An exception during preparation restores player control and writes a readable tactical-log error instead of leaving command ownership in an ambiguous state.
+
+## Preserved tactical authority
+
+This is a scheduling/performance correction rather than an AI balance rewrite. Movement/path scoring, fire-team doctrine, one-route-per-round behavior from 1215, friendly-traffic deferral, reaction fire, TU/ammunition costs, alien reinforcement cadence, rescue logic, fog/visibility, damage, and final mission resolution remain simulation-side.
+
+## Validation
+
+- All non-empty embedded JavaScript blocks pass syntax validation.
+- Build Health contains a dedicated AI-handoff optimization contract.
+- The contract verifies continuation simulation skips deployment generation, supports chunk-only continuation snapshots, yields between chunks, defaults to two-round chunks, and exposes the progress UI.
+- Save format remains 4.
+- Start-screen version remains derived from `CURRENT_GAME_BUILD` and displays `v0.26.08.07.1245`.
+
+## Manual validation gate
+
+The primary manual gate is the original failure path: take over an active tactical battle with Simulation AI and verify the loading panel paints immediately, advances through checkpoints, and reaches playback without repeated browser timeout notifications. Long rescue/search battles and Command Map rebuilds should also be tested because they maximize continuation-simulation work.
+
+---
+
+
+# v0.26.08.07.1215 - Tactical AI Path Coherence and Single-Move Commit Fix
+
+Browser build `v0.26.08.07.1215_TACTICAL_AI_PATH_COHERENCE_AND_SINGLE_MOVE_COMMIT_FIX_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Player-reported behavior
+
+AI-controlled AEGIS soldiers were still showing visibly odd movement: long winding routes, routes that appeared to spend movement without useful progress, and trails that could double back on themselves during one rendered AI turn.
+
+## Source diagnosis
+
+The low-level `tacticalPath(...)` helper was not the source of literal loops. It uses breadth-first traversal with a visited-cell set, so one path returned by that function cannot revisit the same hex.
+
+Two higher-level behaviors were responsible for the apparent path instability:
+
+1. A human AI soldier could commit more than one movement plan in a single tactical round. A successful normal movement could be followed by fallback patrol, and direct-contact response could move toward a reported location and then immediately initiate a second movement plan after discovering an alien.
+2. The generic human movement scorer gave a positive bonus for `cell.steps`. That could make an unnecessarily long candidate more attractive simply because it used more movement steps, even when those steps produced little additional progress toward the current target.
+
+## Single movement commit per tactical round
+
+Build 1215 adds `roundMovementCommittedIds` to the human AI phase plus the helper `tacticalAiMovementCommitAllowed(...)`.
+
+- A soldier may commit at most one locomotion route in one tactical round.
+- A second movement-plan attempt for that same soldier is rejected until the next round.
+- Post-move facing, fire, reaction, targeting, reload, and other action resolution still function normally.
+- The fallback patrol branch now requires that the soldier has not already committed movement.
+- Friendly-traffic defer/re-path still happens before commitment, so waiting for a teammate to clear the lane can still produce the better first-and-only route.
+
+This turns each soldier's visible playback into one coherent movement decision rather than a concatenation of unrelated routes.
+
+## Human path-efficiency scoring
+
+`tacticalAiPathEfficiencyMetrics(...)` separates candidate movement into:
+
+- net progress toward the target;
+- productive steps that contribute to that progress;
+- detour steps that consume movement without equivalent target progress.
+
+Human AI scoring now gives a small reward to productive movement and penalizes excess detour movement. Target progress remains the primary directional signal. The result should favor a shorter, more legible route when two candidates offer similar tactical value.
+
+The correction does not convert tactical movement into naive straight-line movement. Hard cover, occupied cells, doors, buildings, map boundaries, fire-team formation targets, command destinations, threat/cover scoring, and bounded pathfinding still apply. A longer route remains legal when terrain or tactical requirements actually require it.
+
+Alien movement keeps the prior movement-step scoring to avoid silently changing alien combat behavior in a soldier-pathing patch.
+
+## Regression coverage
+
+Build Health adds:
+
+- `AI movement commits one coherent route per soldier per round and penalizes nonproductive detours`
+
+The contract verifies that a first movement commit is allowed, a second positive-step commit for the same soldier is blocked, zero-step/nonmovement resolution remains allowed, direct progress has zero detour cost, a deliberately overlong path to the same endpoint is classified as detour movement, and the live planner/simulation source contains the new scoring and movement-commit guards.
+
+## Validation completed
+
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Direct path-coherence / single-move contract returns `true`.
+- Static test scan reports 352 `*Test` symbols / 351 declarations; the only unmatched token is the existing Three.js material property `depthTest`.
+- The start-screen version derives from `CURRENT_GAME_BUILD` and displays `v0.26.08.07.1215`.
+- Save format remains 4.
+
+## Manual validation gate
+
+1. Run AI-controlled tactical missions on open, urban, and building-heavy maps.
+2. Watch a soldier's full movement trail and confirm it contains one committed movement route per tactical round rather than a main route plus fallback reversal.
+3. Confirm search and formation movement usually favor direct useful progress when no real obstacle requires a detour.
+4. Confirm friendly-traffic deferral still waits for a pending teammate and then chooses the cleaner route.
+5. Confirm soldiers may still fire normally after moving and do not lose combat responses simply because a second locomotion plan is refused.
+6. Confirm necessary obstacle/door/building detours still work and no new stalls appear.
+
+---
+
+# v0.26.08.07.1145 - Interceptor Swarm Target Snapshot Null Fix
+
+Browser build `v0.26.08.07.1145_INTERCEPTOR_SWARM_TARGET_SNAPSHOT_NULL_FIX_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Player-reported failure
+
+After launching **All Bases** interceptors at a UFO while Skyrangers were simultaneously traveling to an incident, Geoscape time could run for a short period and then display:
+
+`Runtime error: Uncaught TypeError: Cannot read properties of null (reading 'id')`
+
+The captured stack identified the actionable application frame as `index.html:5605:152`, inside an `Array.some` callback in the staggered swarm shootdown path.
+
+## Confirmed root cause
+
+The swarm shootdown effect used this sequence conceptually:
+
+1. resolve a successful interceptor pass against the mutable local variable `target`;
+2. queue `setMissions(old => old.some(... target.id ...))` to add the crash site;
+3. continue the same effect and assign `target = null` so later inbound sorties abort;
+4. React executes the queued functional state updater after the effect has continued;
+5. the updater reads `target.id`, but `target` is now null.
+
+This was a JavaScript closure/state-scheduling race, not an invalid UFO record, corrupt save, Skyranger ownership error, or ferry-range failure. Simultaneous Skyranger travel made the failure easier to encounter because the Geoscape clock continued advancing while the staggered swarm effects resolved.
+
+## Implemented correction
+
+- The successful shootdown branch now snapshots the UFO into `defeatedTarget` and its identity into `defeatedTargetId` before any queued state update is created.
+- Crash-site mission insertion now uses `appendCrashMissionOnceForTarget(...)`, which receives the immutable captured ID rather than closing over the mutable `target` variable.
+- The de-duplication helper tolerates null/legacy mission entries with optional ID access instead of assuming every array entry is a valid object.
+- Crash-site report creation, shootdown text, and contact removal use the defeated-target snapshot for the entire branch.
+- Only after those synchronous values are captured does the swarm set its working `target` to null and abort remaining inbound aircraft.
+- All other 1015 global swarm behavior remains unchanged: independent staggered ETAs, per-sortie combat, target-destroyed aborts, ferry routing, home-base/home-hangar preservation, and normal aircraft recovery.
+
+## Regression coverage
+
+Build Health adds:
+
+- `Interceptor swarm shootdown snapshots target identity before queued mission state updates`
+
+The direct regression deliberately captures a UFO ID, sets the mutable working target to null, then verifies crash-site insertion and de-duplication still succeed using the snapshot.
+
+## Validation completed
+
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Direct target-snapshot regression: `true`.
+- Static `*Test` symbol scan: 351 references / 350 declarations; the only unmatched token remains the existing Three.js material property `depthTest`, not a missing test function.
+- The exact old swarm closure `mission.sourceCraftId===target.id` is absent from the current swarm resolution block.
+- The new crash-site updater is bound to `defeatedTargetId`.
+- Start-screen version continues to derive from `CURRENT_GAME_BUILD` and therefore displays `v0.26.08.07.1145`.
+- Save format remains 4.
+
+## Manual validation gate
+
+1. Detect a flying UFO and launch `All Bases`.
+2. While that swarm is outbound, launch one or more Skyrangers to an incident.
+3. Run Geoscape time until an interceptor achieves a confirmed shootdown.
+4. Confirm a single crash-site mission is created without a runtime overlay.
+5. Confirm still-inbound interceptors abort from their current positions and route toward their permanent home bases.
+6. Let the Skyrangers continue independently to their incident and confirm their travel/tactical ownership is unaffected.
+7. Save/reload during the overlapping aircraft operations and repeat the completion path.
+
+---
+
+# v0.26.08.07.1015 - Global Interceptor Swarm + Tactical Cohesion / Beacon Fix
+
+Browser build `v0.26.08.07.1015_GLOBAL_INTERCEPTOR_SWARM_AND_TACTICAL_COHESION_FIX_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Tactical: current incidents now actually use the Alien Field Beacon
+
+The Alien Field Beacon foundation had been added to one tactical deployment implementation, but the effective multi-Skyranger deployment override still used the older insertion logic. Fresh incidents could therefore lack a beacon record and legitimately fall through to the legacy purple reinforcement saucer path.
+
+Build 1015 merges beacon creation into the effective multi-transport deployment path. Current-build tactical incidents create exactly one active Alien Field Beacon regardless of whether one or two Skyrangers deploy. The purple saucer remains a compatibility path only for genuinely legacy tactical snapshots that predate beacon state.
+
+The six immediately adjacent beacon cells are now reserved as a clear materialization ring. Procedural props/cover are removed from those six cells during deployment before aliens are placed. Starting aliens preferentially occupy that ring, and reinforcement transit can rely on the six one-hex neighbors rather than falling back to a distant ring because map decoration happened to block a pad cell.
+
+## Tactical: dynamic friendly-traffic re-pathing
+
+AI pathfinding still resolves inside the deterministic tactical simulation rather than inside the visual animation layer, preserving TU cost, visibility, reaction fire, casualty, save/reload, and replay consistency. The scheduler is now more willing to defer an AI soldier when a route is longer primarily because a friendly soldier who has not acted yet occupies the direct lane.
+
+- A one-step avoidable detour is sufficient to qualify for defer/re-path rather than requiring a two-step penalty.
+- The blocking friendly acts first when appropriate.
+- The deferred soldier then calculates against the updated occupied-cell map.
+- Movement trails continue recording the final chosen route for step-by-step playback.
+- Static terrain, hostile occupancy, cover, map boundaries, and true impassable cells still force normal detours.
+
+## Tactical: strict fire-team assembly pacing
+
+The half-speed leader rule now depends on supports actually occupying their current formation cells instead of relying on a stale or prematurely asserted `formationReady` state.
+
+At initial deployment and after a firefight/regroup:
+
+- a multi-soldier fire-team leader remains capped at half normal movement until supporting soldiers occupy the triangle, spaced-file, diamond, doorway-flank, or escort slots within the established tolerance;
+- after the team is genuinely formed, leader pace is limited by the slowest active member;
+- only the existing active visible-alien rush rule may override AI pacing;
+- player-controlled movement remains exempt from all AI formation pacing.
+
+## Tactical: unique living-soldier hex invariant
+
+Living AEGIS soldiers may not finish a completed tactical movement/action state on the same hex.
+
+- Destination planning treats other living soldiers as occupied.
+- Deferred friendly-traffic re-pathing rechecks occupancy against the current state.
+- Post-move/tactical-state repair resolves any legacy or edge-case overlap deterministically to the nearest valid open cell.
+- Dead units do not reserve a living-unit destination.
+
+This invariant is intended to prevent re-pathing and fire-team regrouping from trading long detours for stacked soldiers.
+
+## Tactical: escort support response decision
+
+When any AEGIS soldier spots one or more living aliens while a fire-team leader is actively escorting civilians/VIPs, tactical play can pause for an escort-support decision covering the affected escort teams:
+
+- **Stay With Escort** — supporting soldiers remain with their fire-team leader and continue protecting the civilian/VIP column.
+- **Break Off To Support** — supporting soldiers temporarily leave the escort formation and use normal combat AI to move toward/reinforce the visible alien engagement.
+
+The escort leader continues the rescue assignment in either case. Once no living alien is currently visible/engaged, detached supports automatically path back to their original fire-team leader and resume the applicable escort formation. Leadership succession and existing fire-team identities remain intact.
+
+## Strategic air combat: All Bases interceptor swarm
+
+Detected flying UFOs now expose an `All Bases (N)` response. It selects every **Ready** interceptor that has a legal direct or staged ferry-network route to the contact, across all bases, while reserving staging hangars so two aircraft cannot claim the same transient slot.
+
+Each interceptor is tracked as an independent sortie inside one swarm operation:
+
+- aircraft launch from their actual current bases;
+- direct and staged ferry routes remain independent;
+- attack ETAs are staggered according to each aircraft's route and travel time;
+- each aircraft attacks only when it reaches its own impact time;
+- earlier aircraft can damage the UFO before later attack passes arrive;
+- aircraft that have already completed their pass continue their normal home-return route;
+- if any pass destroys the UFO, every aircraft still inbound immediately aborts pursuit from its current interpolated route position;
+- an aborted aircraft first returns to a sensible route/ferry anchor, then follows normal ferry-network routing/refueling toward its permanent home base;
+- permanent `homeBase` / `homeHangarKey` ownership is preserved, so a staging base never silently becomes the aircraft's home;
+- aborted aircraft incur no fictitious combat damage and recover Ready when they reach home; aircraft that actually fought retain normal damage/repair outcomes;
+- the strategic route panel shows the independent aircraft, phases, and remaining ETAs.
+
+`All Bases` does not launch an aircraft that is Repairing, otherwise unavailable, or has no legal route under the existing range/fuel/ferry/hangar rules. When every stationed interceptor is Ready and routable, all of them participate.
+
+If the UFO is destroyed while an aircraft is still outbound, that aircraft does not teleport home and does not vanish. It turns around from its current route position and finishes a clock-driven return journey.
+
+## Preserved systems
+
+- 2115 observed reinforcement disembarkation staging and visibility hardening.
+- 1515 actual movement-trail tactical playback.
+- Alien Field Beacon destruction and reinforcement cancellation.
+- Manual-control override of fire-team movement and rescue restrictions.
+- Tactical Command Map and temporary fire-team orders.
+- VIP terminal rescue, reinforcement difficulty, and survivor-preservation rules.
+- Atomic multi-Skyranger launch and staged per-leg Skyranger fuel behavior.
+- Start-screen version is derived from the authoritative build ID and displays `v0.26.08.07.1015`.
+
+## Regression / validation coverage
+
+Build Health and direct executable contracts cover:
+
+- current two-Skyranger deployment creates exactly one beacon and selects beacon reinforcement deployment;
+- the first six starting-alien positions are in the clear six-cell beacon ring when six cells are required;
+- friendly-traffic defer/re-path triggers even for a one-step avoidable detour;
+- fire-team leader half pacing remains active until actual formation occupancy;
+- living-soldier end-state hexes are unique;
+- escort-support stay/break-off behavior and automatic return;
+- movement trails beyond the historical eight-hex playback cap;
+- all-bases swarm option reservation across multiple launch bases and independent travel progression;
+- target-destroyed abort-return route construction points to the aircraft's home base.
+
+Full Chromium gameplay remains a manual validation gate in this tool environment because the container's browser sandbox/zygote startup is unreliable. Syntax, package integrity, static Build Health resolution, and direct Node contracts are required before handoff.
+
+
+# v0.26.08.06.2115 - Tactical Reinforcement Disembarkation Visibility Fix
+
+Browser build `v0.26.08.06.2115_TACTICAL_REINFORCEMENT_DISEMBARKATION_VISIBILITY_FIX_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Problem corrected
+
+The 1145 arrival-integrity work guaranteed that a legacy reinforcement saucer could not count as successfully landed unless the complete requested alien group had valid spawn cells. A second presentation gap remained: the craft renderer considered the saucer observed when any hull or ramp footprint cell was inside AEGIS visibility, while individual alien rendering still required each alien's own hex to be in the current vision cone and line of sight. The rear ramp could therefore be hidden behind the craft even though the saucer itself was visible. AI playback also advanced a phase-complete landing frame after roughly 500 ms, making a legitimate deployment very easy to miss.
+
+## Implemented reinforcement staging
+
+- Reinforcement arrival records whether the beacon or legacy dropship was actually observed by AEGIS at the moment of deployment.
+- An observed landing gets an explicit `reinforcementLanding` playback frame containing deployment kind, wave number, troop count, and deployment coordinates.
+- Just-arrived reinforcement units receive a frame-local visibility override only for that observed deployment frame. This does not permanently reveal aliens after they move back into fog.
+- 2D Hex and Three.js tactical rendering both respect the temporary observed-disembarkation visibility flag.
+- The AI action camera focuses the observed beacon or dropship deployment point before subsequent movement.
+- Observed AI landing frames remain on screen for about 2.2 seconds before playback advances; unobserved arrival frames receive a shorter 1.2-second safety beat instead of the former 0.5-second phase-complete delay.
+- During manual tactical play, an observed arrival remains staged for roughly 1.25 seconds before the alien turn begins moving the new units.
+- Once the arrival beat ends, normal fog-of-war and vision-cone rules immediately resume.
+
+## Compatibility
+
+New tactical battlefields continue to use the Alien Field Beacon. A visible purple saucer therefore normally indicates a legacy tactical state created before the beacon foundation or another compatibility path with no beacon record. Those legacy battles remain supported and now receive the stronger disembarkation presentation.
+
+## Regression coverage
+
+Build Health now includes `Observed reinforcement arrivals visibly stage complete troops before AI movement resumes`. The contract checks the temporary alien visibility override, explicit reinforcement landing frame metadata, Three.js support, and the presence of the observed-arrival path.
+
+---
+
+
+# v0.26.08.06.1515 - Tactical AI Movement Trail Playback Fix
+
+Browser build `v0.26.08.06.1515_TACTICAL_AI_MOVEMENT_TRAIL_PLAYBACK_FIX_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Problem corrected
+
+AI-controlled tactical turns could perform more than one movement plan before the next rendered frame. The simulator stored only the unit’s final coordinates, while tactical playback animated movement only when frame-to-frame displacement was eight hexes or less. When combined movement exceeded that cutoff, the soldier or alien appeared directly on the destination hex and the movement-delay estimator also returned no delay.
+
+## Implemented movement trails
+
+- Simulation frames can now store `movementTrails` keyed by tactical unit ID.
+- Normal human AI movement appends the actual path produced by the movement planner.
+- Fire-team VIP/civilian rescue movement records leader and follower movement step by step.
+- Alien movement records every traversed cell, including movement interrupted by reaction fire.
+- Panic civilian movement contributes its resolved route.
+- Multiple movement plans by the same unit in one half-turn append into one continuous trail without duplicate junction cells.
+- Playback consumes the recorded route rather than applying the old eight-hex displacement cutoff.
+- A legacy/recovery fallback reconstructs a longer route when an older frame lacks a recorded trail.
+- Units selected for animation stay at their previously displayed hex until playback advances them through the trail.
+- Playback timing is calculated from the full path length so the next frame cannot overtake a long movement animation.
+
+## Gameplay continuity
+
+This is a presentation/synchronization fix. It does not change movement TU costs, fire-team pacing, player manual movement, AI destination selection, rescue priorities, cover rules, reaction fire, search doctrine, or mission balance.
+
+## Regression coverage
+
+Build Health now includes `AI tactical playback preserves movement trails beyond the old eight-hex frame cap`. The direct contract verifies a nine-step combined trail survives append/snapshot/replay and reaches the intended final hex without the former snap condition.
+
+---
+
+
+# v0.26.08.06.1245 - Alien Field Beacon Boot Null Guard
+
+Browser build `v0.26.08.06.1245_ALIEN_FIELD_BEACON_BOOT_NULL_GUARD_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Problem corrected
+
+The 1145 beacon regression test was evaluated during application startup and constructed an observer using `beacon.x` before confirming that the deployment had produced a valid beacon record. A null diagnostic fixture therefore raised `Cannot read properties of null (reading 'x')` and could prevent the start screen from loading.
+
+## Implemented safeguards
+
+- Beacon contract fixtures validate deployment, beacon, first alien cell, and numeric coordinates before use.
+- The foundation diagnostic is enclosed in a safe failure boundary and returns `false` rather than throwing.
+- Beacon creation rejects missing, blank, null, and non-numeric coordinates.
+- Beacon spawn-cell generation returns an empty result for invalid beacon coordinates.
+- Build Health includes a dedicated boot-null-guard regression.
+- Runtime error reporting now includes source location and stack details when available, while non-exception resource-load events are ignored by the crash overlay.
+
+## Continuity
+
+No campaign, tactical balance, reinforcement cadence, or save-format rules changed. The Alien Field Beacon foundation from 1145 remains the current playable implementation.
+
+---
+
+
+
+
+# v0.26.08.06.1145 - Alien Field Beacon Foundation and Reinforcement Arrival Integrity
+
+Browser build `v0.26.08.06.1145_TACTICAL_ALIEN_FIELD_BEACON_FOUNDATION_AND_REINFORCEMENT_ARRIVAL_FIX_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Problems addressed
+
+A reinforcement saucer could become visible near an AEGIS Skyranger while its newly created aliens remained initialized as hidden until a later visibility pass. The arrival routine also allowed the landing to count as successful even when it had produced fewer valid troop spawn cells than the requested wave size. Together, those behaviors could make a real reinforcement event look like an empty craft or create an incomplete deployment.
+
+The alien deployment fiction also lacked a persistent tactical device tying together the starting alien force, reinforcement calls, the alien exfil fallback, later research, and eventual alien-base access.
+
+## Implemented Alien Field Beacon foundation
+
+### New tactical missions
+
+- Every newly generated tactical battlefield places one one-hex `Alien Field Beacon` at the original alien insertion point.
+- The starting alien force is positioned around that beacon. The six adjacent hexes are used first; larger initial forces may occupy the next safe ring.
+- Original aliens record the beacon as their home point for fallback and emergency-call behavior.
+- The beacon begins unshielded with 72 HP and can be targeted and destroyed by ordinary ballistic or energy fire.
+- The beacon blocks movement while active and becomes non-blocking when destroyed.
+- The 2D battlefield has a dedicated beacon glyph and HP label.
+- The Three.js battlefield has a dedicated single-hex alien pedestal, luminous core, ring, and energy-column model.
+
+### Reinforcement transit
+
+- New missions route reinforcement materialization through the active beacon instead of adding another tactical saucer.
+- Reinforcement units may occupy only the six hexes immediately surrounding the beacon.
+- The full requested group must have valid passable, unoccupied cells before transit completes.
+- When any required cell is unavailable, the entire wave remains pending and retries on the following round; a partial or zero-unit deployment cannot count as success.
+- All materialized aliens receive the beacon as their home point and retain the existing caller-rally behavior.
+- Immediate line-of-sight reconciliation reveals arriving aliens and the beacon whenever AEGIS soldiers can actually see their cells.
+
+### Beacon destruction
+
+- Shooting the beacon reduces its HP using the existing weapon-mode, ammunition, TU, range, and line-of-sight rules.
+- Reducing it to zero destroys it, removes its movement block, and cuts off pending reinforcement transit.
+- Later reinforcement checks recognize that the mission had a beacon but no longer has an active one, preventing calls from silently falling back to the old insertion-point transmitter.
+- The tactical log identifies beacon damage, destruction, obstructed transit, and cancelled reinforcement signals.
+
+## Legacy tactical-save compatibility
+
+A tactical battle already created by an older build may not contain a beacon. Those battles keep the existing purple-saucer reinforcement method rather than receiving a new device in the middle of the operation. The legacy arrival path now also requires the complete reinforcement group to receive valid spawn cells and immediately recalculates visibility before reporting success. This directly addresses the observed visible-but-apparently-empty craft case without regenerating existing battlefields.
+
+## Planned adaptive beacon progression — not yet implemented
+
+### Phase 2: kinetic shield
+
+After several destroyed beacons, alien deployment doctrine should adapt by adding a kinetic barrier. High-speed ballistic projectiles will be intercepted, while energy weapons, grenades, and personnel can pass through.
+
+### Phase 3: combined kinetic and energy shield
+
+Later beacons should block both ballistic and directed-energy fire. Slow thrown objects such as grenades should pass through, and soldiers should be able to enter the field physically.
+
+### Intact disablement paths
+
+- Research several destroyed beacons to decipher their access system and unlock a qualified hacking action.
+- Capture or study a live alien commander to discover the short-range command badge.
+- Recover that commander badge during a mission and use it from inside the shield to authenticate, collapse the shield, and disable the beacon intact.
+- Intact recovery should provide substantially greater research and strategic value than wreckage.
+
+### Strategic and endgame development
+
+- Add a Geoscape alien flyover and beacon-drop event before the tactical incident begins.
+- Track beacon encounters and alien adaptation thresholds at campaign level.
+- Add destroyed and intact beacon research projects.
+- Trace beacon endpoints to alien bases.
+- Eventually spoof or reverse a captured beacon connection so AEGIS can deploy into an alien base.
+
+## Validation
+
+- All six non-empty embedded JavaScript blocks passed `node --check`.
+- A direct executable beacon contract confirmed a three-unit wave materializes only in adjacent cells, is immediately revealed when observed, and is blocked after beacon destruction.
+- New arrivals require `spawnCells.length === requestedCount` before committing.
+- Legacy saucer arrivals use the same complete-group rule and immediate visibility reconciliation.
+- Build Health now includes the Alien Field Beacon foundation regression.
+- The concise start-screen version remains derived from `CURRENT_GAME_BUILD` and displays `v0.26.08.06.1145`.
+- Save format remains 4; existing campaign saves require no repair.
+
+## Manual test checklist
+
+1. Start a new tactical mission and locate the one-hex beacon near the original alien deployment area.
+2. Observe it in both 2D Hex and 3D Iso views.
+3. Allow a reinforcement call and verify the entire wave materializes in open adjacent hexes.
+4. Place an AEGIS soldier within line of sight and verify no arriving alien remains artificially invisible.
+5. Occupy enough surrounding cells to prevent the full wave and verify the transit retries rather than partially deploying.
+6. Shoot the beacon to zero HP and verify pending transit is cancelled and later calls do not occur.
+7. Load an older live tactical battle with no beacon and verify a legacy saucer still works, with visible ramp troops when observed.
+
+
+# v0.26.08.06.0735 - Start-Screen Version Synchronization Guard
+
+Browser build `v0.26.08.06.0735_START_SCREEN_VERSION_SYNC_GUARD_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Problem statement
+
+The 2355 package correctly updated `CURRENT_GAME_BUILD`, save exports, diagnostics, and package names, but the start screen still displayed `v0.26.08.05.2315`. The concise visible version was stored in a second manually maintained constant, allowing it to fall behind later patch builds.
+
+## Implemented correction
+
+- `CURRENT_GAME_BUILD` is now the single authoritative browser release identifier.
+- `CURRENT_GAME_VERSION` is derived from the leading version segment of that build identifier instead of being entered separately.
+- The start screen explicitly labels the concise value as `Version` and displays the complete build identifier directly beneath it.
+- Build Health now verifies that the concise version matches the build prefix and that the start-screen component is bound to both values.
+
+## Permanent release invariant
+
+Every future browser update must change the authoritative `CURRENT_GAME_BUILD`. The visible start-screen version updates automatically from that value. Release packaging should still verify that:
+
+1. the standalone HTML build identifier matches the intended release;
+2. the start screen displays the same concise version;
+3. the game ZIP and Codex handoff contain byte-identical `index.html` files;
+4. patch notes, roadmap header, ZIP name, and HTML filename use the same release version.
+
+## Preserved behavior
+
+- Tactical startup staging, caches, AI, fire teams, Command Map, rescue, reinforcement, alien exfil, aircraft systems, and mission resolution are unchanged.
+- Save format remains 4. Existing campaigns require no repair.
+
+## Validation
+
+- All six non-empty embedded JavaScript blocks passed `node --check`.
+- Direct extraction confirmed the displayed concise version is `v0.26.08.06.0735` and the full build is `v0.26.08.06.0735_START_SCREEN_VERSION_SYNC_GUARD_INDEX_ONLY_PATCH`.
+- The old independently maintained `v0.26.08.05.2315` version constant is no longer present.
+- Build Health includes `Start screen version is synchronized with the current build`.
+- The standalone, game-package, and Codex copies of `index.html` are byte-identical.
+
+
+# v0.26.08.05.2355 - Tactical Startup Main-Thread Optimization
+
+Browser build `v0.26.08.05.2355_TACTICAL_STARTUP_MAIN_THREAD_OPTIMIZATION_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Problem statement
+
+Starting an asset-backed tactical mission could make the browser report that the page was not responding, sometimes more than once before the battlefield appeared. The tactical feature set now performs procedural structure planning, street and prop placement, cover generation, Skyranger deployment, alien/civilian placement, fire-team initialization, visibility calculation, event-timeline setup, Command Map preparation, and optional Three.js rendering. Several of those tasks were still performed consecutively in one main-thread startup task.
+
+A second source of unnecessary work existed in the tactical unit-state wrapper. Visibility reconciliation can intentionally return the exact existing unit array when no reveal, memory, or civilian-claim state changed. The wrapper nevertheless passed that unchanged array through battlefield repair, initial-fire-team assignment, and fire-team reconciliation, producing fresh objects and another expensive render pass.
+
+## Implemented optimization
+
+### Yielding tactical preparation gate
+
+New tactical missions now mount a lightweight `TacticalMissionStartup` preparation screen before the full battlefield component. Battlefield construction is divided into short stages with browser yields between them:
+
+1. structure planning;
+2. street and scene-cover placement;
+3. hard-cover distribution;
+4. soft-cover and concealment distribution;
+5. Skyranger and unit deployment;
+6. final tactical handoff.
+
+The preparation screen provides a stage label and progress bar. It lets the browser paint and process input between generation phases instead of presenting one long uninterrupted task. Existing cached live tactical battles bypass generation and restore directly.
+
+### Deployment caching
+
+Prepared deployment data is cached by mission identity and deployed soldier IDs. The cache is bounded and reuses completed deployment data when the same tactical component is remounted during normal screen recovery. Live tactical-state cache data remains authoritative for a battle already in progress.
+
+### Building-cell spatial cache
+
+Building footprint, perimeter, doorway, and interior lookups are now precomputed into a coordinate map per tactical battlefield. Repeated terrain, prop, cover, 2D-cell, and Three.js queries no longer scan every building plan for the same coordinate. The cache is bounded across recent mission maps.
+
+### No-op unit-update bailout
+
+The tactical `setUnits` wrapper now exits immediately when an updater returns the exact current unit array. This prevents visibility and pre-contact effects from performing battlefield repair and full fire-team reconciliation when nothing actually changed. Real movement, damage, escort, command-order, leadership, casualty, and formation updates still pass through the existing safety and reconciliation pipeline.
+
+### Viewport allocation reduction
+
+The arrays describing the currently visible 2D/3D tactical viewport are memoized by start coordinate and view size. Ordinary UI-state changes no longer allocate the same cell and row coordinate structures repeatedly.
+
+## Preserved behavior
+
+- Tactical map generation rules, cover counts, biome rules, buildings, Skyranger placement, alien count, civilian objectives, fire teams, fog of war, and mission balance are unchanged.
+- Manual control, AI Command, Command Map orders, VIP rescue, alien reinforcements, exfil behavior, and mission resolution are unchanged.
+- Existing live tactical snapshots restore without regeneration.
+- Save format remains 4. No campaign repair or migration is required.
+
+## Validation
+
+- All six non-empty embedded JavaScript blocks passed `node --check`.
+- Both tactical render mounts now use the startup gate.
+- The chunked battlefield builder contains explicit browser yields between generation phases and inside the hard/soft cover loops.
+- The building-cell cache, bounded deployment cache, no-op unit-update bailout, and memoized viewport arrays are present.
+- Build Health references resolve except the existing Three.js `depthTest` material property, which is not a test declaration.
+- A full browser timing comparison remains the manual gate because Chromium cannot reliably start in the current sandbox/zygote environment.
+
+## Manual performance checklist
+
+- Start several missions across city, small-town, farm, and nature biomes.
+- Confirm the tactical preparation screen paints promptly and its progress advances rather than the browser displaying repeated not-responding prompts.
+- Confirm generated maps retain expected buildings, cover density, civilians, aliens, Skyrangers, fire teams, fog, and extraction ramps.
+- Switch between 2D Hex and 3D Iso after startup and verify normal interaction.
+- Save and reload a live tactical battle and confirm it restores directly from cache/save state rather than regenerating a different map.
+
+
+# v0.26.08.05.2315 - Alien Exfil Homing and Emergency Reinforcement Call
+
+Browser build `v0.26.08.05.2315_TACTICAL_ALIEN_EXFIL_HOMING_AND_EMERGENCY_CALL_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Design ruling
+
+A surviving alien should not stand indefinitely beside a dead civilian or remain trapped in a map corner simply because its previous target no longer exists. It also should not possess perfect knowledge of an unseen AEGIS soldier's position. Once no living target is visible and no valid living last-known contact remains, the alien should attempt to withdraw to its own support point.
+
+The preferred support point is the most recent alien landing craft ramp. When the battlefield has no landed alien craft, the alien uses the insertion position recorded when it originally spawned as a deterministic field beacon. This preserves the user's intended fiction without requiring every mission archetype to add a second physical craft to the map.
+
+## Target priority
+
+Alien priorities are now:
+
+1. Any visible living VIP, civilian, or AEGIS soldier according to the mission's existing priority rules.
+2. A valid last-known position belonging to a target that is still alive and unresolved.
+3. Existing reinforcement rally/search doctrine for reinforcement units.
+4. Existing mandatory-VIP search doctrine.
+5. Exfil toward the latest alien dropship or original insertion beacon.
+
+A dead civilian or dead soldier is not a valid remembered target. Seeing a new living target immediately cancels withdrawal and any pending local call request.
+
+## Exfil movement
+
+Withdrawal uses a dedicated movement planner rather than the general combat-position scoring function.
+
+- It evaluates currently reachable cells under the alien's real TU allowance.
+- It prefers a cell that strictly reduces distance to the home target.
+- It ignores stale visited-cell penalties that could otherwise make standing still appear preferable.
+- It continues respecting hard cover, occupied cells, map boundaries, and reaction fire.
+- Two consecutive blocked exfil turns clear stale movement history before the next retry.
+
+This is intentionally narrow: it changes only no-stimulus withdrawal behavior and does not rewrite the normal firefight, VIP hunt, rally, or reinforcement formation AI.
+
+## Emergency call at home
+
+When the alien reaches within one hex of its dropship ramp or insertion beacon, it can transmit an emergency reinforcement request.
+
+- The request enters the existing reinforcement state machine.
+- The arrival uses the existing two-round purple-dropship warning.
+- Ordinary non-VIP missions retain their one-wave limit.
+- Killing the caller before the next reinforcement-state update prevents the request from producing a wave.
+- A visible living target overrides the exfil state before the call is armed.
+
+## Persistence and migration
+
+Newly spawned original aliens store their insertion coordinates. Reinforcement aliens store their dropship ramp as home. Tactical snapshots preserve home coordinates, emergency-call state, and exfil stall count.
+
+Older tactical states that lack home coordinates use the alien's current valid location as a safe migration fallback. This may allow an already-stalled legacy alien to call from its current position, but it avoids corrupting or regenerating an active battlefield.
+
+## Validation summary
+
+- All embedded JavaScript passes syntax validation.
+- Build Health includes a contract for exfil movement, emergency calling, and visible-target override.
+- Static test reference scanning remains clean except for the known Three.js `depthTest` property token.
+- Packaged and standalone browser files are byte-identical.
+
+## Manual validation gate
+
+1. Leave one alien alive in an ordinary hunt mission.
+2. Let it kill a civilian with no other target visible.
+3. Confirm it leaves the body and withdraws instead of remaining in the corner.
+4. Confirm it uses a landed alien craft when present and its insertion beacon otherwise.
+5. Reveal a living target and confirm immediate attack override.
+6. Let it reach home and verify the emergency two-round reinforcement warning.
+7. Verify one-wave limits and mission terminal rules remain intact.
+
+---
+
+# v0.26.08.05.2245 - Persistent Command Map and Multi-Team Pause Planning
+
+Browser build `v0.26.08.05.2245_TACTICAL_COMMAND_MAP_PERSISTENT_MULTI_ORDER_PAUSE_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Design ruling
+
+The Tactical Command Map is a command workspace rather than a one-order dialog. It stays open while the commander reviews fire teams, assigns destinations, revises orders, and observes the live tactical state. The player should never need to reopen the map after every fire-team order.
+
+The commander also needs a bounded planning pause during tactical-map AI Command. That pause must not cut a soldier's movement animation in half or leave a partially resolved combat frame. A pause request therefore blocks the next AI frame, allows the current movement/action frame to settle, and then freezes advancement until **Resume Action** is pressed.
+
+## Persistent overlay behavior
+
+The Command Map remains open when the player:
+
+- selects a different fire team;
+- issues a movement destination;
+- clears an existing destination;
+- causes the current AI continuation to be rebuilt;
+- resumes AI action after planning;
+- watches unit positions, revealed terrain, or order markers update.
+
+Only the explicit **Close** button dismisses the overlay. Closing the overlay does not itself cancel fire-team orders or alter AI control.
+
+## Pause Action control
+
+While tactical-map Simulation AI Command is active, the Command Map provides **Pause Action**.
+
+- If no action animation is underway, automatic frame advancement stops immediately.
+- If a soldier or alien is currently moving, firing, falling, or completing the active action frame, the control changes to **Pausing after current action...**.
+- The next precomputed frame is blocked as soon as the pause is requested.
+- The current frame is allowed to complete its movement and associated result resolution.
+- The map then enters a clear paused-planning state.
+
+Manual player control is already decision-paused and does not require a second pause mode. The Pause Action control is therefore enabled for Simulation AI Command rather than ordinary manual turns.
+
+## Multi-fire-team planning
+
+During the paused state, the player can configure the whole deployed force without interruption:
+
+1. Select Alpha Fire Team and place or revise its command point.
+2. Select Bravo Fire Team and place a different command point.
+3. Continue through Charlie, Delta, and any other living teams.
+4. Clear any order that is no longer useful.
+5. Press **Resume Action** once the full plan is ready.
+
+The first order issued while paused invalidates the old precomputed continuation because that continuation does not know about the new destination. It does **not** restart the battle immediately. Later orders update the same live tactical state. Resume Action then performs one clean AI rebuild using all final orders.
+
+## Resume and authoritative state
+
+When action resumes, Simulation AI begins from the battlefield currently displayed in the Command Map, including:
+
+- soldier, alien, and civilian/VIP positions;
+- HP, TU, ammunition, facing, and escort ownership;
+- cover damage and breached walls;
+- fog-of-war exploration;
+- tactical round and reinforcement state;
+- fire-team identity, leadership, role, and formation;
+- every active player command destination.
+
+The overlay remains open after Resume Action. This supports an ongoing command-room style of play in which the commander can pause again and adjust the plan without reopening the map.
+
+## Existing command priorities preserved
+
+A player destination remains subordinate to immediate tactical responsibilities:
+
+- currently visible aliens trigger combat doctrine;
+- eligible civilians and VIPs trigger rescue doctrine;
+- assigned escorts continue toward AEGIS extraction;
+- formation assembly and slowest-member pacing remain active;
+- a genuine visible-contact rush can override leader pacing;
+- leadership succession preserves the team's order;
+- reaching the destination clears the order and restores ordinary AI control;
+- three stalled turns still clear an unreachable order.
+
+## Persistence
+
+The live tactical cache now retains the Command Map paused-planning state in addition to overlay visibility and selected fire team. Save format remains 4.
+
+## Validation summary
+
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- The old close-on-order call is absent from issue and clear handlers.
+- AI auto-advance is gated by both paused and pause-requested states.
+- A settling interval prevents the next frame from starting while the current animated frame completes.
+- Resume either continues the retained playback or rebuilds it once from current state after orders invalidate the old continuation.
+- Static Build Health coverage confirms persistent overlay and pause controls.
+- All `*Test` references resolve to declarations.
+- Packaged and standalone browser files are byte-identical.
+
+## Manual validation gate
+
+1. Hand a mission with multiple fire teams to tactical-map AI Command.
+2. Open Command Map and issue orders to Alpha, Bravo, and Charlie without closing it.
+3. Request a pause during an active movement and confirm no following frame begins.
+4. While paused, revise multiple team orders and verify the map remains static.
+5. Resume once and confirm each team follows its final destination until combat/rescue priority intervenes or the point is reached.
+6. Confirm Close is the only action that dismisses the Command Map.
+
+---
+
+# v0.26.08.05.2230 - Tactical Fire-Team Command Map and Temporary Orders
+
+Browser build `v0.26.08.05.2230_TACTICAL_FIRE_TEAM_COMMAND_MAP_AND_TEMPORARY_ORDERS_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Design ruling
+
+Fire teams remain autonomous tactical units, but the commander needs a lightweight way to direct where a specific team should go without taking manual control of each soldier. A command-map order is therefore a temporary destination for the selected fire-team leader rather than a permanent behavior mode or a rigid waypoint for every member.
+
+The fire team continues to obey its established doctrine while carrying out the order:
+
+- the leader sets direction;
+- supports form the appropriate triangle, spaced file, diamond, doorway flank, or escort formation;
+- the leader uses half pace while the formation is assembling and matches the slowest active member after formation;
+- a currently spotted alien may authorize the existing contact-rush speed override;
+- hard cover, occupied cells, breached walls, doors, playable map boundaries, TU reserves, and bounded pathfinding remain authoritative.
+
+## Tactical Command Map
+
+A **Command Map** button is available on the tactical battlefield during player control and tactical-map AI Command.
+
+Opening it displays a top-down hex map with:
+
+- a dropdown containing every living fire team by phonetic designation;
+- the selected team's leader and members highlighted on the map;
+- leader/support role markers;
+- known civilians and VIPs;
+- revealed aliens only;
+- terrain, buildings, cover, map edges, and persistent fog-of-war;
+- the selected team's current command point, when one exists.
+
+The map does not reveal hidden aliens or other information that the deployed soldiers have not legitimately observed.
+
+## Issuing an order
+
+Clicking a passable command-map hex assigns that point to the selected fire team.
+
+- The order is copied to the living members of that fire team so leadership succession preserves it.
+- The highest-ranking/most-experienced current leader owns navigation toward the target.
+- Supporting soldiers move according to the existing fire-team formation rules rather than independently pathing to the exact clicked hex.
+- A click on blocked or occupied terrain is resolved to the nearest valid open cell when possible.
+- The Fire Team Assignment HUD shows the active command coordinates.
+- The command map provides an explicit **Clear Order** control.
+
+When an order is issued while tactical-map AI playback is active, the current displayed frame is retained, future precomputed frames are discarded, and AI continuation is rebuilt from the live battlefield with the new order. Positions, HP, ammunition, TU, civilians, cover damage, fog, reinforcement state, and tactical round remain authoritative.
+
+## Priority overrides
+
+A command-map destination never outranks immediate combat or rescue responsibilities.
+
+The order is temporarily suspended when the fire team encounters:
+
+- a currently visible living alien;
+- an eligible civilian;
+- a tracked or visible VIP;
+- an escort already assigned to one of its members;
+- another existing mandatory rescue priority.
+
+The team fights, rescues, or extracts under its normal AI doctrine. When the higher-priority situation is resolved, a still-active command order can resume.
+
+## Completion and return to autonomy
+
+When the fire-team leader reaches the selected hex:
+
+- the command target is cleared from every current member of that fire team;
+- the tactical log records arrival;
+- the Fire Team Assignment HUD removes the player-order line;
+- the team immediately returns to ordinary AI search, rescue, formation, and combat priorities until another order is issued.
+
+A safety rule also clears an order after three consecutive AI turns in which the leader cannot make meaningful progress toward it. This prevents an obsolete destination from permanently trapping a team after terrain destruction, unit congestion, or a changed battlefield state.
+
+## Persistence
+
+Temporary fire-team command fields are included in tactical continuation snapshots and AI playback frames. They survive:
+
+- tactical renderer switching;
+- AI Command and Take Back Control;
+- tactical cache restoration;
+- ordinary campaign save/reload while the live tactical state is retained;
+- fire-team leader death and succession, provided the team identity remains active.
+
+## Validation summary
+
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Direct helper contracts pass command issuance, team isolation, order lookup, immutable clearing, and in-place AI clearing.
+- Static contracts confirm the Command Map button, overlay, top-down team highlighting, temporary order marker, AI target integration, priority text, arrival clearing, and Build Health entry are present.
+- The game and Codex packages use byte-identical `index.html` files.
+- Chromium headless smoke was attempted but timed out in this environment with DBus/sandbox startup errors before producing a DOM; a full asset-backed browser mission remains the manual gate.
+
+## Manual validation gate
+
+1. Start a tactical mission with at least two fire teams and hand control to tactical-map AI Command.
+2. Open Command Map, select Bravo, and confirm only Bravo members are strongly highlighted with its leader distinguished.
+3. Click a distant passable hex and confirm the current battlefield is preserved while AI continuation restarts from that point.
+4. Confirm Bravo moves toward the marker under formation pacing while Alpha continues its own doctrine.
+5. Place an alien or eligible VIP in Bravo's sight and confirm combat/rescue overrides the movement order.
+6. After the interruption, confirm Bravo resumes the order when appropriate.
+7. Confirm arrival clears the marker and the Fire Team Assignment HUD returns to normal autonomous status.
+8. Issue and manually clear another order.
+
+---
+
+# v0.26.08.05.2145 - Last-Alien Fog/Grid Sweep and AI Fire-Team HUD
+
+Browser build `v0.26.08.05.2145_TACTICAL_LAST_ALIEN_SWEEP_AND_AI_FIRE_TEAM_HUD_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Design ruling
+
+AI-controlled alien-hunting missions must not stall because one living alien remains hidden in fog of war, inside a building, or outside the soldiers' ordinary patrol route. When the primary objective has not completed and no living alien is currently observed, fire teams transition from local contact investigation into a map-clearing search doctrine.
+
+The Fire Team Assignment display is also a persistent command aid rather than a manual-selection-only tooltip. It belongs at the top-right of the tactical battlefield and remains available while AI Command is active.
+
+## Last-known-contact search
+
+Before beginning a full sweep, soldiers continue the existing bounded search around a valid last-known alien position. This prevents a recent contact from being abandoned immediately merely because line of sight was lost.
+
+Once that local search is exhausted and a valid living alien still exists without current visual contact, the search doctrine advances to the fog-sweep phase.
+
+## Phase one: fire-team fog sweep
+
+- Every living fire-team leader receives a deterministic search slot.
+- The playable battlefield is divided into eight-cell sectors and distributed across the active fire teams.
+- Teams select reachable, passable cells that remain unexplored.
+- A team keeps its current fog target until it reaches or reveals that area instead of changing direction every turn.
+- Hard-cover cells and the protected outer map boundary are rejected as search destinations.
+- Newly revealed cells are added to the persistent tactical explored set and carried into later AI frames and save/reload state.
+- Seeing a living alien immediately cancels search behavior and restores ordinary combat priority.
+
+## Phase two: deterministic grid sweep
+
+After no passable unexplored cells remain, fire teams begin a full-map alternating lane sweep:
+
+- grid waypoints are spaced approximately five cells apart;
+- each horizontal lane reverses direction from the previous lane, producing a systematic back-and-forth pattern;
+- waypoints are distributed between active fire teams so they do not all search the same lane;
+- building centers and valid door cells are inserted into the sweep plan;
+- each team stores its current waypoint and index, then advances only after reaching the assigned area;
+- the sweep continues until the hidden alien is discovered, the alien is killed, or another legitimate terminal state occurs.
+
+The doctrine supplements fire-team formation and pacing. It does not constrain manual player movement or manual target selection.
+
+## Fire Team Assignment HUD position and AI visibility
+
+The assignment box now appears at the **top-right** of the battlefield view.
+
+During player control it shows the selected soldier's:
+
+- phonetic fire-team designation;
+- current role;
+- current fire-team leader;
+- active member count.
+
+During AI Command the box remains visible. It follows:
+
+1. the current AI playback actor when that actor is a living AEGIS soldier;
+2. otherwise the living soldier nearest the AI action camera;
+3. otherwise a deterministic living-soldier fallback.
+
+This keeps Alpha, Bravo, Charlie, and later team identities readable while soldiers move, rescue civilians, search fog, or enter combat under autonomous control. The centered shot-result feedback remains separate and can appear simultaneously.
+
+## Compatibility
+
+- Existing campaigns and tactical snapshots require no repaired save.
+- Existing explored cells, fire-team IDs, phonetic designations, and AI playback state remain compatible.
+- The new alien-hunt mode, target coordinates, waypoint index, and explored set are preserved in live tactical snapshots.
+- Optional rescue rules, mandatory VIP terminal resolution, reinforcement cadence, manual-control overrides, and player-only Skyranger extraction remain unchanged.
+- Save format remains 4.
+- Native parity remains pending.
+
+## Validation contract
+
+Build Health adds:
+
+- `AI fire teams clear fog and then grid-sweep for hidden final aliens`
+- `Fire-team assignment HUD stays top-right during player and AI control`
+
+Validation performed:
+
+- all six non-empty embedded JavaScript blocks passed `node --check`;
+- the direct alien-search contract advanced from an unexplored fog target to a legal grid-sweep waypoint and then advanced the waypoint index after arrival;
+- the HUD contract confirmed AI-frame actor/camera fallback logic and the top-right battlefield class;
+- all 336 `*Test` references resolved to 335 declarations, with the only unmatched token being the existing Three.js material property `depthTest`;
+- packaged and standalone HTML copies were verified byte-identical.
+
+## Manual validation gate
+
+1. Run an AI-controlled eliminate-all-aliens mission until at least one alien remains alive but unseen.
+2. Confirm the tactical log announces the systematic fog sweep.
+3. Watch different fire teams clear different unexplored sectors.
+4. After fog is exhausted, confirm the teams follow alternating grid lanes and inspect building doors/interiors.
+5. Confirm sighting the hidden alien immediately restores combat behavior.
+6. During AI Command, confirm the Fire Team Assignment box remains at the top-right and updates to the active or nearest observed AEGIS soldier.
+
+---
+
+# v0.26.08.05.2030 - Manual Escort Authority and Phonetic Fire-Team Designations
+
+Browser build `v0.26.08.05.2030_TACTICAL_MANUAL_ESCORT_AND_FIRE_TEAM_DESIGNATIONS_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Design ruling
+
+Manual tactical control overrides AI role restrictions as well as AI movement restrictions. The player may choose any living soldier to make civilian or VIP contact. Fire-team leaders remain the preferred autonomous rescue actors when AI Command is active.
+
+Every fire team also receives a military phonetic designation so the player can immediately understand a selected soldier's tactical element without relying on internal team numbers.
+
+## Manual civilian and VIP contact
+
+During a human-controlled tactical turn:
+
+- Any living selected AEGIS soldier adjacent to a revealed civilian or VIP may spend 8 TU to establish or retry an escort.
+- The soldier does not need to be the fire-team leader.
+- A selected soldier may escort up to four civilians under the existing capacity rule.
+- When multiple eligible VIPs occupy the same building, the selected soldier may contact the group under the existing building-contact behavior.
+- Civilians follow the soldier who established the escort and may extract only through player-controlled Skyranger ramps.
+- Manual escort interaction does not automatically move supporting soldiers or impose formation pacing.
+
+AI Command retains leader-first rescue doctrine for new contacts. When the player has already assigned civilians to a supporting soldier, AI Command recognizes that existing escort and continues routing it toward AEGIS extraction rather than abandoning or silently reassigning the civilians.
+
+## Phonetic fire-team designations
+
+Fire teams are named in deployment order using the military phonetic alphabet:
+
+- Alpha Fire Team
+- Bravo Fire Team
+- Charlie Fire Team
+- Delta Fire Team
+- continuing through Zulu, then Alpha 2 if a future battle ever exceeds 26 active designations.
+
+The designation is unique across the complete deployed response force, not restarted separately for each response squad.
+
+Designation identity is preserved through:
+
+- leader death and succession;
+- team redistribution after casualties;
+- triangle, spaced-file, diamond, doorway, escort, and combat-spread states;
+- manual control and AI Command handoff;
+- 2D and Three.js tactical renderer switching;
+- live tactical caching and save/reload.
+
+When teams merge, the surviving receiving team keeps its designation. A newly reconstructed legacy team receives the next available deterministic designation.
+
+## Selected-unit fire-team display
+
+Selecting a living soldier now shows a persistent battlefield box at the top-left of the tactical view. It displays:
+
+- the phonetic fire-team name;
+- the selected soldier's current role;
+- the current fire-team leader;
+- the number of active team members.
+
+The existing selected-soldier sidebar also uses the phonetic designation. Temporary shot-result feedback remains centered at the top and does not replace the fire-team assignment display.
+
+## Compatibility
+
+- Existing campaigns and tactical snapshots require no repaired save.
+- Legacy tactical teams without designation fields receive deterministic unique designations when reconciled.
+- Save format remains 4.
+- AI movement pacing, formation behavior, alien reinforcement cadence, VIP terminal-state rules, and extraction-ramp ownership remain unchanged.
+- Native parity remains pending.
+
+## Validation contract
+
+Build Health adds:
+
+- `Manual tactical control lets any soldier escort VIPs and shows phonetic fire-team designations`
+
+Direct contracts confirm that a supporting soldier is rejected by the AI leader-only default, accepted when manual authority is explicitly enabled, spends 8 TU, becomes the civilian's escort, and reports Alpha/Bravo designations correctly.
+
+---
+
+
+# v0.26.08.05.1945 - Manual Tactical Control Formation Override
+
+Browser build `v0.26.08.05.1945_TACTICAL_MANUAL_CONTROL_FORMATION_OVERRIDE_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Design ruling
+
+Fire teams are an autonomous-AI doctrine. They organize soldiers, pace leaders, flank contacts, and manage rescue formations while AI Command is active, but they do not restrict direct player orders. Taking control of the battle transfers movement authority completely to the player.
+
+## Manual movement authority
+
+During a human tactical turn:
+
+- Every living soldier uses their full legal movement allowance after the player's selected reserve-fire setting.
+- Standard movement remains 4 TU per hex with the existing 8-step ceiling.
+- A fire-team leader may move ahead of supports, move away from a visible alien, or reposition laterally without any formation-derived reduction.
+- The player does not need a spotted-alien rush condition to use full movement.
+- Supporting soldiers remain individually selectable and move only when directly ordered.
+
+Normal movement restrictions still apply: hard cover, occupied cells, map edges, insufficient TU, targeting modes, and movement animation locks.
+
+## Highlight and click parity
+
+The reachable-cell overlay and click-to-move path validation now share `tacticalManualMovementStepAllowance`.
+
+This removes the 1745 mismatch in which a cell could be highlighted using full TU but rejected by a second leader-pacing calculation after the click. A path that genuinely becomes invalid now produces a readable log message instead of failing silently.
+
+## Manual escort boundary
+
+The manual override distinguishes civilians from AI-controlled supports:
+
+- Assigned VIPs and civilians continue following their escort leader.
+- Alien landing-craft ramps remain excluded from extraction.
+- Supporting soldiers do not automatically slide into triangle, file, diamond, doorway, or escort-flank positions when the player moves the leader.
+- Supporting soldiers are treated as stationary occupied cells, preventing civilians from moving through or onto them.
+- Supporting soldiers do not lose TU because another soldier was manually moved.
+
+The existing rule that the fire-team leader establishes initial VIP contact remains unchanged. This update controls movement automation rather than changing rescue leadership.
+
+## AI Command remains unchanged
+
+When AI Command is active:
+
+- an assembling or reforming leader uses half pace;
+- a cohesive leader matches the slowest active member;
+- a move closing on a currently spotted living alien may use full speed;
+- supports automatically seek formation positions;
+- rescue, building-entry, combat-spread, regrouping, succession, and redistribution logic continue to use fire-team doctrine.
+
+Taking control pauses those formation movement constraints. Returning control to AI reactivates them from the current battlefield state without deleting fire-team identities.
+
+## Compatibility
+
+- No save migration or repaired campaign is required.
+- Existing tactical snapshots keep their fire-team IDs and roles.
+- Save format remains 4.
+- Native parity remains pending.
+
+## Validation contract
+
+Build Health adds:
+
+- `Manual tactical control bypasses fire-team pacing and forced support movement`
+
+Static and syntax validation confirms that manual highlights and manual path validation share one full-range helper, manual movement does not invoke leader pacing, and AI movement retains the existing 1745 formation gate.
+
+---
+
+
+# v0.26.08.05.1745 - Tactical Fire-Team Cohesion Pacing and Contact Rush
+
+Browser build `v0.26.08.05.1745_TACTICAL_FIRE_TEAM_COHESION_PACING_AND_CONTACT_RUSH_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Design goal
+
+Fire teams should move as coherent tactical elements rather than allowing a high-TU leader to run several hexes ahead of slower supports. The leader now regulates the team's strategic movement pace while preserving a single emergency exception for closing on a currently observed firefight.
+
+## Cohesion pacing states
+
+### Forming or reforming
+
+- The team evaluates every living support against its current formation target.
+- Formation targets include the normal triangle, two-person file, four-person diamond, building-door flank, and VIP escort geometry.
+- A support is formation-ready when it occupies its assigned cell or an adjacent legal fallback cell.
+- Until every support is ready, the leader's movement allowance is capped at the lower of:
+  - half the leader's normal available movement; and
+  - the slowest living fire-team member's available movement.
+- This gives supports excess movement with which to close the gap rather than allowing the leader to preserve or widen separation.
+
+### Cohesive formation
+
+- Once all supports are ready, the leader may move no faster than the slowest living team member.
+- Movement capacity is calculated from current Time Units after reserved-fire costs, using the existing 4 TU per hex and 8-step maximum.
+- A depleted or very slow support can force the leader to wait, preserving the unit rather than abandoning that soldier.
+
+## Spotted-alien contact rush
+
+The only pacing override is a real movement plan toward a currently spotted alien:
+
+- At least one living alien must be visible to AEGIS.
+- The leader's destination must reduce distance to that visible alien.
+- Merely having an alien visible somewhere on the map is not enough when the planned move goes away from the contact.
+- Remembered alien locations, casualty distress markers, patrol waypoints, VIP tracker signals, rescue routes, and formation regrouping do not trigger the override.
+- Losing current visual contact immediately restores normal cohesion pacing.
+
+## AI tactical integration
+
+- Human AI movement plans are generated normally, then passed through the fire-team pacing gate before positions or TU are committed.
+- The gate affects search, patrol, formation, remembered-contact response, combat repositioning, and post-contact regrouping.
+- Direct movement that closes on a spotted alien retains the unmodified movement plan.
+- Supporting soldiers continue moving toward formation cells using their own movement capacity.
+- Unit state records the active pace mode—forming, cohesive, solo, or contact rush—for diagnostics and tactical playback continuity.
+
+## Rescue and escort integration
+
+- Fire-team leaders use the same pacing calculation while searching buildings, contacting VIPs, escorting civilian columns, and returning to player Skyrangers.
+- Route length is capped before escort movement begins, so the leader cannot consume more movement than the slowest active team member can support.
+- Civilians and support soldiers continue advancing one cell per leader step through the existing formation-aware escort movement.
+- Alien sightings do not accelerate an escort unless the generated movement itself is actually toward the spotted firefight.
+
+## Manual tactical integration
+
+- Manual movement of the current fire-team leader obeys forming and cohesive pace caps.
+- Clicking a destination that closes distance to a currently visible alien receives the contact-rush exception.
+- Manual support movement remains individually controlled and is not treated as leader movement.
+
+## Compatibility
+
+- No campaign migration or repaired save is required.
+- New pace fields are optional tactical diagnostics and may be absent from older snapshots.
+- Save format remains 4.
+- All existing fire-team assignment, succession, redistribution, VIP formation, building entry, and player-only extraction rules remain active.
+
+## Validation contract
+
+Build Health now includes:
+
+- `Fire-team leaders pace formations and only override for a spotted-alien contact rush`
+
+Direct tests verify half-speed forming pace, slowest-member cohesive pace, full-speed approach to a spotted alien, and continued pacing when moving away from that same contact.
+
+A bounded Chromium headless smoke was attempted, but the local browser timed out with DBus/zygote errors before producing a DOM. Full asset-backed tactical validation therefore remains a manual gate.
+
+---
+
+# v0.26.08.05.1545 - Tactical Fire Teams and Player Extraction Ramp Guard
+
+Browser build `v0.26.08.05.1545_TACTICAL_FIRE_TEAMS_AND_PLAYER_EXTRACTION_RAMP_GUARD_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Design goals
+
+This update fixes a rescue-path ownership error and introduces the first complete browser implementation of automatic tactical fire teams. The tactical AI should no longer behave as a loose collection of independent soldiers during movement and rescue operations. Each response squad now subdivides into small ranked elements that move, search, fight, escort, absorb casualties, and regroup together.
+
+The formation geometry treats the requested “one more space away” spacing as **hex distance two from the fire-team leader**. In a standard three-person team, the two supporting soldiers occupy the rear-left and rear-right points at distance two, leaving the intervening center hex open. When a single VIP is escorted, that center hex is reserved for the VIP.
+
+## Player-only extraction ownership
+
+- Alien reinforcement saucers remain physical craft with ramps, but their ramps are no longer eligible extraction cells.
+- Rescue routing now derives its corridors only from player-controlled Skyranger craft records.
+- A mixed placement containing one or more Skyrangers and an alien landing craft filters the alien craft before calculating extraction corridors, ramp distance, rescue-perimeter anchors, or civilian extraction.
+- Manual and AI-controlled civilian movement share the same player-only extraction check.
+- An alien ramp may still be crossed as ordinary passable terrain when otherwise legal, but entering it cannot mark a civilian or VIP as rescued.
+
+## Automatic fire-team creation
+
+At tactical deployment, each selected response squad organizes its own soldiers before moving out:
+
+- Fire teams normally contain three soldiers.
+- The number of teams is chosen to favor groups of three while allowing a bounded fourth member where the squad has an extra survivor.
+- Team leaders are selected by rank first, then mission experience, bravery, reactions, and deterministic ID tie-breaking.
+- The highest-qualified soldiers are distributed across the available teams so one team does not consume every veteran leader.
+- Fire-team identity, squad identity, leader ID, role, and remembered building entry are stored on tactical soldier state and carried through AI handoff, renderer changes, and live tactical caching.
+
+## Formation geometry
+
+### Three-person standard formation
+
+- Leader occupies the forward point and determines facing.
+- Left support occupies the rear-left point at hex distance two.
+- Right support occupies the rear-right point at hex distance two.
+- The central hex directly behind the leader remains open for an escorted VIP.
+
+### Two-person reduced formation
+
+- The senior soldier becomes leader.
+- The supporting soldier moves two hexes directly behind the leader.
+- One empty hex remains between them, creating the requested spaced single-file element.
+
+### Four-person diamond
+
+- A three-person triangle gains a rear member.
+- The fourth soldier occupies the position behind and between the two supporting soldiers.
+- This occurs when a lone survivor joins a full three-person team or when the squad begins with a four-person remainder that is best kept together.
+
+### Solo survivor
+
+- A lone fire-team survivor moves toward the nearest viable team.
+- A lone survivor joins a two-person team to restore a three-person triangle.
+- A lone survivor joins a three-person team as the rear member of a four-person diamond.
+- When only a four-person team is available, its lowest-priority nonleader separates and joins the lone survivor, producing a three-person team and a spaced two-person team.
+
+## Casualty succession and redistribution
+
+Fire teams reconcile at the start of AI rounds and after live tactical state changes:
+
+- When a leader dies, the highest-ranked and most experienced surviving member becomes the new leader.
+- A four-person team meeting a two-person team transfers its lowest-priority nonleader, producing two three-person teams.
+- A four-person team meeting a lone survivor transfers its extra member, producing a three-person team and a two-person team.
+- A one-person team joins the nearest compatible team when possible.
+- Role labels are recalculated after every transfer so leader, left, right, wingman, and rear positions remain deterministic.
+
+## Fire-team movement and combat
+
+- Leaders act before supporting members and set the team’s travel direction.
+- Outside immediate contact, supporting soldiers move toward their assigned triangle, single-file, or diamond positions.
+- Formation positions are goals rather than teleport locks. Hard cover, occupied cells, map edges, buildings, and safe pathing may temporarily distort the shape.
+- During alien contact, each soldier uses the fire-team leader rather than only the squad-wide commander as the maneuver anchor.
+- Left and right supports use the existing cover-aware movement scorer to spread and seek opposite flanks while remaining within practical command distance and weapon range.
+- Rear members favor support fire.
+- After contact clears, the team resumes formation movement around its surviving leader.
+
+## VIP and civilian rescue doctrine
+
+- Only the active fire-team leader may establish a new VIP/civilian escort.
+- Manual attempts by a supporting soldier are blocked with a player-readable explanation.
+- AI search and rescue assignments are issued to leaders; their supporting soldiers are reserved as part of the same duty element.
+- When a leader contacts a VIP inside a building, every available living VIP/civilian in that same building is contacted as one group, up to the existing four-civilian escort capacity.
+- An outdoor contact remains a single-civilian contact rather than pulling unrelated civilians from elsewhere on the map.
+
+## Building entry and exit behavior
+
+- When a leader crosses a door or breached wall into a building, the entry opening and outside approach hex are remembered.
+- Supporting soldiers remain outside the building and take available flanking cells around that approach.
+- The leader enters alone, gathers the available VIP group, and then prefers the same door or breach when calculating the exit route.
+- If the remembered opening is no longer viable, the bounded route planner may select another safe legal exit rather than stall permanently.
+- After the leader exits, entry memory clears and the team reforms around the escort.
+
+## Escort formation
+
+- One escorted VIP occupies the central hex directly behind the leader.
+- Additional VIPs form a line behind that first center position.
+- The left and right supporting soldiers flank the last VIP in the escort line.
+- A fourth fire-team member occupies the rear-security position behind the escorted group.
+- Civilian and support movement is resolved one step at a time with collision, cover, building, and extraction checks.
+
+## Manual tactical integration
+
+- Fresh manual missions create and place fire teams before the first player turn.
+- Cached older tactical battles without fire-team fields receive deterministic team assignment on resume.
+- The selected-unit panel shows the soldier’s fire-team number and role.
+- Players may still move individual soldiers manually; formations are enforced by AI movement rather than hard-locking manual controls.
+- Only leaders may initiate civilian contact, but supporting soldiers retain normal movement, fire, inventory, and combat actions under player control.
+
+## Save and compatibility contract
+
+- Save format remains 4.
+- Existing campaign saves require no repair.
+- Existing live tactical states without fire-team metadata are assigned teams when opened or handed to AI.
+- Fire-team fields are included in tactical simulation snapshots so AI intervals, Take Back Control, 2D/3D renderer switching, and survivor preservation do not discard team identity.
+- The 1035 Easy/Medium reinforcement cadence, 0945 timeline and shot feedback, 2345 staged fuel, atomic multi-Skyranger ownership, false-total-loss prevention, sequential VIP waves, and terminal rescue rules remain intact.
+
+## Validation completed
+
+- All six non-empty application JavaScript blocks passed `node --check` after the integration changes.
+- Direct fire-team contracts confirmed:
+  - four soldiers form one diamond;
+  - five form a three-person and a two-person team;
+  - six form two teams of three;
+  - seven form a four-person and a three-person team;
+  - eight form two teams of three and one team of two;
+  - leader death promotes a surviving member;
+  - four plus two redistributes to three plus three;
+  - four plus one redistributes to three plus two;
+  - a two-person wingman remains two hexes behind the leader.
+- Direct rescue contracts confirmed:
+  - all available VIPs in the same building join the leader’s contact group;
+  - unrelated outdoor civilians are not pulled into the group;
+  - the first VIP occupies the center behind the leader and additional VIPs extend the line;
+  - supports remain outside when the leader crosses into a building and the entry point is remembered.
+- Direct extraction contracts confirmed that alien ramps never count as extraction cells or AI extraction corridors while player ramps remain valid.
+- Static test scanning found 331 `*Test` references and 330 declarations; the only unmatched token remains the existing Three.js material property `depthTest`, which is not a test function.
+
+## Manual validation still required
+
+1. Start a fresh one- and two-Skyranger tactical mission and confirm every response squad visibly divides into the expected teams.
+2. Give control to the AI and watch teams move in triangles, two-person spaced files, and four-person diamonds across open terrain.
+3. Kill a fire-team leader and confirm the next senior survivor takes point on the following AI round.
+4. Create four-plus-two and four-plus-one survivor combinations and confirm redistribution follows the documented rules.
+5. Enter a building containing multiple VIPs; confirm only the leader enters, supports flank the approach, all available VIPs join, and the leader prefers the same exit.
+6. Escort one and several VIPs and confirm the center-line and rear-flank formations remain readable where terrain permits.
+7. Spawn an alien reinforcement saucer near the team and confirm neither manual nor AI rescue movement treats its ramp as extraction.
+8. Switch between manual control, AI Command, 2D Hex, and 3D Iso and confirm fire-team identity and escort ownership remain stable.
+9. Finish the mission and confirm normal victory, survivor, reinforcement, report, and Skyranger return processing remains intact.
+10. Run browser Build Health and confirm the three new fire-team/extraction rows pass.
+
+## Known limitations and next steps
+
+- Formation goals are intentionally elastic around hard cover, narrow interiors, occupied hexes, and active firefights; soldiers are not teleported or forced to abandon viable cover merely to draw a perfect shape.
+- The browser patch does not yet add colored fire-team overlays, group-selection hotkeys, player-issued fire-team orders, suppression, bounding overwatch, or dedicated breach commands.
+- Native Godot 0026 does not yet contain this system.
+- The next tactical update should add readable fire-team overlays and orders, then build explicit bounding-overwatch and breach/clear actions on top of the team ownership introduced here.
+
+---
 # v0.26.08.05.1035 - Reinforcement Difficulty and Casualty Pressure
 
 Browser build `v0.26.08.05.1035_TACTICAL_REINFORCEMENT_DIFFICULTY_AND_CASUALTY_PRESSURE_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
