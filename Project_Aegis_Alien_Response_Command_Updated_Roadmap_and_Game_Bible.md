@@ -2,13 +2,181 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-07
-Current handoff build: `v0.26.08.07.1415_TACTICAL_ALIEN_BEACON_FANOUT_SEARCH_AND_LONE_SURVIVOR_EXFIL_FIX_INDEX_ONLY_PATCH`
+Current handoff build: `v0.26.08.07.2055_INCIDENT_MAP_LIMIT_SELF_TEST_STARTUP_TDZ_FIX_INDEX_ONLY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1415 fixes alien beacon camping: while two or more original aliens remain alive, no-contact behavior now fans the group outward through deterministic battlefield search instead of sending every alien back to the active Alien Field Beacon. Search targets for original aliens are kept outside the immediate four-hex beacon perimeter. The emergency fallback/call behavior remains available only to a lone surviving original alien, preserving the reinforcement fiction without turning the beacon into a permanent guard post. Browser 1345 escort-support assignment/loop handling, 1300 streamed AI playback, 1215 path coherence, and the 1015 beacon/swarm foundation remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 2055 is a startup-crash hotfix for 1850. It removes an unsafe Build Health/self-test forward reference to the locally declared `IncidentMapLimitPanel` that triggered a temporal-dead-zone `ReferenceError` during `AlienResponseCommand` initialization. The 1850 VIP rescue coordination, grenade AI, staged Alien Field Beacon knowledge/database unlock, confirmed-beacon targeting, row-major Barracks order, and saved 5-20 routine Incident Map Limit remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
 
 ---
+
+# v0.26.08.07.2055 - Incident Map Limit Self-Test Startup TDZ Hotfix
+
+Browser build `v0.26.08.07.2055_INCIDENT_MAP_LIMIT_SELF_TEST_STARTUP_TDZ_FIX_INDEX_ONLY_PATCH` preserves save format 4 and all 1850 gameplay behavior. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Startup crash fix
+
+- Fixed the player-reported startup `ReferenceError: IncidentMapLimitPanel is not defined`.
+- Root cause: the 1850 Barracks/Incident Map Limit Build Health contract called `String(IncidentMapLimitPanel)` while `AlienResponseCommand` was still initializing and before that local `const` component had reached its declaration. JavaScript correctly treated the local binding as uninitialized and threw from the temporal dead zone.
+- The regression contract now inspects `String(AlienResponseCommand)` for the settings-panel markers and continues to directly test the 5-20 clamping/routine-incident helpers. It no longer evaluates the not-yet-initialized component binding.
+- No Incident Map Limit gameplay logic, Barracks ordering, tactical AI, beacon knowledge, grenade doctrine, or save-format behavior was changed by this hotfix.
+
+## Validation
+
+- Zero remaining `String(IncidentMapLimitPanel)` references.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Authoritative browser build and visible start-screen version derive from 2055.
+- Save format remains 4.
+
+---
+
+# v0.26.08.07.1850 - VIP Rescue Coordination + Grenade AI + Beacon Intel + Barracks Reading Order + Incident Limit
+
+Browser build `v0.26.08.07.1850_VIP_RESCUE_COORDINATION_GRENADE_AI_BEACON_INTEL_BARRACKS_ROW_ORDER_AND_INCIDENT_LIMIT_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## VIP rescue Simulation AI distribution
+
+- On mandatory civilian/VIP rescue missions, Simulation AI now creates persistent fire-team-to-VIP assignments instead of letting every fire-team leader independently choose the nearest marked VIP.
+- The highest-ranked living deployed AEGIS soldier acts as rescue coordinator; XP/experience breaks equal-rank ties, then existing mission/service data provides stable deterministic fallback ordering.
+- One fire team is assigned to each unresolved marked VIP where possible before any duplicate rescue coverage is allowed.
+- If VIPs outnumber teams, available teams go to different VIPs first. If teams outnumber VIPs, excess teams remain free for security/combat/escort work instead of clumping on a rescue target.
+- Valid assignments persist across streamed one-round AI continuation batches and are cleared/reassigned only when the VIP resolves, the assignment becomes invalid, or a higher-authority escort/combat/player Command Map rule applies.
+
+## Simulation AI Frag Grenade doctrine
+
+- AI-start and inherited soldiers now carry/preserve the same Frag Grenade state used by manual tactical control.
+- Simulation AI can choose a grenade when it can hit multiple visible aliens, attack a single visibly entrenched alien, or attack a confirmed high-priority Field Beacon.
+- AI rejects a throw if the blast would hit a living AEGIS soldier, civilian, or VIP.
+- Exposed single aliens do not justify routine grenade expenditure when ordinary fire remains the better choice.
+- Grenade explosions continue to use the existing authoritative blast/structural-breach rules, so an unidentified beacon can still be destroyed incidentally even before AEGIS understands its strategic value.
+
+## Alien Field Beacon knowledge and Mainframe database unlock
+
+- AEGIS begins without strategic understanding of the Field Beacon. Seeing the device alone does not make it an automatic Simulation AI target.
+- When a beacon reinforcement materialization is actually observed, the tactical continuation records that fact and campaign knowledge advances to **Confirmed**.
+- Confirmation unlocks one persistent **Alien Field Beacon** Mainframe database entry. Repeated observations reuse that knowledge rather than generating duplicate unlock reports.
+- The database records only demonstrated knowledge: reinforcements can materialize around the device. Future shielding, hacking, capture value, and deeper operating principles remain unknown until their own discovery/research progression exists.
+- After confirmation, one nearby suitable free fire team may deliberately attack an active discovered beacon. Visible alien threats, escort/rescue duties, and explicit player Command Map orders outrank the automatic beacon objective.
+- Confirmed beacon knowledge and in-mission observation state survive streamed AI round boundaries.
+
+## Barracks row-major reading order
+
+- The main Soldier Barracks card list now uses a responsive grid instead of CSS multi-columns.
+- Soldiers therefore fill **left-to-right across a row, then continue on the next row**, matching normal book-reading order rather than filling top-to-bottom down one column first.
+- Existing soldier sort selection still determines the underlying roster order; this patch changes only how that sorted sequence is laid out visually.
+
+## Configurable Incident Map Limit
+
+- Command Settings now includes an **Incident Map Limit** slider from **5 through 20**.
+- The setting is saved with the campaign and defaults to 20 for existing/legacy saves that do not contain it.
+- Routine monthly/generated incidents are constrained by the configured limit. Longwave Radar can still create additional incident opportunities, but only available active-board slots are filled.
+- Lowering the limit never deletes incidents already active on the map.
+- UFO crash sites and other critical/player-created operations remain preserved even if they temporarily push the map above the routine limit.
+- Completed routine UFO operations suppressed because the board is full no longer produce a false incident-open prompt; the report instead states that the configured limit prevented adding those routine markers.
+
+## Validation contract
+
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Direct helper harness passes VIP assignment persistence/diversity, grenade value/safety, beacon knowledge targeting, and incident-cap clamping.
+- Build Health adds regressions for VIP rescue distribution, grenade/beacon intelligence doctrine, and Barracks/Incident Map Limit behavior.
+- Static test-symbol scan: 361 `*Test` symbols / 360 declarations; the only unmatched token is the existing Three.js material property `depthTest`.
+- Save format remains 4.
+
+## Manual validation gate
+
+1. Hand a terror/VIP rescue mission with several tracked VIPs to Simulation AI and confirm separate fire teams depart for separate VIPs.
+2. Let one VIP resolve and confirm its team can be reassigned without the other teams collapsing onto the same target.
+3. Present two clustered aliens with a safe blast area and confirm an equipped AI soldier can choose a Frag Grenade; repeat with a civilian/friendly in the blast and confirm the grenade is rejected.
+4. Before beacon knowledge is learned, expose a Field Beacon and confirm Simulation AI does not abandon normal priorities just to attack it.
+5. Observe reinforcements materialize from the beacon, confirm the Mainframe database entry unlocks once, then confirm a later suitable free team can prioritize the active beacon.
+6. Open Barracks with enough soldiers for multiple rows and verify visual order proceeds left-to-right, then down.
+7. Set Incident Map Limit to 5, fill the map, and confirm routine new incidents stop adding without deleting existing incidents; verify a UFO crash site is still preserved.
+
+
+---
+
+# v0.26.08.07.1630 - Tactical Damage-State Smoke + Breach Feedback Seed + Unlimited Downtime Capacity
+
+Browser build `v0.26.08.07.1630_TACTICAL_DAMAGE_STATE_SMOKE_BREACH_FEEDBACK_AND_UNLIMITED_DOWNTIME_CAPACITY_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Stage 3 goal
+
+The tactical rules already tracked structural HP and transitioned building pieces through intact, damaged, critical, and breached states, but the visual treatment lagged behind the simulation. A wall or window could lose most of its HP while still looking essentially intact, making it hard to understand which routes were nearly open and which structures had actually taken heavy fire.
+
+Build 1630 adds a shared presentation contract without changing tactical math.
+
+## Shared structural-damage feedback
+
+`tacticalCoverDamageFeedback(...)` now converts existing cover state into deterministic presentation metadata:
+
+- **Damaged** — first crack tier, modest material darkening, light dust/smoke cue.
+- **Critical** — stronger crack tier, deeper darkening, stronger smoke/dust cue.
+- **Breached** — preserves the existing passable rubble/opening state and adds a settling dust/smoke cue.
+- **Damaged window** — uses the same structural state while additionally marking the pane as shattered.
+
+`tacticalCoverDamageTooltip(...)` exposes the resulting state alongside remaining structural HP and window/smoke feedback.
+
+## 2D Hex presentation
+
+- Building walls draw deterministic crack overlays when damaged or critical.
+- Window cells visibly change from intact blue glass to a broken/shattered treatment after structural damage.
+- Damaged/critical structural cells receive restrained dust/smoke wisps.
+- Breach rubble retains the existing amber OPEN treatment and gains a visible settling dust cue.
+- Existing `DMG`, `CRIT`, and `OPEN` badges remain intact.
+
+## Three.js presentation
+
+- Damaged structures use darker state-aware material tones.
+- Crack geometry is added to damaged/critical walls without changing collision geometry.
+- Broken windows use a dimmed pane plus shard/frame cue.
+- Damaged/critical walls and breach rubble receive small bounded translucent smoke/dust meshes.
+- Effects are intentionally static/lightweight so tactical rendering does not reintroduce the timeout/performance problems addressed by earlier Three.js optimization work.
+
+## Temporary unlimited Training Center / Rec Room capacity
+
+The current downtime scheduler previously modeled both facility-wide and per-activity slot caps: six soldiers per Training Center, eight per Rec Room, plus smaller caps for range, gym, running, cards, pool, and darts. Those limits are intentionally disabled for now.
+
+- If at least one **Training Center** exists, any number of currently living/eligible soldiers may train during the same downtime tick.
+- If at least one **Rec Room** exists, any number of currently living/eligible soldiers may use recreation during the same downtime tick.
+- Individual activity caps are also disabled, so a large roster can all choose range practice, gym work, cards, pool, or another valid activity without arbitrary overflow.
+- The facility itself is still required. No Training Center still means no training access; no Rec Room still means no recreation access.
+- Existing activity preferences, autonomous choices, friendship/contact generation, training gains, stress recovery, and Sickbay/overflow exclusions remain unchanged.
+- The old slot values remain in `DOWNTIME_ACTIVITIES` as dormant balancing data for a later deliberate capacity pass.
+
+This is a usability/balance simplification rather than a final world-simulation rule. A future capacity system can return when facility scale, shift scheduling, staffing, room upgrades, and base population pressure have enough supporting gameplay to make the restriction interesting rather than arbitrary.
+
+## Gameplay boundary
+
+This is a **feedback seed**, not the later fire/smoke simulation. Smoke/dust currently does not:
+
+- block or shorten line of sight;
+- damage or suppress units;
+- change movement cost or AI pathfinding;
+- spread to adjacent cells;
+- ignite furnishings;
+- interact with building power.
+
+Those systems remain later Stage 3 work after the visual contract is playtested.
+
+## Validation
+
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Direct damage-state helper contract confirms damaged, critical, breached, and broken-window output.
+- Build Health adds `Tactical structural damage shows cracks broken windows smoke and breach feedback in 2D and Three.js`.
+- Build Health also verifies temporary unlimited downtime capacity using a 24-soldier roster with a single Training Center and single Rec Room.
+- Static test-symbol scan is rerun for this combined build; only Three.js `depthTest` is expected to remain an intentional non-test token.
+- Save format remains 4.
+
+## Manual validation gate
+
+1. Damage a wall through intact -> damaged -> critical -> breached and compare both tactical renderers.
+2. Damage a window and confirm the shattered state is obvious before full breach.
+3. Verify the underlying hex remains blocked until the existing breach threshold actually opens it.
+4. Confirm smoke/dust does not alter LOS, movement, or damage.
+5. Confirm renderer switching preserves the same authoritative structural HP/state.
+6. Assign more than six healthy soldiers to one Training Center and more than eight to one Rec Room; confirm all eligible soldiers can resolve their selected downtime mode.
+7. Remove the matching facility and confirm the activity becomes unavailable, proving only the capacity cap was removed rather than the facility requirement.
+
 
 # v0.26.08.07.1415 - Alien Beacon Fan-Out Search + Lone-Survivor Exfil Fix
 
@@ -4634,15 +4802,172 @@ Still planned:
 - Battlefield-space optimization.
 - Simulated mission sprite consistency.
 - Improve the Three.js battle option for alien incidents so manual tactical missions feel more readable, responsive, and worth choosing over auto-resolve.
-- Add deliberate building-breach actions, fire/smoke propagation, power loss, and clearer damaged-wall/window states.
+- Add deliberate building-breach actions, gameplay fire/smoke propagation, and power loss. Clearer damaged-wall/window feedback now has a browser presentation seed in 1630.
 - Add civilians, rescue/extraction zones, and structure-specific objectives for terror, abduction, harvest, and supply missions.
+- **Next patch: VIP Rescue AI fire-team distribution.** When Simulation AI takes command of a VIP rescue, the highest-ranked available deployed AEGIS soldier (experience as the primary tie-breaker) should act as the tactical coordinator and assign distinct fire teams to distinct currently marked/unrescued VIPs. The AI must not send every free fire team toward the nearest VIP. Each marked VIP should receive one fire team where possible before any VIP receives a second team; excess teams remain available for security, combat, escort support, or later reassignment.
 - Explore upper floors, stairs, and roof visibility only after the single-level cutaway maps remain readable and performant.
 
 Completed in browser 0945:
 `TACTICAL_EVENT_TIMELINE_AND_SHOT_FEEDBACK_INDEX_ONLY`
 
-Possible next Stage 3 patch:
+Completed browser Stage 3 feedback seed:
 `TACTICAL_DAMAGE_STATE_SMOKE_AND_BREACH_FEEDBACK_SEED_INDEX_ONLY`
+
+Possible follow-up after playtest:
+`TACTICAL_FIRE_SMOKE_PROPAGATION_AND_POWER_LOSS_FOUNDATION_INDEX_ONLY`
+
+
+---
+
+
+## Implemented in Browser 1850 — Alien Field Beacon Knowledge and Priority Doctrine
+Status: **Implemented in browser build 1850**
+
+### Design goal
+
+AEGIS should **not begin the campaign already understanding what an Alien Field Beacon is or why it matters**.
+
+Soldiers may see, shoot, grenade, damage, or destroy a beacon before they understand its function. Before the force has sufficient evidence, the beacon is treated as an unfamiliar alien device rather than an automatically high-priority strategic objective.
+
+### Knowledge states
+
+Use an explicit AEGIS knowledge state for Alien Field Beacons.
+
+#### 1. Unknown / Unidentified
+
+Before AEGIS has observed or credibly deduced the beacon's reinforcement role:
+
+- Soldiers can visually notice the beacon as an alien object.
+- The object remains physically destructible under the currently valid weapon/damage rules.
+- A soldier may damage or destroy it incidentally, through player orders, grenade blast, suppressive fire, breach fire, or local tactical judgment.
+- Simulation AI should **not automatically abandon better combat, rescue, escort, or survival objectives merely because a beacon is visible**.
+- The AI does not yet assign a special beacon-destruction fire team.
+- Tactical descriptions/log language should avoid claiming certainty about its purpose before discovery.
+
+#### 2. Suspected Reinforcement Source
+
+AEGIS should be able to infer that the device matters after evidence such as:
+
+- Alien reinforcements are visibly materialized/deployed from the beacon or its reserved reinforcement hexes.
+- A tactical observer sees a reinforcement event originate at the beacon.
+- Multiple sufficiently strong observations allow the command system to deduce the connection even if every soldier did not personally witness the exact moment.
+
+At this stage:
+
+- The beacon receives increased tactical interest.
+- The combat log / tactical knowledge system can record that the device appears linked to alien reinforcement arrivals.
+- AI may favor destroying it when doing so is tactically safe, but immediate threats, VIP/civilian rescue, escort commitments, and explicit player orders can still outrank it.
+
+#### 3. Confirmed Reinforcement Beacon
+
+Once AEGIS has directly witnessed or otherwise firmly established the connection:
+
+- The object becomes a recognized **Alien Field Beacon**.
+- Its reinforcement-enabling role becomes known to the organization and can persist according to the campaign knowledge/research system.
+- Simulation AI treats an active beacon as a strategic target because leaving it intact can produce additional alien forces.
+- A suitable nearby free fire team may be assigned to destroy or disable it.
+- The AI should avoid sending the entire squad to the beacon; rescue, escort, contact response, and perimeter security still require distributed forces.
+- If the beacon is already disabled/destroyed, its priority immediately drops.
+
+### Knowledge acquisition and persistence
+
+- The tactical encounter should be able to promote beacon knowledge when alien reinforcements actually arrive through it.
+- Discovery should be recorded in authoritative tactical/campaign state rather than existing only as a UI message.
+- **Database unlock:** the first time AEGIS confirms the beacon's reinforcement function, create a permanent entry in the globally accessible **research database / alien intel records**. The entry should identify it as an **Alien Field Beacon**, record the observed fact that alien reinforcements can arrive through it, and preserve any still-unknown properties as unresolved rather than revealing future mechanics early.
+- Once the organization has confirmed the beacon's function, future trained AEGIS personnel should not need to rediscover the basic reinforcement relationship in every mission unless a later design explicitly introduces new beacon variants that require fresh identification.
+- Future research/intelligence progression can add deeper knowledge such as shielding, hacking, capture value, reinforcement timing, or alien command-network behavior without erasing the basic reinforcement-source discovery.
+
+### AI targeting doctrine after discovery
+
+Once confirmed:
+
+- Evaluate the beacon alongside other tactical objectives rather than treating it as the only objective.
+- Prefer a fire team that is nearby, free, combat-capable, and not currently carrying a higher-authority player order or critical escort/rescue task.
+- Use ordinary fire if effective.
+- Use grenades when tactically appropriate and the blast is safe.
+- Avoid civilian, VIP, or friendly blast risk.
+- Do not waste scarce explosives when ordinary fire can safely solve the problem.
+- Preserve compatibility with later adaptive beacon defenses: the AI should use only attack types that AEGIS currently knows or has evidence are effective.
+
+### Required regression coverage
+
+Add deterministic tests for at least:
+
+1. **Unknown beacon visible** -> AI does not automatically elevate it above all other objectives.
+2. **Unknown beacon destroyed incidentally** -> destruction is allowed even though strategic significance is not yet understood.
+3. **Observed alien reinforcement arrival** -> beacon knowledge advances to suspected/confirmed state.
+4. **Confirmed beacon + free nearby fire team** -> AI creates a legitimate beacon-destruction objective.
+5. **Confirmed beacon + active VIP/escort emergency** -> higher-priority rescue/escort commitments are preserved.
+6. **Confirmed beacon already destroyed/disabled** -> no stale beacon objective persists.
+7. **Knowledge persistence** -> after organizational confirmation, later encounters recognize the basic reinforcement role without requiring redundant rediscovery.
+8. **Future shield compatibility** -> AI does not assume bullets/grenades/energy work when campaign knowledge says that attack class is blocked.
+9. **Database entry unlock** -> observing/confirming a beacon reinforcement event creates exactly one persistent Alien Field Beacon entry in the research database / alien intel records, and later sightings update/reuse that entry rather than creating duplicates.
+
+### Narrative / player-experience intent
+
+The first beacon encounters should feel mysterious. The player and soldiers may think it is simply alien machinery, a communications node, a power source, or battlefield equipment. The strategic importance becomes clear when reinforcements are seen emerging from it. That moment should change both the player's understanding and AEGIS tactical doctrine.
+
+
+## Implemented in Browser 1850 — VIP Rescue AI Fire-Team Distribution
+Status: **Implemented in browser build 1850**
+
+### Player-facing goal
+
+When a tactical mission is a **VIP rescue** and the player hands command to **Simulation AI**, the AI should behave like a coordinated rescue force instead of allowing every nearby fire team to converge on the same closest VIP.
+
+A senior deployed AEGIS soldier should coordinate the initial rescue assignments so multiple marked VIPs are approached in parallel.
+
+### Tactical coordinator selection
+
+At AI takeover:
+
+1. Consider living, deployed AEGIS soldiers who are still tactically available.
+2. Select the **highest-ranked** soldier as rescue coordinator.
+3. If multiple soldiers share that rank, prefer the soldier with the greatest **experience / XP**.
+4. If a further deterministic tie-break is required, use existing stable service/order data rather than randomness.
+
+This is a command-role decision only. It does not teleport the coordinator, create a new unit type, or require that the coordinator personally escort a VIP.
+
+### One-fire-team-per-VIP distribution doctrine
+
+At the beginning of AI control, collect the currently **marked, living, unresolved VIPs** and the fire teams available to perform rescue work.
+
+The coordinator should issue distinct rescue objectives under these rules:
+
+- Assign **one fire team to each marked VIP where possible**.
+- Do not assign a second fire team to a VIP while another marked VIP remains completely unassigned and a free rescue-capable fire team exists.
+- Prefer sensible path distance / reachability when pairing a team with a VIP, but **global assignment diversity takes priority over every team independently choosing the closest VIP**.
+- Once assigned, a fire team should retain its VIP objective long enough to produce coherent movement rather than recalculating to the globally closest VIP every tactical step.
+- A team may be reassigned when its VIP is rescued/extracted, killed, becomes invalid/unreachable, or when a higher-priority player/escort/combat rule legitimately overrides the rescue objective.
+- If there are **more VIPs than available fire teams**, distribute the available teams across different VIPs first; remaining VIPs stay queued for reassignment as teams become free.
+- If there are **more fire teams than marked VIPs**, assign one team per VIP first. Extra teams should remain available for security, alien engagement, escort support, reserve positioning, or reinforcement of a threatened rescue rather than automatically clumping on the nearest VIP.
+- Existing escort-support decisions from the 1345 assignment board remain authoritative when a team is already escorting a civilian/VIP.
+- Existing explicit player Command Map orders should remain higher authority than automatically generated rescue assignments.
+
+### Streamed Simulation AI compatibility
+
+This doctrine must work with the current streamed one-round AI architecture:
+
+- Assignment state must be carried in the authoritative tactical continuation between streamed rounds.
+- The one-round look-ahead must not forget team-to-VIP ownership and re-clump everyone on the next simulation batch.
+- Manual-to-AI handoff, AI-from-start missions, pause/take-back-control, Command Map replans, and save/reload recovery must not duplicate or silently erase valid rescue assignments.
+- Reassignment should occur only when the current assignment becomes resolved/invalid or an explicit higher-priority tactical rule requires it.
+
+### Acceptance / Build Health coverage for the next patch
+
+Add deterministic regression coverage for at least:
+
+1. **Three marked VIPs + three available fire teams** -> three distinct team-to-VIP objectives.
+2. **Two marked VIPs + four available fire teams** -> both VIPs receive one team before any duplicate rescue assignment is allowed.
+3. **Four marked VIPs + two available fire teams** -> the two teams are assigned to different VIPs rather than both selecting the closest one.
+4. **Coordinator selection** -> higher rank wins; equal rank is resolved by greater experience.
+5. **Stream continuation persistence** -> assignments survive at least one streamed AI round/look-ahead boundary without collapsing back to nearest-target clumping.
+6. **VIP resolved** -> its fire team becomes eligible for a new unresolved VIP or another valid tactical role.
+7. **Player Command Map override** -> an explicit player order is not overwritten merely because the AI rescue coordinator has a default VIP assignment.
+
+### Suggested patch focus
+
+Bundle this with the next tactical-AI patch rather than treating it as a standalone UI feature. The same patch should also introduce the staged Alien Field Beacon knowledge/priority doctrine and Simulation AI grenade-use foundation. The implementation should reuse the existing fire-team, squad-leadership, civilian/VIP rescue, Command Map, escort-support, and streamed-AI state contracts wherever possible.
 
 ---
 
