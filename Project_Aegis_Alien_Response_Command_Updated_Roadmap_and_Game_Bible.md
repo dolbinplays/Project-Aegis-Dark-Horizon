@@ -2,11 +2,38 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-12
-Current handoff build: `v0.26.08.12.0858_ENHANCED_SFX_PER_SOUND_DOUBLE_BOOST_INDEX_ONLY_PATCH`
+Current handoff build: `v0.26.08.12.0915_VIP_EXTRACTION_NO_BUILDING_REENTRY_INDEX_ONLY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0858 adds a persistent Boost ×2 toggle to every one of Browser 0825's 17 Enhanced SFX Library rows. Each boost doubles only that sound after its individual slider and before the master SFX volume; Original SFX bypasses the enhanced mix. Browser 0024's visibility-reactive mission crossfade, Browser 2200's alternate soundtrack and tactical-audio direction, Browser 1652's coherent AI turns/window ballistics, and Browser 1005's crashed-UFO missions remain active. Fire-team formation movement is unchanged. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 0915 prevents AI-controlled VIP rescue columns from re-entering buildings after outdoor egress. Escorts plan outdoor-only routes to the Skyranger, and VIPs plus formation supports apply the same commitment individually without replacing fire-team formation targets or pacing. Browser 0858's per-sound SFX boosts, Browser 0024's visibility-reactive mission crossfade, Browser 2200's alternate soundtrack and tactical-audio direction, Browser 1652's coherent AI turns/window ballistics, and Browser 1005's crashed-UFO missions remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
+
+---
+
+# v0.26.08.12.0915 - VIP Extraction No-Building-Reentry Routing
+
+Browser build `v0.26.08.12.0915_VIP_EXTRACTION_NO_BUILDING_REENTRY_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Outdoor extraction commitment
+
+- AI escorts inside a building continue to select a valid door or breached wall and carry the column toward it under the established egress system.
+- As soon as the escort reaches outdoor ground, extraction pathfinding treats every building cell as unavailable and plans around structures to the chosen Skyranger ramp corridor.
+- The route is planned beyond the current turn's movement allowance, then only the TU-bounded prefix is committed. This prevents repeated local shortest-path decisions from sending a team back through the doorway it just cleared.
+- If no complete path is temporarily available because of living-unit traffic, the escort selects bounded outdoor progress and retries rather than using a building as a shortcut.
+- At the final ramp egress, a leader with trailing VIPs converts unused bounded movement steps into formation advances while holding position. This prevents the last member of a long column from stalling just outside the ramp after the leader has no further waypoint.
+
+## VIP and fire-team formation behavior
+
+- Outdoor commitment is tracked per moving unit during extraction. A VIP still inside may continue through the room and leave normally; after reaching an outdoor cell, that VIP's next formation move cannot return indoors.
+- Supporting soldiers use the same extraction-only candidate filter after they individually exit.
+- The filter does not replace formation destinations, formation pace, TU reserves, occupancy checks, leader waiting, support break-off, or regrouping. It only removes building cells from an already-outdoor unit's eligible formation moves.
+- Search, initial VIP contact, manual player movement, combat maneuvers, and deliberate building entry remain unchanged because the no-reentry rule is enabled only for an active escorted extraction.
+
+## Roadmap and validation
+
+- Browser Build Health now includes a deterministic route across the far side of a procedural building and requires the completed route segment to stay outside.
+- Manual validation should observe a full rescue column leaving a large building, clearing doorway congestion, moving around the structure, and reaching the Skyranger without reversing indoors.
+- Native Godot parity now includes porting the outdoor extraction commitment alongside the existing door/breach egress and formation-following systems.
 
 ---
 

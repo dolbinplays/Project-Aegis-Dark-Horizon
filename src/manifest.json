@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.12.0858_ENHANCED_SFX_PER_SOUND_DOUBLE_BOOST_INDEX_ONLY_PATCH",
+  "currentBuild": "v0.26.08.12.0915_VIP_EXTRACTION_NO_BUILDING_REENTRY_INDEX_ONLY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "enhanced-sfx-per-sound-double-boost-manual-test",
+  "status": "vip-extraction-no-building-reentry-manual-test",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.12.0858_ENHANCED_SFX_PER_SOUND_DOUBLE_BOOST_INDEX_ONLY_PATCH",
+  "lastInspectedBuild": "v0.26.08.12.0915_VIP_EXTRACTION_NO_BUILDING_REENTRY_INDEX_ONLY_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.12.0858_ENHANCED_SFX_PER_SOUND_DOUBLE_BOOST_INDEX_ONLY_PATCH",
+    "browserBuild": "v0.26.08.12.0915_VIP_EXTRACTION_NO_BUILDING_REENTRY_INDEX_ONLY_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -86,6 +86,7 @@
       "selected-soldier-camera-focus",
       "biome-and-map-tier-building-density",
       "building-egress-door-and-breach-routing",
+      "vip-extraction-outdoor-no-reentry-routing",
       "full-civilian-column-ramp-extraction",
       "tactical-adjacent-inventory-transfers-floor-elevation",
       "compact-base-facility-dropdown",
@@ -119,6 +120,10 @@
       {
         "system": "complete-classic-battlescape-command-set",
         "reason": "The command console now includes functional hand slots, targeting cursors, and one prepared throwable. General inventory transfers, additional throwable types, and elevation controls still require bounded gameplay systems before their controls can be added honestly."
+      },
+      {
+        "system": "vip-extraction-outdoor-no-reentry-routing",
+        "reason": "The browser build now commits escorts, VIPs, and formation supports to outdoor cells after building egress. This extraction-only path constraint remains queued for the native Godot tactical port."
       }
     ]
   }

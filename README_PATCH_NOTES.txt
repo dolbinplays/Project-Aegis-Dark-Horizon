@@ -1,9 +1,33 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.12.0858_ENHANCED_SFX_PER_SOUND_DOUBLE_BOOST_INDEX_ONLY_PATCH
+Build: v0.26.08.12.0915_VIP_EXTRACTION_NO_BUILDING_REENTRY_INDEX_ONLY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+AI-controlled VIP rescue teams now commit to outdoor extraction routes after leaving a building. Escorts route around cleared structures instead of treating their interiors as shortcuts, and each VIP or supporting fire-team soldier that reaches outdoor ground is prevented from stepping back inside while following formation.
+
+VIP EXTRACTION - NO BUILDING RE-ENTRY
+-------------------------------------
+- Added an extraction-specific route search that treats every building as closed terrain once an escort is outdoors.
+- Escorts already inside still use the established door-or-breach egress route, then switch to the outdoor-only route for the remaining journey to the Skyranger.
+- Outdoor routing plans all the way to the selected ramp corridor before committing the current TU-bounded movement segment, avoiding local distance choices that can produce doorway loops.
+- If a temporary obstacle blocks the complete route, the escort can still make bounded outdoor progress toward extraction and retry from its new position next round.
+- Escorted VIPs independently inherit the same rule: once an individual VIP reaches outdoor ground during extraction, its formation choices exclude building cells.
+- Fire-team supports retain normal formation targets, pace limits, TU costs, occupancy rules, and break-off behavior; only indoor candidate cells are removed after that support has exited.
+- Units that have not yet cleared the structure can continue moving inside and through a valid door or breach, preventing the new rule from trapping the rear of a civilian column.
+- When the leader reaches the far end of the ramp first, it now holds the extraction corridor and spends its remaining bounded movement allowance advancing trailing VIPs instead of leaving the rear of the column stranded.
+
+BUILD HEALTH
+------------
+- Added a cross-building regression scenario with extraction on the far side of a structure. The contract requires a complete route whose committed segment contains no building cells.
+- Extended the contract to verify the extraction-only follower guard is active while the normal formation system remains the movement authority.
+
+PREVIOUS BUILD - 0858
+=====================
+Build: v0.26.08.12.0858_ENHANCED_SFX_PER_SOUND_DOUBLE_BOOST_INDEX_ONLY_PATCH
 
 SUMMARY
 -------
