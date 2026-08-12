@@ -2,11 +2,59 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-11
-Current handoff build: `v0.26.08.11.1652_ADAPTIVE_COHERENT_AI_TURNS_AND_WINDOW_BALLISTICS_INDEX_ONLY_PATCH`
+Current handoff build: `v0.26.08.11.2200_ALTERNATE_SOUNDTRACK_AND_TACTICAL_AUDIO_DIRECTION_INDEX_ONLY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1652 changes Simulation AI to individual adaptive TU reserves and one coherent move/reassess/continue/final-action sequence per soldier. Fire-team formation pacing remains authoritative over both movement legs. Building windows now transmit sight and shatter when a projectile passes through, applying a first-round accuracy penalty before the shot can hit the target; solid walls remain opaque. Browser 1005's crashed-UFO missions remain fully active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 2200 adds a selectable Dark Horizon alternate soundtrack and an enhanced tactical-audio direction pass. Movement is primarily communicated through role-specific footfalls; spoken lines prioritize changes between alien engagement, VIP/contact search, and area-secure states, while generic movement acknowledgements are deliberately sparse. Fire-team formation movement and Browser 1652's coherent AI-turn/window-ballistics rules remain authoritative and unchanged. Browser 1005's crashed-UFO missions remain fully active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
+
+---
+
+# v0.26.08.11.2200 - Alternate Soundtrack and Tactical Audio Direction
+
+Browser build `v0.26.08.11.2200_ALTERNATE_SOUNDTRACK_AND_TACTICAL_AUDIO_DIRECTION_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Selectable soundtrack identity
+
+- Players can choose `Original Soundtrack` or `Dark Horizon Alternate` in Audio Settings. The choice persists in local browser audio preferences rather than the campaign save.
+- The alternate bank contains 15 original generated score cues beside, rather than in place of, the existing score. Every context has a distinct alternate: `Dark Horizon Overture`, `Command Directive`, `Global Vigil`, `Fort Aegis`, `Quartermaster Ledger`, `Mainframe Archive`, `Barracks After Midnight`, `Unknown Specimen`, `Assembly Line Zero`, `Fireteam Covenant`, `Recovery Ward`, `Contact in the Dark`, `After Action`, `Names on the Wall`, and `Command Suspended`.
+- Automatic and manual track-selection modes continue to work. Changing soundtrack while music is playing restarts the current context on the newly selected bank.
+- Missing alternate audio falls back to the original encoded track and then to the established synthesized theme, so an asset failure cannot silence the game.
+
+## Tactical sound hierarchy
+
+1. Physical action sounds communicate routine activity: soldier boots, alien claws, civilian steps, tracked-VIP hurried shoes, weapon reports, projectile impacts, glass, pain, and falls.
+2. Spoken soldier radio lines communicate information or intent changes: contact gained, contact resolved, VIP/contact search resumed, objective secured, hit/kill confirmation, command handoff, or other meaningful status changes.
+3. Generic `Moving` and `Advancing` acknowledgements are accent lines, not a narration of every path. Manual orders use an 18 percent chance with a 4.5-second cooldown; AI playback uses a deterministic one-in-seven movement accent so replays remain bounded.
+
+## State-change radio doctrine
+
+- `contact search/VIP search -> engagement`: announce alien contact and switch to engagement behavior.
+- `engagement -> VIP search`: announce “Resuming search for the VIP”; the current audio route uses the recorded `Keep Moving` performance until a dedicated matching take is recorded.
+- `engagement -> contact search`: announce that the immediate area is clear and the search is resuming.
+- `any active phase -> secure`: announce that the area is secure.
+- Kill, injury, shot, last-alien, command-return, and escort-support callouts retain their existing priority and recorded personality variants.
+
+## Movement and formation safety
+
+- Footsteps are emitted from existing visible animation steps; they do not create steps, change destinations, consume TU, or write unit positions.
+- Manual movement still advances escorted civilians through the existing escort helper and explicitly leaves automatic fire-team formation application disabled for direct player moves.
+- Simulation AI still obtains its path from the coherent-turn playback trail after the reserve, checkpoint, continuation, formation-pacing, traffic, and unique-hex rules have resolved.
+- Audio callbacks therefore cannot change leader waiting, support cohesion, escort assignments, contact rushes, command-map orders, or occupancy validation.
+
+## Generated sound-effects source library and roadmap
+
+- The signed-in ElevenLabs project now contains generated candidates for 16 tactical categories: human, alien, civilian, and VIP footsteps; ballistic rifle, laser, and alien plasma fire; soldier, alien, and civilian injury reactions; soldier, alien, and civilian/VIP deaths; glass shatter; dirt/concrete impacts; and metal/armor impacts.
+- The enhanced browser SFX profile supplies the event routing and distinct real-time footstep textures now. Generated candidates should be auditioned, normalized, trimmed, exported, and substituted category by category; the Original SFX option must remain available throughout that replacement pass.
+- Future dedicated voice recording should add exact status lines for `Resuming search for the VIP`, `Resuming contact search`, and other objective transitions across the established soldier personality styles.
+- Native Godot parity must reproduce soundtrack-bank selection, audio preference persistence, event-priority dialogue, role footsteps, and fallback behavior without changing tactical outcomes.
+
+## Validation gates
+
+- Switch soundtrack banks while music is playing and confirm the current screen context restarts on the selected bank.
+- Watch manual and Simulation AI movement for humans, aliens, civilians, and tracked VIPs; confirm footsteps follow visible movement without affecting formation positions or TU.
+- Watch an alien engagement interrupt a VIP search, then end, and confirm the resume-status callout occurs once while routine movement remains mostly non-verbal.
+- Confirm Original SFX still plays when selected, enhanced sounds respect the SFX volume, and both modes leave voices independently controlled.
 
 ---
 

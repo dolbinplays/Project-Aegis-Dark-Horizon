@@ -1,12 +1,44 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.11.1652_ADAPTIVE_COHERENT_AI_TURNS_AND_WINDOW_BALLISTICS_INDEX_ONLY_PATCH
+Build: v0.26.08.11.2200_ALTERNATE_SOUNDTRACK_AND_TACTICAL_AUDIO_DIRECTION_INDEX_ONLY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
 SUMMARY
 -------
+The browser build now includes a selectable Dark Horizon alternate soundtrack, a selectable enhanced tactical-SFX profile, role-specific movement footfalls, and event-driven tactical radio direction. Routine movement acknowledgements are rare; soldiers announce meaningful transitions such as engaging alien contact, resuming a VIP/contact search, and securing the area. Fire-team formation movement is unchanged.
+
+ALTERNATE SOUNDTRACK
+--------------------
+- Added 15 original ElevenLabs-generated score cues alongside the existing score, giving every existing music context its own one-to-one alternate.
+- Audio Settings now lets players switch between Original Soundtrack and Dark Horizon Alternate without changing their campaign save.
+- The alternate bank independently scores Start, Command Menu, Geoscape, Base, Inventory, Database, Soldiers, Research, Workshop, Squads, Sickbay, Missions, Reports, Memorial, and Pause.
+- If an alternate file cannot load, playback safely falls back through the original file bank and existing synthesized theme.
+
+TACTICAL AUDIO DIRECTION
+------------------------
+- Human, alien, civilian, and tracked-VIP movement now produces distinct footfall textures on the same animation steps that already drive movement.
+- Simulation AI radio dialogue prioritizes tactical state changes: alien engagement begins, contact ends and VIP search resumes, contact search resumes, or the area becomes secure.
+- The VIP transition is authored as “Resuming search for the VIP” and uses the recorded Keep Moving performance until a dedicated recording is added.
+- Generic Moving/Advancing acknowledgements remain as an occasional manual-order response and a deterministic one-in-seven AI-movement accent, with longer cooldowns.
+- Existing hit, kill, last-contact, weapon, armor-impact, pain, death, glass, and environmental sounds remain active.
+- Audio Settings includes Enhanced Tactical SFX and Original SFX choices; the preference persists locally and does not alter save format 4.
+
+ELEVENLABS SOURCE LIBRARY
+-------------------------
+- Generated a 16-category sound-effects library in the project's signed-in ElevenLabs account: role-specific footsteps; ballistic, laser, and alien plasma weapons; soldier, alien, and civilian injury/death reactions; glass; dirt/concrete impacts; and armor impacts.
+- The integrated enhanced profile establishes the routing and event timing for those categories while generated takes can be auditioned and substituted without changing combat or formation logic.
+
+BUILD HEALTH
+------------
+- Added checks for alternate-track routing, persisted soundtrack/SFX selection, state-change radio callouts, bounded generic movement acknowledgements, and footfalls on movement animation steps.
+- Fire-team paths, TU use, escort following, cohesion limits, and formation pacing are untouched by the audio hooks.
+
+PREVIOUS BUILD - 1652
+=====================
+Build: v0.26.08.11.1652_ADAPTIVE_COHERENT_AI_TURNS_AND_WINDOW_BALLISTICS_INDEX_ONLY_PATCH
+
 Simulation AI now gives each soldier an individual TU reserve and presents that soldier's movement as one coherent turn: move, reassess once from the new position, optionally continue within the same path, then fire or kneel. Fire-team formation pacing remains authoritative. Building windows now transmit sight and can be shot through; the first passing projectile shatters intact glass and takes an accuracy penalty, while solid wall sections remain opaque.
 
 SIMULATION AI - ADAPTIVE COHERENT TURNS

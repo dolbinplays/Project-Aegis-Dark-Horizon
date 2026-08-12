@@ -11,6 +11,7 @@ const nativeTacticalPath = path.join(root, "godot", "scripts", "tactical_board.g
 const nativeAudioBusPath = path.join(root, "godot", "default_bus_layout.tres");
 const dialogueDirectory = path.join(root, "assets", "audio", "dialogue");
 const dialogueManifestPath = path.join(dialogueDirectory, "manifest.js");
+const alternateAudioDirectory = path.join(root, "assets", "audio", "alternate");
 
 const html = fs.readFileSync(indexPath, "utf8");
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
@@ -67,7 +68,7 @@ function wavTakeEnergy(filePath, take, sampleLimit = 12000) {
 
 const required = [
   manifest.currentBuild,
-  `CURRENT_GAME_VERSION=\"${manifest.currentBuild.match(/^v[^_]+/)?.[0] || ""}\"`,
+  `const CURRENT_GAME_VERSION=currentGameVersionFromBuild()`,
   "ARCHITECTURE_MODULE_PLAN",
   "Modular source layout and engine-port prep contract is present",
   "Workshop production preserves destination base and equipment logistics summaries",
@@ -156,6 +157,13 @@ const required = [
   "Voice preferences normalize and persist independently from SFX",
   "Audio settings expose voice toggle slider and user-gesture playback test",
   "AI tactical playback emits bounded context-aware soldier dialogue",
+  "ALTERNATE_SOUNDTRACK_AND_TACTICAL_AUDIO_DIRECTION_PATCH",
+  "ALTERNATE_MUSIC_AUDIO_URLS",
+  "Dark Horizon Alternate",
+  "Enhanced Tactical SFX",
+  "Resuming search for the VIP",
+  "footstep-human",
+  "occasional-human-move",
   "Three.js Skyranger renders one cohesive craft with attached extraction ramp",
   "Geoscape range and ferry controls share one operational overlay section",
   "UFO alert speed selection retains the active command screen",
@@ -175,9 +183,9 @@ const required = [
   "Base facility construction uses a compact dropdown with the complete catalog",
   "Fit Map frames complete Small Medium and Large grids in 2D and isometric views",
   "Out-of-combat soldiers approach and contact their nearest unescorted VIP",
-  "Living alien commanders can call one delayed reinforcement dropship into a clear landing footprint",
-  "A wiped alien force draws one investigation dropship 5 to 15 rounds after its dead commander misses check-in",
-  "Alien reinforcement craft renders as a purple flying saucer with a rear deployment ramp",
+  "Legacy tactical saves retain one delayed reinforcement dropship with complete validated troop placement",
+  "Easy reinforcement mode retains the original 5 to 15 round post-wipe missed check-in cadence",
+  "Legacy reinforcement craft still renders as a purple flying saucer with a rear deployment ramp",
   "Cross-squad responders advance directly to reported contacts before switching to cover and engagement",
   "Medkit issue and return conserve local Base Inventory",
   "Tactical Medkit use spends 12 TU heals 12 HP and consumes one charge",
@@ -493,6 +501,19 @@ if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system
 
 const dialogueWavFiles = fs.readdirSync(dialogueDirectory).filter((name) => name.toLowerCase().endsWith(".wav"));
 const dialogueVariants = Object.values(dialogue?.events || {}).flatMap((event) => Object.values(event.variants || {}));
+const alternateSoundtrackFiles = [
+  "dark_horizon_overture.mp3", "command_directive.mp3", "global_vigil.mp3", "fort_aegis.mp3",
+  "quartermaster_ledger.mp3", "mainframe_archive.mp3", "barracks_after_midnight.mp3", "unknown_specimen.mp3",
+  "assembly_line_zero.mp3", "fireteam_covenant.mp3", "recovery_ward.mp3", "contact_in_the_dark.mp3",
+  "after_action.mp3", "names_on_the_wall.mp3", "command_suspended.mp3",
+];
+for (const filename of alternateSoundtrackFiles) {
+  const audioPath = path.join(alternateAudioDirectory, filename);
+  if (!fs.existsSync(audioPath) || fs.statSync(audioPath).size < 100000) missing.push(`alternate soundtrack asset missing or too small: ${filename}`);
+}
+if (new Set(alternateSoundtrackFiles).size !== 15 || alternateSoundtrackFiles.some((filename) => !html.includes(`assets/audio/alternate/${filename}`))) {
+  missing.push("alternate soundtrack must map one distinct generated file to all 15 existing music contexts");
+}
 if (dialogue?.recordingCount !== 105 || dialogueWavFiles.length !== 105 || dialogueVariants.length !== 105) {
   missing.push("recorded dialogue manifest must cover all 105 WAV recordings");
 }
