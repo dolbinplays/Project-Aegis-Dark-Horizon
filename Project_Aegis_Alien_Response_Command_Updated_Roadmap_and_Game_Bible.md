@@ -1,12 +1,114 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-08-11
-Current handoff build: `v0.26.08.11.2200_ALTERNATE_SOUNDTRACK_AND_TACTICAL_AUDIO_DIRECTION_INDEX_ONLY_PATCH`
+Last updated: 2026-08-12
+Current handoff build: `v0.26.08.12.0858_ENHANCED_SFX_PER_SOUND_DOUBLE_BOOST_INDEX_ONLY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2200 adds a selectable Dark Horizon alternate soundtrack and an enhanced tactical-audio direction pass. Movement is primarily communicated through role-specific footfalls; spoken lines prioritize changes between alien engagement, VIP/contact search, and area-secure states, while generic movement acknowledgements are deliberately sparse. Fire-team formation movement and Browser 1652's coherent AI-turn/window-ballistics rules remain authoritative and unchanged. Browser 1005's crashed-UFO missions remain fully active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 0858 adds a persistent Boost ×2 toggle to every one of Browser 0825's 17 Enhanced SFX Library rows. Each boost doubles only that sound after its individual slider and before the master SFX volume; Original SFX bypasses the enhanced mix. Browser 0024's visibility-reactive mission crossfade, Browser 2200's alternate soundtrack and tactical-audio direction, Browser 1652's coherent AI turns/window ballistics, and Browser 1005's crashed-UFO missions remain active. Fire-team formation movement is unchanged. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
+
+---
+
+# v0.26.08.12.0858 - Enhanced SFX Per-Sound Double Boost
+
+Browser build `v0.26.08.12.0858_ENHANCED_SFX_PER_SOUND_DOUBLE_BOOST_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Library boost controls
+
+- Every one of the 17 Enhanced SFX Library rows now carries a dedicated `Boost ×2` button beside its Play control.
+- Boost is an independent toggle per sound. Active buttons are highlighted as `Boost ×2 On`, expose their pressed state accessibly, and add `×2` to the row's level readout.
+- The toggle affects both Play previews and the corresponding sound during gameplay, making it possible to raise quiet footsteps or impacts without making weapons and aircraft equally louder.
+- `Reset Mix` returns all individual sliders to 100 percent and switches all 17 boosts off.
+
+## Gain and persistence contract
+
+- Effective enhanced gain is `individual slider / 100 × (boost ? 2 : 1)`, then multiplied by the existing master SFX bus.
+- A 60 percent row with Boost therefore produces 1.2 times its unscaled source level before the master bus. A 0 percent sound remains silent even when boosted.
+- Boost preferences are normalized strictly to booleans, stored under their own versioned local key, and default off for missing or newly added sounds.
+- Existing slider preferences remain in their original storage key. The patch needs no migration and does not alter campaign data or save format 4.
+- Original SFX uses gain 1 through this layer, bypassing both enhanced sliders and boosts. Returning to Enhanced restores both saved preference sets.
+
+## Gameplay safety
+
+- The boost layer only changes a short-lived Web Audio gain node created for the selected effect.
+- It cannot add movement events, move units, spend TU, alter AI planning, change shot results, or affect escort and fire-team formation rules.
+
+## Validation gates
+
+1. Open Save / Load > Enhanced SFX Library and confirm every sound row has Play and Boost ×2 controls.
+2. Set a sound to 50 percent, audition it with boost off, enable boost, and confirm the preview is twice as loud while other sounds remain unchanged.
+3. Reload the page and confirm the selected sound's boost remains on and its slider remains unchanged.
+4. Use Reset Mix and confirm all levels return to 100 percent and every Boost ×2 control turns off.
+5. Switch to Original SFX and confirm enhanced boosts do not affect it; switch back and confirm the enhanced boost selection returns.
+6. Run Build Health and confirm the extended Enhanced SFX Library contract reports OK.
+
+---
+
+# v0.26.08.12.0825 - Enhanced SFX Library and Per-Sound Mix
+
+Browser build `v0.26.08.12.0825_ENHANCED_SFX_LIBRARY_AND_PER_SOUND_MIX_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Save / Load audio archive
+
+- The Save / Load Game header now includes an `Enhanced SFX Library` button that opens a dedicated full-screen audio archive and returns directly to Save / Load.
+- The archive lists every enhanced effect that is currently routed in gameplay, grouped as Movement, Weapons, Impacts and Casualties, and Skyranger.
+- Its 17 entries cover soldier, alien, civilian, and VIP footsteps; ballistic, laser, AEGIS plasma, and alien shots; miss/flyby, hit/injury, armor, glass, death, and fall feedback; and Skyranger flyby, takeoff, and landing.
+- Every row has a Play button and an independent 0-100 percent level. Preview buttons explicitly audition the enhanced synthesis even when the player has Original SFX selected.
+- The screen also exposes master SFX volume, a `Reset All to 100%` action, the active SFX profile, and a one-click route back to Enhanced Tactical SFX when Original SFX is active.
+
+## Mix and persistence contract
+
+- Individual levels multiply the master SFX bus instead of replacing it. A 50 percent weapon setting under a 70 percent master level therefore plays at half of the established 70 percent bus output.
+- Versioned per-sound preferences are stored locally and normalized to the 0-100 range. Missing or older keys default to 100 percent so new sounds are audible after an update.
+- Original SFX retains its prior mix and bypasses enhanced per-sound levels. Switching profiles does not discard the saved enhanced mix.
+- Window shattering now has an audible enhanced route in both simulated playback frames and manual window-crossing shots.
+- No level is serialized into campaign data; save format remains 4.
+
+## Gameplay and formation safety
+
+- The library and mixer operate only on Web Audio destination gains and presentation callbacks.
+- They do not plan paths, create animation steps, spend TU, choose shots, alter line of sight, change AI decisions, move escorts, or edit unit state.
+- Fire-team leaders, supports, formation pacing, coherent single-turn movement, checkpoint reassessment, and final-action rules remain authoritative and unchanged.
+
+## Validation gates
+
+1. Open Save / Load Game and confirm the Enhanced SFX Library button opens the dedicated screen and Back returns cleanly.
+2. Play all 17 rows and confirm each produces the labeled effect; test the four movement roles and four weapon reports for clear differences.
+3. Set one sound to 0 percent, leave another at 100 percent, and confirm previews and gameplay respect the individual levels under the same master setting.
+4. Reload the page and confirm the individual mix persists while campaign saves remain compatible.
+5. Switch to Original SFX and confirm its established mix is unchanged; switch back to Enhanced and confirm the individual mix returns.
+6. Run Build Health and confirm the Enhanced SFX Library contract reports OK.
+
+---
+
+# v0.26.08.12.0024 - Tactical Mission Visibility Music Crossfade
+
+Browser build `v0.26.08.12.0024_TACTICAL_MISSION_VISIBILITY_MUSIC_CROSSFADE_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Contact in the Dark adaptive mission structure
+
+- While no living alien is in current line of sight of a living soldier, the alternate mission cue loops from 0:00 up to the 0:36 boundary.
+- While one or more living aliens are currently visible, it loops from 0:37 up to the 1:00 boundary.
+- Music state uses the same live soldier line-of-sight calculation as tactical observation, not the alien's persistent `revealed` or last-known-position memory. A contact moving behind opaque cover therefore returns the score to search.
+- Gaining or losing contact creates a 1.4-second equal-direction crossfade using two media players: the outgoing section fades down as the incoming player seeks to its new segment start and fades up.
+- Every active player enforces its own segment boundaries. The search passage cannot spill into combat, and the combat passage cannot wrap through the search introduction.
+- A newer visibility change cancels the prior transition timer and disposes its stale outgoing player before starting another crossfade.
+- The segmented behavior is limited to `contact_in_the_dark.mp3` when `Dark Horizon Alternate` and the mission context are active. Original soundtrack and fallback/synth routing retain their existing behavior.
+
+## Gameplay safety
+
+- The music hook observes live positions, health, cover, and line of sight but does not write tactical state.
+- Alien reveal memory, fog rendering, AI contact logic, window visibility, unit paths, TU, action order, escort movement, and fire-team formation rules are unchanged.
+- Save format remains 4 because the transient music state is neither serialized nor added to campaign data.
+
+## Manual validation gate
+
+1. Enter a tactical mission with Dark Horizon Alternate selected and confirm 0:00-0:36 repeats before contact.
+2. Reveal a living alien and confirm the score crossfades to 0:37-1:00 rather than jumping or stopping.
+3. Break every soldier's line of sight to all living aliens and confirm a crossfade back to the opening search passage even though contact remains remembered on the map.
+4. Regain and lose contact rapidly and confirm there is never more than one incoming and one outgoing layer and that the abandoned transition is cleaned up.
+5. Switch to Original Soundtrack and confirm its existing complete mission loop is unchanged.
 
 ---
 

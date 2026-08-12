@@ -1,13 +1,77 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.11.2200_ALTERNATE_SOUNDTRACK_AND_TACTICAL_AUDIO_DIRECTION_INDEX_ONLY_PATCH
+Build: v0.26.08.12.0858_ENHANCED_SFX_PER_SOUND_DOUBLE_BOOST_INDEX_ONLY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
 SUMMARY
 -------
-The browser build now includes a selectable Dark Horizon alternate soundtrack, a selectable enhanced tactical-SFX profile, role-specific movement footfalls, and event-driven tactical radio direction. Routine movement acknowledgements are rare; soldiers announce meaningful transitions such as engaging alien contact, resuming a VIP/contact search, and securing the area. Fire-team formation movement is unchanged.
+Every sound in the Save / Load Enhanced SFX Library now has its own persistent Boost ×2 button. Boost doubles only the selected effect after its individual slider and before the master SFX volume, so quiet sounds can be raised without changing the rest of the mix.
+
+PER-SOUND DOUBLE BOOST
+----------------------
+- Added a Boost ×2 toggle beside Play on all 17 Enhanced SFX Library rows.
+- An active boost is clearly highlighted and reads Boost ×2 On; the row readout also shows its slider percentage followed by ×2.
+- Boost multiplies the sound's individual slider by two before the master SFX bus. For example, 60% with Boost ×2 produces a 120% per-sound gain that still follows the master SFX volume.
+- Boost state persists locally for each sound under a separate versioned preference key. Existing saved slider levels migrate without changes and every boost defaults off.
+- Reset Mix returns all sliders to 100% and switches every boost off.
+- Original SFX bypasses both enhanced levels and enhanced boosts. Switching back to Enhanced Tactical SFX restores the player's saved mix.
+- Boost is audio presentation only and cannot affect combat, TU, AI decisions, escort routing, or fire-team formation movement.
+
+BUILD HEALTH
+------------
+- Extended the 17-entry audio-library contract to verify boost normalization, default-off behavior, the exact ×2 gain calculation, unique per-row boost controls, local persistence, and reset behavior.
+
+PREVIOUS BUILD - 0825
+=====================
+Build: v0.26.08.12.0825_ENHANCED_SFX_LIBRARY_AND_PER_SOUND_MIX_INDEX_ONLY_PATCH
+
+Save / Load Game now has a dedicated Enhanced SFX Library. Players can audition all 17 enhanced effects, tune each one independently, adjust the existing master SFX volume from the same screen, and keep the mix as a local audio preference without changing campaign saves.
+
+ENHANCED SFX LIBRARY
+--------------------
+- Added an Enhanced SFX Library button to the Save / Load Game header and a full library screen with a clear return control.
+- The library exposes every enhanced sound currently routed in the browser build: four role-specific footsteps; ballistic, laser, AEGIS plasma, and alien weapon reports; miss/flyby, hit/injury, armor, glass, death, and fall feedback; plus Skyranger flyby, takeoff, and landing.
+- Every sound has its own Play button and 0-100 percent level control. Library previews always use the enhanced version so it can be compared even when Original SFX is currently selected.
+- Individual levels multiply the existing master SFX volume. The library also exposes that master control and provides Reset All to 100%.
+- Per-sound levels persist in local audio preferences under their own versioned setting and do not enter campaign save data.
+- Original SFX bypasses the enhanced per-sound mix. A one-click Use Enhanced SFX control is shown when the original profile is active.
+- Added an audible glass-shatter route to window-crossing shots in manual and simulated tactical playback, using the same presentation-only callback layer as existing weapon and impact sounds.
+
+GAMEPLAY SAFETY
+---------------
+- The mixer only scales audio destinations. It does not write movement, combat, TU, AI, escort, or formation state.
+- Fire-team formation movement and the coherent single-turn AI rules remain unchanged.
+
+BUILD HEALTH
+------------
+- Added a 17-entry catalog contract covering unique routing keys, bounded level normalization, persistent local storage, the Save / Load entry button, screen controls, preview routing, master-volume multiplication, and glass feedback.
+
+PREVIOUS BUILD - 0024
+=====================
+Build: v0.26.08.12.0024_TACTICAL_MISSION_VISIBILITY_MUSIC_CROSSFADE_INDEX_ONLY_PATCH
+
+The Dark Horizon alternate mission track is now visibility-reactive. Contact in the Dark loops its 0:00-0:36 search section while no living alien is in current soldier line of sight, loops its 0:37-1:00 combat section while any alien is visible, and crossfades between those two sections as contact changes.
+
+MISSION MUSIC VISIBILITY CROSSFADES
+-----------------------------------
+- Current line of sight, rather than permanent revealed/last-known-contact memory, drives the music state. Losing sight behind a wall or other cover returns the score to search even though soldiers remember the contact.
+- Search uses 0:00 up to the 0:36 boundary. Visible engagement uses 0:37 up to the 1:00 boundary. Each segment seeks back to its own start before playback can drift into the other section.
+- Visibility changes start a 1.4-second two-player crossfade: the old segment fades down while a second synchronized media player starts and fades up at the new segment boundary.
+- A rapid second visibility change cancels and cleans up the stale outgoing player before starting the newest transition, preventing stacked playback.
+- The behavior applies specifically to Dark Horizon Alternate's Contact in the Dark mission cue. Original Soundtrack mission playback and all non-mission tracks retain their established looping and fallback behavior.
+- This is presentation-only: visibility rules are read without changing unit reveal memory, AI decisions, fire-team formation movement, TU, combat, or save format.
+
+BUILD HEALTH
+------------
+- Added required seams for the 0:00/0:36 and 0:37/1:00 segment contract, live LOS visibility signal, crossfade duration, outgoing-player cleanup, and alternate-mission routing.
+
+PREVIOUS BUILD - 2200
+=====================
+Build: v0.26.08.11.2200_ALTERNATE_SOUNDTRACK_AND_TACTICAL_AUDIO_DIRECTION_INDEX_ONLY_PATCH
+
+The browser build added a selectable Dark Horizon alternate soundtrack, a selectable enhanced tactical-SFX profile, role-specific movement footfalls, and event-driven tactical radio direction. Routine movement acknowledgements are rare; soldiers announce meaningful transitions such as engaging alien contact, resuming a VIP/contact search, and securing the area. Fire-team formation movement is unchanged.
 
 ALTERNATE SOUNDTRACK
 --------------------

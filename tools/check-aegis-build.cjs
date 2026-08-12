@@ -158,7 +158,36 @@ const required = [
   "Audio settings expose voice toggle slider and user-gesture playback test",
   "AI tactical playback emits bounded context-aware soldier dialogue",
   "ALTERNATE_SOUNDTRACK_AND_TACTICAL_AUDIO_DIRECTION_PATCH",
+  "TACTICAL_MISSION_VISIBILITY_MUSIC_CROSSFADE_PATCH",
+  "ENHANCED_SFX_LIBRARY_AND_PER_SOUND_MIX_PATCH",
+  "ENHANCED_SFX_PER_SOUND_DOUBLE_BOOST_PATCH",
+  "ENHANCED_SFX_LEVEL_STORAGE_KEY",
+  "ENHANCED_SFX_BOOST_STORAGE_KEY",
+  "ENHANCED_SFX_LIBRARY",
+  "normalizeEnhancedSfxLevels",
+  "readEnhancedSfxLevels",
+  "writeEnhancedSfxLevels",
+  "normalizeEnhancedSfxBoosts",
+  "readEnhancedSfxBoosts",
+  "writeEnhancedSfxBoosts",
+  "enhancedSfxMixGain",
+  "enhancedSfxDestination",
+  "previewEnhancedSfx",
+  "EnhancedSfxLibraryScreen",
+  "data-aegis-open-sfx-library",
+  "data-aegis-enhanced-sfx-library",
+  "data-aegis-sfx-key",
+  "data-aegis-sfx-boost",
+  "Boost ×2 On",
+  "Reset Mix",
+  "Window Shatter",
+  "Save / Load Enhanced SFX Library previews every routed sound and persists levels plus individual double boosts",
   "ALTERNATE_MUSIC_AUDIO_URLS",
+  "CONTACT_IN_THE_DARK_MISSION_SEGMENTS",
+  "CONTACT_IN_THE_DARK_CROSSFADE_MS",
+  "tacticalMissionHasVisibleAliens",
+  "setContactInTheDarkSegment",
+  "mediaFadingOut",
   "Dark Horizon Alternate",
   "Enhanced Tactical SFX",
   "Resuming search for the VIP",
@@ -513,6 +542,15 @@ for (const filename of alternateSoundtrackFiles) {
 }
 if (new Set(alternateSoundtrackFiles).size !== 15 || alternateSoundtrackFiles.some((filename) => !html.includes(`assets/audio/alternate/${filename}`))) {
   missing.push("alternate soundtrack must map one distinct generated file to all 15 existing music contexts");
+}
+if (!html.includes("CONTACT_IN_THE_DARK_MISSION_SEGMENTS={search:{start:0,end:36},combat:{start:37,end:60}}") || !html.includes("CONTACT_IN_THE_DARK_CROSSFADE_MS=1400") || !html.includes("return aliensVisible?CONTACT_IN_THE_DARK_MISSION_SEGMENTS.combat:CONTACT_IN_THE_DARK_MISSION_SEGMENTS.search")) {
+  missing.push("Contact in the Dark must retain the 0:00-0:36 search loop, 0:37-1:00 combat loop, and 1.4-second crossfade contract");
+}
+if (!html.includes("tacticalMissionHasVisibleAliens(units,covers,mission)") || !html.includes("hasLineOfSight(observer,unit.x,unit.y,covers,mission)") || !html.includes("onAlienVisibilityChange(tacticalMusicAliensVisible)")) {
+  missing.push("mission music state must follow live soldier line of sight instead of permanent alien reveal memory");
+}
+if (!html.includes("audio.mediaFadingOut=outgoing") || !html.includes("cancelMusicMediaCrossfade(true)") || !html.includes("armContactInTheDarkLoop(incoming,targetKey,true)")) {
+  missing.push("mission music visibility changes must crossfade between bounded segment players and clean stale transitions");
 }
 if (dialogue?.recordingCount !== 105 || dialogueWavFiles.length !== 105 || dialogueVariants.length !== 105) {
   missing.push("recorded dialogue manifest must cover all 105 WAV recordings");
