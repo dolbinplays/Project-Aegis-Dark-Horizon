@@ -2,11 +2,41 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-12
-Current handoff build: `v0.26.08.12.0915_VIP_EXTRACTION_NO_BUILDING_REENTRY_INDEX_ONLY_PATCH`
+Current handoff build: `v0.26.08.12.1305_ESCORT_CONTACT_AND_EXTRACTION_TRAFFIC_INDEX_ONLY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0915 prevents AI-controlled VIP rescue columns from re-entering buildings after outdoor egress. Escorts plan outdoor-only routes to the Skyranger, and VIPs plus formation supports apply the same commitment individually without replacing fire-team formation targets or pacing. Browser 0858's per-sound SFX boosts, Browser 0024's visibility-reactive mission crossfade, Browser 2200's alternate soundtrack and tactical-audio direction, Browser 1652's coherent AI turns/window ballistics, and Browser 1005's crashed-UFO missions remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 1305 adds round-based escort contact recovery and Skyranger extraction traffic control. A VIP/civilian who spends one full round both outside normal escort spacing and without mutual line of sight becomes unescorted and reassignable, while the original living fire team is recalled. Escort supports defend outside ramp cells and the leader clears the corridor after the final follower extracts. Browser 0915's outdoor no-reentry extraction routing, Browser 0858's per-sound SFX boosts, Browser 0024's visibility-reactive mission crossfade, Browser 2200's alternate soundtrack and tactical-audio direction, Browser 1652's coherent AI turns/window ballistics, and Browser 1005's crashed-UFO missions remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
+
+---
+
+# v0.26.08.12.1305 - Escort Contact Recovery and Extraction Traffic
+
+Browser build `v0.26.08.12.1305_ESCORT_CONTACT_AND_EXTRACTION_TRAFFIC_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## One-full-round lost-contact rule
+
+- Escort attachment now has a deliberate grace period. At each completed tactical round, a civilian is considered in contact if within normal four-person column spacing or if an unobstructed sightline exists in either direction.
+- Only the combination of excess separation and blocked sight starts the timer. The first round boundary records the loss and announces a regroup window; release occurs only if the same condition remains at the following boundary, so a complete intervening round is always available for recovery.
+- Restored sight or spacing clears the timer immediately at the next assessment and retains the existing escort.
+- Release removes the active escort, priority claim, approach claim, order, and blocked-formation state while keeping the civilian revealed and available. This permits any free fire-team leader to make a normal contact and assume the escort.
+- When the original escort is alive, every living member of that fire team returns to stay-together escort mode and the leader receives a recall target for the separated civilian. A direct recall target takes precedence over ordinary VIP distribution while no alien contact requires combat priority.
+- If a different team contacts the civilian first, the previous recall assignment is cleared rather than producing two competing escorts.
+- Round evaluation is shared by direct tactical control, rounds with pending alien reinforcement, post-combat rescue turns, and both full and streamed simulation-AI resolution. Contact and recall fields are retained in tactical snapshots.
+
+## Skyranger extraction traffic doctrine
+
+- An escort leader entering a player Skyranger extraction corridor activates a temporary ramp-guard formation for that fire team's supporting soldiers.
+- Guard targets are selected outside all friendly ramp and hull cells, favor nearby passable and defensible ground. Supports remain under the existing movement-capacity, TU reserve, occupancy, pacing, and turn-order systems.
+- While the assignment is active, a support soldier cannot select any extraction cell even if a normal formation target would pull them forward. This reserves the narrow corridor for escorted civilians and VIPs.
+- The leader may enter and hold the corridor so the single-file civilian formation can advance. When the final assigned follower enters an extraction cell, is marked rescued/extracted, and leaves active occupancy, the leader moves to a free outside cell and the temporary guard markers clear.
+- This formation override is scoped to escorted extraction. It does not alter ordinary fire-team triangles, building door/breach movement, combat break-off, manual movement, or search behavior.
+
+## Roadmap and validation
+
+- Build Health includes a blocked-sight, excessive-distance test across two round boundaries; it covers warning, full-round release, original-team recall, support return, reassignment by a second team, and timer reset after regrouping.
+- A second deterministic scenario drives a full fire team and escorted VIP through a Skyranger corridor, requiring supports to remain outside ramp cells and the leader to clear the corridor after the VIP extracts.
+- Native Godot parity now includes the contact timer/recall state and the extraction ramp-guard/leader-clearance behavior alongside Browser 0915's outdoor no-reentry route.
 
 ---
 

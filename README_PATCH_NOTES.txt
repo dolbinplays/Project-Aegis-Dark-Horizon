@@ -1,12 +1,43 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.12.0915_VIP_EXTRACTION_NO_BUILDING_REENTRY_INDEX_ONLY_PATCH
+Build: v0.26.08.12.1305_ESCORT_CONTACT_AND_EXTRACTION_TRAFFIC_INDEX_ONLY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
 SUMMARY
 -------
+VIPs and civilians who remain both separated from and unable to see their escort for one complete round now return to an unescorted, reassignable state. The original fire team is recalled when possible. At Skyranger extraction, supporting soldiers form defensive positions outside the ramp cells, and the escort leader clears the corridor after the final assigned civilian extracts.
+
+ESCORT CONTACT AND REASSIGNMENT
+--------------------------------
+- Normal four-person escort-column spacing remains valid and does not start the lost-contact timer.
+- Separation alone does not release a follower if the VIP and escort retain an unobstructed line of sight.
+- Blocked sight alone does not release a follower while the escort remains within normal contact distance.
+- The first completed round of both separation and lost sight starts a regroup warning; a second completed round in that same condition releases the follower, ensuring a full round elapsed.
+- Regaining distance or sight during the grace round clears the warning without changing the escort assignment.
+- A released civilian is revealed, calm, and free of exclusive escort claims so another fire-team leader can immediately make contact.
+- The original living fire team is switched back to stay-together escort support, and its leader receives a return target. If another team reaches the civilian first, the stale recall clears.
+- The rule runs at round boundaries in direct-control, reinforcement-wait, post-combat rescue, and simulation-AI battles. Its state is retained across streamed tactical snapshots.
+
+EXTRACTION-ZONE TRAFFIC
+-----------------------
+- When an escort leader enters the selected Skyranger extraction corridor, living fire-team supports receive defensive guard cells outside every ramp and hull footprint.
+- Guard positions prefer nearby cover and remain subject to TU, occupancy, formation-order, and passability checks.
+- Supporting soldiers are explicitly prevented from choosing extraction cells while the guard assignment is active, leaving ramp capacity for VIPs and civilians.
+- The leader holds the corridor while the assigned civilian column advances, preserving the existing single-file escort behavior.
+- When the last assigned follower reaches an extraction cell and leaves the map, the leader immediately moves to a clear cell outside the extraction footprint and releases the temporary guard assignment.
+- These overrides apply only to active escorted extraction; normal patrol, combat, building entry, manual movement, and fire-team formation behavior are unchanged.
+
+BUILD HEALTH
+------------
+- Added a deterministic two-round blocked-sight scenario that verifies the grace round, release, original-team recall, support return, another-team reassignment, and contact recovery reset.
+- Added a Skyranger traffic scenario that verifies supports remain outside extraction cells, the VIP extracts, and the leader clears the ramp afterward.
+
+PREVIOUS BUILD - 0915
+=====================
+Build: v0.26.08.12.0915_VIP_EXTRACTION_NO_BUILDING_REENTRY_INDEX_ONLY_PATCH
+
 AI-controlled VIP rescue teams now commit to outdoor extraction routes after leaving a building. Escorts route around cleared structures instead of treating their interiors as shortcuts, and each VIP or supporting fire-team soldier that reaches outdoor ground is prevented from stepping back inside while following formation.
 
 VIP EXTRACTION - NO BUILDING RE-ENTRY
