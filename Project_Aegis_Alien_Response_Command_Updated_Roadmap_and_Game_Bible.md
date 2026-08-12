@@ -1,12 +1,82 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-08-07
-Current handoff build: `v0.26.08.07.2055_INCIDENT_MAP_LIMIT_SELF_TEST_STARTUP_TDZ_FIX_INDEX_ONLY_PATCH`
+Last updated: 2026-08-11
+Current handoff build: `v0.26.08.11.1652_ADAPTIVE_COHERENT_AI_TURNS_AND_WINDOW_BALLISTICS_INDEX_ONLY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2055 is a startup-crash hotfix for 1850. It removes an unsafe Build Health/self-test forward reference to the locally declared `IncidentMapLimitPanel` that triggered a temporal-dead-zone `ReferenceError` during `AlienResponseCommand` initialization. The 1850 VIP rescue coordination, grenade AI, staged Alien Field Beacon knowledge/database unlock, confirmed-beacon targeting, row-major Barracks order, and saved 5-20 routine Incident Map Limit remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 1652 changes Simulation AI to individual adaptive TU reserves and one coherent move/reassess/continue/final-action sequence per soldier. Fire-team formation pacing remains authoritative over both movement legs. Building windows now transmit sight and shatter when a projectile passes through, applying a first-round accuracy penalty before the shot can hit the target; solid walls remain opaque. Browser 1005's crashed-UFO missions remain fully active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
+
+---
+
+# v0.26.08.11.1652 - Adaptive Coherent AI Turns and Window Ballistics
+
+Browser build `v0.26.08.11.1652_ADAPTIVE_COHERENT_AI_TURNS_AND_WINDOW_BALLISTICS_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Simulation AI turn model
+
+- Every AI-controlled soldier chooses an individual TU reserve before movement instead of inheriting one global fire mode.
+- Available reserve choices are Snap Shot, Aimed Shot, Burst, Full Auto, and Kneel + Snap. Selection considers visible range, target cover, contact count, fire-team role, ammunition, and available TU.
+- Aimed fire is preferred for distant or protected targets when TU permits. Burst and automatic fire are considered at closer ranges with sufficient ammunition and contacts. Rear/base-fire roles can reserve kneeling plus a snap shot when no target is visible.
+- A soldier can plan against the full TU remaining after that personal reserve rather than the old generic eight-step AI ceiling.
+
+## Coherent movement and reassessment
+
+- Each soldier receives one observable turn sequence: initial movement, one checkpoint reassessment, an optional continuation, then one final action.
+- The initial and continuation legs append to the same recorded movement trail. Playback therefore presents one continuous route rather than multiple movement phases for the same soldier.
+- The checkpoint updates the soldier's personally visible alien contacts. The soldier may stop to engage, continue toward a newly observed enemy, continue toward the current objective, or finish by kneeling when appropriate.
+- At most one continuation is permitted, and total movement can never exceed TU left after the current reserve.
+
+## Fire-team formation guarantee
+
+- Adaptive movement does not replace fire-team movement rules. Both the initial plan and its optional continuation pass through the existing formation pace authority.
+- Leaders remain half-paced while supports are assembling and still use the slowest eligible member's capacity when formed.
+- Supporting soldiers cannot use a no-contact continuation to separate beyond the established leader-cohesion bound.
+- Existing contact-rush, player Command Map, escort-support, friendly-traffic, formation-target, and unique-hex safeguards remain in force.
+
+## Building sight and window ballistics
+
+- Procedural building exteriors continue to mix window wall sections with solid wall sections.
+- Window sections transmit line of sight for human, alien, civilian, AI, fog-of-war, and targeting calculations. Solid walls and partitions remain opaque.
+- When a projectile path crosses an intact window, the pane shatters before the normal hit roll and that first round receives an 18-point accuracy penalty.
+- If the penalized roll still succeeds, the projectile can hit the soldier or alien beyond the window. Subsequent rounds and attacks cross the shattered window without another glass penalty.
+- Shattered windows remain hard, impassable wall cells; creating a traversable opening still requires the existing structural breach system.
+- Manual fire, Simulation AI fire, alien fire, and reaction fire use the shared shattering rule and damaged-window presentation.
+
+## Roadmap and validation
+
+- Browser Build Health includes contracts for adaptive reserves, coherent movement metadata, single reassessment, formation-governed continuation, window sight, solid-wall occlusion, glass shattering, and the first-shot penalty.
+- Manual release validation must watch complete Simulation AI turns, verify formation cohesion across checkpoint continuations, and test both window and solid-wall engagements in 2D and Three.js tactical views.
+- Native Godot parity remains a roadmap item: port the personal reserve decision, coherent playback sequence, formation continuation guard, window LOS, and window projectile state before declaring browser/native tactical parity.
+- The next AI refinement should expose the chosen reserve and final turn action more prominently in playback HUD text, using the metadata already saved on frame units.
+
+---
+
+# v0.26.08.10.1005 - UFO Crash Site Wreck and Impact Trail
+
+Browser build `v0.26.08.10.1005_UFO_CRASH_SITE_WRECK_AND_IMPACT_TRAIL_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Crash-site tactical identity
+
+- UFO Crash Site missions no longer place an intact Alien Field Beacon at the alien deployment center.
+- The downed craft now occupies a seven-cell hard-cover footprint and appears at a stable mission-seeded yaw and uneven pitch/roll.
+- Three.js renders a scorched saucer with a flattened hull, fractured dome, incomplete rim, torn panel, exposed damaged core, dead purple machinery glow, and a bounded static smoke plume.
+- 2D Hex renders dedicated crash-wreck silhouettes, impact scars, broken trees, building debris, and smoke rather than reusing the reinforcement-craft or beacon artwork.
+
+## Procedural impact trail
+
+- A mission-seeded 10-20-cell path runs into the wreck and widens at irregular intervals.
+- Open terrain becomes churned soil. Vegetation becomes fallen trunks and stumps. Urban or structural cover becomes masonry and beam debris.
+- Terrain crossed by the impact path is replaced instead of stacked, keeping cover lookup and tactical presentation coherent.
+- Aliens and civilians are placed after the wreck cover is finalized so no unit begins inside an indestructible wreck cell.
+
+## Scope and regression coverage
+
+- Crash-site detection supports current mission kinds plus explicit/legacy crash-site metadata.
+- Ordinary incidents retain their Alien Field Beacon, reinforcement call, and dropship behavior.
+- Build Health verifies beacon exclusion, wreck geometry, impact-trail length, abnormal craft tilt, unit placement safety, and both renderer contracts.
+- Browser syntax and runtime startup remain release gates; save format remains 4.
 
 ---
 
@@ -20,6 +90,14 @@ Browser build `v0.26.08.07.2055_INCIDENT_MAP_LIMIT_SELF_TEST_STARTUP_TDZ_FIX_IND
 - Root cause: the 1850 Barracks/Incident Map Limit Build Health contract called `String(IncidentMapLimitPanel)` while `AlienResponseCommand` was still initializing and before that local `const` component had reached its declaration. JavaScript correctly treated the local binding as uninitialized and threw from the temporal dead zone.
 - The regression contract now inspects `String(AlienResponseCommand)` for the settings-panel markers and continues to directly test the 5-20 clamping/routine-incident helpers. It no longer evaluates the not-yet-initialized component binding.
 - No Incident Map Limit gameplay logic, Barracks ordering, tactical AI, beacon knowledge, grenade doctrine, or save-format behavior was changed by this hotfix.
+
+## Post-review code cleanup
+
+- Routine-incident cap accounting now excludes protected crash sites and other critical/player-created operations. Those missions remain on the board and may push the total above the configured routine limit without consuming routine incident slots.
+- Generated routine batches are de-duplicated against both the active board and earlier candidates in the same batch.
+- The Incident Map Limit range control now exposes a valid accessible label in the rendered DOM.
+- VIP rescue coordination now uses the established nearest-VIP fallback when a legacy/test tactical state has no assignable fire-team leaders, rather than enabling coordination with an empty assignment plan.
+- The structural-damage Build Health contract now checks the base cover renderer that owns the crack, shattered-window, and smoke presentation, plus the alien-technology wrapper's delegation to that renderer. This corrects a false diagnostic failure without reducing feature coverage.
 
 ## Validation
 
