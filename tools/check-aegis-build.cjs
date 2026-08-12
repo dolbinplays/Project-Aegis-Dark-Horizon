@@ -135,6 +135,19 @@ const required = [
   "fireTeamExtractionGuardActive",
   "fireTeamExtractionEscortCleared",
   "another fire team may take over first",
+  "Alien Field Beacons adapt with a ballistic-blocking kinetic shield after three destroyed devices",
+  "TACTICAL_ADAPTIVE_ALIEN_BEACON_KINETIC_SHIELD_PATCH",
+  "tacticalAlienBeaconShieldForCampaign",
+  "tacticalUnitCanBreachAlienBeaconShield",
+  "beaconStrikeAssigned && fireTeamLeader?.id === human.id",
+  "beaconStrikeAttack && liveBeaconAfterMove",
+  "alien-beacon-kinetic-shield",
+  "K-SHIELD",
+  "kinetic shield",
+  "Reinforcement arrivals preserve the mission's original beacon and crashed-UFO landmarks",
+  "TACTICAL_REINFORCEMENT_LANDMARK_PERSISTENCE_FIX_PATCH",
+  "tacticalPreserveReinforcementLandmarks",
+  "candidate?.crashedUfo",
   "AI routes through doors to enter buildings and locks adjacent VIP contact without circling",
   "2D Fit Map reserves a visible perimeter around every battlefield size",
   "Three.js Fit Map keeps every battlefield corner inside the live camera frustum",
@@ -533,6 +546,8 @@ for (const system of [
   "tactical-small-medium-large-map-profiles",
   "tactical-playable-perimeter-edge-guards",
   "visible-vip-tracker-pulses-in-2d-and-3d",
+  "adaptive-alien-beacon-kinetic-shield",
+  "reinforcement-landmark-persistence",
 ]) {
   if (!manifest.gameplayParity?.requiredSystems?.includes(system)) {
     missing.push(`gameplay parity system missing: ${system}`);

@@ -2,11 +2,52 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-12
-Current handoff build: `v0.26.08.12.1305_ESCORT_CONTACT_AND_EXTRACTION_TRAFFIC_INDEX_ONLY_PATCH`
+Current handoff build: `v0.26.08.12.1552_ADAPTIVE_ALIEN_BEACON_KINETIC_SHIELD_INDEX_ONLY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1305 adds round-based escort contact recovery and Skyranger extraction traffic control. A VIP/civilian who spends one full round both outside normal escort spacing and without mutual line of sight becomes unescorted and reassignable, while the original living fire team is recalled. Escort supports defend outside ramp cells and the leader clears the corridor after the final follower extracts. Browser 0915's outdoor no-reentry extraction routing, Browser 0858's per-sound SFX boosts, Browser 0024's visibility-reactive mission crossfade, Browser 2200's alternate soundtrack and tactical-audio direction, Browser 1652's coherent AI turns/window ballistics, and Browser 1005's crashed-UFO missions remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 1552 implements Phase 2 of Alien Field Beacon adaptation. After three beacon destructions recorded in campaign mission reports, later non-crash incidents deploy a kinetic field that intercepts ballistic fire while allowing energy weapons, grenades, and personnel through. AI beacon teams require at least one effective weapon and retain established formation, rescue, escort, combat, and player-order priorities. Browser 1305's escort contact/extraction traffic, Browser 0915's outdoor no-reentry extraction routing, Browser 0858's per-sound SFX boosts, Browser 0024's visibility-reactive mission crossfade, Browser 2200's alternate soundtrack and tactical-audio direction, Browser 1652's coherent AI turns/window ballistics, and Browser 1005's crashed-UFO missions remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
+
+---
+
+# v0.26.08.12.1552 - Adaptive Alien Beacon Kinetic Shield
+
+Browser build `v0.26.08.12.1552_ADAPTIVE_ALIEN_BEACON_KINETIC_SHIELD_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Campaign adaptation threshold
+
+- AEGIS counts completed mission reports in which an Alien Field Beacon was destroyed. New mission results mark the destruction and preserve it in the report action log, while log-text recognition keeps older format-4 reports compatible.
+- Once three destructions have been recorded, newly generated non-crash tactical deployments receive a kinetic shield. Earlier deployments and already streamed tactical snapshots retain their original explicit shield state.
+- UFO crash-site missions remain excluded because their deployment wrapper removes the beacon and places the angled crashed UFO, impact trench, debris, broken vegetation/structures, and smoke instead.
+- No save migration is required: mission reports are already part of format-4 campaign saves.
+
+## Shield behavior
+
+- High-speed ballistic damage is intercepted. The attack still spends its normal TU and ammunition, reveals the impact, and records a shield-interception message, but beacon HP does not change.
+- Laser and plasma fire are classified as energy and damage the beacon normally.
+- Frag Grenade blast is classified as explosive and passes through the field under the existing prime/throw cost, range, blast shape, and friendly-risk rules.
+- The shield does not make surrounding cells impassable. Personnel and ordinary tactical movement can enter the field area, while the beacon's own physical hex remains occupied until it is destroyed.
+- Reducing the beacon to zero through an effective attack still opens its cell and cancels pending reinforcement transit.
+
+## Reinforcement landmark persistence
+
+- When a beacon wave materializes, visibility reconciliation merges into the current cover set and retains the original beacon by identity. Its HP, shield, damage, and revealed state cannot be replaced by a new placeholder or dropped from the frame.
+- In crashed-UFO missions, a later reinforcement dropship is a separate craft. Registering it preserves the crashed-UFO craft model and every wreck/trail cover, so the original objective scenery remains visible while the live dropship arrives.
+- Landmark preservation covers the crashed core, hull, wings, impact scars, broken trees, building debris, and other crash-trail pieces without duplicating records already present in the updated battlefield.
+
+## AI and fire-team doctrine
+
+- Confirmed-beacon targeting still assigns at most one available fire team after visible contact, player command, rescue, escort, and civilian responsibilities are evaluated.
+- A shielded-beacon team must contain at least one living soldier with an energy weapon or available Frag Grenade. A ballistic-only team is not assigned to waste turns against the field.
+- The assigned fire-team leader remains the movement authority and advances the whole team under the established leader/support formation, half-pace assembly, slowest-member pacing, occupancy, and coherent single-turn rules. Any shield-capable member may attack when the formation puts that soldier in range; a support does not become an independent beacon movement leader.
+- Safe grenade assessment continues to reject blast cells containing AEGIS personnel, civilians, or VIPs.
+
+## Presentation, validation, and parity
+
+- The 2D marker displays `K-SHIELD`; its title and cover details identify ballistic immunity.
+- The Three.js beacon displays a translucent cyan field that brightens when a bullet is intercepted.
+- Build Health deterministically covers threshold progression, campaign report counting, ballistic interception, energy/grenade passage, unshielded legacy behavior, capable AI team selection, deployed state, both render paths, and original beacon/crashed-UFO persistence when reinforcements arrive.
+- Native Godot parity now includes campaign beacon-loss history, per-mission shield state, weapon-class filtering, AI capability selection, and kinetic-field presentation.
 
 ---
 
@@ -1155,11 +1196,11 @@ The alien deployment fiction also lacked a persistent tactical device tying toge
 
 A tactical battle already created by an older build may not contain a beacon. Those battles keep the existing purple-saucer reinforcement method rather than receiving a new device in the middle of the operation. The legacy arrival path now also requires the complete reinforcement group to receive valid spawn cells and immediately recalculates visibility before reporting success. This directly addresses the observed visible-but-apparently-empty craft case without regenerating existing battlefields.
 
-## Planned adaptive beacon progression — not yet implemented
+## Adaptive beacon progression
 
-### Phase 2: kinetic shield
+### Phase 2: kinetic shield - implemented in Browser 1552
 
-After several destroyed beacons, alien deployment doctrine should adapt by adding a kinetic barrier. High-speed ballistic projectiles will be intercepted, while energy weapons, grenades, and personnel can pass through.
+After three destroyed beacons recorded in campaign mission reports, alien deployment doctrine adapts by adding a kinetic barrier to newly deployed beacons. High-speed ballistic projectiles are intercepted, while energy weapons, grenades, and personnel pass through. An encounter's explicit shield state is fixed when its battlefield is generated, so an in-progress mission does not change beneath the player.
 
 ### Phase 3: combined kinetic and energy shield
 
@@ -1175,7 +1216,7 @@ Later beacons should block both ballistic and directed-energy fire. Slow thrown 
 ### Strategic and endgame development
 
 - Add a Geoscape alien flyover and beacon-drop event before the tactical incident begins.
-- Track beacon encounters and alien adaptation thresholds at campaign level.
+- Expand the implemented mission-report beacon-loss history into richer encounter and intact-recovery statistics when the beacon research tree is built.
 - Add destroyed and intact beacon research projects.
 - Trace beacon endpoints to alien bases.
 - Eventually spoof or reverse a captured beacon connection so AEGIS can deploy into an alien base.
@@ -5089,7 +5130,9 @@ Still planned:
 - Improve the Three.js battle option for alien incidents so manual tactical missions feel more readable, responsive, and worth choosing over auto-resolve.
 - Add deliberate building-breach actions, gameplay fire/smoke propagation, and power loss. Clearer damaged-wall/window feedback now has a browser presentation seed in 1630.
 - Add civilians, rescue/extraction zones, and structure-specific objectives for terror, abduction, harvest, and supply missions.
-- **Next patch: VIP Rescue AI fire-team distribution.** When Simulation AI takes command of a VIP rescue, the highest-ranked available deployed AEGIS soldier (experience as the primary tie-breaker) should act as the tactical coordinator and assign distinct fire teams to distinct currently marked/unrescued VIPs. The AI must not send every free fire team toward the nearest VIP. Each marked VIP should receive one fire team where possible before any VIP receives a second team; excess teams remain available for security, combat, escort support, or later reassignment.
+- VIP Rescue AI fire-team distribution is implemented in Browser 1850: the senior tactical coordinator assigns distinct fire teams across distinct marked VIPs before allowing duplicate coverage, while extra teams remain available for security, combat, escort support, or later reassignment.
+- Adaptive Alien Field Beacon Phase 2 is implemented in Browser 1552: three recorded beacon destructions trigger ballistic-blocking kinetic fields on later beacon deployments, and reinforcement arrivals preserve the original beacon or crashed-UFO landmark.
+- Next beacon milestone after live playtesting: Phase 3 combined kinetic/energy shielding plus intact hacking and commander-badge disablement. This remains behind research/evidence gates rather than being enabled automatically.
 - Explore upper floors, stairs, and roof visibility only after the single-level cutaway maps remain readable and performant.
 
 Completed in browser 0945:

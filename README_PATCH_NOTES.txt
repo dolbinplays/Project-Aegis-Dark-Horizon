@@ -1,6 +1,47 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.12.1552_ADAPTIVE_ALIEN_BEACON_KINETIC_SHIELD_INDEX_ONLY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+After three Alien Field Beacon destructions recorded in campaign mission reports, later non-crash incidents deploy the beacon with an adaptive kinetic shield. The field stops ballistic rounds, while laser/plasma fire, Frag Grenades, and personnel continue to pass through. Existing tactical battles retain their deployed beacon state, UFO crash sites still replace the beacon with the crashed craft and impact trail, and reinforcement arrivals no longer remove either mission landmark.
+
+ADAPTIVE KINETIC SHIELD
+-----------------------
+- The campaign derives the alien adaptation threshold from saved mission reports, so existing format-4 campaigns need no migration or new campaign field.
+- The first three destroyed-beacon encounters retain the original unshielded device. Once the third destruction is in the report archive, newly generated beacon missions receive the kinetic field.
+- Ballistic fire still spends the chosen shot's TU and ammunition, but causes no beacon HP damage and produces a shield-interception combat log message.
+- Laser and plasma weapons pass through the field and damage the beacon normally.
+- Frag Grenade blast damage passes through the field and can destroy the beacon under the existing prime, throw, blast-radius, and friendly-risk rules.
+- The field does not occupy surrounding cells, so soldiers, aliens, civilians, and VIPs retain normal movement around it.
+- A mission's shield state is fixed when its battlefield is created and is preserved by the existing tactical snapshot system.
+
+AI AND FIRE-TEAM SAFETY
+-----------------------
+- Confirmed-beacon doctrine assigns only one free fire team, preserving player orders, combat priorities, rescue work, escorts, and existing formation movement.
+- A shielded-beacon assignment is accepted only if the chosen team has an energy weapon or a Frag Grenade that can breach the field.
+- The fire-team leader remains the movement authority and advances the whole team under the existing leader/support formation and pacing rules; any shield-capable member may attack once the formation puts that soldier in range. Other teams do not clump on the beacon.
+- The established safe-grenade logic still rejects any throw whose blast includes an AEGIS soldier, civilian, or VIP.
+
+REINFORCEMENT LANDMARK PERSISTENCE
+----------------------------------
+- Beacon reinforcement materialization preserves the exact original beacon cover record, including HP, shield state, damage state, and visibility.
+- Crash-site reinforcement arrivals preserve every crashed-UFO hull, wing, core, impact-trail, scar, broken-tree, debris, and smoke source cover.
+- Registering a live reinforcement dropship no longer removes the crashed-UFO craft model from the battlefield; both can coexist for the duration of the arrival.
+- The preservation merge is identity-based, so an already retained landmark is not duplicated.
+
+PRESENTATION AND BUILD HEALTH
+-----------------------------
+- The 2D beacon marker carries a K-SHIELD badge and its hover description identifies the ballistic block.
+- The 3D Iso beacon receives a translucent cyan shield shell that brightens on a ballistic impact.
+- Cover details and tactical logs distinguish shield interception from ordinary damage and destruction.
+- Regression coverage verifies the three-destruction threshold, ballistic interception, energy/grenade passage, unshielded legacy damage, mission deployment, report-history counting, capable AI team selection, 2D/3D presentation seams, and beacon/crashed-UFO persistence through reinforcement arrival.
+
+PREVIOUS BUILD - 1305
+=====================
 Build: v0.26.08.12.1305_ESCORT_CONTACT_AND_EXTRACTION_TRAFFIC_INDEX_ONLY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
