@@ -1,6 +1,43 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.13.1204_ADAPTIVE_ALIEN_BEACON_COMBINED_SHIELD_INDEX_ONLY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Phase 3 of Alien Field Beacon adaptation is active. After six beacon destructions are recorded in campaign mission reports, newly generated non-crash incidents upgrade from the ballistic-only kinetic field to a combined shield that also intercepts laser and plasma fire. Grenades and personnel still pass through, existing battlefields retain their deployed shield state, and reinforcement arrivals still preserve original beacons and crashed-UFO landmarks.
+
+COMBINED KINETIC-ENERGY SHIELD
+------------------------------
+- Destruction history remains report-based and save-format-4 compatible: 0-2 destroyed beacons deploy unshielded, 3-5 deploy the Phase 2 kinetic shield, and 6 or more deploy the combined field.
+- Combined shields block ballistic, laser, plasma, and alien energy weapon damage without reducing beacon HP. TU/ammunition are still spent and the tactical log identifies the intercepted damage class.
+- Frag Grenades remain the intentional Phase 3 breach path and use the existing prime/throw costs, range, seven-cell blast, and friendly-risk rejection.
+- The field remains non-solid around the beacon. Soldiers, aliens, civilians, and VIPs can move through the shield volume; only the beacon's physical hex remains occupied.
+- UFO crash-site deployments remain excluded and continue replacing the beacon with the angled smoking wreck and impact trail.
+
+AI, FORMATION, AND PRESENTATION
+-------------------------------
+- Simulation AI assigns a combined-shield beacon only to a free fire team that still has a living soldier with a Frag Grenade. Ballistic- or energy-only teams do not waste turns firing into the field.
+- The fire-team leader remains the sole movement authority. A grenade-capable support follows normal formation and attacks only when the formation places that soldier safely in range.
+- Laser/plasma users carrying grenades reserve their direct weapon fire against the combined shield and use the existing safe grenade decision instead.
+- 2D displays a magenta `K+E SHIELD` badge and descriptive tooltip. Three.js uses a magenta combined-field shell distinct from the cyan Phase 2 kinetic field.
+
+PRESERVED REINFORCEMENT LANDMARKS
+---------------------------------
+- Beacon reinforcement waves retain the original beacon record, including its shield, HP, damage, and revealed state.
+- Reinforcement dropships in crash missions retain the original crashed-UFO craft, wreckage, trail, broken trees/buildings, and smoke.
+
+BUILD HEALTH
+------------
+- Added a Phase 3 regression contract covering the six-destruction threshold, ballistic/laser/plasma interception, grenade passage, AI team eligibility, formation movement ownership, and 2D/Three.js presentation.
+- Existing Phase 2 kinetic-shield and reinforcement-landmark regression contracts remain active.
+- Save format remains 4; no migration is required.
+
+PREVIOUS BUILD - 1552
+=====================
+
 Build: v0.26.08.12.1552_ADAPTIVE_ALIEN_BEACON_KINETIC_SHIELD_INDEX_ONLY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

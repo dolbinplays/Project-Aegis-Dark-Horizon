@@ -1,12 +1,50 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-08-12
-Current handoff build: `v0.26.08.12.1552_ADAPTIVE_ALIEN_BEACON_KINETIC_SHIELD_INDEX_ONLY_PATCH`
+Last updated: 2026-08-13
+Current handoff build: `v0.26.08.13.1204_ADAPTIVE_ALIEN_BEACON_COMBINED_SHIELD_INDEX_ONLY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1552 implements Phase 2 of Alien Field Beacon adaptation. After three beacon destructions recorded in campaign mission reports, later non-crash incidents deploy a kinetic field that intercepts ballistic fire while allowing energy weapons, grenades, and personnel through. AI beacon teams require at least one effective weapon and retain established formation, rescue, escort, combat, and player-order priorities. Browser 1305's escort contact/extraction traffic, Browser 0915's outdoor no-reentry extraction routing, Browser 0858's per-sound SFX boosts, Browser 0024's visibility-reactive mission crossfade, Browser 2200's alternate soundtrack and tactical-audio direction, Browser 1652's coherent AI turns/window ballistics, and Browser 1005's crashed-UFO missions remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 1204 implements Phase 3 of Alien Field Beacon adaptation. After six beacon destructions recorded in campaign mission reports, later non-crash incidents upgrade to a combined kinetic-energy field that intercepts ballistic, laser, and plasma fire while allowing grenades and personnel through. AI assigns such a beacon only to a free team with a remaining Frag Grenade; the leader remains the movement authority and supports retain normal formation. Browser 1552's kinetic shield and reinforcement-landmark persistence, Browser 1305's escort contact/extraction traffic, Browser 0915's outdoor no-reentry extraction routing, Browser 0858's per-sound SFX boosts, Browser 0024's visibility-reactive mission crossfade, Browser 2200's alternate soundtrack/tactical audio, Browser 1652's coherent AI turns/window ballistics, and Browser 1005's crashed-UFO missions remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
+
+---
+
+# v0.26.08.13.1204 - Adaptive Alien Beacon Combined Shield
+
+Browser build `v0.26.08.13.1204_ADAPTIVE_ALIEN_BEACON_COMBINED_SHIELD_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Phase 3 campaign threshold
+
+- Beacon destruction history continues to come from completed mission reports, including compatible action-log recognition for older format-4 reports.
+- Newly generated non-crash deployments remain unshielded at 0-2 destructions, use the kinetic field at 3-5, and upgrade to the combined kinetic-energy field at 6 or more.
+- Each battlefield stores an explicit shield state when generated. Continuing manual battles, streamed AI snapshots, and old saves do not change shield type mid-operation.
+- UFO crash-site missions remain excluded and continue to replace the beacon with the crashed craft, impact trench, debris, broken vegetation/structures, and smoke.
+
+## Combined shield behavior
+
+- Ballistic, laser, plasma, and alien energy fire are intercepted. The attack still uses normal TU/ammunition and reports the correct intercepted damage class, but beacon HP does not change.
+- Frag Grenade blast remains slow/explosive enough to cross the field and damage the beacon under the existing safe seven-cell blast contract.
+- The shield volume remains traversable for soldiers, aliens, civilians, and VIPs. The beacon's physical center hex stays occupied until destruction.
+- Phase 2 behavior remains distinct: a kinetic-only beacon still blocks ballistics while laser and plasma fire pass normally.
+
+## AI and formation doctrine
+
+- A combined-shield strike assignment requires a free fire team containing at least one living soldier with an available Frag Grenade. Energy weapons alone no longer qualify for Phase 3.
+- The fire-team leader remains the sole beacon movement authority. Supports continue to use established leader-relative formation cells, half-pace assembly, slowest-member pacing, occupancy, and coherent single-turn movement.
+- A grenade-capable support may attack when normal formation puts that soldier in safe range. Supports never become independent beacon movement leaders.
+- Visible alien combat, player Command Map orders, rescue work, active escorts, and civilian duties continue to outrank beacon attack.
+
+## Presentation, persistence, and validation
+
+- The 2D badge identifies `K+E SHIELD` in magenta and explains that ballistic and energy fire are blocked. The Three.js field uses a matching magenta shell, distinct from the cyan Phase 2 field.
+- Reinforcement visibility reconciliation preserves the original beacon record, shield type, HP, damage, and revealed state.
+- Crash-mission reinforcement registration continues to preserve the original crashed-UFO model, wreck covers, trail, broken trees/buildings, and smoke.
+- Build Health covers both progression thresholds, all relevant damage classes, grenade passage, AI team eligibility, leader-only movement authority, and 2D/Three.js presentation.
+
+## Native parity
+
+The Godot vertical slice remains at 0026. Phase 2 and Phase 3 beacon adaptation, campaign report history, AI strike eligibility, presentation, and landmark persistence remain queued for paired native implementation.
 
 ---
 
@@ -1202,9 +1240,9 @@ A tactical battle already created by an older build may not contain a beacon. Th
 
 After three destroyed beacons recorded in campaign mission reports, alien deployment doctrine adapts by adding a kinetic barrier to newly deployed beacons. High-speed ballistic projectiles are intercepted, while energy weapons, grenades, and personnel pass through. An encounter's explicit shield state is fixed when its battlefield is generated, so an in-progress mission does not change beneath the player.
 
-### Phase 3: combined kinetic and energy shield
+### Phase 3: combined kinetic and energy shield - implemented in Browser 1204
 
-Later beacons should block both ballistic and directed-energy fire. Slow thrown objects such as grenades should pass through, and soldiers should be able to enter the field physically.
+After six destroyed beacons recorded in campaign mission reports, newly deployed non-crash beacons upgrade to a combined field that blocks ballistic and directed-energy fire. Slow thrown explosives such as Frag Grenades pass through, and personnel can enter the field physically. The AI requires a grenade-capable team for beacon duty while retaining leader-controlled formation movement.
 
 ### Intact disablement paths
 
