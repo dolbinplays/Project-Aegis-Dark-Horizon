@@ -542,7 +542,8 @@ const TACTICAL_THREE_PERSISTENT_RENDERER_PATCH=true;
 const TACTICAL_THREE_AI_FOG_SHADING_FIX_PATCH=true;
 const TACTICAL_VISIBILITY_OBSERVER_AND_TERRAIN_CACHE_PATCH=true;
 const TACTICAL_2D_CELL_RENDER_INDEX_PATCH=true;
-const CURRENT_GAME_BUILD="v0.26.08.15.1615_TACTICAL_2D_CELL_RENDER_INDEX_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
+const TACTICAL_THREE_LIVING_UNIT_POSE_HOTFIX=true;
+const CURRENT_GAME_BUILD="v0.26.08.15.1645_THREEJS_LIVING_UNIT_POSE_HOTFIX_INDEX_ONLY_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
 function runCriticalBootSmokeTests(){
   const checks=[
     {name:"Game root is available",pass:typeof document!=="undefined"&&Boolean(document.getElementById("root"))},
@@ -2166,6 +2167,7 @@ const tacticalAlienContactConvergenceTest=(()=>{
 ,{name:"Three.js tactical renderer preserves scene caches and invalidates only changed layers",pass:tacticalThreePersistentRendererContractTest()&&tacticalThreePersistentInvalidationContractTest()}
 ,{name:"Tactical visibility reuses cover contexts and unchanged observer sight while 2D terrain stays cached",pass:TACTICAL_VISIBILITY_OBSERVER_AND_TERRAIN_CACHE_PATCH&&tacticalVisibilityCacheContractTest()}
 ,{name:"2D tactical cells use indexed units cover floor items and movement paths",pass:TACTICAL_2D_CELL_RENDER_INDEX_PATCH&&tacticalCellRenderIndexContractTest()}
+,{name:"Persistent 3D animation keeps every living faction upright",pass:TACTICAL_THREE_LIVING_UNIT_POSE_HOTFIX&&tacticalThreePersistentUnitPoseContractTest()}
 ];}
 const AEGIS_FULL_BUILD_HEALTH_RUNNER=runSelfTests;
 const AEGIS_DEFERRED_SELF_TEST_RESULTS=[
@@ -6889,6 +6891,8 @@ function tacticalThreePersistentUnitSignature(unit={}){
   const visual=unit.team==="human"?soldierVisualData(unit.baseSoldier||unit):null;
   return[unit.team,unit.hp>0?1:0,unit.panic?1:0,unit.escortId||"",unit.reinforcementLandingVisible?1:0,visual?.armorColor||"",visual?.vestColor||"",visual?.skin||"",visual?.weaponColor||"",visual?.isUnarmed?1:0].join(":");
 }
+function tacticalThreePersistentUnitRestingRotationZ(node=null){return node?.userData?.alive===false?-Math.PI/2:0;}
+function tacticalThreePersistentUnitPoseContractTest(){const living={userData:{alive:true,signature:tacticalThreePersistentUnitSignature({team:"alien",hp:30,panic:false,reinforcementLandingVisible:false})}};const fallen={userData:{alive:false,signature:tacticalThreePersistentUnitSignature({team:"civilian",hp:0,panic:false,reinforcementLandingVisible:false})}};return living.userData.signature.includes(":0:")&&tacticalThreePersistentUnitRestingRotationZ(living)===0&&tacticalThreePersistentUnitRestingRotationZ(fallen)===-Math.PI/2;}
 function tacticalThreePersistentApplyFacing(runtime,node,unit){
   const facing=unit.facing||"S";if(node.userData.facing===facing)return;const direction=TACTICAL_DIRECTIONS.find(candidate=>candidate.key===facing)||TACTICAL_DIRECTIONS[0];const beam=node.children.find(child=>child.geometry===runtime.geoCache.beam);const weapon=node.children.find(child=>child.geometry===runtime.geoCache.weaponBar);
   if(beam){beam.position.set(direction.vx*0.36,0.62,direction.vy*0.36);beam.rotation.y=Math.atan2(direction.vx,direction.vy);}
@@ -6896,7 +6900,7 @@ function tacticalThreePersistentApplyFacing(runtime,node,unit){
   if(node.userData.facing!==undefined)TACTICAL_THREE_PERSISTENT_RUNTIME_METRICS.unitMutations+=1;node.userData.facing=facing;
 }
 function tacticalThreePersistentCreateUnitNode(runtime,unit,unitIndex=0){
-  const {THREE,geoCache,qualitySettings}=runtime;const group=new THREE.Group();group.name=`tactical-unit-${unit.id}`;group.userData.unitId=unit.id;group.userData.signature=tacticalThreePersistentUnitSignature(unit);group.userData.phase=unitIndex*0.85;
+  const {THREE,geoCache,qualitySettings}=runtime;const group=new THREE.Group();group.name=`tactical-unit-${unit.id}`;group.userData.unitId=unit.id;group.userData.signature=tacticalThreePersistentUnitSignature(unit);group.userData.alive=unit.hp>0;group.userData.phase=unitIndex*0.85;
   const alive=unit.hp>0;const isCivilian=unit.team==="civilian";const visual=unit.team==="human"?soldierVisualData(unit.baseSoldier||unit):null;const armorHex=visual?new THREE.Color(visual.armorColor).getHex():0xa855f7;const vestHex=visual?new THREE.Color(visual.vestColor).getHex():0x7c3aed;const skinHex=visual?new THREE.Color(visual.skin).getHex():0xc084fc;const weaponHex=visual?new THREE.Color(visual.weaponColor).getHex():0xf0abfc;const color=unit.team==="human"?armorHex:isCivilian?(unit.panic?0xef4444:unit.escortId?0x22d3ee:0xf59e0b):0xa855f7;
   const body=new THREE.Mesh(unit.team==="human"||isCivilian?geoCache.soldierBody:geoCache.alienBody,tacticalThreePersistentMaterial(runtime,`${unit.team}-${alive}-${color}`,alive?color:0x7f1d1d,{roughness:0.52,metalness:unit.team==="human"?0.2:0.04,emissive:alive?0.08:0,emissiveColor:color}));body.position.y=0.44;body.castShadow=qualitySettings.shadows;group.add(body);
   if(unit.team==="human"){const plate=new THREE.Mesh(geoCache.armorPlate,tacticalThreePersistentMaterial(runtime,`vest-${vestHex}`,vestHex,{roughness:0.64,metalness:0.12,emissive:0.04,emissiveColor:vestHex}));plate.position.set(0,0.55,0.18);plate.castShadow=qualitySettings.shadows;group.add(plate);}
@@ -6910,7 +6914,7 @@ function tacticalThreePersistentUpdateUnits(runtime,props){
   props.units.filter(unit=>(runtime.visibleSet.has(tacticalKey(unit.x,unit.y))||unit.reinforcementLandingVisible)&&tacticalUnitVisibleOnMap(unit,props.visibleByHumans(unit.x,unit.y),{aiMapPlayback:props.aiMapPlayback,battleResolved:props.battleResolved})).forEach(unit=>{
     visibleIds.add(unit.id);const signature=tacticalThreePersistentUnitSignature(unit);let node=runtime.unitNodes.get(unit.id);
     if(!node||node.userData.signature!==signature){if(node){tacticalThreePersistentDisposeSubtree(node,runtime);runtime.unitRoot.remove(node);}node=tacticalThreePersistentCreateUnitNode(runtime,unit,unitIndex);runtime.unitRoot.add(node);runtime.unitNodes.set(unit.id,node);}
-    tacticalThreePersistentApplyFacing(runtime,node,unit);const point=runtime.worldFor(unit.x,unit.y);const baseY=unit.hp>0?0.2:0.13;if(node.position.x!==point.x||node.position.z!==point.z||Math.abs(node.position.y-baseY)>0.001)TACTICAL_THREE_PERSISTENT_RUNTIME_METRICS.unitMutations+=1;node.position.set(point.x,baseY,point.z);node.userData.baseY=baseY;node.userData.victoryDance=Boolean(props.victoryDance&&unit.team==="human"&&unit.hp>0);unitIndex+=1;
+    tacticalThreePersistentApplyFacing(runtime,node,unit);const point=runtime.worldFor(unit.x,unit.y);const baseY=unit.hp>0?0.2:0.13;if(node.position.x!==point.x||node.position.z!==point.z||Math.abs(node.position.y-baseY)>0.001)TACTICAL_THREE_PERSISTENT_RUNTIME_METRICS.unitMutations+=1;node.position.set(point.x,baseY,point.z);node.userData.alive=unit.hp>0;node.userData.baseY=baseY;node.userData.victoryDance=Boolean(props.victoryDance&&unit.team==="human"&&unit.hp>0);unitIndex+=1;
   });
   [...runtime.unitNodes.entries()].forEach(([id,node])=>{if(visibleIds.has(id))return;tacticalThreePersistentDisposeSubtree(node,runtime);runtime.unitRoot.remove(node);runtime.unitNodes.delete(id);});
 }
@@ -6942,12 +6946,12 @@ function tacticalThreePersistentRenderFrame(runtime){
 }
 function tacticalThreePersistentAnimationFrame(runtime,now){
   if(runtime.disposed||!runtime.animationActive){runtime.frameId=0;return;}
-  runtime.unitNodes.forEach(node=>{if(node.userData.victoryDance){const phase=node.userData.phase||0;node.position.y=(node.userData.baseY||0.2)+Math.abs(Math.sin(now/165+phase))*0.34;node.rotation.z=Math.sin(now/130+phase)*0.1;}else{node.position.y=node.userData.baseY??node.position.y;node.rotation.z=node.userData.signature?.includes(":0:")?-Math.PI/2:0;}});
+  runtime.unitNodes.forEach(node=>{if(node.userData.victoryDance){const phase=node.userData.phase||0;node.position.y=(node.userData.baseY||0.2)+Math.abs(Math.sin(now/165+phase))*0.34;node.rotation.z=Math.sin(now/130+phase)*0.1;}else{node.position.y=node.userData.baseY??node.position.y;node.rotation.z=tacticalThreePersistentUnitRestingRotationZ(node);}});
   runtime.trackerNodes.forEach(group=>{const elapsed=(now-runtime.animationStartedAt)/1000+(group.userData.phase||0);const cycle=elapsed%5.5;const active=cycle<2.6;const progress=clamp(cycle/2.6,0,1);const scale=active?0.82+progress*0.78:0.82;group.scale.set(scale,1,scale);if(group.userData.locator){group.userData.locator.rotation.y=elapsed*2.5;group.userData.locator.position.y=3.28+Math.sin(elapsed*5)*0.12;}if(group.userData.indicator){group.userData.indicator.style.opacity=active?"1":"0.78";group.userData.indicator.style.transform=`translate(-50%,-50%) scale(${active?1+Math.sin(progress*Math.PI)*0.24:0.88})`;}(group.userData.pulseMaterials||[]).forEach((material,index)=>{material.opacity=active?(index<2?0.96*(1-progress*0.72):index===2?0.5:index===3?1:0.9):(index===2?0.18:index===3?0.72:index===4?1:0.68);});});
   if(now-runtime.lastAnimatedRender>=80){tacticalThreePersistentRenderFrame(runtime);runtime.lastAnimatedRender=now;}runtime.frameId=requestAnimationFrame(next=>tacticalThreePersistentAnimationFrame(runtime,next));
 }
 function tacticalThreePersistentSetAnimationState(runtime,active){
-  runtime.animationActive=Boolean(active);if(runtime.animationActive&&!runtime.frameId){runtime.animationStartedAt=performance.now();runtime.lastAnimatedRender=0;runtime.frameId=requestAnimationFrame(now=>tacticalThreePersistentAnimationFrame(runtime,now));}else if(!runtime.animationActive&&runtime.frameId){cancelAnimationFrame(runtime.frameId);runtime.frameId=0;runtime.unitNodes.forEach(node=>{node.position.y=node.userData.baseY??node.position.y;if(!node.userData.signature?.includes(":0:"))node.rotation.z=0;});tacticalThreePersistentRenderFrame(runtime);}
+  runtime.animationActive=Boolean(active);if(runtime.animationActive&&!runtime.frameId){runtime.animationStartedAt=performance.now();runtime.lastAnimatedRender=0;runtime.frameId=requestAnimationFrame(now=>tacticalThreePersistentAnimationFrame(runtime,now));}else if(!runtime.animationActive&&runtime.frameId){cancelAnimationFrame(runtime.frameId);runtime.frameId=0;runtime.unitNodes.forEach(node=>{node.position.y=node.userData.baseY??node.position.y;node.rotation.z=tacticalThreePersistentUnitRestingRotationZ(node);});tacticalThreePersistentRenderFrame(runtime);}
 }
 function tacticalThreePersistentDisposeRuntime(runtime){
   if(!runtime||runtime.disposed)return;runtime.disposed=true;TACTICAL_THREE_PERSISTENT_RUNTIME_METRICS.disposed+=1;if(runtime.frameId)cancelAnimationFrame(runtime.frameId);if(runtime.resizeTimer)clearTimeout(runtime.resizeTimer);window.removeEventListener("resize",runtime.onResize);runtime.renderer.domElement.removeEventListener("click",runtime.onClick);runtime.renderer.domElement.removeEventListener("webglcontextlost",runtime.onContextLost,false);

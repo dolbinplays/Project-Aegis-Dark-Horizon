@@ -2,11 +2,20 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-15
-Current handoff build: `v0.26.08.15.1615_TACTICAL_2D_CELL_RENDER_INDEX_PATCH`
+Current handoff build: `v0.26.08.15.1645_THREEJS_LIVING_UNIT_POSE_HOTFIX_INDEX_ONLY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1615 completes the next 2D-grid hot-path slice with memoized cell indexes for units, active cover, floor items, and movement paths. Browser 1445's terrain and observer-visibility caches, Browser 1430's full-AI fog correction, Browser 1342's persistent Three.js renderer, and all earlier shared systems remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 1645 fixes intermittent all-faction prone spawning in the persistent 3D view by separating explicit life state from the visual signature. Browser 1615's 2D cell indexes, Browser 1445's terrain and observer-visibility caches, and all earlier shared systems remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
+
+---
+
+# v0.26.08.15.1645 - Persistent 3D Living-Unit Pose Hotfix
+
+- The persistent animation loop no longer infers death by searching a composite unit signature for the text `:0:`. Living units naturally contain zero-valued presentation fields, including false panic and reinforcement states.
+- Every Three.js tactical unit node now stores an explicit living-state property derived from its current HP.
+- Continuous VIP tracker animation, victory animation cleanup, and other animation-loop passes use that explicit property: living soldiers, civilians, and aliens stand upright; only fallen units use the prone rotation.
+- This is presentation-only and does not alter HP, casualties, targeting, AI, movement, fog, or mission resolution.
 
 ---
 

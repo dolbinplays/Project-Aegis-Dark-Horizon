@@ -272,6 +272,7 @@ const required = [
   "TACTICAL_THREE_AI_FOG_SHADING_FIX_PATCH",
   "TACTICAL_VISIBILITY_OBSERVER_AND_TERRAIN_CACHE_PATCH",
   "TACTICAL_2D_CELL_RENDER_INDEX_PATCH",
+  "TACTICAL_THREE_LIVING_UNIT_POSE_HOTFIX",
   "TacticalIsoThreeViewPersistent",
   "data-aegis-persistent-three-tactical",
   "dataset.aegisTacticalRendererId",
@@ -294,6 +295,10 @@ const required = [
   "tacticalFloorItemsByCell.get(cellKey)",
   "tacticalMovementPathByCell.get(cellKey)",
   "2D tactical cells use indexed units cover floor items and movement paths",
+  "tacticalThreePersistentUnitRestingRotationZ",
+  "tacticalThreePersistentUnitPoseContractTest",
+  "node.userData.alive=unit.hp>0",
+  "Persistent 3D animation keeps every living faction upright",
   "tacticalThreePersistentUpdateUnits",
   "tacticalThreePersistentApplyFacing",
   "runtime.unitNodes",
@@ -704,6 +709,7 @@ for (const system of [
   "threejs-full-ai-fog-of-war-shading",
   "observer-level-tactical-visibility-and-static-terrain-cache",
   "indexed-2d-tactical-cell-render-lookups",
+  "threejs-explicit-living-unit-pose-state",
 ]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser-only current-patch system must be recorded as a temporary parity exception: ${system}`);
@@ -773,6 +779,7 @@ for (const system of [
   "threejs-full-ai-fog-of-war-shading",
   "observer-level-tactical-visibility-and-static-terrain-cache",
   "indexed-2d-tactical-cell-render-lookups",
+  "threejs-explicit-living-unit-pose-state",
 ]) {
   if (!manifest.gameplayParity?.requiredSystems?.includes(system)) {
     missing.push(`gameplay parity system missing: ${system}`);
@@ -786,7 +793,7 @@ if (!nativeContent.soldiers?.every((soldier) => Number.isFinite(soldier.reaction
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "complete-classic-battlescape-command-set" && entry?.reason)) {
   missing.push("remaining classic battlescape command depth must be recorded as a temporary gameplay parity exception");
 }
-for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups"]) {
+for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state"]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser optimization parity exception missing: ${system}`);
   }

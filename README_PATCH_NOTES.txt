@@ -1,13 +1,20 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.15.1615_TACTICAL_2D_CELL_RENDER_INDEX_PATCH
+Build: v0.26.08.15.1645_THREEJS_LIVING_UNIT_POSE_HOTFIX_INDEX_ONLY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
 SUMMARY
 -------
-Completed the next 2D tactical-grid optimization slice. Visible hexes now retrieve units, active cover, floor items, and movement-path steps from memoized cell indexes instead of repeatedly scanning whole battle collections.
+Corrected an intermittent persistent-3D pose bug that could make every soldier, civilian, and alien begin a mission lying prone despite being alive. The 1615 2D cell-index optimization remains active.
+
+LIVING UNIT POSE HOTFIX
+-----------------------
+- VIP tracker animation exposed the bug because it keeps the persistent renderer animation loop active.
+- The loop previously searched a composite visual signature for `:0:` as a shorthand for death. Ordinary living-unit fields such as not panicked also contain that token.
+- Every 3D unit node now stores an explicit living-state property. Animation and animation shutdown use only that property to choose standing or fallen rotation.
+- Fallen units remain prone, while living soldiers, civilians, and aliens remain upright during tracker pulses and other continuous animations.
 
 2D CELL RENDER INDEXES
 ----------------------
@@ -43,6 +50,7 @@ PERSISTENT THREE.JS TACTICAL RUNTIME
 
 VALIDATION
 ----------
+- Added a regression contract proving that a living unit whose signature contains unrelated zero-valued fields remains upright while a fallen unit remains prone.
 - Added a deterministic contract covering living and fallen unit rules, destroyed cover exclusion, floor-level item grouping, and repeated movement-path cells.
 - The 2D render-source check requires all four memoized indexes to be wired into the visible-cell loop.
 - Added a focused cache contract proving that unrelated alien movement reuses every soldier sight result, while moving one soldier recalculates only that observer.
@@ -52,6 +60,14 @@ VALIDATION
 - Live browser validation launched a 64 x 64 tactical mission, switched into 3D Iso, selected another soldier, and completed a turn update while retaining the same renderer identity (`tactical-three-1`) with exactly one live 3D root and no runtime-error overlay.
 - The full diagnostic suite remains at the prior build's established baseline; the new persistence-specific check passes.
 - Save format remains 4. Existing campaigns and cached tactical battle state require no migration.
+
+PREVIOUS BUILD - 1615
+=====================
+
+Build: v0.26.08.15.1615_TACTICAL_2D_CELL_RENDER_INDEX_PATCH
+Save format: 4 (unchanged)
+
+Added memoized 2D cell indexes for units, cover, floor equipment, and movement paths.
 
 PREVIOUS BUILD - 1445
 =====================
