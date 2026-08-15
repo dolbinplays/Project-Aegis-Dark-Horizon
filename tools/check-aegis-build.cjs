@@ -271,6 +271,7 @@ const required = [
   "TACTICAL_THREE_PERSISTENT_RENDERER_PATCH",
   "TACTICAL_THREE_AI_FOG_SHADING_FIX_PATCH",
   "TACTICAL_VISIBILITY_OBSERVER_AND_TERRAIN_CACHE_PATCH",
+  "TACTICAL_2D_CELL_RENDER_INDEX_PATCH",
   "TacticalIsoThreeViewPersistent",
   "data-aegis-persistent-three-tactical",
   "dataset.aegisTacticalRendererId",
@@ -283,6 +284,16 @@ const required = [
   "tacticalVisibleCellsForObserverCached",
   "tacticalVisibilityCacheContractTest",
   "Tactical visibility reuses cover contexts and unchanged observer sight while 2D terrain stays cached",
+  "tacticalIndexUnitsByCell",
+  "tacticalIndexActiveCoverByCell",
+  "tacticalIndexFloorItemsByCell",
+  "tacticalIndexMovementPathByCell",
+  "tacticalCellRenderIndexContractTest",
+  "tacticalUnitByCell.get(cellKey)",
+  "tacticalCoverByCell.get(cellKey)",
+  "tacticalFloorItemsByCell.get(cellKey)",
+  "tacticalMovementPathByCell.get(cellKey)",
+  "2D tactical cells use indexed units cover floor items and movement paths",
   "tacticalThreePersistentUpdateUnits",
   "tacticalThreePersistentApplyFacing",
   "runtime.unitNodes",
@@ -692,6 +703,7 @@ for (const system of [
   "persistent-threejs-tactical-renderer-and-layer-invalidation",
   "threejs-full-ai-fog-of-war-shading",
   "observer-level-tactical-visibility-and-static-terrain-cache",
+  "indexed-2d-tactical-cell-render-lookups",
 ]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser-only current-patch system must be recorded as a temporary parity exception: ${system}`);
@@ -760,6 +772,7 @@ for (const system of [
   "persistent-threejs-tactical-renderer-and-layer-invalidation",
   "threejs-full-ai-fog-of-war-shading",
   "observer-level-tactical-visibility-and-static-terrain-cache",
+  "indexed-2d-tactical-cell-render-lookups",
 ]) {
   if (!manifest.gameplayParity?.requiredSystems?.includes(system)) {
     missing.push(`gameplay parity system missing: ${system}`);
@@ -773,7 +786,7 @@ if (!nativeContent.soldiers?.every((soldier) => Number.isFinite(soldier.reaction
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "complete-classic-battlescape-command-set" && entry?.reason)) {
   missing.push("remaining classic battlescape command depth must be recorded as a temporary gameplay parity exception");
 }
-for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache"]) {
+for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups"]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser optimization parity exception missing: ${system}`);
   }

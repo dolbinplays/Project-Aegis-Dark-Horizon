@@ -1,13 +1,22 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.15.1445_TACTICAL_VISIBILITY_AND_STATIC_TERRAIN_CACHE_INDEX_ONLY_PATCH
+Build: v0.26.08.15.1615_TACTICAL_2D_CELL_RENDER_INDEX_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
 SUMMARY
 -------
-Optimized the shared tactical visibility and 2D terrain hot path. Deterministic terrain is cached per mission, line-of-sight cover indexes are reused, and unchanged soldiers retain their observer-specific visible-cell sets when aliens, civilians, or other unrelated state changes.
+Completed the next 2D tactical-grid optimization slice. Visible hexes now retrieve units, active cover, floor items, and movement-path steps from memoized cell indexes instead of repeatedly scanning whole battle collections.
+
+2D CELL RENDER INDEXES
+----------------------
+- Living/visible-state unit occupancy is indexed once per unit-state update while preserving fallen-human and resolved-battle display rules.
+- Active cover is indexed once per cover update; destroyed cover is excluded exactly as before.
+- Ground-level equipment is grouped by cell once per inventory change rather than filtered for every rendered hex.
+- The current movement path is indexed by cell and retains the first step number when a path revisits a hex.
+- Each rendered cell constructs its coordinate key once and reuses it for visibility, exploration, tracker, beacon-shield, item, movement, and React-key lookups.
+- The optimization changes presentation lookup cost only; tactical movement, formation following, fog, line of sight, targeting, and mission resolution are unchanged.
 
 VISIBILITY AND TERRAIN CACHES
 -----------------------------
@@ -34,6 +43,8 @@ PERSISTENT THREE.JS TACTICAL RUNTIME
 
 VALIDATION
 ----------
+- Added a deterministic contract covering living and fallen unit rules, destroyed cover exclusion, floor-level item grouping, and repeated movement-path cells.
+- The 2D render-source check requires all four memoized indexes to be wired into the visible-cell loop.
 - Added a focused cache contract proving that unrelated alien movement reuses every soldier sight result, while moving one soldier recalculates only that observer.
 - The contract also verifies deterministic terrain reuse, shared cover-context reuse, and bounded cache behavior. JavaScript syntax and the static release checker pass for build 1445.
 - Added Build Health contracts for persistent scene ownership, cached terrain, stable unit nodes, cleanup, and layer-specific invalidation.
@@ -41,6 +52,14 @@ VALIDATION
 - Live browser validation launched a 64 x 64 tactical mission, switched into 3D Iso, selected another soldier, and completed a turn update while retaining the same renderer identity (`tactical-three-1`) with exactly one live 3D root and no runtime-error overlay.
 - The full diagnostic suite remains at the prior build's established baseline; the new persistence-specific check passes.
 - Save format remains 4. Existing campaigns and cached tactical battle state require no migration.
+
+PREVIOUS BUILD - 1445
+=====================
+
+Build: v0.26.08.15.1445_TACTICAL_VISIBILITY_AND_STATIC_TERRAIN_CACHE_INDEX_ONLY_PATCH
+Save format: 4 (unchanged)
+
+Added deterministic terrain, reusable cover-context, and per-observer tactical visibility caches.
 
 PREVIOUS BUILD - 1430
 =====================

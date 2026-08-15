@@ -2,11 +2,23 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-15
-Current handoff build: `v0.26.08.15.1445_TACTICAL_VISIBILITY_AND_STATIC_TERRAIN_CACHE_INDEX_ONLY_PATCH`
+Current handoff build: `v0.26.08.15.1615_TACTICAL_2D_CELL_RENDER_INDEX_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1445 begins the combined 2D-grid and visibility optimization by caching deterministic terrain, reusing indexed cover contexts, and retaining observer-specific sight results across unrelated unit updates. Browser 1430's full-AI fog correction, Browser 1342's persistent Three.js renderer, and all earlier shared systems remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 1615 completes the next 2D-grid hot-path slice with memoized cell indexes for units, active cover, floor items, and movement paths. Browser 1445's terrain and observer-visibility caches, Browser 1430's full-AI fog correction, Browser 1342's persistent Three.js renderer, and all earlier shared systems remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
+
+---
+
+# v0.26.08.15.1615 - Indexed 2D Tactical Cell Rendering
+
+- The 2D tactical board builds memoized cell indexes for displayable units, active cover, ground-level equipment, and the current movement path.
+- Visible cells use constant-time map lookups instead of scanning each complete collection. This removes the previous map-area multiplied by unit/cover/item/path cost during ordinary renders and AI movement animation.
+- A cell coordinate string is built once and shared across visibility, exploration, VIP tracker, beacon-shield, equipment, path, and React identity checks.
+- Unit indexing preserves living-unit display, fallen human markers, and resolved-battle inspection. Cover indexing still excludes destroyed objects. Floor-item indexing still excludes upper levels. Repeated path cells keep their first displayed step.
+- Indexes invalidate independently from terrain and visibility caches: units rebuild on unit updates, cover on cover updates, equipment on floor-item changes, and path on movement-path changes.
+- This is a rendering optimization only and does not alter movement legality, Time Units, reserved shots, fire-team formation, Hybrid/full AI, fog, window ballistics, escort/extraction, beacon behavior, or mission resolution.
+- The next cleanup priority is to modernize `tacticalPath` with parent pointers and prebuilt occupancy/cover sets while preserving route choice and formation behavior.
 
 ---
 
@@ -18,7 +30,7 @@ Current patch status: **Browser 1445 begins the combined 2D-grid and visibility 
 - Alien/civilian movement and presentation-only state can reuse every observer result. Moving one soldier recomputes only that observer while unchanged fire-team members remain cached.
 - Terrain, cover-context, and observer caches are explicitly bounded for long campaigns.
 - This patch does not change vision range/cones, window sight, cover blocking, fog states, fire-team formation, Hybrid/full AI, or mission resolution.
-- The next 2D optimization slice should replace per-cell unit, cover, floor-item, and movement-path scans with render indexes and introduce stable memoized cell boundaries.
+- Completed in Browser 1615: per-cell unit, cover, floor-item, and movement-path scans were replaced by memoized render indexes. Stable extracted cell-component boundaries remain future architectural consolidation work.
 
 ---
 
