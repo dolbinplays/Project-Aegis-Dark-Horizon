@@ -268,6 +268,26 @@ const required = [
   "[geoscapeClockRunning,geoscapeTickMinutes,screen,gameOver]",
   "Full Build Health waits for the diagnostics panel while critical boot smoke stays synchronous",
   "Geoscape clock owns one stable interval across simulation state updates",
+  "TACTICAL_THREE_PERSISTENT_RENDERER_PATCH",
+  "TACTICAL_THREE_AI_FOG_SHADING_FIX_PATCH",
+  "TACTICAL_VISIBILITY_OBSERVER_AND_TERRAIN_CACHE_PATCH",
+  "TacticalIsoThreeViewPersistent",
+  "data-aegis-persistent-three-tactical",
+  "dataset.aegisTacticalRendererId",
+  "tacticalThreePersistentInvalidationPlan",
+  "tacticalThreePersistentBuildTerrain",
+  "tacticalThreePersistentRevealAllGround",
+  "aegisFogUnseenCount",
+  "tacticalStaticTerrainForCell",
+  "tacticalCachedVisibilityContext",
+  "tacticalVisibleCellsForObserverCached",
+  "tacticalVisibilityCacheContractTest",
+  "Tactical visibility reuses cover contexts and unchanged observer sight while 2D terrain stays cached",
+  "tacticalThreePersistentUpdateUnits",
+  "tacticalThreePersistentApplyFacing",
+  "runtime.unitNodes",
+  "tacticalThreePersistentDisposeRuntime",
+  "Three.js tactical renderer preserves scene caches and invalidates only changed layers",
   "Geoscape Active UFOs opens a centered scrollable interception board",
   "tacticalHybridCombatTargetForFireTeam",
   "tacticalFireTeamFormationMovePlan",
@@ -669,6 +689,9 @@ for (const system of [
   "hybrid-opening-escort-support-independent-follow",
   "deferred-full-build-health-with-critical-boot-smoke",
   "single-owner-geoscape-clock-interval",
+  "persistent-threejs-tactical-renderer-and-layer-invalidation",
+  "threejs-full-ai-fog-of-war-shading",
+  "observer-level-tactical-visibility-and-static-terrain-cache",
 ]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser-only current-patch system must be recorded as a temporary parity exception: ${system}`);
@@ -734,6 +757,9 @@ for (const system of [
   "enhanced-sfx-per-sound-multipliers",
   "hybrid-escort-contact-decision-mode-preservation",
   "hybrid-opening-escort-support-independent-follow",
+  "persistent-threejs-tactical-renderer-and-layer-invalidation",
+  "threejs-full-ai-fog-of-war-shading",
+  "observer-level-tactical-visibility-and-static-terrain-cache",
 ]) {
   if (!manifest.gameplayParity?.requiredSystems?.includes(system)) {
     missing.push(`gameplay parity system missing: ${system}`);
@@ -747,7 +773,7 @@ if (!nativeContent.soldiers?.every((soldier) => Number.isFinite(soldier.reaction
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "complete-classic-battlescape-command-set" && entry?.reason)) {
   missing.push("remaining classic battlescape command depth must be recorded as a temporary gameplay parity exception");
 }
-for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval"]) {
+for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache"]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser optimization parity exception missing: ${system}`);
   }

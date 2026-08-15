@@ -1,6 +1,66 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.15.1445_TACTICAL_VISIBILITY_AND_STATIC_TERRAIN_CACHE_INDEX_ONLY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Optimized the shared tactical visibility and 2D terrain hot path. Deterministic terrain is cached per mission, line-of-sight cover indexes are reused, and unchanged soldiers retain their observer-specific visible-cell sets when aliens, civilians, or other unrelated state changes.
+
+VISIBILITY AND TERRAIN CACHES
+-----------------------------
+- Procedural 2D terrain cells are generated once per mission/cell and reused during later renders.
+- Sight-blocking cover is indexed once per cover-state signature, including wall, window, breach, HP, blocking, and shattered-window state.
+- Each living human observer has a bounded visibility entry keyed by mission, grid size, position, facing, and current cover signature.
+- Alien or civilian movement reuses every soldier visibility entry. Moving one soldier misses only that observer entry while the remaining fire team stays cached.
+- Bounded mission, context, and observer cache sizes prevent long campaigns from growing memory without limit.
+
+AI-CONTROLLED FOG-OF-WAR FIX
+----------------------------
+- The supplied Sunken Relay save exposed a presentation mismatch: full-AI playback suppressed every 3D ground-fog instance even though unit and cover discovery still followed soldier vision.
+- `aiMapPlayback` no longer reveals the complete ground. Unseen cells use the strong fog batch, explored cells use the lighter batch, and visible cells remain clear in manual, Hybrid AI, and full-AI control.
+- Only a resolved tactical battle may reveal the complete ground for the final battlefield view.
+
+PERSISTENT THREE.JS TACTICAL RUNTIME
+------------------------------------
+- Entering a 3D tactical mission creates one renderer and scene runtime. It is disposed when the mission view ends, the mission changes, or the player changes the 3D quality setting.
+- The complete tactical grid is built once with instanced ground and seam geometry. Changing the viewed area, selecting a soldier, or following an action moves the camera without reconstructing terrain.
+- Fog uses two reusable instanced batches for unseen and explored cells. Visibility changes update their matrices and counts rather than creating thousands of new meshes.
+- Static cover and Skyranger geometry live in their own scene layer and rebuild only when their source state changes. Cover changes also invalidate visibility so a newly opened breach cannot leave stale fog behind.
+- Human, alien, and civilian models are indexed by unit ID. Movement mutates each existing node's position, and facing rotates only the weapon/direction pieces. Visual-signature changes such as death, equipment, panic, or escort status replace only that unit node.
+- Selection rings, VIP trackers, movement/shot effects, camera framing, and animation state each have bounded update paths instead of sharing a single full-scene rebuild effect.
+
+VALIDATION
+----------
+- Added a focused cache contract proving that unrelated alien movement reuses every soldier sight result, while moving one soldier recalculates only that observer.
+- The contract also verifies deterministic terrain reuse, shared cover-context reuse, and bounded cache behavior. JavaScript syntax and the static release checker pass for build 1445.
+- Added Build Health contracts for persistent scene ownership, cached terrain, stable unit nodes, cleanup, and layer-specific invalidation.
+- Static JavaScript syntax validation passes.
+- Live browser validation launched a 64 x 64 tactical mission, switched into 3D Iso, selected another soldier, and completed a turn update while retaining the same renderer identity (`tactical-three-1`) with exactly one live 3D root and no runtime-error overlay.
+- The full diagnostic suite remains at the prior build's established baseline; the new persistence-specific check passes.
+- Save format remains 4. Existing campaigns and cached tactical battle state require no migration.
+
+PREVIOUS BUILD - 1430
+=====================
+
+Build: v0.26.08.15.1430_PERSISTENT_THREE_TACTICAL_RENDERER_AND_AI_FOG_FIX_INDEX_ONLY_PATCH
+Save format: 4 (unchanged)
+
+Restored unexplored and explored 3D fog shading during full-AI tactical control while retaining the persistent renderer.
+
+PREVIOUS BUILD - 1342
+=====================
+
+Build: v0.26.08.15.1342_PERSISTENT_THREE_TACTICAL_RENDERER_INDEX_ONLY_PATCH
+Save format: 4 (unchanged)
+
+Introduced the persistent Three.js tactical renderer, stable actor nodes, instanced terrain/fog, and layer-specific invalidation. Full-AI ground fog was corrected in the following 1430 build.
+
+PREVIOUS BUILD - 1208
+=====================
+
 Build: v0.26.08.15.1208_DEFERRED_BUILD_HEALTH_AND_STABLE_GEOCLOCK_INDEX_ONLY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

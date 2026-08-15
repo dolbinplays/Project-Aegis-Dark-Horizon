@@ -2,11 +2,63 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-15
-Current handoff build: `v0.26.08.15.1208_DEFERRED_BUILD_HEALTH_AND_STABLE_GEOCLOCK_INDEX_ONLY_PATCH`
+Current handoff build: `v0.26.08.15.1445_TACTICAL_VISIBILITY_AND_STATIC_TERRAIN_CACHE_INDEX_ONLY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1208 begins the performance and architecture cleanup series by removing the complete Build Health suite from synchronous startup and stabilizing the Geoscape interval lifecycle. Boot retains only four inexpensive smoke checks; opening Build Health paints the panel and then schedules/caches the complete suite. Geoscape time uses one interval with a live callback ref rather than rebuilding the timer on its own ticks and unrelated UFO/campaign updates. Browser 2112's Hybrid opening-escort follow fix and all earlier shared systems remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 1445 begins the combined 2D-grid and visibility optimization by caching deterministic terrain, reusing indexed cover contexts, and retaining observer-specific sight results across unrelated unit updates. Browser 1430's full-AI fog correction, Browser 1342's persistent Three.js renderer, and all earlier shared systems remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
+
+---
+
+# v0.26.08.15.1445 - Tactical Visibility and Static Terrain Cache
+
+- Deterministic tactical terrain is cached by mission and cell, so repeated 2D renders do not regenerate field features, building floors, and terrain colors.
+- Sight-affecting cover state produces a reusable indexed visibility context. Walls, windows, breaches, HP, block state, and shattered-window state invalidate it correctly.
+- Living human observers retain separate visible-cell sets keyed by mission, grid, position, facing, and cover state.
+- Alien/civilian movement and presentation-only state can reuse every observer result. Moving one soldier recomputes only that observer while unchanged fire-team members remain cached.
+- Terrain, cover-context, and observer caches are explicitly bounded for long campaigns.
+- This patch does not change vision range/cones, window sight, cover blocking, fog states, fire-team formation, Hybrid/full AI, or mission resolution.
+- The next 2D optimization slice should replace per-cell unit, cover, floor-item, and movement-path scans with render indexes and introduce stable memoized cell boundaries.
+
+---
+
+# v0.26.08.15.1430 - Persistent Three.js AI Fog-of-War Fix
+
+- The supplied Sunken Relay mission demonstrated that `aiMapPlayback` was suppressing both persistent 3D fog batches while unit and cover discovery still advanced normally.
+- AI control is a presentation/control mode, not permission to reveal terrain. Manual, Hybrid AI, and full-AI missions now share the same unexplored, explored, and currently visible ground shading.
+- `battleResolved` remains the sole complete-ground reveal condition so the final battlefield can be reviewed without fog.
+- The persistent renderer and layer-specific invalidation remain unchanged; the fix only corrects the fog batch population rule.
+- Save format remains 4 and the supplied Browser 1342 campaign needs no migration.
+
+---
+
+# v0.26.08.15.1342 - Persistent Three.js Tactical Renderer
+
+Browser build `v0.26.08.15.1342_PERSISTENT_THREE_TACTICAL_RENDERER_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Persistent tactical-renderer doctrine
+
+- A Three.js tactical mission owns one long-lived renderer, scene, orthographic camera, scene-layer hierarchy, animation loop state, resize/context-loss listeners, and resource caches.
+- The runtime may be recreated when the mission changes, the player changes Three.js quality, or the tactical view unmounts. Soldier selection, movement, shots, fog updates, camera following, and ordinary React renders are not renderer-lifecycle boundaries.
+- Full-map terrain uses persistent instanced ground and seam batches. Camera zoom and focus reveal different parts of the same static battlefield rather than rebuilding a local tile window.
+- Fog is represented by reusable unseen and explored instanced batches. Visibility changes update instance matrices/counts. Cover-state changes invalidate visibility because destroyed walls and opened breaches can change line of sight without a unit moving.
+- Static cover and Skyranger presentation own a separate scene root and rebuild only when cover or craft state changes.
+- Tactical actors are indexed by unit ID. Movement updates the existing scene-node position and facing rotates only the weapon/direction pieces in place. A node is replaced only when its visual signature changes, including life state, panic/escort presentation, landing presentation, armor, skin, or weapon appearance.
+- Selection/reachable rings, VIP tracker pings, movement and shot effects, camera framing, fog, units, and covers use separate invalidation keys. An unrelated update must not cascade into static terrain or renderer reconstruction.
+- Runtime cleanup removes DOM indicators and event listeners, cancels animation/resize work, disposes owned geometry, materials, textures, and renderer resources, and removes the canvas exactly once.
+
+## Gameplay preservation
+
+- The persistent view remains a presentation layer over the authoritative tactical state. It does not change Time Units, reserves, line of sight, window ballistics, cover HP, movement paths, fire-team formation, Hybrid AI, escort/extraction logic, beacon shields, reinforcements, or mission resolution.
+- 2D Hex and Three.js Iso continue to share the same mission, unit, cover, fog, selection, Skyranger, and effect state. Switching views does not create a second battle simulation.
+- Existing Three.js visual contracts remain available through a composite renderer-source diagnostic so Build Health still verifies the concrete helper that now owns each feature instead of assuming every implementation is nested in one React effect.
+
+## Validation and cleanup-series roadmap
+
+- Build Health adds a persistent-runtime contract covering scene ownership, instanced terrain, stable unit-node mutation, disposal, and layer-specific invalidation. The new contract passes at the established full-suite baseline.
+- Live browser validation launched a Small 64 x 64 mission, entered 3D Iso, changed selected soldiers, and completed a turn update. The renderer identity remained `tactical-three-1`, exactly one persistent 3D root remained mounted, and no runtime-error overlay appeared.
+- The next performance patch should optimize the 2D tactical grid and fog/visibility together: pre-index units/covers/items, cache static terrain, reuse visibility contexts, and avoid recomputing observers unaffected by a state change.
+- Following work should modernize `tacticalPath`, replace runtime Tailwind with embedded precompiled CSS, lazily index the Memorial library, and begin component/patch-layer consolidation before minor allocation and class-string cleanup.
 
 ---
 
@@ -32,8 +84,8 @@ Browser build `v0.26.08.15.1208_DEFERRED_BUILD_HEALTH_AND_STABLE_GEOCLOCK_INDEX_
 
 ## Cleanup-series roadmap
 
-- Next performance patch: make the Three.js tactical renderer persistent across movement, selection, and soldier-state updates; retain renderer, scene, caches, and static battlefield objects while mutating changed actors/effects.
-- Following tactical patch: combine 2D grid indexing, static terrain caching, fog/visibility context reuse, and observer-level visibility invalidation.
+- Completed in Browser 1342: make the Three.js tactical renderer persistent across movement, selection, and soldier-state updates; retain renderer, scene, caches, and static battlefield objects while mutating changed actors/effects.
+- Next tactical patch: combine 2D grid indexing, static terrain caching, fog/visibility context reuse, and observer-level visibility invalidation.
 - Subsequent patches should modernize `tacticalPath`, replace runtime Tailwind with embedded precompiled CSS, lazily index the Memorial library, and begin component/patch-layer consolidation before minor allocation and class-string cleanup.
 - Every performance patch must preserve fire-team formation, Hybrid AI, escort/extraction, visibility, window ballistics, and save-format behavior.
 
