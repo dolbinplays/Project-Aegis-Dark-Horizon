@@ -223,6 +223,7 @@ const required = [
   "GEOSCAPE_ACTIVE_UFO_INTERCEPTION_MODAL_PATCH",
   "TACTICAL_HYBRID_SUPPORT_FULL_TU_CATCH_UP_PATCH",
   "TACTICAL_HYBRID_ESCORT_PROMPT_MODE_PRESERVATION_PATCH",
+  "TACTICAL_HYBRID_OPENING_ESCORT_SUPPORT_FOLLOW_FIX_PATCH",
   "TACTICAL_HYBRID_AGGRESSIVE_FLANKING_AND_SUPPORT_MOVEMENT_FIX_PATCH",
   "tacticalHybridFireTeamLeaders",
   "tacticalHybridMarkPriorityTarget",
@@ -248,6 +249,25 @@ const required = [
   "restartHybridAiAfterEscortDecision",
   "Hybrid AI remains active; fire-team-leader control will return after this support round",
   "Hybrid escort-contact decisions preserve Hybrid AI leader control",
+  "hybridEscortLeaderHold",
+  "hybridEscortSupportStays",
+  "plan.formationFollow===true",
+  "Opening Hybrid escort rounds hold the leader while supports spend their own TU to follow",
+  "DEFERRED_BUILD_HEALTH_EXECUTION_PATCH",
+  "GEOSCAPE_STABLE_INTERVAL_LIFECYCLE_PATCH",
+  "runCriticalBootSmokeTests",
+  "AEGIS_FULL_BUILD_HEALTH_RUNNER",
+  "AEGIS_DEFERRED_SELF_TEST_RESULTS",
+  "runDeferredSelfTests",
+  "executeDeferredFullBuildHealth",
+  "scheduleDeferredFullBuildHealth",
+  "requestIdleCallback",
+  "__AEGIS_REFRESH_BUILD_HEALTH",
+  "geoscapeAdvanceRef.current=advanceGeoscapeTimeByMinutes",
+  "geoscapeAdvanceRef.current(geoscapeTickMinutes)",
+  "[geoscapeClockRunning,geoscapeTickMinutes,screen,gameOver]",
+  "Full Build Health waits for the diagnostics panel while critical boot smoke stays synchronous",
+  "Geoscape clock owns one stable interval across simulation state updates",
   "Geoscape Active UFOs opens a centered scrollable interception board",
   "tacticalHybridCombatTargetForFireTeam",
   "tacticalFireTeamFormationMovePlan",
@@ -638,11 +658,17 @@ if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "hybrid-escort-contact-decision-mode-preservation" && entry?.reason)) {
   missing.push("browser-only hybrid escort prompt mode preservation must be recorded as a temporary gameplay parity exception");
 }
+if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "hybrid-opening-escort-support-independent-follow" && entry?.reason)) {
+  missing.push("browser-only hybrid opening escort support follow fix must be recorded as a temporary gameplay parity exception");
+}
 for (const system of [
   "save-load-patch-notes-version-history",
   "tactical-shot-result-stack-and-toggle",
   "enhanced-sfx-per-sound-multipliers",
   "hybrid-escort-contact-decision-mode-preservation",
+  "hybrid-opening-escort-support-independent-follow",
+  "deferred-full-build-health-with-critical-boot-smoke",
+  "single-owner-geoscape-clock-interval",
 ]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser-only current-patch system must be recorded as a temporary parity exception: ${system}`);
@@ -707,6 +733,7 @@ for (const system of [
   "tactical-shot-result-stack-and-toggle",
   "enhanced-sfx-per-sound-multipliers",
   "hybrid-escort-contact-decision-mode-preservation",
+  "hybrid-opening-escort-support-independent-follow",
 ]) {
   if (!manifest.gameplayParity?.requiredSystems?.includes(system)) {
     missing.push(`gameplay parity system missing: ${system}`);
@@ -719,6 +746,11 @@ if (!nativeContent.soldiers?.every((soldier) => Number.isFinite(soldier.reaction
 
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "complete-classic-battlescape-command-set" && entry?.reason)) {
   missing.push("remaining classic battlescape command depth must be recorded as a temporary gameplay parity exception");
+}
+for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval"]) {
+  if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
+    missing.push(`browser optimization parity exception missing: ${system}`);
+  }
 }
 
 const dialogueWavFiles = fs.readdirSync(dialogueDirectory).filter((name) => name.toLowerCase().endsWith(".wav"));

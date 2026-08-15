@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.14.1728_HYBRID_ESCORT_PROMPT_MODE_PRESERVATION_INDEX_ONLY_PATCH",
+  "currentBuild": "v0.26.08.15.1208_DEFERRED_BUILD_HEALTH_AND_STABLE_GEOCLOCK_INDEX_ONLY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "hybrid-escort-prompt-mode-preservation-static-and-browser-build-health-passed",
+  "status": "deferred-build-health-and-stable-geoscape-clock-static-and-browser-passed",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.14.1728_HYBRID_ESCORT_PROMPT_MODE_PRESERVATION_INDEX_ONLY_PATCH",
+  "lastInspectedBuild": "v0.26.08.15.1208_DEFERRED_BUILD_HEALTH_AND_STABLE_GEOCLOCK_INDEX_ONLY_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.14.1728_HYBRID_ESCORT_PROMPT_MODE_PRESERVATION_INDEX_ONLY_PATCH",
+    "browserBuild": "v0.26.08.15.1208_DEFERRED_BUILD_HEALTH_AND_STABLE_GEOCLOCK_INDEX_ONLY_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -131,7 +131,10 @@
       "hybrid-direct-support-formation-follow-fallback",
       "geoscape-centered-scrollable-ufo-interception-board",
       "hybrid-support-full-tu-formation-catch-up",
-      "hybrid-escort-contact-decision-mode-preservation"
+      "hybrid-escort-contact-decision-mode-preservation",
+      "hybrid-opening-escort-support-independent-follow",
+      "deferred-full-build-health-with-critical-boot-smoke",
+      "single-owner-geoscape-clock-interval"
     ],
     "temporaryExceptions": [
       {
@@ -225,6 +228,18 @@
       {
         "system": "hybrid-escort-contact-decision-mode-preservation",
         "reason": "Browser Hybrid AI escort-contact decisions now replan the remaining support action as a bounded hybrid round and return fire-team-leader control instead of starting full Simulation AI command. Native tactical parity remains queued."
+      },
+      {
+        "system": "hybrid-opening-escort-support-independent-follow",
+        "reason": "Browser Hybrid AI now holds a player-positioned escort leader without marking the support soldiers as completed rescue-duty units, allowing their own TU-driven formation catch-up on the opening and later handoffs. Native tactical parity remains queued."
+      },
+      {
+        "system": "deferred-full-build-health-with-critical-boot-smoke",
+        "reason": "The browser now limits synchronous startup diagnostics to four inexpensive smoke checks and runs the complete suite only after Build Health opens. Native Godot uses a different boot and diagnostic architecture."
+      },
+      {
+        "system": "single-owner-geoscape-clock-interval",
+        "reason": "The browser Geoscape now keeps one React-owned interval and invokes current simulation state through a live callback ref. Native Godot time progression needs an engine-native single-owner lifecycle rather than a direct React port."
       },
       {
         "system": "threejs-armor-matched-soldier-helmets",

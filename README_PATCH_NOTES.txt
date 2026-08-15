@@ -1,6 +1,58 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.15.1208_DEFERRED_BUILD_HEALTH_AND_STABLE_GEOCLOCK_INDEX_ONLY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Reduced boot work and corrected the Geoscape clock lifecycle. Startup now runs only a tiny critical smoke test covering the game root, React runtime, and build/save metadata. The complete Build Health suite is cached but not executed until the player opens Build Health. The Geoscape clock now keeps one interval across ordinary campaign and UFO updates while a live callback reference supplies current simulation state.
+
+DEFERRED BUILD HEALTH
+---------------------
+- The full diagnostic suite no longer runs from the app component's boot-time memo. The memo receives a shared four-check boot result without constructing battlefields, visibility contexts, path searches, tactical fixtures, or the rest of the full suite.
+- Selecting any Build Health button opens the diagnostics panel immediately and schedules the full suite through requestIdleCallback, with a short timer fallback for browsers that do not implement the idle API.
+- The completed result array is cached for the session. Reopening Build Health does not repeat the full suite.
+- Full-suite exceptions are caught and displayed as a failed diagnostic instead of escaping into the startup path.
+- The critical boot smoke remains synchronous and deliberately small: root element, React runtime, and build/save metadata only.
+
+STABLE GEOSCAPE CLOCK LIFECYCLE
+--------------------------------
+- The Geoscape timer now depends only on whether the clock is running, its selected speed, the active app screen, and game-over state.
+- Month, day, minute, mission, playback, council, UFO, and radar updates no longer tear down and recreate the interval on every simulation tick.
+- A render-updated callback ref gives each interval tick the latest campaign closure, avoiding stale state without adding volatile effect dependencies.
+- Pausing, changing speed, leaving the game screen, or reaching game over still tears the timer down normally.
+
+BUILD HEALTH
+------------
+- Browser validation confirms the start screen appears while the full-suite status remains deferred, Build Health first displays the four boot checks, and the complete suite then replaces them after the idle run.
+- The full suite now reports dedicated passing contracts for deferred execution and stable Geoscape interval ownership. A live 5-minute clock run advanced from 08:00 to 08:10 without a runtime error.
+- Static release checks require the new patch flags, deferred runner/cache/listener, live Geoscape callback ref, bounded timer dependencies, current metadata, and unchanged save format.
+- Save format remains 4. Existing campaigns and cached tactical battles require no migration.
+
+PREVIOUS BUILD - 2112
+=====================
+
+Build: v0.26.08.14.2112_HYBRID_OPENING_ESCORT_SUPPORT_FOLLOW_FIX_INDEX_ONLY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Fixed Hybrid AI support soldiers being suppressed by the escort/rescue system during the opening support handoff. When a player-controlled fire-team leader is holding position with a VIP or civilian, only the leader remains committed to the escort action; supports spend their own TU moving toward the current formation cells. Long catch-up moves may complete their second movement checkpoint instead of being reduced to a single hex while the support remains outside normal cohesion.
+
+OPENING HYBRID ESCORT FOLLOW FIX
+--------------------------------
+- Hybrid AI marks the player-controlled leader as a fixed escort lead during the support handoff. The rescue planner no longer treats the entire fire team as already committed merely because the held leader has zero TU.
+- Supporting soldiers remain eligible for the normal hybrid movement pass and calculate their positions around the leader and escorted civilian/VIP column.
+- Stay on Escort keeps supports on escort-relative formation cells even when aliens are visible. Break Off and Engage retains enemy-relative flank behavior.
+- The leader does not move a second time under rescue AI after the player has positioned them.
+- Formation catch-up extensions may continue when each additional leg makes progress toward the held leader.
+
+PREVIOUS BUILD - 1728
+=====================
+
 Build: v0.26.08.14.1728_HYBRID_ESCORT_PROMPT_MODE_PRESERVATION_INDEX_ONLY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

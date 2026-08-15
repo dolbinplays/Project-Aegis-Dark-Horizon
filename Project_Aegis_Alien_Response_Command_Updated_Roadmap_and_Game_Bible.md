@@ -1,12 +1,73 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-08-14
-Current handoff build: `v0.26.08.14.1728_HYBRID_ESCORT_PROMPT_MODE_PRESERVATION_INDEX_ONLY_PATCH`
+Last updated: 2026-08-15
+Current handoff build: `v0.26.08.15.1208_DEFERRED_BUILD_HEALTH_AND_STABLE_GEOCLOCK_INDEX_ONLY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1728 preserves Hybrid AI Command when an escort-contact assignment prompt interrupts its one-round support playback. Stay-on-escort and break-off choices now rebuild only the remaining bounded hybrid support action, retain player control of fire-team leads, and return to the next leader-command phase instead of starting full Simulation AI. Browser 1712's UFO Interception Board and full-TU formation catch-up remain active with the earlier shared 2D/Three.js hybrid controls, ordered playback, rescue, beacon, extraction, audio, window-ballistics, and crashed-UFO systems. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 1208 begins the performance and architecture cleanup series by removing the complete Build Health suite from synchronous startup and stabilizing the Geoscape interval lifecycle. Boot retains only four inexpensive smoke checks; opening Build Health paints the panel and then schedules/caches the complete suite. Geoscape time uses one interval with a live callback ref rather than rebuilding the timer on its own ticks and unrelated UFO/campaign updates. Browser 2112's Hybrid opening-escort follow fix and all earlier shared systems remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
+
+---
+
+# v0.26.08.15.1208 - Deferred Build Health and Stable Geoscape Clock
+
+Browser build `v0.26.08.15.1208_DEFERRED_BUILD_HEALTH_AND_STABLE_GEOCLOCK_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Startup diagnostic doctrine
+
+- Startup may run only a bounded critical smoke pass covering prerequisites needed to render the first screen: the root element, React runtime, and valid build/save metadata.
+- Battlefield creation, tactical AI simulations, visibility scans, pathfinding fixtures, Three.js contracts, content-library checks, and all other complete Build Health work are diagnostic actions, not boot prerequisites.
+- The stable `runSelfTests()` seam returns the shared boot result during application mount. The original complete runner remains captured behind the deferred diagnostic boundary.
+- Selecting Build Health must open the panel before starting the full suite. The suite is scheduled with `requestIdleCallback` and a short timer fallback, then replaces the shared result array and requests one React refresh.
+- A completed full-suite result is cached for the session. Reopening Build Health must not repeat expensive checks unless a future explicit rerun control is added.
+- A full-suite exception becomes a visible failed diagnostic. It must not prevent the start screen or campaign UI from loading.
+
+## Geoscape interval ownership doctrine
+
+- The Geoscape clock owns at most one progression interval. Its lifecycle changes only when running/paused state, selected speed, app screen, or game-over state changes.
+- Simulation values that naturally change on a tick—minute, day, month, UFO state, radar coverage, mission state, playback state, and council state—must not be interval dependencies.
+- A callback ref is refreshed on every render and points at the current `advanceGeoscapeTimeByMinutes` closure. The stable interval invokes that ref, preserving current state without repeated teardown/setup.
+- Clock pause, speed changes, screen departure, and game over remain authoritative cleanup boundaries.
+
+## Cleanup-series roadmap
+
+- Next performance patch: make the Three.js tactical renderer persistent across movement, selection, and soldier-state updates; retain renderer, scene, caches, and static battlefield objects while mutating changed actors/effects.
+- Following tactical patch: combine 2D grid indexing, static terrain caching, fog/visibility context reuse, and observer-level visibility invalidation.
+- Subsequent patches should modernize `tacticalPath`, replace runtime Tailwind with embedded precompiled CSS, lazily index the Memorial library, and begin component/patch-layer consolidation before minor allocation and class-string cleanup.
+- Every performance patch must preserve fire-team formation, Hybrid AI, escort/extraction, visibility, window ballistics, and save-format behavior.
+
+## Validation and native roadmap
+
+- Browser validation observes four boot checks immediately after Build Health opens, then `383/399` full checks after the deferred callback. The new deferred-runner and stable-clock contracts pass.
+- A live Geoscape run at the 5-minute speed advanced from 08:00 to 08:10 without a runtime error.
+- Native Godot does not share the browser's React startup or interval implementation, but the broader rule still applies: editor/runtime diagnostics should not block game boot, and strategic clocks should have single-owner lifecycle management.
+
+---
+
+# v0.26.08.14.2112 - Hybrid Opening Escort Support Follow Fix
+
+Browser build `v0.26.08.14.2112_HYBRID_OPENING_ESCORT_SUPPORT_FOLLOW_FIX_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Opening hybrid escort handoff doctrine
+
+- When Hybrid AI begins its support phase, every player-controlled fire-team leader is a fixed command anchor. If that leader is escorting civilians/VIPs, rescue logic may preserve the leader's escort responsibility but may not classify the entire fire team as already finished merely because the held leader has zero TU.
+- The leader remains stationary at the player-selected hex. Escorted civilians have already followed the manual leader route and retain their column state.
+- Living supports remain eligible for the hybrid AI action pass and spend their own available TU toward formation cells calculated from the fixed leader and the current civilian/VIP column.
+- `Stay on Escort` suppresses enemy-relative flank selection for that escort team and keeps supports on column-protection positions. `Break Off and Engage` allows the established preferred-target and aggressive-flank rules until contact ends.
+- Movement remains bounded by each support's TU, terrain, occupancy, extraction guards, building rules, and role assignment. The held leader does not grant free movement and cannot be moved a second time by rescue AI.
+
+## Catch-up checkpoint doctrine
+
+- A hybrid formation-follow move may use its second adaptive checkpoint whenever that legal leg makes measurable progress toward the held leader, even if the support remains temporarily outside the normal six-hex cohesion envelope.
+- This exception applies only to an active hybrid formation order and a formation-follow plan. It does not authorize a combat rush, ignore occupied cells, exceed the fifteen-step movement ceiling, or spend reserved TU unless the existing no-contact catch-up rule released that reserve.
+- Short routes must not collapse to one hex merely because the first checkpoint ends outside cohesion. Distant supports should use as much legal movement as their selected reserve or Formation Catch-Up permits.
+
+## Validation and native roadmap
+
+- The opening-round integration test begins with an escort leader far ahead of two supports and no prior hybrid round. It confirms the leader is the only escort-duty ID, both supports are recorded as acting, both travel more than one hex, and both finish closer to the held leader.
+- Build Health and static checks cover the rescue-duty exclusion, Stay on Escort combat-target gate, formation extension condition, current build metadata, and unchanged save format.
+- Native Hybrid AI must preserve this split between fixed player leader, escort column, and independently moving supports when the feature is ported to Godot.
 
 ---
 
