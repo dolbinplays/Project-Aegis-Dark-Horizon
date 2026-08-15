@@ -1,12 +1,271 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-08-13
-Current handoff build: `v0.26.08.13.1204_ADAPTIVE_ALIEN_BEACON_COMBINED_SHIELD_INDEX_ONLY_PATCH`
+Last updated: 2026-08-14
+Current handoff build: `v0.26.08.14.1728_HYBRID_ESCORT_PROMPT_MODE_PRESERVATION_INDEX_ONLY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1204 implements Phase 3 of Alien Field Beacon adaptation. After six beacon destructions recorded in campaign mission reports, later non-crash incidents upgrade to a combined kinetic-energy field that intercepts ballistic, laser, and plasma fire while allowing grenades and personnel through. AI assigns such a beacon only to a free team with a remaining Frag Grenade; the leader remains the movement authority and supports retain normal formation. Browser 1552's kinetic shield and reinforcement-landmark persistence, Browser 1305's escort contact/extraction traffic, Browser 0915's outdoor no-reentry extraction routing, Browser 0858's per-sound SFX boosts, Browser 0024's visibility-reactive mission crossfade, Browser 2200's alternate soundtrack/tactical audio, Browser 1652's coherent AI turns/window ballistics, and Browser 1005's crashed-UFO missions remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 1728 preserves Hybrid AI Command when an escort-contact assignment prompt interrupts its one-round support playback. Stay-on-escort and break-off choices now rebuild only the remaining bounded hybrid support action, retain player control of fire-team leads, and return to the next leader-command phase instead of starting full Simulation AI. Browser 1712's UFO Interception Board and full-TU formation catch-up remain active with the earlier shared 2D/Three.js hybrid controls, ordered playback, rescue, beacon, extraction, audio, window-ballistics, and crashed-UFO systems. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
+
+---
+
+# v0.26.08.14.1728 - Hybrid Escort Prompt Mode Preservation
+
+Browser build `v0.26.08.14.1728_HYBRID_ESCORT_PROMPT_MODE_PRESERVATION_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Hybrid escort-contact decision doctrine
+
+- The alien-contact escort assignment board may interrupt either a full Simulation AI stream or the bounded support playback of Hybrid AI Command. Its continuation must preserve the control mode that raised it.
+- `Stay on Escort` keeps that fire team's supports protecting the civilian/VIP column. `Break Off and Engage` temporarily releases its supports to the visible fight while the lead keeps the escort moving. Applying either selection changes duty assignments only; it cannot silently transfer strategic control of the mission.
+- During Hybrid AI, the pre-decision playback plan is stale because it was calculated before the player's assignments. Applying the decision therefore rebuilds a single bounded support-and-engagement round from the live displayed battlefield, with fire-team leads held at their player-selected positions.
+- The replacement playback remains marked as a hybrid round, uses the normal formation, flank, TU-reserve, targeting, escort, extraction, and sequential-animation systems, and returns to a living fire-team lead with refreshed TU when complete.
+- A full Simulation AI prompt continues its full-AI stream because that was the mode the player had already selected. The continuation mode is derived from the interrupted playback's hybrid marker, including when an escort prompt was restored from cached tactical state.
+- Failure to prepare the replacement hybrid round returns the current battlefield to player-controlled Hybrid AI leader command. It must never fall through to a full mission simulation.
+
+## Validation and native roadmap
+
+- Build Health checks explicit hybrid prompt state, hybrid playback fallback detection, normal Simulation AI continuation, the dedicated hybrid restart path, and the retained one-round hybrid marker.
+- Release validation requires the new patch flag, continuation-mode helper, bounded `maxRoundsOverride:1` simulation, hybrid completion route, and unchanged save format 4.
+- Port mode-preserving escort decisions to Godot when native hybrid command is implemented; the prompt response must replan only the native bounded support phase and return leader control.
+
+---
+
+# v0.26.08.14.1712 - UFO Interception Board and Hybrid Support Catch-Up
+
+Browser build `v0.26.08.14.1712_UFO_INTERCEPTION_BOARD_AND_HYBRID_SUPPORT_CATCH_UP_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Geoscape UFO-interception interface doctrine
+
+- `Active UFOs (count)` is a peer of `Open Incident List`: selecting it opens a centered command panel rather than expanding content at the bottom of the Geoscape page.
+- The UFO Interception Board has a fixed heading and close action with an independently scrollable contact body bounded to the viewport. A large contact count must never require scrolling past the globe, tracking summary, or other Geoscape sections merely to reach the list.
+- Every radar-visible contact retains its size or unresolved-echo identity, region, flight progress, radar-contact quality, threat, estimated mission risk, interceptor sortie readiness, last air-combat result, and remembered damage state.
+- `1 Interceptor`, `Pair`, and `All Bases` remain the authoritative launch actions. Detection, readiness, active-flight exclusion, fuel, range, staging, ferry-network reach, permanent home-base ownership, and return-route checks remain unchanged.
+- Opening and closing the board changes presentation state only. It cannot pause or alter UFO travel, change detection, create a track, spend resources, advance time, or modify campaign saves.
+
+## Hybrid support catch-up doctrine
+
+- After the player moves a fire-team lead, each out-of-contact hybrid support compares the exact formation-cell distance with its movement capacity after the AI's selected shot reserve.
+- When the support could move farther with its current TU and the reserve alone would leave it short of the formation cell, the AI may select `Formation Catch-Up`: movement reserve becomes zero for that handoff and the soldier spends up to the full adaptive movement allowance toward the direct formation route.
+- Catch-up is bounded by actual TU at four TU per hex, the fifteen-step adaptive ceiling, hard terrain, occupied cells, path-search limits, and the standard leader-relative formation destination. It grants no free movement and cannot place multiple living units on one hex.
+- The movement continues through the established initial checkpoint and extension sequence, preserving one coherent displayed route and post-move reassessment rather than adding another visible movement phase.
+- An observed alien cancels formation catch-up reserve release. In contact, enemy-relative aggressive flanking and the normal reserve, shooting, range, LOS, cover, cohesion, escort, and extraction rules remain authoritative.
+
+## Validation and native roadmap
+
+- Geoscape regression requires a centered dialog, bounded viewport height, independent vertical scroll region, radar-contact data, close action, and the existing one, pair, and all-base launch choices.
+- Tactical regression demonstrates a distant support with 60 TU and a 28-TU reserve moving eight steps normally but fifteen steps under no-contact catch-up, while the same soldier preserves the reserve when an alien is supplied as the combat target.
+- Port the modal contact-board presentation and catch-up reserve decision to Godot while reusing native radar, interception, formation, TU, occupancy, and action-playback systems.
+
+---
+
+# v0.26.08.14.1347 - Hybrid Aggressive Flanking and Support Movement Fix
+
+Browser build `v0.26.08.14.1347_HYBRID_AGGRESSIVE_FLANKING_AND_SUPPORT_MOVEMENT_FIX_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Hybrid support movement doctrine
+
+- Supporting soldiers must move during a hybrid AI handoff whenever they have TU available after their chosen reserve and a legal route exists to a materially better formation or combat position.
+- A formation destination is a friendly navigation goal, not a hostile contact. It must be handled by a direct route toward the exact open role cell produced by the authoritative fire-team formation system.
+- If the exact formation cell is temporarily unreachable, the support chooses the reachable cell that makes the greatest safe progress toward it. A general combat-position score may not convert an ordinary formation-follow request into an unexplained hold.
+- Movement continues to respect impassable terrain, occupied cells, the AI-selected TU reserve, bounded search limits, escort and extraction priorities, and the six-hex fire-team cohesion requirement.
+
+## Aggressive contact flanking doctrine
+
+- Once a fire team has an actually observed living alien, supporting soldiers use that alien as the combat reference. A legal preferred target established by the lead has priority; otherwise the nearest observed alien is used.
+- The flank axis runs from the fire-team lead to the observed alien. A soldier assigned the left role seeks the left side of that axis and a soldier assigned the right role seeks the right side, producing distinct enemy-relative angles rather than merely copying static map offsets.
+- Candidate flank cells favor current line of sight, legal weapon distance, controlled forward pressure, hard-cover value, low friendly crowding, and approximately two-to-six hexes of separation from the lead. Positions substantially behind the lead or on the wrong assigned side are rejected.
+- If no viable combat flank can be reached with available movement TU, the support falls back to direct leader-relative formation following. Aggressive movement extends the standard formation behavior; it does not replace fire-team roles, break cohesion, or create independent player-controlled support paths.
+- At the end of movement, support soldiers reassess visibility from the new position. They may fire on the preferred alien when legal, select another visible alien if that target is gone or unavailable, kneel, or hold according to the normal AI action rules.
+
+## Hybrid handoff and validation
+
+- Fire-team leads remain in the positions chosen by the player and cannot spend their remaining TU again during the AI support handoff.
+- Supporting routes, movement, shots, impacts, and camera changes remain sequentially presented. The mode still resolves one AI round, clears temporary handoff orders, refreshes surviving soldiers' TU, and returns control to a living lead.
+- Regression coverage verifies that rear-positioned left and right supports spend movement, arrive on opposite sides of the lead-to-alien axis, remain within cohesion, and retain a moving direct-formation fallback.
+- Native Godot parity must port both the enemy-relative flank evaluator and the friendly formation-route distinction while reusing the native formation and occupancy authority.
+
+---
+
+# v0.26.08.14.1236 - Battle-Screen Hybrid Command and Collapsible UFO List
+
+Browser build `v0.26.08.14.1236_HYBRID_LEADER_CONTROL_AND_COLLAPSIBLE_UFO_LIST_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Main battlescape hybrid-control doctrine
+
+- Hybrid AI Command is a reversible battle-screen control mode available from the shared tactical toolbar in both the 2D map and Three.js isometric view.
+- While active, player navigation changes from individual soldiers to living fire-team leads. Previous Fire Team and Next Fire Team cycle one lead per team; clicking a supporting soldier redirects selection to that soldier's lead.
+- Fire-team leads remain ordinary manually controlled units during the player phase. Movement range, reachable cells, TU cost, selected reserve mode, remaining shot allowance, kneeling, inventory, targeting, and weapon fire all use the existing manual tactical rules.
+- Supporting soldiers cannot receive independent player movement routes in this mode. The player establishes the team position by moving its lead, retaining a clear hierarchy and preventing accidental formation splits.
+- Switching Hybrid AI Command off during an idle human phase restores standard individual-soldier selection and the normal manual alien-turn sequence.
+
+## One-round support and engagement handoff
+
+- End Turn becomes Run Hybrid AI Turn. It creates a temporary in-place order at every living lead's player-selected location and resolves exactly one AI-controlled tactical round.
+- The lead holds the chosen position while supporting soldiers derive their destinations from the existing fire-team formation system. Role offsets, slowest-member pacing, cohesion, occupancy, escort assignments, rescue priorities, extraction traffic, and bounded blocked-route behavior remain authoritative.
+- The AI determines each support's reserve profile, legal route and distance, post-move reassessment, kneeling, firing mode, ammunition use, and whether to shoot at the end of movement.
+- All support movement and alien engagement uses sequential playback: path display, actor animation, footfalls, shots, impacts, and camera focus remain attached to the acting unit rather than being collapsed into confusing parallel phases.
+- A valid shot fired by a lead during the manual phase records that alien as the fire team's preferred handoff target. Team members use it only while alive, visible, in range, and in line of sight, then fall back to another legal visible target.
+- Leads are treated as finished during the support handoff, preventing AI from spending leftover player-phase TU a second time. At playback completion, temporary hybrid orders clear, current battlefield state and reinforcement state are retained, all living soldiers receive the normal fresh-turn TU allocation, the round advances, and player control returns to the first living fire-team lead. A resolved mission proceeds through the normal result handoff instead.
+
+## Geoscape active-UFO list interaction
+
+- Active UFO tracking cards are collapsed by default to keep the Geoscape interface compact when many contacts are present.
+- An `Active UFOs (count)` button sits beside `Open Incident List`. It reveals the authoritative card list and changes to `Hide Active UFOs` while expanded.
+- Collapsing the card list is presentation-only. Radar detection, contact state, selected targets, interceptions, aircraft routes, reports, incident generation, and Geoscape time continue unchanged.
+
+## Validation and native roadmap
+
+- Browser regression verifies one-lead-per-team selection, in-place leader orders shared with supports, preferred-target propagation, temporary-order cleanup, one-round handoff markers, and the battle-toolbar labels.
+- Static release checks require both new patch flags, the hybrid round helpers, player-facing toggle and navigation labels, and the Geoscape UFO-list control.
+- Port the leader-selection state, one-round continuation handoff, sequential support presentation, and collapsible contact-list interaction to Godot without duplicating the native formation implementation.
+
+---
+
+# v0.26.08.14.1142 - Hybrid Fire-Team Command, Ordered Playback, Helmets, and Transfer Confirmation
+
+Browser build `v0.26.08.14.1142_HYBRID_FIRETEAM_PLAYBACK_HELMETS_AND_TRANSFER_CONFIRMATION_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## AI-controlled battle turn and presentation doctrine
+
+- An AI-controlled soldier owns one coherent action presentation. The playback frame names the acting unit and explicitly lists every unit allowed to animate in that frame.
+- A normal movement frame may animate the acting soldier plus civilians genuinely moving with that escort. It may not animate another soldier merely because combat or end-of-phase state for that soldier also changed.
+- Shot damage and other combat state can be staged without importing a target's later coordinates. Impact and phase-completion frames carry no movement authority.
+- Route display, footstep playback, camera focus, estimated delay, and unit interpolation all consume the same action-movement list. A unit cannot walk without its own route/action presentation and cannot snap back from a prematurely applied final position.
+- The tactical AI continues to choose its reserve profile before movement, spend available TU on a bounded route, reassess contacts from the new position, and make its final fire/kneel decision from the completed position. Internally merged movement trails remain one observable soldier action rather than several confusing playback phases.
+
+## Hybrid Fire-Team Command control mode
+
+- Hybrid Fire-Team Command sits between full manual control and complete Simulation AI control.
+- The player commands each fire-team leader's destination from the Tactical Command Map. The leader is the only unit receiving that player route.
+- The player may also designate one currently revealed alien as the team's preferred target. This is an engagement preference, not guaranteed knowledge or a forced illegal shot.
+- The AI retains authority over reserve TU, snap/aimed/burst or other available fire mode, kneeling, path execution, contact reassessment, ammunition use, grenade use, and whether a valid shot exists at the end of movement.
+- At the end of movement, team members select the preferred target only if it is alive, personally visible, in range, and reachable by line of sight. If it is dead or unavailable, they may select another visible alien using normal AI targeting.
+- The command persists as a formation hold after the leader reaches the waypoint. The player explicitly clears or replaces it; three consecutive turns of blocked progress still clear it safely.
+
+## Formation preservation requirement
+
+- Hybrid command must never replace, bypass, or duplicate the standard fire-team formation implementation.
+- Supporting soldiers continue using leader-relative role cells, slowest-member pacing, cohesion checks, occupied-cell repair, and the existing fire-team movement trail system.
+- When a hybrid order exists, support formation remains the movement priority even during contact. Supports may still fire after arriving, prefer the team's designated target, and fall back to another visible alien when necessary.
+- Escort and VIP responsibilities remain authoritative. A fire team already responsible for an evacuee continues using the established escort, extraction-traffic, and lost-contact rules instead of abandoning that duty for an ordinary waypoint.
+
+## Three.js soldier helmet presentation
+
+- Three.js AEGIS soldier models include a small tactical helmet made from a curved shell and short brim.
+- Helmet color is derived from the same equipped-armor palette used by the soldier body, including baseline and researched armor variants.
+- The helmet is presentation-only. It cannot change protection, hit boxes, visibility, cover, TU, damage, loadout, or save format.
+
+## Barracks troop-transfer interaction
+
+- Transfer destinations remain hidden on each soldier card until the player presses Transfer.
+- Selecting a destination opens a dedicated confirmation screen before any state change.
+- Confirmation identifies the soldier, origin base, destination base, estimated travel time, logistics fee, immediate squad-duty removal, transit unavailability, and cancellation-without-refund rule.
+- Insufficient funds disables the confirmation action. Back or closing the destination choice leaves campaign state unchanged.
+- Only Confirm Transfer invokes the authoritative transfer operation that deducts funds, removes squad assignment, and writes the transit record.
+
+## Validation and native roadmap
+
+- Browser regression requires non-acting soldiers to retain their prior coordinates until their own sequential frame and forbids movement on impact or phase-completion frames.
+- Hybrid regression requires preferred-target selection, legal fallback selection, formation-source use for supports, order persistence at the waypoint, and complete preferred-target cleanup when an order is cleared.
+- Three.js regression requires the tactical helmet helper and armor-color material key. Barracks regression requires collapsed options and the modal confirmation marker.
+- Port hybrid order data, preferred-target fallback, sequential movement ownership, and troop-transfer confirmation to the Godot vertical slice without implementing a second formation system.
+- Native helmet presentation can use the native soldier model/material pipeline; it remains a renderer task rather than a gameplay-parity blocker.
+
+---
+
+# v0.26.08.14.0949 - VIP Rescue, Patch History, Shot Stack, and SFX Multipliers
+
+Browser build `v0.26.08.14.0949_VIP_RESCUE_INGRESS_PATCH_HISTORY_SHOT_STACK_AND_SFX_MULTIPLIERS_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Authoritative mandatory rescue resolution
+
+- A mandatory rescue objective now exposes separate terminal permissions: `canResolveVictory` requires the quota to be met, while `canResolveFailure` requires all VIPs to be resolved below quota.
+- Defeating the alien force no longer converts an exhausted below-quota rescue objective into a victory. The shared terminal state records an objective failure for manual End Turn, Watch AI Team Leader, streamed Simulation AI, playback, mission reports, rewards, and panic handling.
+- A quota that has become mathematically impossible remains in the rescue phase while living unresolved VIPs remain. Soldiers continue rescue work so every possible extraction can earn partial credit.
+- Once no active VIP remains and the quota is missed, the battle ends as a resolved failure rather than waiting for irrelevant reinforcement checks, beacon search, or an AI safety-limit withdrawal.
+- A failed mission retains the existing 20% fallback base reward and applies the mission panic penalty. Each extracted VIP still pays its normal per-rescue reward; the quota completion bonus is withheld.
+- Soldier survival, experience, injuries, KIA state, VIP rescued/lost totals, and the action log remain authoritative regardless of success or failure.
+
+## Traffic-aware VIP building ingress
+
+- The rescue planner distinguishes mobile formation traffic from fixed occupancy. A fire-team leader may plan through a doorway or narrow corridor currently occupied by one of its own supports because the established formation mover will shift that support as the leader advances.
+- Unrelated soldiers, aliens, civilians, hard walls, intact windows, and other fixed occupancy remain path blockers.
+- When a VIP occupies a building, candidate contact cells must be passable cells inside the same building. Exterior adjacency across a solid wall does not count as a completed approach.
+- Full path selection compares the valid interior contact cells around the VIP and follows a real door or existing breach. When temporary unrelated traffic prevents a complete route, bounded fallback movement ranks valid door and breach openings before raw straight-line distance to the VIP.
+- The leader remains the only movement authority for the fire team. Supports keep their relative formation behavior, Time Unit pacing, and occupancy repair; no extra movement phase is introduced.
+- The 0915 extraction rule remains intact: once an escort and VIP have exited their building, the route to the Skyranger cannot re-enter any building.
+
+## In-game patch notes and version history
+
+- Save / Load owns a Patch Notes / Version History entry point alongside Build Health and Enhanced SFX Library.
+- The viewer must work from the standalone `file://` build without a server or network request. Current and historical summaries are embedded with the playable artifact.
+- Opening the viewer selects the current build. Desktop uses a scrollable version list; compact layouts use an equivalent selector.
+- Every record exposes a display version, release date, title, summary, full build identifier, save-format status, and test-relevant highlights where available.
+- `README_PATCH_NOTES.txt` remains the authoritative detailed archive. The in-game viewer is a testing reference and must be updated whenever `CURRENT_GAME_BUILD` changes.
+
+## Tactical shot-result presentation
+
+- A tactical shot creates a result card containing weapon or fire-mode label, outcome, shooter, and target. Cards are newest-first at the top of the battlescape and older cards move down as new shots arrive.
+- Each card remains fully visible for exactly 10 seconds, then enters its own 700-millisecond opacity/scale fade before removal. Later shots do not reset an older card's timer.
+- The bounded stack retains up to six entries so sustained fire remains readable without obscuring the battlefield indefinitely.
+- A `Shot Results: On / Off` battle-header control changes presentation only. Turning it off clears visible cards and pending card timers; ballistics, TU, ammunition, damage, audio, dialogue, and the permanent Mission Timeline remain authoritative.
+- The visibility preference is part of the live cached battle state, so command-section navigation does not unexpectedly turn the overlay back on.
+
+## Enhanced SFX multiplier mix
+
+- Every Enhanced SFX Library sound has a discrete 1x, 2x, 3x, or 4x multiplier in addition to its 0-100% individual level and the master SFX level.
+- Gain order is individual level, then selected multiplier, then master SFX volume. Preview and routed gameplay playback use the same computed mix gain.
+- Stored boost values are normalized to the 1-4 range. Legacy boolean `true` migrates to 2x and `false` or a missing value migrates to 1x without altering campaign save format 4.
+- Reset Mix restores all per-sound levels to 100% and multipliers to 1x.
+- These settings remain local audio preferences and must never change tactical rules, Time Units, fire-team movement, save results, or campaign balance.
+
+## Regression and parity roadmap
+
+- The mandatory-rescue regression covers open rescue, quota-met-but-unresolved, impossible-but-active, terminal success, terminal failure, AI result classification, and exact partial-credit behavior.
+- The building-ingress regression places a support in the doorway and requires the leader's route to cross that opening, end inside the VIP's building, contact the VIP, and retain support duty.
+- The shot-result regression covers bounded newest-first stacking, independent fade/removal transforms, a 10-second visibility constant, and a multi-entry capacity; browser testing must also exercise the battle-header toggle.
+- The Enhanced SFX regression covers legacy boolean migration, clamping to 1x-4x, and exact 2x/3x gain calculations. Browser testing must exercise every multiplier button and Reset Mix.
+- Static release checks require the Save / Load patch-history entry point, the selected-version detail pane, the tactical stack/toggle markers, and the complete four-choice SFX control.
+- Port the split rescue victory/failure terminal permissions, partial-credit result, own-team mobile-traffic filtering, same-building contact-cell rule, and entrance-biased fallback to Godot as one paired native milestone.
+- Port the tactical result stack and audio multiplier controls to the native interface without changing their presentation-only/local-preference scope. A native patch-history viewer may read equivalent packaged release data.
+- Add native fixtures for a support-blocked door, an unrelated-unit-blocked door, a breached alternate entrance, and the extraction no-reentry boundary.
+
+---
+
+# v0.26.08.13.2320 - Seven-Hex Beacon Shield and Mission Exit Fix
+
+Browser build `v0.26.08.13.2320_SEVEN_HEX_BEACON_SHIELD_AND_MISSION_EXIT_FIX_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Shield footprint and interception doctrine
+
+- A deployed kinetic or combined field surrounds exactly seven cells: the beacon's center hex and its six immediate neighbors.
+- The six outer cells remain normal passable terrain. The field does not add hard cover, reserve occupancy, or block soldier, alien, civilian, VIP, escort, or fire-team paths; only the beacon's physical center remains occupied.
+- A shield applies when a shot starts outside the field and ends on a protected cell. Kinetic shields intercept high-speed ballistic fire; combined shields intercept ballistic and directed-energy fire. Explosive blast remains capable of crossing either field.
+- The rule protects any unit in the footprint, including reinforcements immediately after beam-in. It is positional protection, not a permanent reinforcement status: a unit that leaves the seven cells loses the field's protection.
+- A shot starting inside the field does not cross the boundary and is not intercepted. An armed soldier can therefore enter one of the six outer cells and directly damage or destroy the beacon. This close-assault route supplements compatible ranged weapons and Frag Grenades.
+
+## AI and fire-team movement
+
+- Confirmed-beacon AI considers any living armed team capable because it can close with the field; Frag Grenades and shield-compatible ranged weapons remain faster alternatives when safe and available.
+- The existing leader-only movement authority is unchanged. The assigned leader chooses the beacon approach while support soldiers retain leader-relative formation cells, slowest-member pacing, occupancy checks, and coherent one-movement-phase behavior.
+- Entering the field does not split the team or create a special support movement phase. Supports continue forming outside or alongside the leader according to existing formation rules.
+- Visible alien contact, player Command Map orders, rescue work, active escort responsibility, and civilian traffic management continue to outrank a beacon close assault.
+
+## Presentation, victory, and regression safety
+
+- Once revealed, all seven protected cells receive a cyan kinetic or magenta combined outline in 2D. Three.js renders a widened, flattened shell encompassing the same footprint.
+- Field interception feedback applies to protected-unit shots as well as direct attacks against the beacon.
+- The confirmed-beacon victory gate remains authoritative: entering the field creates a viable destruction path but victory still waits for actual beacon neutralization, alien-force defeat, and any mandatory rescue objective.
+- Tactical result creation now assigns `result.beaconObjective` from the correctly scoped `tacticalBeaconObjective`. The obsolete undefined `tacticalAlienBeaconObjective` reference that caused an exit-time `ReferenceError` is forbidden by the regression contract.
+- Build Health now verifies the exact seven-cell footprint, passability, reinforcement placement, outside-fire interception, inside-fire bypass, explosive passage, 2D/Three.js presentation, leader-only formation movement, and the corrected exit handoff.
+
+## Native parity roadmap
+
+- Add the seven-cell field footprint and outside-to-inside interception query to the Godot tactical board.
+- Port the close-assault eligibility rule without creating a second movement phase or bypassing commander-centered formation ownership.
+- Add paired cyan/magenta footprint presentation and reinforcement-arrival protection tests.
+- The browser-only JavaScript scope crash has no direct Godot equivalent, but native result handoff should still receive a beacon-objective regression fixture.
 
 ---
 
@@ -45,6 +304,35 @@ Browser build `v0.26.08.13.1204_ADAPTIVE_ALIEN_BEACON_COMBINED_SHIELD_INDEX_ONLY
 ## Native parity
 
 The Godot vertical slice remains at 0026. Phase 2 and Phase 3 beacon adaptation, campaign report history, AI strike eligibility, presentation, and landmark persistence remain queued for paired native implementation.
+
+---
+
+# v0.26.08.13.1956 - Confirmed Beacon Mission Completion Gate
+
+Browser build `v0.26.08.13.1956_CONFIRMED_BEACON_MISSION_COMPLETION_GATE_INDEX_ONLY_PATCH` preserves save format 4. Native Godot remains unchanged at `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
+
+## Victory-condition doctrine
+
+- In non-crash missions whose primary objective requires defeating the alien force, confirmed Alien Field Beacon knowledge makes an active mission beacon part of the remaining hostile operation.
+- Eliminating the last living alien no longer ends the mission while the known beacon remains active. The battle enters a clearly announced **Secure the Beacon** phase until the device is destroyed or disabled.
+- Victory requires no living aliens, no active confirmed-target beacon, and completion of any independent mandatory civilian/VIP rescue requirement.
+- Destroying or disabling the beacon cancels a reinforcement wave still in transit, including destruction by a manually thrown Frag Grenade.
+- Reinforcements that materialized before neutralization remain part of the force that must be defeated; beacon destruction never removes enemies already on the battlefield.
+
+## Discovery and AI continuation
+
+- Campaign confirmation that beacons are viable targets does not grant artificial battlefield vision. An undiscovered device changes the objective to **Locate and neutralize the Alien Field Beacon**, and AI units conduct coordinated existing grid/fog exploration until normal range and line of sight reveal it.
+- Once discovered, one suitable free fire team receives the beacon strike assignment under established priority and shield-breach rules. The leader remains movement authority and supporting soldiers retain formation movement.
+- Direct control, Watch AI Team Leader, streamed Simulation AI, and Classic Lineup resolution all use the same beacon-aware terminal-state helper.
+- The HUD, tactical log, and playback outcome state whether the squad is searching, advancing to neutralize, unable to breach, or complete.
+
+## Deadlock and mission-scope safeguards
+
+- If no living soldier has a weapon or Frag Grenade capable of breaching the deployed shield, AI resolution stops without inventing a destruction. The operation remains incomplete, returns control where applicable, and offers withdrawal with an explicit **No available beacon-breach capability** explanation.
+- UFO Crash Site missions are excluded because the intact beacon is replaced by the crashed UFO, impact trail, debris, damage, and smoke.
+- Missions that do not require alien-force defeat retain their own objective rules unless they explicitly name beacon neutralization as mandatory.
+- Build Health covers active, hidden, destroyed, and impossible-to-breach beacons; unknown doctrine; transit cancellation; already-arrived reinforcements; mandatory rescue coexistence; shared mode wiring; and non-elimination/crash-site exclusions.
+- Native Godot parity remains queued and must adopt the same shared terminal-state contract and objective messaging.
 
 ---
 

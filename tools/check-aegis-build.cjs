@@ -140,7 +140,7 @@ const required = [
   "tacticalAlienBeaconShieldForCampaign",
   "tacticalUnitCanBreachAlienBeaconShield",
   "beaconStrikeAssigned && fireTeamLeader?.id === human.id",
-  "beaconStrikeAttack && tacticalWeaponCanBreachAlienBeaconShield",
+  "beaconShooterInsideField || tacticalWeaponCanBreachAlienBeaconShield",
   "alien-beacon-kinetic-shield",
   "K-SHIELD",
   "kinetic shield",
@@ -156,6 +156,105 @@ const required = [
   "TACTICAL_REINFORCEMENT_LANDMARK_PERSISTENCE_FIX_PATCH",
   "tacticalPreserveReinforcementLandmarks",
   "candidate?.crashedUfo",
+  "Confirmed beacon objectives hold eliminate-force victory until neutralization",
+  "TACTICAL_CONFIRMED_BEACON_MISSION_COMPLETION_GATE_PATCH",
+  "tacticalAlienBeaconObjectiveState",
+  "tacticalAiShouldContinueBeacon",
+  "tacticalAiBeaconSearchTarget",
+  "No available beacon-breach capability",
+  "data-aegis-beacon-objective",
+  "result.beaconObjective=tacticalBeaconObjective",
+  "Alien Field Beacon shields cover seven passable hexes, protect arrivals, and permit close assaults",
+  "TACTICAL_ALIEN_BEACON_SEVEN_HEX_SHIELD_PATCH",
+  "tacticalAlienBeaconShieldCells",
+  "tacticalAlienBeaconShieldShotState",
+  "tacticalAlienBeaconCloseAssaultMovePlan",
+  "tacticalFireTeamHasExternalAlienBeaconBreach",
+  "alienBeaconShieldedAtArrival",
+  "data-aegis-beacon-shield-cell",
+  "alien-beacon-seven-hex-shield",
+  "Mandatory VIP rescue quotas resolve as failures while preserving per-rescue partial credit",
+  "TACTICAL_MANDATORY_VIP_RESCUE_QUOTA_RESOLUTION_PATCH",
+  "TACTICAL_MANDATORY_VIP_RESCUE_QUOTA_RESOLUTION_CONTRACT",
+  "canResolveFailure",
+  "terminalAfterHuman.objectiveFailed",
+  "terminalAtTurnStart.objectiveFailed",
+  "Mission failed - VIP rescue quota missed",
+  "Fire-team VIP routes treat formation supports as mobile traffic and enter through valid building openings",
+  "TACTICAL_FIRE_TEAM_VIP_BUILDING_INGRESS_FIX_PATCH",
+  "TACTICAL_FIRE_TEAM_VIP_BUILDING_INGRESS_CONTRACT",
+  "mobileFireTeamIds",
+  "routeUnitsForMovement",
+  "fireTeamTrafficIgnored",
+  "SAVE_LOAD_PATCH_NOTES_VERSION_HISTORY_PATCH",
+  "PATCH_NOTES_HISTORY",
+  "PatchNotesLibraryScreen",
+  "data-aegis-open-patch-notes",
+  "data-aegis-patch-notes",
+  "data-aegis-selected-patch",
+  "TACTICAL_SHOT_RESULT_STACK_AND_TOGGLE_PATCH",
+  "TACTICAL_SHOT_RESULT_VISIBLE_MS=10000",
+  "TACTICAL_SHOT_RESULT_FADE_MS",
+  "tacticalShotResultStackPush",
+  "data-aegis-shot-results-stack",
+  "data-aegis-shot-result",
+  "data-aegis-toggle-shot-results",
+  "TACTICAL_AI_SEQUENTIAL_MOVEMENT_PRESENTATION_FIX_PATCH",
+  "tacticalPlaybackActionMovementIds",
+  "tacticalPlaybackUnitMayAnimate",
+  "actionMovementIds",
+  "TACTICAL_HYBRID_FIRE_TEAM_COMMAND_PATCH",
+  "Hybrid Fire-Team Command",
+  "fireTeamCommandPreferredTargetId",
+  "tacticalFireTeamCommandShotTarget",
+  "supporting soldiers retain standard formation",
+  "AI fallback - nearest visible alien",
+  "TACTICAL_THREE_ARMOR_MATCHED_HELMETS_PATCH",
+  "addTacticalSoldierThreeHelmet",
+  "Armor-matched tactical helmet",
+  "helmet-${armorHex}",
+  "BARRACKS_TRANSFER_BUTTON_AND_CONFIRMATION_PATCH",
+  "SoldierTransferControls",
+  "data-aegis-soldier-transfer-options",
+  "data-aegis-soldier-transfer-confirmation",
+  "Confirm Troop Transfer",
+  "TACTICAL_HYBRID_LEADER_CONTROL_ROUND_PATCH",
+  "GEOSCAPE_COLLAPSIBLE_ACTIVE_UFO_LIST_PATCH",
+  "GEOSCAPE_ACTIVE_UFO_INTERCEPTION_MODAL_PATCH",
+  "TACTICAL_HYBRID_SUPPORT_FULL_TU_CATCH_UP_PATCH",
+  "TACTICAL_HYBRID_ESCORT_PROMPT_MODE_PRESERVATION_PATCH",
+  "TACTICAL_HYBRID_AGGRESSIVE_FLANKING_AND_SUPPORT_MOVEMENT_FIX_PATCH",
+  "tacticalHybridFireTeamLeaders",
+  "tacticalHybridMarkPriorityTarget",
+  "tacticalHybridPrepareAiRoundUnits",
+  "tacticalHybridRefreshPlayerTurnUnits",
+  "hybridPlayerControlledLead",
+  "endHybridBattleTurn",
+  "Hybrid AI: On",
+  "Prev Fire Team",
+  "Next Fire Team",
+  "Run Hybrid AI Turn",
+  "data-aegis-hybrid-battle-mode",
+  "data-aegis-active-ufo-list-toggle",
+  "data-aegis-active-ufo-list-modal",
+  "data-aegis-active-ufo-list-scroll",
+  "UFO Interception Board",
+  "activeUfoListOpen",
+  "tacticalHybridSupportCatchUpState",
+  "Formation Catch-Up",
+  "formation-catch-up",
+  "Hybrid supports spend full movement TU when their selected reserve would leave them behind formation",
+  "tacticalEscortSupportContinuationMode",
+  "restartHybridAiAfterEscortDecision",
+  "Hybrid AI remains active; fire-team-leader control will return after this support round",
+  "Hybrid escort-contact decisions preserve Hybrid AI leader control",
+  "Geoscape Active UFOs opens a centered scrollable interception board",
+  "tacticalHybridCombatTargetForFireTeam",
+  "tacticalFireTeamFormationMovePlan",
+  "tacticalHybridAggressiveFlankMovePlan",
+  "hybridCombatTarget",
+  "hybridFlankMove",
+  "Hybrid support soldiers move to enemy-relative left and right flanks with formation fallback",
   "AI routes through doors to enter buildings and locks adjacent VIP contact without circling",
   "2D Fit Map reserves a visible perimeter around every battlefield size",
   "Three.js Fit Map keeps every battlefield corner inside the live camera frustum",
@@ -201,6 +300,7 @@ const required = [
   "TACTICAL_MISSION_VISIBILITY_MUSIC_CROSSFADE_PATCH",
   "ENHANCED_SFX_LIBRARY_AND_PER_SOUND_MIX_PATCH",
   "ENHANCED_SFX_PER_SOUND_DOUBLE_BOOST_PATCH",
+  "ENHANCED_SFX_PER_SOUND_MULTIPLIER_PATCH",
   "ENHANCED_SFX_LEVEL_STORAGE_KEY",
   "ENHANCED_SFX_BOOST_STORAGE_KEY",
   "ENHANCED_SFX_LIBRARY",
@@ -210,6 +310,7 @@ const required = [
   "normalizeEnhancedSfxBoosts",
   "readEnhancedSfxBoosts",
   "writeEnhancedSfxBoosts",
+  "enhancedSfxBoostMultiplier",
   "enhancedSfxMixGain",
   "enhancedSfxDestination",
   "previewEnhancedSfx",
@@ -218,10 +319,12 @@ const required = [
   "data-aegis-enhanced-sfx-library",
   "data-aegis-sfx-key",
   "data-aegis-sfx-boost",
-  "Boost ×2 On",
+  "data-aegis-sfx-boost-multiplier",
+  "[1,2,3,4].map",
+  "1×, 2×, 3×, and 4× boosts",
   "Reset Mix",
   "Window Shatter",
-  "Save / Load Enhanced SFX Library previews every routed sound and persists levels plus individual double boosts",
+  "Save / Load Enhanced SFX Library previews every routed sound and persists levels plus individual 1x through 4x multipliers",
   "ALTERNATE_MUSIC_AUDIO_URLS",
   "CONTACT_IN_THE_DARK_MISSION_SEGMENTS",
   "CONTACT_IN_THE_DARK_CROSSFADE_MS",
@@ -372,6 +475,16 @@ const required = [
 
 const missing = required.filter((needle) => !html.includes(needle));
 
+for (const obsoleteNeedle of [
+  "const[lastShotFeedback,setLastShotFeedback]",
+  "shotFeedbackTimerRef",
+  "function toggleEnhancedSfxBoost",
+  "current[key]!==true",
+  "Boost ×2 On",
+]) {
+  if (html.includes(obsoleteNeedle)) missing.push(`obsolete current-patch implementation remains: ${obsoleteNeedle}`);
+}
+
 if (manifest.playableArtifact !== "index.html") {
   missing.push("manifest playableArtifact must remain index.html");
 }
@@ -507,6 +620,34 @@ if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "multi-base-recruitment-and-recovery-ownership" && entry?.reason)) {
   missing.push("browser-only multi-base recruitment and recovery ownership must be recorded as a temporary gameplay parity exception");
 }
+if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "confirmed-beacon-mission-completion-gate" && entry?.reason)) {
+  missing.push("browser-only confirmed beacon mission completion gate must be recorded as a temporary gameplay parity exception");
+}
+if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "seven-hex-beacon-shield-close-assault" && entry?.reason)) {
+  missing.push("browser-only seven-hex beacon shield close assault must be recorded as a temporary gameplay parity exception");
+}
+if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "tactical-mission-exit-beacon-objective-scope-fix" && entry?.reason)) {
+  missing.push("browser-only tactical mission exit beacon objective scope fix must be recorded as a temporary gameplay parity exception");
+}
+if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "mandatory-vip-rescue-quota-resolution-and-partial-credit" && entry?.reason)) {
+  missing.push("browser-only mandatory VIP rescue quota resolution must be recorded as a temporary gameplay parity exception");
+}
+if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "fire-team-vip-building-ingress-traffic-aware-routing" && entry?.reason)) {
+  missing.push("browser-only fire-team VIP building ingress routing must be recorded as a temporary gameplay parity exception");
+}
+if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "hybrid-escort-contact-decision-mode-preservation" && entry?.reason)) {
+  missing.push("browser-only hybrid escort prompt mode preservation must be recorded as a temporary gameplay parity exception");
+}
+for (const system of [
+  "save-load-patch-notes-version-history",
+  "tactical-shot-result-stack-and-toggle",
+  "enhanced-sfx-per-sound-multipliers",
+  "hybrid-escort-contact-decision-mode-preservation",
+]) {
+  if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
+    missing.push(`browser-only current-patch system must be recorded as a temporary parity exception: ${system}`);
+  }
+}
 
 const nativeMedkit = nativeContent.field_items?.find((item) => item.id === "Medkit");
 if (nativeMedkit?.heal !== 12 || nativeMedkit?.tu_cost !== 12) {
@@ -557,6 +698,15 @@ for (const system of [
   "adaptive-alien-beacon-kinetic-shield",
   "adaptive-alien-beacon-combined-shield",
   "reinforcement-landmark-persistence",
+  "confirmed-beacon-mission-completion-gate",
+  "seven-hex-beacon-shield-close-assault",
+  "tactical-mission-exit-beacon-objective-scope-fix",
+  "mandatory-vip-rescue-quota-resolution-and-partial-credit",
+  "fire-team-vip-building-ingress-traffic-aware-routing",
+  "save-load-patch-notes-version-history",
+  "tactical-shot-result-stack-and-toggle",
+  "enhanced-sfx-per-sound-multipliers",
+  "hybrid-escort-contact-decision-mode-preservation",
 ]) {
   if (!manifest.gameplayParity?.requiredSystems?.includes(system)) {
     missing.push(`gameplay parity system missing: ${system}`);

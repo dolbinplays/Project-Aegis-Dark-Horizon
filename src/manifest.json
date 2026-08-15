@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.13.1204_ADAPTIVE_ALIEN_BEACON_COMBINED_SHIELD_INDEX_ONLY_PATCH",
+  "currentBuild": "v0.26.08.14.1728_HYBRID_ESCORT_PROMPT_MODE_PRESERVATION_INDEX_ONLY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "adaptive-alien-beacon-combined-shield-manual-test",
+  "status": "hybrid-escort-prompt-mode-preservation-static-and-browser-build-health-passed",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.13.1204_ADAPTIVE_ALIEN_BEACON_COMBINED_SHIELD_INDEX_ONLY_PATCH",
+  "lastInspectedBuild": "v0.26.08.14.1728_HYBRID_ESCORT_PROMPT_MODE_PRESERVATION_INDEX_ONLY_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.13.1204_ADAPTIVE_ALIEN_BEACON_COMBINED_SHIELD_INDEX_ONLY_PATCH",
+    "browserBuild": "v0.26.08.14.1728_HYBRID_ESCORT_PROMPT_MODE_PRESERVATION_INDEX_ONLY_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -111,7 +111,27 @@
       "voice-take-normalization-music-ducking",
       "adaptive-alien-beacon-kinetic-shield",
       "adaptive-alien-beacon-combined-shield",
-      "reinforcement-landmark-persistence"
+      "reinforcement-landmark-persistence",
+      "confirmed-beacon-mission-completion-gate",
+      "seven-hex-beacon-shield-close-assault",
+      "tactical-mission-exit-beacon-objective-scope-fix",
+      "mandatory-vip-rescue-quota-resolution-and-partial-credit",
+      "fire-team-vip-building-ingress-traffic-aware-routing",
+      "save-load-patch-notes-version-history",
+      "tactical-shot-result-stack-and-toggle",
+      "enhanced-sfx-per-sound-multipliers",
+      "sequential-action-movement-presentation-isolation",
+      "hybrid-fire-team-leader-waypoints-and-preferred-targets",
+      "standard-formation-support-following-under-hybrid-command",
+      "threejs-armor-matched-soldier-helmets",
+      "barracks-transfer-button-and-confirmation",
+      "hybrid-battle-leader-selection-and-one-round-ai-support-playback",
+      "geoscape-collapsible-active-ufo-list",
+      "hybrid-enemy-relative-aggressive-support-flanking",
+      "hybrid-direct-support-formation-follow-fallback",
+      "geoscape-centered-scrollable-ufo-interception-board",
+      "hybrid-support-full-tu-formation-catch-up",
+      "hybrid-escort-contact-decision-mode-preservation"
     ],
     "temporaryExceptions": [
       {
@@ -145,6 +165,74 @@
       {
         "system": "reinforcement-landmark-persistence",
         "reason": "The browser reinforcement handoff now preserves the original crashed-UFO model and wreck trail or field-beacon record. Native Godot parity remains queued."
+      },
+      {
+        "system": "confirmed-beacon-mission-completion-gate",
+        "reason": "The browser build now holds eliminate-force victory for a confirmed active field beacon, continues honest search and strike behavior, and provides bounded no-breach withdrawal. Native Godot parity remains queued."
+      },
+      {
+        "system": "seven-hex-beacon-shield-close-assault",
+        "reason": "The browser shield now covers the beacon and six passable adjacent hexes, protects materialized reinforcements from compatible outside fire, and permits soldiers inside the field to attack the beacon. Native Godot parity remains queued."
+      },
+      {
+        "system": "tactical-mission-exit-beacon-objective-scope-fix",
+        "reason": "The browser mission-result handoff now exports the correctly scoped tactical beacon objective instead of referencing an undefined name. Native Godot does not share this browser-only failure seam."
+      },
+      {
+        "system": "mandatory-vip-rescue-quota-resolution-and-partial-credit",
+        "reason": "The browser mission resolver now treats an exhausted mandatory VIP objective below quota as a resolved failure while preserving per-VIP partial credit. Native Godot parity remains queued."
+      },
+      {
+        "system": "fire-team-vip-building-ingress-traffic-aware-routing",
+        "reason": "Browser fire-team leaders now plan VIP building ingress through valid doors or breaches while treating their own formation supports as mobile traffic. Native Godot parity remains queued."
+      },
+      {
+        "system": "save-load-patch-notes-version-history",
+        "reason": "The browser Save / Load screen now contains a direct-file-compatible patch-notes and version-history viewer. A native front-end equivalent remains queued."
+      },
+      {
+        "system": "tactical-shot-result-stack-and-toggle",
+        "reason": "Browser tactical battles now retain several newest-first shot results for ten seconds, fade each independently, and expose an on/off control. Native Godot presentation parity remains queued."
+      },
+      {
+        "system": "enhanced-sfx-per-sound-multipliers",
+        "reason": "The browser Enhanced SFX Library now provides persistent 1x through 4x multipliers with automatic migration of older boolean 2x settings. Native audio-menu parity remains queued."
+      },
+      {
+        "system": "hybrid-fire-team-command-and-ordered-playback",
+        "reason": "Browser tactical playback now isolates each action's moving units, while hybrid command accepts leader waypoints and preferred targets without replacing formation support logic. Native Godot parity remains queued."
+      },
+      {
+        "system": "hybrid-battle-leader-selection-and-one-round-ai-support-playback",
+        "reason": "Browser 2D and Three.js battles now expose leader-only hybrid command in the shared toolbar and hand one animated support-and-engagement round to AI on End Turn. Native Godot parity remains queued."
+      },
+      {
+        "system": "geoscape-collapsible-active-ufo-list",
+        "reason": "The browser Geoscape now keeps the potentially long active-UFO card list behind a count-bearing interface button. Native front-end parity remains queued."
+      },
+      {
+        "system": "hybrid-aggressive-flanking-and-support-movement-fix",
+        "reason": "Browser hybrid support turns now calculate left and right flanks relative to the fire-team lead and a currently observed alien, with direct formation-follow pathing when contact or a viable flank is unavailable. Native Godot parity remains queued."
+      },
+      {
+        "system": "geoscape-centered-scrollable-ufo-interception-board",
+        "reason": "The browser Geoscape now opens radar contacts and their existing interceptor launch actions in a centered scrollable interception board instead of expanding the list below the tracking section. Native front-end parity remains queued."
+      },
+      {
+        "system": "hybrid-support-full-tu-formation-catch-up",
+        "reason": "Out-of-contact browser hybrid supports now temporarily release a shot reserve when that reserve alone would prevent reaching their leader-relative formation cell, allowing a full-TU catch-up move. Native tactical parity remains queued."
+      },
+      {
+        "system": "hybrid-escort-contact-decision-mode-preservation",
+        "reason": "Browser Hybrid AI escort-contact decisions now replan the remaining support action as a bounded hybrid round and return fire-team-leader control instead of starting full Simulation AI command. Native tactical parity remains queued."
+      },
+      {
+        "system": "threejs-armor-matched-soldier-helmets",
+        "reason": "The browser Three.js presentation now gives each soldier a tactical helmet using their equipped armor color. This is presentation-only and remains queued for the native renderer."
+      },
+      {
+        "system": "barracks-transfer-button-and-confirmation",
+        "reason": "Browser Barracks cards now collapse transfer destinations behind a Transfer button and require a route, time, fee, and availability confirmation screen. Native front-end parity remains queued."
       }
     ]
   }
