@@ -2,10 +2,23 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-15
-Current handoff build: `v0.26.08.15.1650_ALL_TACTICAL_VICTORY_DANCE_RESTORE_INDEX_ONLY_PATCH`
+Current handoff build: `v0.26.08.15.1730_VIP_QUOTA_IMPOSSIBLE_TERMINAL_FIX_INDEX_ONLY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1650 restores victory celebrations across every successful tactical presentation path. Persistent Three.js now invalidates its actor layer when the victory-dance state changes, so surviving AEGIS soldiers celebrate without rebuilding the scene. 2D Hex, Classic Lineup, tactical-map playback, Hybrid AI, and Simulation AI preserve the same success-only rule. Browser 1645's explicit living/fallen pose fix and the earlier performance optimizations remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 1730 resolves mandatory VIP operations as failed when the quota has become mathematically impossible. Explicit dead state is authoritative even during staged playback that temporarily retains positive display HP, so AI rescue search cannot loop after every remaining VIP is dead or extracted. Per-rescue partial credit remains intact. Browser 1650's success-only victory celebration, Browser 1645's explicit living/fallen pose fix, and the earlier performance optimizations remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
+
+
+---
+
+# v0.26.08.15.1730 - Impossible VIP Rescue Quota Terminal Fix
+
+- Mandatory VIP rescue missions now terminate as an objective failure when the number already rescued plus the number still alive cannot reach the required quota and no aliens remain to fight.
+- Explicit `alive: false` VIP state is authoritative for casualty and active-rescue counts. Staged tactical playback may temporarily keep display HP above zero while presenting a fall, but that display state no longer tells the AI that the VIP can still be rescued.
+- The reported four-VIP case is covered directly: with three required, two rescued, and two dead, the shared terminal resolver marks the primary battlefield secure, the rescue objective impossible, and the mission resolved as a failure instead of continuing AI search rounds.
+- Each rescued VIP retains the established $40k partial reward, so two rescues award $80k. The mandatory-quota completion reward is withheld and no victory celebration plays.
+- Manual, Hybrid AI, full Simulation AI, and mission playback use the same objective calculation. Escort routing, extraction traffic, formation movement, reinforcements, and beacon gates are unchanged.
+- Build Health includes a regression fixture in which both dead VIPs retain positive playback HP, proving that authoritative death state still stops rescue search and ends the operation correctly.
+- Save format remains 4. Native Godot parity should preserve the same authoritative casualty-state rule when this tactical objective system is ported.
 
 
 ---

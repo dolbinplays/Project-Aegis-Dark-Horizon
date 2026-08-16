@@ -1,6 +1,34 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.15.1730_VIP_QUOTA_IMPOSSIBLE_TERMINAL_FIX_INDEX_ONLY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Fixed an AI mission-ending loop when a mandatory VIP quota had become impossible. A VIP explicitly marked dead is now counted as a casualty even if staged death playback temporarily retains positive display HP. If 2 of 4 VIPs are rescued, 2 are dead, and 3 were required, eliminating the remaining aliens now ends the mission as a failed objective with the normal partial rescue credit.
+
+IMPOSSIBLE VIP QUOTA TERMINATION
+--------------------------------
+- Explicit VIP life state is authoritative for mission resolution; positive HP retained solely for fall-animation playback no longer makes a dead VIP appear rescuable to the AI.
+- The shared AI/manual terminal calculation stops rescue search as soon as no active VIP can make the mandatory quota attainable.
+- In the reported 4-VIP case, 2 rescued plus 2 dead against a quota of 3 resolves as mission failure after the battlefield is otherwise secure.
+- The two rescued VIPs still award their existing per-rescue partial credit. The quota completion reward and tactical victory celebration are not awarded.
+- Existing escort, extraction, fire-team formation, reinforcement, and beacon-objective rules are unchanged.
+
+BUILD HEALTH
+------------
+- Added a focused four-VIP regression contract using two rescued VIPs and two explicitly dead VIPs whose display HP remains positive.
+- The contract verifies that rescue search stops, the objective becomes an impossible resolved failure, tactical victory remains false, and $80k of per-VIP partial credit is retained.
+- Save format remains 4; no migration is required.
+
+PREVIOUS BUILD - 1650
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.15.1650_ALL_TACTICAL_VICTORY_DANCE_RESTORE_INDEX_ONLY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

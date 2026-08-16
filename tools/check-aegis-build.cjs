@@ -273,6 +273,7 @@ const required = [
   "TACTICAL_VISIBILITY_OBSERVER_AND_TERRAIN_CACHE_PATCH",
   "TACTICAL_2D_CELL_RENDER_INDEX_PATCH",
   "TACTICAL_THREE_LIVING_UNIT_POSE_HOTFIX",
+  "TACTICAL_VIP_QUOTA_DEATH_FLAG_TERMINAL_FIX",
   "TacticalIsoThreeViewPersistent",
   "data-aegis-persistent-three-tactical",
   "dataset.aegisTacticalRendererId",
@@ -299,6 +300,10 @@ const required = [
   "tacticalThreePersistentUnitPoseContractTest",
   "node.userData.alive=unit.hp>0",
   "Persistent 3D animation keeps every living faction upright",
+  "tacticalVipQuotaDeathFlagTerminalContractTest",
+  "civilian.alive === false || Number(civilian.hp) <= 0",
+  "civilian.alive !== false && Number(civilian.hp) > 0",
+  "Dead VIP flags terminate impossible rescue quotas without an AI search loop",
   "tacticalThreePersistentUpdateUnits",
   "tacticalThreePersistentApplyFacing",
   "runtime.unitNodes",
@@ -397,7 +402,7 @@ const required = [
   "UFO alert speed selection retains the active command screen",
   "Port tactical visibility and turns use indexed bounded passes",
   "Three.js isometric tactical framing preserves vertical proportions",
-  "All tactical battle views animate surviving soldiers after victory",
+  "All successful tactical mission types animate surviving soldiers after victory",
   "Classic lineup victory dance moves paper dolls without moving soldier cards",
   "Day-night terminator map follows Geoscape clock and preserves operational layers",
   "Recorded command aircraft and soldier dialogue uses segmented cached playback",
@@ -710,6 +715,7 @@ for (const system of [
   "observer-level-tactical-visibility-and-static-terrain-cache",
   "indexed-2d-tactical-cell-render-lookups",
   "threejs-explicit-living-unit-pose-state",
+  "vip-death-flag-impossible-quota-terminal-resolution",
 ]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser-only current-patch system must be recorded as a temporary parity exception: ${system}`);
@@ -780,6 +786,7 @@ for (const system of [
   "observer-level-tactical-visibility-and-static-terrain-cache",
   "indexed-2d-tactical-cell-render-lookups",
   "threejs-explicit-living-unit-pose-state",
+  "vip-death-flag-impossible-quota-terminal-resolution",
 ]) {
   if (!manifest.gameplayParity?.requiredSystems?.includes(system)) {
     missing.push(`gameplay parity system missing: ${system}`);
@@ -793,7 +800,7 @@ if (!nativeContent.soldiers?.every((soldier) => Number.isFinite(soldier.reaction
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "complete-classic-battlescape-command-set" && entry?.reason)) {
   missing.push("remaining classic battlescape command depth must be recorded as a temporary gameplay parity exception");
 }
-for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state"]) {
+for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution"]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser optimization parity exception missing: ${system}`);
   }

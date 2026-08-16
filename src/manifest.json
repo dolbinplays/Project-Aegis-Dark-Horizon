@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.15.1645_THREEJS_LIVING_UNIT_POSE_HOTFIX_INDEX_ONLY_PATCH",
+  "currentBuild": "v0.26.08.15.1730_VIP_QUOTA_IMPOSSIBLE_TERMINAL_FIX_INDEX_ONLY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "threejs-living-unit-pose-hotfix-static-passed",
+  "status": "vip-quota-impossible-terminal-fix-static-passed",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.15.1645_THREEJS_LIVING_UNIT_POSE_HOTFIX_INDEX_ONLY_PATCH",
+  "lastInspectedBuild": "v0.26.08.15.1730_VIP_QUOTA_IMPOSSIBLE_TERMINAL_FIX_INDEX_ONLY_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.15.1645_THREEJS_LIVING_UNIT_POSE_HOTFIX_INDEX_ONLY_PATCH",
+    "browserBuild": "v0.26.08.15.1730_VIP_QUOTA_IMPOSSIBLE_TERMINAL_FIX_INDEX_ONLY_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -139,7 +139,8 @@
       "threejs-full-ai-fog-of-war-shading",
       "observer-level-tactical-visibility-and-static-terrain-cache",
       "indexed-2d-tactical-cell-render-lookups",
-      "threejs-explicit-living-unit-pose-state"
+      "threejs-explicit-living-unit-pose-state",
+      "vip-death-flag-impossible-quota-terminal-resolution"
     ],
     "temporaryExceptions": [
       {
@@ -265,6 +266,10 @@
       {
         "system": "threejs-explicit-living-unit-pose-state",
         "reason": "The browser persistent Three.js renderer now drives standing and fallen poses from an explicit life-state property rather than parsing unrelated fields from a visual signature. Native Godot should retain the same explicit-state rule."
+      },
+      {
+        "system": "vip-death-flag-impossible-quota-terminal-resolution",
+        "reason": "The browser tactical resolver now treats an explicit dead VIP flag as authoritative even while staged playback retains temporary positive display HP, allowing impossible rescue quotas to terminate with partial credit. Native Godot should retain equivalent authoritative casualty state."
       },
       {
         "system": "threejs-armor-matched-soldier-helmets",

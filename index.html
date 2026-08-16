@@ -544,7 +544,8 @@ const TACTICAL_VISIBILITY_OBSERVER_AND_TERRAIN_CACHE_PATCH=true;
 const TACTICAL_2D_CELL_RENDER_INDEX_PATCH=true;
 const TACTICAL_THREE_LIVING_UNIT_POSE_HOTFIX=true;
 const TACTICAL_ALL_SUCCESS_VICTORY_DANCE_FIX=true;
-const CURRENT_GAME_BUILD="v0.26.08.15.1650_ALL_TACTICAL_VICTORY_DANCE_RESTORE_INDEX_ONLY_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
+const TACTICAL_VIP_QUOTA_DEATH_FLAG_TERMINAL_FIX=true;
+const CURRENT_GAME_BUILD="v0.26.08.15.1730_VIP_QUOTA_IMPOSSIBLE_TERMINAL_FIX_INDEX_ONLY_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
 function runCriticalBootSmokeTests(){
   const checks=[
     {name:"Game root is available",pass:typeof document!=="undefined"&&Boolean(document.getElementById("root"))},
@@ -2169,6 +2170,7 @@ const tacticalAlienContactConvergenceTest=(()=>{
 ,{name:"Tactical visibility reuses cover contexts and unchanged observer sight while 2D terrain stays cached",pass:TACTICAL_VISIBILITY_OBSERVER_AND_TERRAIN_CACHE_PATCH&&tacticalVisibilityCacheContractTest()}
 ,{name:"2D tactical cells use indexed units cover floor items and movement paths",pass:TACTICAL_2D_CELL_RENDER_INDEX_PATCH&&tacticalCellRenderIndexContractTest()}
 ,{name:"Persistent 3D animation keeps every living faction upright",pass:TACTICAL_THREE_LIVING_UNIT_POSE_HOTFIX&&tacticalThreePersistentUnitPoseContractTest()}
+,{name:"Dead VIP flags terminate impossible rescue quotas without an AI search loop",pass:TACTICAL_VIP_QUOTA_DEATH_FLAG_TERMINAL_FIX&&tacticalVipQuotaDeathFlagTerminalContractTest()}
 ];}
 const AEGIS_FULL_BUILD_HEALTH_RUNNER=runSelfTests;
 const AEGIS_DEFERRED_SELF_TEST_RESULTS=[
@@ -4854,8 +4856,8 @@ function tacticalAiContinuationState({ units = [], covers = [], round = 1, explo
 function tacticalAiRescueProgress(mission = null, civilians = []) {
   const total = civilians.length;
   const rescued = civilians.filter((civilian) => civilian.rescued).length;
-  const casualties = civilians.filter((civilian) => civilian.hp <= 0 && !civilian.rescued).length;
-  const active = civilians.filter((civilian) => civilian.hp > 0 && !civilian.rescued).length;
+  const casualties = civilians.filter((civilian) => !civilian.rescued && (civilian.alive === false || Number(civilian.hp) <= 0)).length;
+  const active = civilians.filter((civilian) => !civilian.rescued && civilian.alive !== false && Number(civilian.hp) > 0).length;
   return tacticalCivilianObjectiveProgress(mission, total, rescued, casualties, active);
 }
 function tacticalAiShouldContinueRescue(mission = null, humans = [], aliens = [], civilians = []) {
@@ -4882,6 +4884,7 @@ function tacticalAiMissionResolution(mission=null,humans=[],aliens=[],civilians=
   const terminal=tacticalMissionTerminalState({mission,humans,aliens,civilians,covers,beaconKnowledge});
   return{...terminal,success:terminal.victory,squadDefeated:terminal.squadWiped,operationIncomplete:!terminal.resolved};
 }
+function tacticalVipQuotaDeathFlagTerminalContractTest(){const mission={id:"vip-death-flag-terminal",kind:"Alien Terror Raid",sourceUfoIntent:"terror",threat:3};const human={id:"vip-terminal-human",team:"human",hp:40,alive:true,x:8,y:8};const alien={id:"vip-terminal-alien",team:"alien",hp:0,alive:false,x:20,y:20};const rescued=[0,1].map(index=>({id:`vip-rescued-${index}`,team:"civilian",hp:18,alive:false,rescued:true,x:8+index,y:58}));const dead=[0,1].map(index=>({id:`vip-dead-${index}`,team:"civilian",hp:18,alive:false,rescued:false,fellThisFrame:index===0,x:14+index,y:14}));const civilians=[...rescued,...dead];const progress=tacticalAiRescueProgress(mission,civilians);const terminal=tacticalMissionTerminalState({mission,humans:[human],aliens:[alien],civilians});const outcome=tacticalCivilianOutcomeForMission(mission,4,2,2,false);return progress.required===3&&progress.rescued===2&&progress.lost===2&&progress.active===0&&progress.impossible&&progress.canResolveFailure&&!tacticalAiShouldContinueRescue(mission,[human],[alien],civilians)&&terminal.primarySecured&&terminal.objectiveFailed&&terminal.resolved&&!terminal.victory&&outcome.rewardBonus===80&&!outcome.completed;}
 function tacticalAiRoundRobinUnits(units = [], round = 1) {
   const ordered = [...units].sort((left, right) => String(left.id).localeCompare(String(right.id)));
   if (ordered.length < 2) return ordered;
@@ -8575,7 +8578,8 @@ const IncidentDetailsModal=({mission})=>/*#__PURE__*/React.createElement("div",{
   );
 }
 const PATCH_NOTES_HISTORY=[
-  {build:CURRENT_GAME_BUILD,date:"August 15, 2026",title:"All Tactical Victory Dance Restore",summary:"Successful tactical missions once again leave every surviving AEGIS soldier celebrating on the final battlefield in persistent Three.js, 2D Hex, Classic Lineup, and tactical-map playback.",items:["Persistent Three.js actor invalidation now includes the victory-dance state, so existing soldier nodes are marked to celebrate when a battle resolves successfully.","The persistent animation loop continues to reuse the same renderer and actor nodes; no battlefield rebuild is required to start the celebration.","Playback celebration keys off the authoritative Mission success frame rather than requiring alienAlive to equal zero, keeping future non-elimination victory types compatible.","KIA soldiers, failures, withdrawals, incomplete operations, and unresolved battles never receive the celebration animation."]},
+  {build:CURRENT_GAME_BUILD,date:"August 15, 2026",title:"Impossible VIP Rescue Quota Terminal Fix",summary:"Mandatory VIP rescue missions now end as failed objectives when casualties make the quota unreachable, instead of leaving the AI searching for VIPs who are already dead.",items:["Explicit dead state is authoritative even while staged fall playback temporarily retains positive display HP.","With 3 required of 4, 2 rescued and 2 dead now produces a resolved failure as soon as the remaining alien force and other completion gates are clear.","The AI stops rescue search when no active VIP can make the quota attainable.","Each rescued VIP retains the normal partial reward; the quota completion reward and victory celebration are withheld."]},
+  {build:"v0.26.08.15.1650_ALL_TACTICAL_VICTORY_DANCE_RESTORE_INDEX_ONLY_PATCH",date:"August 15, 2026",title:"All Tactical Victory Dance Restore",summary:"Successful tactical missions once again leave every surviving AEGIS soldier celebrating on the final battlefield in persistent Three.js, 2D Hex, Classic Lineup, and tactical-map playback.",items:["Persistent Three.js actor invalidation now includes the victory-dance state, so existing soldier nodes are marked to celebrate when a battle resolves successfully.","The persistent animation loop continues to reuse the same renderer and actor nodes; no battlefield rebuild is required to start the celebration.","Playback celebration keys off the authoritative Mission success frame rather than requiring alienAlive to equal zero, keeping future non-elimination victory types compatible.","KIA soldiers, failures, withdrawals, incomplete operations, and unresolved battles never receive the celebration animation."]},
   {build:"v0.26.08.15.1645_THREEJS_LIVING_UNIT_POSE_HOTFIX_INDEX_ONLY_PATCH",date:"August 15, 2026",title:"Persistent 3D Living-Unit Pose Hotfix",summary:"Living soldiers, civilians, and aliens remain upright during persistent Three.js animation; only fallen units use the prone rotation."},
   {build:"v0.26.08.15.1615_TACTICAL_2D_CELL_RENDER_INDEX_PATCH",date:"August 15, 2026",title:"Indexed 2D Tactical Cell Rendering",summary:"2D tactical cell rendering uses memoized unit, cover, floor-item, and movement-path indexes instead of per-cell collection scans."},
   {build:"v0.26.08.15.1445_TACTICAL_VISIBILITY_AND_STATIC_TERRAIN_CACHE_INDEX_ONLY_PATCH",date:"August 15, 2026",title:"Tactical Visibility and Static Terrain Cache",summary:"The 2D tactical hot path caches deterministic terrain, reuses indexed cover visibility contexts, and preserves unchanged soldier sight results across unrelated unit updates."},
