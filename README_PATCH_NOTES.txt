@@ -1,6 +1,80 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.16.2255_CAMERA_RELATIVE_SKY_FPV_HUD_WEAPON_AND_TRADITIONAL_ARCHITECTURE_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Corrected the oversized first-person celestial sphere by making the procedural sky camera-relative, repaired the persistent renderer's missing first-person weapon geometries so an armed soldier's barrel is reliably visible, added a visibility-authorized sci-fi visor HUD, and made regional buildings easier to recognize from ground level through traditional facade, roofline, window, shutter, and foundation details.
+
+CAMERA-RELATIVE SKY / SUN FIX
+-----------------------------
+- The sky dome, stars, sun, moon, and celestial halo now remain centered on the active camera rather than remaining fixed at the battlefield world origin.
+- The player can no longer approach the sun sphere as the observed soldier crosses a large map.
+- Sun and moon discs use a smaller fixed apparent scale and remain near the atmospheric horizon/sky direction derived from mission time and longitude.
+- The sky-gradient shader now derives height from local sphere coordinates, preventing camera translation from distorting the horizon gradient.
+- The directional light continues to use the celestial direction while the decorative sky layer follows the camera.
+- This is presentation-only and does not alter tactical light sources, line of sight, fog-of-war, accuracy, detection, or mission time.
+
+FIRST-PERSON WEAPON VISIBILITY REPAIR
+-------------------------------------
+- Root cause: Browser 2210's persistent Three.js renderer created a first-person weapon rig but its own geometry cache did not define the referenced barrel, shroud, sight, and muzzle geometries. The older non-persistent renderer did define them, which allowed static source checks to pass while the live persistent view could show no weapon.
+- The persistent runtime now owns explicit barrel, shroud, receiver, grip, sight, and muzzle geometry.
+- The rig remains attached to the perspective camera and renders above world depth, preventing terrain or nearby cover from hiding the weapon.
+- Barrel, shroud, and receiver retain the authoritative `soldierVisualData(...).weaponColor` used by the soldier card and battlefield model.
+- Weapon length scaling, walking sway, and recoil remain presentation-only. Unarmed soldiers still show no firearm.
+
+SCI-FI SOLDIER VISOR HUD
+------------------------
+- First-person observation now projects tactical brackets for visible hostile targets, priority VIPs, civilians, squadmates, a revealed active Alien Field Beacon, and known Skyranger extraction ramps.
+- Each bracket has a role label, color-coded outline, and approximate hex distance.
+- The HUD uses the same tactical visibility authorization as the battlefield renderer. A hidden alien, unrevealed civilian, or unseen beacon is not added merely because First Person is active.
+- The viewed soldier is omitted from the overlay.
+- Brackets are projected from world space every first-person render frame and naturally track smooth camera movement, turns, and unit motion.
+- The overlay is observer information only. It does not select targets, issue orders, change AI priorities, or provide line-of-sight through cover.
+
+TRADITIONAL / REGIONALLY READABLE BUILDINGS
+--------------------------------------------
+- The six existing regional environment profiles now select matching architectural presentation kits:
+  - tropical veranda architecture,
+  - arid adobe courtyard architecture,
+  - Mediterranean stucco and tile architecture,
+  - temperate brick-and-timber architecture,
+  - boreal timber architecture,
+  - tundra/alpine stone-and-timber architecture.
+- Structural wall cells retain their exact gameplay footprint but now add recognizable foundations, facade palettes, eaves or parapets, roofline trim, vertical posts, framed windows, sills, shutters, and climate-appropriate awnings.
+- Windows remain the same ballistic/visibility objects and retain their intact or shattered state.
+- No decorative door is placed on a blocked wall cell, avoiding misleading false entrances.
+- Existing authored doorway gaps, wall continuity, breach rubble, building interiors, cover values, destruction, pathfinding, and line-of-sight remain authoritative and unchanged.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added a release contract requiring the camera-relative sky seam, complete persistent first-person weapon geometry, visibility-gated entity HUD, six architecture styles, and regional facade details.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- A targeted HUD fixture confirmed visible hostile, VIP, civilian, objective, and extraction entries while rejecting a revealed-but-currently-unseen alien.
+- Static validation confirms the persistent geometry cache includes all weapon-rig parts and that the sky sync occurs before rendering.
+- Headless Chromium could not produce a page DOM in this execution environment, so full live WebGL/React validation remains a manual gate.
+- Save format remains 4. No external assets changed; players with the Browser 0043+ assets folder can replace only `index.html`.
+
+MANUAL TEST GATES
+-----------------
+1. Enter a 3D tactical mission during daylight, enable AI First Person, and cross a large portion of the map. Confirm the sun remains a distant small disc and never becomes a large yellow dome.
+2. Repeat at night and confirm the moon/stars remain fixed at atmospheric distance while the camera moves.
+3. Observe an armed ballistic, laser, and plasma soldier. Confirm a barrel/receiver/grip are visible and match the weapon color on the soldier card.
+4. Confirm the visor HUD brackets only contacts the squad can currently see, plus known squadmates/extraction. Move an alien behind opaque cover and confirm its hostile bracket disappears with tactical visibility.
+5. Confirm VIP, civilian, revealed beacon, and extraction markers use distinct colors and track correctly while the observed soldier moves and turns.
+6. Compare tropical, arid, Mediterranean, temperate, boreal, and tundra missions. Confirm buildings read as deliberate architecture rather than featureless slabs, especially from ground level.
+7. Shoot through and shatter a window, breach a wall, and enter a doorway. Confirm all prior structural gameplay behavior remains unchanged.
+8. Run Build Health and confirm the new FPV sky/HUD/weapon/architecture contract reports OK.
+
+PREVIOUS BUILD - 2210
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.16.2210_FIRST_PERSON_CAMERA_SKY_WEAPON_AND_REGIONAL_BIOME_POLISH_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

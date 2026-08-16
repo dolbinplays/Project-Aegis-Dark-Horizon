@@ -2,13 +2,55 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-16
-Current handoff build: `v0.26.08.16.2210_FIRST_PERSON_CAMERA_SKY_WEAPON_AND_REGIONAL_BIOME_POLISH_PATCH`
+Current handoff build: `v0.26.08.16.2255_CAMERA_RELATIVE_SKY_FPV_HUD_WEAPON_AND_TRADITIONAL_ARCHITECTURE_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2210 polishes the AI soldier-eye observer with eased high-cadence movement, restrained head motion/recoil, and a camera-space weapon using the soldier card’s authoritative weapon color. Tactical coordinates and mission time now drive procedural daylight/twilight/night skies, while six broad regional profiles vary ground, trees, brush, crops, rocks, and bounded non-blocking detail. Browser 2145’s terminal reinforcement/victory gate, Browser 1930 pathfinding optimization, Browser 0043 victory music, Browser 2207 cooperative aftermath, and earlier renderer/visibility work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 2255 keeps the local sky and celestial objects camera-relative so the sun/moon cannot be approached as battlefield geometry, repairs the persistent renderer’s missing first-person weapon geometries, adds a tactical-visibility-gated sci-fi visor HUD for hostiles/VIPs/civilians/allies/objectives/extraction, and gives each regional environment a more recognizable traditional architecture kit. Browser 2210 camera/biome polish, Browser 2145 first-person observer and terminal victory gate, Browser 1930 pathfinding optimization, Browser 0043 victory music, Browser 2207 cooperative aftermath, and earlier renderer/visibility work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+
 
 
 
 ---
+
+# v0.26.08.16.2255 - Camera-Relative Sky, FPV Tactical HUD, Visible Weapon, and Traditional Architecture
+
+## Camera-relative tactical atmosphere doctrine
+
+- A procedural sky is an atmospheric presentation layer and must remain centered on the active rendering camera.
+- The sky dome, stars, sun, moon, and related glow objects retain a fixed apparent distance as the observed soldier moves. They may not be world-space objects that the camera can physically approach.
+- The horizon gradient must be calculated from each sky vertex's local direction, not from translated world coordinates.
+- Celestial direction may continue to drive decorative directional lighting, but camera-relative sky translation cannot alter mission time, local lights, fog-of-war, visibility, AI knowledge, or ballistics.
+- Isometric and first-person cameras share the same atmosphere root and synchronize it immediately before rendering.
+
+## First-person weapon authority and visibility doctrine
+
+- The persistent Three.js runtime must own every geometry referenced by the camera-space weapon rig. Source code in an obsolete/non-persistent renderer is not sufficient validation.
+- Armed observed soldiers display a compact barrel, shroud, receiver, grip, sight, and muzzle. The rig renders in camera space above world depth so nearby cover cannot erase it.
+- Barrel/receiver color continues to derive from `soldierVisualData(...).weaponColor`, preserving the soldier card and battlefield model as the visual authority.
+- Unarmed soldiers display no firearm. Camera sway/recoil remain purely visual and cannot alter aim, ammunition, Time Units, damage, or AI decisions.
+
+## Tactical visor HUD doctrine
+
+- The first-person observer may improve readability through projected labels/brackets, but it must not reveal information unavailable to the squad.
+- Hostile markers require the same reveal and current-visibility authorization used by the tactical battlefield. Hidden or currently unseen aliens are excluded.
+- VIP/civilian markers require their normal reveal/visibility state; revealed active Alien Field Beacons require tactical visibility; Skyranger extraction is always known to the deployed squad.
+- Friendly squadmates may be identified for orientation. The currently observed soldier is omitted.
+- HUD markers are display-only. They cannot create target selection, AI priorities, movement orders, reaction fire, or new mission knowledge.
+- Future visor features—health bars, ammo readouts, objective direction arrows, threat severity, or squad commands—must preserve the same knowledge boundary.
+
+## Regional traditional architecture doctrine
+
+- Regional building presentation should make structures immediately legible from a human eye-level camera without changing tactical geometry.
+- Tropical regions may use deep eaves/veranda cues; arid regions use adobe/parapet cues; Mediterranean regions use stucco/tile/awning cues; temperate regions use brick/timber cues; boreal regions use timber/steep-roof cues; tundra/alpine regions use stone/timber/metal-roof cues.
+- Foundations, facade color, roofline strips, posts, window frames, sills, shutters, and awnings may be layered onto existing structural cells.
+- Decorative architecture must never imply a passable door where the authoritative building plan contains a solid wall.
+- Authored doorway gaps, windows, continuous walls, breaches, interior cells, cover values, movement, destruction, and line of sight remain authoritative.
+- Future building work can add complete roof volumes, doors, porches, balconies, signs, regional props, and interior ceilings, but must keep tactical openings and cover synchronized across 2D, isometric, and first-person views.
+
+## Validation and native parity
+
+- Browser Build Health checks camera-relative sky synchronization, the persistent weapon geometry cache, visibility-gated HUD classification, extraction/objective markers, six architecture styles, and architecture rendering seams.
+- Manual validation must include movement across a large map, day/night celestial checks, multiple weapon types, losing/reacquiring alien sight, window destruction, wall breaching, doorway entry, and representative regional buildings.
+- Native Godot parity should treat the same tactical state as authoritative. Native first-person presentation may use engine-native outline/post-processing tools, but it must preserve visibility authorization and building-opening truth.
 
 # v0.26.08.16.2210 - First-Person Camera, Weapon, Local Sky, and Regional Biome Polish
 
