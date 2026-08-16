@@ -1,6 +1,66 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.16.2145_AI_FIRST_PERSON_OBSERVER_AND_TERMINAL_VICTORY_MUSIC_GATE_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Added an optional soldier-eye camera for AI-controlled tactical-map playback and corrected a reinforcement-state race that could briefly declare victory and start victory music before a newly materialized Alien Field Beacon wave reached the live battlefield unit state. The first-person view reuses the persistent Three.js scene and authoritative AI action stream; the victory cue now waits for a fully committed terminal mission state.
+
+AI SOLDIER FIRST-PERSON OBSERVER
+--------------------------------
+- During full Simulation AI map playback and the AI-controlled portion of Hybrid AI, the tactical toolbar exposes `First Person: Off / On`.
+- Enabling the option remembers the player's current 2D/3D view, switches to the persistent Three.js battlefield, and follows the currently acting living AEGIS soldier from eye height.
+- During an AEGIS movement or shot, the camera follows that soldier and looks along the soldier's facing or active firing direction.
+- During an alien/civilian action, the observer holds the most recently followed living AEGIS soldier rather than granting an alien-eye view.
+- The viewed soldier's own Three.js model is hidden only from that perspective, preventing helmet/body clipping. A restrained reticle and `EYES:` identifier show whose viewpoint is active.
+- Turning the option off restores the prior tactical view. It also turns itself off and restores the prior view when map-based AI playback ends, or safely falls back to 2D if the renderer reports a failure.
+- The perspective camera shares the existing renderer, scene, terrain, fog, cover, actors, effects, and action timing. It does not create a second tactical simulation or rebuild the battlefield.
+
+TERMINAL VICTORY / REINFORCEMENT AUDIO GATE
+--------------------------------------------
+- Root cause of the reported false cue: Alien Field Beacon arrival code updated the reinforcement cache before React committed the generated alien units. During that short boundary, the mission could see `arrived=true` while the old unit array still contained zero living aliens.
+- Every reinforcement arrival now records the exact generated alien IDs and marks `arrivalCommitPending=true`.
+- The pending marker remains authoritative until all generated IDs appear in the live unit collection. Tactical terminal-state evaluation cannot declare victory during that boundary.
+- Because the victory dance and direct-control victory cue derive from the same terminal state, neither can start before the wave is actually present.
+- Direct tactical audio also contains a defensive reversible handoff: if a previously signaled victory becomes non-terminal, the victory player is stopped and its mission trigger is released.
+- Simulation/Classic playback victory music now requires the actual final `Mission success` frame, a completed stream, no continuation state, and no pending reinforcement commit.
+- Confirmed beacon destruction, mandatory rescue objectives, incomplete operations, withdrawals, failures, and all existing victory rules remain authoritative.
+
+GAMEPLAY / COMPATIBILITY
+------------------------
+- First-person mode is an observer camera only. AI orders, Time Units, movement paths, formations, escorts, visibility rules, weapon fire, damage, reinforcement behavior, and mission results are unchanged.
+- Team-authoritative fog and hidden-contact rules remain active; the camera does not reveal unrevealed aliens or unexplored battlefield state.
+- The four Operation Vindicator victory MP3 files are unchanged from Browser 0043/1930. Players updating from Browser 1930 may keep their existing `assets` directory.
+- Save format remains 4; existing campaigns and cached tactical battles require no migration.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added a terminal-victory regression that reproduces a reinforcement cache containing generated IDs before those IDs exist in the live unit array. Victory must remain false until the units are committed.
+- Added a playback-audio regression requiring the final completed frame and rejecting an incomplete stream or a reinforcement commit boundary.
+- Added an AI first-person observer contract covering human-only actor selection, last-soldier fallback, facing/shot camera direction, perspective-camera ownership, active-camera rendering, toolbar wiring, reticle, and reversible view cleanup.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Isolated tests confirm the reinforcement pending marker clears only after every generated ID is present, terminal victory remains blocked during the gap, final-frame victory audio remains allowed afterward, and first-person actor/facing selection is correct.
+- Automated Chromium loading remains blocked by the execution environment's browser-administrator policy, so a complete live WebGL mission is retained as a manual test gate.
+
+MANUAL TEST GATES
+-----------------
+1. Hand a 3D tactical mission to Simulation AI, toggle First Person on, and confirm the camera follows each acting AEGIS soldier during movement and firing.
+2. Let an alien act and confirm the view remains with the last living AEGIS soldier rather than changing to an alien viewpoint.
+3. Toggle First Person off and confirm the exact previous 2D/3D view returns. Repeat by allowing AI playback to end while First Person is still active.
+4. Repeat during a Hybrid AI support handoff and confirm the view follows support soldiers, then exits when player leader control returns.
+5. Trigger an Alien Field Beacon reinforcement as the apparent last alien is defeated. Confirm no victory music or victory dance begins before the arriving aliens are committed and visible under normal fog rules.
+6. Defeat the actual final force and satisfy all beacon/rescue objectives; confirm one random Operation Vindicator cue begins exactly once.
+7. Run Build Health and confirm the new first-person observer and terminal victory-music contracts report OK.
+
+PREVIOUS BUILD - 1930
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.16.1930_TACTICAL_PATH_PARENT_POINTER_AND_BLOCKER_INDEX_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

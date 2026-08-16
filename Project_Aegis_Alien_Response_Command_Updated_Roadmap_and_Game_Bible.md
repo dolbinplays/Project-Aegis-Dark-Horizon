@@ -2,11 +2,40 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-16
-Current handoff build: `v0.26.08.16.1930_TACTICAL_PATH_PARENT_POINTER_AND_BLOCKER_INDEX_PATCH`
+Current handoff build: `v0.26.08.16.2145_AI_FIRST_PERSON_OBSERVER_AND_TERMINAL_VICTORY_MUSIC_GATE_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1930 modernizes tactical pathfinding with indexed hard-cover/living-occupancy blockers and parent-pointer route reconstruction, while preserving the established shortest routes, direction order, movement legality, TU, formation, escort, and mission behavior. Beacon close-assault and rescue multi-destination planners reuse blocker indexes. Browser 0043 random victory music, Browser 2207 cooperative aftermath, Browser 2024 direct finalization, Browser 1650 victory celebrations, and the earlier renderer/visibility/2D performance work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 2145 adds a reversible soldier-eye perspective during Simulation AI and Hybrid AI tactical-map playback, using the existing persistent Three.js battlefield and authoritative acting-soldier stream. It also closes the reinforcement cache-to-unit commit race so victory, celebration, and Operation Vindicator music cannot trigger before a newly materialized beacon wave exists in live tactical state; Simulation/Classic audio additionally waits for the final completed playback frame. Browser 1930 pathfinding optimization, Browser 0043 victory music, Browser 2207 cooperative aftermath, Browser 1650 celebrations, and the earlier renderer/visibility work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
+
+---
+
+# v0.26.08.16.2145 - AI Soldier First-Person Observer + Terminal Victory Music Gate
+
+## AI observer-camera doctrine
+
+- A player who hands tactical-map control to full Simulation AI or the bounded Hybrid AI support phase may toggle a soldier-eye observer camera without changing control authority.
+- `First Person: On` remembers the current tactical view and switches to a perspective camera inside the existing persistent Three.js runtime. The terrain, cover, fog, unit nodes, effects, and renderer remain the same objects; the feature is a camera/layer mutation rather than a second renderer or tactical simulation.
+- The preferred viewpoint is the current action's living AEGIS actor. Movement follows the acting soldier; a shot temporarily aims toward its impact target; otherwise the view follows the soldier's authoritative facing. Alien/civilian action frames retain the last valid living AEGIS viewpoint.
+- The observed soldier model is hidden from its own camera to avoid helmet, head, and torso clipping. The rest of the actor collection remains unchanged, and returning to isometric view restores the node immediately.
+- A compact reticle and soldier identifier make the perspective legible. The mode exits and restores the prior 2D/3D view when the player toggles it off, when Hybrid AI returns leader control, when Simulation map playback ends, or when WebGL recovery falls back to 2D.
+- First-person observation may consume only presentation state. It cannot issue movement, select AI targets, change Time Units, bypass fog, reveal unrevealed aliens, alter fire-team formation, or modify battle results.
+
+## Authoritative terminal-victory audio doctrine
+
+- A reinforcement generator and the React battlefield unit collection are separate state boundaries. A generated wave can enter the reinforcement cache a render before its alien objects enter the live unit array.
+- Every arrival therefore records `arrivalUnitIds` and an `arrivalCommitPending` marker. The marker remains true until every generated ID is found in authoritative live tactical units.
+- `tacticalMissionTerminalState(...)` treats that commit boundary as unresolved. Zero currently visible/living aliens is not sufficient for victory while an arrival is pending commit.
+- Direct-control victory dance and music inherit the corrected terminal state. A defensive reversible music callback also stops a cue and releases its per-mission trigger if the battle reopens for any reason.
+- Simulation and Classic presentation require the final `Mission success` frame, completed stream state, no continuation snapshot, and no pending reinforcement commit before starting a victory cue.
+- These rules supplement rather than replace existing victory requirements: confirmed active beacon neutralization, living alien elimination, mandatory rescue quota, and non-withdrawal remain authoritative.
+
+## Validation, assets, and native parity
+
+- Build Health reproduces the exact generated-ID-before-unit-commit race, verifies terminal victory remains false during it, and verifies success becomes eligible after commit. It also checks final-frame/stream audio readiness and first-person perspective ownership/wiring.
+- All six embedded JavaScript blocks pass syntax validation. Isolated helper tests confirm pending/committed transition, terminal gating, playback gating, human-only actor selection, last-soldier fallback, and shot/facing camera aim.
+- Victory audio assets are byte-identical to Browser 1930/0043. No `assets` replacement is required when applying the index-only portion over an intact Browser 1930 directory.
+- Save format remains 4. Native Godot parity should eventually add an equivalent spectator camera tied to the native action actor, and native mission-completion audio must wait for the final committed reinforcement/objective state rather than an intermediate presentation state.
 
 ---
 
