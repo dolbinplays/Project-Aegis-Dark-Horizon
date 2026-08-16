@@ -1,10 +1,39 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-08-15
-Current handoff build: `v0.26.08.15.2207_COOPERATIVE_MISSION_AFTERMATH_AND_DIRECT_FINALIZER_INDEX_ONLY_PATCH`
+Last updated: 2026-08-16
+Current handoff build: `v0.26.08.16.0043_RANDOM_MISSION_VICTORY_MUSIC_AUDIO_ASSET_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2207 further optimizes mission completion: completed manual battles now use a direct live-battle result finalizer with no tactical continuation snapshot or resolver entry, and return-to-base campaign aftermath is cooperatively chunked so Chromium can repaint between roster, memorial, report, recovery, and Geoscape updates. Autosave/manual save are guarded against partial debrief state. Browser 2024 kill-accounting fixes, Browser 1650 victory celebrations, Browser 1645 living/fallen poses, and the earlier renderer/visibility/2D performance work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 0043 adds four packaged Operation Vindicator mission-victory tracks. Every authoritative successful tactical outcome randomly selects one cue, avoids an immediate repeat when alternatives exist, respects Music On/Off and master volume, and stops when the player leaves the completed battlefield. Browser 2207 cooperative mission aftermath, Browser 2024 direct finalization and kill accounting, Browser 1650 victory celebrations, and the earlier renderer/visibility/2D performance work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+
+
+
+---
+
+# v0.26.08.16.0043 - Random Mission Victory Music
+
+- Four supplied Operation Vindicator MP3 recordings are packaged as offline game assets under `assets/audio/victory/`.
+- An authoritative successful tactical outcome temporarily replaces the mission-threat score with one randomly selected victory cue while surviving AEGIS soldiers perform the established celebration.
+- The same success doctrine applies to direct control, Hybrid AI, full Simulation AI, and Classic Lineup playback. Manual battles trigger from the live tactical victory state; simulation presentations trigger from the authoritative `Mission success` terminal frame.
+- The selector remembers the last successfully started cue and avoids selecting it immediately again whenever at least one other asset is available.
+- A mission owns at most one victory-music trigger. React rerenders, tactical view changes, final-field inspection, and the natural end of the MP3 cannot restart the cue for that mission.
+- Failure, withdrawal, incomplete objectives, terminal rescue failure, and unresolved AI safety intervals remain excluded.
+
+## Audio ownership and settings
+
+- Victory playback follows the existing Music On / Off state and master music volume. It is categorized as music rather than SFX or dialogue.
+- Beginning a victory cue pauses the active mission track and cancels any in-progress Contact in the Dark segment crossfade, preventing two music layers from competing.
+- While a completed mission remains open, ordinary automatic context updates cannot restart the threat score over the victory cue.
+- Leaving the mission, closing successful Simulation/Classic playback, turning music off, or manually selecting another music mode stops and releases the victory player.
+- The next screen resumes normal context-sensitive music through the established soundtrack bank and fallback system.
+- Audio remains external rather than embedded as data URLs, preserving the single HTML script's startup parse cost. The distributable patch must therefore retain the `assets/audio/victory/` directory beside the game.
+
+## Validation and native parity
+
+- Build Health checks four unique asset records, `.mp3` victory paths, randomized no-immediate-repeat ordering, direct tactical success wiring, terminal simulation success wiring, and explicit cleanup.
+- All embedded JavaScript blocks pass syntax validation. The four source assets are distinct stereo 44.1 kHz files of approximately 60 seconds each.
+- Save format remains 4 because victory selection and playback are transient presentation state.
+- Native Godot parity should package the same four cues as streamed audio resources, select one on authoritative mission success, follow native music-volume settings, avoid immediate repetition, and stop the cue when leaving the final battlefield.
 
 
 

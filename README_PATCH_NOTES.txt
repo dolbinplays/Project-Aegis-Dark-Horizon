@@ -1,6 +1,53 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.16.0043_RANDOM_MISSION_VICTORY_MUSIC_AUDIO_ASSET_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Added a four-track mission-victory music bank using the supplied Operation Vindicator recordings. When a tactical mission reaches an authoritative successful outcome, one track is randomly selected and plays while surviving soldiers celebrate on the final battlefield.
+
+RANDOM SUCCESS MUSIC
+--------------------
+- Packaged all four supplied MP3 files under `assets/audio/victory/`.
+- A successful direct-control, Hybrid AI, Simulation AI, or Classic Lineup mission selects one Operation Vindicator track at random.
+- The selector avoids immediately repeating the last successfully played track whenever another track is available.
+- The cue triggers once for a mission even if the victory battlefield rerenders, switches between 2D and Three.js, or remains open after the song ends.
+- Mission failure, withdrawal, objective failure, incomplete operations, and unresolved AI safety handoffs do not trigger victory music.
+
+MUSIC HANDOFF
+-------------
+- The active mission-threat score pauses when the victory cue starts.
+- Victory music follows the existing Music On / Off setting and master music volume.
+- Changing the music mode manually remains an explicit player override.
+- Leaving the completed mission stops the victory cue immediately; the normal Geoscape/command music system then resumes through its existing context routing.
+- The four tracks are external packaged assets rather than base64 strings, avoiding a large increase to `index.html` parse and startup cost.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added a regression contract requiring four unique victory assets, randomized no-immediate-repeat selection, successful-mission wiring in `TacticalMission`, and successful terminal-frame wiring in Simulation/Classic playback.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- All four MP3 assets decode as stereo 44.1 kHz audio and are approximately 60.0 seconds long.
+- Save format remains 4; existing campaigns require no migration.
+
+MANUAL TEST GATES
+-----------------
+1. Complete a direct-control 3D Iso mission and confirm one Operation Vindicator cue starts once when Tactical Victory appears.
+2. Switch between 3D Iso and 2D Hex while the victory screen remains open and confirm the cue does not restart.
+3. End the incident before the cue finishes and confirm it stops immediately as the Skyranger return begins.
+4. Complete several successful missions and confirm the selected cue varies without immediately repeating when alternatives exist.
+5. Complete or withdraw from a failed mission and confirm no victory cue plays.
+6. Test Simulation AI and Classic Lineup victories and confirm the cue begins on the authoritative `Mission success` frame.
+7. Turn Music Off before victory and confirm the victory cue remains silent; turn music back on for a later mission and confirm normal operation.
+
+PREVIOUS BUILD - 2207
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.15.2207_COOPERATIVE_MISSION_AFTERMATH_AND_DIRECT_FINALIZER_INDEX_ONLY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
