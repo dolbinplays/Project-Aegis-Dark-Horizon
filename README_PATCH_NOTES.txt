@@ -1,6 +1,67 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.16.2300_FPV_PREAIM_LEFT_SHOT_STACK_AND_TERRAIN_BLEND_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Improved AI first-person combat readability by adding an explicit pre-fire target-acquisition phase: after movement completes, the camera and crosshair turn toward the acting AEGIS soldier's target and receive a bounded settle interval before the visible shot, muzzle response, and projectile effect begin. Tactical shot-result cards now occupy a compact left-side stack rather than the center of the battlefield, and persistent 3D ground colors blend with neighboring hexes to reduce the chessboard appearance from elevated camera angles.
+
+FPV PRE-FIRE TARGET ACQUISITION
+--------------------------------
+- Human AI shots shown through First Person now create a temporary aim cue after the soldier's movement animation completes.
+- The perspective camera targets the actual shot destination before `showShotEvent(...)` creates recoil, weapon audio, tracer/projectile, and impact presentation.
+- Aim turning uses a faster but still smoothed interpolation while the cue is active, allowing the center reticle to settle onto the target instead of snapping at the same instant as the shot.
+- At normal Battle Speed the acquisition interval is approximately 620 milliseconds. Faster playback scales the interval down but retains a 360-millisecond minimum; slower playback receives a proportionally longer interval.
+- The reticle changes to an amber acquisition state and identifies the pending target during this short presentation window.
+- Alien action frames and non-first-person playback retain their existing timing. The observer never changes to an alien viewpoint.
+- This delay is presentation-only. AI choice, hit chance, resolved hit/miss result, damage, ammunition, Time Units, target selection, reaction-fire authority, and frame order are already authoritative and remain unchanged.
+
+LEFT-SIDE TACTICAL SHOT STACK
+------------------------------
+- Shot-result cards have moved from the upper center of the tactical battlefield to a compact column on the left.
+- The stack begins below the upper-left renderer/FPV status block so it does not cover the center reticle, line of fire, target brackets, or the main action.
+- Cards use left-aligned text and a slightly narrower maximum width while preserving newest-first ordering, six-entry capacity, ten-second full visibility, independent fade timing, toggle behavior, and permanent Mission Timeline records.
+- The relocation applies to 2D, 3D isometric, manual, Hybrid AI, and Simulation AI tactical presentation.
+
+NEIGHBOR-BLENDED 3D TERRAIN
+----------------------------
+- Each persistent 3D ground hex now mixes its authored terrain color with the average color of adjacent hexes.
+- A small deterministic location/mission variation keeps natural ground from becoming a flat single color while avoiding harsh alternating palette blocks.
+- The prior set of separate palette batches is replaced in the live persistent renderer by one instanced ground batch with per-instance colors. This reduces terrain draw-call fragmentation while retaining one pickable cell mapping for tactical interaction.
+- The seam underlay now derives from the average battlefield ground color instead of using a high-contrast slate seam, making neighboring terrain read as a continuous surface from above.
+- Terrain identity, labels, regional biome selection, cover objects, occupancy, pathfinding, fog-of-war, visibility, movement, extraction cells, and tactical balance are unchanged.
+- The change is procedural and requires no new image or audio assets.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added a regression contract requiring the FPV aim cue, target-directed camera pose, speed-bounded settle delay, left-side shot-result stack, and neighbor-blended instanced terrain path.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- A targeted pure-helper test confirmed human shots create aim cues, alien shots do not take over the soldier-eye camera, the camera pose points at the intended target, and settle delays remain 620 ms at normal speed / 413 ms at 150% / 1240 ms at 50%.
+- A high-contrast adjacent-cell fixture reduced summed RGB difference from 288 to 190 after blending, confirming the algorithm softens abrupt tile transitions without flattening them completely.
+- Static package validation confirms the current build identifier, aim state/prop wiring, left-side stack classes, instanced per-cell colors, unchanged save format 4, and retained victory audio files.
+- A complete live WebGL AI firefight remains the manual validation gate in this execution environment.
+
+MANUAL TEST GATES
+-----------------
+1. Start a 3D tactical mission, hand control to Simulation AI, enable First Person, and observe an AEGIS soldier with a visible target. Confirm the camera turns and the reticle settles onto the target before the shot/tracer begins.
+2. Repeat at 10%, 50%, 100%, and 150% Battle Speed. Confirm acquisition remains readable and no shot is skipped or duplicated.
+3. Observe alien actions and confirm FPV holds the last valid AEGIS soldier rather than aiming through an alien's eyes.
+4. Confirm hit/miss, damage, ammunition, career kill credit, shot audio, impact timing, and playback order match the authoritative simulation result.
+5. Generate several shot results and confirm the stack stays on the left, below the FPV status panel, without covering the reticle or main target area.
+6. Toggle Shot Results Off/On and confirm the established clearing/timing behavior remains intact.
+7. Inspect mixed forest, farmland, urban-edge, arid, tropical, and tundra battlefields from 3D isometric zoom. Confirm neighboring ground colors transition more naturally and dark chessboard seams are reduced.
+8. Confirm cover, walls, windows, buildings, movement paths, extraction, fog, and cell clicking remain aligned with the same authoritative hexes.
+9. Run Build Health and confirm the new FPV pre-aim / left stack / terrain blend contract reports OK.
+
+PREVIOUS BUILD - 2255
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.16.2255_CAMERA_RELATIVE_SKY_FPV_HUD_WEAPON_AND_TRADITIONAL_ARCHITECTURE_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

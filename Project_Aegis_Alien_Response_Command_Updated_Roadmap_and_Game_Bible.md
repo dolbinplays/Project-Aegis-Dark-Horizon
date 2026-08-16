@@ -2,12 +2,49 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-16
-Current handoff build: `v0.26.08.16.2255_CAMERA_RELATIVE_SKY_FPV_HUD_WEAPON_AND_TRADITIONAL_ARCHITECTURE_PATCH`
+Current handoff build: `v0.26.08.16.2300_FPV_PREAIM_LEFT_SHOT_STACK_AND_TERRAIN_BLEND_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2255 keeps the local sky and celestial objects camera-relative so the sun/moon cannot be approached as battlefield geometry, repairs the persistent renderer’s missing first-person weapon geometries, adds a tactical-visibility-gated sci-fi visor HUD for hostiles/VIPs/civilians/allies/objectives/extraction, and gives each regional environment a more recognizable traditional architecture kit. Browser 2210 camera/biome polish, Browser 2145 first-person observer and terminal victory gate, Browser 1930 pathfinding optimization, Browser 0043 victory music, Browser 2207 cooperative aftermath, and earlier renderer/visibility work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 2300 adds a presentation-only FPV pre-fire acquisition phase so the camera/reticle settles on the acting AEGIS soldier’s target before the visible shot, moves tactical shot-result cards to a compact left-side stack, and neighbor-blends persistent 3D ground colors/seams to reduce the chessboard appearance from above. Browser 2255 sky/HUD/weapon/architecture work, Browser 2210 camera/biome polish, Browser 2145 first-person observer and terminal victory gate, Browser 1930 pathfinding optimization, Browser 0043 victory music, Browser 2207 cooperative aftermath, and earlier renderer/visibility work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
 
+
+---
+
+# v0.26.08.16.2300 - FPV Pre-Aim, Left Shot Stack, and Neighbor-Blended Terrain
+
+## First-person pre-fire acquisition doctrine
+
+- The first-person observer should show the acting AEGIS soldier acquiring a target before presenting weapon discharge. A shot may not appear at the same instant that the camera first begins turning toward its target.
+- After authoritative AI movement is applied, a human-shot playback frame creates a temporary aim cue containing the acting soldier and resolved shot destination.
+- The perspective camera eases toward that destination with a faster bounded aim interpolation than ordinary patrol/facing turns. The center reticle remains the aim authority for presentation.
+- Visible discharge, recoil, tracer/projectile, audio, and impact presentation begin only after a speed-aware settle interval. Normal speed targets approximately 620 milliseconds; high playback speed retains a minimum readable interval rather than collapsing acquisition to zero.
+- The aim cue must never alter AI target choice, hit roll, resolved damage, ammunition, Time Units, reaction-fire authority, casualties, or playback ordering. It delays presentation of an already-resolved shot only.
+- Alien frames do not take ownership of the soldier-eye camera. If no living AEGIS actor owns the shot, the observer retains the last valid friendly viewpoint and no friendly pre-aim cue is created.
+- Turning First Person off, ending AI map playback, taking back command, or cancelling playback timers must clear any pending acquisition cue.
+
+## Tactical shot-result placement doctrine
+
+- Transient shot-result cards are supporting information and should not occupy the primary target/action region.
+- The battlefield stack is docked to the left below the upper-left tactical renderer/FPV status panel. It must avoid the central reticle, target brackets, and typical line-of-fire framing.
+- Cards remain newest-first, independently timed, bounded to six entries, fully visible for ten seconds, and independently faded/removed. The Shot Results toggle and permanent Mission Timeline remain authoritative.
+- The placement applies consistently across direct control, Hybrid AI, Simulation AI, 2D Hex, and 3D Iso presentation.
+
+## Neighbor-blended tactical ground doctrine
+
+- Tactical cells remain discrete gameplay hexes, but their 3D surface colors should read as continuous terrain rather than a high-contrast board.
+- A rendered ground cell mixes its authored terrain color with a bounded average of adjacent cells. The cell’s own terrain remains dominant so farmland, soil, forest floor, concrete, scars, and regional biome identity remain legible.
+- Small deterministic per-cell variation may prevent visual flatness, but it must not create regular alternating patterns.
+- The seam underlay should derive from the average ground palette instead of a universal high-contrast line color.
+- The persistent renderer may use one instanced surface mesh with per-instance colors to reduce draw calls. Cell picking must retain exact instance-to-hex mapping.
+- Blending is presentation-only. It cannot change terrain type, cell descriptions, movement cost, occupancy, cover, line of sight, fog, extraction, pathfinding, destruction, or save data.
+- Future terrain polish may add vertex-color gradients, decals, trails, snow/sand accumulation, and biome transitions, but all must preserve the same authoritative tactical cell model.
+
+## Validation and native parity
+
+- Browser Build Health verifies human-only aim cues, target-directed camera pose, speed-bounded acquisition timing, cancellation paths, left-side shot stack placement, per-instance neighbor colors, and terrain-colored seams.
+- Manual validation should cover stationary shots, move-then-fire shots, multiple Battle Speed values, alien turns, FPV toggling during acquisition, dense shot stacks, and varied biome/terrain transitions.
+- Native Godot should reproduce the same presentation sequence with an engine-native camera/tween or animation state. The resolved tactical shot must remain authoritative before the visual acquisition phase begins.
 
 ---
 
