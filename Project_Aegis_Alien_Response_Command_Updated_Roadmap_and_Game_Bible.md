@@ -2,26 +2,36 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-15
-Current handoff build: `v0.26.08.15.1730_VIP_QUOTA_IMPOSSIBLE_TERMINAL_FIX_INDEX_ONLY_PATCH`
+Current handoff build: `v0.26.08.15.2207_COOPERATIVE_MISSION_AFTERMATH_AND_DIRECT_FINALIZER_INDEX_ONLY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1730 resolves mandatory VIP operations as failed when the quota has become mathematically impossible. Explicit dead state is authoritative even during staged playback that temporarily retains positive display HP, so AI rescue search cannot loop after every remaining VIP is dead or extracted. Per-rescue partial credit remains intact. Browser 1650's success-only victory celebration, Browser 1645's explicit living/fallen pose fix, and the earlier performance optimizations remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 2207 further optimizes mission completion: completed manual battles now use a direct live-battle result finalizer with no tactical continuation snapshot or resolver entry, and return-to-base campaign aftermath is cooperatively chunked so Chromium can repaint between roster, memorial, report, recovery, and Geoscape updates. Autosave/manual save are guarded against partial debrief state. Browser 2024 kill-accounting fixes, Browser 1650 victory celebrations, Browser 1645 living/fallen poses, and the earlier renderer/visibility/2D performance work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
 
 ---
 
-# v0.26.08.15.1730 - Impossible VIP Rescue Quota Terminal Fix
+# v0.26.08.15.2207 - Cooperative Mission Aftermath + Direct Finalizer
 
-- Mandatory VIP rescue missions now terminate as an objective failure when the number already rescued plus the number still alive cannot reach the required quota and no aliens remain to fight.
-- Explicit `alive: false` VIP state is authoritative for casualty and active-rescue counts. Staged tactical playback may temporarily keep display HP above zero while presenting a fall, but that display state no longer tells the AI that the VIP can still be rescued.
-- The reported four-VIP case is covered directly: with three required, two rescued, and two dead, the shared terminal resolver marks the primary battlefield secure, the rescue objective impossible, and the mission resolved as a failure instead of continuing AI search rounds.
-- Each rescued VIP retains the established $40k partial reward, so two rescues award $80k. The mandatory-quota completion reward is withheld and no victory celebration plays.
-- Manual, Hybrid AI, full Simulation AI, and mission playback use the same objective calculation. Escort routing, extraction traffic, formation movement, reinforcements, and beacon gates are unchanged.
-- Build Health includes a regression fixture in which both dead VIPs retain positive playback HP, proving that authoritative death state still stops rescue search and ends the operation correctly.
-- Save format remains 4. Native Godot parity should preserve the same authoritative casualty-state rule when this tactical objective system is ported.
+- A completed manual battlefield now bypasses `resolveMission(...)` entirely. The tactical finish function reads the authoritative live soldier/civilian state and directly creates XP, kill, wound/KIA, medical, stat-up, rescue, and round results.
+- The obsolete post-victory `tacticalAiContinuationState(...)` construction is removed from manual completion. This avoids copying the live battlefield and avoids resolver-only visibility, snapshot, and playback preparation after the player has already won or withdrawn.
+- Campaign debrief application is cooperative. Full-roster aftermath is processed in bounded chunks and yields to the browser event loop between major stages so the page can repaint and accept input rather than presenting one long main-thread task.
+- KIA memorial-offering generation receives its own chunk/yield boundary. The complete memorial-writing library remains available and no tribute content is removed; the change only prevents that optional narrative work from blocking the whole return-to-base transition.
+- Growth records are indexed by soldier ID once for the debrief, reducing repeated result-array scans during roster and wiped-squad processing.
+- A mission-aftermath guard prevents duplicate finalization. Autosave is skipped while aftermath is partially applied and manual save is blocked during that same short window, preventing inconsistent partial campaign saves.
+- The debrief guard is released in a `finally` path so an error cannot permanently disable future mission processing or saves.
+- Browser Build Health now verifies the direct finalizer, absence of manual `finalizeOnly:true` / continuation-state construction, cooperative map/yield seams, and save guard.
+- Save format remains 4. Native parity should follow the same architectural doctrine: once native tactical resolution is authoritative, campaign aftermath should consume that final tactical state directly and expensive debrief work should not monopolize the main UI thread.
 
+# v0.26.08.15.2024 - Manual Tactical Exit Fast Path
 
----
+- Manual tactical completion now treats the visible battlefield as authoritative. Pressing the return-to-base confirmation snapshots current soldiers, cover, civilian/VIP rescue state, beacon state, reinforcement state, explored cells, tactical round, and Skyranger deployment.
+- The shared mission resolver now supports a `finalizeOnly` mode. In this mode it skips every AI combat round and proceeds directly to the established terminal result/growth calculation.
+- This removes the old behavior where a completed manual battle called `resolveMission(...)` against a newly generated deployment and could simulate many hidden rounds before the campaign transition began.
+- The aftermath formulas remain shared rather than forked: XP, wounds, KIA state, stat increases, rescue rewards, beacon completion, report output, recovered equipment/materials, funding/panic effects, friendship, leadership aftermath, memorial handling, and save-format behavior continue through the existing campaign result pipeline.
+- Manual direct-fire kills, Frag Grenade multi-kills, and reaction-fire kills now update the live soldier mission counter. AI/Hybrid frame snapshots preserve that counter so returning to manual command cannot erase earned kills before completion.
+- Full Simulation AI / Hybrid results that already possess an authoritative resolved result are not re-finalized through the manual fast path.
+- Build Health requires the resolver loop to be gated by `!finalizeOnly`, the manual finish function to use a live continuation snapshot with `finalizeOnly:true`, and the manual kill-accounting seams to remain present.
+- Save format remains 4. Native parity should use the same principle: a completed native tactical battle should hand its actual final tactical state into campaign aftermath rather than simulating a second result.
 
 # v0.26.08.15.1650 - All Tactical Victory Dance Restore
 

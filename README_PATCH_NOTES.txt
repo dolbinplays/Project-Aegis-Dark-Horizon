@@ -1,27 +1,98 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.15.1730_VIP_QUOTA_IMPOSSIBLE_TERMINAL_FIX_INDEX_ONLY_PATCH
+Build: v0.26.08.15.2207_COOPERATIVE_MISSION_AFTERMATH_AND_DIRECT_FINALIZER_INDEX_ONLY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
 SUMMARY
 -------
-Fixed an AI mission-ending loop when a mandatory VIP quota had become impossible. A VIP explicitly marked dead is now counted as a casualty even if staged death playback temporarily retains positive display HP. If 2 of 4 VIPs are rescued, 2 are dead, and 3 were required, eliminating the remaining aliens now ends the mission as a failed objective with the normal partial rescue credit.
+Further optimized the tactical mission ending and return-to-base debrief after Browser 2024 removed the hidden second battle simulation. The manual exit path now constructs its result directly from the live battlefield instead of entering the shared tactical resolver at all, and the campaign aftermath is processed cooperatively in short chunks so Chromium can repaint and service input between expensive stages.
 
-IMPOSSIBLE VIP QUOTA TERMINATION
---------------------------------
-- Explicit VIP life state is authoritative for mission resolution; positive HP retained solely for fall-animation playback no longer makes a dead VIP appear rescuable to the AI.
-- The shared AI/manual terminal calculation stops rescue search as soon as no active VIP can make the mandatory quota attainable.
-- In the reported 4-VIP case, 2 rescued plus 2 dead against a quota of 3 resolves as mission failure after the battlefield is otherwise secure.
-- The two rescued VIPs still award their existing per-rescue partial credit. The quota completion reward and tactical victory celebration are not awarded.
-- Existing escort, extraction, fire-team formation, reinforcement, and beacon-objective rules are unchanged.
+DIRECT LIVE-BATTLE FINALIZER
+----------------------------
+- `End Incident and Return to Base`, loss confirmation, and manual withdrawal no longer construct a tactical continuation snapshot after the visible battle has ended.
+- The manual finish path no longer calls `resolveMission(...)`, even in `finalizeOnly` mode.
+- Growth, XP, kill credit, wound/KIA state, tactical medical status, stat-up rolls, civilian outcome, and round count are derived directly from the authoritative live tactical units.
+- This avoids the resolver's remaining simulation-oriented setup work such as tactical visibility recomputation, unit visibility snapshots, playback-frame construction, continuation-state packaging, and other state preparation that is unnecessary after a completed player battle.
+- The shared resolver and its `finalizeOnly` compatibility seam remain available for other code paths; this patch only removes that overhead from the already-completed manual battlefield exit.
 
-BUILD HEALTH
-------------
-- Added a focused four-VIP regression contract using two rescued VIPs and two explicitly dead VIPs whose display HP remains positive.
-- The contract verifies that rescue search stops, the objective becomes an impossible resolved failure, tactical victory remains false, and $80k of per-VIP partial credit is retained.
+COOPERATIVE RETURN-TO-BASE AFTERMATH
+------------------------------------
+- `finishMission(...)` is now a cooperative asynchronous debrief pipeline rather than one uninterrupted JavaScript task.
+- Large roster updates are applied through bounded 12-soldier chunks with an event-loop yield between chunks.
+- Friendship aftermath, KIA memorial processing, soldier-state commit, reports, recovery, and Geoscape-time advancement receive separate yield boundaries so the browser can render between major stages.
+- KIA memorial-offering generation is processed in smaller chunks, preventing the large memorial-message library from monopolizing the entire mission-return transition when several soldiers are lost.
+- Mission growth is indexed by soldier ID once and reused through roster and squad-wipe checks instead of repeatedly scanning the result-growth array.
+
+SAVE / CONSISTENCY SAFETY
+-------------------------
+- A mission-aftermath in-progress guard prevents the same debrief from being started twice.
+- Rotating autosave is suspended while the cooperative aftermath is only partially applied.
+- Manual save is temporarily blocked during that short debrief window so no save slot can capture an in-between campaign state.
+- The guard clears when the debrief completes or if the debrief throws an error.
+- Save format remains 4; existing campaigns require no migration.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Build Health now requires the manual tactical path to use `tacticalFinalizeLiveBattleResult(...)` and rejects reintroduction of `finalizeOnly:true` or a `finalBattleState` continuation snapshot in the tactical finish function.
+- The same contract requires cooperative roster mapping, explicit event-loop yields, and the autosave in-progress guard.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Current build metadata and in-game patch history are synchronized to Browser 2207.
+
+MANUAL TEST GATES
+-----------------
+1. Win a 3D Iso mission, leave the soldiers dancing briefly, then click End Incident and Return to Base. Confirm the Skyranger return transition begins without a long frozen pause.
+2. Let the Skyranger reach base and confirm the debrief/report transition remains responsive instead of producing a browser "page not responding" warning.
+3. Repeat with wounded soldiers and at least one KIA to exercise the heavier memorial/recovery path.
+4. Confirm XP, career kills, wounds/KIA, recovered gear/materials, rescue totals, reward, panic, mission report, and squad removal still match the played battle.
+5. Try saving during the brief debrief-processing window and confirm the game refuses the save rather than writing a partial campaign state.
+6. Repeat a 2D mission and a Hybrid AI mission that returns to manual control before victory.
+
+PREVIOUS BUILD - 2024
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
+Build: v0.26.08.15.2024_MANUAL_TACTICAL_EXIT_FAST_PATH_INDEX_ONLY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Optimized the manual tactical mission exit transition. Ending a played battle no longer launches a second hidden multi-round AI simulation before the Skyranger return handoff. The game now snapshots the live battlefield and runs only the established result-finalization formulas, preserving the actual battle outcome while making the exit click substantially lighter.
+
+MANUAL TACTICAL EXIT FAST PATH
+------------------------------
+- `End Incident and Return to Base`, loss confirmation, and manual withdrawal now snapshot the current tactical units, cover, rescue state, Alien Field Beacon state, reinforcement state, explored cells, round, and Skyranger deployment.
+- `resolveMission(...)` gained a `finalizeOnly` path. It reuses the existing XP, wounds, KIA, stat-up, civilian, beacon, result-log, recovery, and campaign aftermath formulas but skips the combat simulation loop completely.
+- The previous manual exit path invoked `resolveMission(...)` from a fresh deployment. That could spend time resolving up to dozens of hidden AI rounds after the visible battle had already ended.
+- The new path does not create an extra tactical round, does not move units, does not fire hidden shots, and does not regenerate the battlefield.
+- Full Simulation AI and Hybrid AI results that already own an authoritative resolved result continue to use their existing result handoff.
+
+LIVE KILL ACCOUNTING
+--------------------
+- Manual direct-fire kills now increment the acting soldier's mission kill counter.
+- Frag Grenade multi-kills add the exact number of aliens eliminated to the thrower's mission kill counter.
+- Manual reaction-fire kills increment the reacting soldier's counter.
+- AI/Hybrid playback snapshots now retain the `kills` value so command handoffs do not erase previously earned kills before a later manual mission exit.
+- Mission XP and career kill totals therefore use the played battle's retained kill count rather than a hidden post-battle re-simulation.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added a Build Health contract requiring the manual finish path to create a live-state continuation snapshot, request `finalizeOnly:true`, and gate the resolver's combat loop behind `!finalizeOnly`.
+- The contract also checks direct-fire and grenade kill-accounting seams.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
 - Save format remains 4; no migration is required.
+
+MANUAL TEST GATES
+-----------------
+1. Complete a 3D Iso tactical victory and click End Incident and Return to Base; confirm the Geoscape/Skyranger return transition begins promptly.
+2. Repeat after a 2D manual victory.
+3. Confirm wounded/KIA soldiers, rescue totals, beacon status, recovered materials, rewards, panic, and mission report still match the battle.
+4. Confirm soldiers receive career kills for manual rifle kills, grenade multi-kills, and reaction-fire kills.
+5. Test a manual withdrawal/failed mission and confirm no extra hidden combat occurs before return.
 
 PREVIOUS BUILD - 1650
 =====================
