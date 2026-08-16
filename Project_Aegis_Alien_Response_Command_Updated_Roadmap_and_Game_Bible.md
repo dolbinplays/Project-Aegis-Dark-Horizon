@@ -2,10 +2,23 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-15
-Current handoff build: `v0.26.08.15.1645_THREEJS_LIVING_UNIT_POSE_HOTFIX_INDEX_ONLY_PATCH`
+Current handoff build: `v0.26.08.15.1650_ALL_TACTICAL_VICTORY_DANCE_RESTORE_INDEX_ONLY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1645 fixes intermittent all-faction prone spawning in the persistent 3D view by separating explicit life state from the visual signature. Browser 1615's 2D cell indexes, Browser 1445's terrain and observer-visibility caches, and all earlier shared systems remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 1650 restores victory celebrations across every successful tactical presentation path. Persistent Three.js now invalidates its actor layer when the victory-dance state changes, so surviving AEGIS soldiers celebrate without rebuilding the scene. 2D Hex, Classic Lineup, tactical-map playback, Hybrid AI, and Simulation AI preserve the same success-only rule. Browser 1645's explicit living/fallen pose fix and the earlier performance optimizations remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
+
+
+---
+
+# v0.26.08.15.1650 - All Tactical Victory Dance Restore
+
+- A successfully completed tactical mission now keeps every surviving AEGIS soldier celebrating on the final battlefield until the player confirms return to base. This doctrine applies to direct control, Hybrid AI, Simulation AI, 2D Hex, Three.js Iso, Classic Lineup, and tactical-map playback.
+- The persistent Three.js regression came from actor-layer invalidation rather than the animation math itself. The renderer started the victory animation loop, but a pure victory-state transition did not run `tacticalThreePersistentUpdateUnits(...)`, leaving existing nodes with `victoryDance=false`.
+- The persistent actor invalidation key now includes victory-dance state. Victory therefore mutates the already-existing soldier nodes in place and preserves the long-lived renderer, scene, terrain, fog, cover, and actor caches.
+- Only living human soldiers are marked for celebration. Fallen soldiers stay prone, and failures, withdrawals, incomplete objectives, unresolved AI intervals, and other non-success terminal states never trigger the dance.
+- Simulation/Classic playback uses the authoritative `Mission success` terminal label rather than additionally requiring zero surviving aliens. This keeps the presentation compatible with future mission types where objective success may not require complete enemy elimination.
+- Build Health now checks victory-state-only actor invalidation, successful objective frames, failure exclusion, living-vs-fallen behavior, and wiring through all tactical display modes.
+- Save format remains 4; native Godot parity should preserve the same success-only celebration doctrine when the native tactical presentation reaches parity.
 
 
 ---

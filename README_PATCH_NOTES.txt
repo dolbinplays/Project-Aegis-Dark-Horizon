@@ -1,6 +1,39 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.15.1650_ALL_TACTICAL_VICTORY_DANCE_RESTORE_INDEX_ONLY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Restored the soldier victory celebration across successful tactical mission outcomes. The persistent Three.js renderer was starting its victory animation loop but not invalidating the actor layer when the victory flag changed, so existing soldier nodes never received the dance state. 2D and playback celebrations remain active, and the shared success rule is now future-safe for victory objectives that may not require every alien to be dead.
+
+ALL-SUCCESS VICTORY CELEBRATION
+-------------------------------
+- Every surviving AEGIS soldier celebrates while a successfully completed tactical battlefield remains open for review.
+- Direct-control, Hybrid AI, full Simulation AI, Classic Lineup, 2D Hex, tactical-map playback, and Three.js Iso all retain their existing presentation paths but share the same successful-outcome doctrine.
+- KIA soldiers remain fallen and do not animate. Mission failures, withdrawals, objective failures, incomplete operations, and unresolved AI handoffs do not trigger celebration.
+- Playback victory detection now keys off the authoritative `Mission success` terminal frame instead of additionally requiring `alienAlive === 0`. This preserves celebrations for future objective-driven victories that can legitimately end with hostiles still present.
+
+PERSISTENT THREE.JS REGRESSION FIX
+----------------------------------
+- Root cause: Browser 1342 made the Three.js scene persistent and separated actor updates from animation state. `victoryDance` correctly restarted the animation loop, but the actor invalidation key only tracked unit state. When victory arrived without a unit-state change, `tacticalThreePersistentUpdateUnits(...)` did not run and every existing soldier node kept `victoryDance=false`.
+- The persistent actor key now includes the victory-dance state. A victory transition updates the existing nodes in place, marks only living human soldiers to celebrate, and retains the same renderer, scene, terrain, cover, fog, and actor objects.
+- Returning from celebration or disposing the battlefield still restores normal standing/fallen poses through the existing explicit living-state logic from Browser 1645.
+
+BUILD HEALTH
+------------
+- Strengthened the all-battle-views victory contract to verify direct 2D/3D wiring, Simulation/Classic playback, living-vs-fallen behavior, failure exclusion, and persistent actor invalidation when only the victory flag changes.
+- Added a future-facing success fixture whose terminal frame is `Mission success` even with a nonzero alien count; surviving soldiers still celebrate because success, not elimination count, is authoritative.
+- Save format remains 4; no migration is required.
+
+PREVIOUS BUILD - 1645
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.15.1645_THREEJS_LIVING_UNIT_POSE_HOTFIX_INDEX_ONLY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
