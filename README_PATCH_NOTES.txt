@@ -1,6 +1,83 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.16.2210_FIRST_PERSON_CAMERA_SKY_WEAPON_AND_REGIONAL_BIOME_POLISH_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Polished AI soldier-eye observation so discrete tactical hex movement reads as smooth first-person motion, added a camera-space weapon barrel that uses the same equipped-weapon color as the soldier card and battlefield model, introduced mission-location day/night skies, and expanded regional terrain/flora presentation across tropical, arid, Mediterranean, temperate, boreal, and tundra/alpine environments.
+
+FIRST-PERSON CAMERA STABILIZATION
+---------------------------------
+- The observer camera no longer snaps directly to each newly committed tactical hex and facing.
+- Eye position eases toward the soldier's authoritative world position while viewing direction uses a slightly softer interpolation, keeping movement responsive without abrupt turns.
+- Acting-soldier changes snap to the new soldier rather than flying the camera across the battlefield between units.
+- Movement uses restrained, bounded head bob and lateral sway. Idle breathing motion is deliberately minimal.
+- Shots add a short controlled recoil response without changing aim, ballistics, damage, playback timing, or AI decisions.
+- First-person rendering runs at the normal animation-frame cadence while active instead of using the slower tracker/victory-animation refresh interval.
+- Isometric rendering, fog, terrain caches, unit nodes, and tactical simulation still use the same persistent Three.js runtime.
+
+FIRST-PERSON WEAPON PRESENTATION
+--------------------------------
+- A compact camera-space weapon rig is shown in the lower-right portion of the first-person view.
+- Barrel and shroud color come from `soldierVisualData(...).weaponColor`, the same source used by the soldier card and Three.js soldier model.
+- Ballistic weapons remain dark gunmetal, laser weapons use the established blue/cyan treatment, and plasma weapons use the established green treatment.
+- Basic length/scale differences distinguish carbines, sniper weapons, and heavier weapons while retaining a low-obstruction silhouette.
+- The rig follows camera sway and recoil, updates when the acting soldier changes, and remains hidden for unarmed soldiers.
+- The first-person HUD now identifies the viewed soldier and equipped weapon.
+
+LOCATION-AWARE TACTICAL SKY
+----------------------------
+- Tactical atmosphere reads the mission's stored `tacticalClock` and geographic `location`.
+- Local solar state selects daylight, twilight, or night presentation.
+- The sky uses a procedural horizon-to-zenith gradient rather than an external image asset.
+- Twilight receives a warmer horizon; night adds deterministic stars and a moon; daylight/twilight place a sun-like celestial disc according to local solar time.
+- Hemisphere, key, rim, fog color, and fog distance are adjusted to the presentation phase.
+- The atmosphere is available in first person and remains compatible with the isometric view.
+- Sky and lighting are presentation only. Tactical visibility range, line of sight, fog-of-war discovery, AI knowledge, and weapon accuracy are unchanged.
+
+REGIONAL TERRAIN AND FLORA VARIETY
+-----------------------------------
+- Mission coordinates and campaign region select one of six broad environmental profiles: tropical rainforest, arid scrubland, Mediterranean scrub, temperate woodland, boreal forest, or tundra/alpine ground.
+- Open-ground labels and palettes adapt by profile, including rainforest floors, humid earth, desert scrub, acacia woodland, conifer forest, frost-paled ground, and regional stone tones.
+- Three.js trees vary in canopy proportions and color: broad tropical crowns, flattened acacia forms, olive-like Mediterranean forms, tall conifers, and sparse alpine trees.
+- Bushes, brush, crops, trunks, and rocks use matching regional palettes and modest deterministic shape variation.
+- Small bounded cosmetic flora/stone batches add ground-level detail without occupying cells or becoming tactical cover.
+- Cosmetic scatter uses a bounded deterministic sampling pass rather than scanning or creating detail on every map cell.
+- Existing hard/soft cover records remain authoritative. Regional presentation does not add movement blockers, cover bonuses, line-of-sight blockers, or destructible objects.
+
+GAMEPLAY / COMPATIBILITY
+------------------------
+- AI orders, movement paths, Time Units, fire-team formation, escort behavior, reaction fire, damage, reinforcement logic, victory handling, and mission results are unchanged.
+- Existing cached tactical battles and save-format-4 campaigns require no migration.
+- No new external assets were added. The victory-music assets from Browser 0043/1930/2145 are unchanged, so players with an intact assets folder may replace only `index.html`.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added a presentation contract covering tropical/arid/tundra classification, local atmosphere generation, eased first-person animation, high-cadence first-person rendering, weapon-color sourcing, procedural sky/stars, and bounded regional scatter.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Isolated helper validation confirmed tropical South America, arid Africa, tundra northern Europe, temperate mid-latitude East Asia, arid forest-to-acacia terrain conversion, and night atmosphere selection.
+- Static release checks confirm synchronized build metadata, current patch history, both new patch flags, the first-person weapon rig, local sky, regional flora profiles, and unchanged save format 4.
+- A full live WebGL mission remains the final manual validation gate.
+
+MANUAL TEST GATES
+-----------------
+1. Start a 3D tactical mission, hand control to Simulation AI, enable First Person, and watch a soldier cross several hexes. Confirm the camera glides through each step without hard positional snaps.
+2. Watch the soldier turn and fire. Confirm the turn is readable, recoil is brief, and the reticle remains usable.
+3. Observe ballistic-, laser-, and plasma-equipped soldiers and confirm the visible barrel matches the weapon color shown on their soldier cards.
+4. Launch missions at daytime, twilight, and nighttime campaign hours. Confirm the sky, horizon, stars/celestial object, fog tone, and light levels change without altering fog-of-war discovery.
+5. Compare low-latitude South America/Africa, arid Africa or the Middle East, northern Europe, and ordinary temperate missions. Confirm terrain and flora differ while every tactical cover cell and route remains unchanged.
+6. Toggle First Person off during movement and confirm the persistent isometric battlefield returns cleanly.
+7. Run Build Health and confirm the first-person camera/weapon/sky/regional-biome contract reports OK.
+
+PREVIOUS BUILD - 2145
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.16.2145_AI_FIRST_PERSON_OBSERVER_AND_TERMINAL_VICTORY_MUSIC_GATE_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
@@ -1295,4 +1372,5 @@ A complete live Chromium tactical/geoscape smoke test remains the final validati
 4. Confirm no two living soldiers finish a round on the same hex.
 5. Escort a VIP/civilian with a fire-team leader, spot an alien, test both escort-support choices, and confirm detached supports return afterward.
 6. Station Ready interceptors at several bases, select `All Bases`, verify staggered arrivals, destroy the UFO before every interceptor arrives, and follow the remaining aircraft home through normal ferry routing.
+
 

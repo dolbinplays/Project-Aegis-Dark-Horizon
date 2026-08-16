@@ -2,11 +2,55 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-16
-Current handoff build: `v0.26.08.16.2145_AI_FIRST_PERSON_OBSERVER_AND_TERMINAL_VICTORY_MUSIC_GATE_PATCH`
+Current handoff build: `v0.26.08.16.2210_FIRST_PERSON_CAMERA_SKY_WEAPON_AND_REGIONAL_BIOME_POLISH_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2145 adds a reversible soldier-eye perspective during Simulation AI and Hybrid AI tactical-map playback, using the existing persistent Three.js battlefield and authoritative acting-soldier stream. It also closes the reinforcement cache-to-unit commit race so victory, celebration, and Operation Vindicator music cannot trigger before a newly materialized beacon wave exists in live tactical state; Simulation/Classic audio additionally waits for the final completed playback frame. Browser 1930 pathfinding optimization, Browser 0043 victory music, Browser 2207 cooperative aftermath, Browser 1650 celebrations, and the earlier renderer/visibility work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 2210 polishes the AI soldier-eye observer with eased high-cadence movement, restrained head motion/recoil, and a camera-space weapon using the soldier card’s authoritative weapon color. Tactical coordinates and mission time now drive procedural daylight/twilight/night skies, while six broad regional profiles vary ground, trees, brush, crops, rocks, and bounded non-blocking detail. Browser 2145’s terminal reinforcement/victory gate, Browser 1930 pathfinding optimization, Browser 0043 victory music, Browser 2207 cooperative aftermath, and earlier renderer/visibility work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
+
+---
+
+# v0.26.08.16.2210 - First-Person Camera, Weapon, Local Sky, and Regional Biome Polish
+
+## Stabilized soldier-eye camera doctrine
+
+- First-person observation remains attached to the authoritative AI action actor and the existing persistent Three.js battlefield. It is a presentation layer, not a movement or command system.
+- Tactical units still advance through committed hex states. The camera independently eases its eye position and viewing direction toward those authoritative states, eliminating abrupt visual snapping without inventing intermediate gameplay positions.
+- Eye translation uses a responsive exponential interpolation; facing/aim uses a slightly softer interpolation so turns remain readable. A change to a different acting soldier resets directly to that soldier rather than flying across the map.
+- Head movement is intentionally restrained: small bounded walking bob/sway, minimal idle drift, and a short presentation-only recoil response for shots.
+- First-person mode owns a higher render cadence while active. The established lower-frequency tracker/victory animation cadence remains available outside first-person observation.
+
+## First-person weapon doctrine
+
+- A camera-space weapon rig is visible while observing an armed AEGIS soldier.
+- The rig’s barrel/shroud material must derive from `soldierVisualData(...).weaponColor`, preserving one visual authority across soldier cards, world models, and first-person view.
+- Weapon geometry may vary slightly by broad role/length, but must remain compact enough not to hide the tactical scene.
+- Recoil and sway affect only the camera-space model. They cannot modify shot direction, accuracy, ammunition, Time Units, or damage.
+- The rig updates as acting-soldier authority changes and is absent for unarmed soldiers.
+
+## Local tactical atmosphere doctrine
+
+- A launched mission carries `tacticalClock` and geographic `location`; those values are sufficient to derive broad local solar phase without adding save data.
+- Daylight, twilight, and night select sky-gradient, fog-tone, ambient/key/rim-light, and celestial presentation settings.
+- Night may display deterministic stars and a moon-like disc; daylight/twilight may display a sun-like disc positioned from local solar time.
+- Atmospheric rendering may improve scene readability but cannot change tactical visibility distance, fog-of-war discovery, AI knowledge, cover, or accuracy unless a separate future gameplay feature explicitly changes those systems.
+- Procedural atmosphere avoids external sky textures and keeps the browser build’s offline package unchanged.
+
+## Regional environment doctrine
+
+- The browser tactical renderer classifies mission locations into broad presentation profiles: tropical, arid, Mediterranean, temperate, boreal, and tundra/alpine.
+- Classification uses mission latitude plus campaign region, providing more locally plausible palettes without claiming exact ecological simulation at every coordinate.
+- The selected profile can vary open-ground color/label, tree canopy form, trunks, bushes, crops, rocks, and bounded cosmetic ground scatter.
+- Cosmetic scatter is deterministic, bounded, non-interactive, and excluded from pathfinding, occupancy, cover, destruction, and line-of-sight authority.
+- Existing tactical cover objects remain authoritative. A rendered shrub or stone detail may not silently become cover or block a route.
+- Future expansion can add finer coastal, wetland, volcanic, snow-depth, seasonal, and urban-architecture profiles while preserving this presentation/gameplay boundary.
+
+## Validation and native parity
+
+- Browser Build Health checks regional classification, palette conversion, atmosphere seams, stabilized first-person animation, weapon-color authority, sky/stars, and bounded scatter integration.
+- All six embedded JavaScript blocks pass syntax validation. Isolated helper tests cover representative tropical, arid, tundra, and temperate locations.
+- Save format remains 4 and no external asset replacement is required over Browser 2145.
+- Godot parity should use an equivalent native spectator-camera interpolation and reuse authoritative native weapon materials. Local sky/biome presentation should read the same mission location/time data while keeping visual detail separate from navigation and tactical cover resources.
 
 ---
 
