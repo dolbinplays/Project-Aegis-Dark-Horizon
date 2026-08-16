@@ -2,12 +2,42 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-16
-Current handoff build: `v0.26.08.16.2300_FPV_PREAIM_LEFT_SHOT_STACK_AND_TERRAIN_BLEND_PATCH`
+Current handoff build: `v0.26.08.16.2335_BALANCED_TERRAIN_BLEND_AND_LAZY_MEMORIAL_INDEX_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2300 adds a presentation-only FPV pre-fire acquisition phase so the camera/reticle settles on the acting AEGIS soldier’s target before the visible shot, moves tactical shot-result cards to a compact left-side stack, and neighbor-blends persistent 3D ground colors/seams to reduce the chessboard appearance from above. Browser 2255 sky/HUD/weapon/architecture work, Browser 2210 camera/biome polish, Browser 2145 first-person observer and terminal victory gate, Browser 1930 pathfinding optimization, Browser 0043 victory music, Browser 2207 cooperative aftermath, and earlier renderer/visibility work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 2335 refines the neighbor-blended 3D terrain into a balanced, contrast-aware mix that preserves substantially more authored local color while retaining softened boundaries. It also lazily indexes the 3,500-entry memorial message library for faster repeated KIA/tribute selection without changing message eligibility or deterministic choice. The left-side shot-result stack and Browser 2300 FPV pre-aim remain unchanged; Browser 2255 sky/HUD/weapon/architecture work, Browser 2210 camera/biome polish, Browser 2145 first-person observer and terminal victory gate, Browser 1930 pathfinding optimization, Browser 0043 victory music, Browser 2207 cooperative aftermath, and earlier renderer/visibility work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
 
+
+---
+
+# v0.26.08.16.2335 - Balanced Terrain Blend and Lazy Memorial Index
+
+## Balanced tactical-ground presentation doctrine
+
+- Tactical ground should read as a continuous environment without erasing the authored identity of individual terrain types.
+- Each cell derives a deterministic local tone from its own authored base/accent pair before receiving neighbor influence. This keeps soil, farmland, forest floor, concrete, roads, scars, snow/sand, and regional biomes visually distinguishable.
+- Neighbor influence is contrast-aware rather than uniform: similar terrain receives a light blend, moderate transitions receive a medium blend, and strong boundaries receive the highest bounded blend. A cell's own authored tone remains dominant in every case.
+- Per-cell variation should come primarily from the terrain's own palette rather than broad random brightness, avoiding both flat sameness and a regular chessboard pattern.
+- The seam underlay remains derived from the average battlefield palette and should be subtle enough not to redraw every hex boundary.
+- The one-instanced-mesh/per-instance-color renderer and exact instance-to-cell picking remain authoritative.
+- This remains presentation-only and cannot alter terrain labels, movement, pathfinding, cover, occupancy, line of sight, fog, extraction, destruction, AI, or save data.
+
+## Lazy memorial-library indexing doctrine
+
+- The full authored memorial libraries remain packaged and available; no messages or item categories are removed for performance.
+- The 3,500-entry massive message library builds normalized records and lookup buckets only on first tribute selection, not during ordinary startup.
+- Indexes cover relationship tier, item category, relationship tags, item tags, and tone. Repeated selections reuse Set-based normalized tags instead of repeatedly allocating lowercased arrays for every message.
+- Candidate narrowing may skip only records that cannot receive a positive score under the requested context. If low scores could allow neutral records into the weighted near-best pool, the selector must fall back to the full indexed record list.
+- Deterministic weighted selection, duplicate avoidance, recent-message penalties, deep-bond restrictions, rivalry respect, same-squad low-bond handling, item specificity, and legacy fallback behavior remain unchanged.
+- The index is runtime-only and never enters campaign saves. Memorial offerings already stored on fallen soldiers remain authoritative.
+
+## Validation and native parity
+
+- Browser Build Health verifies that the revised terrain blend smooths boundaries without over-flattening a high-contrast fixture.
+- Memorial validation verifies one reusable cache, complete library coverage, a smaller context-specific candidate set, and the same chosen message as an exhaustive full-index scan.
+- Manual validation should include varied biome/terrain transitions plus missions with multiple KIA and repeated Memorial inspection.
+- Native Godot should preserve the same authored-terrain-vs-neighbor balance in its materials and may implement equivalent indexed memorial selection if the narrative library is ported.
 
 ---
 

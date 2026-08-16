@@ -1,6 +1,62 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.16.2335_BALANCED_TERRAIN_BLEND_AND_LAZY_MEMORIAL_INDEX_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Refined Browser 2300's terrain smoothing to a middle ground: neighboring hexes still soften abrupt boundaries, but each cell now retains more of its authored base/accent identity and natural local variation. The well-received left-side shot-result stack is unchanged. This build also completes the next documented performance cleanup by lazily indexing the 3,500-entry memorial message library and reusing that index during KIA/tribute generation.
+
+BALANCED 3D TERRAIN BLENDING
+----------------------------
+- A cell's authored base and accent colors now create a deterministic local tone before any neighbor influence is applied.
+- Neighbor blending is reduced from a uniform 26% to a contrast-aware 9%, 14%, or 18%.
+- Similar neighboring terrain receives only a light smoothing pass; visibly different terrain receives a somewhat stronger but still bounded transition.
+- Brightness variation is narrower and secondary to authored palette variation, preventing both flat sameness and regular alternating tiles.
+- The seam underlay remains terrain-derived but is slightly lighter, avoiding a return to dark chessboard outlines.
+- The renderer continues using one instanced ground batch with per-cell colors and exact instance-to-hex picking.
+- Terrain labels, biome classification, cover, movement, pathfinding, visibility, fog, extraction, destruction, and balance are unchanged.
+
+LAZY MEMORIAL MESSAGE INDEX
+---------------------------
+- The 3,500-entry massive memorial-message library no longer repeatedly normalizes every message's tags for every generated tribute.
+- The first memorial selection lazily builds reusable records and indexes for relationship tier, item category, relationship tags, item tags, and tone.
+- Later KIA and Memorial-screen selections reuse normalized Set-based records instead of allocating and scanning normalized tag arrays repeatedly.
+- Candidate selection includes every message capable of receiving a positive score for the requested relationship/item/tone context.
+- Exact legacy selection is preserved: if the best indexed candidate is low enough that unrelated zero-score entries could enter the weighted near-best pool, selection automatically falls back to the complete indexed record list.
+- The index is transient runtime data. It is not serialized and requires no save migration.
+
+PRESERVED PRESENTATION
+----------------------
+- The shot-result stack remains in the compact left-side position introduced by Browser 2300.
+- FPV pre-aim, target HUD, visible weapon, regional sky, architecture, victory music, and the terminal reinforcement gate are unchanged.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added a balanced-blend contract requiring neighbor smoothing while retaining at least 62% of the original color separation in a high-contrast fixture.
+- Added a lazy-index contract verifying one reusable cache, full library coverage, meaningful candidate narrowing, and identical indexed/exhaustive selected message IDs.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- A 76,800-cell deterministic terrain comparison found that the revised blend preserved more of the authored cell color in 89.9% of samples while still moving 80.2% of samples toward their neighboring palette.
+- Memorial equivalence validation compared 420 representative contexts against the previous exhaustive selector with zero message-ID mismatches. In an isolated 180-selection benchmark, the warmed indexed selector was about 4.2× faster (99 ms versus 420 ms).
+- Save format remains 4 and the victory audio assets are unchanged.
+
+MANUAL TEST GATES
+-----------------
+1. Inspect mixed forest/farmland, urban-edge, arid, tropical, tundra, road, soil, and concrete areas from elevated 3D Iso. Confirm boundaries are softened but the terrain no longer looks uniformly colored.
+2. Zoom between local cells and confirm forests, fields, roads, scars, snow/sand, and building ground retain recognizable color differences.
+3. Confirm the left-side shot-result stack remains unchanged and does not cover the primary action.
+4. Complete a mission with one or more KIA, allow the cooperative aftermath to finish, and inspect the Memorial. Confirm tribute text/items remain varied and appropriate.
+5. Reopen several fallen soldiers' memorial entries and confirm no runtime error and no missing offerings.
+6. Run Build Health and confirm the balanced terrain / lazy memorial index contracts report OK.
+
+PREVIOUS BUILD - 2300
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.16.2300_FPV_PREAIM_LEFT_SHOT_STACK_AND_TERRAIN_BLEND_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
