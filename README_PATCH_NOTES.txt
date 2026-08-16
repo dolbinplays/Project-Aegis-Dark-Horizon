@@ -1,6 +1,58 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.16.1930_TACTICAL_PATH_PARENT_POINTER_AND_BLOCKER_INDEX_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Optimized tactical route searches without changing movement rules or route choice. The main breadth-first pathfinder now indexes hard cover and living occupancy once per search, stores parent links instead of copying the complete route into every queued node, and reconstructs only the final winning path. Multi-destination beacon and rescue planners also reuse one blocker index across their candidate searches.
+
+INDEXED BLOCKERS
+----------------
+- `tacticalPathBlockerIndex(...)` builds one hard-cover key set and one living-unit occupancy key set for a route-search context.
+- Destroyed/soft cover remains passable, rescued units remain non-blocking, and the acting unit is excluded exactly as before.
+- Each explored cell now performs constant-time blocker membership checks rather than scanning the full cover and unit arrays.
+- `tacticalReachableCellSet(...)` uses the same indexed blocker doctrine.
+
+PARENT-POINTER ROUTE RECONSTRUCTION
+-----------------------------------
+- The old breadth-first queue stored a full copied `path` array on every candidate node. Longer searches repeatedly allocated and copied every prior step.
+- Each queued node now stores only coordinates, step count, and its parent queue index.
+- Once the destination is found, the route is reconstructed backward through those parent indexes and reversed once.
+- Neighbor order, visited-on-enqueue behavior, shortest-path selection, maximum-step handling, target blocking, and returned start-to-target coordinate shape remain unchanged.
+- `tacticalPathDistance(...)` can return the discovered step count without reconstructing a coordinate array.
+
+SHARED MULTI-DESTINATION INDEXES
+--------------------------------
+- Alien Field Beacon close-assault planning reuses one blocker index while comparing the six legal shield-entry cells.
+- VIP/civilian rescue ingress planning reuses one blocker index while comparing multiple legal contact cells, doors, and breached approaches.
+- This reduces repeated setup work in AI situations that intentionally compare several routes from the same unit and battlefield state.
+
+VALIDATION
+----------
+- A deterministic Build Health contract verifies hard-cover indexing, living occupancy indexing, rescued-unit exclusion, route legality, path-distance agreement, parent-index storage, and removal of per-node path-array copying.
+- An external randomized equivalence test compared 5,000 generated maps against the previous pathfinder and produced identical routes or identical null results in every case.
+- In an isolated 96 x 96 long-route Node benchmark, 30 identical searches fell from roughly 855 ms with copied route arrays to roughly 255 ms with indexed blockers and parent indexes. Browser gains will vary by battlefield and hardware.
+- All non-empty embedded JavaScript blocks pass `node --check`.
+- Save format remains 4; existing campaigns and cached tactical states require no migration.
+
+MANUAL TEST GATES
+-----------------
+1. Move a soldier around hard cover in 2D and Three.js views and confirm the preview and completed route match prior behavior.
+2. Run Hybrid AI and full Simulation AI through buildings, narrow doors, friendly traffic, and long formation catch-up routes.
+3. Run a VIP rescue with an occupied doorway and confirm the leader still chooses a legal interior contact route while supports remain formation traffic.
+4. Assault a confirmed shielded Alien Field Beacon and confirm the team can compare and select reachable entry cells without changing shield or formation rules.
+5. Confirm TU cost, reserved-fire allowance, occupancy, extraction, fog, reaction fire, and movement animation remain unchanged.
+6. Run Build Health and confirm “Tactical pathfinding uses indexed blockers and parent-pointer reconstruction” reports OK.
+
+PREVIOUS BUILD - 0043
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.16.0043_RANDOM_MISSION_VICTORY_MUSIC_AUDIO_ASSET_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
@@ -1183,3 +1235,4 @@ A complete live Chromium tactical/geoscape smoke test remains the final validati
 4. Confirm no two living soldiers finish a round on the same hex.
 5. Escort a VIP/civilian with a fire-team leader, spot an alien, test both escort-support choices, and confirm detached supports return afterward.
 6. Station Ready interceptors at several bases, select `All Bases`, verify staggered arrivals, destroy the UFO before every interceptor arrives, and follow the remaining aircraft home through normal ferry routing.
+

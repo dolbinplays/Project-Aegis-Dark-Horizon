@@ -2,10 +2,34 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-16
-Current handoff build: `v0.26.08.16.0043_RANDOM_MISSION_VICTORY_MUSIC_AUDIO_ASSET_PATCH`
+Current handoff build: `v0.26.08.16.1930_TACTICAL_PATH_PARENT_POINTER_AND_BLOCKER_INDEX_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0043 adds four packaged Operation Vindicator mission-victory tracks. Every authoritative successful tactical outcome randomly selects one cue, avoids an immediate repeat when alternatives exist, respects Music On/Off and master volume, and stops when the player leaves the completed battlefield. Browser 2207 cooperative mission aftermath, Browser 2024 direct finalization and kill accounting, Browser 1650 victory celebrations, and the earlier renderer/visibility/2D performance work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 1930 modernizes tactical pathfinding with indexed hard-cover/living-occupancy blockers and parent-pointer route reconstruction, while preserving the established shortest routes, direction order, movement legality, TU, formation, escort, and mission behavior. Beacon close-assault and rescue multi-destination planners reuse blocker indexes. Browser 0043 random victory music, Browser 2207 cooperative aftermath, Browser 2024 direct finalization, Browser 1650 victory celebrations, and the earlier renderer/visibility/2D performance work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
+
+
+---
+
+# v0.26.08.16.1930 - Indexed Parent-Pointer Tactical Pathfinding
+
+- The authoritative browser `tacticalPath(...)` breadth-first search no longer stores a complete copied path array on every queued candidate. Each node stores its coordinates, step count, and parent queue index; only a reached destination reconstructs a final start-to-target route.
+- One route-search blocker index records active hard-cover cells and living, non-rescued unit occupancy. Per-cell expansion uses constant-time set membership rather than repeatedly scanning the complete cover and unit collections.
+- The acting unit remains excluded from occupancy, destroyed and soft cover remain passable, rescued units remain non-blocking, target-block rejection remains authoritative, and the six-direction neighbor order is unchanged. Visited cells are still claimed when enqueued, preserving the prior deterministic shortest-route tie breaking.
+- `tacticalPathDistance(...)` uses the same search but may return the reached step count without reconstructing the coordinate path. `tacticalReachableCellSet(...)` shares the blocker-index helper.
+- Alien Field Beacon close-assault planning reuses one blocker index while evaluating shield-entry candidates. VIP/civilian rescue routing reuses one index while evaluating multiple contact cells and building approaches.
+
+## Gameplay preservation and validation
+
+- This is a pathfinding allocation/lookup optimization, not a new movement model. Time Units, reserved shots, maximum movement, fire-team leader authority, support formation, friendly-traffic defer/repath, escort columns, extraction rules, building ingress, fog, line of sight, reaction fire, and playback trails remain unchanged.
+- A deterministic Build Health contract verifies blocker classification, rescued-unit exclusion, route legality, path/distance agreement, parent-index storage, and the absence of the prior per-node `[...current.path]` copies.
+- A separate randomized equivalence harness compared 5,000 generated maps against the previous implementation and found identical route/null outcomes. An isolated 96 x 96 benchmark reduced 30 long searches from roughly 855 ms to roughly 255 ms in Node; live browser gains depend on map layout and hardware.
+- Save format remains 4. Native Godot should follow the same doctrine when its tactical pathfinder is optimized: pre-index immutable blockers for a planning pass and reconstruct only the selected route, without changing deterministic route preference.
+
+## Next cleanup priorities
+
+- Replace the embedded runtime Tailwind compiler with retained precompiled CSS after a complete class inventory and visual-regression pass.
+- Lazily index the large Memorial message library so tribute selection does not scan and lowercase the entire catalog per request.
+- Continue component and patch-layer consolidation, especially hoisting stable React component identities and removing duplicate authoritative helper definitions.
 
 
 ---
@@ -92,7 +116,7 @@ Current patch status: **Browser 0043 adds four packaged Operation Vindicator mis
 - Unit indexing preserves living-unit display, fallen human markers, and resolved-battle inspection. Cover indexing still excludes destroyed objects. Floor-item indexing still excludes upper levels. Repeated path cells keep their first displayed step.
 - Indexes invalidate independently from terrain and visibility caches: units rebuild on unit updates, cover on cover updates, equipment on floor-item changes, and path on movement-path changes.
 - This is a rendering optimization only and does not alter movement legality, Time Units, reserved shots, fire-team formation, Hybrid/full AI, fog, window ballistics, escort/extraction, beacon behavior, or mission resolution.
-- The next cleanup priority is to modernize `tacticalPath` with parent pointers and prebuilt occupancy/cover sets while preserving route choice and formation behavior.
+- Completed in Browser 1930: `tacticalPath` now uses parent-pointer reconstruction and indexed occupancy/cover blockers while preserving route choice and formation behavior. The next cleanup priorities are precompiled CSS, lazy Memorial indexing, and component/patch-layer consolidation.
 
 ---
 
@@ -144,7 +168,7 @@ Browser build `v0.26.08.15.1342_PERSISTENT_THREE_TACTICAL_RENDERER_INDEX_ONLY_PA
 - Build Health adds a persistent-runtime contract covering scene ownership, instanced terrain, stable unit-node mutation, disposal, and layer-specific invalidation. The new contract passes at the established full-suite baseline.
 - Live browser validation launched a Small 64 x 64 mission, entered 3D Iso, changed selected soldiers, and completed a turn update. The renderer identity remained `tactical-three-1`, exactly one persistent 3D root remained mounted, and no runtime-error overlay appeared.
 - The next performance patch should optimize the 2D tactical grid and fog/visibility together: pre-index units/covers/items, cache static terrain, reuse visibility contexts, and avoid recomputing observers unaffected by a state change.
-- Following work should modernize `tacticalPath`, replace runtime Tailwind with embedded precompiled CSS, lazily index the Memorial library, and begin component/patch-layer consolidation before minor allocation and class-string cleanup.
+- Browser 1930 completed the `tacticalPath` modernization. Following work should replace runtime Tailwind with embedded precompiled CSS, lazily index the Memorial library, and begin component/patch-layer consolidation before minor allocation and class-string cleanup.
 
 ---
 
@@ -172,7 +196,7 @@ Browser build `v0.26.08.15.1208_DEFERRED_BUILD_HEALTH_AND_STABLE_GEOCLOCK_INDEX_
 
 - Completed in Browser 1342: make the Three.js tactical renderer persistent across movement, selection, and soldier-state updates; retain renderer, scene, caches, and static battlefield objects while mutating changed actors/effects.
 - Next tactical patch: combine 2D grid indexing, static terrain caching, fog/visibility context reuse, and observer-level visibility invalidation.
-- Subsequent patches should modernize `tacticalPath`, replace runtime Tailwind with embedded precompiled CSS, lazily index the Memorial library, and begin component/patch-layer consolidation before minor allocation and class-string cleanup.
+- Browser 1930 completed the `tacticalPath` modernization. Subsequent patches should replace runtime Tailwind with embedded precompiled CSS, lazily index the Memorial library, and begin component/patch-layer consolidation before minor allocation and class-string cleanup.
 - Every performance patch must preserve fire-team formation, Hybrid AI, escort/extraction, visibility, window ballistics, and save-format behavior.
 
 ## Validation and native roadmap
