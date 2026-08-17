@@ -1,6 +1,80 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.17.0335_FPV_NAV_HUD_TRANSPARENT_WINDOWS_AND_AI_RESCUE_DUSTOFF_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Expanded the AI-observer first-person presentation and aligned two tactical behaviors with what the player sees. FPV now carries a persistent soldier identity panel, a continuously scrolling compass ribbon driven by the smoothed camera heading, and a north-up lower-right local tactical mini-map that remains constrained to legitimate squad knowledge. Three.js building windows now render as true framed transparent apertures rather than short opaque walls with blue panels, matching the existing line-of-sight and shot-through-window rules. Mandatory VIP missions under AI command can now end cleanly with a Dust Off once every VIP is resolved and a missed rescue quota is mathematically unrecoverable, even if hostile aliens remain on the map.
+
+FPV SOLDIER IDENTITY / COMPASS / MINI-MAP
+------------------------------------------
+- The lower-left FPV visor identity block now gives the observed AEGIS soldier's name primary visual prominence and retains available rank, equipped weapon, HP, and TU context.
+- A top-center compass ribbon scrolls continuously from the smoothed first-person camera direction rather than snapping only between stored hex facings. Tactical Focus target acquisition therefore rotates naturally through intermediate bearings as well.
+- The centered compass index includes a live cardinal and degree readout.
+- A compact 19 x 19 local tactical mini-map occupies the lower-right corner while FPV is active. It is north-up so the compass and map form a stable navigation pair.
+- Explored/visible terrain can appear on the mini-map. AEGIS squadmates and known Skyranger extraction ramps remain known; hostile aliens, VIPs/civilians, and Alien Field Beacons are included only when the existing tactical visibility/reveal rules permit them.
+- The mini-map therefore improves situational awareness without creating omniscient contacts or revealing an objective through opaque terrain.
+- The existing renderer/coverage status readout moves to bottom-center during FPV so it does not overlap the mini-map.
+
+TRANSPARENT WINDOW APERTURES
+----------------------------
+- The gameplay model already treats building-window cover as line-of-sight transparent and allows projectiles to cross it; solid wall sections remain opaque. The 3D presentation now visually matches that contract.
+- A window cell no longer places a shortened opaque wall directly behind the glass. The wall is assembled as a lower section, upper lintel, and two side jambs around an actual central opening.
+- Intact glass is now lightly transparent, double-sided, and non-depth-writing so soldiers and aliens on the far side are visibly understandable in FPV instead of appearing to be targeted through a solid wall.
+- Shattered glass becomes almost clear while retaining a small broken-frame/shard presentation.
+- Structural connector geometry is forbidden from drawing a solid bridge across any edge involving a window aperture. Adjacent true wall cells retain their normal opaque connected-wall treatment.
+- Decorative regional trim, sills, shutters, awnings, foundations, roofs, damage cracking, and smoke remain available around the aperture.
+- This changes presentation only. Existing 18-point first-shot glass accuracy penalty, shattering, movement blocking, structural breaching, cover HP, LOS, and ballistics rules are unchanged.
+
+AI DUST OFF AFTER IRRECOVERABLE VIP FAILURE
+--------------------------------------------
+- Mandatory VIP objectives distinguish an active rescue phase from a terminal failed objective. The new AI-specific Dust Off rule applies only after every VIP is resolved (rescued or confirmed dead), no unresolved VIP remains, and the required rescue quota was missed.
+- Simulation AI and Hybrid AI support handoffs check this state after rescue processing and before committing the squad to another combat exchange.
+- When the state is terminal, the AI commander orders Dust Off immediately rather than continuing to hunt remaining aliens during an operation that can no longer be turned into a success.
+- The mission resolves as a normal failure even if living aliens remain on the battlefield. It is not treated as a simulation safety-limit withdrawal or an incomplete operation.
+- Extracted VIPs retain their normal per-rescue partial credit. The missed-quota completion bonus remains withheld, and normal failure panic/reward/report consequences remain authoritative.
+- Surviving soldiers retain their real HP, wounds, KIA state, XP, and kill credit at the moment of withdrawal. No synthetic casualties are created to explain the remaining hostile force.
+- Manual-control doctrine is intentionally unchanged: a player who has not handed the operation to AI can still choose whether to continue fighting or use the existing Dust Off control.
+- If the rescue quota was met, or even one mandatory VIP remains alive and unresolved, the new failure Dust Off does not trigger.
+
+PRESERVED TACTICAL PRESENTATION
+-------------------------------
+- Browser 0245 stable hex-depth separation, guaranteed-visible batched vegetation, modular alien silhouettes, and rare Critical Kill dismemberment remain active.
+- Browser 0205 sidewalks/access walks and Tactical Focus remain active.
+- Browser 0145 rich terrain presentation, FPV obstacle-avoidance lean, weapon rig, regional sky/day-night atmosphere, and regional architecture remain active.
+- The left-side shot-result stack remains in its approved location.
+- Browser 0135's explicit-material/no-ground-instance-color invariant remains permanent.
+- Random victory music, reinforcement/victory gating, indexed tactical pathfinding, cooperative mission aftermath, and lazy memorial indexing are unchanged.
+- Save format remains 4; existing campaigns require no migration.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- A targeted mandatory-VIP fixture confirms one rescued plus two dead VIPs on a 2-of-3 terror quota triggers AI Dust Off; one remaining live unresolved VIP does not; and a completed 2-of-3 quota does not produce failure Dust Off.
+- Static window validation requires a lower wall, lintel, two aperture jambs, transparent pane material, disabled glass depth writing, double-sided glass, and the guard that prevents solid connector geometry from spanning a window.
+- FPV Build Health retains the soldier identity, smooth compass, and knowledge-limited mini-map contract from the planned navigation-HUD work.
+- Save format remains 4.
+
+MANUAL TEST GATES
+-----------------
+1. Enter Simulation AI map playback, enable First Person, and confirm the lower-left panel clearly shows the observed soldier name, the top compass moves smoothly as that soldier turns, and the lower-right mini-map remains north-up.
+2. Rotate through a full turn/Tactical Focus shot and confirm the compass degree/cardinal readout moves continuously rather than jumping between six hex facings.
+3. Place an alien on the far side of an intact building window. Confirm FPV visibly shows transparent glass/open aperture framing rather than an opaque wall, while an adjacent true wall still completely blocks the view.
+4. Fire through the intact window and confirm the established glass-shatter/accuracy behavior still occurs; inspect the same opening afterward and confirm shattered glass is nearly clear.
+5. Run a mandatory 2-of-3 VIP mission under Simulation AI. Rescue only one VIP and allow the other two to die while aliens remain. Confirm the AI announces Dust Off and the mission completes as a failure without continuing alien-hunting rounds.
+6. Repeat with one VIP still alive/unresolved and confirm AI does not Dust Off merely because the quota has become difficult or impossible; the remaining VIP must first be resolved.
+7. Repeat after rescuing enough VIPs to meet the quota and confirm this failure-specific Dust Off does not trigger.
+8. Confirm extracted VIP partial credit, soldier wounds/KIA/XP/kills, failure panic/reward handling, mission report, and return-to-base aftermath remain correct.
+
+PREVIOUS BUILD - 0245
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.17.0245_STABLE_HEX_EDGES_VISIBLE_VEGETATION_CRITICAL_GIBS_AND_ALIEN_SILHOUETTES_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

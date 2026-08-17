@@ -2,13 +2,49 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.0245_STABLE_HEX_EDGES_VISIBLE_VEGETATION_CRITICAL_GIBS_AND_ALIEN_SILHOUETTES_PATCH`
+Current handoff build: `v0.26.08.17.0335_FPV_NAV_HUD_TRANSPARENT_WINDOWS_AND_AI_RESCUE_DUSTOFF_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0245 strengthens the tactical visual layer after live 0205 testing: neighboring textured hex faces now have a wider explicit inset/depth separation, vegetation batches are guaranteed visible and use larger bounded grass/shrub geometry, the six Mainframe alien archetypes receive distinct modular low-poly tactical silhouettes, and rare exceptionally strong lethal AEGIS shots can produce presentation-only Critical Kill dismemberment from those real model parts. Browser 0135's explicit-material no-instance-color ground invariant remains permanent; Browser 0145 rich terrain, Browser 0205 sidewalks/Tactical Focus, the left-side shot stack, victory music/gating, indexed pathfinding, cooperative aftermath, and lazy memorial indexing remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 0335 expands the AI-observer FPV into a navigable combat visor with soldier identity, a continuously scrolling compass, and a knowledge-limited north-up local mini-map. The same build makes 3D window geometry visually honest to the existing see-through/shoot-through rules by replacing opaque window-wall backing with real framed transparent apertures. Mandatory VIP operations under Simulation/Hybrid AI may now Dust Off as a resolved failure once every VIP is rescued or dead and the missed rescue quota is unrecoverable, even with hostiles still active. Browser 0245 modular aliens/Critical Kills/vegetation/depth stability, Browser 0205 sidewalks/Tactical Focus, Browser 0145 rich terrain/FPV movement presentation, Browser 0135 explicit-material terrain safety, and earlier victory/performance systems remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
+# v0.26.08.17.0335 - FPV Navigation HUD, Transparent Windows + AI Rescue Dust Off
 
+## FPV navigation-viser doctrine
 
+- AI first-person observation is a soldier-eye presentation layer over the authoritative tactical playback. It now carries a persistent lower-left identity block naming the currently observed soldier and displaying available rank, weapon, HP, and TU context.
+- A top-center compass ribbon is driven by the smoothed Three.js camera forward vector every FPV animation frame. It therefore sweeps through intermediate headings during walking turns, avoidance lean, and Tactical Focus rather than snapping to the unit's six stored hex facings.
+- A center index displays the nearest compass cardinal plus a 0-359 degree heading.
+- A lower-right local tactical mini-map covers a 19 x 19 neighborhood around the observed soldier and remains north-up. The map and compass intentionally use different orientation roles: map orientation is stable, while the compass tells the viewer which direction the eyes are facing.
+- Terrain appears only when currently visible or previously explored. AEGIS personnel and known extraction geometry remain known; aliens, civilians/VIPs, and beacon objectives obey the same visibility/reveal doctrine as the tactical battlefield.
+- The FPV mini-map cannot reveal a hidden hostile, unrevealed VIP/civilian, or unrevealed beacon. It is navigation assistance, not an omniscient sensor.
+
+## Transparent building-window doctrine
+
+- Tactical gameplay already defines `building-window` cover as vision-transmitting and projectile-transmitting while solid walls block line of sight. Browser 0335 requires the Three.js/FPV geometry to communicate that same rule visually.
+- Window cells render a true central aperture: lower wall, upper lintel, and side jambs provide recognizable traditional architecture without filling the sightline with opaque wall material.
+- Intact glass is a lightly transparent, double-sided, non-depth-writing material. Shattered glass is almost clear and retains only restrained shard/frame evidence.
+- Connected structural-wall bridging may not span a window with an opaque full-height connector. Only real wall-to-wall connections use that bridge path.
+- Regional foundations, roof/eave/parapet treatment, shutters, trim, damage cracks, and smoke continue to decorate the window without changing its gameplay aperture.
+- The renderer change does not alter the established movement block, window HP, first-projectile shatter, 18-point first-shot accuracy penalty, solid-wall occlusion, breach behavior, or cover calculations.
+
+## AI terminal rescue-failure Dust Off doctrine
+
+- The campaign already computes a mandatory rescue objective's required quota, rescued count, confirmed losses, active unresolved VIPs, mathematical possibility, and terminal failure state.
+- Browser 0335 adds an AI-command decision boundary: when living AEGIS personnel remain, the objective is mandatory, `active === 0`, and `canResolveFailure === true`, AI command treats the operation as irrecoverably failed and orders Dust Off before another combat exchange.
+- The rule applies to streamed Simulation AI and to Hybrid AI support resolution because both consume the shared `resolveMission(...)` AI resolver. A Hybrid round whose battlefield has reached this state returns a completed failure result rather than returning another leader-control continuation.
+- Remaining aliens do not need to be eliminated for this AI withdrawal. The operation is reported as a resolved failure rather than `operationIncomplete` or a safety-limit continuation.
+- Partial rescue credit, failure rewards/panic, real soldier health/KIA/XP/kill state, mission reports, recovered state, and cooperative return-to-base aftermath remain authoritative.
+- The rule never triggers while any mandatory VIP is alive/unresolved, and it never converts a quota-met rescue into failure.
+- Manual play retains player agency. Browser 0335 does not automatically terminate a manually controlled failed rescue objective merely because its result is unrecoverable; the existing Dust Off control remains the player's choice.
+
+## Validation and native parity
+
+- JavaScript syntax validation passes across all six non-empty inline scripts.
+- Deterministic rescue fixtures cover terminal below-quota failure, still-open rescue, and quota-met completion.
+- Static renderer contracts require a genuine window aperture, transparent/non-depth-writing glass, no full-height connector across window cells, and the FPV identity/compass/mini-map seams.
+- Native Godot parity should reproduce the same player-facing doctrines using native UI/3D systems: soldier-name visor identity, smooth heading compass, knowledge-limited north-up local map, visually transparent window apertures that agree with ballistics, and AI withdrawal after a fully resolved irrecoverable mandatory rescue failure.
+
+---
 
 # v0.26.08.17.0245 - Stable Hex Edges, Visible Vegetation, Critical Dismemberment + Modular Alien Silhouettes
 
