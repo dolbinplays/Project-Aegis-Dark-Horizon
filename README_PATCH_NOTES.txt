@@ -1,6 +1,52 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.17.0605_TPV_CAMERA_LIFECYCLE_AND_CHASE_FOLLOW_FIX_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Fixed the newly added AI Third Person observer opening from the tactical world origin and appearing static. TPV now seeds the chase camera immediately from the acting soldier, remains in the persistent renderer's animation loop throughout ordinary AI observation, and explicitly participates in camera invalidation when switching between Iso, FPV, and TPV.
+
+THIRD-PERSON CAMERA LIFECYCLE FIX
+---------------------------------
+- Root cause: Browser 0555 created and targeted the TPV camera correctly, but the persistent animation-state gate omitted `thirdPersonView`. If no victory dance, VIP tracker, gib cinematic, beacon flyover, or FPV animation was active, the renderer performed one static render before `tacticalThreePersistentAnimateThirdPerson(...)` ever copied the chase target into the camera.
+- That left the perspective camera near its default world-origin pose, producing the ground-level static view shown in testing.
+- A newly observed TPV soldier now immediately seeds the perspective camera position/look target before the first frame is rendered.
+- Third Person now keeps the persistent animation loop alive at the same high observer-camera cadence as FPV, so position and look smoothing continue while the AI actor moves and turns.
+- The camera invalidation key explicitly includes Third Person on/off state and actor identity, and the dynamic renderer effect now explicitly depends on `thirdPersonView`.
+- Switching Iso -> TPV, FPV -> TPV, TPV -> FPV, and TPV -> Iso therefore hands camera ownership over immediately without waiting for an unrelated tactical update.
+- The upper-left renderer status now identifies `AI Soldier Third-Person` while TPV is active instead of incorrectly reporting the isometric tactical view.
+
+PRESERVED BEHAVIOR
+------------------
+- TPV still follows the current living AEGIS AI action actor from an over-the-shoulder position and keeps that soldier model visible.
+- FPV, Tactical Focus, Critical Kill cinematics, compass, mini-map, consolidated upper-right soldier/fire-team/order HUD, solid vehicle footprints, hollow Skyranger, beacon redeployment, and all gameplay simulation rules are unchanged.
+- TPV remains a presentation layer over the same persistent Three.js scene; no second battlefield or simulation is created.
+- Save format remains 4.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added a dedicated regression contract requiring the TPV animation-state gate, Third Person camera invalidation key, immediate initial camera seeding, and per-frame chase-camera application.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Static checks confirm the active renderer now contains `firstPersonView||thirdPersonView||victoryDance` in its animation ownership gate and that both initial TPV targeting and animation apply the chase pose through the same camera helper.
+- A full live WebGL mission cannot be executed in this environment; AI TPV movement remains the manual visual gate.
+
+MANUAL TEST GATES
+-----------------
+1. Start AI Tactical Map playback in 3D Iso and enable Third Person. Confirm the first TPV frame appears behind/above the current AEGIS soldier rather than at the map origin.
+2. Watch a soldier walk several hexes and turn. Confirm the chase camera follows continuously instead of remaining static.
+3. Switch TPV off and on during a quiet AI interval with no visible shot/tracker animation; confirm the camera still starts and follows immediately.
+4. Switch between FPV and TPV and confirm each mode takes ownership cleanly without an origin flash or frozen frame.
+5. Confirm the upper-left status reads AI Soldier Third-Person in TPV and that compass/mini-map/upper-right soldier status remain active.
+
+PREVIOUS BUILD - 0555
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.17.0555_SKY_VEHICLE_COVER_SKYRANGER_TPV_AND_HUD_CONSOLIDATION_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

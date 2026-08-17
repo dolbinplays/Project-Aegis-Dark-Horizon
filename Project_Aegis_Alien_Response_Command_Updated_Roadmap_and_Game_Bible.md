@@ -2,15 +2,39 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.0555_SKY_VEHICLE_COVER_SKYRANGER_TPV_AND_HUD_CONSOLIDATION_PATCH`
+Current handoff build: `v0.26.08.17.0605_TPV_CAMERA_LIFECYCLE_AND_CHASE_FOLLOW_FIX_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0555 corrects the clipped FPV atmosphere shell, doubles vehicle height and makes complete multi-hex road-vehicle footprints authoritative hard cover, replaces the solid Skyranger fuselage with a hollow troop bay, adds a reversible AI Third Person observer beside FPV, and consolidates soldier identity, Fire Team Assignment, and Current Objective / Order into the upper-right observer HUD. Browser 0525 replacement-beacon flyover/current-order logic and Browser 0455 continuous FPV ground, canonical alien models, critical-kill cinema, failed clear-field salvage, street life, and beacon redeployment remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 0605 fixes the Browser 0555 Third Person observer lifecycle regression: TPV now seeds its chase camera from the acting soldier before the first render, explicitly keeps the persistent animation loop alive, and invalidates camera ownership when Third Person toggles. Browser 0555 sky stability, tall solid vehicles, hollow Skyranger, TPV/HUD foundation; Browser 0525 replacement-beacon flyover/current-order logic; and Browser 0455 continuous FPV ground, canonical alien models, critical-kill cinema, failed clear-field salvage, street life, and beacon redeployment remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
 
 
 
 
+
+# v0.26.08.17.0605 - Third-Person Camera Lifecycle + Chase Follow Fix
+
+## TPV lifecycle doctrine
+
+- Third Person observation is a continuous camera mode and therefore owns the persistent Three.js animation loop for as long as TPV is active, even when no shot, tracker pulse, victory animation, gib effect, or other battlefield animation happens to be running.
+- A newly selected TPV actor must seed the chase camera's position and look target before the first TPV frame is rendered. The camera may never briefly render from its constructor/default origin while waiting for a later requestAnimationFrame callback.
+- TPV camera position continues to smooth toward a rear/shoulder target relative to the acting soldier's current tactical position and facing. The soldier remains visible because TPV is an external observer camera rather than an eye camera.
+- `thirdPersonView` is an explicit camera-invalidation dependency. Switching Iso, FPV, and TPV must transfer camera ownership immediately and cannot rely on unrelated movement or shot state to force an update.
+- The compass consumes the smoothed chase-camera direction, while the knowledge-limited mini-map and consolidated upper-right soldier/fire-team/order panel remain shared between FPV and TPV.
+
+## Regression fixed
+
+- Browser 0555 correctly created `thirdPersonCamera` and calculated a chase target but omitted Third Person from the persistent animation-state gate. A quiet AI interval could therefore render TPV once before `tacticalThreePersistentAnimateThirdPerson(...)` ever copied that target into the camera.
+- The result was a static ground-level view from near the tactical world origin, often dominated by nearby vegetation or terrain geometry.
+- Browser 0605 adds immediate camera seeding plus continuous TPV animation ownership, eliminating both the origin frame and the frozen chase camera.
+
+## Validation and native roadmap
+
+- Browser Build Health now requires TPV in the animation-state gate, Third Person in the camera key, immediate pose application during target creation, and the same pose helper during per-frame chase animation.
+- All six embedded JavaScript blocks pass syntax validation. A complete live WebGL AI movement sequence remains the manual visual test gate.
+- Save format remains 4. Native TPV, when implemented, should follow the same ownership doctrine: observer mode must own a continuous camera update rather than depending on unrelated combat-animation events.
+
+---
 
 # v0.26.08.17.0555 - Sky Stability, Solid Vehicles, Hollow Skyranger, Third-Person Observer + HUD Consolidation
 
