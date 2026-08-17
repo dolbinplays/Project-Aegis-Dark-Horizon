@@ -1,6 +1,58 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.17.0125_TERRAIN_COLOR_PRESERVING_FOG_FIX_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Live screenshots from Browser 0030 proved that the terrain palette itself was no longer the main problem. The persistent fog-of-war renderer was still placing a single dark biome-colored mesh over every unseen cell at 72% opacity in daylight, visually flattening otherwise distinct tan, brown, green, gray, and road surfaces into one near-black sheet. Browser 0125 fixes the fog layer itself: unseen and explored ground now receive per-cell fog tints derived from each tile's own terrain color, with substantially lower daytime opacity, so terrain remains readable in 3D Iso and FPV without revealing hidden units, objectives, or tactical knowledge.
+
+COLOR-PRESERVING FOG-OF-WAR
+----------------------------
+- Persistent unseen/explored fog batches now use `vertexColors` and per-instance colors instead of one universal dark biome color.
+- Each unseen cell derives its veil from that cell's presented terrain color, slightly cooled/desaturated toward the mission biome and then darkened. Grass remains greenish, arid soil remains brown/tan, roads remain gray, and concrete/stone retain their own value relationships under fog.
+- Explored cells use a lighter version of the same per-cell tint so known terrain remains almost fully readable when it is outside current sight.
+- Currently visible cells continue to receive no ground fog mesh at all.
+
+DAY / TWILIGHT / NIGHT OPACITY
+-------------------------------
+- Daylight unseen fog: 72% -> 34%.
+- Daylight explored fog: 13% -> 10%.
+- Twilight unseen/explored fog: 79% / 24% -> 42% / 15%.
+- Night unseen/explored fog: 84% / 36% -> 50% / 22%.
+- Night remains visually darker because the underlying terrain itself still follows the mission's local lighting phase. The fog layer no longer has to create darkness by painting the map black.
+
+TACTICAL KNOWLEDGE PRESERVED
+-----------------------------
+- Alien, civilian, VIP, beacon, and other objective reveal rules are unchanged.
+- Fog still consumes the existing authoritative visible/explored sets.
+- Hidden contacts are not rendered merely because their ground tile is now readable.
+- Line of sight, AI knowledge, shooting, pathfinding, cover, movement, Time Units, and mission outcomes are unchanged.
+- Save format remains 4.
+
+VALIDATION
+----------
+- All six embedded JavaScript blocks pass syntax validation.
+- Static validation confirms both persistent fog materials are per-instance vertex-colored and the dynamic update writes independent unseen/explored colors for every fogged cell.
+- Representative daylight arid composites now remain clearly separated under unseen fog: dry ground approximately `#b88345`, scrub approximately `#84652b`, and true road approximately `#3a4451` rather than converging toward a common near-black value.
+- The left-side shot result stack, FPV weapon/HUD/pre-aim, regional architecture, victory music, pathfinding optimization, cooperative aftermath, and lazy memorial index are untouched.
+
+MANUAL TEST GATES
+-----------------
+1. Recreate the arid Small Town daylight operation shown in the Browser 0030 screenshots. The unrevealed ground should now retain visible tan/brown/gray terrain families instead of reading as a black sheet.
+2. In 3D Iso, compare a road against adjacent dry ground/scrub both inside and outside current sight. The road should remain noticeably darker and grayer.
+3. Enable FPV and confirm the ground ahead is no longer black merely because cells are outside the current visibility set.
+4. Confirm unrevealed aliens/VIPs/objectives remain hidden exactly as before.
+5. Verify the left-side shot-result stack remains unchanged.
+
+PREVIOUS BUILD - 0030
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.17.0030_BRIGHT_REGIONAL_TERRAIN_READABILITY_AND_ASPHALT_REMOVAL_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

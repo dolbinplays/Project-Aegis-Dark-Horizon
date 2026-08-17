@@ -2,14 +2,46 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.0030_BRIGHT_REGIONAL_TERRAIN_READABILITY_AND_ASPHALT_REMOVAL_PATCH`
+Current handoff build: `v0.26.08.17.0125_TERRAIN_COLOR_PRESERVING_FOG_FIX_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0030 responds to live isometric/FPV screenshots showing Browser 2355 still too dark and asphalt-like. Persistent 3D ground is now texture-map free and uses explicit per-cell regional colors; arid daylight receives a strong tan/ochre readability lift while real roads remain darker, explored daylight fog is reduced without revealing unrevealed cells, and the seam underlay is thinner and almost color-identical to its owning tile. The left-side shot stack, FPV pre-aim/HUD/weapon/sky/architecture, Browser 2335 lazy memorial index, Browser 2145 terminal victory gate, Browser 1930 pathfinding optimization, Browser 0043 victory music, Browser 2207 cooperative aftermath, and earlier renderer/visibility work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 0125 corrects the actual remaining terrain-darkness regression identified by live Browser 0030 screenshots: the fog-of-war layer was still painting every unseen daylight cell with one 72%-opaque dark biome color. Persistent fog is now per-cell and terrain-color-preserving, with lower day/twilight/night opacity while hidden contacts and objective knowledge remain fully protected. Browser 0030 texture-free regional ground, the left-side shot stack, FPV pre-aim/HUD/weapon/sky/architecture, Browser 2335 lazy memorial index, Browser 2145 terminal victory gate, Browser 1930 pathfinding optimization, Browser 0043 victory music, Browser 2207 cooperative aftermath, and earlier renderer/visibility work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
 
 
 ---
+
+# v0.26.08.17.0125 - Terrain Color-Preserving Fog Fix
+
+## Root-cause correction
+
+- Browser 0030 successfully restored explicit biome/terrain colors to the persistent ground, but live screenshots still showed most of an arid daylight battlefield as a nearly uniform black plane. The remaining cause was not the tile palette: `tacticalThreePersistentBuildTerrain(...)` created one unseen fog material from the biome's dark fog color and composited it over every unseen tile at 72% opacity.
+- A global dark veil necessarily collapses different terrain hues and luminance toward the same result. Further changing the underlying tan/ochre/grass/road palette cannot solve that presentation problem.
+- Browser 0125 therefore moves the fix into the fog renderer. Each fogged cell now owns an unseen and explored tint derived from its own already-presented terrain surface color.
+
+## Terrain-preserving fog doctrine
+
+- Fog-of-war may reduce brightness, saturation, and contrast, but it should not erase the underlying terrain identity. A dry arid yard, road, scrub tile, concrete lot, snow field, and grass cell must remain visually distinguishable even when not currently visible.
+- The per-cell tint receives a small pull toward the mission biome fog color so unseen areas still read as one atmospheric layer rather than fully lit ground. The owning terrain color remains the dominant source.
+- Persistent unseen and explored fog batches use instanced vertex colors. They no longer share one global terrain-flattening color.
+- Visible cells receive no fog mesh, as before.
+
+## Visibility and gameplay safety
+
+- Terrain readability is not tactical omniscience. Hidden aliens, civilians, VIPs, Alien Field Beacons, and other unrevealed covers/targets remain governed by their existing reveal and line-of-sight rules.
+- The renderer continues to consume the same authoritative `visibleByHumans` and `explored` state. Only the appearance of ground underneath fog changes.
+- Daylight unseen/explored opacity is 34% / 10%; twilight is 42% / 15%; night is 50% / 22%. Underlying local-time terrain presentation still provides the larger day/night difference.
+- Save format remains 4. Native parity should preserve the same principle when tactical fog is ported: conceal tactical entities without collapsing all terrain into a uniform black surface.
+
+## Screenshot-driven validation target
+
+- Recreate the supplied arid Small Town mission. In 3D Iso, large unseen regions must still show distinct road, dry ground, scrub/yard, and built-surface families rather than one black polygonal sheet.
+- In FPV, ground outside current sight may be muted but should retain recognizable regional coloration.
+- Representative daylight arid compositing under unseen fog should remain separated around dry ground `#b88345`, scrub `#84652b`, and road `#3a4451`.
+- The left-side shot-result stack remains explicitly frozen at its well-received Browser 2300 placement.
+
+---
+
 
 # v0.26.08.17.0030 - Bright Regional Terrain Readability and Asphalt Removal
 
