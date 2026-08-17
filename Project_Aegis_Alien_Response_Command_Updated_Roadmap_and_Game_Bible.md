@@ -2,12 +2,58 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.0205_SIDEWALK_STABLE_TERRAIN_TACTICAL_FOCUS_AND_LIGHT_VEGETATION_PATCH`
+Current handoff build: `v0.26.08.17.0245_STABLE_HEX_EDGES_VISIBLE_VEGETATION_CRITICAL_GIBS_AND_ALIEN_SILHOUETTES_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0205 adds presentation-only roadside sidewalks and building access walks, removes the coplanar terrain overlap that caused shimmering/squiggling hex edges, gives AI first-person firefights an original Tactical Focus acquisition/release sequence, and adds sparse quality-scaled instanced grass/shrubs including occasional pedestrian-edge tufts. Browser 0135's explicit-material no-instance-color ground fix remains a hard renderer invariant, while Browser 0145's rich terrain palettes/textures and FPV avoidance lean remain active. The left-side shot stack, victory music/terminal reinforcement gate, optimized pathfinding, cooperative aftermath, and lazy memorial index remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 0245 strengthens the tactical visual layer after live 0205 testing: neighboring textured hex faces now have a wider explicit inset/depth separation, vegetation batches are guaranteed visible and use larger bounded grass/shrub geometry, the six Mainframe alien archetypes receive distinct modular low-poly tactical silhouettes, and rare exceptionally strong lethal AEGIS shots can produce presentation-only Critical Kill dismemberment from those real model parts. Browser 0135's explicit-material no-instance-color ground invariant remains permanent; Browser 0145 rich terrain, Browser 0205 sidewalks/Tactical Focus, the left-side shot stack, victory music/gating, indexed pathfinding, cooperative aftermath, and lazy memorial indexing remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
 
+
+
+# v0.26.08.17.0245 - Stable Hex Edges, Visible Vegetation, Critical Dismemberment + Modular Alien Silhouettes
+
+## Stable terrain-depth doctrine
+
+- Browser 0205 removed overlapping seam meshes but live camera movement still exposed unstable high-contrast shared edges. Browser 0245 deliberately stops neighboring surface faces from sharing an effectively identical raster boundary.
+- The active face geometry uses `surfaceScale 0.982`, the visible material plane is raised to about `0.035`, the single stable terrain bed is lowered to about `-0.085`, and fog occupies a separate plane at about `0.165`. Ground materials also use polygon offset as a defensive depth guard.
+- The microscopic gap is intentional and is filled visually by the lower terrain bed; neighboring textured faces do not need to overlap one another.
+- Browser 0135's root-cause invariant remains mandatory: ground color must remain on explicit ordinary materials and the active persistent ground builder may not use `setColorAt()` / `instanceColor`.
+- Browser 0145's contrast-aware neighbor grading, rich procedural ground textures, deterministic texture rotation, local biome palette, sidewalks, and building access walks remain active above that stable renderer.
+
+## Guaranteed-visible lightweight vegetation
+
+- The two global decorative `InstancedMesh` batches now disable frustum culling. This avoids the renderer treating a translated battlefield-wide batch as though it lived only near its source geometry bounds.
+- Grass tufts and shrubs are modestly larger and density is increased within strict quality caps so vegetation reads in both elevated Iso and FPV.
+- Performance/Balanced/Quality remain bounded at approximately 220/440/680 grass and 28/54/88 shrubs before biome scaling.
+- Sidewalk/access-walk cells can create a small pair of edge tufts biased toward neighboring natural ground. Eligible boundaries are still sparse; the intent is occasional encroaching grass, not a continuous planted border.
+- Vegetation remains presentation-only and cannot affect occupancy, pathfinding, cover, concealment, LOS, shooting, TU, or AI decisions.
+
+## Modular alien battlefield silhouettes
+
+- The tactical renderer now consumes the same six alien archetype identities already used by the Mainframe visual/database mapping instead of giving every alien the generic purple model.
+- Signal Leech emphasizes a compact neural-parasite body and tendrils; Glass Wraith is elongated and crystalline; Needle Drone is low/mechanical with multiple legs and dorsal needles; Tide Horror is broad/amphibious with a tail; Chitin Brute carries a thick armored torso and shoulder plates; Pale Commander is tall/pale with an enlarged head and neural crown.
+- These are intentionally lightweight low-poly approximations whose priority is recognizable silhouette and role readability at tactical distance.
+- Heads, torsos/cores, arms/legs, armor plates, tendrils, needles, tails, and crown structures are separate tagged meshes as appropriate to the archetype. This modularity is also the source geometry for the critical-kill presentation.
+- Alien archetype is included in the persistent visual signature so unit-node caching cannot substitute one alien species' silhouette for another.
+
+## Exceptional lethal shot / Critical Kill presentation
+
+- A rare Project Aegis `Critical Kill` presentation is evaluated only after a human AEGIS firearm/energy attack has already been authoritatively resolved as a lethal hit on an alien.
+- Qualification is deterministic, not a hidden extra RNG roll. The visual score weighs damage/max-HP ratio, overkill beyond pre-shot HP, hit chance, aimed/sniper fire, complete multi-round hit quality, and a modest weapon-class contribution. The threshold is intentionally high.
+- Ordinary lethal shots keep the existing intact/fallen presentation. Grenade kills, nonlethal shots, misses, and alien-on-human kills do not use this alien gunshot dismemberment effect.
+- When qualified in Three.js, the actual modular alien meshes detach after projectile travel/impact and follow short deterministic outward arcs with gravity/spin. A small static remnant remains for battlefield continuity.
+- The shot-result stack reports `CRITICAL KILL`. The feature is presentation-only: hit chance, RNG, damage, TU, ammunition, kill credit, salvage/remains, reports, and mission outcome cannot be altered by the visual score.
+- Tactical Focus remains the FPV staging layer for AI shots, so the reticle first acquires the authoritative target before any qualifying dismemberment is shown.
+
+## Validation and native parity
+
+- All six embedded JavaScript blocks pass syntax validation.
+- Deterministic tests cover six distinct alien profile mappings and positive/negative Critical Kill cases.
+- Static checks require the 0.982 surface inset/depth separation, no active ground `setColorAt()`, no-frustum-cull vegetation batches, edge-tuft bias, modular alien helpers, and Critical Kill gating.
+- Manual testing should prioritize the exact terrain boundary that previously shimmered, vegetation visibility in multiple biomes/quality settings, all six alien silhouettes, and repeated lethal shots to confirm the dismemberment remains exceptional rather than routine.
+- Native Godot parity should reproduce the design intent—stable terrain depth ownership, lightweight regional vegetation, recognizable modular alien silhouettes, and rare presentation-only lethal dismemberment—using Godot-native meshes/materials/particles while sharing the same authoritative combat results.
+
+---
 
 
 # v0.26.08.17.0205 - Sidewalks, Stable Terrain Layers, Tactical Focus + Lightweight Vegetation

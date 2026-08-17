@@ -1,6 +1,93 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.17.0245_STABLE_HEX_EDGES_VISIBLE_VEGETATION_CRITICAL_GIBS_AND_ALIEN_SILHOUETTES_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Strengthened the persistent Three.js tactical presentation after Browser 0205 testing. Neighboring hex surfaces now have a larger deterministic inset plus explicit vertical/depth separation so two textured terrain faces cannot compete for the same edge pixels. Decorative grass and shrubs are larger, denser within bounded quality caps, and no longer eligible for whole-batch frustum culling, addressing the case where generated vegetation was not visible at all. The six existing Mainframe alien archetypes now receive distinct modular low-poly battlefield silhouettes. Exceptional lethal AEGIS gunshots can produce a presentation-only Critical Kill dismemberment effect assembled from those modular body pieces; ordinary lethal hits retain the normal fallen-body presentation.
+
+STABLE HEX EDGE DEPTH SEPARATION
+--------------------------------
+- Browser 0205 removed the old overlapping seam batches, but live testing still showed high-contrast neighboring hex edges appearing to flip or squiggle while the camera moved.
+- Visible terrain faces are now inset farther (`surfaceScale 0.982` instead of `0.996`), creating a deliberate microscopic separation between neighboring surfaces rather than relying on mathematically shared raster edges.
+- The visible surface plane is raised to approximately `y = 0.035`, while the single stable terrain bed is lowered to approximately `y = -0.085`. The bed fills the tiny visual gaps without being coplanar with either adjacent tile.
+- Ground materials also use an explicit polygon offset as an additional depth-stability guard. Fog sits independently at approximately `y = 0.165`.
+- The Browser 0135 root-cause invariant remains permanent: visible ground color still comes from explicit ordinary material batches. The active ground builder contains no `setColorAt()` / ground `instanceColor` path, so the black-ground regression is not reintroduced.
+- Rich Browser 0145 neighbor grading, procedural ground texture, rotated texture orientation, roadside sidewalks, building access walks, and regional palettes remain active.
+
+VISIBLE BATCHED GRASS / SHRUBS
+------------------------------
+- The Browser 0205 grass and shrub `InstancedMesh` objects could be culled as a complete batch even though their translated instances covered a large battlefield. Both decorative batches now explicitly disable frustum culling.
+- Grass geometry is taller/wider and shrubs are modestly larger so they remain readable from both 3D Iso and FPV without becoming heavy scene objects.
+- Density remains biome-aware but is increased enough to be visible: tropical/temperate remain fuller, arid/tundra remain restrained.
+- Quality caps remain bounded at approximately 220/440/680 grass tufts and 28/54/88 shrubs for Performance/Balanced/Quality before biome scaling.
+- Sidewalk/access-walk edges adjacent to natural terrain can now receive a small pair of tufts roughly one third of the eligible time, biased toward the natural side of the boundary. This produces occasional grass peeking between paving hexes rather than a continuous border.
+- Grass and shrubs remain two lightweight instanced decorative batches. They add no collision, occupancy, cover, concealment, LOS, ballistics, TU, or pathfinding behavior.
+
+MODULAR MAINFRAME-ARCHETYPE ALIENS
+----------------------------------
+- Tactical aliens are no longer all represented by the same generic purple body/head pair.
+- The battlefield renderer now uses the same six archetype identities already used by the Mainframe database visual mapping and alien descriptions:
+  - Signal Leech: compact bulbous neural-parasite silhouette with hanging tendrils.
+  - Glass Wraith: tall, narrow, translucent/crystalline body with elongated limbs.
+  - Needle Drone: low mechanical core with multiple legs and visible dorsal needles.
+  - Tide Horror: broad amphibious/reptilian body with elongated head, heavy limbs, and tail.
+  - Chitin Brute: thick armored torso, prominent shoulder plates, and oversized limbs.
+  - Pale Commander: tall pale frame, enlarged head, and recognizable neural-crown spines.
+- The models deliberately remain low-poly and lightweight. The goal is immediate silhouette recognition at tactical scale rather than photorealism.
+- Each alien is assembled from tagged modular pieces (head, torso/core, limbs, plates, tendrils, needles, tail/crown as appropriate). This gives the renderer real separable parts for the critical-kill presentation rather than spawning unrelated debris.
+- Alien archetype is now part of the persistent unit visual signature so changing/creating a different alien type cannot accidentally reuse another species' model.
+
+EXCEPTIONAL LETHAL-SHOT / CRITICAL KILL PRESENTATION
+----------------------------------------------------
+- Only a successful AEGIS shot that actually kills an alien can qualify. Nonlethal shots, misses, alien-on-human attacks, and Frag Grenades do not use this effect.
+- Qualification is deterministic and intentionally uncommon. A presentation score considers damage relative to the alien's maximum HP, true overkill beyond the HP it had before the shot, shot hit chance, aimed/sniper fire, complete multi-round hits, and modest energy-weapon bonuses.
+- The score threshold is high enough that an ordinary lethal hit remains an intact fallen alien. A severe high-quality overkill can trigger `CRITICAL KILL` in the left-side shot-result stack.
+- Combat is already resolved before this presentation is evaluated. It does not reroll accuracy, alter damage, change ammunition/TU, award extra kills, change salvage/recovery, or affect mission outcome.
+- When triggered in Three.js, the target's actual modular alien pieces separate at impact, travel outward in deterministic physics-like arcs, spin, fall under gravity, and leave a small persistent remnant on the battlefield.
+- The original alien node is hidden only for that critical-kill presentation; campaign casualty/remains logic continues using the authoritative tactical result.
+- Tactical Focus still acquires the authoritative target before the shot, so an FPV Critical Kill occurs as the culmination of the existing deliberate acquisition/release sequence rather than as a disconnected effect.
+
+PRESERVED SYSTEMS
+-----------------
+- Roadside sidewalks and building access paths remain presentation-only and unchanged.
+- Tactical Focus, FPV target HUD, weapon rig, pre-aim, camera smoothing, avoidance lean, regional sky/day-night presentation, and regional architecture remain active.
+- The left-side shot-result stack remains in its approved location.
+- Random victory music and the terminal reinforcement/victory gate remain unchanged.
+- Browser 1930 indexed pathfinding, Browser 2207 cooperative aftermath, and Browser 2335 lazy memorial index remain active.
+- Save format remains 4; existing campaigns require no migration.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Targeted critical-kill tests confirm a severe aimed plasma overkill qualifies, while an ordinary ballistic lethal hit, a grenade kill, and an alien killing a human do not.
+- All six Mainframe archetype names resolve to six distinct tactical silhouette profiles.
+- The active persistent ground builder contains no `setColorAt()` call, uses the 0.982 surface inset, raises visible faces, applies depth/polygon separation, and raises fog independently.
+- Both vegetation batches explicitly use `frustumCulled=false`, and sidewalk-edge tufts are biased farther toward the natural boundary.
+- Static Build Health now covers the hex-depth, visible-vegetation, modular-alien, and critical-dismemberment seams.
+- Save format remains 4.
+
+MANUAL TEST GATES
+-----------------
+1. Reopen the same mixed-terrain mission that showed the edge shimmer. Pan, orbit, zoom, and enter FPV while watching a boundary between two very different terrain materials. Confirm neither edge repeatedly swaps/flips on top of the other.
+2. Confirm rich terrain color fading and texture from Browser 0145 remain visible and the black-ground regression does not return.
+3. Check arid, temperate, and tropical missions in 3D Iso and FPV. Confirm actual grass/shrubs are visibly present, while arid growth remains sparse.
+4. Find sidewalk/access-walk boundaries beside natural ground and confirm occasional small grass pairs poke through near the hex edge without becoming a continuous hedge.
+5. Compare Signal Leech, Glass Wraith, Needle Drone, Tide Horror, Chitin Brute, and Pale Commander on the battlefield. Confirm they can be identified from silhouette/major anatomy without opening the Mainframe.
+6. Observe ordinary alien deaths and confirm most remain intact fallen models.
+7. Observe an exceptionally strong lethal AEGIS firearm/energy shot. When it qualifies, confirm the shot stack reports `CRITICAL KILL`, modular parts separate only after impact, and pieces arc/fall without affecting the already-resolved combat result.
+8. Confirm nonlethal fire, grenade kills, and alien attacks on humans never invoke alien gunshot dismemberment.
+9. Confirm kills, XP, ammunition, TU, mission reports, rewards, salvage/remains recovery, and victory gating match the authoritative battle exactly.
+
+PREVIOUS BUILD - 0205
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.17.0205_SIDEWALK_STABLE_TERRAIN_TACTICAL_FOCUS_AND_LIGHT_VEGETATION_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
