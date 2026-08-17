@@ -1,6 +1,42 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.17.0630_TACTICAL_AI_MAP_PLAYBACK_TDZ_HOTFIX_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Hotfixes the Browser 0625 tactical-display crash: `Cannot access 'aiMapPlayback' before initialization`. The new incoming-fire reaction camera referenced the local `aiMapPlayback` const before that declaration had executed inside `TacticalMission`, causing the tactical map error boundary to replace the battle view as soon as the component rendered.
+
+TACTICAL AI MAP PLAYBACK TDZ HOTFIX
+-----------------------------------
+- Root cause: Browser 0625 added `aiIncomingFireReactionActor` alongside the early observer/HUD state. That expression used `aiMapPlayback` roughly 105 KB of component source before `const aiMapPlayback = aiPlayback?.view === "map"` was initialized.
+- JavaScript `const` bindings are in the temporal dead zone until execution reaches their declaration, so merely evaluating the early expression threw a ReferenceError even though the value would later have been valid.
+- The incoming-fire reaction actor now checks the already-available authoritative playback value directly: `aiPlayback?.view === "map"`.
+- The authoritative `aiMapPlayback` / `aiOverlayPlayback` derivation has also been moved up beside `aiPlaybackFrame`, before every tactical observer expression and FPV/TPV toggle function that references it. The later duplicate declaration is removed.
+- Browser 0625 functionality is otherwise unchanged: incoming alien-fire TPV reactions, FPV victory dancing, alien saucer interiors, TPV observer mode, consolidated observer HUD, vehicle cover, replacement beacons, and all prior tactical systems remain active.
+- Save format remains 4; no campaign migration is required.
+
+VALIDATION
+----------
+- All non-empty embedded JavaScript blocks pass `node --check`.
+- Static declaration-order validation confirms there are zero `aiMapPlayback` references inside `TacticalMission` before the authoritative `const aiMapPlayback` declaration.
+- The incoming-fire reaction expression still requires Tactical Map playback plus an alien shooter and human target.
+
+MANUAL TEST GATES
+-----------------
+1. Launch a tactical mission and confirm the map loads instead of showing the tactical display error.
+2. Hand control to Simulation AI in Tactical Map mode and confirm normal Iso/FPV/TPV playback works.
+3. Let an alien fire at an AEGIS soldier and confirm the temporary targeted-soldier TPV reaction camera still occurs.
+4. Win while in FPV and confirm the FPV victory-dance camera remains active.
+
+PREVIOUS BUILD - 0625
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.17.0625_INCOMING_FIRE_REACTION_FPV_VICTORY_DANCE_AND_ALIEN_SAUCER_INTERIOR_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

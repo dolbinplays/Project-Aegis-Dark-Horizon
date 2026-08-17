@@ -2,15 +2,25 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.0625_INCOMING_FIRE_REACTION_FPV_VICTORY_DANCE_AND_ALIEN_SAUCER_INTERIOR_PATCH`
+Current handoff build: `v0.26.08.17.0630_TACTICAL_AI_MAP_PLAYBACK_TDZ_HOTFIX_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0625 expands AI-observer presentation: incoming alien fire temporarily cuts to a targeted-soldier TPV reaction camera without changing the player's selected observer mode, successful missions preserve FPV/TPV after the AI stream completes and FPV camera motion now participates in the victory dance, and open alien reinforcement saucers expose a simple illuminated troop bay. Browser 0605 TPV lifecycle stability, Browser 0555 vehicle/Skyranger/HUD work, Browser 0525 replacement-beacon flyover/current-order logic, and Browser 0455 continuous FPV ground/canonical alien models/critical-kill cinema remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 0630 hotfixes the Browser 0625 tactical-map TDZ crash by removing the pre-declaration `aiMapPlayback` read from the incoming-fire reaction camera. The reaction now keys directly from the already-available `aiPlayback?.view === "map"` state, preserving all 0625 presentation behavior without changing tactical simulation or save data. Browser 0625 incoming-fire reactions/FPV victory/saucer interiors, Browser 0605 TPV lifecycle stability, Browser 0555 vehicle/Skyranger/HUD work, and earlier tactical systems remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
 
 
 
 
+
+# v0.26.08.17.0630 - Tactical AI Map Playback TDZ Hotfix
+
+- Browser 0625 introduced an incoming-fire target reaction camera but evaluated `aiMapPlayback` before the local `const aiMapPlayback` declaration inside `TacticalMission`, triggering `Cannot access 'aiMapPlayback' before initialization` during tactical rendering.
+- The reaction-camera gate now reads the already-available `aiPlayback?.view === "map"` value directly. The authoritative `aiMapPlayback` / `aiOverlayPlayback` derivation is also moved up beside `aiPlaybackFrame`, before every observer expression and FPV/TPV toggle function, and the later duplicate declaration is removed.
+- This is a declaration-order hotfix only. Incoming-fire TPV reactions, FPV victory camera motion, alien saucer interiors, TPV/FPV modes, vehicle cover, beacon redeployment, AI behavior, combat resolution, and campaign aftermath remain unchanged.
+- Static release validation requires zero `aiMapPlayback` references before its declaration inside `TacticalMission`, preventing this specific temporal-dead-zone regression from returning.
+- Save format remains 4; no migration is required.
+
+---
 
 # v0.26.08.17.0625 - Incoming Fire Reaction, FPV Victory Dance, and Alien Saucer Interior
 
