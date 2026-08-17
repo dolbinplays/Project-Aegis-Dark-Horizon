@@ -2,11 +2,44 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.0135_EXPLICIT_TERRAIN_MATERIAL_BATCH_AND_FOG_OVERLAY_FIX_PATCH`
+Current handoff build: `v0.26.08.17.0145_RICH_TERRAIN_EXPLICIT_MATERIAL_AND_FPV_AVOIDANCE_LEAN_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0135 responds to the Browser 0125 field screenshots showing that even fully visible FPV ground remained pure black. That evidence rules out fog as the primary remaining fault and points to the consolidated instanced-ground color path. Persistent terrain now uses explicit colored material batches instead of per-instance `setColorAt()` ground colors; the seam underlay is removed; and fog uses matrix-only translucent batches with no instance-color dependency. Browser 0125 reduced fog opacity, Browser 0030 biome palettes, the left-side shot stack, FPV pre-aim/HUD/weapon/sky/architecture, Browser 2335 lazy memorial index, Browser 2145 terminal victory gate, Browser 1930 pathfinding optimization, Browser 0043 victory music, Browser 2207 cooperative aftermath, and earlier renderer/visibility work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 0145 keeps Browser 0135's proven explicit-material fix for the black tactical ground while restoring the richer terrain presentation that earlier diagnostic attempts had stripped away. Balanced 9-18% neighbor fading, authored base/accent variation, procedural ground texture, rotated surface detail, and color-matched seams now run through explicit material batches with no terrain `setColorAt()` / `instanceColor` dependency. FPV also gains a small eased left/right avoidance lean while the observed AI soldier moves past nearby units or cover. The left-side shot stack, FPV pre-aim/HUD/weapon/sky/architecture, terminal victory gate, victory music, pathfinding optimization, cooperative aftermath, and lazy memorial index remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
+
+
+# v0.26.08.17.0145 - Rich Terrain Explicit Materials + FPV Avoidance Lean
+
+## Renderer doctrine after the black-ground root cause
+
+- Browser 0135 established the decisive root cause: the consolidated persistent ground could calculate correct colors yet render black when visible hue depended on `InstancedMesh.instanceColor` / `setColorAt()`. Browser 0145 treats the removal of that dependency as permanent.
+- Ground remains instanced, but every batch owns an ordinary explicit material color. No active terrain or fog path uses per-instance color.
+- The diagnostic visual simplifications from Browser 2355, 0030, 0125, and the flat-color portion of 0135 are therefore no longer needed as the active presentation. Their historical records remain below for continuity.
+
+## Restored richer terrain surface
+
+- Terrain again begins from the authored base/accent palette and deterministic cell variation.
+- Adjacent terrain contributes approximately 9%, 14%, or 18% according to color contrast. Similar ground therefore blends gently while strong road/soil/vegetation boundaries retain identity.
+- Per-cell presentation colors are quantized into bounded explicit-material batches. This reproduces local fading without returning to one mesh per tile or to the broken instance-color path.
+- Procedural CanvasTexture detail returns as a neutral modulation layer: organic mottling for soil/grass/scrub/forest, subtle agricultural bands for crop cells, and restrained wear on roads/stone/built surfaces.
+- Hexes rotate that texture in deterministic sixty-degree increments so large surfaces do not reveal one repeated directional pattern.
+- Narrow seam underlays return with colors derived from the local surface and neighboring cells rather than a universal dark seam.
+- The active path no longer uses Browser 0030's forced daylight brightness floor or Browser 0125's per-cell fog-color experiment. Pre-diagnostic fog strength is restored through safe matrix-only fog batches.
+
+## FPV obstacle-avoidance presentation
+
+- While the observed AI soldier is moving, FPV evaluates units and physical cover around the current/next movement corridor.
+- An obstacle on one side produces a small lean toward the other side. A centerline obstacle selects a deterministic side so the camera does not oscillate.
+- Lean state is eased independently from the normal first-person position and look interpolation. The camera shifts laterally, rolls only a few degrees, and the weapon rig follows the body motion.
+- This is explicitly not a movement-system change. The authoritative soldier coordinates, path, TU, occupancy rules, formation behavior, cover collision, and AI decision remain untouched.
+
+## Validation / parity
+
+- The active persistent ground builder is forbidden from containing `setColorAt()` and must contain both explicit material color and the restored ground texture map.
+- Build Health covers the rich explicit-material marker, balanced neighbor-blend seam, target pre-aim, and FPV avoidance lean.
+- Manual validation should use the same arid Small Town mission that demonstrated Browser 0135's black-ground fix, then compare Browser 0145 for richer texture and transitions without any recurrence of black ground.
+- Godot parity should copy the presentation intent—regional texture variation and subtle first-person collision-avoidance body language—while relying on Godot's native terrain/material and camera systems rather than mirroring browser implementation details.
 
 
 ---

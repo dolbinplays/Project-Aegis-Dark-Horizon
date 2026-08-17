@@ -1,6 +1,87 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.17.0145_RICH_TERRAIN_EXPLICIT_MATERIAL_AND_FPV_AVOIDANCE_LEAN_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Browser 0135 finally isolated and fixed the black-ground regression: the live GPU path was failing when the consolidated persistent terrain depended on `InstancedMesh.setColorAt()` / `instanceColor`. With that root cause now known, this patch deliberately rolls back the visual simplifications from the unsuccessful terrain-diagnostic passes and restores the richer terrain treatment on top of the proven explicit-material renderer. Balanced neighbor fading, authored base/accent variation, CanvasTexture surface detail, rotated texture orientation, and color-matched seams are active again, but ground color never returns to per-instance colors. FPV also gains a small obstacle-avoidance lean while an AI-controlled soldier moves past nearby units or cover.
+
+ROOT-CAUSE FIX PRESERVED
+------------------------
+- Browser 0135's successful rule is retained as a hard renderer invariant: the persistent terrain builder contains no `setColorAt()` call and does not rely on `instanceColor` for visible ground color.
+- Each terrain batch uses an ordinary explicit `MeshBasicMaterial.color`, the same reliable material-color path that fixed the live black-ground screenshots.
+- Fog remains matrix/count-only instancing and likewise does not use per-instance color.
+- Exact tactical picking is preserved through each batch's instance-indexed cell list.
+
+RICH TERRAIN PRESENTATION RESTORED
+----------------------------------
+- Restored the Browser 2335 balanced neighbor-fading doctrine instead of the later diagnostic flat-color presentation.
+- Every cell first mixes its authored base/accent palette with deterministic local variation.
+- Neighbor influence is contrast-aware: approximately 9% for similar adjacent terrain, 14% for moderate transitions, and 18% for strong boundaries.
+- This allows dry ground, scrub, grass, roads, stone, building floors, paths, and other surfaces to grade into one another without replacing the owning terrain identity with one map-wide average.
+- Cell colors are quantized into explicit-material batches. This preserves local fading while avoiding one draw call per hex and avoiding the broken instance-color path.
+
+GROUND TEXTURE AND SEAMS RESTORED SAFELY
+----------------------------------------
+- Procedural 64 x 64 CanvasTexture detail is active again.
+- The texture is a neutral light modulation map rather than the source of terrain hue. Explicit material color remains authoritative, so texture sampling cannot recreate the previous black instance-color failure.
+- Organic ground receives irregular mottling; crop/field surfaces receive subtle bands; roads, lanes, stone, and built surfaces receive restrained wear/fleck detail.
+- Every hex receives one of six deterministic 60-degree texture rotations so repeated patterns do not align across the complete battlefield.
+- A narrow color-matched seam underlay is restored. Seam color is derived from the owning cell plus nearby terrain rather than a universal dark strip.
+
+DIAGNOSTIC TERRAIN PASSES ROLLED BACK FROM ACTIVE PRESENTATION
+-------------------------------------------------------------
+- Browser 2355's no-neighbor-blend palette-only presentation is no longer the active terrain surface.
+- Browser 0030's forced daylight luminance lift and texture removal are no longer used by the active persistent terrain builder.
+- Browser 0125's terrain-derived per-cell fog-color experiment is no longer active.
+- Browser 0135's deliberately simplified flat semantic-family colors served their diagnostic purpose and are superseded by the rich explicit-material batches in this build.
+- The historical helper code remains in the single-file artifact for patch-history/build-health continuity, but the live terrain path now follows Browser 0145's explicit-material rich-rendering contract.
+- Pre-diagnostic unseen/explored fog strengths are restored while retaining the safe matrix-only fog implementation.
+
+FPV OBSTACLE-AVOIDANCE LEAN
+---------------------------
+- During AI movement, FPV examines the current movement path and nearby living units/cover around the observed soldier.
+- If another unit or cover object occupies or crowds the movement corridor, the camera eases toward the clearer side instead of remaining perfectly centered through the obstruction.
+- Centerline obstacles choose a deterministic left/right side so the view does not jitter between directions.
+- The lean uses a small lateral eye shift, a restrained camera roll, and matching weapon-rig movement.
+- The lean eases in and out rather than snapping at hex boundaries.
+- This is visual only. It does not alter the authoritative movement path, occupancy, collision, TU use, formation logic, AI decisions, or where the soldier actually stands.
+
+PRESERVED SYSTEMS
+-----------------
+- The left-side shot-result stack remains unchanged.
+- FPV target pre-aim, weapon barrel, visor HUD, camera smoothing, local sky, traditional regional architecture, and day/night presentation remain active.
+- Victory music and the terminal reinforcement gate are unchanged.
+- Browser 1930 pathfinding optimization, Browser 2207 cooperative mission aftermath, and Browser 2335 lazy memorial indexing remain active.
+- Save format remains 4.
+
+VALIDATION
+----------
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Static validation confirms the active persistent terrain builder has no `setColorAt()` call.
+- Static validation confirms the active terrain builder both uses `map:tacticalThreePersistentGroundTexture(...)` and assigns an explicit material color for every terrain batch.
+- The active terrain path contains the restored contrast-aware neighbor blend and color-matched seam batches.
+- An isolated FPV avoidance test confirms: no nearby obstacle = zero lean; a centerline obstacle creates a deterministic nonzero lean; a side obstacle produces a lean away from that side.
+- Assets are unchanged from Browser 0135.
+
+MANUAL TEST GATES
+-----------------
+1. Reopen the arid Small Town daylight mission that proved Browser 0135 fixed the black ground. Confirm the ground remains colored rather than black.
+2. Compare the same battlefield with Browser 0135: Browser 0145 should show noticeably richer within-tile mottling, local gradient/variation, and softer terrain transitions.
+3. Verify true roads, dry soil, scrub, vegetation, stone, and building-floor surfaces remain visually distinct instead of becoming one averaged sheet.
+4. Enable FPV during AI movement and watch a soldier pass close to another soldier, a wall/crate/tree, or other cover. Confirm the camera and weapon lean slightly to the clearer side and return smoothly to center afterward.
+5. Confirm the lean does not change the actual hex route, movement timing, occupancy, firing, or AI result.
+6. Confirm the left-side shot-result stack, FPV target acquisition, HUD markers, victory music, and mission completion still behave normally.
+
+PREVIOUS BUILD - 0135
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.17.0135_EXPLICIT_TERRAIN_MATERIAL_BATCH_AND_FOG_OVERLAY_FIX_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
