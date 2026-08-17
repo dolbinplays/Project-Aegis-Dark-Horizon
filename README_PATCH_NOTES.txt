@@ -1,6 +1,80 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.17.1335_TACTICAL_DRAG_PAN_SOLID_VEHICLES_SKYRANGER_VOICE_AND_FPV_DANCE_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Adds direct click-and-drag panning to the persistent Three.js Iso battlefield, simplifies player-facing AI handoff to the Tactical Map, closes remaining multi-hex road-vehicle movement/LOS/shot seams, makes the Skyranger rear troop bay visibly open while preserving solid hull geometry, removes duplicate AI shot voice confirmations, and fixes an already-active FPV camera failing to enter the victory-dance motion when success begins.
+
+THREE.JS ISO CLICK-DRAG PAN
+---------------------------
+- Left-click dragging directly on the 3D Iso battlefield now pans the persistent orthographic camera like grabbing and moving a physical map.
+- A five-pixel movement threshold distinguishes a drag from an ordinary hex click. After a real drag, the following click event is briefly suppressed so releasing the mouse cannot accidentally select or order a destination.
+- Panning uses the real camera right/up directions and current orthographic zoom so movement remains consistent at Close, Near, Wide, Full, and Fit Map scales.
+- The pan offset lives on the persistent renderer runtime and therefore survives ordinary soldier movement, AI updates, fog changes, and React renders rather than snapping back every update.
+- Entering Fit Map from another zoom state resets the pan offset so Fit Map still performs its exact Browser 1235 complete-map framing.
+- FPV, TPV, incoming-fire reaction, and Critical Kill cameras do not accept the map-drag gesture.
+
+AI HANDOFF - TACTICAL MAP ONLY
+------------------------------
+- The player-facing AI Command confirmation now offers only Cancel and Watch Tactical Map.
+- Classic Overlay is no longer offered as a handoff choice.
+- `handOffToSimulationAi(...)` normalizes player handoff to `view="map"`, preventing a stale caller from selecting the removed presentation path.
+- Legacy overlay playback code remains internally available only for compatibility with historical/cached states; no current player control invokes it.
+
+ROAD VEHICLES - FULL FOOTPRINT AUTHORITY
+----------------------------------------
+- The existing 3x2 car/van/utility footprints and larger bus footprints are now consumed consistently by movement playback, hard-cover collision, shot interception, target-cover selection, cover adjacency, and FPV shot-solution checks.
+- AI/pathfinding blocker indexes already expanded multi-hex vehicles; Browser 1335 removes the remaining anchor-cell assumptions from actual projectile-cover resolution and presentation helpers.
+- Recorded AI movement trails are validated against the current hard-cover and occupied-cell indexes before animation.
+- If a recorded route is stale, the renderer reconstructs a legal path with a larger bounded search. The old unconditional straight-line fallback that could visibly carry a soldier through a car or other hard cover is removed.
+- A direct line is used only when every traversed cell is legal. If no legal displayed route exists, the presentation refuses to animate through solid geometry.
+- Vehicles remain destructible hard cover with their existing HP and dimensions.
+
+SKYRANGER - OPEN REAR / SOLID HULL
+----------------------------------
+- The solid rear cargo-opening slab has been removed from the friendly Skyranger model.
+- A narrow overhead lintel and two side jambs now frame a genuinely open rear troop-bay aperture, allowing FPV/TPV to see from outside through the lowered ramp into the cabin.
+- The existing tactical Skyranger data remains authoritative: side hull cells are indestructible hard cover with full shot/LOS blocking, while the center ramp/aisle cells remain passable extraction cells.
+- `tacticalBreachCover(...)` now explicitly preserves `indestructible` cover records, preventing Skyranger hull cells from being accidentally converted into breach rubble by a sufficiently large shot.
+
+SINGLE VOICE EVENT PER AI SHOT
+------------------------------
+- AI playback previously announced a shot/kill through `tacticalAiFrameDialogueCue(...)` and then sent the same shot to `showShotEvent(...)`, whose shared manual-fire dialogue routing could immediately announce a second line.
+- AI map playback now calls the shared shot presenter with `suppressDialogue:true`.
+- AI frame dialogue remains the single voice owner for the event, preserving higher-priority lines such as `That's the last of them` while preventing combinations such as `Target down` immediately followed by `Alien down` for one kill.
+- Manual player shots still use the established shared dialogue routing.
+
+FPV VICTORY-DANCE TRANSITION
+----------------------------
+- The FPV animation system already supported victory movement once its camera target was refreshed, but the persistent camera invalidation key did not include the victory state.
+- `victoryDance` is now part of the camera key. A false -> true victory transition immediately refreshes the active FPV target state without requiring the player to leave and re-enter First Person.
+- Soldier-eye celebration motion, weapon movement, surviving-soldier rules, and the ordinary 3D/2D victory dance remain otherwise unchanged.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added a combined regression contract covering drag-pan ownership, Tactical Map-only player handoff, full vehicle-footprint blockers, Skyranger hard-hull/open-ramp rules, voice suppression during AI shot presentation, safe playback-route validation, and FPV victory camera invalidation.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Save format remains 4; no migration is required.
+
+MANUAL TEST GATES
+-----------------
+1. In 3D Iso, click-drag the battlefield horizontally and vertically at several zoom levels. Confirm the map follows the drag and releasing after a drag does not issue a movement order.
+2. Choose AI Command and confirm the handoff dialog offers only Cancel and Watch Tactical Map.
+3. In AI FPV, watch soldiers route around cars, vans, trucks, and buses. Confirm no actor visibly walks through the body and shots/LOS are blocked by any occupied footprint cell.
+4. Approach the friendly Skyranger from behind with its ramp down. Confirm the cabin is visible through the open rear, the ramp/center aisle can be entered, and side hull walls cannot be walked or fired through.
+5. Observe several AI kills and confirm one resolved shot produces at most one soldier voice confirmation.
+6. Win while already in FPV and confirm the soldier-eye camera begins the victory celebration immediately without toggling FPV off/on.
+
+PREVIOUS BUILD - 1235
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.17.1235_ISO_FIT_MAP_EXACT_PROJECTED_BOUNDS_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

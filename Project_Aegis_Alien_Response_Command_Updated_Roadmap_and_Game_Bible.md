@@ -2,9 +2,9 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.1235_ISO_FIT_MAP_EXACT_PROJECTED_BOUNDS_PATCH`
+Current handoff build: `v0.26.08.17.1335_TACTICAL_DRAG_PAN_SOLID_VEHICLES_SKYRANGER_VOICE_AND_FPV_DANCE_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1235 replaces Browser 0725's approximate 3D Iso Fit Map safe-frame calculation with exact projected rendered-hex bounds against the real asymmetric orthographic frustum. The southeast edge is explicitly covered, the old 90% CSS scaling workaround is removed, and Browser 0725's two-thirds road-vehicle height remains active. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 1335 adds persistent click-drag panning to the Three.js Iso tactical map, makes Tactical Map the sole player-facing AI handoff, closes the remaining multi-hex vehicle footprint seams across movement playback/LOS/shot collision, opens the friendly Skyranger rear troop bay while retaining solid indestructible hull cover, deduplicates AI shot voice events, and makes an already-active FPV camera enter the victory dance immediately. Browser 1235 exact Fit Map framing remains active. Save format remains 4; native Godot remains at 0026.**
 
 Browser 0725 roadmap completion note: **Both Browser 0630 documentation-only refinements are now implemented. Road vehicles use two-thirds of the prior vertical presentation height without changing their footprint/cover rules, and Three.js Iso Fit Map now reserves explicit safe perimeter space around all projected battlefield corners.**
 
@@ -12,6 +12,55 @@ Browser 0725 roadmap completion note: **Both Browser 0630 documentation-only ref
 
 
 
+
+
+# v0.26.08.17.1335 - Tactical Drag Pan, Solid Vehicles/Skyranger, Voice Dedup + FPV Victory Transition
+
+## 3D Iso direct-manipulation camera doctrine
+
+- The Three.js Iso battlefield supports grab-style left-button panning directly on the rendered map. Dragging changes only the persistent orthographic camera target; it never edits tactical coordinates, unit positions, orders, paths, fog, or mission state.
+- A small movement threshold separates map dragging from ordinary hex clicking. A completed drag suppresses the immediately following browser click so a camera gesture cannot accidentally become a movement/fire order.
+- Pan distance is calculated from the live orthographic frustum, zoom, canvas dimensions, camera right vector, and projected camera-up direction. The same physical pointer movement therefore has predictable screen-space behavior at different tactical zooms.
+- Pan state belongs to the persistent renderer runtime and survives ordinary dynamic invalidation. Switching into Fit Map resets that offset once so Browser 1235's exact projected-perimeter framing remains a reliable recenter action.
+- FPV, TPV, incoming-fire reaction cuts, and Critical Kill cinematics retain exclusive perspective-camera ownership and ignore the Iso pan gesture.
+
+## AI handoff presentation doctrine
+
+- Current player-facing Simulation AI handoff uses the Tactical Map exclusively. The confirmation dialog presents `Cancel` and `Watch Tactical Map`; Classic Overlay is no longer a selectable mode.
+- The handoff function normalizes its presentation request to map playback even if an obsolete caller supplies another view value.
+- Historical/cached overlay-state compatibility may remain in code so old state can fail safely, but new gameplay must not initiate Classic Overlay.
+
+## Full road-vehicle footprint authority
+
+- A road vehicle is one multi-hex tactical object. Every cell listed in `footprintCells` must agree across pathfinding, reachable-cell generation, movement playback validation, LOS context, shot collision, cover targeting, and cover-adjacency logic.
+- Browser 1335 removes remaining single-anchor assumptions from shot interception and FPV target-solution evaluation.
+- AI playback may use a recorded movement trail only if the complete trail is still legal against current hard-cover and occupied-cell indexes. A stale trail is reconstructed with the shared pathfinder. A straight-line visual fallback is permitted only when every traversed cell is legal; it may never visually tunnel a soldier through a vehicle or other hard cover.
+- Existing road-vehicle HP, destructibility, two-thirds vertical scale, 3x2 ordinary footprint, larger bus footprint, and hard-cover doctrine remain authoritative.
+
+## Friendly Skyranger shell and extraction corridor
+
+- The friendly Skyranger's rear troop bay is a genuine open aperture when the ramp is lowered. The old opaque rear slab is replaced by an upper lintel and side jambs so FPV/TPV can look through the rear from outside into the troop bay.
+- Tactical geometry remains split deliberately: hull cells are indestructible `kind:"hard"`, `block:1` cover and therefore block movement, sight, and incoming/outgoing fire; ramp/center-aisle cells remain passable extraction geometry.
+- Indestructible cover records must survive structural-damage calls unchanged. A Skyranger wall can absorb/block a shot but cannot become ordinary breach rubble.
+
+## Tactical voice-event ownership
+
+- One resolved combat event should produce at most one routine soldier voice confirmation unless a deliberately separate narrative event occurs.
+- During AI playback, `tacticalAiFrameDialogueCue(...)` owns the voice event. The shared visual shot presenter runs with dialogue suppressed so it cannot independently add `Target down`, `Alien down`, `Taking the shot`, or equivalent lines for the same AI frame.
+- Manual player shots continue using the shared manual dialogue path.
+
+## FPV success-transition doctrine
+
+- An active FPV camera must respond immediately when authoritative mission state changes into victory. The persistent camera invalidation key therefore includes `victoryDance`, not only actor/facing/shot state.
+- If a player is already watching a soldier in FPV when success is declared, that same camera begins the established rhythmic victory movement immediately. Re-entering FPV must not be required to initialize celebration state.
+
+## Validation / native roadmap
+
+- Browser Build Health now covers drag-pan seams, Tactical Map-only handoff, multi-hex vehicle authority, friendly Skyranger hull/ramp rules, one-owner AI voice events, safe playback routes, and live FPV victory transition.
+- Save format remains 4.
+- Native parity should preserve the gameplay doctrines rather than the browser-specific implementation: vehicle footprints must be authoritative across navigation/ballistics, dropship hull and ramp geometry must agree with visuals, and AI combat events should have one voice owner.
+
+---
 
 
 # v0.26.08.17.1235 - Iso Fit Map Exact Projected Bounds
