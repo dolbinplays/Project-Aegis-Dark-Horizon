@@ -2,14 +2,46 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.0525_LARGE_ROAD_VEHICLES_BEACON_FLYOVER_AND_FPV_ORDER_HUD_PATCH`
+Current handoff build: `v0.26.08.17.0555_SKY_VEHICLE_COVER_SKYRANGER_TPV_AND_HUD_CONSOLIDATION_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0525 rescales civilian road vehicles to a 3x2-hex visual footprint, adds an actual lightweight saucer/payload animation to the existing five-turn replacement-beacon deployment, and adds a knowledge-safe Current Objective / Order readout beneath Fire Team Assignment in FPV. Browser 0455 continuous FPV ground, canonical alien models, critical-kill cinema, failed clear-field salvage, street life, and beacon redeployment logic remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 0555 corrects the clipped FPV atmosphere shell, doubles vehicle height and makes complete multi-hex road-vehicle footprints authoritative hard cover, replaces the solid Skyranger fuselage with a hollow troop bay, adds a reversible AI Third Person observer beside FPV, and consolidates soldier identity, Fire Team Assignment, and Current Objective / Order into the upper-right observer HUD. Browser 0525 replacement-beacon flyover/current-order logic and Browser 0455 continuous FPV ground, canonical alien models, critical-kill cinema, failed clear-field salvage, street life, and beacon redeployment remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
 
 
 
+
+
+# v0.26.08.17.0555 - Sky Stability, Solid Vehicles, Hollow Skyranger, Third-Person Observer + HUD Consolidation
+
+## Observer sky and camera doctrine
+
+- The camera-relative tactical atmosphere must remain entirely inside the active perspective camera's clip range. The FPV/TPV sky shell uses a bounded 96-unit radius and does not depth-test or write depth against battlefield geometry.
+- Regional day, twilight, night, fog, stars, and directional lighting remain derived from mission coordinates and campaign time. No physical sun/moon sphere is permitted to intersect or follow the first-person horizon.
+- AI Tactical Map playback supports mutually exclusive First Person and Third Person observer modes over the same authoritative persistent renderer and battle state. Third Person follows the current living AEGIS action actor from a smoothed over-the-shoulder position; neither observer mode creates a second simulation.
+- Leaving map playback, switching to 2D, or renderer failure clears both observer modes and restores the prior tactical camera safely.
+
+## Vehicle tactical-footprint doctrine
+
+- Ordinary road vehicles retain a 3x2 footprint and buses a longer 5x2 footprint. Their vertical body/cabin proportions are approximately doubled so soldier scale is believable in Iso, FPV, and TPV.
+- The complete footprint is authoritative hard cover and solid occupancy, not only decorative spacing. Shared cover lookup, pathfinding blocker indexes, and LOS/visibility contexts expand the vehicle cover across every footprint cell.
+- A vehicle's single authoritative HP/destruction record governs the whole footprint: intact cells block movement/LOS as hard cover, and destruction releases the footprint without requiring duplicate cover records or save migration.
+
+## Hollow Skyranger doctrine
+
+- The tactical Skyranger must present a navigable-looking rear troop bay in observer cameras. Its model uses a thin floor, roof, left/right fuselage shell, forward cabin bulkhead, interior benches, central aisle, and open rear entrance aligned with the extraction ramp.
+- The visual shell does not replace the authoritative extraction/ramp footprint, escort traffic rules, or deployment logic. It exists so FPV/TPV movement into extraction matches what the player sees.
+
+## Consolidated observer HUD doctrine
+
+- FPV and TPV use one upper-right status block. Soldier name/rank/weapon/HP/TU appear first, Fire Team Assignment appears second, and Current Objective / Order appears last.
+- The old lower-left identity card is removed to reduce duplicate HUD information and free battlefield space.
+- Compass and knowledge-limited tactical mini-map remain observer aids and continue to respect existing reveal/visibility rules.
+
+## Validation and native roadmap
+
+- Browser validation requires footprint-aware hard-cover indexing, explicit tall vehicle geometry, bounded non-depth-tested atmosphere, hollow Skyranger shell, shared persistent Third Person camera, consolidated observer HUD, and unchanged save format 4.
+- Native Godot parity should reproduce the gameplay-relevant vehicle footprint/cover doctrine and hollow extraction presentation. FPV/TPV camera/HUD design can follow when native tactical presentation reaches equivalent maturity.
 
 # v0.26.08.17.0525 - Large Road Vehicles, Replacement Beacon Flyover + FPV Current Orders
 

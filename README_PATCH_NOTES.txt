@@ -1,6 +1,73 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.17.0555_SKY_VEHICLE_COVER_SKYRANGER_TPV_AND_HUD_CONSOLIDATION_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Corrected the remaining camera-relative FPV sky-shell clipping, made civilian road vehicles taller and authoritative multi-hex hard cover, rebuilt the Skyranger as a hollow troop-bay shell for first-person extraction, added a reversible AI third-person observer camera beside FPV, and consolidated soldier identity, fire-team assignment, and current-order data into one upper-right observer HUD.
+
+FPV SKY STABILITY
+-----------------
+- The location-aware sky sphere now uses a 96-unit radius instead of 168, keeping the complete atmosphere shell safely inside the FPV camera's 140-unit far plane.
+- The atmosphere shell and stars no longer depth-test against battlefield geometry. They remain camera-relative background presentation with depth writing disabled.
+- Star radius is reduced to 86 units so the star field also remains inside the perspective clip range.
+- Regional day/dusk/night colors and mission-time lighting remain active. This corrects the giant clipped pale/yellow dome without reintroducing a physical sun/moon object.
+
+ROAD VEHICLES - TALL, SOLID MULTI-HEX HARD COVER
+-------------------------------------------------
+- Cars/vans/utilities retain the established 3-hex-long by 2-hex-wide footprint and buses retain their longer 5x2 footprint.
+- Vehicle body/cabin height is approximately doubled so a standing soldier visually fits inside the vehicle volume in Iso, FPV, and TPV.
+- Every cell in a road vehicle's footprint is now authoritative hard-cover occupancy rather than decorative reservation only.
+- Shared hard-cover lookup, path blockers, and tactical visibility context expand vehicle covers across all footprint cells. Soldiers, aliens, civilians, and VIPs therefore cannot path through the body, and fire/LOS queries recognize the complete vehicle footprint.
+- A destroyed vehicle opens its entire footprint through the existing cover HP/destruction path; no additional save fields are required.
+
+HOLLOW SKYRANGER TROOP BAY
+--------------------------
+- The old solid main-fuselage block is replaced by a thin floor, roof, left/right shell walls, forward bulkhead/cabin, and an open rear troop bay aligned with the extraction ramp.
+- Interior side benches and a central aisle make the rear cabin visually readable when escorting civilians/VIPs into extraction in FPV/TPV.
+- The Skyranger remains a lightweight presentation model over the existing authoritative ramp/extraction footprint; extraction rules and save data are unchanged.
+
+AI THIRD-PERSON OBSERVER
+------------------------
+- AI Tactical Map playback now places a Third Person: Off / On button directly beside First Person.
+- TPV follows the same current living AEGIS action actor as FPV from a smoothed over-the-shoulder/chase camera.
+- Switching FPV/TPV is mutually exclusive and reuses the same persistent Three.js renderer, scene, units, terrain, effects, and simulation state.
+- Ending AI map playback or returning to 2D automatically clears either observer camera and restores the prior tactical view.
+- TPV is presentation-only: movement, TU, targeting, hit rolls, Tactical Focus, Critical Kill results, escort logic, and AI action sequencing remain authoritative and unchanged.
+
+CONSOLIDATED FPV / TPV STATUS HUD
+---------------------------------
+- The redundant lower-left FPV soldier identity card has been removed.
+- During FPV or TPV, the upper-right observer status panel now displays the soldier's name, rank, equipped weapon, HP, and TU first.
+- Fire Team Assignment appears directly below the soldier identity, followed by Current Objective / Order.
+- The top compass and lower-right knowledge-limited tactical mini-map remain available in both observer camera modes.
+- Objective/order text continues to consume only legitimately known tactical information.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- A targeted blocker test confirms all six cells of a representative 3x2 vehicle footprint enter the authoritative hard-cover blocker index.
+- Static release checks confirm the 96-unit no-depth-test sky shell, doubled vehicle dimensions, footprint-aware cover/LOS/path helpers, hollow Skyranger shell, Third Person camera/button, consolidated observer HUD, current build metadata, and unchanged save format 4.
+- A full live WebGL mission has not been executed in this environment; FPV sky, TPV camera framing, vehicle scale/cover, and Skyranger cabin traversal remain manual visual gates.
+
+MANUAL TEST GATES
+-----------------
+1. Enter FPV in the same daylight mission that showed the giant pale dome. Confirm the sky is continuous with no circular/dome boundary following the camera.
+2. Compare a soldier beside a car/van and bus. Confirm vehicle height reads plausibly and units route around the complete multi-hex body.
+3. Fire across a vehicle footprint and confirm the body behaves as hard cover; destroy the vehicle and confirm its footprint becomes traversable under the normal cover-destruction rules.
+4. Escort a civilian/VIP into the Skyranger in FPV and confirm the rear ramp opens into a visible hollow troop bay instead of a solid fuselage block.
+5. During AI Tactical Map playback, toggle First Person and Third Person beside one another; confirm TPV follows the acting soldier smoothly and switching modes never creates a second battlefield.
+6. Confirm the upper-right panel shows soldier identity above Fire Team Assignment and Current Objective / Order, with no duplicate lower-left identity box.
+
+PREVIOUS BUILD - 0525
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.17.0525_LARGE_ROAD_VEHICLES_BEACON_FLYOVER_AND_FPV_ORDER_HUD_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
