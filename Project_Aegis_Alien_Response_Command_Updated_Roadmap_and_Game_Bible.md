@@ -2,13 +2,22 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.0455_FPV_CONTINUOUS_GROUND_BEACON_REDEPLOYMENT_CRITICAL_CINEMA_AND_STREET_LIFE_PATCH`
+Current handoff build: `v0.26.08.17.0525_LARGE_ROAD_VEHICLES_BEACON_FLYOVER_AND_FPV_ORDER_HUD_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0455 replaces the persistent FPV ground with a single continuous textured surface to eliminate shared-hex edge shimmer while keeping the explicit-material Iso renderer, removes physical camera-relative sun/moon geometry, standardizes reinforcement and legacy aliens on the six modular Mainframe archetypes, restores the yellow AI acting-soldier ring, allows killed-alien recovery after clear-field objective failures with surviving AEGIS personnel, adds five-turn replacement-beacon redeployment during still-active operations, expands bounded street-life scenery, and gives rare Critical Kills a slowed cinematic camera beat. Browser 0345 window/wall continuity and alien palettes, Browser 0335 FPV identity/compass/minimap and AI terminal VIP Dust Off, Browser 0245 modular alien dismemberment, and all earlier victory/performance systems remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 0525 rescales civilian road vehicles to a 3x2-hex visual footprint, adds an actual lightweight saucer/payload animation to the existing five-turn replacement-beacon deployment, and adds a knowledge-safe Current Objective / Order readout beneath Fire Team Assignment in FPV. Browser 0455 continuous FPV ground, canonical alien models, critical-kill cinema, failed clear-field salvage, street life, and beacon redeployment logic remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
 
 
+
+
+# v0.26.08.17.0525 - Large Road Vehicles, Replacement Beacon Flyover + FPV Current Orders
+
+- Civilian sedan/van/utility presentation now occupies approximately a 3-hex-long by 2-hex-wide visual envelope, with buses extending farther. Street generation reserves each vehicle's decorative footprint so nearby furniture is not placed through the body, and vehicle heading follows the local road axis.
+- The five-turn replacement-beacon gameplay rule remains authoritative. When the safe drop actually occurs, the persistent Three.js renderer now shows a bounded alien saucer pass, drop beam, and descending beacon payload at that same selected cell. The presentation cannot change timing, placement, tactical state, or visibility.
+- FPV's upper-right Fire Team Assignment panel now includes the observed soldier's Current Objective / Order. The text resolves player command-map orders, rescue targets, escorts, extraction guard work, regrouping, break-off/stay-on-escort support, contact/fog/grid searches, beacon support, visible-contact engagement, and ordinary formation duty.
+- The objective panel consumes only authoritative soldier/order fields plus legitimate revealed tactical state, so it cannot identify hidden alien contacts or unrevealed rescue targets.
+- Save format remains 4. Native parity should eventually mirror the larger vehicle scale, replacement-beacon flyover presentation, and soldier-level observer objective readout without duplicating tactical decision logic.
 
 # v0.26.08.17.0455 - FPV Continuous Ground, Beacon Redeployment, Critical-Kill Cinema + Street Life
 

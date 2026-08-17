@@ -1,6 +1,54 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.17.0525_LARGE_ROAD_VEHICLES_BEACON_FLYOVER_AND_FPV_ORDER_HUD_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Rescaled civilian road vehicles to believable multi-hex proportions, completed the five-turn replacement-beacon mechanic with a lightweight overhead craft/drop presentation, and expanded the AI first-person visor with the observed soldier's current objective/order beneath Fire Team Assignment.
+
+LARGE ROAD VEHICLE PROPORTIONS
+------------------------------
+- Ordinary sedan/van/utility props now use a visual envelope at least three hexes long by two hexes wide so their scale reads correctly beside soldiers in Iso and FPV.
+- Vehicle placement reserves the complete decorative footprint so bus stops, benches, machines, signs, and other street props do not spawn through the same vehicle body.
+- Vehicles orient along the local road/lane/path direction instead of all sharing one world-axis heading.
+- Buses remain longer than ordinary cars while using the same lightweight low-poly primitive approach.
+- The scale change is primarily presentation; it does not rewrite tactical movement rules or vehicle simulation.
+
+REPLACEMENT BEACON FLYOVER PRESENTATION
+---------------------------------------
+- The existing authoritative five-turn beacon-redeployment rule is unchanged.
+- When a replacement beacon actually deploys, a small alien saucer crosses the battlefield, an energy drop beam appears, and a beacon payload descends at the chosen safe drop point before the craft exits.
+- The animation uses the already-selected safe drop cell and cannot move the beacon, change the countdown, reveal hidden information, alter reinforcements, or affect combat.
+- The effect is bounded to roughly five seconds and reuses the persistent renderer animation loop.
+
+FPV CURRENT OBJECTIVE / ORDER HUD
+---------------------------------
+- Beneath Fire Team Assignment, FPV now shows the observed soldier's current objective/order.
+- The readout can identify player/fire-team waypoints, VIP rescue assignments, escort/extraction duty, separated-civilian regrouping, escort support/break-off duty, fog/grid searches, last-contact searches, beacon support, visible-contact engagement, and default leader/support formation behavior.
+- The readout is derived only from the soldier's authoritative AI/order state and known tactical state. It does not expose hidden aliens, unrevealed VIPs, or unseen objectives.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Static contracts require a six-cell-or-larger 3x2 ordinary vehicle footprint, replacement-beacon flyover renderer seams, and FPV Current Objective / Order wiring.
+- Save format remains 4; no migration is required.
+
+MANUAL TEST GATES
+-----------------
+1. Open a Small Town/urban mission and compare a civilian car directly against a soldier; confirm the car reads as approximately 3 hexes long by 2 hexes wide and follows the road direction.
+2. Destroy an active beacon, keep the operation active for five turns, and confirm the replacement event includes an overhead craft, descending payload/beam, and the beacon at a safe unoccupied location.
+3. Use AI Command > Tactical Map > FPV and confirm the upper-right Fire Team panel gains a Current Objective / Order section that changes as the acting soldier transitions between search, combat, escort, rescue, and extraction work.
+4. Confirm the order panel does not name hidden aliens or unrevealed civilians/VIPs.
+
+PREVIOUS BUILD - 0455
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.17.0455_FPV_CONTINUOUS_GROUND_BEACON_REDEPLOYMENT_CRITICAL_CINEMA_AND_STREET_LIFE_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
