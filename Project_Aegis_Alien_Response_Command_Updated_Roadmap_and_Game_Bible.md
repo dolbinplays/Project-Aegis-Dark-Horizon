@@ -2,14 +2,39 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-16
-Current handoff build: `v0.26.08.16.2335_BALANCED_TERRAIN_BLEND_AND_LAZY_MEMORIAL_INDEX_PATCH`
+Current handoff build: `v0.26.08.16.2355_TERRAIN_PALETTE_RESTORE_AND_COLOR_MATCHED_SEAMS_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2335 refines the neighbor-blended 3D terrain into a balanced, contrast-aware mix that preserves substantially more authored local color while retaining softened boundaries. It also lazily indexes the 3,500-entry memorial message library for faster repeated KIA/tribute selection without changing message eligibility or deterministic choice. The left-side shot-result stack and Browser 2300 FPV pre-aim remain unchanged; Browser 2255 sky/HUD/weapon/architecture work, Browser 2210 camera/biome polish, Browser 2145 first-person observer and terminal victory gate, Browser 1930 pathfinding optimization, Browser 0043 victory music, Browser 2207 cooperative aftermath, and earlier renderer/visibility work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 2355 removes whole-tile terrain neighbor averaging after field testing showed the reduced Browser 2335 blend still reading as a uniform asphalt sheet. Persistent and fallback Three.js terrain again use authored palette-specific surfaces, subtle organic palette texture, and narrow per-cell color-matched seam underlays. The left-side shot stack, FPV pre-aim/HUD/weapon/sky/architecture, Browser 2335 lazy memorial index, Browser 2145 terminal victory gate, Browser 1930 pathfinding optimization, Browser 0043 victory music, Browser 2207 cooperative aftermath, and earlier renderer/visibility work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
 
 
 ---
+
+# v0.26.08.16.2355 - Terrain Palette Restore and Color-Matched Seams
+
+## Tactical-ground identity doctrine
+
+- A tactical cell's authored terrain category must remain visually legible. Grass, forest floor, scrub, soil, cultivated fields, roads, concrete, stone, snow/sand, crash damage, building interiors, and region-specific palettes cannot be averaged into one shared ground color.
+- Neighboring terrain may influence only the narrow presentation used to hide raster junctions; it must not recolor the whole playable tile.
+- Persistent Three.js ground returns to palette-specific instanced batches. Each batch uses the terrain's authored base, accent, and detail colors rather than a neutral texture multiplied by an averaged instance color.
+- Subtle texture mottling, one-of-six texture orientation, and bounded per-cell brightness provide organic variation without changing the terrain category.
+- Raster-gap underlays are narrow and color-matched per cell. A universal dark-gray seam is forbidden because it makes the tactical board read as a grid.
+- Exact instance-to-hex picking, the persistent renderer lifecycle, bounded ground mesh budget, fog batches, and regional cosmetic scatter remain authoritative.
+- The presentation layer cannot alter cover, occupancy, movement, pathfinding, line of sight, fog knowledge, extraction, destruction, AI, Time Units, hit resolution, or campaign data.
+
+## Field-testing lesson
+
+- Browser 2300 introduced whole-tile neighbor blending to reduce the chessboard effect. Browser 2335 reduced that blend but retained the same structural approach.
+- Field testing showed both versions could collapse the visual range into a gray-green asphalt sheet, especially from elevated views.
+- Future terrain smoothing should operate through border materials, decals, procedural texture, vegetation, and shape continuity—not by averaging the complete interior color of adjacent gameplay cells.
+
+## Validation and native parity
+
+- Browser Build Health requires palette-specific ground batches, authored surface texture, color-matched seams, and no active neighbor-blended-ground marker.
+- A grass-versus-road fixture must retain most of its authored color separation while seam colors remain recognizably derived from the source tile.
+- Manual validation should include elevated mixed-terrain views and near-ground FPV inspection across several regional biomes.
+- Native Godot should follow the same terrain-identity doctrine when its tactical materials and biome presentation are expanded.
 
 # v0.26.08.16.2335 - Balanced Terrain Blend and Lazy Memorial Index
 

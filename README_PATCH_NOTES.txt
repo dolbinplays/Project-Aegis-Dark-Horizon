@@ -1,6 +1,60 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.16.2355_TERRAIN_PALETTE_RESTORE_AND_COLOR_MATCHED_SEAMS_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Corrected the 3D terrain presentation after Browser 2335 still made the battlefield read as a uniform sheet of asphalt. The problem was structural rather than a percentage needing another small adjustment: the complete interior color of every tile was still averaged toward neighboring tiles and then multiplied through one neutral texture. This build removes whole-tile neighbor averaging, restores authored terrain-specific textures, and confines visual softening to narrow color-matched seams plus subtle organic texture variation.
+
+AUTHORED TERRAIN PALETTE RESTORE
+--------------------------------
+- The interior of each tactical hex again uses its own authored base, accent, and detail colors.
+- Grass, forest floor, scrub, farmland, harvested fields, tilled soil, roads, service lanes, concrete, building interiors, stone, snow/sand, crash scars, and regional biome palettes remain visibly distinct.
+- Neighbor colors no longer alter the complete tile face.
+- The former single neutral ground texture has been removed from active persistent rendering.
+- Palette-specific 64x64 textures now contain subdued deterministic mottling based on that terrain's own colors.
+- Hex textures receive one of six rotations plus a very small brightness variation, reducing repeated stamped patterns without flattening terrain categories.
+
+COLOR-MATCHED SEAMS
+-------------------
+- The raster-gap underlay is narrowed from scale 1.024 to 1.018.
+- Each underlay instance receives a slightly darkened color derived from its own tile instead of one battlefield-wide gray seam color.
+- The seam remains sufficient to close tiny WebGL junction gaps but no longer redraws the board as a dark hex grid.
+- The legacy/fallback Three.js renderer receives the same terrain-matched seam behavior.
+
+PRESERVED SYSTEMS
+-----------------
+- The well-received left-side shot-result stack is unchanged.
+- FPV pre-aim, weapon rendering, HUD markers, regional sky, first-person camera smoothing, architecture, victory music, reinforcement victory gate, pathfinding, cooperative aftermath, and lazy memorial indexing remain unchanged.
+- Terrain labels, cover, movement, pathfinding, line of sight, fog, extraction, destruction, AI decisions, and combat balance are unchanged.
+- Save format remains 4.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Build Health now requires authored palette batches, palette-matched seams, and removal of the active `neighborBlendedGround` renderer marker.
+- A high-contrast grass-versus-road fixture must retain at least 86% of its authored color separation.
+- The seam must remain close to the source tile color rather than becoming a universal gray.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Package validation confirms all victory-audio assets are unchanged.
+
+MANUAL TEST GATES
+-----------------
+1. Inspect a mixed 3D battlefield from high zoom. Roads, fields, grass, soil, concrete, forest floor, and building interiors should be immediately distinguishable.
+2. Confirm the ground no longer reads as one gray/asphalt sheet.
+3. Look for narrow dark gaps between hexes. Tiny raster gaps should remain closed without an obvious universal grid.
+4. Enter FPV and confirm the restored terrain color variety remains readable near ground level.
+5. Confirm the shot-result stack remains on the left and unchanged.
+6. Run Build Health and confirm the authored-palette terrain contract reports OK.
+
+PREVIOUS BUILD - 2335
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.16.2335_BALANCED_TERRAIN_BLEND_AND_LAZY_MEMORIAL_INDEX_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
