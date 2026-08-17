@@ -2,12 +2,62 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.0345_FPV_DEPTH_STABILITY_ALIEN_DATABASE_PALETTE_AND_CONTINUOUS_WINDOW_WALL_PATCH`
+Current handoff build: `v0.26.08.17.0455_FPV_CONTINUOUS_GROUND_BEACON_REDEPLOYMENT_CRITICAL_CINEMA_AND_STREET_LIFE_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0345 targets the remaining FPV-only hex-edge shimmer at the perspective depth layer: the first-person camera uses a safer near/far range and ground surfaces no longer carry the obsolete negative polygon offset. Modular alien battlefield colors are remapped toward the Mainframe database sprite families while preserving Browser 0245 silhouettes and gib-capable body parts. Transparent windows remain genuinely see-through, but wall/window junctions now use continuous sill/lintel connector geometry so traditional facades no longer show open gaps; those connectors disappear with destroyed source structure. Browser 0335 FPV identity/compass/mini-map and AI terminal VIP Dust Off, Browser 0245 Critical Kills/vegetation/modular aliens, Browser 0205 sidewalks/Tactical Focus, Browser 0145 rich terrain/FPV movement presentation, Browser 0135 explicit-material terrain safety, and earlier victory/performance systems remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 0455 replaces the persistent FPV ground with a single continuous textured surface to eliminate shared-hex edge shimmer while keeping the explicit-material Iso renderer, removes physical camera-relative sun/moon geometry, standardizes reinforcement and legacy aliens on the six modular Mainframe archetypes, restores the yellow AI acting-soldier ring, allows killed-alien recovery after clear-field objective failures with surviving AEGIS personnel, adds five-turn replacement-beacon redeployment during still-active operations, expands bounded street-life scenery, and gives rare Critical Kills a slowed cinematic camera beat. Browser 0345 window/wall continuity and alien palettes, Browser 0335 FPV identity/compass/minimap and AI terminal VIP Dust Off, Browser 0245 modular alien dismemberment, and all earlier victory/performance systems remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
 
+
+
+# v0.26.08.17.0455 - FPV Continuous Ground, Beacon Redeployment, Critical-Kill Cinema + Street Life
+
+## FPV continuous-ground doctrine
+
+- FPV must not rely on neighboring coplanar hex-face geometry. While First Person View is active, the persistent renderer hides individual ground batches and ground-fog hex batches and displays one continuous terrain plane generated from the authoritative cell palettes. Three.js Iso retains the normal explicit-material hex renderer.
+- The continuous FPV surface may reproduce terrain colors, neighbor grading, pedestrian surfaces, and subtle procedural detail, but it is presentation only: authoritative hex identity, movement, pathfinding, cover, LOS, fog knowledge, and tactical selection remain unchanged.
+- Ground `instanceColor` / `setColorAt()` remains forbidden in the persistent terrain path; Browser 0135's black-ground root-cause fix is permanent.
+
+## Celestial presentation doctrine
+
+- The camera-relative atmosphere may contain the sky gradient and stars, but no physical sun/moon sphere or halo may ride inside the camera-centered sky root.
+- Mission latitude/longitude and campaign clock still derive solar direction for daylight/twilight/night color and directional lighting. A future visible sun should be a screen-safe/infinite-distance treatment rather than world geometry capable of intersecting the horizon.
+
+## Canonical alien tactical models
+
+- Every living alien shown by the persistent tactical renderer must resolve to one of the six Mainframe archetypes: Signal Leech, Glass Wraith, Needle Drone, Tide Horror, Chitin Brute, or Pale Commander.
+- New reinforcement waves spawn canonical archetype names/types. Legacy unknown types are deterministically remapped for presentation rather than falling back to the generic purple geometry.
+- Pale Commander remains the reinforcement-command silhouette; non-command reinforcements cycle among the other five archetypes. Their modular detachable body parts and Mainframe-aligned colors remain the basis of Critical Kill dismemberment.
+
+## Five-turn replacement-beacon doctrine
+
+- Destroying an active Alien Field Beacon starts a five-completed-turn redeployment clock only if another unresolved condition keeps the operation active. The replacement does not postpone a mission that is already legitimately complete.
+- At the deadline, an alien craft attempts an overhead replacement-beacon drop into an open cell. Deployment cannot overwrite living AEGIS/alien/civilian/VIP occupancy, Skyranger footprints, live cover, buildings, map-edge cells, or active objectives, and it keeps a small safety buffer from AEGIS/civilians.
+- If no safe cell exists, redeployment retries next round. Each successfully deployed replacement receives a unique generation ID and normal campaign-derived adaptive shield state. Destroying it starts another five-turn cycle if the battle remains active.
+- Mission history must record that at least one beacon was destroyed even if a later generation remains active at the end of the mission.
+
+## Clear-field recovery on objective failure
+
+- Alien battlefield recovery is permitted after mission failure when at least one AEGIS soldier survives and zero living aliens remain. This supports cases such as a failed VIP quota after the alien force was completely eliminated.
+- Dead-alien remains/fragments use the existing recovery table. Live capture remains success-gated. Failure with surviving aliens or a total AEGIS wipe still provides no battlefield alien recovery.
+
+## AI observer and Critical Kill presentation
+
+- Three.js Iso under AI command identifies the current acting AEGIS soldier with a yellow ring that follows the movement/action actor rather than relying only on manual selection state.
+- Rare Critical Kill dismemberments use a dedicated cinematic camera and time-dilated presentation. The camera may cut to a dramatic over-shoulder/impact-side angle, hold through the gib event, and restore the prior FPV/AI camera automatically.
+- Cinematic presentation operates only after the authoritative shot result exists and cannot change RNG, damage, TU, ammunition, XP, recovery, or action order.
+
+## Lightweight street-life environment doctrine
+
+- Urban and small-town maps may contain bounded low-poly contextual props: better-proportioned cars, buses, bus stops, traffic lights, stop signs, benches, newspaper/vending machines, statues, fountains, and playground equipment. Farm maps use a reduced subset.
+- Props belong near plausible streets, curbs, building fronts, civic/open areas, or residences and are count-capped by settlement type. They reuse simple geometry and the existing cover renderer instead of creating many independent animated systems.
+- This presentation layer supplements Browser 0205 sidewalks/access walks and Browser 0245 vegetation; it must not create a large draw-call or simulation burden.
+
+## Browser/native parity note
+
+- Save format stays at 4. The native Godot slice remains 0026. Native parity eventually needs replacement-beacon campaign logic, canonical modular alien model identity, failed clear-field recovery, AI observer selection feedback, and equivalent environment/cinematic presentation using native rendering rather than browser-specific CanvasTexture/camera code.
+
+---
 # v0.26.08.17.0345 - FPV Depth Stability, Mainframe Alien Palettes + Continuous Window Walls
 
 ## FPV perspective-depth stability doctrine

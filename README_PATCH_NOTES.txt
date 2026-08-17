@@ -1,6 +1,103 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.17.0455_FPV_CONTINUOUS_GROUND_BEACON_REDEPLOYMENT_CRITICAL_CINEMA_AND_STREET_LIFE_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+This combined tactical presentation/campaign patch replaces the stubborn first-person hex-edge shimmer with a continuous FPV-only ground renderer instead of another depth-offset adjustment, removes the physical camera-relative sun sphere that could fill the horizon, standardizes all reinforcement/legacy alien models on the six Mainframe archetypes, restores the yellow AI acting-soldier ring, permits alien recovery after an objective failure when AEGIS survivors have nevertheless cleared the battlefield, adds the requested five-turn Alien Field Beacon redeployment cycle, expands lightweight street-life scenery, and gives rare Critical Kill dismemberments a slowed cinematic camera presentation.
+
+FPV CONTINUOUS-GROUND STABILITY
+-------------------------------
+- FPV no longer displays the battlefield floor as thousands of neighboring hex meshes. While First Person View is active, those individual ground batches are hidden and replaced by one continuous textured plane assembled from the authoritative per-cell terrain palettes.
+- The continuous texture retains local terrain color, authored accent color, deterministic variation, sidewalks/access walks, and the same regional terrain identity while eliminating shared polygon borders from the first-person depth buffer.
+- Returning to Three.js Iso immediately restores the normal explicit-material hex batches. The isometric renderer, picking, terrain identity, movement cells, paths, cover, and tactical rules are unchanged.
+- FPV also hides the per-hex ground-fog meshes while the continuous plane is active so a second set of touching coplanar hex borders cannot shimmer over the replacement floor. Entity visibility, objective reveal rules, minimap knowledge, cover visibility, and tactical LOS remain authoritative.
+- Browser 0135's permanent safety rule remains intact: the live persistent ground still does not use `setColorAt()` / ground `instanceColor`.
+
+CAMERA-RELATIVE SUN DOME REMOVAL
+--------------------------------
+- The giant yellow dome reported at the FPV horizon was the physical sun/halo geometry living inside the camera-relative sky root.
+- The physical sun/moon sphere and halo are removed entirely from the battlefield scene.
+- The location/time-derived celestial direction remains available for directional key lighting, daylight/twilight/night sky gradients, stars, and regional atmosphere.
+- Because there is no longer a physical celestial mesh, no yellow sphere can follow the FPV camera or intersect the battlefield horizon.
+
+CANONICAL REINFORCEMENT ALIEN MODELS
+------------------------------------
+- New beacon and dropship reinforcement waves no longer spawn placeholder `Void Lancer` / `Void Raider` alien types that fell through to the old purple generic geometry.
+- The reinforcement commander uses the Pale Commander silhouette; supporting reinforcements deterministically select Signal Leech, Glass Wraith, Needle Drone, Tide Horror, or Chitin Brute.
+- Legacy/unknown alien records are also mapped deterministically onto one of those six Mainframe archetypes at render time, so old save data cannot reintroduce the purple fallback in the middle of a mission.
+- The existing Mainframe-aligned colors and modular gib-capable body parts remain authoritative.
+
+AI ACTING-SOLDIER SELECTION RING
+--------------------------------
+- During AI tactical-map control, the active AEGIS actor is once again identified by a bright yellow selection ring in Three.js Iso.
+- The ring follows `movingUnit` / current FPV actor before falling back to the ordinary selected soldier, and its invalidation key now changes when the AI actor changes.
+- Manual selection retains the established cyan selected-unit ring.
+
+FAILED-MISSION ALIEN RECOVERY
+-----------------------------
+- Mission success is no longer the only condition that permits recovery of dead alien material.
+- If an objective fails but AEGIS still has at least one living soldier and every alien on the battlefield has been killed, the normal alien remains / weapon-fragment / power-cell recovery table is still applied.
+- A squad wipe or failed mission with surviving aliens still recovers no battlefield alien loot.
+- Live alien capture remains success-gated; this change applies to killed-alien battlefield recovery only.
+- Save format remains 4.
+
+FIVE-TURN REPLACEMENT BEACON REDEPLOYMENT
+-----------------------------------------
+- Destroying the active Alien Field Beacon starts a five-turn redeployment countdown if the mission remains active for another reason, such as surviving aliens or unresolved rescue work.
+- Example: destroying the beacon on round 3 makes the replacement eligible on round 8.
+- If all objectives are already complete before the deadline, the mission still ends normally; the countdown does not hold open an otherwise completed operation.
+- On the due round an alien craft performs an overhead redeployment pass and attempts to place a replacement beacon in a deterministic random safe cell.
+- Safe placement excludes living AEGIS personnel, living aliens, civilians/VIPs, Skyranger hull/ramp cells, live cover/structures, building cells, map edges, and a safety radius around AEGIS/civilians.
+- If no safe cell exists, the craft retries on the following round instead of overwriting an occupied cell.
+- Replacement beacons receive unique generation IDs and the normal adaptive shield type for that campaign. Destroying a replacement starts a fresh five-turn cycle if the mission continues.
+- Destroying any beacon generation still counts as a beacon destruction in the mission report/history even if a later replacement remains active.
+
+LIGHTWEIGHT STREET-LIFE PASS
+----------------------------
+- Sedan/van/utility-car proportions are longer and lower, with visible cabins and wheels rather than the previous tall box-like vehicles.
+- Bounded context-aware props can now appear on urban/small-town/farm maps: buses, bus stops, traffic lights, stop signs, benches, newspaper machines, vending machines, civic statues, water fountains, and small playground equipment.
+- Props are placed near roads, curbs, building fronts, or appropriate open/civic/residential spaces rather than uniformly scattered.
+- Counts are deliberately capped by settlement type. The new objects reuse simple low-poly primitives and the existing cover renderer rather than creating a heavy simulation system.
+- Existing vegetation, sidewalks, access walks, buildings, and destructible-cover behavior remain active.
+
+CRITICAL KILL CINEMATIC
+-----------------------
+- Rare exceptional lethal shots that already qualify for modular alien dismemberment now receive a dedicated cinematic presentation.
+- The visible projectile travel is lengthened for those kills, the camera cuts to an over-shoulder / target-side angle, and detached alien pieces move in time-dilated slow motion through the impact beat.
+- The camera then returns to the prior First Person or AI-observer camera automatically.
+- Ordinary kills do not invoke the cinematic, so normal firefights keep their established pace.
+- The cinematic is strictly post-resolution presentation: target choice, RNG, accuracy, damage, ammunition, TU, XP, kill credit, recovery, and mission outcome are unchanged.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Targeted reinforcement testing verifies a beacon destroyed on round 3 produces due round 8, remains unavailable on round 7, and becomes replacement-ready on round 8.
+- Safe-cell testing rejects occupied units, cover, buildings, and Skyranger footprint cells.
+- Legacy `Void Raider` rendering resolves to a Mainframe archetype rather than the purple fallback.
+- A failed result explicitly marked as battlefield-cleared-with-survivors qualifies for alien field recovery.
+- Static validation requires the FPV continuous-ground toggle, physical celestial-geometry removal, five-turn redeployment branch, canonical reinforcement types, yellow AI selection ring, street-life catalog, Critical Kill cinematic camera, and unchanged explicit-material/no-ground-instance-color invariant.
+- Save format remains 4.
+
+MANUAL TEST GATES
+-----------------
+1. Re-run the same FPV route that previously showed flickering shared hex edges and confirm the floor is stable while moving/turning/leaning.
+2. Sweep the FPV horizon in daylight and confirm no large yellow sphere/dome follows the camera.
+3. Trigger initial aliens and later reinforcement aliens in one mission and confirm every alien uses one of the six modular Mainframe silhouettes/colors.
+4. Watch AI control in Three.js Iso and confirm the currently acting soldier has a yellow selection ring.
+5. Fail a VIP/objective mission after killing every alien while at least one AEGIS soldier survives; confirm dead-alien recovery is awarded in aftermath.
+6. Destroy a beacon, keep the mission active for five more turns, and confirm the overhead replacement event places a new beacon only in a safe open cell.
+7. Inspect city/small-town maps for appropriately bounded buses, bus stops, traffic controls, benches, machines, civic fixtures, playgrounds, and more believable car proportions.
+8. Trigger a rare Critical Kill and confirm the camera cuts to a slowed cinematic dismemberment beat, then returns cleanly to FPV/AI observation.
+
+PREVIOUS BUILD - 0345
+=====================
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.17.0345_FPV_DEPTH_STABILITY_ALIEN_DATABASE_PALETTE_AND_CONTINUOUS_WINDOW_WALL_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
