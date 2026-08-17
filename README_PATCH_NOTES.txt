@@ -1,6 +1,64 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.17.0345_FPV_DEPTH_STABILITY_ALIEN_DATABASE_PALETTE_AND_CONTINUOUS_WINDOW_WALL_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Focused the next tactical renderer pass on the three live visual issues reported after Browser 0335. The remaining ground-edge shimmer is specifically first-person, so the FPV perspective camera now uses a depth-buffer-friendly near/far clipping range and the ground drops the obsolete polygon offset that was no longer needed after physical terrain-bed separation. Modular alien models retain their distinct/gib-capable silhouettes but move toward the colors of the Mainframe database sprite families. Transparent window apertures keep their see-through opening while new sill/lintel junction geometry closes the visible gaps between neighboring wall sections.
+
+FPV GROUND-EDGE DEPTH STABILITY
+--------------------------------
+- The remaining edge flicker was reported specifically in first-person rather than the elevated isometric camera, pointing to perspective depth precision rather than another terrain-palette problem.
+- FPV camera clipping changes from near/far 0.04/180 to 0.12/140. Raising the near plane substantially improves perspective Z-buffer precision at shallow ground angles while still leaving the camera-space weapon comfortably inside the visible volume.
+- Ground surface materials no longer use `polygonOffsetFactor:-2` / `polygonOffsetUnits:-2`. Browser 0205/0245 already physically separated the visible terrain face, lower terrain bed, fog, and other overlay layers, so the extra depth bias could create unnecessary grazing-angle instability.
+- Isometric terrain colors, texture generation, neighbor grading, sidewalks, paths, vegetation, fog knowledge, movement, cover, and tactical math are otherwise unchanged.
+- Browser 0135's explicit-material terrain invariant remains permanent: no ground `instanceColor` / `setColorAt()` path is restored.
+
+MAINFRAME-ALIGNED MODULAR ALIEN COLORS
+--------------------------------------
+- The six modular battlefield silhouettes from Browser 0245 remain intact and remain assembled from separable gib-capable parts.
+- Signal Leech now uses a cooler gray-scout palette instead of the stronger purple body treatment.
+- Glass Wraith shifts toward pale translucent cyan/white.
+- Needle Drone uses insectoid bronze/tan and dark mechanical accents.
+- Tide Horror uses a clearer reptilian olive/green palette.
+- Chitin Brute uses stronger rust/chitin browns and orange-brown armor accents.
+- Pale Commander uses pale gray/lilac psionic tones rather than warm off-white alone.
+- These changes are presentation-only. Alien HP, weapons, armor, AI, recovery, autopsy identity, database records, and Critical Kill rules are unchanged.
+
+CONTINUOUS WALLS AROUND TRANSPARENT WINDOWS
+-------------------------------------------
+- Browser 0335 correctly removed opaque full-height bridge geometry from window openings, but that exposed visible gaps between adjacent structural cells.
+- Wall/window and window/window junctions now build a low sill connector and an upper lintel connector across the cell boundary instead of a full-height slab.
+- The middle of the window remains physically open and carries the existing transparent glass pane, so an alien on the far side reads as being seen through glass rather than through a solid wall.
+- Solid wall-to-wall junctions retain the existing full structural connector.
+- Junction geometry is derived only from currently living authoritative cover cells. If either source wall/window segment is destroyed or breached, the connector disappears on the next cover rebuild, so the facade remains visually consistent with destruction.
+- LOS, glass shattering, the established first-shot accuracy penalty, movement blocking, wall HP, and breach rules are unchanged.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Static validation confirms the FPV camera uses 0.12/140 clipping, the current ground material no longer uses the old negative polygon offset, and the prior 0.04/180 FPV camera definition is absent.
+- Static validation confirms all six alien archetypes retain unique body colors and that the new gray-scout / insectoid / reptilian / chitin / pale-psionic palette markers are present.
+- Transparent-window validation now requires explicit sill and lintel connector seams rather than the Browser 0335 rule that skipped every structural connection touching a window.
+- Save format remains 4; existing campaigns require no migration.
+
+MANUAL TEST GATES
+-----------------
+1. Reproduce the same FPV walk across a multi-texture hex boundary that was flickering in Browser 0335. Confirm the edge remains stable while the camera walks, leans, turns, and enters Tactical Focus.
+2. Switch out of FPV and confirm the elevated isometric battlefield still has the same rich terrain colors/textures and does not show a new seam regression.
+3. View every identified alien archetype in the Mainframe and then in 3D tactical view; confirm the battlefield colors now read closer to the corresponding database image family while silhouettes remain distinct.
+4. Inspect wall-window-wall and window-window sequences in FPV. Confirm the facade is visually continuous at the sill and lintel but the central glass aperture remains transparent.
+5. Destroy/breach a structural segment adjacent to a window and confirm its junction connector disappears with that structure.
+
+PREVIOUS BUILD - 0335
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.17.0335_FPV_NAV_HUD_TRANSPARENT_WINDOWS_AND_AI_RESCUE_DUSTOFF_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
@@ -2111,5 +2169,6 @@ A complete live Chromium tactical/geoscape smoke test remains the final validati
 4. Confirm no two living soldiers finish a round on the same hex.
 5. Escort a VIP/civilian with a fire-team leader, spot an alien, test both escort-support choices, and confirm detached supports return afterward.
 6. Station Ready interceptors at several bases, select `All Bases`, verify staggered arrivals, destroy the UFO before every interceptor arrives, and follow the remaining aircraft home through normal ferry routing.
+
 
 

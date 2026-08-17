@@ -2,10 +2,45 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.0335_FPV_NAV_HUD_TRANSPARENT_WINDOWS_AND_AI_RESCUE_DUSTOFF_PATCH`
+Current handoff build: `v0.26.08.17.0345_FPV_DEPTH_STABILITY_ALIEN_DATABASE_PALETTE_AND_CONTINUOUS_WINDOW_WALL_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0335 expands the AI-observer FPV into a navigable combat visor with soldier identity, a continuously scrolling compass, and a knowledge-limited north-up local mini-map. The same build makes 3D window geometry visually honest to the existing see-through/shoot-through rules by replacing opaque window-wall backing with real framed transparent apertures. Mandatory VIP operations under Simulation/Hybrid AI may now Dust Off as a resolved failure once every VIP is rescued or dead and the missed rescue quota is unrecoverable, even with hostiles still active. Browser 0245 modular aliens/Critical Kills/vegetation/depth stability, Browser 0205 sidewalks/Tactical Focus, Browser 0145 rich terrain/FPV movement presentation, Browser 0135 explicit-material terrain safety, and earlier victory/performance systems remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 0345 targets the remaining FPV-only hex-edge shimmer at the perspective depth layer: the first-person camera uses a safer near/far range and ground surfaces no longer carry the obsolete negative polygon offset. Modular alien battlefield colors are remapped toward the Mainframe database sprite families while preserving Browser 0245 silhouettes and gib-capable body parts. Transparent windows remain genuinely see-through, but wall/window junctions now use continuous sill/lintel connector geometry so traditional facades no longer show open gaps; those connectors disappear with destroyed source structure. Browser 0335 FPV identity/compass/mini-map and AI terminal VIP Dust Off, Browser 0245 Critical Kills/vegetation/modular aliens, Browser 0205 sidewalks/Tactical Focus, Browser 0145 rich terrain/FPV movement presentation, Browser 0135 explicit-material terrain safety, and earlier victory/performance systems remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
+
+
+# v0.26.08.17.0345 - FPV Depth Stability, Mainframe Alien Palettes + Continuous Window Walls
+
+## FPV perspective-depth stability doctrine
+
+- The reported terrain-edge instability is first-person-specific. Browser 0345 therefore treats it as a perspective depth-buffer problem rather than another terrain-palette or isometric-renderer problem.
+- FPV uses a 0.12 near plane and 140 far plane instead of 0.04/180. The camera-space weapon remains safely beyond the near clip while the perspective depth range becomes much more precise at low viewing angles.
+- Rich ground surfaces no longer request a negative polygon offset. The terrain face, lower stable bed, fog layer, and gameplay overlays already have distinct physical Y separation, and additional shader depth bias is not part of the stable renderer doctrine.
+- The explicit-material fix from Browser 0135 remains authoritative. Ground must not return to the `instanceColor`/`setColorAt()` path that caused the black battlefield.
+- This change is presentation-only. Hex identity, terrain palette, road/sidewalk/access-walk generation, vegetation, movement, pathfinding, fog knowledge, cover, shooting, and AI are unchanged.
+
+## Mainframe-aligned modular alien palette doctrine
+
+- Browser 0245's six modular primitive silhouettes remain the canonical lightweight tactical bodies and remain built from detachable components for exceptional Critical Kill dismemberment.
+- Battlefield color identity should visually correspond to the same sprite family used by `AlienAvatar` in the Mainframe database: Signal Leech/gray-scout -> cool gray; Glass Wraith -> translucent cyan-white; Needle Drone/insectoid -> bronze-tan mechanical chitin; Tide Horror/reptilian -> olive/reptile green; Chitin Brute -> rust-brown shell; Pale Commander/psionic -> pale gray-lilac.
+- Materials may still use darker structural accents and brighter anatomical/energy accents so body parts remain readable during movement and dismemberment.
+- Color changes never imply new alien statistics, abilities, research requirements, remains, or tactical knowledge.
+
+## Continuous transparent-window facade doctrine
+
+- Window cells must communicate two facts simultaneously: they belong to one continuous building wall, and the center of the cell is a transparent glass aperture through which LOS/shots can pass.
+- A junction involving a live window may not use a full-height opaque bridge. Instead the renderer connects neighboring structural cells with a low sill band and an upper lintel band, leaving the eye-level opening unobstructed.
+- Solid wall-to-wall connections continue using the full structural bridge.
+- Connector meshes are derived from the same live cover records as the wall/window cells. Destroying either contributing structural cell removes the connector during the normal cover-layer rebuild; no decorative geometry can survive as an indestructible floating wall remnant.
+- Glass transparency, shattered-window presentation, movement blocking, first-projectile shatter/accuracy penalty, LOS, cover HP, and breach rules remain the established gameplay authority.
+
+## Validation and native parity
+
+- All six non-empty browser scripts pass syntax validation.
+- Build Health explicitly checks the 0.12/140 FPV camera range, absence of the former ground polygon-offset bias, unique Mainframe-aligned alien material families, and continuous sill/lintel window junctions.
+- Manual parity testing should compare the exact FPV terrain boundary that shimmered under 0335, then inspect intact and destroyed wall-window junctions.
+- Native Godot should eventually preserve the same visual doctrines: sufficient FPV depth precision, species colors matching database art, transparent glass that agrees with ballistics, and facade connectors that are owned by/destruct with their source structural cells.
+
+---
 
 # v0.26.08.17.0335 - FPV Navigation HUD, Transparent Windows + AI Rescue Dust Off
 
