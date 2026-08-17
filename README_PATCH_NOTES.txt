@@ -1,6 +1,66 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.17.0030_BRIGHT_REGIONAL_TERRAIN_READABILITY_AND_ASPHALT_REMOVAL_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Reworked the persistent Three.js tactical ground after live screenshots showed Browser 2355 still rendering arid daylight missions as a dark, nearly uniform asphalt sheet. The remaining problem was the visual stack rather than neighbor averaging: palette CanvasTextures were still multiplied across every tile and produced a repeated diagonal streak pattern, while the explored-ground fog veil remained dark enough to bury already-known biome color. Browser 0030 removes the active ground texture map entirely, renders explicit per-cell biome colors, raises daylight readability by regional environment, narrows the seam underlay again, and lightens only explored daylight fog. Unrevealed fog-of-war remains strongly obscured.
+
+BRIGHT BIOME-SPECIFIC GROUND
+----------------------------
+- Persistent 3D ground now uses one vertex-colored instanced hex surface with the authoritative per-cell terrain color written directly to each instance.
+- The active tile material no longer uses `tacticalThreePersistentGroundTexture(...)`; this removes the repeated diagonal dash/streak artifact visible in both isometric and FPV screenshots.
+- Arid daylight receives the strongest readability lift so desert scrub, dusty yards, dry ground, and pale stone read as tan/ochre/sun-bleached surfaces rather than charcoal.
+- Mediterranean, tropical, temperate, boreal, and tundra/alpine surfaces receive smaller environment-specific daylight lifts that preserve their own palette identity.
+- True roads and service lanes intentionally receive much less lift, preserving the visual hierarchy of darker pavement against brighter surrounding soil/vegetation.
+- Twilight and night retain darker presentation scaling; the change does not turn nighttime missions into daylight.
+
+FOG-OF-WAR READABILITY
+----------------------
+- Explored-but-not-currently-visible ground uses a 13% veil during daylight instead of the previous 38% dark overlay.
+- Twilight explored fog remains stronger at 24%; night remains stronger at 36%.
+- Completely unrevealed cells remain heavily obscured: 72% by day, 79% at twilight, and 84% at night.
+- No tactical knowledge is added. Alien/civilian/objective reveal rules and the authoritative visible/explored sets are unchanged.
+
+SEAMS / HEX READABILITY
+-----------------------
+- Surface geometry scale is tightened from 1.008 to 1.006 and raster-closing underlay scale from 1.018 to 1.012.
+- Seam color is now only about 1.5% darker than the owning presented tile and receives almost no detail-color pull.
+- This keeps tiny WebGL gaps closed without redrawing the battlefield as dark hex outlines.
+- Per-cell deterministic color variation remains, but its range is reduced so it cannot overpower the terrain category.
+
+PRESERVED SYSTEMS
+-----------------
+- The left-side shot-result stack remains exactly where it is.
+- FPV pre-aim, weapon rendering, target/VIP/civilian/extraction HUD, camera smoothing, sky/day-night atmosphere, architecture, victory music, reinforcement victory gate, pathfinding, cooperative aftermath, and lazy memorial indexing remain active.
+- Cover, movement, pathfinding, line of sight, fog knowledge, hit chance, AI decisions, Time Units, mission resolution, and campaign data are unchanged.
+- Save format remains 4.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Static release validation confirms the persistent terrain builder contains no active ground texture map, uses explicit instance colors, retains the new patch flag, keeps the left shot stack, and uses the narrower seam geometry.
+- A representative arid daylight fixture moves desert scrub from approximately `#745726` to `#9c7733` (luminance ~122) and dry ground from approximately `#a87539` to `#da9b51` (luminance ~163), while a true road remains near `#455060` (luminance ~79).
+- Build Health now requires the bright regional terrain marker, texture-map-free persistent terrain, a brighter arid surface than road surface, narrow color-matched seams, and the reduced daylight explored-fog opacity.
+
+MANUAL TEST GATES
+-----------------
+1. Re-run an arid Small Town daylight mission similar to the supplied screenshots. Open ground should read as dusty tan/ochre/stone, not black asphalt.
+2. From 3D Iso, verify roads remain visibly darker than lawns/yards/scrub/soil and that terrain categories can be distinguished at a glance.
+3. Enable FPV and verify nearby visible ground retains the same bright regional colors without the repeating diagonal dash texture.
+4. Move into previously explored but currently unseen ground and verify it is shaded but still readable; completely unrevealed terrain should remain strongly fogged.
+5. Confirm the left-side shot-result stack remains unchanged.
+6. Run Build Health and confirm the FPV/terrain readability contract reports OK.
+
+PREVIOUS BUILD - 2355
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.16.2355_TERRAIN_PALETTE_RESTORE_AND_COLOR_MATCHED_SEAMS_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

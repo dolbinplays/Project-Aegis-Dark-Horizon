@@ -1,15 +1,50 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-08-16
-Current handoff build: `v0.26.08.16.2355_TERRAIN_PALETTE_RESTORE_AND_COLOR_MATCHED_SEAMS_PATCH`
+Last updated: 2026-08-17
+Current handoff build: `v0.26.08.17.0030_BRIGHT_REGIONAL_TERRAIN_READABILITY_AND_ASPHALT_REMOVAL_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2355 removes whole-tile terrain neighbor averaging after field testing showed the reduced Browser 2335 blend still reading as a uniform asphalt sheet. Persistent and fallback Three.js terrain again use authored palette-specific surfaces, subtle organic palette texture, and narrow per-cell color-matched seam underlays. The left-side shot stack, FPV pre-aim/HUD/weapon/sky/architecture, Browser 2335 lazy memorial index, Browser 2145 terminal victory gate, Browser 1930 pathfinding optimization, Browser 0043 victory music, Browser 2207 cooperative aftermath, and earlier renderer/visibility work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 0030 responds to live isometric/FPV screenshots showing Browser 2355 still too dark and asphalt-like. Persistent 3D ground is now texture-map free and uses explicit per-cell regional colors; arid daylight receives a strong tan/ochre readability lift while real roads remain darker, explored daylight fog is reduced without revealing unrevealed cells, and the seam underlay is thinner and almost color-identical to its owning tile. The left-side shot stack, FPV pre-aim/HUD/weapon/sky/architecture, Browser 2335 lazy memorial index, Browser 2145 terminal victory gate, Browser 1930 pathfinding optimization, Browser 0043 victory music, Browser 2207 cooperative aftermath, and earlier renderer/visibility work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
 
 
 ---
+
+# v0.26.08.17.0030 - Bright Regional Terrain Readability and Asphalt Removal
+
+## Ground-surface readability doctrine
+
+- A currently visible tactical cell must display its regional terrain identity directly. The persistent 3D renderer may not multiply every tile through a repeating dark CanvasTexture that changes the apparent palette.
+- Explicit instance color is authoritative for the persistent 3D ground surface. Deterministic per-cell variation may slightly shift a terrain's own base/accent range, but it cannot turn arid soil, scrub, grass, stone, or farmland into a shared charcoal surface.
+- Regional daylight presentation is deliberately asymmetric: arid terrain receives the largest brightness/readability lift; Mediterranean, tundra, boreal, temperate, and tropical profiles receive smaller lifts. Roads and service lanes remain darker exceptions so built pavement is visually legible against surrounding ground.
+- Twilight and night remain darker. Presentation brightness follows the mission's stored tactical clock/location and does not change tactical visibility range or AI knowledge.
+
+## Texture and seam doctrine
+
+- The active persistent ground material is texture-map free. Repeated palette-level CanvasTextures are forbidden on the main tile face after live screenshots showed their ellipse/mottle pattern becoming regular diagonal dashes from both elevated and first-person cameras.
+- Regional texture should come from terrain color variation, flora/stone scatter, cover, structures, future decals, and other non-repeating detail rather than stamping the same small texture across every hex in a palette.
+- Raster-closing seam geometry is presentation-only and should be nearly the same color as the owning tile. It exists to close WebGL cracks, not to outline the tactical grid.
+- Browser 0030 narrows surface/underlay scale to 1.006/1.012 and uses a seam within a few percent of the tile's presented color.
+
+## Fog-of-war readability doctrine
+
+- Unrevealed terrain remains strongly concealed and cannot gain tactical information through this visual pass.
+- Explored terrain is known terrain and should remain recognizable, particularly during bright daylight. Browser 0030 reduces the explored daylight veil to 13% while keeping unrevealed daylight fog at 72%.
+- Twilight and night retain progressively stronger explored and unrevealed veils. Fog presentation must continue consuming the same authoritative visible/explored state as 2D and AI playback.
+
+## Screenshot-driven regression target
+
+- An arid Small Town daylight operation must no longer resemble a black asphalt plane in either elevated 3D Iso or FPV.
+- Representative arid scrub and dry-ground colors should land in clearly readable tan/ochre ranges, while actual road cells remain medium-dark gray.
+- FPV must not show the repeating diagonal ground dashes seen in the Browser 2355 screenshots.
+- The well-received left-side shot-result stack is explicitly preserved.
+
+## Gameplay and native parity
+
+- Terrain color, fog opacity, and seams are presentation only. Cover, passability, occupancy, pathfinding, LOS, revealed contacts, extraction, Time Units, AI, hit resolution, and mission outcomes remain unchanged.
+- Save format remains 4 because no campaign or tactical-state schema changes are introduced.
+- Native Godot should apply the same doctrine when its tactical rendering catches up: direct biome materials, clear road-vs-ground value separation, non-repeating surface detail, and distinct known-vs-unrevealed fog treatment.
 
 # v0.26.08.16.2355 - Terrain Palette Restore and Color-Matched Seams
 
