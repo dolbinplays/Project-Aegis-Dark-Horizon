@@ -2,15 +2,42 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.0630_TACTICAL_AI_MAP_PLAYBACK_TDZ_HOTFIX_PATCH`
+Current handoff build: `v0.26.08.17.0725_ROAD_VEHICLE_HEIGHT_AND_ISO_FIT_MAP_SAFE_FRAME_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0630 hotfixes the Browser 0625 tactical-map TDZ crash by removing the pre-declaration `aiMapPlayback` read from the incoming-fire reaction camera. The reaction now keys directly from the already-available `aiPlayback?.view === "map"` state, preserving all 0625 presentation behavior without changing tactical simulation or save data. Browser 0625 incoming-fire reactions/FPV victory/saucer interiors, Browser 0605 TPV lifecycle stability, Browser 0555 vehicle/Skyranger/HUD work, and earlier tactical systems remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 0725 implements the two queued Browser 0630 presentation refinements: road-vehicle bodies/cabins/windows are reduced to two-thirds of the prior doubled height while preserving their authoritative multi-hex hard-cover footprint, and Three.js Iso Fit Map now uses live viewport aspect, a true world-space map center, and explicit corner-safe zoom margin so the complete tactical diamond remains visible. Browser 0630 TDZ protection and all 0625/0605/0555 tactical observer systems remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+
+Browser 0725 roadmap completion note: **Both Browser 0630 documentation-only refinements are now implemented. Road vehicles use two-thirds of the prior vertical presentation height without changing their footprint/cover rules, and Three.js Iso Fit Map now reserves explicit safe perimeter space around all projected battlefield corners.**
 
 
 
 
 
 
+
+# v0.26.08.17.0725 - Road Vehicle Height + Iso Fit Map Safe Frame
+
+## Road-vehicle proportion refinement
+
+- Road vehicles keep the authoritative Browser 0555/0525 tactical footprint: ordinary cars/vans/utility vehicles remain 3x2 and buses remain longer multi-hex objects.
+- Browser 0725 reduces the visual vertical scale of road-vehicle bodies, cabins, and bus windows to exactly two-thirds of the Browser 0555/0630 presentation height.
+- The change is presentation-only with respect to size in the vertical axis. Wheels, horizontal footprint, road orientation, solid occupancy, HP, destruction state, hard-cover behavior, pathfinding blockers, and LOS blocking remain unchanged.
+- A shared `TACTICAL_ROAD_VEHICLE_HEIGHT_SCALE` constant now owns the vertical proportion so subsequent tuning can be performed consistently.
+
+## Three.js Iso Fit Map safe-framing doctrine
+
+- Fit Map must frame the complete projected battlefield, not merely the nominal grid center or actor focus.
+- Browser 0725 computes Fit Map zoom using the live render-canvas aspect ratio and then applies an explicit safety reduction so map edges are not allowed to sit directly on the orthographic clip boundary.
+- While Fit Map is active, the camera targets the actual world-space center derived from the complete battlefield bounds. AI movement/shot focus cannot pull the full-map framing toward one corner.
+- Small 64x64, Medium 80x80, and Large 96x96 maps retain deliberate projected margin at wide and square viewport shapes. The reported near/bottom-corner clipping case is included in the regression fixture.
+- Close, Near, Wide, Full, FPV, TPV, incoming-fire reaction cuts, and Critical Kill camera behavior retain their established focus rules.
+
+## Validation and native roadmap
+
+- Browser Build Health checks the two-thirds vehicle scale and verifies projected Fit Map margin for 64/80/96 maps across wide 1457x653, standard 1280x720, and square 900x900 viewports.
+- All six non-empty embedded JavaScript blocks pass syntax validation.
+- Save format remains 4. Native parity should eventually preserve the same vehicle proportion and full-map safe-framing intent while using Godot-native camera calculations.
+
+---
 
 # v0.26.08.17.0630 - Tactical AI Map Playback TDZ Hotfix
 
@@ -84,10 +111,12 @@ Current patch status: **Browser 0630 hotfixes the Browser 0625 tactical-map TDZ 
 - Regional day, twilight, night, fog, stars, and directional lighting remain derived from mission coordinates and campaign time. No physical sun/moon sphere is permitted to intersect or follow the first-person horizon.
 - AI Tactical Map playback supports mutually exclusive First Person and Third Person observer modes over the same authoritative persistent renderer and battle state. Third Person follows the current living AEGIS action actor from a smoothed over-the-shoulder position; neither observer mode creates a second simulation.
 - Leaving map playback, switching to 2D, or renderer failure clears both observer modes and restores the prior tactical camera safely.
+- **Implemented in Browser 0725:** Three.js Iso `Fit Map` now frames the **entire projected battlefield with explicit safe padding on every edge and all four corners**. The reported near/bottom-corner clipping case is covered by a wide-viewport regression. Fit Map derives zoom from projected map bounds plus a conservative safety factor, uses the live viewport aspect ratio, and targets the true world-space map center without altering tactical coordinates, map size, click picking, pathfinding, fog, unit positions, or AI behavior.
 
 ## Vehicle tactical-footprint doctrine
 
 - Ordinary road vehicles retain a 3x2 footprint and buses a longer 5x2 footprint. Their vertical body/cabin proportions are approximately doubled so soldier scale is believable in Iso, FPV, and TPV.
+- **Implemented in Browser 0725:** road-vehicle vertical scale is reduced to **two-thirds of the Browser 0555/0630 height**. The existing 3x2 car/truck footprint and longer bus footprint remain unchanged, along with vehicle solidity, HP, hard-cover behavior, pathfinding occupancy, LOS blocking, and destruction rules.
 - The complete footprint is authoritative hard cover and solid occupancy, not only decorative spacing. Shared cover lookup, pathfinding blocker indexes, and LOS/visibility contexts expand the vehicle cover across every footprint cell.
 - A vehicle's single authoritative HP/destruction record governs the whole footprint: intact cells block movement/LOS as hard cover, and destruction releases the footprint without requiring duplicate cover records or save migration.
 

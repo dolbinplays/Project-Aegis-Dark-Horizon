@@ -1,6 +1,53 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.17.0725_ROAD_VEHICLE_HEIGHT_AND_ISO_FIT_MAP_SAFE_FRAME_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Implements the two queued tactical-presentation roadmap refinements from Browser 0630. Road vehicles retain their established multi-hex solid/hard-cover footprints but reduce vertical presentation to two-thirds of the prior doubled height. Three.js Iso Fit Map now uses the live canvas aspect ratio, the true world-space center of the complete battlefield, and additional corner-safe zoom padding so the entire projected map remains onscreen.
+
+ROAD-VEHICLE HEIGHT REFINEMENT
+------------------------------
+- Cars, vans, utility vehicles, trucks represented by the utility profile, and buses retain their existing 3x2 or longer multi-hex visual/tactical footprints.
+- Body, cabin, and bus-window vertical scales use a shared `TACTICAL_ROAD_VEHICLE_HEIGHT_SCALE = 2/3` multiplier.
+- The vertical positions of those body/cabin/window components use the same multiplier, preserving their assembled proportions rather than compressing only individual pieces.
+- Wheel placement, vehicle width/length, road alignment, authoritative HP, destruction record, solid occupancy, hard-cover behavior, pathfinding footprint, and LOS blocking are unchanged.
+- The Browser 0555 doubled-height feature remains part of history, but Browser 0725 supersedes its final presentation height.
+
+THREE.JS ISO FIT MAP SAFE FRAME
+-------------------------------
+- Fit Map now applies an explicit 0.86 safety factor after calculating the projected-map fit zoom.
+- The fit calculation uses the live Three.js canvas width and height rather than a default viewport aspect.
+- While Fit Map is active, action focus no longer drags the camera within the available slack. The camera targets the true world-space center derived from the complete map's outer rows and columns.
+- This guarantees deliberate perimeter room around all four projected map corners, including the near/bottom corner that could previously be clipped.
+- Ordinary Close/Near/Wide/Full camera focus behavior remains unchanged.
+- Tactical coordinates, click picking, map size, pathfinding, fog, AI movement, unit positions, cover, and combat rules are unchanged.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added a regression contract covering the exact two-thirds vehicle-height multiplier and the current explicit-material vehicle renderer wiring.
+- Fit Map validation checks 64x64, 80x80, and 96x96 battlefields at 1457x653, 1280x720, and 900x900 viewports.
+- The wide 1457x653 / 64x64 fixture retains roughly 13 world-units of vertical projected-map margin after the safety factor.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Save format remains 4; no migration is required.
+
+MANUAL TEST GATES
+-----------------
+1. Open a tactical map containing cars, vans/utility vehicles, and a bus. Confirm their footprint remains large/solid while their height is visibly two-thirds of Browser 0630.
+2. In 3D Iso choose Fit Map on Small, Medium, and Large battlefields. Confirm all four map corners are simultaneously visible with a small perimeter margin.
+3. Resize the browser to a very wide shape similar to the reported screenshot and confirm the near/bottom corner remains inside the canvas.
+4. Click/select units after leaving Fit Map and confirm ordinary camera focus and exact hex picking are unchanged.
+5. Confirm units still path around road vehicles and treat their complete footprints as hard cover.
+
+PREVIOUS BUILD - 0630
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.17.0630_TACTICAL_AI_MAP_PLAYBACK_TDZ_HOTFIX_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
@@ -2514,6 +2561,7 @@ A complete live Chromium tactical/geoscape smoke test remains the final validati
 4. Confirm no two living soldiers finish a round on the same hex.
 5. Escort a VIP/civilian with a fire-team leader, spot an alien, test both escort-support choices, and confirm detached supports return afterward.
 6. Station Ready interceptors at several bases, select `All Bases`, verify staggered arrivals, destroy the UFO before every interceptor arrives, and follow the remaining aircraft home through normal ferry routing.
+
 
 
 
