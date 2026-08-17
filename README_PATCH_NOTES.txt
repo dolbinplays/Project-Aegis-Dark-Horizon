@@ -1,6 +1,57 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.17.0625_INCOMING_FIRE_REACTION_FPV_VICTORY_DANCE_AND_ALIEN_SAUCER_INTERIOR_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Expanded AI-observer battle presentation. Incoming alien fire now temporarily cuts to a close third-person reaction view of the targeted AEGIS soldier and returns to the player's prior camera afterward. Successful missions can remain in FPV after AI playback ends, with the soldier-eye camera participating in the victory dance. Alien reinforcement saucers now expose a simple illuminated interior behind an open ramp.
+
+INCOMING-FIRE TARGET REACTION CAMERA
+------------------------------------
+- Tactical shot presentation now retains shooter ID/team and target ID/team metadata.
+- During Tactical Map AI playback, an alien shot aimed at an AEGIS soldier temporarily overrides Iso, FPV, or TPV with a third-person reaction camera centered on the targeted soldier.
+- The camera is placed just beyond and to one side of the target along the incoming-fire axis so the player can see the soldier, the direction of attack, and the impact context.
+- The automatic cut is presentation-only. It does not toggle the player's selected observer mode, hand back control, recalculate the attack, or alter hit chance, damage, TU, ammunition, or action order.
+- When the shot effect expires, the renderer returns to the previously selected Iso/FPV/TPV camera automatically.
+- If the player was in FPV, the viewed soldier model is temporarily made visible during the reaction cut so the targeted body is actually shown.
+
+FPV VICTORY CELEBRATION
+------------------------
+- A victorious AI-controlled mission no longer forces an active FPV/TPV observer back to Iso merely because the AI playback stream has completed.
+- The surviving observed soldier remains the FPV actor while the final battlefield stays open.
+- First-person victory motion now adds rhythmic side sway, head lift/nod, small roll, and matching weapon movement on top of the existing soldier victory-dance animation.
+- This is a camera presentation of the same established success-only victory state. Fallen soldiers, failures, withdrawals, incomplete objectives, and unresolved reinforcement states do not receive it.
+
+ALIEN SAUCER INTERIOR
+---------------------
+- Open-ramp alien reinforcement saucers no longer terminate at a solid black rear panel.
+- The rear opening is framed by left/right jambs and an upper lintel.
+- A lightweight illuminated troop bay is visible behind the ramp: floor, ceiling, side walls, two simple seats, a forward bulkhead, overhead light strips, and a small interior core light.
+- The interior is a presentation layer and does not change the craft footprint, reinforcement placement, ramp logic, cover, pathfinding, or mission rules.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added a contract covering incoming-fire shot metadata, targeted-soldier TPV reaction wiring, FPV victory camera motion, and open-saucer interior geometry.
+- Updated the prior TPV lifecycle contract so the new incoming-fire reaction animation path remains part of the persistent-renderer animation gate.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Save format remains 4; no migration is required.
+
+MANUAL TEST GATES
+-----------------
+1. Watch an AI Tactical Map battle in Iso, FPV, and TPV and let an alien fire at an AEGIS soldier. Confirm the camera temporarily cuts to the targeted soldier and returns to the prior view after the shot.
+2. Win while FPV is enabled. Confirm the view remains in FPV on the final battlefield and the camera visibly bobs/sways with the surviving soldier's celebration.
+3. Observe an alien reinforcement saucer with its ramp open from FPV/TPV and confirm a readable illuminated interior is visible behind the ramp.
+4. Confirm incoming-fire cuts do not change combat results or AI control state.
+
+PREVIOUS BUILD - 0605
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.17.0605_TPV_CAMERA_LIFECYCLE_AND_CHASE_FOLLOW_FIX_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

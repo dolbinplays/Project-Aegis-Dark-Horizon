@@ -2,14 +2,44 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.0605_TPV_CAMERA_LIFECYCLE_AND_CHASE_FOLLOW_FIX_PATCH`
+Current handoff build: `v0.26.08.17.0625_INCOMING_FIRE_REACTION_FPV_VICTORY_DANCE_AND_ALIEN_SAUCER_INTERIOR_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0605 fixes the Browser 0555 Third Person observer lifecycle regression: TPV now seeds its chase camera from the acting soldier before the first render, explicitly keeps the persistent animation loop alive, and invalidates camera ownership when Third Person toggles. Browser 0555 sky stability, tall solid vehicles, hollow Skyranger, TPV/HUD foundation; Browser 0525 replacement-beacon flyover/current-order logic; and Browser 0455 continuous FPV ground, canonical alien models, critical-kill cinema, failed clear-field salvage, street life, and beacon redeployment remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 0625 expands AI-observer presentation: incoming alien fire temporarily cuts to a targeted-soldier TPV reaction camera without changing the player's selected observer mode, successful missions preserve FPV/TPV after the AI stream completes and FPV camera motion now participates in the victory dance, and open alien reinforcement saucers expose a simple illuminated troop bay. Browser 0605 TPV lifecycle stability, Browser 0555 vehicle/Skyranger/HUD work, Browser 0525 replacement-beacon flyover/current-order logic, and Browser 0455 continuous FPV ground/canonical alien models/critical-kill cinema remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
 
 
 
+
+
+# v0.26.08.17.0625 - Incoming Fire Reaction, FPV Victory Dance, and Alien Saucer Interior
+
+## Incoming-fire observer doctrine
+
+- During AI Tactical Map playback, a hostile alien shot targeting an AEGIS soldier temporarily owns the 3D camera with a close third-person reaction view of that targeted soldier.
+- The cut derives from the authoritative shot that has already been chosen/resolved. It cannot alter targeting, RNG, damage, ammunition, Time Units, AI decisions, or action order.
+- The reaction view is transient renderer state rather than a player control-mode toggle. When the shot presentation ends, camera ownership returns to the player's previous Iso, FPV, or TPV observer mode.
+- The target soldier is made visible during the reaction cut even when that same soldier was the hidden self-model of an FPV camera.
+
+## FPV victory celebration doctrine
+
+- A terminal successful mission may retain an active FPV or TPV observer after the streamed AI resolver completes. Completing the AI stream is not itself a reason to eject the player from the selected observer camera when the battlefield is still open for review.
+- Every surviving soldier continues using the established victory-dance actor animation. When the observed soldier is in FPV, camera sway, lift, nod, roll, and weapon motion provide the first-person equivalent of that dance.
+- The behavior is success-only and remains gated behind the same authoritative terminal mission state/reinforcement-commit rules as the existing victory dance and victory music.
+
+## Alien reinforcement saucer interior
+
+- An alien reinforcement saucer with an open ramp presents a framed rear aperture instead of a solid rear block.
+- A simple low-cost troop bay is visible from the ramp: floor, ceiling, side walls, seats, forward bulkhead, light strips, and core light.
+- This is presentation only. Saucer footprint, landing/ramp cells, reinforcement deployment, cover/pathfinding, and combat rules remain unchanged.
+
+## Validation and native roadmap
+
+- Browser Build Health now checks incoming-shot metadata, targeted-soldier reaction-camera wiring, FPV victory movement, and saucer-interior geometry.
+- All six embedded JavaScript blocks pass syntax validation. Save format remains 4.
+- Native parity should eventually preserve the same camera doctrine: incoming hostile fire may create a short target reaction shot, successful first-person observation should remain celebratory after resolution, and open alien transports should expose readable interiors without changing tactical occupancy.
+
+---
 
 
 # v0.26.08.17.0605 - Third-Person Camera Lifecycle + Chase Follow Fix
