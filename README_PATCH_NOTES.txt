@@ -1,6 +1,48 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.17.1235_ISO_FIT_MAP_EXACT_PROJECTED_BOUNDS_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Corrects the remaining Three.js Iso Fit Map southeast-edge clipping reported after Browser 0725. The previous safe-frame pass calculated Fit Map against an approximate symmetric viewport model even though the live orthographic camera uses asymmetric top/bottom bounds. Fit Map now measures the actual rendered boundary-hex vertices, fits them against the real camera frustum, and offsets the camera target for the frustum's asymmetric center.
+
+EXACT PROJECTED-BOUND FIT MAP
+-----------------------------
+- Fit Map no longer estimates the battlefield from cell centers plus generic X/Y margins.
+- The fit helper projects every vertex of the outermost rendered hexes, including odd-row staggering and the southeast perimeter, into the same camera-right/camera-up coordinate system used by Three.js.
+- Zoom is calculated from those exact rendered bounds against the actual live `tacticalIsoCameraBounds(...)` width and height.
+- The camera target is shifted to compensate for the real orthographic frustum center. This matters because the tactical camera deliberately has different top and bottom extents; simply looking at the nominal world center does not center the rendered map inside that frustum.
+- Approximately 4.5% projected padding is retained around the limiting axis, with a minimum fractional-hex safety margin.
+- The old 90% CSS scale workaround is removed. Fit Map now uses the available canvas instead of shrinking the entire tactical view independently of the camera calculation.
+- Close, Near, Wide, Full, FPV, TPV, incoming-fire reaction, and Critical Kill cameras are unchanged.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- The existing road-vehicle two-thirds-height contract remains active and unchanged.
+- Fit Map validation now checks the exact rendered boundary rather than the approximate projected-center bounds.
+- Regression fixtures cover 64x64, 80x80, and 96x96 maps at 1457x653, 1450x635, 1280x720, and 900x900 viewport shapes.
+- A dedicated southeast assertion verifies the rightmost/lower projected boundary stays inside the real frustum plus padding.
+- Independent numeric validation confirms positive margin on all four rendered edges for every fixture.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Save format remains 4; no migration is required.
+
+MANUAL TEST GATES
+-----------------
+1. Reopen the same 64x64 Three.js Iso mission from the reported screenshot and select Fit Map.
+2. Confirm the southeast / near-bottom corner is fully visible rather than ending at the camera boundary.
+3. Confirm Fit Map now uses substantially more of the canvas than Browser 0725 while still retaining a narrow safety perimeter.
+4. Resize to a wide browser shape and confirm all outer hexes remain visible.
+5. Leave Fit Map and verify ordinary unit focus, hex picking, FPV, and TPV are unchanged.
+
+PREVIOUS BUILD - 0725
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.17.0725_ROAD_VEHICLE_HEIGHT_AND_ISO_FIT_MAP_SAFE_FRAME_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

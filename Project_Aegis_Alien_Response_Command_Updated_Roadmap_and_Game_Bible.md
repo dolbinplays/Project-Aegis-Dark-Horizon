@@ -2,9 +2,9 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.0725_ROAD_VEHICLE_HEIGHT_AND_ISO_FIT_MAP_SAFE_FRAME_PATCH`
+Current handoff build: `v0.26.08.17.1235_ISO_FIT_MAP_EXACT_PROJECTED_BOUNDS_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0725 implements the two queued Browser 0630 presentation refinements: road-vehicle bodies/cabins/windows are reduced to two-thirds of the prior doubled height while preserving their authoritative multi-hex hard-cover footprint, and Three.js Iso Fit Map now uses live viewport aspect, a true world-space map center, and explicit corner-safe zoom margin so the complete tactical diamond remains visible. Browser 0630 TDZ protection and all 0625/0605/0555 tactical observer systems remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 1235 replaces Browser 0725's approximate 3D Iso Fit Map safe-frame calculation with exact projected rendered-hex bounds against the real asymmetric orthographic frustum. The southeast edge is explicitly covered, the old 90% CSS scaling workaround is removed, and Browser 0725's two-thirds road-vehicle height remains active. Save format remains 4; native Godot remains at 0026.**
 
 Browser 0725 roadmap completion note: **Both Browser 0630 documentation-only refinements are now implemented. Road vehicles use two-thirds of the prior vertical presentation height without changing their footprint/cover rules, and Three.js Iso Fit Map now reserves explicit safe perimeter space around all projected battlefield corners.**
 
@@ -13,6 +13,26 @@ Browser 0725 roadmap completion note: **Both Browser 0630 documentation-only ref
 
 
 
+
+# v0.26.08.17.1235 - Iso Fit Map Exact Projected Bounds
+
+## Exact rendered-perimeter camera doctrine
+
+- Three.js Iso `Fit Map` must fit the **rendered battlefield perimeter**, not an estimate derived only from cell centers, nominal map size, or a symmetric camera model.
+- Browser 1235 projects the vertices of every outer boundary hex using the same fixed tactical camera right/up basis used by the real renderer. Odd-row staggering and the southeast boundary are therefore part of the fit calculation directly.
+- The calculation uses the live `tacticalIsoCameraBounds(...)` frustum. Because this orthographic camera intentionally has asymmetric top and bottom bounds, the world target is offset so the rendered-map projected center aligns with the **actual frustum center**, not merely world `(0,0)`.
+- Fit zoom is chosen from the exact projected width/height plus approximately 4.5% padding on the limiting axis and a minimum fractional-hex margin. No map edge may sit exactly on the frustum boundary.
+- The Browser 0725 90% CSS scaling workaround is removed. Fit Map camera math alone owns complete-map framing, allowing the battlefield to use more of the canvas without risking southeast clipping.
+- Actor/action focus has no authority while Fit Map is active. Close, Near, Wide, Full, FPV, TPV, reaction-camera, and Critical Kill framing remain separate and unchanged.
+
+## Validation
+
+- Build Health checks exact rendered-bound containment for Small 64x64, Medium 80x80, and Large 96x96 battlefields across 1457x653, 1450x635, 1280x720, and 900x900 viewports.
+- A dedicated southeast condition verifies the lower/right rendered extremes remain inside the corresponding frustum limits after the target offset is applied.
+- Browser 0725's two-thirds road-vehicle height remains active without modification.
+- Save format remains 4. Native parity should adopt the same principle when native tactical Fit Map is implemented: derive framing from the true projected rendered bounds of the native map and the actual camera viewport.
+
+---
 
 # v0.26.08.17.0725 - Road Vehicle Height + Iso Fit Map Safe Frame
 
