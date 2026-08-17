@@ -2,9 +2,9 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.1335_TACTICAL_DRAG_PAN_SOLID_VEHICLES_SKYRANGER_VOICE_AND_FPV_DANCE_PATCH`
+Current handoff build: `v0.26.08.17.1515_NIGHT_OPERATIONS_DYNAMIC_LIGHTING_WEAPON_LIGHT_AND_FIELD_FLARE_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1335 adds persistent click-drag panning to the Three.js Iso tactical map, makes Tactical Map the sole player-facing AI handoff, closes the remaining multi-hex vehicle footprint seams across movement playback/LOS/shot collision, opens the friendly Skyranger rear troop bay while retaining solid indestructible hull cover, deduplicates AI shot voice events, and makes an already-active FPV camera enter the victory dance immediately. Browser 1235 exact Fit Map framing remains active. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 1515 turns night and twilight into authoritative tactical conditions. Unaided AEGIS vision falls to 7 hexes at full night and 12 at twilight, darkness reduces shot accuracy, and local illumination can restore practical visibility. Street lamps, deterministic abandoned-vehicle headlights, lit building windows, Skyranger perimeter/bay lights, underslung Weapon Lights, Field Flares, and existing alien beacon glow now feed the same indexed visibility context used by LOS and combat. AEGIS AI automatically activates Weapon Lights outside daylight; each soldier begins with one throwable Field Flare. Three.js local dynamic lights are capped to protect performance. Browser 1335 control/vehicle/Skyranger/voice fixes and Browser 1235 exact Fit Map framing remain active. Save format remains 4; native Godot remains at 0026.**
 
 Browser 0725 roadmap completion note: **Both Browser 0630 documentation-only refinements are now implemented. Road vehicles use two-thirds of the prior vertical presentation height without changing their footprint/cover rules, and Three.js Iso Fit Map now reserves explicit safe perimeter space around all projected battlefield corners.**
 
@@ -12,7 +12,47 @@ Browser 0725 roadmap completion note: **Both Browser 0630 documentation-only ref
 
 
 
+# v0.26.08.17.1515 - Night Operations, Dynamic Lighting, Weapon Lights + Field Flares
 
+## Night-operations tactical doctrine
+
+- Mission lighting is now gameplay-authoritative rather than cosmetic. Full daylight retains the established 20-hex human sight ceiling; twilight reduces unaided AEGIS sight to 12 hexes and full night reduces it to 7. Aliens retain better unaided dark vision (16 twilight / 14 night) so darkness initially favors them.
+- Darkness also affects fire-control quality. Unilluminated AEGIS targets impose an 8-point twilight or 18-point night accuracy penalty; aliens suffer smaller 3/6-point penalties. If the target cell is locally illuminated or the shooter is lighting it with a Weapon Light, that darkness penalty is removed. Existing range, cover, kneeling, window, weapon-mode, morale, and specialization modifiers still apply normally.
+- Visibility remains blocked by the established physical LOS rules. Artificial light can extend practical sight into an area, but it does not let a soldier see through walls, vehicles, Skyranger hull cells, or other opaque hard cover.
+
+## Environmental light sources
+
+- Street lamps become functional night light sources with an approximately 7-hex illumination radius.
+- A deterministic subset of abandoned road vehicles spawn with headlights left on. Ordinary cars/vans/trucks illuminate roughly 8 hexes; buses may illuminate roughly 9. Vehicle solidity and hard-cover/LOS blocking remain unchanged.
+- A deterministic subset of building windows are treated as lit interiors and illuminate approximately 5 hexes around the window/facade. Walls remain opaque; the light source does not alter structural pathing or shot rules.
+- The friendly Skyranger supplies approximately 8 hexes of tactical illumination around its rear ramp/extraction area. Its 3D model also carries perimeter lamps and a simple troop-bay light, while the existing hull remains solid and the ramp corridor remains passable.
+- Active Alien Field Beacons continue to emit a weaker local glow and can therefore create visible pockets in an otherwise dark battlefield.
+
+## Soldier-carried lighting
+
+- Every AEGIS soldier has an underslung **Weapon Light** state. In manual control it can be toggled on/off outside full daylight. It projects forward with approximately 14 hexes of useful gameplay reach and is represented by a real spotlight in FPV/TPV presentation.
+- Simulation AI automatically turns Weapon Lights on during twilight/night so AI-controlled fire teams do not intentionally fight with their lights disabled by default. The light state is included in visibility-cache keys, observer keys, playback snapshots, and persistent-render invalidation so toggling it immediately changes LOS.
+- Every soldier currently begins a mission with **1 Field Flare**. Throwing it costs 8 TU, has an 8-hex throwing range, and creates a mission-duration approximately 10-hex illumination zone. The flare is a light source rather than hard cover and may be thrown into unexplored darkness.
+- Field Flares and Weapon Lights are intentionally simple first-pass equipment. Future balancing may add flare duration, additional carried quantities, research/upgrades, batteries, light discipline, alien responses to illumination, or specialized night-vision equipment after playtesting.
+
+## Lighting architecture and performance doctrine
+
+- Environmental lights, Field Flares, Skyranger lights, and Weapon Lights all feed the same tactical visibility/accuracy authority rather than separate visual-only rules. The visibility context is cached by mission lighting state, relevant cover/light metadata, and observer Weapon Light state.
+- Adding or toggling a light invalidates only the relevant visibility caches. Existing bounded observer/terrain caches remain in use.
+- Three.js presentation uses emissive source geometry plus bounded local Point/Spot lights. Active environmental dynamic lights are capped at 14 in the persistent renderer to prevent a dense city night map from creating an unbounded GPU-light workload. Gameplay illumination remains authoritative even when presentation light count is capped.
+- Night atmosphere exposure, fog distance, hemisphere/key lighting, and sky palette are reduced to make darkness visually meaningful while retaining the existing safe sky-shell strategy that avoids the earlier FPV giant-dome clipping regression.
+
+## Save / native parity
+
+- Save format remains 4. Older live tactical states normalize missing `flashlightOn` to off and missing `flareCharges` to one, so no save migration is required.
+- Native Godot parity remains at 0026. Native implementation should preserve the doctrine—time-of-day sight penalties, authoritative light volumes, Weapon Light/Field Flare equipment, environmental lighting, and bounded rendering cost—rather than copying browser-specific Three.js implementation details.
+
+## Validation targets
+
+- Build Health covers night/day range changes, darkness accuracy penalties, artificial-light restoration, Weapon Light/Field Flare controls, Skyranger gameplay lighting, and bounded indexed visibility caching.
+- Manual test priority: compare the same mission at day/night, approach a lit street/building/car from darkness, toggle a Weapon Light in FPV/TPV, throw a Field Flare into unexplored darkness, verify walls/vehicles still block LOS, and confirm the Skyranger creates a safe illuminated extraction pocket.
+
+---
 
 # v0.26.08.17.1335 - Tactical Drag Pan, Solid Vehicles/Skyranger, Voice Dedup + FPV Victory Transition
 
