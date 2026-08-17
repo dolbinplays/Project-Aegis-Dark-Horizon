@@ -2,12 +2,55 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.0145_RICH_TERRAIN_EXPLICIT_MATERIAL_AND_FPV_AVOIDANCE_LEAN_PATCH`
+Current handoff build: `v0.26.08.17.0205_SIDEWALK_STABLE_TERRAIN_TACTICAL_FOCUS_AND_LIGHT_VEGETATION_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0145 keeps Browser 0135's proven explicit-material fix for the black tactical ground while restoring the richer terrain presentation that earlier diagnostic attempts had stripped away. Balanced 9-18% neighbor fading, authored base/accent variation, procedural ground texture, rotated surface detail, and color-matched seams now run through explicit material batches with no terrain `setColorAt()` / `instanceColor` dependency. FPV also gains a small eased left/right avoidance lean while the observed AI soldier moves past nearby units or cover. The left-side shot stack, FPV pre-aim/HUD/weapon/sky/architecture, terminal victory gate, victory music, pathfinding optimization, cooperative aftermath, and lazy memorial index remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 0205 adds presentation-only roadside sidewalks and building access walks, removes the coplanar terrain overlap that caused shimmering/squiggling hex edges, gives AI first-person firefights an original Tactical Focus acquisition/release sequence, and adds sparse quality-scaled instanced grass/shrubs including occasional pedestrian-edge tufts. Browser 0135's explicit-material no-instance-color ground fix remains a hard renderer invariant, while Browser 0145's rich terrain palettes/textures and FPV avoidance lean remain active. The left-side shot stack, victory music/terminal reinforcement gate, optimized pathfinding, cooperative aftermath, and lazy memorial index remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
 
+
+
+# v0.26.08.17.0205 - Sidewalks, Stable Terrain Layers, Tactical Focus + Lightweight Vegetation
+
+## Pedestrian surface presentation
+
+- True road and service-lane cells can generate a one-hex-wide lighter-gray sidewalk along valid adjacent outdoor cells.
+- Building doors search bounded exterior routes to the nearest generated sidewalk and may receive a short, slightly lighter access walk connecting the entrance to that pedestrian network.
+- Sidewalk/access-walk classification exists only in the Three.js presentation palette. It does not write the tactical terrain model, movement cost, passability, cover, LOS, occupancy, building ingress, or AI pathfinding state.
+- Pedestrian surfaces use restrained paved texture treatment and reduced neighbor-fade influence so they remain legible as intentional constructed paths while still fitting the richer Browser 0145 ground presentation.
+
+## Stable non-overlapping terrain doctrine
+
+- Visible hex faces must not solve raster gaps by overlapping adjacent terrain at the same depth. The active surface geometry is slightly inset (`surfaceScale 0.996`) so two neighboring material batches cannot compete for the same pixels.
+- The prior many-color seam-underlay batch is removed from the active persistent renderer. A single lower battlefield bed fills the hairline space beneath all inset surfaces and sits far enough below the ground to avoid coplanar competition.
+- Fog remains a separate elevated transparent layer. Terrain, stable bed, and fog therefore own distinct depth planes.
+- Browser 0135's root-cause safeguard is permanent: visible terrain hue comes from ordinary explicit Three.js material color, never `InstancedMesh.instanceColor` / `setColorAt()`.
+- Browser 0145's rich neighbor fading and procedural texture continue on those safe explicit material batches.
+
+## AI first-person Tactical Focus presentation
+
+- Human AI shots observed in FPV gain a Project Aegis `Tactical Focus` sequence. After movement, the observer camera turns onto the already-selected target, narrows its FOV, and displays target, distance, weapon, and a presentation-only solution indicator before the visible shot is released.
+- Acquisition timing scales with Battle Speed but retains a readable minimum. A short release/recovery beat prevents the firefight from becoming an unreadable stream of instantaneous movement and impacts.
+- Tactical Focus is a visualization of an authoritative AI action, not a combat subsystem. It cannot change target selection, hit chance, RNG result, damage, ammo, TU, death state, action order, or mission result.
+- Existing knowledge restrictions remain authoritative: FPV cannot mark an unseen alien or otherwise grant information the soldiers do not possess.
+- Terminology, visual language, and UI are original to Project Aegis and intentionally avoid another game's branded combat-system name/interface.
+
+## Lightweight regional vegetation
+
+- A new decorative vegetation pass uses one instanced grass batch and one instanced shrub batch. It avoids per-plant meshes/draw calls.
+- Mission environment and 3D quality scale density, with sparse arid/tundra growth and denser tropical/temperate growth.
+- Performance/Balanced/Quality caps are bounded (approximately 150/280/430 grass and 18/38/62 shrubs before biome scaling), preventing map size from growing vegetation cost without limit.
+- A few deterministic grass tufts can bias toward natural terrain at sidewalk/access-walk boundaries, giving occasional growth between paved hexes without forming a dense continuous border.
+- These plants are strictly decorative: no collision, cover, concealment, occupancy, LOS, ballistics, TU, or pathfinding behavior is added.
+
+## Validation / native roadmap
+
+- Browser static validation requires the new pedestrian map, lower terrain bed, non-overlapping surface marker, instanced vegetation pass, Tactical Focus acquisition seam, current metadata, and save format 4.
+- The active terrain function is forbidden from containing `seamBatches` or `setColorAt()`.
+- Manual testing should specifically pan the camera across adjacent high-contrast terrain to verify the z-fighting/squiggle is gone, then inspect road-adjacent sidewalks/access walks in both 3D Iso and FPV.
+- Native Godot parity should preserve the same design intent—pedestrian readability, stable non-coplanar terrain layers, cinematic AI observer targeting, and cheap decorative vegetation—through native meshes/materials/camera animation rather than copying the browser implementation.
+
+---
 
 # v0.26.08.17.0145 - Rich Terrain Explicit Materials + FPV Avoidance Lean
 

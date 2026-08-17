@@ -1,6 +1,86 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.17.0205_SIDEWALK_STABLE_TERRAIN_TACTICAL_FOCUS_AND_LIGHT_VEGETATION_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Added a presentation-focused tactical pass on top of Browser 0145's rich explicit-material terrain. Roads and service lanes now receive lighter one-hex pedestrian sidewalks, and building doors can receive short decorative access walks to the nearest sidewalk. The persistent ground renderer no longer overlaps enlarged neighboring hex faces or competing seam meshes, removing the coplanar z-fighting that made hex edges shimmer and squiggle. AI first-person firefights gain an original Tactical Focus presentation that frames and acquires the authoritative target before releasing the already-resolved shot. Sparse biome-aware grass tufts and shrubs are added through two bounded instanced decorative batches, including occasional edge grass where pedestrian paving meets natural ground.
+
+ROADSIDE SIDEWALKS AND BUILDING ACCESS WALKS
+---------------------------------------------
+- Cells directly beside true road and service-lane cells can receive a one-hex-wide pedestrian sidewalk rendered in a lighter neutral gray than the roadway.
+- Sidewalk generation excludes the road itself, building interiors, streams/irrigation, hard cover, and the outer map boundary.
+- Each authored building door examines valid exterior approach cells and performs a bounded search for the nearest generated sidewalk. When a route exists, the exterior cells between the door and sidewalk receive a slightly lighter pedestrian access-walk treatment.
+- Access walks are capped and deterministic; they do not grow arbitrarily across the map.
+- Sidewalk and access-walk state is presentation-only. The underlying tactical terrain, TU movement costs, passability, occupancy, cover, building-entry rules, AI pathfinding, and line of sight remain authoritative and unchanged.
+- Sidewalk/access-walk surfaces remain part of the rich explicit-material terrain system and retain restrained paved wear rather than becoming featureless flat polygons.
+
+STABLE TERRAIN LAYERS / Z-FIGHTING FIX
+--------------------------------------
+- Browser 0145's visible hex faces used a slightly oversized surface together with locally colored seam underlays. Adjacent surfaces could therefore occupy overlapping pixels at the same depth and fight for ownership, producing the reported shimmering/squiggling edge effect.
+- Visible tactical hex faces are now slightly inset instead of oversized (`surfaceScale 0.996`). Neighboring terrain batches therefore do not overlap one another.
+- The many overlapping colored seam underlays are removed from the active persistent terrain builder.
+- One lower terrain bed sits safely below the complete battlefield and is visible only through the very narrow raster gaps between inset hexes. It uses a darkened average battlefield tone and never competes with the surface plane for depth.
+- The Browser 0135 black-ground invariant remains permanent: the active visible terrain builder uses explicit ordinary material colors and contains no ground `setColorAt()` / `instanceColor` dependency.
+- Fog remains on its own elevated transparent layer and cannot z-fight with the ground surface.
+
+AI FPV - TACTICAL FOCUS
+-----------------------
+- Human AI-controlled shots shown in first person now enter an original `Tactical Focus` presentation phase after movement and before visible firing.
+- The camera tightens from the normal approximately 72-degree field of view toward approximately 58 degrees while the reticle turns onto the authoritative shot target.
+- The visor panel identifies the target, approximate distance, weapon, and a presentation-only firing-solution quality indicator while the sight settles.
+- At normal Battle Speed the target-acquisition beat is approximately 0.88 seconds, with bounded scaling for faster/slower playback. The shot then enters a short release and recovery beat.
+- The actual AI decision, hit/miss roll, damage, ammunition, TU use, target choice, shot order, and mission result are already authoritative before the presentation begins and are not recalculated by Tactical Focus.
+- Alien actions never steal the soldier-eye observer camera. Existing FPV target visibility, HUD knowledge restrictions, pre-aim behavior, weapon rig, avoidance lean, and camera smoothing remain active.
+- The feature intentionally uses Project Aegis terminology and visual language rather than another game's branding or proprietary interface.
+
+LIGHTWEIGHT BIOME VEGETATION
+----------------------------
+- Sparse grass tufts and small shrubs are generated only on compatible organic ground and are deterministic for the mission seed.
+- Grass uses one instanced three-sided cone batch and shrubs use one low-poly icosahedron batch. Hundreds of decorative plants therefore require only two additional draw batches rather than one object/draw call per plant.
+- Density is scaled by environment: tropical and temperate maps can be fuller, while arid and tundra maps remain sparse.
+- Density is also quality-aware. Performance mode uses lower caps than Balanced and Quality modes.
+- Current caps are approximately 150/280/430 grass tufts and 18/38/62 shrubs for Performance/Balanced/Quality before biome scaling.
+- A small minority of sidewalk/access-walk cells beside natural terrain can receive one short grass tuft biased toward the natural edge, creating occasional vegetation peeking through the paving boundary rather than a continuous grass border.
+- Decorative vegetation has no occupancy, collision, cover, concealment, LOS, projectile, TU, or pathfinding role and does not cast tactical shadows.
+
+PRESERVED SYSTEMS
+-----------------
+- Browser 0145's rich terrain fading, explicit material batches, procedural surface textures, local biome palettes, and FPV obstacle-avoidance lean remain active.
+- The left-side tactical shot-result stack remains unchanged.
+- FPV weapon barrel, visor markers, target pre-aim, location-aware sky, day/night presentation, regional architecture, and victory celebration remain active.
+- Terminal victory/reinforcement gating and the random Operation Vindicator victory bank are unchanged.
+- Browser 1930 pathfinding optimization, Browser 2207 cooperative mission aftermath, and Browser 2335 lazy memorial index remain active.
+- Save format remains 4.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- The active persistent terrain builder contains no `seamBatches` and no `setColorAt()` call; it requires the stable lower terrain bed and marks the rendered surface as non-overlapping.
+- The shared hex geometry contract requires `surfaceScale < 1` for the active ground surface.
+- Static release checks require the pedestrian surface map, stable terrain bed, lightweight vegetation layer, Tactical Focus acquisition seam, current build metadata, and unchanged save format.
+- The packaged victory MP3 files are byte-for-byte unchanged from Browser 0145.
+
+MANUAL TEST GATES
+-----------------
+1. Load a Small Town/urban tactical mission containing roads. Confirm a lighter one-hex sidewalk appears alongside road edges and that building entrances receive plausible short access walks toward the nearest sidewalk where geometry permits.
+2. Pan/zoom the 3D Iso camera over high-contrast adjacent terrain and watch the edges while the camera moves. Confirm neighboring hex faces no longer shimmer, squiggle, or repeatedly swap which texture appears on top.
+3. Confirm the rich Browser 0145 terrain colors/textures remain visible and the black-ground regression does not return.
+4. Enable AI FPV and observe a human soldier firing. Confirm movement finishes, Tactical Focus turns the reticle onto the intended target, the FOV tightens, the solution panel appears, and only then does the visible shot release.
+5. Compare the tactical result with normal AI playback and confirm Tactical Focus changes presentation only, not target, hit/miss, damage, TU, ammunition, or action order.
+6. Inspect tropical/temperate/arid/tundra maps at different 3D quality settings. Confirm grass/shrub density is sparse and biome-appropriate and does not noticeably reduce responsiveness.
+7. Inspect sidewalk/path boundaries and confirm only occasional small edge tufts appear rather than a dense continuous grass line.
+8. Confirm the left-side shot-result stack remains in its current position and behavior.
+
+PREVIOUS BUILD - 0145
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.17.0145_RICH_TERRAIN_EXPLICIT_MATERIAL_AND_FPV_AVOIDANCE_LEAN_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
