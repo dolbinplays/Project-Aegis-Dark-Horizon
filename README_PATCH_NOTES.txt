@@ -1,6 +1,66 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.17.0135_EXPLICIT_TERRAIN_MATERIAL_BATCH_AND_FOG_OVERLAY_FIX_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+The Browser 0125 screenshots provided decisive new evidence: the battlefield remained pure black even in FPV immediately around a living AEGIS soldier, where the ground receives no fog-of-war mesh. That rules out fog as the primary remaining failure. The common factor was Browser 0030's single ground `InstancedMesh`, which depended on per-instance `setColorAt()` data to produce every terrain color. Browser 0135 removes that dependency completely. The persistent battlefield now uses a bounded set of still-instanced meshes whose ordinary Three.js materials carry explicit terrain colors, while fog uses fixed translucent materials and matrix-only instancing. This follows the same basic material-color path that is already rendering soldiers, buildings, props, and the Skyranger correctly in the supplied screenshots.
+
+EXPLICIT TERRAIN MATERIAL BATCHES
+---------------------------------
+- Removed the single vertex/instance-colored ground mesh from the persistent renderer.
+- Ground cells are grouped into semantic surface families such as road, lane, path, stream, building floor, doorway, dry earth, scrub, grass, forest, crop, stone, and open terrain.
+- Every resulting batch is still an `InstancedMesh`, but its `MeshBasicMaterial.color` explicitly contains the terrain color. Ground visibility no longer depends on `InstancedMesh.instanceColor` or `setColorAt()`.
+- Organic terrain families use two deterministic variants so large areas do not become one perfectly flat material while remaining within a bounded draw-call count.
+- True pavement and built surfaces retain stable dedicated material families, preserving road-versus-soil value separation.
+
+BLACK UNDERLAY / SEAM REMOVAL
+-----------------------------
+- The persistent ground seam underlay has been removed from the active terrain builder.
+- The slightly oversized main hex geometry already closes raster gaps, so a second ground layer is not required.
+- This removes another possible full-map dark surface beneath the playable tiles and simplifies diagnosis of the renderer.
+- Edge/reachable/selected/extraction rings remain independent and unchanged.
+
+FOG WITHOUT INSTANCE COLORS
+---------------------------
+- Unseen and explored fog remain dynamic instanced overlays, but they now use fixed translucent day/twilight/night material colors.
+- Fog instances update matrices/counts only. There are no fog `setColorAt()` calls and no `instanceColor` dependency.
+- Browser 0125's substantially reduced day/twilight/night fog opacities are retained.
+- Visible cells still receive no fog overlay at all.
+- Hidden aliens, civilians, VIPs, beacons, covers, and objective information remain governed by the existing tactical reveal/LOS rules.
+
+PRESERVED SYSTEMS
+-----------------
+- The well-received left-side shot-result stack is unchanged.
+- FPV pre-aim, weapon model, visor HUD, camera smoothing, location-aware sky, regional architecture, and biome selection remain active.
+- Victory music, reinforcement victory gate, pathfinding optimization, cooperative aftermath, lazy memorial indexing, cover, movement, LOS, Time Units, AI decisions, and mission resolution are unchanged.
+- Save format remains 4.
+
+VALIDATION
+----------
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Static validation confirms the persistent terrain/fog block contains no `setColorAt()` calls.
+- Static validation confirms terrain batches use explicit `MeshBasicMaterial({color: batch.color})` values.
+- A representative material-batch fixture produced separate arid dry-ground (`#da9b51`), scrub (`#9c7733`), road (`#455060`), and grass (`#6f873b`) materials with only four batches.
+- Build Health now requires the explicit-material-batch marker and rejects reintroduction of the ground `setColorAt(cell.surfaceColor)` dependency.
+
+MANUAL TEST GATES
+-----------------
+1. Load the same arid Small Town daylight mission shown in the Browser 0125 screenshots.
+2. In FPV, the ground directly around and ahead of the observed soldier must no longer be a pure black plane.
+3. In 3D Iso, roads should render as a distinct darker gray while dry earth/scrub/vegetation use visibly different tan, ochre, and muted green materials.
+4. Move between visible, explored, and unrevealed areas and confirm fog changes brightness without replacing the terrain with a black sheet.
+5. Confirm unit/cover/objective visibility, hex picking, movement, pathfinding, the FPV HUD, and the left-side shot stack remain correct.
+
+PREVIOUS BUILD - 0125
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.17.0125_TERRAIN_COLOR_PRESERVING_FOG_FIX_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

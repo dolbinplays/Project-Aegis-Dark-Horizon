@@ -2,14 +2,47 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.0125_TERRAIN_COLOR_PRESERVING_FOG_FIX_PATCH`
+Current handoff build: `v0.26.08.17.0135_EXPLICIT_TERRAIN_MATERIAL_BATCH_AND_FOG_OVERLAY_FIX_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0125 corrects the actual remaining terrain-darkness regression identified by live Browser 0030 screenshots: the fog-of-war layer was still painting every unseen daylight cell with one 72%-opaque dark biome color. Persistent fog is now per-cell and terrain-color-preserving, with lower day/twilight/night opacity while hidden contacts and objective knowledge remain fully protected. Browser 0030 texture-free regional ground, the left-side shot stack, FPV pre-aim/HUD/weapon/sky/architecture, Browser 2335 lazy memorial index, Browser 2145 terminal victory gate, Browser 1930 pathfinding optimization, Browser 0043 victory music, Browser 2207 cooperative aftermath, and earlier renderer/visibility work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
+Current patch status: **Browser 0135 responds to the Browser 0125 field screenshots showing that even fully visible FPV ground remained pure black. That evidence rules out fog as the primary remaining fault and points to the consolidated instanced-ground color path. Persistent terrain now uses explicit colored material batches instead of per-instance `setColorAt()` ground colors; the seam underlay is removed; and fog uses matrix-only translucent batches with no instance-color dependency. Browser 0125 reduced fog opacity, Browser 0030 biome palettes, the left-side shot stack, FPV pre-aim/HUD/weapon/sky/architecture, Browser 2335 lazy memorial index, Browser 2145 terminal victory gate, Browser 1930 pathfinding optimization, Browser 0043 victory music, Browser 2207 cooperative aftermath, and earlier renderer/visibility work remain active. Save format remains 4; native Godot remains at 0026 and requires parity work.**
 
 
 
 
 ---
+
+# v0.26.08.17.0135 - Explicit Terrain Material Batch and Fog Overlay Fix
+
+## Screenshot-driven root cause
+
+- Browser 0125 changed the fog layer, but the supplied follow-up screenshots show fully visible first-person ground immediately around an AEGIS soldier remaining pure black. Visible cells do not receive persistent ground fog, so fog cannot be the primary cause of that black surface.
+- The persistent renderer introduced a single consolidated terrain `InstancedMesh` whose white base material depended on per-instance colors written through `setColorAt()`. Calculated terrain colors could therefore be correct in deterministic tests while the runtime GPU/material path still rendered the complete ground black.
+- Soldiers, covers, architecture, props, the Skyranger, and the FPV weapon are all visibly receiving their ordinary material colors in the same screenshots. Browser 0135 deliberately moves terrain onto that proven explicit material-color path.
+
+## Explicit-material terrain doctrine
+
+- Tactical terrain remains instanced for performance, but color is now owned by each batch's ordinary `MeshBasicMaterial`, not by `instanceColor`.
+- Cells are grouped by regional environment plus semantic terrain family: roads, lanes, dirt paths, streams/irrigation, building floors, doors, forest, scrub, dry ground, crop/field, grass, stone/lot/concrete, and generic open ground.
+- Organic terrain may use two deterministic material variants per family. This provides controlled surface variation without requiring thousands of materials or per-cell meshes.
+- The active terrain builder contains no `setColorAt(cell.surfaceColor)` call and no ground CanvasTexture map. The color visible on the GPU is the same explicit material color represented by the terrain batch.
+- Exact hex picking is preserved because each batch retains a `userData.cells` array indexed by the instance ID.
+
+## Underlay and fog simplification
+
+- The additional ground seam/underlay mesh is removed from the persistent path. The main hex surface remains slightly oversized to close tiny raster gaps by itself, eliminating a second full-map layer that could contribute dark pixels.
+- Fog uses ordinary fixed-color transparent materials selected by local daylight/twilight/night phase. Its instances carry only transforms/counts, never per-instance colors.
+- Browser 0125's lower fog opacities remain. Visible cells still receive no fog instance, explored terrain receives a light veil, and unrevealed terrain receives a stronger veil.
+- Entity/objective secrecy remains independent of ground readability. Hidden aliens, VIPs, civilians, beacons, and covers continue using the established visibility/reveal rules.
+
+## Regression target
+
+- The exact arid Small Town daylight mission shown in the Browser 0125 screenshots is the primary manual test. FPV ground around the observer must visibly show explicit dry-earth/scrub/road colors rather than a pure black plane.
+- Elevated 3D Iso must show clearly separate terrain families. True road pavement remains medium-dark gray while arid dry earth/scrub and vegetation use brighter regional colors.
+- Build Health rejects a return to the consolidated `setColorAt(cell.surfaceColor)` terrain implementation and requires the explicit material-batch marker.
+- The left-side shot stack, FPV aiming/HUD, movement, LOS, cover, pathfinding, AI behavior, and save format 4 are unchanged.
+
+---
+
 
 # v0.26.08.17.0125 - Terrain Color-Preserving Fog Fix
 
