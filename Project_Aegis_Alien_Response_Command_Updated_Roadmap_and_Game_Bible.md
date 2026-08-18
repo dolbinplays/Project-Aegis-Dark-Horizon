@@ -2,9 +2,50 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.2115_ISO_UNIT_FOG_FREE_READABILITY_PATCH`
+Current handoff build: `v0.26.08.17.2215_DESTRUCTIBLE_LIGHTS_AND_BUILDING_POWER_LOSS_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2115 closes the remaining 3D Iso night-unit readability regression by removing atmospheric fog from the Iso-only readability materials as well as dynamic light shading. Browser 2045 had correctly switched units to unlit materials, but those materials still participated in the very dark night fog, and pre-existing MeshBasicMaterial parts could bypass the readability clone entirely. Visible soldiers, aliens, civilians, and VIPs now keep clear authored colors in 3D Iso while FPV/TPV and incoming-fire reaction views retain the full light-reactive/fogged presentation. Browser 1545 VIP extraction pathing, Browser 1515 authoritative night visibility/accuracy, Browser 1335 tactical control/vehicle/Skyranger/voice fixes, and Browser 1235 exact Fit Map framing remain active. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 2215 extends Night Operations into destructible battlefield infrastructure. Street lamps and headlight vehicles stop contributing illumination when their cover record is destroyed; breached lit windows no longer continue glowing; and newly generated buildings include a destructible PWR control panel linked to that building’s interior-light circuit. Destroying the panel removes all linked interior-window light from authoritative sight/accuracy calculations and the persistent Three.js light list while leaving Skyranger lamps, Weapon Lights, Field Flares, alien beacon glow, and unrelated street lighting independent. Browser 2115 fog-free Iso unit readability remains active, as do Browser 1545 VIP extraction pathing, Browser 1515 night visibility/accuracy, Browser 1335 tactical control/vehicle/Skyranger/voice fixes, and Browser 1235 exact Fit Map framing. Save format remains 4; native Godot remains at 0026.**
+
+
+# v0.26.08.17.2215 - Destructible Lights + Building Power Loss
+
+## Night Operations infrastructure doctrine
+
+- Artificial light is now part of the destructible tactical environment rather than guaranteed illumination once a mission begins. The Night Operations authority introduced in Browser 1515 still determines sight range and darkness accuracy; Browser 2215 changes whether specific environmental light sources continue to exist after battlefield damage.
+- Street lamps stop contributing their approximately seven-hex illumination radius when the lamp-post cover is destroyed.
+- Headlight-equipped abandoned vehicles stop contributing light when the vehicle cover is destroyed. Their established multi-hex solidity, hard-cover behavior, HP, and destruction rules remain unchanged.
+- A powered building window stops contributing interior light when that window is breached. The breach-rubble record may remain as low cover, but it cannot retain the old window’s light merely because the structural damage helper preserves metadata on the replacement cover record.
+- Skyranger perimeter lamps, soldier Weapon Lights, Field Flares, alien beacon glow, and unrelated exterior fixtures are independent light systems and are not disabled by a civilian building circuit failure.
+
+## Building power-control circuits
+
+- Every newly generated tactical building receives one deterministic `interior-power-panel` furnishing placed inside the structure. The panel is visually identified as **PWR** in the 2D tactical presentation and receives a dedicated cabinet/indicator model in the persistent Three.js renderer.
+- The panel is ordinary destructible half-cover with 48 HP through the existing cover-stat profile. It is not an indestructible objective and does not require a special interaction: ordinary structural/weapon damage can destroy it.
+- Lit building windows carry the building’s `powerCircuitId`. While the associated power-control record remains alive, those windows behave exactly like Browser 1515 interior light sources.
+- Destroying the building’s power control marks that circuit offline. Every linked interior-window light is then excluded from the shared `tacticalLightSources(...)` authority and from the persistent renderer’s bounded real-time light list.
+- A circuit failure does not destroy the windows themselves, change the building footprint, open walls, alter movement costs, or remove cover. It only removes that building’s powered interior illumination.
+- Older live tactical states that do not contain a power-control record or `powerCircuitId` retain the pre-2215 powered behavior. Missing circuit metadata therefore fails open for backward compatibility rather than unexpectedly darkening an in-progress saved mission.
+
+## Gameplay consequences
+
+- Because environmental light feeds the same visibility and accuracy system as before, destroying a lamp or building circuit can shrink practical sight at twilight/night and can cause the established darkness accuracy penalty to apply again to targets that are no longer illuminated.
+- Power loss never reveals hidden information, never bypasses walls/vehicles/Skyranger hull LOS blockers, and does not change the base day/twilight/night sight ceilings.
+- Full daylight continues to ignore local-light gameplay sources in the normal way; the new circuit state matters when the mission lighting phase actually uses artificial illumination.
+
+## Presentation and performance
+
+- Three.js computes one bounded building-circuit state map when rebuilding tactical cover presentation and reuses it while deciding which local lights/window glow meshes exist.
+- A destroyed circuit removes the warm emissive window treatment along with the real-time PointLight for those linked windows. The existing global cap of fourteen active renderer-side local lights remains unchanged.
+- Visibility-cache keys now include power-control and circuit metadata so circuit changes cannot reuse a stale night-visibility context.
+- Browser 2115’s Iso unit readability doctrine remains intact: visible units in 3D Iso stay unlit and fog-free for readability, while FPV/TPV units remain fully light-reactive. Power loss affects the environment and gameplay illumination around those units, not the Iso readability override itself.
+
+## Validation / compatibility
+
+- Build Health now includes a deterministic night fixture containing one building power control, one linked lit window, and one street lamp. The contract verifies that destroying the power control removes only the linked window light, breaching the window removes that light directly, destroying the street lamp removes its own light, and destroying all three leaves no local light sources in the fixture.
+- Static regression coverage requires the generated `interior-power-panel`, `powerCircuitId` wiring, circuit-aware persistent renderer path, power-panel indicator presentation, and visibility-cache metadata.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Save format remains **4** and no new binary assets are required.
+- Native Godot parity remains `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`. Native parity should reproduce the gameplay doctrine—destructible environmental lights and building circuit loss—using Godot-native scene/light ownership rather than copying the browser material/light implementation literally.
 
 
 # v0.26.08.17.2115 - 3D Iso Fog-Free Unit Readability
@@ -6553,7 +6594,7 @@ Still planned:
 - Battlefield-space optimization.
 - Simulated mission sprite consistency.
 - Improve the Three.js battle option for alien incidents so manual tactical missions feel more readable, responsive, and worth choosing over auto-resolve.
-- Add deliberate building-breach actions, gameplay fire/smoke propagation, and power loss. Clearer damaged-wall/window feedback now has a browser presentation seed in 1630.
+- Add deliberate building-breach actions and gameplay fire/smoke propagation. **Destructible environmental lights and building power-loss circuits are implemented in Browser 2215**; clearer damaged-wall/window feedback remains the Browser 1630 presentation seed for the later fire/smoke layer.
 - Add civilians, rescue/extraction zones, and structure-specific objectives for terror, abduction, harvest, and supply missions.
 - VIP Rescue AI fire-team distribution is implemented in Browser 1850: the senior tactical coordinator assigns distinct fire teams across distinct marked VIPs before allowing duplicate coverage, while extra teams remain available for security, combat, escort support, or later reassignment.
 - Adaptive Alien Field Beacon Phase 2 is implemented in Browser 1552: three recorded beacon destructions trigger ballistic-blocking kinetic fields on later beacon deployments, and reinforcement arrivals preserve the original beacon or crashed-UFO landmark.
@@ -6566,8 +6607,8 @@ Completed in browser 0945:
 Completed browser Stage 3 feedback seed:
 `TACTICAL_DAMAGE_STATE_SMOKE_AND_BREACH_FEEDBACK_SEED_INDEX_ONLY`
 
-Possible follow-up after playtest:
-`TACTICAL_FIRE_SMOKE_PROPAGATION_AND_POWER_LOSS_FOUNDATION_INDEX_ONLY`
+Power-loss/destructible-light foundation completed in Browser 2215. Possible follow-up after playtest:
+`TACTICAL_FIRE_SMOKE_PROPAGATION_FOUNDATION_INDEX_ONLY`
 
 
 ---

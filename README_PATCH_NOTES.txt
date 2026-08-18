@@ -1,6 +1,77 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.17.2215_DESTRUCTIBLE_LIGHTS_AND_BUILDING_POWER_LOSS_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Extends the new Night Operations system so environmental illumination can be lost through battlefield damage. Street lamps and headlight-equipped vehicles stop providing light when destroyed, breached lit windows can no longer keep emitting, and every newly generated building now contains a destructible PWR control panel. Destroying that panel cuts the building’s linked interior-window lighting in both authoritative visibility/accuracy calculations and the persistent Three.js presentation.
+
+DESTRUCTIBLE ENVIRONMENTAL LIGHTS
+---------------------------------
+- Street lamp illumination now ends when the lamp-post cover reaches 0 HP.
+- Headlight-equipped civilian vehicles stop contributing their local light when the vehicle is destroyed; their existing multi-hex hard-cover/destruction behavior is otherwise unchanged.
+- Lit building windows stop contributing light after the window is structurally breached. The breach-rubble replacement cannot inherit a functioning interior-light source.
+- Alien Field Beacons already stop glowing when destroyed and retain that behavior.
+- Skyranger perimeter lights, Weapon Lights, Field Flares, and unrelated fixtures remain independent and are not disabled by civilian building power loss.
+
+BUILDING POWER CONTROLS
+-----------------------
+- Every newly generated tactical building receives one deterministic `interior-power-panel` furnishing inside the structure.
+- The panel uses the existing half-cover profile (48 HP) and can be destroyed with ordinary weapon/structural damage; it is not an indestructible objective.
+- 2D tactical presentation identifies the cabinet with a PWR label and dedicated panel art.
+- Persistent Three.js uses a dedicated metal power cabinet, breaker face, and live status indicator rather than rendering it as generic furniture.
+- Lit windows are linked to the building by `powerCircuitId`.
+- Destroying the PWR panel marks that circuit offline and removes every linked interior-window light from the authoritative light-source list.
+- The power failure does not remove walls/windows, change pathfinding, change cover values, or open the structure. It only removes powered interior illumination.
+
+NIGHT GAMEPLAY CONSEQUENCES
+---------------------------
+- Browser 1515 remains the authority for sight and accuracy. If a destroyed lamp or failed building circuit was the source illuminating an area, practical sight can contract and the normal darkness accuracy penalty can return.
+- Light loss still cannot reveal hidden contacts or see/shoot through opaque hard cover.
+- Full daylight behavior is unchanged; local-light gameplay sources remain relevant to twilight/night operations.
+- Browser 2115 remains active: visible units in 3D Iso retain their fog-free/unlit readability treatment even when the environment around them loses power. FPV/TPV remain fully light-reactive.
+
+CACHE / PERFORMANCE
+-------------------
+- Building circuit state is derived once from the current cover records and reused while enumerating local light sources.
+- The persistent Three.js cover rebuild computes the same bounded circuit map before adding live local PointLights/window glow.
+- Visibility-cover cache keys now include power-control/circuit metadata so destroying a panel cannot leave stale illuminated visibility results.
+- The existing cap of 14 renderer-side active local lights is unchanged.
+
+BACKWARD COMPATIBILITY
+----------------------
+- Save format remains 4.
+- Older in-progress tactical states without power-control/circuit metadata default to the pre-2215 powered behavior rather than unexpectedly losing their interior lights.
+- No new binary assets are required.
+
+REGRESSION COVERAGE
+-------------------
+- Added a deterministic full-night Build Health fixture with one PWR panel, one linked lit window, and one street lamp.
+- The fixture verifies the linked window goes dark when its PWR panel is destroyed while the unrelated street lamp stays active.
+- A separate branch verifies a breached lit window stops emitting even while its building circuit is still online.
+- Destroying the lamp as well leaves the fixture with zero environmental light sources.
+- Static checks require `interior-power-panel`, `powerCircuitId`, circuit-aware Three.js rendering, the power-panel indicator, and cache-key wiring.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+
+MANUAL TEST GATES
+-----------------
+1. Start a full-night Small Town/urban mission and find a building with one or more warm lit windows. Enter/reveal the interior and locate the PWR control panel.
+2. Observe the building from 3D Iso and FPV/TPV, then destroy the PWR panel. Confirm all linked warm window glows/local light pools disappear while nearby street lamps remain lit.
+3. Check visibility near the darkened building and confirm practical sight/accuracy changes only where the lost interior lighting had been helping.
+4. Destroy a lit window directly and confirm that specific light goes out even if the PWR panel remains intact.
+5. Destroy a street lamp and a headlight-equipped vehicle and confirm their illumination disappears independently.
+6. Confirm Skyranger lamps, soldier Weapon Lights, Field Flares, and alien beacon glow are not affected by a civilian building’s PWR panel.
+7. Recheck a night mission in 3D Iso and confirm Browser 2115 unit readability remains clear while the terrain/buildings still become darker when power is lost.
+
+PREVIOUS BUILD - 2115
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.17.2115_ISO_UNIT_FOG_FREE_READABILITY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
