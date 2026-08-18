@@ -2,9 +2,57 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.2315_TPV_FPV_GROUND_TEXTURE_PARITY_PATCH`
+Current handoff build: `v0.26.08.17.2355_TACTICAL_FIRE_SMOKE_PROPAGATION_FOUNDATION_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2315 refines Browser 2245’s TPV continuous-ground presentation so Third Person now uses an FPV-matched ground treatment instead of the harsher visible hex mosaic that could still show up from the chase-camera angle. FPV keeps the original continuous floor texture. TPV and incoming-fire reaction TPV now swap to a parity-smoothed variant of that same cached continuous-ground texture, preserving the FPV terrain language while reducing visible hex boundaries at third-person height. Ordinary 3D Iso still restores the explicit hex board, Browser 2215 destructible lights/building power remains active, Browser 2115 fog-free Iso unit readability remains active, Browser 1545 VIP extraction pathing remains active, Browser 1515 night visibility/accuracy remains active, Browser 1335 tactical control/vehicle/Skyranger/voice fixes remain active, and Browser 1235 exact Fit Map framing remains active. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 2355 establishes the first gameplay-authoritative tactical fire/smoke propagation foundation. Destruction of electrical power controls and vehicles can seed persistent fire, energetic/grenade destruction can ignite flammable battlefield objects, fire damages exposed units and burns/spreads through suitable cover, and each active fire produces short-lived drifting smoke. Accumulated smoke now participates in tactical line of sight, while active flames join the unified Night Operations light authority and create local illumination without becoming hard cover. The system is deliberately bounded and deterministic for this first pass: it does not yet add movement penalties, suppression, firefighting equipment, wind simulation, or full building-wide conflagration. Browser 2315 TPV/FPV ground texture parity, Browser 2215 destructible lights/building power, Browser 2115 fog-free Iso unit readability, Browser 1545 VIP extraction pathing, Browser 1515 night visibility/accuracy, Browser 1335 tactical control/vehicle/Skyranger/voice fixes, and Browser 1235 exact Fit Map framing remain active. Save format remains 4; native Godot remains at 0026.**
+
+
+# v0.26.08.17.2355 - Tactical Fire + Smoke Propagation Foundation
+
+## Stage 3 environmental-hazard foundation
+
+- Browser 2355 turns the earlier structural-damage smoke/fire presentation seeds into the first gameplay-authoritative environmental hazard layer. Fire and smoke are represented as lightweight tactical cover records with no movement block, allowing the existing battlefield/save architecture to carry them without introducing a second simulation map.
+- Destroyed building power-control panels and destroyed road vehicles can ignite automatically. Grenades and energetic weapon destruction can also ignite flammable objects such as trees, brush, hay/crops, crates, timber construction, and selected interior furnishings.
+- A newly ignited location creates a persistent open-flame hazard. Fire currently lasts for a bounded number of completed tactical rounds unless it is sustained by burning cover.
+- Flammable intact cover can enter a `burning` state rather than instantly disappearing. Burning cover loses structural HP each hazard step and may eventually collapse into its normal breached/destroyed state while leaving an open flame behind.
+
+## Fire gameplay
+
+- A living unit that ends a completed round on an active fire cell takes fire damage. This applies to AEGIS soldiers, aliens, civilians, and VIPs through the shared tactical unit state rather than a faction-specific rule.
+- Fire spread is deliberately bounded and deterministic in this first pass. Each active source considers nearby flammable cover and may ignite a qualifying neighbor according to a fixed spread rule derived from the mission/round state rather than an unbounded particle or flood-fill simulation.
+- Active fire is also a real Night Operations light source with an approximately four-hex local illumination radius. It participates in the same tactical light authority used by street lamps, headlights, interior lights, Skyranger lamps, Field Flares, Weapon Lights, and alien beacon glow.
+- Burning cover itself emits the same local open-flame illumination, so a spreading fire can alter night visibility even before the burning object collapses into a separate flame hazard.
+
+## Smoke gameplay
+
+- Every active fire attempts to seed a short-lived smoke hazard into one deterministic neighboring open cell each completed round. Smoke is non-solid: it does not block movement, occupy a cover slot for pathfinding, or act as ballistic hard cover.
+- Smoke density is accumulated in the visibility context and is counted along the actual hex line between observer and target. Dense enough smoke can now block line of sight even when no wall or vehicle lies between the units.
+- Humans currently lose LOS at a lower accumulated smoke threshold than aliens, preserving the established doctrine that alien senses have a modest low-visibility advantage.
+- Fire itself contributes a smaller smoke-obscuration value, so shooting through several burning/smoking cells can also close a sightline.
+- This first pass intentionally stops at LOS obstruction. Smoke does not yet impose dedicated accuracy penalties, respiratory damage, panic/suppression, or movement costs.
+
+## Rendering and information policy
+
+- 2D tactical view now has explicit FIRE and SMK hazard glyphs. Three.js renders open flames as low-cost emissive flame/smoke geometry and smoke hazards as translucent clustered volumes.
+- Intact burning cover receives a lightweight flame-and-smoke overlay without replacing the underlying object, allowing the player to see both what is burning and its current structural state.
+- Fire/smoke presentation consumes the same authoritative hazard records used by LOS, damage, spreading, and lighting. There is no separate visual-only hazard simulation.
+- Ordinary fog-of-war, revealed-contact rules, unit visibility, mission objectives, and tactical knowledge remain authoritative. Fire and smoke do not reveal hidden aliens or objectives simply by existing.
+
+## Performance, saves, and scope boundaries
+
+- Hazard processing occurs once per completed tactical exchange/round in both manual tactical control and Simulation/Hybrid AI resolution. It is not a per-frame simulation.
+- Fire duration, smoke duration, smoke density, spread chance, structural burn damage, unit fire damage, and flame light radius are centralized in `TACTICAL_FIRE_SMOKE_RULES` for later balance tuning.
+- The system reuses the existing cover-state cache and adds hazard/burning fields to visibility invalidation so smoke and fire update LOS and lighting immediately after a hazard step.
+- Save format remains **4**. Existing campaigns do not require migration because hazard records and burning metadata fit inside the existing tactical cover-state schema.
+- This is the foundation rather than the finished Stage 3 environmental system. Explicitly deferred follow-ups include richer wind direction, smoke accuracy modifiers, AI avoidance/usage of hazards, extinguishers/firefighting, thermal or respirator equipment, explosive fuel chains, suppression/panic interactions, and more sophisticated room-to-room fire propagation.
+
+## Validation
+
+- Build Health now includes an isolated fire/smoke contract: destruction of a power control seeds fire, the fire survives into the hazard step, a unit occupying the flame cell takes damage, smoke is emitted, the flame resolves as a tactical light source, smoke enters the LOS context, and both manual/AI tactical resolvers call the shared hazard step.
+- Visibility cache validation requires fire/smoke/burning metadata to participate in cover-state invalidation.
+- 2D and persistent Three.js renderer contracts require explicit `tactical-fire` / `tactical-smoke` presentation paths.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Manual priority: destroy a power panel or vehicle, keep the mission active for several rounds, confirm visible fire/smoke persistence and spread, stand a unit on the flame cell to confirm damage, compare a sightline through accumulated smoke, and inspect the same fire during a night operation to confirm local illumination.
 
 
 # v0.26.08.17.2315 - TPV / FPV Ground Texture Parity
