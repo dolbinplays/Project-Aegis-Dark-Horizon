@@ -1,9 +1,55 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.17.2045_ISO_UNIT_READABILITY_NIGHT_LIGHTING_DECOUPLE_PATCH
+Build: v0.26.08.17.2115_ISO_UNIT_FOG_FREE_READABILITY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Fixes the remaining 3D Iso night-unit readability problem shown in live testing. Browser 2045 made visible units unlit in Iso, but the temporary readability materials still participated in the dark Night Operations scene fog, and unit pieces that were already MeshBasicMaterial could bypass the conversion. Browser 2115 makes the Iso-only unit materials both unlit and fog-free. FPV, TPV, and incoming-fire reaction cameras still restore the original light-reactive materials and retain the normal night atmosphere.
+
+3D ISO FOG-FREE UNIT READABILITY
+--------------------------------
+- This fix is specifically for the **3D Iso view**.
+- Every legitimately visible soldier, alien, civilian, and VIP mesh now uses a cached Iso readability material with `fog:false` and `toneMapped:false`.
+- Atmospheric night fog can no longer blend visible unit models toward black at elevated Iso camera distances.
+- Unit parts that already use MeshBasicMaterial are no longer returned unchanged; they receive the same cached fog-free readability treatment as lit MeshStandard/MeshLambert parts.
+- Authored armor, vest, skin, weapon, civilian/VIP, and alien-archetype colors remain readable.
+- Terrain, buildings, vehicles, Skyrangers, vegetation, props, sky, and environmental fog remain dark at night.
+
+FPV / TPV LIGHTING PRESERVED
+-----------------------------
+- First Person, Third Person, and incoming-fire reaction views restore each unit mesh's original material immediately.
+- Street lamps, vehicle headlights, building lights, Skyranger lights, Weapon Lights, Field Flares, alien beacon light, and scene fog remain visually meaningful in those close-camera views.
+- Returning to Iso reapplies the cached fog-free readability materials without rebuilding unit geometry.
+
+GAMEPLAY UNCHANGED
+------------------
+- Night/twilight sight ranges remain unchanged.
+- Darkness accuracy penalties remain unchanged.
+- Artificial-light visibility restoration remains unchanged.
+- Physical LOS/shot blocking remains unchanged.
+- Hidden units are not revealed by this presentation fix.
+- Save format remains 4.
+
+REGRESSION COVERAGE
+-------------------
+- Build Health requires `fog:false` on the Iso readability material.
+- Build Health rejects the prior `if(material.isMeshBasicMaterial)return material` bypass.
+- The existing mode-aware material restoration contract still requires FPV/TPV/reaction cameras to use the original light-reactive material.
+- All embedded JavaScript blocks pass `node --check`.
+
+MANUAL TEST GATES
+-----------------
+1. Open a full-night mission in **3D Iso** and confirm visible AEGIS soldiers are clearly readable rather than near-black silhouettes.
+2. Check aliens, civilians, and VIPs in the same view and confirm their authored palette remains readable.
+3. Switch to FPV/TPV near and away from a light source and confirm characters again react normally to local lighting and night atmosphere.
+4. Return to Iso and confirm unit colors brighten immediately without globally brightening terrain/buildings.
+5. Confirm LOS, night sight range, hit penalties, Weapon Lights, and Field Flares behave exactly as before.
+
+PREVIOUS BUILD 2045 - 3D ISO UNIT READABILITY AT NIGHT
+------------------------------------------------------
 
 SUMMARY
 -------

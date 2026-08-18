@@ -2,9 +2,37 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.2045_ISO_UNIT_READABILITY_NIGHT_LIGHTING_DECOUPLE_PATCH`
+Current handoff build: `v0.26.08.17.2115_ISO_UNIT_FOG_FREE_READABILITY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2045 preserves Night Operations gameplay but decouples individual unit shading from dynamic darkness in 3D Iso. Visible soldiers, aliens, civilians, and VIPs retain readable authored colors in Iso, while FPV/TPV and incoming-fire reaction views retain the full light-reactive presentation. Browser 1545 VIP extraction pathing, Browser 1515 authoritative night visibility/accuracy, Browser 1335 tactical control/vehicle/Skyranger/voice fixes, and Browser 1235 exact Fit Map framing remain active. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 2115 closes the remaining 3D Iso night-unit readability regression by removing atmospheric fog from the Iso-only readability materials as well as dynamic light shading. Browser 2045 had correctly switched units to unlit materials, but those materials still participated in the very dark night fog, and pre-existing MeshBasicMaterial parts could bypass the readability clone entirely. Visible soldiers, aliens, civilians, and VIPs now keep clear authored colors in 3D Iso while FPV/TPV and incoming-fire reaction views retain the full light-reactive/fogged presentation. Browser 1545 VIP extraction pathing, Browser 1515 authoritative night visibility/accuracy, Browser 1335 tactical control/vehicle/Skyranger/voice fixes, and Browser 1235 exact Fit Map framing remain active. Save format remains 4; native Godot remains at 0026.**
+
+
+# v0.26.08.17.2115 - 3D Iso Fog-Free Unit Readability
+
+## Regression root cause
+
+- Browser 2045 correctly stopped visible tactical units from receiving dynamic scene-light shading in 3D Iso by swapping their light-reactive materials to temporary `MeshBasicMaterial` readability clones.
+- Live night testing showed that this was not enough. Those readability materials still had Three.js scene fog enabled, so the short, very dark Night Operations fog could blend soldiers, aliens, civilians, and VIPs back toward near-black at the elevated Iso camera distance.
+- A second seam allowed any unit part already using `MeshBasicMaterial` to return directly without receiving a fog-free readability clone. That made the result inconsistent across body/weapon/accessory pieces.
+
+## Corrected 3D Iso presentation doctrine
+
+- While the camera is in **3D Iso**, every legitimately visible unit mesh uses a cached unlit readability material with `fog:false` and `toneMapped:false`. The unit therefore keeps its authored armor, vest, skin, weapon, civilian/VIP, or alien-archetype colors instead of being darkened by scene lighting or atmospheric fog.
+- Existing `MeshBasicMaterial` unit parts are no longer exempt from the conversion; they also receive the cached fog-free Iso readability material.
+- Terrain, buildings, road vehicles, Skyrangers, vegetation, street props, sky, and battlefield fog remain dark at night. The battlefield still visually reads as a night operation; only individual visible units are protected from becoming black silhouettes.
+- The change is still presentation-only. It does not reveal hidden units, extend line of sight, remove darkness accuracy penalties, or alter any gameplay light volume.
+
+## FPV / TPV preservation
+
+- First Person, Third Person, and incoming-fire reaction views continue restoring each mesh's original light-reactive material. Those close-camera modes still respond to street lamps, vehicle headlights, Weapon Lights, Field Flares, Skyranger lamps, interior lighting, and the normal night fog/atmosphere.
+- Returning to Iso reuses cached fog-free materials; the persistent tactical scene and unit geometry are not rebuilt.
+
+## Validation / compatibility
+
+- Build Health now requires the Iso readability material to use `fog:false`, rejects the prior early return that skipped already-basic unit materials, and continues requiring the FPV/TPV material restoration path.
+- All embedded JavaScript blocks pass syntax validation.
+- Save format remains **4**. No new binary assets are required.
+- Native Godot parity remains `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`; native parity should follow the design doctrine (readable Iso units, atmospheric FPV/TPV) rather than the browser-specific material-swap implementation.
 
 
 # v0.26.08.17.2045 - 3D Iso Unit Readability at Night
