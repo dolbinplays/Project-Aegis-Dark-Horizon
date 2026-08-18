@@ -2,11 +2,76 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-18
-Current handoff build: `v0.26.08.18.0115_HAZARD_PATH_RULES_BOOT_TDZ_HOTFIX_PATCH`
+Current handoff build: `v0.26.08.18.0215_BREACH_INTERIOR_FLOORS_AND_PERSPECTIVE_BACKDROPS_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0115 is a startup hotfix for Browser 0045. The 0045 hazard-aware pathing code introduced `TACTICAL_HAZARD_PATH_RULES` below an older startup contract that already invokes `tacticalPlaybackMovementPath()`. Because that playback function can now call the hazard-aware pathfinder, launch-time contract evaluation reached `tacticalMovementHazardCost()` before the `const` rules object had initialized, producing a temporal-dead-zone `ReferenceError`. Browser 0115 moves the immutable hazard-path rules declaration into the early tactical constants block, before any startup contract can invoke hazard-aware movement code. No hazard weights, AI doctrine, save data, gameplay balance, or Stage 3 roadmap scope change in this hotfix. Browser 0045 hazard-aware routing, Browser 0015 vehicle-footprint pathing, Browser 2355 fire/smoke propagation, Browser 2315 TPV/FPV ground parity, Browser 2215 destructible lights/building power, Browser 2115 fog-free Iso unit readability, Browser 1545 VIP extraction pathing, Browser 1515 night visibility/accuracy, and Browser 1335 tactical control/vehicle/Skyranger/voice fixes remain active. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 0215 adds deliberate breach-and-clear interaction, stronger indoor-floor presentation, and location-appropriate perspective horizon scenery. AEGIS soldiers can spend 14 TU to deliberately breach an adjacent destructible building wall/window/partition with an equipped weapon; ballistic breaching consumes three rounds. AI VIP-rescue fire-team leads can also use the same action when already adjacent to a target building, the VIP is nearby, and the ordinary door approach is meaningfully farther away. Building interiors now carry building-specific floor patterns in 2D, 3D Iso, FPV, and TPV rather than reading as outdoor ground. FPV/TPV and incoming-fire perspective cameras now gain low-contrast geometric mission backdrops—city skylines, small-town silhouettes, farmland ridges/structures, forests, or mountains—while 3D Iso remains focused on the tactical board. Browser 0115 boot-TDZ protection, Browser 0045 hazard-aware routing, Browser 0015 vehicle-footprint pathing, Browser 2355 fire/smoke propagation, Browser 2315 TPV/FPV ground parity, Browser 2215 destructible lights/building power, Browser 2115 fog-free Iso unit readability, and Browser 1545 VIP extraction pathing remain active. Save format remains 4; native Godot remains at 0026.**
 
-Roadmap-only planning update (2026-08-17): **Future Stage 3 tactical work explicitly includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior designed to work across levels. No implementation of that Stage 3 verticality is part of Browser 0115; the verticality work remains future roadmap scope.**
+Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 0215 improves single-level building interaction/presentation but does not implement vertical levels.**
+
+
+# v0.26.08.18.0215 - Deliberate Breach, Interior Floors + Perspective Mission Backdrops
+
+## Deliberate breach-and-clear interaction
+
+- A selected living AEGIS soldier with an equipped weapon can enter **Breach** targeting mode from the tactical action panel.
+- The action is deliberately close-range: the soldier must be adjacent to a revealed, destructible building wall, window, or interior partition.
+- A deliberate breach costs **14 TU**. Ballistic weapons consume **3 rounds**; energy weapons use the same close-quarters action without ballistic ammunition expenditure.
+- The action feeds the existing structural damage/breach authority rather than introducing a second wall state. A successful breach becomes the established passable `breach-rubble` opening immediately, so ordinary movement, escort routing, fire-team formation, LOS, hazards, and later AI turns all see the same battlefield state.
+- Indestructible geometry, alien beacons, Skyranger hull geometry, already-destroyed cover, and unrelated props cannot be selected for this action.
+- VIP/civilian AI never performs the breaching action itself.
+
+## Bounded AI breach-and-clear use
+
+- AI VIP-rescue fire-team leaders may now use the same deliberate breach action when they are already adjacent to a wall of the VIP's building, the VIP is within a short local approach, and the nearest normal doorway is at least several hexes away.
+- This is intentionally conservative. The AI does not roam around demolishing buildings simply because breaching is possible; the current use case is a nearby rescue route where an opening meaningfully shortens ingress.
+- After breaching, the leader's remaining TU is recalculated before continuing movement, and the changed cover state is returned to the authoritative AI simulation so subsequent soldiers, civilians, and escorts can use the opening.
+- Fire/smoke hazard-aware routing from Browser 0045 immediately applies to the newly opened route. A breach that exposes a burning room does not force the team to enter it.
+
+## Building-specific interior floor hexes
+
+- Building archetypes now carry explicit floor-pattern identities instead of relying only on slightly different ground colors.
+- Current patterns include tile, linoleum, concrete, checker flooring, wood flooring, and plank flooring. They are assigned by building type—for example municipal/market interiors differ from workshops, residences, diners, barns, and ranger outposts.
+- The 2D hex board uses subtle patterned CSS backgrounds for interior cells and door thresholds.
+- Persistent 3D Iso ground textures render the same indoor patterns, with sharply reduced neighbor-color blending so exterior grass/soil/asphalt does not visually bleed into a room.
+- The FPV/TPV continuous-ground canvas also draws the interior patterns inside each building hex before generating the perspective texture. Browser 2315's TPV smoothing remains active, so TPV retains the same indoor material language without reintroducing hex-edge flicker.
+- Indoor floor presentation is visual only: movement cost, cover, LOS, fire/smoke rules, and building footprints are unchanged.
+
+## FPV / TPV mission horizon backdrops
+
+- Perspective observer modes no longer rely on only the sky gradient and a flat/empty horizon beyond the tactical map.
+- The persistent Three.js atmosphere now builds a simple camera-relative geometric backdrop matched to mission setting:
+  - **Urban:** distant blocky city skyline with varied building heights and occasional antenna silhouettes.
+  - **Small town:** low building silhouettes mixed with a distant tree line.
+  - **Farmland:** low ridges, tree-like forms, and occasional farm-structure silhouettes.
+  - **Wilderness / forest regions:** layered low-poly tree silhouettes.
+  - **Arid, tundra, and selected Mediterranean wilderness:** broad low-poly mountain silhouettes.
+- The backdrop deliberately uses low contrast, translucent geometry, softened horizon haze, and simple primitive shapes so it supplies place/context without competing with enemies, cover, HUD markers, or mission objectives.
+- These backdrops are enabled only while a perspective camera owns the battlefield: FPV, normal TPV, and incoming-fire reaction TPV. Returning to 3D Iso hides the perspective backdrop and restores the normal command-map emphasis.
+- The backdrop follows the perspective camera position like the existing sky dome, so the player sees environmental depth beyond the mission boundary instead of approaching a visibly empty edge.
+
+## Performance / compatibility
+
+- No external image assets or texture files are required. Interior patterns are generated procedurally and mission backdrops use lightweight Three.js primitives.
+- The backdrop is built once with the tactical atmosphere and toggled by camera mode; it is not regenerated every frame.
+- FPV/TPV continue to share the persistent continuous-ground plane. Interior-floor work adds drawing instructions to its existing cached canvas rather than creating another ground renderer.
+- Save format remains **4**. No campaign migration is required.
+
+## Validation
+
+- Build Health verifies an adjacent ballistic soldier can deliberately breach a structural wall for 14 TU and 3 rounds, while the resulting cover becomes a passable breach.
+- Build Health verifies generated building interior terrain exposes a floor pattern and that 2D/perspective/3D ground paths retain that metadata.
+- Build Health verifies an urban mission selects the cityscape backdrop profile and that the persistent atmosphere contains the perspective-backdrop ownership/toggle path.
+- The AI source contract verifies the bounded VIP-rescue breach-and-clear behavior is present.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- An isolated helper harness also passed deliberate-breach state transition, indoor CSS-floor generation, and urban backdrop-profile selection.
+
+## Manual test priorities
+
+- Select a soldier adjacent to a building wall, activate **Breach**, open the wall, and confirm the soldier/escort can route through the opening on the next move.
+- Compare a residence, diner, workshop, and barn in 3D Iso and FPV/TPV; their floor hexes should now visibly read as indoor surfaces rather than exterior terrain.
+- View an urban mission in FPV/TPV and confirm there is a subdued geometric skyline beyond the map. Repeat in wilderness/farm/small-town missions and confirm the distant silhouettes change appropriately.
+- Rotate/move the perspective camera and confirm the background stays distant and unobtrusive with no obvious flat map-edge horizon.
+- Return to 3D Iso and confirm the perspective backdrop disappears while the normal tactical board remains unchanged.
 
 
 # v0.26.08.18.0115 - Hazard Path Rules Boot TDZ Hotfix
