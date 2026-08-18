@@ -1,12 +1,46 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.17.1545_VIP_EXTRACTION_RAMP_PATHING_AND_ESCORT_HOLD_FIX_PATCH
+Build: v0.26.08.17.2045_ISO_UNIT_READABILITY_NIGHT_LIGHTING_DECOUPLE_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
 SUMMARY
 -------
+Keeps Night Operations gameplay-authoritative while restoring unit readability in the 3D Iso presentation. Soldiers, aliens, civilians, and VIPs no longer become nearly black simply because the scene is at night. In 3D Iso, visible unit meshes use temporary unlit readability materials that preserve their authored colors. FPV, TPV, and incoming-fire TPV reaction views immediately restore the original light-reactive materials, so local lamps, headlights, Weapon Lights, Field Flares, Skyranger lighting, and darkness still shape the close-camera visual experience.
+
+3D ISO UNIT READABILITY
+-----------------------
+- Individual tactical units in 3D Iso are decoupled from dynamic night-light shading once they are legitimately visible.
+- Human armor/vest/skin/weapon colors, civilian colors, and the six canonical alien palettes remain readable instead of collapsing toward black under low exposure.
+- Iso readability uses temporary MeshBasicMaterial equivalents derived from each unit's existing material and preserves color, opacity, side/depth behavior, maps, vertex-color flags, and fog participation.
+- Terrain, buildings, vehicles, vegetation, Skyrangers, street props, sky, fog, and environmental light sources remain night-dark. This is not a global brightness increase.
+
+FPV / TPV LIGHTING PRESERVED
+-----------------------------
+- Entering First Person restores each unit's original MeshStandard/MeshLambert material immediately.
+- Entering Third Person does the same, including the temporary incoming-fire TPV reaction camera.
+- Returning to Iso reapplies the cached unlit readability materials without rebuilding the tactical scene.
+- Weapon-light spotlights, street lamps, vehicle headlights, building lights, Field Flares, and Skyranger lights therefore remain visually meaningful in FPV/TPV.
+
+GAMEPLAY LIGHTING UNCHANGED
+---------------------------
+- Day/twilight/night sight ranges are unchanged from Browser 1515.
+- Darkness accuracy penalties are unchanged.
+- Artificial-light visibility restoration is unchanged.
+- LOS/shot blocking through walls, vehicles, Skyranger hull cells, and other opaque cover is unchanged.
+- Flashlight and Field Flare state/AI behavior is unchanged.
+- The change is presentation-only and does not reveal hidden units.
+- Save format remains 4.
+
+REGRESSION COVERAGE
+-------------------
+- Build Health verifies that Iso uses an unlit unit-readability path while FPV/TPV/reaction cameras select the original light-reactive materials.
+- An isolated material-swap harness confirms Iso -> FPV -> reaction TPV -> Iso restores and reuses the correct material set.
+- All six embedded JavaScript blocks pass `node --check`.
+
+PREVIOUS BUILD 1545 - VIP EXTRACTION RAMP PATHING + ESCORT HOLD FIX
+-------------------------------------------------------------------
 Fixes a VIP rescue/extraction stall where an escort soldier could reach the Skyranger ramp/cabin while escorted VIPs remained stationary beside the craft for multiple turns. Once the escort commits to the Skyranger extraction corridor, each escorted VIP now receives an independent bounded path to an actually open ramp cell. The escort may hold position while followers route around the solid Skyranger hull. A VIP is not counted rescued until that VIP itself occupies a valid extraction cell.
 
 VIP EXTRACTION RAMP PATHING FIX

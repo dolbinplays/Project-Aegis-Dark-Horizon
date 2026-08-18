@@ -2,9 +2,41 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.1545_VIP_EXTRACTION_RAMP_PATHING_AND_ESCORT_HOLD_FIX_PATCH`
+Current handoff build: `v0.26.08.17.2045_ISO_UNIT_READABILITY_NIGHT_LIGHTING_DECOUPLE_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1545 fixes VIP extraction stalls at the Skyranger. Once an escort reaches the extraction corridor, remaining escorted VIPs independently path around solid hull cells toward open ramp cells and continue extracting even if the escort holds position or has no movement TU remaining. Rescue credit is granted only when each VIP actually reaches an extraction cell. Browser 1515 Night Operations, Browser 1335 tactical control/vehicle/Skyranger/voice fixes, and Browser 1235 exact Fit Map framing remain active. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 2045 preserves Night Operations gameplay but decouples individual unit shading from dynamic darkness in 3D Iso. Visible soldiers, aliens, civilians, and VIPs retain readable authored colors in Iso, while FPV/TPV and incoming-fire reaction views retain the full light-reactive presentation. Browser 1545 VIP extraction pathing, Browser 1515 authoritative night visibility/accuracy, Browser 1335 tactical control/vehicle/Skyranger/voice fixes, and Browser 1235 exact Fit Map framing remain active. Save format remains 4; native Godot remains at 0026.**
+
+
+# v0.26.08.17.2045 - 3D Iso Unit Readability at Night
+
+## Presentation doctrine
+
+- Night Operations remains a gameplay system. Darkness still reduces unaided sight, applies the established darkness accuracy penalties, and makes local artificial light tactically useful. This patch does **not** brighten hidden information, extend LOS, change hit chances, or bypass hard-cover blockers.
+- The change is restricted to the **rendering of individual tactical units in 3D Iso**. Once a soldier, alien, civilian, or VIP is legitimately visible under the normal visibility rules, its model uses a temporary unlit readability material in Iso so authored colors remain identifiable at a strategic/isometric viewing distance.
+- Human armor, vest, skin, and weapon palettes remain readable. Civilian/VIP colors remain readable. The canonical alien archetype palettes remain readable. Dead/fallen unit presentation uses the same readability policy.
+- Terrain, road vehicles, buildings, Skyrangers, street furniture, vegetation, fog, sky, and emissive/environmental light sources continue using the darker Night Operations presentation. The battlefield should still clearly read as night; the units simply do not disappear into black silhouettes.
+
+## FPV / TPV lighting policy
+
+- First Person and Third Person continue to use the normal light-reactive MeshStandard/MeshLambert unit materials. Street lamps, vehicle headlights, interior building lights, Skyranger perimeter lamps, Field Flares, and Weapon Lights therefore continue to visibly illuminate nearby characters from close camera views.
+- Incoming-fire reaction TPV also uses light-reactive materials. The temporary camera cut does not inherit the Iso readability override.
+- Switching back to Iso reuses cached unlit materials rather than recreating all unit geometry. This preserves the persistent-renderer performance doctrine and avoids scene rebuilds on camera toggles.
+
+## Gameplay invariants
+
+- Browser 1515 sight ranges remain unchanged: daylight 20, twilight 12 unaided human, full night 7 unaided human, with the established alien low-light advantage.
+- Browser 1515 darkness accuracy penalties and illumination removal rules remain unchanged.
+- Weapon Light, Field Flare, streetlight, lit-window, vehicle-headlight, Skyranger-light, and beacon-light gameplay volumes remain authoritative.
+- Walls, solid road vehicles, Skyranger hull cells, and other opaque hard cover continue to block LOS and shots.
+- A unit that has not been legitimately revealed/seen is still not rendered simply because Iso units use readable materials.
+
+## Validation / compatibility
+
+- Build Health now checks that the persistent 3D renderer calls the mode-aware unit-lighting presentation helper and that Iso materials are unlit while FPV/TPV/reaction cameras restore the original lit materials.
+- An isolated swap test covers Iso -> FPV -> incoming-fire TPV -> Iso and verifies that the same cached readability material is reused.
+- All six embedded JavaScript blocks pass syntax validation.
+- Save format remains **4** and no new binary assets are required.
+- Native Godot parity remains `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`; native implementation should preserve the same design doctrine rather than copying the Three.js material-swap mechanism literally.
 
 
 # v0.26.08.17.1545 - VIP Extraction Ramp Pathing + Escort Hold Fix
