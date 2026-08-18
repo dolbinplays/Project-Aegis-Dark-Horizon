@@ -1,47 +1,77 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.18.1115_AI_FIRST_ROUND_STREAM_CONTINUATION_AND_DATELINE_SHORTEST_ROUTE_PATCH
+Build: v0.26.08.18.1245_AI_STREAM_RECOVERY_AND_TERMINATOR_PARITY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
-CURRENT PATCH SUMMARY
----------------------
-Fixes two live-test regressions from Browser 1055: Simulation AI could still expose Continue Mission Result after the first round of an unresolved mission, and moving aircraft could visually follow the long side of the flat terminator map instead of crossing the ±180° seam when that was the shorter world route. Browser 1115 makes first-round AI streaming use the same continuation contract as later rounds and makes aircraft flight curves explicitly dateline-aware.
+SUMMARY
+-------
+Fixes the Browser 1115 Simulation AI continuation interruption reported in the same Sunken Relay-style no-contact hunt. Browser 1115 correctly prevented a false mission result after round one, but the now-reachable round-two continuation exposed an older tactical-state ownership bug: `covers` was declared const even though rescue/escort processing legitimately replaces it with updated cover state. The resulting `Assignment to constant variable` exception caused the red Retry AI Continuation state; retry appeared ineffective because it immediately re-entered the same exception. Browser 1245 makes that local state mutable and preserves all existing stream-terminal safeguards.
 
-SIMULATION AI FIRST-ROUND CONTINUATION FIX
-------------------------------------------
-- The remaining first-round bug was caused by the chunk-return branch requiring an existing `initialBattleState` (`continuing === true`).
-- The opening streamed round begins without an existing continuation state, so an unresolved first round could hit its one-round safety limit without generating the next continuation snapshot.
-- The chunk-return branch now applies to any unresolved bounded Simulation AI batch, including the opening round.
-- The stream wrapper now marks a batch complete only for a genuine terminal result: mission success, legitimate objective failure, squad defeat, or deliberate AI rescue dust-off.
-- A nonterminal batch that somehow returns without a continuation snapshot now raises an explicit stream interruption instead of ever enabling Continue Mission Result.
-- Hybrid AI round return behavior is unchanged.
+This patch also removes the approximately once-per-second night-shadow flash on the flat terminator map and aligns the Three.js globe to the same subsolar latitude/longitude authority as the flat map, so both Geoscape views describe the same day/night cycle.
 
-DATELINE SHORTEST-ROUTE AIRCRAFT PATHING
-----------------------------------------
-- Added an explicit shortest-longitude-delta helper for world-seam movement.
-- Skyranger/interceptor curved flight presentation is calculated with an unwrapped destination longitude before final normalization.
-- Routes such as 170E -> 170W now cross the nearby map seam (~20 degrees) rather than visually traversing the long side (~340 degrees).
-- Eastbound and westbound seam crossings are symmetric.
-- Great-circle distance, ETA, fuel, ferry routing, and existing 1055 edge-wrap marker copies remain authoritative/compatible.
+SIMULATION AI STREAM RECOVERY
+-----------------------------
+- Root cause: `resolveMission()` declared the evolving battlefield `covers` array with `const`.
+- Rescue / escort processing later performs `covers = rescueTurn.covers || covers`, which is intentional because fire, smoke, destruction, breaches, vehicle state and rescue movement can update the authoritative cover collection during a tactical exchange.
+- The first streamed continuation that entered this branch threw `Assignment to constant variable` before the next round's frames could be appended.
+- `covers` is now declared with `let`; no tactical rules or data shape were changed.
+- Browser 1115's terminal gate remains authoritative: unresolved Alien Hunt/search rounds cannot become Continue Mission Result merely because a playback chunk ends.
+- Retry AI Continuation now has a viable recovery path because the restored continuation no longer immediately throws the same const-assignment exception.
+- Take Back Control remains available if a genuinely different continuation exception occurs.
+
+SMOOTH TERMINATOR CLOCK STABILITY
+---------------------------------
+- The 1055 interpolation system previously reset its visual-time anchor whenever the normal Geoscape clock state advanced, typically about once per second.
+- That phase reset could appear as a visible flash/pulse in the flat-map night overlay even though the intended motion was continuous.
+- Browser 1245 adds `geoscapeSmoothClockSourceUpdate()`. At an unchanged time speed, ordinary authoritative ticks update the reference time without resetting the interpolation anchor when the predicted and authoritative clocks agree.
+- Pause/resume, time-speed changes and real strategic time jumps still re-anchor intentionally.
+- The flat-map shadow therefore continues sliding between ticks rather than visually restarting each second.
+
+GLOBE / TERMINATOR MAP DAY-NIGHT PARITY
+---------------------------------------
+- The flat map uses `geoscapeSubsolarPoint()` to determine the actual world longitude/latitude beneath the sun.
+- The old Three.js globe light used a simpler camera-independent sinusoidal vector, so the globe could illuminate a different hemisphere from the flat terminator map at the same strategic time.
+- Browser 1245 adds `geoscapeThreeSunVectorForClock(clock, cameraCenter)` and derives the globe's sunlight from the same subsolar point as the flat map.
+- The vector is transformed into the globe's current camera-centered spherical frame, so rotating/focusing the globe does not change which real-world locations are on the day side.
+- Ambient and back-light values remain restrained to preserve the existing night-side appearance.
 
 REGRESSION COVERAGE
 -------------------
-- Build Health checks that first-round chunk generation no longer depends on an already-existing continuation state.
-- Build Health checks that streamed completion is terminal-result based and unresolved/no-continuation batches fail safe.
-- Dateline regression checks verify 170E -> 170W = +20 degrees, 170W -> 170E = -20 degrees, and midpoint aircraft positions stay at the world seam.
-- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Build Health verifies `resolveMission()` now contains `let covers = continuing` and still contains the rescue-phase cover reassignment that previously caused the runtime error.
+- Build Health verifies a same-speed strategic clock tick preserves the smooth interpolation anchor and a speed change re-anchors from the current interpolated time.
+- Build Health verifies the shared subsolar point faces the Three.js sun while its antipode faces away.
+- Browser 1115 dateline shortest-route logic and 1055 flat-map world-wrap presentation remain active.
+- All 6 non-empty embedded JavaScript blocks pass `node --check`.
 
 MANUAL TEST GATES
 -----------------
-1. Start Simulation AI on a fresh no-contact Alien Hunt and let at least 3-5 rounds play. Continue Mission Result must not appear after round one.
-2. Confirm playback automatically streams another round whenever the current frame buffer is exhausted and the mission remains unresolved.
-3. Send a Skyranger/interceptor across the dateline in both directions and verify it takes the short seam route on the flat terminator map.
-4. Confirm ETA/fuel/distance match the short route and ordinary non-dateline routes are unchanged.
+1. Re-run a no-contact Alien Hunt under Simulation AI for at least several rounds. Round two should begin automatically after the first stream batch; no false Continue Mission Result and no red Retry AI Continuation state should appear.
+2. If Retry AI Continuation is shown for some unrelated future error, verify clicking it visibly resumes thinking/streaming rather than immediately returning to the same const-assignment exception.
+3. Watch the flat terminator map for at least 10 seconds at each Geoscape time speed. The night overlay should move continuously without an approximately one-second flash.
+4. Pause and resume the Geoscape clock and change speeds; the terminator should stop/resume/re-time cleanly without a large backward jump.
+5. Compare day/night regions on the flat map and globe at the same time, including after rotating/focusing the globe. They should correspond geographically.
+6. Reconfirm east/west dateline aircraft routes still use the short edge-crossing route and world-wrap display.
 
-PREVIOUS BUILD 2115 - ISO UNIT FOG-FREE READABILITY PATCH
----------------------------------------------------------
+COMPATIBILITY
+-------------
+- Save format remains 4.
+- Existing Browser 1115 / 1055 campaign saves remain compatible.
+- No migration is required.
+
+
+HISTORICAL PATCH NOTES ARCHIVE
+==============================
+The historical notes below are retained from the prior bundle. The current authoritative build is the 1245 build stated above.
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
+Build: v0.26.08.17.2115_ISO_UNIT_FOG_FREE_READABILITY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
 SUMMARY
 -------
 Fixes the remaining 3D Iso night-unit readability problem shown in live testing. Browser 2045 made visible units unlit in Iso, but the temporary readability materials still participated in the dark Night Operations scene fog, and unit pieces that were already MeshBasicMaterial could bypass the conversion. Browser 2115 makes the Iso-only unit materials both unlit and fog-free. FPV, TPV, and incoming-fire reaction cameras still restore the original light-reactive materials and retain the normal night atmosphere.

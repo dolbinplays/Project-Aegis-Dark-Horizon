@@ -2,13 +2,54 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-18
-Current handoff build: `v0.26.08.18.1115_AI_FIRST_ROUND_STREAM_CONTINUATION_AND_DATELINE_SHORTEST_ROUTE_PATCH`
+Current handoff build: `v0.26.08.18.1245_AI_STREAM_RECOVERY_AND_TERMINATOR_PARITY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1115 fixes the remaining first-round Simulation AI stream bug by allowing the very first unresolved one-round batch to create the same continuation snapshot used by later streamed rounds. A second terminal guard now refuses to mark any nonterminal batch complete merely because no continuation flag was returned, so no-contact Alien Hunt missions cannot expose Continue Mission Result after round one. Geoscape aircraft routing/display now uses an explicit shortest-longitude delta across the ±180° dateline: Skyrangers and interceptors can choose the western/eastern map seam whenever it is the shorter route, and their curved flight presentation is calculated in an unwrapped longitude frame before being normalized back onto the globe/map. Browser 1055 smooth terminator motion, flat-map wrap copies, radio-static emphasis, and all earlier tactical/pathing/lighting fixes remain active. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 1245 fixes the Simulation AI continuation crash exposed after Browser 1115 successfully reached round two: the tactical resolver intentionally replaces its evolving cover state after rescue/escort processing, but that collection was declared `const`, producing `Assignment to constant variable` during a streamed continuation. It is now mutable (`let`) and remains protected by the existing unresolved-stream watchdog, so Retry AI Continuation no longer re-enters the same exception. Browser 1245 also removes the once-per-second flat-map terminator flash by preserving one continuous interpolated visual clock across ordinary Geoscape ticks, and makes the Three.js globe derive its sunlight direction from the exact same subsolar latitude/longitude authority as the flat terminator map. Browser 1115 dateline-shortest aircraft routing, Browser 1055 map wrapping/radio-static emphasis, and all earlier tactical/pathing/lighting fixes remain active. Save format remains 4; native Godot remains at 0026.**
 
 
-Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1115 preserves Browser 0215's single-level building interaction/presentation improvements but does not implement vertical levels.**
+Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1245 preserves Browser 0215's single-level building interaction/presentation improvements but does not implement vertical levels.**
 
+
+
+
+# v0.26.08.18.1245 - Simulation AI Stream Recovery + Terminator Stability / Globe Parity
+
+## Simulation AI continuation `Assignment to constant variable` fix
+
+- Live testing of Browser 1115 correctly stopped the false **Continue Mission Result** state, but exposed the next hidden continuation fault at the end of the first streamed round: **`Assignment to constant variable`**.
+- Root cause: `resolveMission()` initializes the battlefield `covers` collection from either a fresh deployment or a continuation snapshot. Later rescue/escort processing legitimately replaces that evolving state with `rescueTurn.covers`. The collection was still declared `const`, so the first streamed continuation that entered this branch threw before round-two frames could be appended.
+- Browser 1245 changes that local battlefield-state owner from `const covers` to `let covers`. This is deliberately narrow: the array reference may evolve between tactical phases, while all existing cover objects, destruction/fire/smoke rules, path blockers, visibility invalidation, and save-state serialization continue using the same authoritative data.
+- The existing Browser 1115 terminal guard remains in force. An unresolved mission still cannot expose **Continue Mission Result** merely because a stream batch ends.
+- The **Retry AI Continuation** button in 1115 appeared to do nothing because it correctly restored the last stable continuation, then immediately hit the same const-assignment exception again. With the underlying exception removed, that recovery path can now proceed instead of looping back into the interrupted state.
+
+## Flat terminator-map flash removal
+
+- Browser 1055 introduced continuous day/night interpolation between strategic time ticks, but the flat map still re-anchored its visual clock to the authoritative Geoscape clock every time React received the normal approximately one-second strategic tick. That repeated phase reset could present as a distracting once-per-second flash/pulse in the night overlay.
+- Browser 1245 adds a stable visual-clock source. While the Geoscape is running at the same selected speed and the authoritative clock remains close to the continuously predicted time, ordinary clock ticks update the authority reference **without resetting the interpolation anchor**.
+- The visual anchor is rebuilt only when it should be: pause/resume, a time-speed change, loading/jumping to a materially different strategic time, or another real discontinuity.
+- The canvas shadow continues to update smoothly at a bounded presentation cadence; strategic time itself remains authoritative and unchanged.
+
+## Globe / flat-map day-night authority parity
+
+- The flat terminator map already calculates daylight from a real mission-world subsolar latitude/longitude (`geoscapeSubsolarPoint`). The Three.js globe had been using an older camera-independent sinusoidal light vector, so the illuminated hemisphere could disagree with the flat map even though both moved with the same strategic clock.
+- Browser 1245 adds a camera-centered Three.js solar transform derived from the **same subsolar point** used by the flat map. The current globe camera center is transformed into the same spherical frame before the directional light is positioned.
+- The point shown as directly beneath the sun on the flat map therefore maps to the center of the globe's day-facing hemisphere, while the antipode maps to the night-facing hemisphere.
+- Globe ambient/back-light levels remain intentionally restrained so the corrected solar geometry does not wash out the existing night-side presentation.
+
+## Regression coverage
+
+- Build Health now verifies `resolveMission()` owns `covers` as mutable state and still performs the rescue-phase cover-state replacement that previously triggered the runtime exception.
+- The new clock-source contract verifies an ordinary same-speed one-second strategic tick preserves the interpolation anchor and yields a smooth midpoint, while a speed change re-anchors from the current interpolated time instead of jumping backward.
+- The globe-parity contract verifies the shared subsolar point evaluates as the Three.js globe's day-facing direction and its antipode evaluates as the night-facing direction.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+
+## Manual test gates
+
+1. Re-run the same no-contact Alien Hunt under Simulation AI and allow it to finish the first streamed round. Confirm round two begins automatically with no **Continue Mission Result**, no **Retry AI Continuation**, and no `Assignment to constant variable` interruption.
+2. If an interrupted 1115-style state is reproduced intentionally, press **Retry AI Continuation** and confirm frames begin appending rather than immediately returning to the same error.
+3. Run the flat terminator map at every Geoscape speed for at least 10 seconds each. The night shadow should slide continuously without the approximately once-per-second flash. Pause and confirm it stops cleanly; resume and confirm it continues without a large jump.
+4. Compare the flat map and Three.js globe at the same strategic time. Regions clearly on the flat-map day side should also be on the globe's illuminated side, including after rotating/focusing the globe to another region.
+5. Confirm Browser 1115 dateline crossing still chooses the short world-seam route and Browser 1055 world-wrap presentation still shows craft crossing the flat-map edge continuously.
 
 # v0.26.08.18.1115 - Simulation AI First-Round Continuation + Dateline Shortest-Route Pathing
 
