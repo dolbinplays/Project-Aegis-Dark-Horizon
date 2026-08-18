@@ -1,62 +1,61 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.18.1345_THREE_GLOBE_SOLAR_SURFACE_AUTHORITY_PATCH
+Build: v0.26.08.18.1515_GEOSCAPE_TICK_FLICKER_ELIMINATION_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
 SUMMARY
 -------
-Fixes the remaining mismatch between the Geoscape globe and flat Terminator Map. The globe itself was never transparent; the visual problem came from a second opaque SVG Earth presentation drawn above the actual Three.js sphere. That SVG layer included its own screen-space circular night mask, so the visible shadow could resemble a far-side night shadow showing through the Earth. Browser 1345 removes that duplicate visible surface/terminator and makes the real opaque Three.js sphere the sole visible Earth surface. The same subsolar point already used by the flat Terminator Map now directly drives the globe lighting.
+Removes the remaining once-per-Geoscape-tick visual flicker from the Three.js globe and the flat day/night Terminator Map while preserving Browser 1345's corrected shared solar geometry.
 
-THREE.JS GLOBE IS NOW THE VISIBLE EARTH AUTHORITY
--------------------------------------------------
-- The Three.js ocean sphere remains fully opaque (`transparent:false`, `opacity:1`) with depth testing/writing and front-side rendering.
-- Three.js land geometry remains slightly above the ocean sphere and uses front-side depth-tested materials.
-- The SVG command layer no longer paints an opaque ocean disc, duplicate landmass fills, duplicate gloss, or `SmoothGeoscapeGlobeTerminator`.
-- The SVG layer remains available for interaction and UI overlays such as markers, range/ferry lines, selection feedback, clouds, and command presentation.
-- Background SVG stars are excluded from the globe disc so they cannot appear to shine through the now-visible WebGL Earth.
+ROOT CAUSES
+-----------
+1. The smooth visual solar clock could continue extrapolating past the next expected strategic tick. If the browser/main thread was delayed while the large strategic state update ran, the next authoritative React update could force the visual clock back toward strategic time. That backwards correction read as a once-per-second night-shadow flash.
+2. The Terminator Map was rebuilding a full ImageData buffer and performing repeated object creation/trigonometric solar calculations for every pixel at roughly 25 presentation frames per second. This added main-thread pressure at the same time the strategic tick updated campaign state.
+3. advanceGeoscapeTimeByMinutes() regenerated the random globe cloud-drift seed every strategic tick. Because the seed ID was part of every cloud SVG key, the cloud layer was physically unmounted and remounted about once per second, producing an additional visible globe flash.
 
-GLOBE / TERMINATOR MAP SOLAR PARITY
------------------------------------
-- `geoscapeSubsolarPoint()` is the common solar authority for both views.
-- The flat map continues evaluating day/night from each map location relative to that subsolar latitude/longitude.
-- The globe transforms the same subsolar point into the current camera-centered spherical frame and positions the Three.js directional light along that vector.
-- A region's solar state is therefore tied to the strategic clock and its real longitude/latitude, not to the screen-space position of a 2D shadow circle.
-- Rotating/focusing the globe changes the visible geography while the solar direction remains physically consistent.
-- The far hemisphere cannot contribute a separate visible night overlay.
-
-LIGHTING READABILITY
---------------------
-- Whole-globe light intensity is no longer brightened/dimmed from a separate day/night readout.
-- The visible terminator is produced by the surface normal relative to the shared solar vector.
-- Ambient illumination is intentionally low but nonzero so the night hemisphere remains readable without looking self-lit.
-- Back lighting is reduced to a very faint rim contribution rather than materially illuminating the night hemisphere.
+FIXES
+-----
+- Solar presentation now interpolates only as far as the next expected strategic tick. If the authoritative tick is late, the presentation holds at that boundary instead of running ahead.
+- Normal strategic ticks use an authoritative "tick handoff": the newly advanced strategic time becomes the next interpolation anchor with no backwards phase correction.
+- Pause/resume, time-speed changes, loads, and deliberate time jumps remain explicit re-anchor events.
+- Terminator Map reuses one persistent ImageData buffer.
+- Terminator Map precomputes latitude/longitude sine/cosine tables once and uses a fast solar dot-product loop for subsequent frames.
+- The flat night canvas is isolated on a persistent composited paint layer.
+- The Three.js WebGL globe mount/canvas is also isolated on a stable compositor layer.
+- Per-tick setCloudDriftSeed(makeCloudDriftSeed(4)) has been removed.
+- Globe cloud element keys are stable across strategic time ticks, so cloud animations continue instead of restarting.
 
 PRESERVED SYSTEMS
 -----------------
-- Browser 1245 AI stream recovery remains active.
-- Browser 1245 flat Terminator Map interpolation/flash fix remains active.
+- Browser 1345 Three.js globe surface authority and globe/flat-map solar parity remain active.
+- Browser 1245 Simulation AI stream recovery remains active.
 - Browser 1115 dateline-shortest aircraft routing remains active.
-- Browser 1055 flat-map world wrapping and stronger tactical radio static remain active.
-- Tactical systems, mission rules, save data, and save format are unchanged.
+- Browser 1055 flat-map world-wrap craft copies and louder tactical radio static remain active.
+- Tactical fire/smoke hazard AI, civilian/VIP vehicle-footprint pathing, breaching, building interior floors, FPV/TPV mission backdrops, and all earlier tactical fixes remain active.
+- Save format remains 4.
 
 REGRESSION COVERAGE
 -------------------
-- Build Health requires Three.js to be the visible surface authority and `geoscapeSubsolarPoint` to be the solar authority.
-- The SVG terminator and duplicate surface opacity must be zero.
-- A direct solar-parity test requires the projected subsolar point to align with the Three.js sun vector and its antipode to point exactly away.
-- The globe mount exposes data diagnostics showing Three.js surface authority and far-side night overlay disabled.
-- All six non-empty embedded JavaScript blocks pass `node --check`.
+- A delayed tick test confirms the presentation reaches the next tick and then hands off without a backwards jump.
+- Build Health confirms cloud drift is no longer reseeded from the strategic tick function.
+- Build Health confirms the Terminator Map uses persistent Float32Array trig tables and exposes tick-flicker compositor diagnostics.
+- Build Health confirms the Three.js globe exposes the same compositor-isolation diagnostic.
+- All six non-empty embedded JavaScript blocks pass node --check.
 
 MANUAL TEST GATES
 -----------------
-1. Compare the flat Terminator Map and globe at the same paused time. Day and night regions must match.
-2. Rotate/focus the globe while paused. The solar boundary must stay tied to the Sun/strategic clock rather than the screen.
-3. Run every Geoscape time speed and confirm the globe and map boundaries move in the same direction and remain synchronized.
-4. Confirm no stars or second circular shadow appear inside the globe disc/night hemisphere.
-5. Confirm globe drag, wheel zoom, placement clicks, base/incident markers, UFOs, aircraft, range rings, and ferry overlays still work.
+1. Run the Geoscape for 15-20 seconds at 1m, 30m, 1h, 6h, and 1d compression. The globe must not flash when the strategic clock ticks.
+2. Repeat on the flat Terminator Map. The night overlay must slide continuously without the once-per-second pulse/flash.
+3. Observe globe clouds for at least 15 seconds. They should drift continuously instead of visibly restarting each tick.
+4. Pause time, compare a clearly daylit and clearly dark region between the globe and flat map, and confirm Browser 1345 solar parity is preserved.
+5. Recheck aircraft movement, including dateline crossings, to confirm this presentation patch did not affect travel authority.
 
-PREVIOUS BUILD 1245
--------------------
-Browser 1245 fixed the streamed Simulation AI `Assignment to constant variable` continuation failure, preserved Retry AI Continuation recovery, removed the approximately once-per-second flat Terminator Map flash, and unified the mathematical subsolar point used by the flat map and Three.js globe. Browser 1345 completes that visual unification by removing the duplicate SVG Earth/terminator layer that was still obscuring the actual Three.js result.
+RECENT BASELINE
+---------------
+1345: Three.js globe became the sole visible Earth surface; duplicate SVG Earth/night circle removed; globe and Terminator Map share geoscapeSubsolarPoint().
+1245: Simulation AI continuation const-assignment fix plus stable visual-clock source and initial globe/map solar parity.
+1115: First-round Simulation AI continuation and shortest dateline aircraft route.
+1055: AI stream watchdog, smooth day/night presentation foundation, flat-map craft world wrap, stronger tactical radio static.
+0215: Deliberate breaching, building interior floor tiles, and FPV/TPV biome backdrops.

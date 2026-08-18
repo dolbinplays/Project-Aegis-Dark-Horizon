@@ -2,15 +2,61 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-18
-Current handoff build: `v0.26.08.18.1345_THREE_GLOBE_SOLAR_SURFACE_AUTHORITY_PATCH`
+Current handoff build: `v0.26.08.18.1515_GEOSCAPE_TICK_FLICKER_ELIMINATION_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1345 completes the Geoscape globe day/night authority cleanup. The globe is not transparent; the mismatch was caused by an opaque SVG Earth/terminator presentation sitting above the real Three.js sphere. Browser 1345 makes the Three.js ocean and land surface the only visible Earth surface, removes the screen-space SVG night circle and duplicate SVG land/ocean/gloss fill, prevents background stars from appearing over the globe disc, and drives the Three.js directional sunlight directly from the same `geoscapeSubsolarPoint()` used by the flat Terminator Map. Whole-globe ambient/back-light modulation is reduced so the visible day/night boundary is produced by the actual surface normals relative to the shared solar vector, with the far hemisphere unable to contribute a visible night overlay. Browser 1245 AI-stream recovery and smooth flat-map interpolation, Browser 1115 dateline-shortest aircraft routing, Browser 1055 world-wrap/radio-static emphasis, and all earlier tactical/pathing/lighting fixes remain active. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 1515 removes the remaining once-per-Geoscape-tick visual flicker from both the Three.js globe and flat Terminator Map. The smooth solar clock now uses bounded one-tick interpolation with an authoritative tick handoff instead of extrapolating past a delayed strategic tick and snapping backward when React catches up. The flat night mask now reuses one persistent `ImageData` buffer with precomputed latitude/longitude trig tables instead of rebuilding and recalculating location objects for every pixel, reducing the main-thread spike that coincides with the strategic tick. Globe cloud drift is no longer randomly reseeded every strategic time advance, and cloud SVG keys remain stable, preventing the white cloud layer from unmounting/remounting once per second. The WebGL globe and flat-map night canvas are isolated on persistent compositor layers. Browser 1345 remains the authoritative globe-surface/solar-parity foundation; Browser 1245 AI-stream recovery, Browser 1115 dateline-shortest aircraft routing, Browser 1055 world-wrap/radio-static emphasis, and all earlier tactical/pathing/lighting fixes remain active. Save format remains 4; native Godot remains at 0026.**
 
 
-Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1345 preserves Browser 0215's single-level building interaction/presentation improvements but does not implement vertical levels.**
+Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1515 preserves Browser 0215's single-level building interaction/presentation improvements but does not implement vertical levels.**
 
 
 
+
+
+
+# v0.26.08.18.1515 - Geoscape Tick Flicker Elimination
+
+## Goal
+
+Remove the visible once-per-second/tick flash from the Three.js globe and flat Terminator Map without changing the authoritative strategic clock, selected Geoscape time speeds, or Browser 1345's corrected shared solar geometry.
+
+## Smooth solar-clock tick handoff
+
+- The presentation clock now interpolates only from the current authoritative strategic time toward the **next expected tick**, clamping at that boundary if the browser/main thread is briefly late.
+- When the authoritative Geoscape tick arrives, the visual clock performs a zero-discontinuity **tick handoff**: the new authoritative time becomes the next interpolation anchor instead of allowing the visual clock to run ahead and then snapping backward.
+- This is intentionally different from a manual time jump, load, pause/resume, or time-speed change. Those remain legitimate re-anchor events.
+- Result: ordinary one-second strategic updates should no longer create a backwards solar phase correction that reads as a terminator flash.
+
+## Flat Terminator Map rendering fast path
+
+- The night canvas remains a persistent overlay and is not recreated on strategic ticks.
+- Its `ImageData` allocation is now persistent for the life of the map component instead of allocating a fresh full-frame buffer on every presentation update.
+- Latitude and longitude sine/cosine values are precomputed once. Per-frame solar evaluation reuses those tables and the current subsolar point instead of constructing a location object and performing repeated trigonometry for every pixel.
+- The resulting mask still uses the same `geoscapeSubsolarPoint()`/solar-elevation authority and preserves twilight softness, but with substantially less work at the exact moment the main strategic state updates.
+- The canvas is placed on its own composited paint layer to reduce repaint coupling with the rest of the Geoscape UI.
+
+## Three.js globe tick isolation
+
+- The Browser 1345 Three.js globe remains the sole visible Earth-surface authority.
+- Its WebGL mount/canvas is kept on a stable composited paint layer so unrelated React/UI updates are less likely to invalidate the Earth render.
+- The old `setCloudDriftSeed(makeCloudDriftSeed(4))` call has been removed from `advanceGeoscapeTimeByMinutes()`. Clouds already have continuous SVG animation, so replacing the entire random drift seed on every strategic tick was unnecessary and caused the cloud layer to visibly restart.
+- Cloud element keys no longer include the random drift-seed ID. A time tick therefore cannot unmount/remount the visible cloud groups.
+
+## Preserved behavior
+
+- All Geoscape time-speed options retain their existing strategic rates.
+- The day/night boundary still moves faster or slower according to the selected compression speed.
+- Browser 1345 globe/map solar parity is unchanged: both views still derive daylight from `geoscapeSubsolarPoint()`.
+- Aircraft dateline shortest-route behavior and flat-map world wrapping remain unchanged.
+- Save format remains 4.
+
+## Regression coverage / manual gates
+
+- Build Health verifies that a delayed ordinary strategic tick hands the solar clock from one completed visual interval to the next without a backward discontinuity.
+- It verifies that cloud drift is no longer reseeded from `advanceGeoscapeTimeByMinutes()`, the flat map uses the persistent trig/ImageData fast path, and both globe/map surfaces expose compositor-isolation diagnostics.
+- Manual gate: watch either Geoscape view for at least 15–20 seconds at 1m, 30m, 1h, 6h, and 1d speeds. Ordinary clock ticks should not create a flash; movement may pause momentarily at a tick boundary if the browser is late, but it must not jump backward.
+- Manual gate: confirm globe clouds move continuously rather than visibly resetting once per second.
+- Manual gate: switch between globe and Terminator Map at the same strategic time and confirm Browser 1345 day/night parity remains intact.
 
 # v0.26.08.18.1345 - Three.js Globe Solar Surface Authority
 
