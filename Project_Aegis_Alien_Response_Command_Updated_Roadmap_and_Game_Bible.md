@@ -2,9 +2,38 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.2215_DESTRUCTIBLE_LIGHTS_AND_BUILDING_POWER_LOSS_PATCH`
+Current handoff build: `v0.26.08.17.2245_TPV_CONTINUOUS_GROUND_EDGE_STABILITY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2215 extends Night Operations into destructible battlefield infrastructure. Street lamps and headlight vehicles stop contributing illumination when their cover record is destroyed; breached lit windows no longer continue glowing; and newly generated buildings include a destructible PWR control panel linked to that building’s interior-light circuit. Destroying the panel removes all linked interior-window light from authoritative sight/accuracy calculations and the persistent Three.js light list while leaving Skyranger lamps, Weapon Lights, Field Flares, alien beacon glow, and unrelated street lighting independent. Browser 2115 fog-free Iso unit readability remains active, as do Browser 1545 VIP extraction pathing, Browser 1515 night visibility/accuracy, Browser 1335 tactical control/vehicle/Skyranger/voice fixes, and Browser 1235 exact Fit Map framing. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 2245 extends Browser 0455’s FPV continuous-ground anti-flicker presentation to normal Third Person and incoming-fire reaction TPV. Whenever a perspective observer camera owns the battlefield, the persistent renderer now hides the touching per-hex ground surfaces and their per-hex fog overlay and uses the same continuous textured terrain plane already proven in FPV. Ordinary 3D Iso retains its explicit hex surfaces and exact picking. Browser 2215 destructible lights/building power, Browser 2115 fog-free Iso unit readability, Browser 1545 VIP extraction pathing, Browser 1515 night visibility/accuracy, Browser 1335 tactical control/vehicle/Skyranger/voice fixes, and Browser 1235 exact Fit Map framing remain active. Save format remains 4; native Godot remains at 0026.**
+
+
+# v0.26.08.17.2245 - TPV Continuous Ground Edge Stability
+
+## Perspective-ground stability doctrine
+
+- Browser 0455 solved first-person shared-hex edge shimmer by hiding the individual rendered ground hexes while FPV owns the perspective camera and replacing them with one continuous terrain plane generated from the same authoritative terrain palettes. Browser 2245 applies that same presentation rule to Third Person rather than maintaining a separate TPV ground path.
+- Normal Third Person now activates the continuous terrain plane for the full chase-camera interval. The touching explicit hex ground meshes remain hidden until the renderer returns to 3D Iso. This removes the grazing-angle raster competition that can make shared hex boundaries flicker while a TPV camera follows a moving soldier.
+- Incoming-fire reaction TPV uses the same continuous-ground mode. A temporary alien-shot reaction cut therefore cannot flash back to the unstable touching-hex presentation while the camera is close to the ground.
+- FPV continues using the same established continuous plane. The renderer records whether the active perspective ground mode is `fpv`, `tpv`, or `reaction-tpv`, but those modes reuse one cached terrain texture/mesh rather than creating duplicate battlefield floors.
+
+## Fog and knowledge policy
+
+- The per-hex tactical ground-fog meshes are hidden whenever the continuous perspective plane is active, matching Browser 0455 FPV behavior. This matters because leaving those touching fog hexes visible over the continuous floor would reintroduce a second set of shared polygon edges capable of flickering.
+- This is a presentation-layer substitution only. Authoritative explored/visible state still controls tactical units, objectives, cover visibility, HUD/minimap knowledge, target selection, AI information, LOS, and combat. Hiding the ground-fog mesh in FPV/TPV does not grant hidden contacts or alter the mission visibility model.
+- Returning to 3D Iso immediately restores the explicit ground hex meshes and the normal ground-fog batches, preserving the exact tactical-map presentation and picking behavior used by the elevated command view.
+
+## Performance / lifecycle
+
+- TPV reuses the already-built continuous terrain plane and CanvasTexture created with the persistent tactical scene. Switching FPV <-> TPV <-> Iso changes visibility only; it does not rebuild terrain geometry, regenerate the texture, or create a second renderer.
+- The same cached ground is also reused for incoming-fire reaction cuts, so repeated reactions do not allocate new terrain meshes.
+- Save format remains **4**. No campaign/tactical-state migration and no new binary assets are required.
+
+## Validation
+
+- Build Health now requires normal TPV, incoming-fire reaction TPV, and FPV to all select the continuous-ground path while 3D Iso disables it.
+- The static contract also requires TPV-specific renderer diagnostics and verifies that the continuous perspective plane is tagged for both FPV and TPV use.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Manual priority: reproduce the previously visible TPV hex-edge flicker, follow a soldier while walking and turning, then trigger an incoming-fire reaction cut. Ground boundaries should remain visually stable in both third-person cases while ordinary 3D Iso remains unchanged.
 
 
 # v0.26.08.17.2215 - Destructible Lights + Building Power Loss
