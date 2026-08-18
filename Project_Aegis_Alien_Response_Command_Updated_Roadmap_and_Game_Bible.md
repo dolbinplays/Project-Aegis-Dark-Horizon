@@ -1,10 +1,47 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.2355_TACTICAL_FIRE_SMOKE_PROPAGATION_FOUNDATION_PATCH`
+Last updated: 2026-08-18
+Current handoff build: `v0.26.08.18.0015_CIVILIAN_VIP_VEHICLE_FOOTPRINT_PATHING_AUTHORITY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2355 establishes the first gameplay-authoritative tactical fire/smoke propagation foundation. Destruction of electrical power controls and vehicles can seed persistent fire, energetic/grenade destruction can ignite flammable battlefield objects, fire damages exposed units and burns/spreads through suitable cover, and each active fire produces short-lived drifting smoke. Accumulated smoke now participates in tactical line of sight, while active flames join the unified Night Operations light authority and create local illumination without becoming hard cover. The system is deliberately bounded and deterministic for this first pass: it does not yet add movement penalties, suppression, firefighting equipment, wind simulation, or full building-wide conflagration. Browser 2315 TPV/FPV ground texture parity, Browser 2215 destructible lights/building power, Browser 2115 fog-free Iso unit readability, Browser 1545 VIP extraction pathing, Browser 1515 night visibility/accuracy, Browser 1335 tactical control/vehicle/Skyranger/voice fixes, and Browser 1235 exact Fit Map framing remain active. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 0015 closes a civilian/VIP movement-authority seam around multi-hex land vehicles. Every live hard-cover footprint cell—not only the vehicle anchor cell—is now consumed by shared reachable-cell searches, AI movement plans, extraction/no-reentry routing, search/guard target selection, and battlefield integrity repair. VIPs and civilians therefore cannot route, flee, be assigned, or be repaired into the occupied body of a sedan, van, truck, bus, or other multi-cell land vehicle. Destroyed vehicles still release their full footprint, Skyranger hull/ramp rules remain unchanged, Browser 2355 fire/smoke, Browser 2315 TPV/FPV ground parity, Browser 2215 destructible lights/building power, Browser 2115 fog-free Iso unit readability, Browser 1545 VIP extraction pathing, Browser 1515 night visibility/accuracy, Browser 1335 tactical control/vehicle/Skyranger/voice fixes, and Browser 1235 exact Fit Map framing remain active. Save format remains 4; native Godot remains at 0026.**
+
+Roadmap-only planning update (2026-08-17): **Future Stage 3 tactical work now explicitly includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior designed to work across levels. No code or build-number change is part of this documentation update.**
+
+
+# v0.26.08.18.0015 - Civilian / VIP Vehicle-Footprint Pathing Authority
+
+## Full land-vehicle footprint movement authority
+
+- A living multi-cell land vehicle is one solid tactical object for movement. Every cell returned by its authoritative `footprintCells` / `tacticalCoverFootprintCells(...)` record is a hard-cover movement blocker while the vehicle remains intact.
+- Browser 0015 removes remaining pathing seams that rebuilt a blocker set from only each cover record's anchor `x,y` coordinate. Those local anchor-only sets could let a civilian or VIP route into a non-anchor cell visually occupied by a 3x2 car/van/truck or a longer bus.
+- The shared `tacticalHardCoverFootprintKeySet(...)` and `tacticalPathBlockerIndex(...)` authority now feeds reachable-cell searches and AI movement plans so all movement actors see the same complete solid footprint.
+
+## Civilian / VIP behavior covered
+
+- Ordinary civilian and VIP reachability cannot include a live vehicle footprint cell.
+- Escort/extraction routing continues to use bounded pathfinding but now inherits the same complete vehicle blocker authority on every route to a Skyranger ramp.
+- AI no-building-reentry, reported-contact search, secure-search, guard, patrol, and related target-selection helpers use the shared footprint-aware blocker set rather than independently assuming one cover cell equals one object.
+- Panic/flee and nearby movement behavior continue to reject hard cover; because hard-cover occupancy is now footprint-authoritative, a fleeing civilian cannot choose the side/rear cell of a vehicle as an apparently open destination.
+
+## Battlefield integrity safety net
+
+- `tacticalNearestPlayableOpenCell(...)` now excludes the full footprint of every living hard-cover object when it searches for a legal repair position.
+- `tacticalRepairBattlefieldState(...)` explicitly recognizes a living unit found inside a hard-cover footprint as invalid state. If an older/stale tactical snapshot or fallback places a VIP/civilian inside a vehicle body, the integrity pass relocates the unit to the nearest legal open cell and records the condition as `cover-overlap`.
+- This integrity rule applies consistently to living tactical actors rather than special-casing only VIPs, preventing similar overlap regressions from resurfacing through another movement path.
+
+## Preserved vehicle / Skyranger doctrine
+
+- Destroyed land vehicles become traversable exactly as before because only live hard-cover records (`hp > 0`) contribute footprint blockers.
+- Vehicle HP, destructibility, shot/LOS blocking, cover adjacency, visual footprint, fire/smoke behavior, and salvage/campaign outcomes are unchanged.
+- Friendly Skyranger hull cells remain indestructible hard cover; ramp/center-aisle extraction cells remain passable. The footprint fix does not turn the open ramp into solid cover.
+- Save format remains **4**. No migration or binary assets are required.
+
+## Validation
+
+- Build Health includes a representative 3x2 road-vehicle regression. It requires every footprint cell to enter the hard-cover blocker index, ordinary reachability and AI reachability to exclude those cells, a VIP extraction route to remain outside the vehicle body, and integrity repair to move a VIP seeded into a non-anchor vehicle cell back to legal ground.
+- All non-empty embedded JavaScript blocks pass `node --check`.
+- Manual priority: escort and panic-route civilians/VIPs around cars and buses, then destroy a vehicle and confirm its former footprint becomes traversable without changing Skyranger-ramp behavior.
 
 
 # v0.26.08.17.2355 - Tactical Fire + Smoke Propagation Foundation
@@ -6300,6 +6337,7 @@ Implemented or first-pass:
 - Larger craft are harder to shoot down.
 - Shootdowns create crash incidents.
 - Some UFOs should eventually land or complete a mission profile, creating alien ground incidents such as terror raids, abductions, harvest sites, scouting operations, or landed UFO missions if not intercepted in time.
+- Larger landed/crashed UFO missions should eventually use the Stage 3 multi-deck alien-craft system, allowing combat to move through distinct interior decks and mission-critical ship systems rather than treating every craft as a single flat interior.
 - Live alien research should eventually reveal alien command sites.
 - Highest-tier live alien research gates alien base/final command-site discovery.
 - Endgame final mission should become available after the correct chain of detection/research/escalation.
@@ -6676,7 +6714,7 @@ Still planned:
 - VIP Rescue AI fire-team distribution is implemented in Browser 1850: the senior tactical coordinator assigns distinct fire teams across distinct marked VIPs before allowing duplicate coverage, while extra teams remain available for security, combat, escort support, or later reassignment.
 - Adaptive Alien Field Beacon Phase 2 is implemented in Browser 1552: three recorded beacon destructions trigger ballistic-blocking kinetic fields on later beacon deployments, and reinforcement arrivals preserve the original beacon or crashed-UFO landmark.
 - Next beacon milestone after live playtesting: Phase 3 combined kinetic/energy shielding plus intact hacking and commander-badge disablement. This remains behind research/evidence gates rather than being enabled automatically.
-- Explore upper floors, stairs, and roof visibility only after the single-level cutaway maps remain readable and performant.
+- Add **multi-floor / multi-level tactical structures and multi-deck alien craft** after the single-level cutaway maps remain readable and performant. This includes upper floors, stairs/ladders/ramps/lifts where appropriate, roof access, floor-aware LOS and ballistics, vertical AI pathfinding, camera/floor cutaways, structural destruction across levels, and fire/smoke propagation between connected spaces. See the dedicated roadmap addition below.
 
 Completed in browser 0945:
 `TACTICAL_EVENT_TIMELINE_AND_SHOT_FEEDBACK_INDEX_ONLY`
@@ -6686,6 +6724,114 @@ Completed browser Stage 3 feedback seed:
 
 Power-loss/destructible-light foundation completed in Browser 2215. Possible follow-up after playtest:
 `TACTICAL_FIRE_SMOKE_PROPAGATION_FOUNDATION_INDEX_ONLY`
+
+
+### Future Roadmap Addition — Multi-Floor Structures and Multi-Deck Alien Craft
+Status: **Roadmapped / future Stage 3 tactical expansion**
+
+#### Design goal
+
+Tactical battlefields should eventually support meaningful vertical spaces instead of treating every structure and alien craft as a single flat floor. Multi-level locations should expand tactical possibilities without sacrificing the readability, deterministic rules, performance discipline, and persistent-renderer stability established by the current single-level battlescape.
+
+The intended player experience is that entering a two- or three-story building, climbing onto a roof, breaching an upper wall, or fighting through the decks of a landed alien craft feels like one continuous tactical mission rather than a separate minigame or disconnected map.
+
+#### Human and terrestrial structures
+
+Future urban, small-town, industrial, military, and special-objective maps may include:
+
+- Two-story and eventually taller buildings where the mission/map budget allows.
+- Accessible upper floors connected by stairs, ladders, ramps, fire escapes, service lifts, or other architecture-appropriate traversal.
+- Roofs that can become real tactical spaces when reachable rather than decorative caps only.
+- Balconies, mezzanines, raised walkways, gantries, parking structures, observation platforms, towers, and other partial-height spaces.
+- Floor openings, stairwells, atriums, broken ceilings, skylights, and breached sections that permit sight, fire, movement, falling debris, or vertical hazard interaction when the geometry logically allows it.
+- Multi-level rescue/objective layouts, including civilians or VIPs on upper floors, rooftop extraction possibilities, defended control rooms, generators, data centers, laboratories, or other mission-specific objectives.
+
+#### Alien craft and alien structures
+
+Landed UFOs, intact alien transports, larger invasion craft, command vessels, and future alien facilities should eventually support **multi-deck interiors** rather than being represented only as exterior footprints or a single interior plane.
+
+Possible alien-craft spaces include:
+
+- Entry ramps / airlocks and lower cargo or deployment decks.
+- Troop bays, containment areas, specimen chambers, storage spaces, and equipment compartments.
+- Engineering / power-core rooms and propulsion spaces.
+- Command, navigation, communications, or bridge sections on upper decks.
+- Vertical shafts, ramps, lifts, gravitic platforms, ladders, or alien traversal devices appropriate to the craft archetype.
+- Interior bulkheads, doors, windows/viewports, destructible systems, shield controls, power systems, and breachable surfaces where consistent with the craft's technology and mission role.
+- Crashed craft variants where decks may be tilted, partially collapsed, exposed to the outside, or connected by holes and wreckage rather than intact corridors.
+- Larger craft that may require several tactical floors while smaller scouts remain one-level for clarity and performance.
+
+Alien craft should retain recognizable exterior identity while their internal deck plan also communicates the vessel's purpose. A scout, terror ship, transport, command craft, and final-mission vessel should not all use the same generic interior.
+
+#### Vertical coordinate and movement doctrine
+
+- Tactical state should eventually treat a unit position as **hex/cell + level/elevation**, not merely X/Y on one plane.
+- Moving between levels must use explicit traversable connections. Units should not path through ceilings or teleport between floors.
+- Stairs, ramps, ladders, lifts, holes, and special alien traversal devices should advertise their valid destinations clearly to both the player and AI.
+- Reachability, Time Unit cost, occupancy, cover, escort movement, civilians/VIPs, reinforcement deployment, and extraction must all agree on the same vertical movement graph.
+- Fire teams should maintain formation sensibly across stairs and narrow vertical transitions rather than stacking or repeatedly pathing between floors.
+
+#### Floor-aware LOS, cover, and ballistics
+
+- LOS and shooting must become elevation-aware. A unit on one floor cannot see or fire through an intact floor/ceiling simply because the horizontal hexes overlap.
+- Windows, balconies, stairwells, atriums, roof edges, holes, breached floors, and open ramps can create legitimate cross-level sightlines.
+- Cover should account for vertical exposure: low cover, parapets, railings, floor edges, upper-floor windows, and overhead protection should matter from the actual attack angle.
+- Projectile interception must use the same floor/structure authority as movement and LOS so shots cannot visually or mechanically pass through intact ceilings, decks, or bulkheads.
+- Grenades and thrown objects should eventually support believable vertical arcs and floor-to-floor use where openings exist.
+
+#### Camera and readability doctrine
+
+Multi-level tactical play should be built around readability first. Planned presentation rules:
+
+- 3D Iso needs a clear **current-floor / viewed-floor** control with fast switching between levels.
+- The active floor may use cutaway, fade, transparency, hide-above, or roof-removal rules so units are never obscured by floors the player is not trying to inspect.
+- FPV and TPV should naturally show the physical multi-level environment without artificial floor hiding unless a camera obstruction requires a presentation fallback.
+- Selection rings, movement previews, objective markers, fire-team indicators, and target brackets must communicate when a unit/objective is above or below the currently viewed level.
+- Fit Map and camera focusing should understand vertical bounds so a tall building or alien craft does not break framing.
+- The player should be able to tell at a glance which floor a selected unit occupies and how to reach another level.
+
+#### Destruction, fire, smoke, and power across levels
+
+The Browser 2355 fire/smoke foundation and Browser 2215 destructible-light/power systems should eventually extend vertically:
+
+- Fire can spread between floors only through believable connected paths such as stairwells, open shafts, breaches, windows, or destructible floor/ceiling sections.
+- Smoke can rise into upper floors and collect in enclosed spaces, with vertical openings affecting movement of smoke.
+- Destroyed floors, stairs, lifts, or alien traversal systems may change the available vertical path graph.
+- Building or alien-craft power loss can affect lights, doors, lifts, shields, machinery, or mission systems across several floors/decks when those systems share a circuit.
+- Structural collapse must be bounded and deterministic rather than introducing uncontrolled physics simulation.
+
+#### AI doctrine
+
+- Simulation/Hybrid AI must use the same floor-aware pathfinding and visibility rules as manual control.
+- AI should be able to pursue contacts upstairs/downstairs, clear rooms floor by floor, guard stairs/ramps, rescue upper-floor civilians/VIPs, and use alternate vertical routes when available.
+- AI must not oscillate between floors because of target-selection churn; floor transitions should be treated as meaningful route commitments.
+- Alien defenders inside craft should understand decks, choke points, command rooms, reinforcement entry points, and mission-critical systems rather than clustering on one level.
+
+#### Staged implementation recommendation
+
+Do **not** attempt the entire vertical system in one patch. Recommended future sequence:
+
+1. **Vertical data foundation** — add level/elevation identity to tactical cells and unit positions while keeping existing missions on level 0.
+2. **Two-floor building prototype** — one controlled building with stairs, floor switching, cutaway visibility, movement, LOS, and shooting.
+3. **Vertical AI/pathfinding parity** — ensure manual, Hybrid, and Simulation AI all use the same vertical route graph.
+4. **Destruction / fire / smoke parity** — extend structural damage, power, hazards, and visibility across levels.
+5. **Alien-craft multi-deck prototype** — build one landed/crashed craft with a distinct lower and upper deck connected through an alien-appropriate transition.
+6. **Mission/objective expansion** — upper-floor VIPs, control rooms, alien command decks, power-core objectives, rooftop positions, and multi-level extraction/assault scenarios.
+7. **Broader procedural support** — allow selected map/building/craft archetypes to generate multi-level layouts after the prototypes are stable and performant.
+
+#### Scope guardrails
+
+- Existing single-level maps remain valid and should not be forced into multi-level layouts.
+- Small buildings and small alien scouts may remain single-level permanently when that is clearer.
+- Verticality should create tactical decisions, not simply add floors for visual spectacle.
+- Save-format changes should be avoided if the eventual level/elevation data can be normalized safely, but the implementation should prefer a clean authoritative model over preserving format 4 at all costs.
+- Browser and future Godot implementations should share the gameplay doctrine while using engine-appropriate rendering/camera techniques.
+
+Suggested future patch sequence names:
+- `TACTICAL_VERTICAL_LEVEL_DATA_FOUNDATION`
+- `TACTICAL_TWO_FLOOR_BUILDING_AND_CUTAWAY_PROTOTYPE`
+- `TACTICAL_VERTICAL_AI_LOS_AND_BALLISTICS_PARITY`
+- `TACTICAL_MULTI_DECK_ALIEN_CRAFT_PROTOTYPE`
 
 
 ---
