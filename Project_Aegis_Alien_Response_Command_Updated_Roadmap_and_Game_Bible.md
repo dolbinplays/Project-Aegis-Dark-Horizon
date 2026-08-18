@@ -2,38 +2,38 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.2245_TPV_CONTINUOUS_GROUND_EDGE_STABILITY_PATCH`
+Current handoff build: `v0.26.08.17.2315_TPV_FPV_GROUND_TEXTURE_PARITY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2245 extends Browser 0455’s FPV continuous-ground anti-flicker presentation to normal Third Person and incoming-fire reaction TPV. Whenever a perspective observer camera owns the battlefield, the persistent renderer now hides the touching per-hex ground surfaces and their per-hex fog overlay and uses the same continuous textured terrain plane already proven in FPV. Ordinary 3D Iso retains its explicit hex surfaces and exact picking. Browser 2215 destructible lights/building power, Browser 2115 fog-free Iso unit readability, Browser 1545 VIP extraction pathing, Browser 1515 night visibility/accuracy, Browser 1335 tactical control/vehicle/Skyranger/voice fixes, and Browser 1235 exact Fit Map framing remain active. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 2315 refines Browser 2245’s TPV continuous-ground presentation so Third Person now uses an FPV-matched ground treatment instead of the harsher visible hex mosaic that could still show up from the chase-camera angle. FPV keeps the original continuous floor texture. TPV and incoming-fire reaction TPV now swap to a parity-smoothed variant of that same cached continuous-ground texture, preserving the FPV terrain language while reducing visible hex boundaries at third-person height. Ordinary 3D Iso still restores the explicit hex board, Browser 2215 destructible lights/building power remains active, Browser 2115 fog-free Iso unit readability remains active, Browser 1545 VIP extraction pathing remains active, Browser 1515 night visibility/accuracy remains active, Browser 1335 tactical control/vehicle/Skyranger/voice fixes remain active, and Browser 1235 exact Fit Map framing remains active. Save format remains 4; native Godot remains at 0026.**
 
 
-# v0.26.08.17.2245 - TPV Continuous Ground Edge Stability
+# v0.26.08.17.2315 - TPV / FPV Ground Texture Parity
 
-## Perspective-ground stability doctrine
+## Perspective-ground presentation doctrine
 
-- Browser 0455 solved first-person shared-hex edge shimmer by hiding the individual rendered ground hexes while FPV owns the perspective camera and replacing them with one continuous terrain plane generated from the same authoritative terrain palettes. Browser 2245 applies that same presentation rule to Third Person rather than maintaining a separate TPV ground path.
-- Normal Third Person now activates the continuous terrain plane for the full chase-camera interval. The touching explicit hex ground meshes remain hidden until the renderer returns to 3D Iso. This removes the grazing-angle raster competition that can make shared hex boundaries flicker while a TPV camera follows a moving soldier.
-- Incoming-fire reaction TPV uses the same continuous-ground mode. A temporary alien-shot reaction cut therefore cannot flash back to the unstable touching-hex presentation while the camera is close to the ground.
-- FPV continues using the same established continuous plane. The renderer records whether the active perspective ground mode is `fpv`, `tpv`, or `reaction-tpv`, but those modes reuse one cached terrain texture/mesh rather than creating duplicate battlefield floors.
+- Browser 2245 correctly moved normal TPV and incoming-fire reaction TPV onto the same continuous-ground pathway already used by FPV, eliminating the shared-edge flicker produced by touching explicit ground hex meshes.
+- The follow-up issue shown in live play was visual parity rather than ownership: TPV still read harsher from its elevated chase-camera angle, with individual hex boundaries standing out more than they do in FPV.
+- Browser 2315 keeps one authoritative continuous-ground plane but gives TPV and reaction TPV their own presentation texture derived from the FPV floor. The TPV texture is a parity-smoothed copy of the FPV texture rather than a separate terrain interpretation.
+- FPV continues using the direct continuous-ground texture. TPV and reaction TPV now automatically swap to the parity-smoothed TPV texture. 3D Iso still restores the explicit rendered ground hexes and their normal command-view look.
 
-## Fog and knowledge policy
+## Visual consistency policy
 
-- The per-hex tactical ground-fog meshes are hidden whenever the continuous perspective plane is active, matching Browser 0455 FPV behavior. This matters because leaving those touching fog hexes visible over the continuous floor would reintroduce a second set of shared polygon edges capable of flickering.
-- This is a presentation-layer substitution only. Authoritative explored/visible state still controls tactical units, objectives, cover visibility, HUD/minimap knowledge, target selection, AI information, LOS, and combat. Hiding the ground-fog mesh in FPV/TPV does not grant hidden contacts or alter the mission visibility model.
-- Returning to 3D Iso immediately restores the explicit ground hex meshes and the normal ground-fog batches, preserving the exact tactical-map presentation and picking behavior used by the elevated command view.
+- The TPV texture is generated from the same cached terrain canvas used by FPV. It is blurred slightly and then blended back with the original terrain image so the result still preserves the local terrain palette, color transitions, and mission-specific ground logic while reducing the strong hex-outline read seen from the third-person camera height.
+- Because TPV and reaction TPV still use the same continuous-ground plane introduced earlier, this patch does not change pathfinding, LOS, movement costs, visibility authority, or combat calculations.
+- Runtime diagnostics now expose whether the perspective ground is using the base FPV texture or the parity-smoothed TPV texture.
 
 ## Performance / lifecycle
 
-- TPV reuses the already-built continuous terrain plane and CanvasTexture created with the persistent tactical scene. Switching FPV <-> TPV <-> Iso changes visibility only; it does not rebuild terrain geometry, regenerate the texture, or create a second renderer.
-- The same cached ground is also reused for incoming-fire reaction cuts, so repeated reactions do not allocate new terrain meshes.
-- Save format remains **4**. No campaign/tactical-state migration and no new binary assets are required.
+- No new terrain renderer is created. The persistent 3D tactical scene still builds one continuous perspective floor and one explicit Iso floor.
+- Camera mode changes only swap which cached texture the continuous perspective floor material displays.
+- Save format remains **4**. No tactical migration and no new external assets are required.
 
 ## Validation
 
-- Build Health now requires normal TPV, incoming-fire reaction TPV, and FPV to all select the continuous-ground path while 3D Iso disables it.
-- The static contract also requires TPV-specific renderer diagnostics and verifies that the continuous perspective plane is tagged for both FPV and TPV use.
+- Build Health still verifies that FPV, TPV, and reaction TPV all select the continuous-ground path and that 3D Iso disables it.
+- A new contract verifies that the TPV parity texture is generated, that TPV selects it, and that runtime diagnostics expose the new mode.
 - All six non-empty embedded JavaScript blocks pass `node --check`.
-- Manual priority: reproduce the previously visible TPV hex-edge flicker, follow a soldier while walking and turning, then trigger an incoming-fire reaction cut. Ground boundaries should remain visually stable in both third-person cases while ordinary 3D Iso remains unchanged.
+- Manual priority: compare FPV and TPV on the same tactical map and confirm that TPV now reads much closer to FPV’s softer terrain language while preserving the earlier anti-flicker stability.
 
 
 # v0.26.08.17.2215 - Destructible Lights + Building Power Loss
