@@ -2,11 +2,32 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-18
-Current handoff build: `v0.26.08.18.0045_FIRE_SMOKE_HAZARD_AWARE_PATHING_AND_AI_RESPONSE_PATCH`
+Current handoff build: `v0.26.08.18.0115_HAZARD_PATH_RULES_BOOT_TDZ_HOTFIX_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0045 makes Browser 2355's fire/smoke hazards part of tactical movement authority instead of consequences that AI can ignore. AEGIS soldiers, aliens, civilians, VIPs, escorts, fire-team movement, rescue/extraction routes, search/guard assignment, and AI playback now prefer lower-hazard routes when practical. Active fire carries a very large movement penalty—strongest for civilians/VIPs—while dense smoke also discourages movement through obscured corridors. Fire remains traversable as a desperate fallback if no legal safer route exists, so hazards do not become invisible hard walls. Browser 0015 full land-vehicle footprint pathing authority remains active, Browser 2315 TPV/FPV ground parity remains active, Browser 2215 destructible lights/building power remains active, Browser 2115 fog-free Iso unit readability remains active, Browser 1545 VIP extraction pathing remains active, Browser 1515 night visibility/accuracy remains active, and Browser 1335 tactical control/vehicle/Skyranger/voice fixes remain active. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 0115 is a startup hotfix for Browser 0045. The 0045 hazard-aware pathing code introduced `TACTICAL_HAZARD_PATH_RULES` below an older startup contract that already invokes `tacticalPlaybackMovementPath()`. Because that playback function can now call the hazard-aware pathfinder, launch-time contract evaluation reached `tacticalMovementHazardCost()` before the `const` rules object had initialized, producing a temporal-dead-zone `ReferenceError`. Browser 0115 moves the immutable hazard-path rules declaration into the early tactical constants block, before any startup contract can invoke hazard-aware movement code. No hazard weights, AI doctrine, save data, gameplay balance, or Stage 3 roadmap scope change in this hotfix. Browser 0045 hazard-aware routing, Browser 0015 vehicle-footprint pathing, Browser 2355 fire/smoke propagation, Browser 2315 TPV/FPV ground parity, Browser 2215 destructible lights/building power, Browser 2115 fog-free Iso unit readability, Browser 1545 VIP extraction pathing, Browser 1515 night visibility/accuracy, and Browser 1335 tactical control/vehicle/Skyranger/voice fixes remain active. Save format remains 4; native Godot remains at 0026.**
 
-Roadmap-only planning update (2026-08-17): **Future Stage 3 tactical work explicitly includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior designed to work across levels. No implementation of that Stage 3 verticality is part of Browser 0045.**
+Roadmap-only planning update (2026-08-17): **Future Stage 3 tactical work explicitly includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior designed to work across levels. No implementation of that Stage 3 verticality is part of Browser 0115; the verticality work remains future roadmap scope.**
+
+
+# v0.26.08.18.0115 - Hazard Path Rules Boot TDZ Hotfix
+
+## Startup regression
+
+- Browser 0045 added `TACTICAL_HAZARD_PATH_RULES` as a `const` near the hazard-path helper implementations. That location was valid for normal runtime calls but not for the existing startup contract sequence.
+- An older launch-time contract immediately executes `tacticalAiMovementTrailPlaybackFixTest()`. Browser 0045 changed `tacticalPlaybackMovementPath()` so it can call `tacticalAiHazardAwarePath()`, which in turn calls `tacticalMovementHazardCost()`.
+- At that moment the script had not yet reached the later `TACTICAL_HAZARD_PATH_RULES` declaration. JavaScript therefore raised `Cannot access 'TACTICAL_HAZARD_PATH_RULES' before initialization` and prevented the start screen from loading.
+
+## Hotfix
+
+- The immutable hazard-path rules object is now initialized with the early tactical patch/constants block, before any launch-time contract can call the hazard-aware movement stack.
+- The later duplicate declaration has been removed. The hazard weights themselves are unchanged: civilians/VIPs still avoid fire most aggressively, AEGIS soldiers use a strong penalty, aliens use a lower penalty, and smoke remains a softer routing cost.
+- Added `TACTICAL_HAZARD_PATH_RULES_BOOT_TDZ_HOTFIX_PATCH` and a Build Health contract confirming the rules object exists with the expected values and remains referenced by `tacticalMovementHazardCost()`.
+
+## Validation
+
+- Static initialization-order validation confirms the rules declaration occurs before the launch-time `tacticalAiMovementTrailPlaybackFixContract` evaluation and that there is only one declaration.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Save format remains **4**. No campaign migration, AI rebalance, or asset changes are required.
 
 
 # v0.26.08.18.0045 - Fire / Smoke Hazard-Aware Pathing + AI Response

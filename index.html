@@ -615,10 +615,12 @@ const TACTICAL_TPV_GROUND_TEXTURE_PARITY_PATCH=true;
 const TACTICAL_FIRE_SMOKE_PROPAGATION_FOUNDATION_PATCH=true;
 const TACTICAL_CIVILIAN_VIP_VEHICLE_FOOTPRINT_PATHING_AUTHORITY_PATCH=true;
 const TACTICAL_FIRE_SMOKE_HAZARD_AWARE_PATHING_AI_PATCH=true;
+const TACTICAL_HAZARD_PATH_RULES_BOOT_TDZ_HOTFIX_PATCH=true;
+const TACTICAL_HAZARD_PATH_RULES=Object.freeze({humanFire:44,civilianFire:96,alienFire:34,humanSmoke:4,civilianSmoke:7,alienSmoke:3,denseSmokeExtra:7});
 const TACTICAL_ROAD_VEHICLE_HEIGHT_SCALE=2/3;
 const TACTICAL_ISO_FIT_MAP_SAFE_ZOOM_SCALE=0.86;
 const TACTICAL_ISO_FIT_MAP_EXACT_PADDING_RATIO=0.045;
-const CURRENT_GAME_BUILD="v0.26.08.18.0045_FIRE_SMOKE_HAZARD_AWARE_PATHING_AND_AI_RESPONSE_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
+const CURRENT_GAME_BUILD="v0.26.08.18.0115_HAZARD_PATH_RULES_BOOT_TDZ_HOTFIX_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
 function runCriticalBootSmokeTests(){
   const checks=[
     {name:"Game root is available",pass:typeof document!=="undefined"&&Boolean(document.getElementById("root"))},
@@ -2418,6 +2420,9 @@ function tacticalFireSmokeHazardAwarePathingAiContractTest(){
 }
 const AEGIS_RUN_SELF_TESTS_BEFORE_FIRE_SMOKE_HAZARD_AI_PATCH=runSelfTests;
 runSelfTests=function runSelfTestsWithFireSmokeHazardAiPatch(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_FIRE_SMOKE_HAZARD_AI_PATCH(),{name:"Fire and smoke alter AI, VIP/civilian, escort, and playback path selection without becoming absolute movement walls",pass:tacticalFireSmokeHazardAwarePathingAiContractTest()}];};
+function tacticalHazardPathRulesBootTdzHotfixContractTest(){const rules=TACTICAL_HAZARD_PATH_RULES;const movementSource=String(tacticalMovementHazardCost);return TACTICAL_HAZARD_PATH_RULES_BOOT_TDZ_HOTFIX_PATCH&&rules&&rules.humanFire===44&&rules.civilianFire===96&&rules.alienFire===34&&movementSource.includes("TACTICAL_HAZARD_PATH_RULES");}
+const AEGIS_RUN_SELF_TESTS_BEFORE_HAZARD_RULES_BOOT_TDZ_HOTFIX=runSelfTests;
+runSelfTests=function runSelfTestsWithHazardRulesBootTdzHotfix(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_HAZARD_RULES_BOOT_TDZ_HOTFIX(),{name:"Hazard path rules are initialized before startup contracts can invoke hazard-aware playback pathing",pass:tacticalHazardPathRulesBootTdzHotfixContractTest()}];};
 const AEGIS_FULL_BUILD_HEALTH_RUNNER=runSelfTests;
 const AEGIS_DEFERRED_SELF_TEST_RESULTS=[
   ...AEGIS_CRITICAL_BOOT_SMOKE_RESULT.checks,
@@ -6564,7 +6569,6 @@ function tacticalCoverFlammability(cover=null){if(!cover||cover.indestructible||
 function tacticalFireHazardCover(x,y,{round=1,intensity=2,sourceId="fire"}={}){return{id:`hazard-fire-${sourceId}-${Math.round(x)}-${Math.round(y)}-${Math.max(1,Number(round)||1)}`,x:Math.round(x),y:Math.round(y),hp:1,maxHp:1,kind:null,block:0,visual:"tactical-fire",hazardType:"fire",fireIntensity:clamp(Math.round(Number(intensity)||2),1,3),fireTurns:TACTICAL_FIRE_SMOKE_RULES.fireLifetime,revealed:true,lightType:"fire",lightActive:true,lightRadius:TACTICAL_FIRE_SMOKE_RULES.fireLightRadius};}
 function tacticalSmokeHazardCover(x,y,{round=1,density=TACTICAL_FIRE_SMOKE_RULES.smokeDensity,sourceId="smoke"}={}){return{id:`hazard-smoke-${sourceId}-${Math.round(x)}-${Math.round(y)}-${Math.max(1,Number(round)||1)}`,x:Math.round(x),y:Math.round(y),hp:1,maxHp:1,kind:null,block:0,visual:"tactical-smoke",hazardType:"smoke",smokeDensity:clamp(Number(density)||2,1,3),smokeTurns:TACTICAL_FIRE_SMOKE_RULES.smokeLifetime,revealed:true};}
 function tacticalHazardCellOccupied(covers=[],x=0,y=0){return(covers||[]).some(cover=>cover&&Number(cover.hp)>0&&!cover.hazardType&&tacticalCoverOccupiesCell(cover,x,y));}
-const TACTICAL_HAZARD_PATH_RULES=Object.freeze({humanFire:44,civilianFire:96,alienFire:34,humanSmoke:4,civilianSmoke:7,alienSmoke:3,denseSmokeExtra:7});
 function tacticalFireIntensityAt(covers=[],x=0,y=0){let intensity=0;for(const cover of covers||[]){if(!cover||Number(cover.hp)<=0||!tacticalCoverOccupiesCell(cover,x,y))continue;if(tacticalIsFireHazard(cover))intensity=Math.max(intensity,clamp(Number(cover.fireIntensity)||1,1,3));else if(cover.burning)intensity=Math.max(intensity,clamp(Number(cover.fireIntensity)||1,1,3));}return intensity;}
 function tacticalSmokeDensityAt(covers=[],x=0,y=0){let density=0;for(const cover of covers||[]){if(!cover||Number(cover.hp)<=0||!tacticalCoverOccupiesCell(cover,x,y))continue;density=Math.max(density,tacticalSmokeDensityForCover(cover));}return clamp(Number(density)||0,0,3);}
 function tacticalMovementHazardCost(unit=null,cell=null,covers=[]){if(!cell)return 0;const fire=tacticalFireIntensityAt(covers,cell.x,cell.y);const smoke=tacticalSmokeDensityAt(covers,cell.x,cell.y);const team=String(unit?.team||unit?.side||"").toLowerCase();const civilian=team==="civilian"||Boolean(unit?.vipTracker&&team!=="alien");const alien=team==="alien";const fireWeight=civilian?TACTICAL_HAZARD_PATH_RULES.civilianFire:alien?TACTICAL_HAZARD_PATH_RULES.alienFire:TACTICAL_HAZARD_PATH_RULES.humanFire;const smokeWeight=civilian?TACTICAL_HAZARD_PATH_RULES.civilianSmoke:alien?TACTICAL_HAZARD_PATH_RULES.alienSmoke:TACTICAL_HAZARD_PATH_RULES.humanSmoke;return fire*fireWeight+smoke*smokeWeight+(smoke>=3?TACTICAL_HAZARD_PATH_RULES.denseSmokeExtra:0);}
