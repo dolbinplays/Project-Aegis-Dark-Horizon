@@ -1,12 +1,33 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.17.1515_NIGHT_OPERATIONS_DYNAMIC_LIGHTING_WEAPON_LIGHT_AND_FIELD_FLARE_PATCH
+Build: v0.26.08.17.1545_VIP_EXTRACTION_RAMP_PATHING_AND_ESCORT_HOLD_FIX_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
 SUMMARY
 -------
+Fixes a VIP rescue/extraction stall where an escort soldier could reach the Skyranger ramp/cabin while escorted VIPs remained stationary beside the craft for multiple turns. Once the escort commits to the Skyranger extraction corridor, each escorted VIP now receives an independent bounded path to an actually open ramp cell. The escort may hold position while followers route around the solid Skyranger hull. A VIP is not counted rescued until that VIP itself occupies a valid extraction cell.
+
+VIP EXTRACTION RAMP PATHING FIX
+--------------------------------
+- Escorted VIP movement no longer depends exclusively on the escort soldier taking another movement step after reaching the Skyranger.
+- When the escort is already on/in the extraction corridor, remaining escorted VIPs perform their own bounded route search toward the ramp.
+- The route respects hard-cover/path blockers, including the solid Skyranger hull, and uses only open/passable ramp cells as extraction targets.
+- VIPs beside either side of the craft can route around the hull toward the rear opening instead of remaining stationary beside the fuselage.
+- The escort can remain stationary while followers advance up to three path cells during the rescue pass; movement trails are retained for 3D/FPV/TPV playback.
+- Multi-Skyranger missions preserve craft affinity by selecting the extraction craft associated with the escort.
+- `rescued` / `extracted` is set only when the civilian itself reaches a valid extraction-ramp cell.
+- Save format remains 4.
+
+REGRESSION COVERAGE
+-------------------
+- Added a Build Health scenario with the escort already two cells inside the ramp, zero movement TU, and two VIPs stalled beside opposite sides of the Skyranger.
+- The contract requires both VIPs to progress around the solid hull and extract while the escort stays stationary.
+- Existing building-egress, no-building-reentry, extraction-traffic, and Skyranger hard-cover contracts remain in place.
+
+PREVIOUS BUILD 1515 - NIGHT OPERATIONS
+---------------------------------------
 Makes night and twilight materially affect tactical missions instead of acting as visual atmosphere only. Unaided AEGIS visibility is reduced, darkness penalizes shot accuracy, and a unified local-light system allows street lamps, abandoned vehicle headlights, lit buildings, Skyranger lights, underslung Weapon Lights, Field Flares, and alien beacon glow to restore practical visibility. The optimized visibility cache was updated so light/time state remains authoritative without discarding the earlier performance work.
 
 NIGHT / TWILIGHT GAMEPLAY

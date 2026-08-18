@@ -2,9 +2,32 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-17
-Current handoff build: `v0.26.08.17.1515_NIGHT_OPERATIONS_DYNAMIC_LIGHTING_WEAPON_LIGHT_AND_FIELD_FLARE_PATCH`
+Current handoff build: `v0.26.08.17.1545_VIP_EXTRACTION_RAMP_PATHING_AND_ESCORT_HOLD_FIX_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1515 turns night and twilight into authoritative tactical conditions. Unaided AEGIS vision falls to 7 hexes at full night and 12 at twilight, darkness reduces shot accuracy, and local illumination can restore practical visibility. Street lamps, deterministic abandoned-vehicle headlights, lit building windows, Skyranger perimeter/bay lights, underslung Weapon Lights, Field Flares, and existing alien beacon glow now feed the same indexed visibility context used by LOS and combat. AEGIS AI automatically activates Weapon Lights outside daylight; each soldier begins with one throwable Field Flare. Three.js local dynamic lights are capped to protect performance. Browser 1335 control/vehicle/Skyranger/voice fixes and Browser 1235 exact Fit Map framing remain active. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 1545 fixes VIP extraction stalls at the Skyranger. Once an escort reaches the extraction corridor, remaining escorted VIPs independently path around solid hull cells toward open ramp cells and continue extracting even if the escort holds position or has no movement TU remaining. Rescue credit is granted only when each VIP actually reaches an extraction cell. Browser 1515 Night Operations, Browser 1335 tactical control/vehicle/Skyranger/voice fixes, and Browser 1235 exact Fit Map framing remain active. Save format remains 4; native Godot remains at 0026.**
+
+
+# v0.26.08.17.1545 - VIP Extraction Ramp Pathing + Escort Hold Fix
+
+## VIP extraction behavior
+
+- Fixed the observed rescue-state failure where an AEGIS escort could enter the Skyranger while one or more assigned VIPs remained motionless beside the craft for multiple turns.
+- Escort extraction is now a two-part responsibility: the soldier still leads the group to the transport, but once the escort is committed to the Skyranger ramp/corridor, each remaining VIP receives an independent bounded route toward a passable ramp cell. The escort does not need to keep walking deeper into the craft just to make the civilian column move.
+- VIP extraction routing respects the same hard-cover blocker index used by tactical movement, so the solid Skyranger hull cannot be crossed. A VIP stranded beside a side wall must route around the hull to the rear ramp opening.
+- The catch-up pass can advance an escorted VIP by up to three path cells per AI rescue pass. This is intentionally bounded and retains the movement trail so FPV/TPV/Iso playback can show the actual route rather than teleporting the civilian.
+- A VIP is marked `rescued` / `extracted` only after the VIP itself reaches a valid extraction-ramp cell. An escort entering the Skyranger never grants rescue credit by itself.
+- In multi-transport missions, the catch-up route uses the Skyranger associated with the escort rather than arbitrarily redirecting the civilian column to another craft.
+
+## Regression doctrine
+
+- Build Health now includes a targeted stalled-column scenario: the escort is already two cells inside the ramp with no movement TU, while two escorted VIPs wait beside opposite sides of the hull. The test requires the VIPs to path around the solid craft and extract while the escort remains stationary.
+- Existing VIP building-egress, outdoor no-reentry, lost-contact/escort recall, ramp-traffic, and rescue-terminal contracts remain authoritative.
+
+## Save / native parity
+
+- Save format remains **4**.
+- No new binary assets are required.
+- Native Godot parity remains `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`.
 
 Browser 0725 roadmap completion note: **Both Browser 0630 documentation-only refinements are now implemented. Road vehicles use two-thirds of the prior vertical presentation height without changing their footprint/cover rules, and Three.js Iso Fit Map now reserves explicit safe perimeter space around all projected battlefield corners.**
 
