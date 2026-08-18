@@ -2,12 +2,55 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-18
-Current handoff build: `v0.26.08.18.0215_BREACH_INTERIOR_FLOORS_AND_PERSPECTIVE_BACKDROPS_PATCH`
+Current handoff build: `v0.26.08.18.1055_AI_STREAM_WATCHDOG_SMOOTH_TERMINATOR_WORLD_WRAP_AND_RADIO_STATIC_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0215 adds deliberate breach-and-clear interaction, stronger indoor-floor presentation, and location-appropriate perspective horizon scenery. AEGIS soldiers can spend 14 TU to deliberately breach an adjacent destructible building wall/window/partition with an equipped weapon; ballistic breaching consumes three rounds. AI VIP-rescue fire-team leads can also use the same action when already adjacent to a target building, the VIP is nearby, and the ordinary door approach is meaningfully farther away. Building interiors now carry building-specific floor patterns in 2D, 3D Iso, FPV, and TPV rather than reading as outdoor ground. FPV/TPV and incoming-fire perspective cameras now gain low-contrast geometric mission backdrops—city skylines, small-town silhouettes, farmland ridges/structures, forests, or mountains—while 3D Iso remains focused on the tactical board. Browser 0115 boot-TDZ protection, Browser 0045 hazard-aware routing, Browser 0015 vehicle-footprint pathing, Browser 2355 fire/smoke propagation, Browser 2315 TPV/FPV ground parity, Browser 2215 destructible lights/building power, Browser 2115 fog-free Iso unit readability, and Browser 1545 VIP extraction pathing remain active. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 1055 hardens streamed Simulation AI so the end of the currently buffered playback frames—or a failed one-round look-ahead—can no longer masquerade as a completed mission. Unresolved tactical states preserve the battlefield, retain the continuation error, offer Retry AI Continuation / Take Back Control, and make one bounded automatic recovery attempt from the last stable continuation when one exists. Genuine terminal mission state is now required before Continue Mission Result is enabled. Geoscape day/night presentation now interpolates continuously between authoritative clock ticks on both the 3D globe and the flat terminator map, with apparent motion scaling directly with the player's selected time speed and stopping when paused. UFO, Skyranger, and interceptor markers on the flat terminator map now visually wrap across the ±180° world seam so westbound/eastbound craft can leave one edge and appear on the other. Tactical soldier recorded dialogue now uses stronger radio-static bookends plus a subtle continuous static/crackle bed, while strategic computer/aircraft voice treatment is unchanged. Browser 0215 deliberate breaching, interior floors, and perspective mission backdrops plus all earlier tactical/pathing/lighting fixes remain active. Save format remains 4; native Godot remains at 0026.**
 
-Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 0215 improves single-level building interaction/presentation but does not implement vertical levels.**
+Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1055 preserves Browser 0215's single-level building interaction/presentation improvements but does not implement vertical levels.**
 
+
+# v0.26.08.18.1055 - AI Stream End-Buffer Safety, Smooth Terminator, Map World Wrap + Tactical Radio Static
+
+## Simulation AI stream terminal-state guard and recovery watchdog
+
+- Reaching the final frame of the **currently buffered** Simulation AI playback is no longer treated as evidence that the mission itself is over. The result path now requires a genuine terminal simulation state rather than merely an exhausted frame array.
+- An unresolved Alien Hunt can therefore spend multiple rounds searching without contact, reach the end of one streamed batch, and remain an active tactical mission instead of presenting a false **Continue Mission Result** state.
+- Stream-prefetch exceptions preserve the last rendered battlefield and the last stable continuation snapshot when available. The exception message is retained as `streamError` for diagnostics instead of being silently converted into a completed stream.
+- An interrupted stream is presented as **Simulation AI Stream Interrupted**. The player can use **Retry AI Continuation** or **Take Back Control**; neither path falsely resolves the mission.
+- A bounded watchdog makes one automatic retry from the last stable continuation after playback reaches the current buffer end. Repeated failure remains visible and hands the decision back to the player rather than creating an infinite retry loop.
+- If a streamed round reports that the operation is still incomplete but fails to return a usable continuation snapshot, the mission is still protected from result finalization. The player can take back control from the preserved battlefield rather than losing the live tactical state.
+- Hybrid AI round return behavior remains separate and unchanged: a completed one-round Hybrid support batch still returns fire-team-leader control normally.
+
+## Smooth, speed-scaled Geoscape day/night motion
+
+- The visual day/night boundary now moves **continuously** on both Geoscape presentations instead of visibly jumping only when the strategic clock commits its next tick.
+- The authoritative campaign clock remains discrete and deterministic. A presentation-only visual clock interpolates forward from the last committed Geoscape minute using the currently selected time mode and its tick interval.
+- This means the terminator appears to slide slowly at low time acceleration and rapidly at high acceleration, including the very fast 6-hour and 1-day modes, while **Pause** immediately stops the interpolation.
+- The flat terminator map refreshes its light/twilight/night mask on a bounded animation cadence, while the Three.js globe updates its directional sunlight state during the normal render loop. The fallback globe terminator overlay receives the same interpolated clock doctrine.
+- This is presentation interpolation only; aircraft travel, detection, incidents, transfers, research, manufacturing, and other strategic systems continue to advance from the authoritative Geoscape time state.
+
+## Flat terminator-map world-wrap continuity for moving craft
+
+- UFOs, Skyrangers, and interceptors on the flat world map now gain opposite-edge wrap copies when they approach the ±180° longitude seam.
+- A craft travelling west can leave the western edge and immediately appear at the eastern edge; eastbound travel behaves symmetrically. This makes the flat map read as a wrapped world rather than a hard-walled rectangle.
+- The primary craft longitude remains normalized and authoritative. Wrap markers are presentation duplicates only, so they do not create a second craft, duplicate combat, alter fuel, or change arrival logic.
+- Existing great-circle/normalized-longitude routing remains authoritative. Bases, incidents, and other fixed map locations are not duplicated merely because a moving craft is near the seam.
+- The 3D globe requires no equivalent duplicate-marker trick because movement already wraps naturally around the sphere.
+
+## More prominent tactical mission radio static
+
+- Recorded **soldier mission dialogue** now has longer and louder radio-static bookends: approximately 0.11 seconds leading static, 0.14 seconds trailing static, and a stronger burst level than the previous subtle treatment.
+- A low-level band-passed static/crackle bed now runs under the spoken tactical clip as well, giving mission voices a more obvious field-radio character without burying the dialogue.
+- The radio bed remains deliberately much quieter than the spoken clip and is routed through the existing voice mix/limiter so the master voice volume still controls the overall presentation.
+- Strategic computer announcements and aircraft voice categories keep their existing cleaner treatment; this pass targets the soldiers' in-mission communications specifically.
+
+## Compatibility, validation, and regression guard
+
+- **Save format remains 4.** Browser 0215 campaign saves remain within the same save-format generation; no migration/reset is introduced by this patch.
+- Browser 0215 deliberate breaching, indoor floor materials, FPV/TPV mission backdrops, Browser 0115 startup protection, Browser 0045 hazard-aware pathing, Browser 0015 vehicle-footprint pathing, Browser 2355 fire/smoke, and the established Geoscape travel systems remain in place.
+- Build Health now checks unresolved-stream terminal gating, interrupted-stream detection, genuine terminal acceptance, speed-scaled visual-clock interpolation, both directions of flat-map wrap duplication, the Simulation AI retry/watchdog hooks, time-speed metadata passed into the globe, and the stronger soldier radio-static profile.
+- All six non-empty embedded JavaScript blocks pass `node --check` after the patch.
+- Manual validation should specifically include: a no-contact Alien Hunt running through several streamed rounds; deliberately reaching a streamed end-buffer state; each Geoscape time speed including Pause; a UFO/Skyranger/interceptor crossing the dateline in both directions on the flat map; and several tactical soldier voice clips to confirm the static is noticeable without masking speech.
 
 # v0.26.08.18.0215 - Deliberate Breach, Interior Floors + Perspective Mission Backdrops
 
@@ -6272,6 +6315,20 @@ Example preferred activities:
 
 Design direction: the player should set broad guidance, not micromanage every recreation choice. Soldiers should feel like people making choices based on need and temperament.
 
+### Future Downtime Location Clarity Pass
+
+The current base-life visualization uses a combined **maintenance / reading** downtime category, which can place soldiers in Base Stores even when the intended fiction is quiet study rather than equipment work. Split this into clearer activities so a soldier's physical location communicates what they are actually doing.
+
+- **Equipment / weapon maintenance** should remain associated with **Base Stores / Quartermaster**, or later with a dedicated armory/workbench area if that facility layer is expanded.
+- **Reading / private study** should usually resolve to **Living Quarters** or another quiet personnel space rather than Base Stores.
+- A soldier shown in Base Stores for downtime should visually imply maintenance, inspection, cleaning, inventory familiarization, or preparation—not that the soldier is autonomously consuming, transferring, or altering campaign inventory.
+- Preserve the existing autonomous-preference logic, but separate the maintenance and reading preference weights so personalities/backgrounds can favor one without automatically favoring the other.
+- Standby/fallback logic should choose a believable neutral location instead of overusing Base Stores when a preferred Training Center or Rec Room activity is unavailable. Living Quarters should be the default quiet fallback unless another duty-specific location is more appropriate.
+- Future base-life animation can reinforce the distinction with simple props/poses: a rifle or kit laid out at a Stores bench for maintenance; seated reading/tablet/book poses in Living Quarters; engineer-specific workbench behavior where appropriate.
+- If a dedicated **Armory / Equipment Bench** sub-area is introduced later, maintenance downtime can migrate there while Base Stores remains primarily the logistical stockroom.
+
+Design rule: **base location should explain soldier intent at a glance**. Downtime visualization is flavor and character simulation; it must not silently perform strategic inventory actions unless the player has explicitly ordered those actions through the equipment/logistics systems.
+
 ## Friendships
 Implemented first-pass systems:
 - Friendship scores
@@ -6358,6 +6415,8 @@ Design rule: memorial writing should be short, specific, and personal. Avoid gen
 ### Living Quarters
 Personnel capacity and base life.
 
+Future downtime-location role: treat Living Quarters as the normal home for **reading, private study, quiet recovery, and neutral standby** when a soldier is not using a more specialized facility. This prevents Base Stores from becoming the catch-all visual location for soldiers who are merely off duty.
+
 ### Sickbay
 Injury recovery. Sickbay soldier cards have been optimized/collapsed similarly to barracks cards.
 
@@ -6369,6 +6428,8 @@ Engineering/manufacturing. Current assumption: 10 engineers per workshop.
 
 ### Base Stores
 Storage and supplies. Text readability has been fixed for dark mode.
+
+Future downtime-location role: soldiers may visit Stores for **weapon/equipment maintenance, inspection, cleaning, loadout familiarization, and quartermaster-related preparation**. Their presence here is representational only and should never consume, transfer, equip, sell, or otherwise modify strategic inventory without an explicit player/system logistics action. Reading/private-study downtime should move to Living Quarters during the planned downtime-location clarity pass. A later dedicated armory/workbench sub-area may inherit most maintenance activity if the base facility simulation becomes more granular.
 
 ### Training Center
 Soldier stat improvement over time. Also supports downtime/training guidance.
