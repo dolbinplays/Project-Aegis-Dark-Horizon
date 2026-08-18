@@ -2,15 +2,55 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-18
-Current handoff build: `v0.26.08.18.1245_AI_STREAM_RECOVERY_AND_TERMINATOR_PARITY_PATCH`
+Current handoff build: `v0.26.08.18.1345_THREE_GLOBE_SOLAR_SURFACE_AUTHORITY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1245 fixes the Simulation AI continuation crash exposed after Browser 1115 successfully reached round two: the tactical resolver intentionally replaces its evolving cover state after rescue/escort processing, but that collection was declared `const`, producing `Assignment to constant variable` during a streamed continuation. It is now mutable (`let`) and remains protected by the existing unresolved-stream watchdog, so Retry AI Continuation no longer re-enters the same exception. Browser 1245 also removes the once-per-second flat-map terminator flash by preserving one continuous interpolated visual clock across ordinary Geoscape ticks, and makes the Three.js globe derive its sunlight direction from the exact same subsolar latitude/longitude authority as the flat terminator map. Browser 1115 dateline-shortest aircraft routing, Browser 1055 map wrapping/radio-static emphasis, and all earlier tactical/pathing/lighting fixes remain active. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 1345 completes the Geoscape globe day/night authority cleanup. The globe is not transparent; the mismatch was caused by an opaque SVG Earth/terminator presentation sitting above the real Three.js sphere. Browser 1345 makes the Three.js ocean and land surface the only visible Earth surface, removes the screen-space SVG night circle and duplicate SVG land/ocean/gloss fill, prevents background stars from appearing over the globe disc, and drives the Three.js directional sunlight directly from the same `geoscapeSubsolarPoint()` used by the flat Terminator Map. Whole-globe ambient/back-light modulation is reduced so the visible day/night boundary is produced by the actual surface normals relative to the shared solar vector, with the far hemisphere unable to contribute a visible night overlay. Browser 1245 AI-stream recovery and smooth flat-map interpolation, Browser 1115 dateline-shortest aircraft routing, Browser 1055 world-wrap/radio-static emphasis, and all earlier tactical/pathing/lighting fixes remain active. Save format remains 4; native Godot remains at 0026.**
 
 
-Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1245 preserves Browser 0215's single-level building interaction/presentation improvements but does not implement vertical levels.**
+Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1345 preserves Browser 0215's single-level building interaction/presentation improvements but does not implement vertical levels.**
 
 
 
+
+# v0.26.08.18.1345 - Three.js Globe Solar Surface Authority
+
+## Geoscape globe day/night authority cleanup
+
+- Live comparison of the globe and flat Terminator Map showed that the apparent globe night region could still disagree with the map even after Browser 1245 unified the solar-vector math.
+- Root cause: the real Three.js sphere was being rendered underneath a second SVG Earth presentation. That SVG layer drew an opaque ocean disc, opaque landmasses, gloss, and `SmoothGeoscapeGlobeTerminator`, a large 2D night circle positioned in screen space. The globe itself was opaque, but the overlaid SVG night circle could visually resemble seeing the far-side shadow through the Earth.
+- Browser 1345 makes **Three.js the sole visible Earth-surface authority**. The SVG layer remains for interaction, markers, range/ferry overlays, clouds, selection feedback, and other command UI, but its duplicate ocean/land/gloss surface is transparent and its fake globe terminator is disabled.
+- The Three.js ocean remains a fully opaque front-facing sphere with depth testing/writing enabled. Land uses front-facing depth-tested geometry slightly above that sphere. The far hemisphere therefore cannot project a separate night overlay onto the visible hemisphere.
+- Background SVG stars are culled from the globe disc now that the WebGL sphere is visible through the overlay layer, preventing stars from appearing to shine through the Earth.
+
+## Shared solar geometry with the Terminator Map
+
+- `geoscapeSubsolarPoint()` remains the common astronomical authority for both Geoscape views.
+- The flat Terminator Map evaluates each visible map location against that subsolar latitude/longitude.
+- The Three.js globe transforms the same subsolar point into the current camera-centered spherical frame and positions its directional light along that exact vector.
+- Globe rotation/focus changes therefore alter which geography faces the camera, not which locations are intrinsically in daylight. A location that is night on the flat map should remain night when that same location is brought to the visible side of the globe.
+- Browser 1345 removes the old global day/night brightness modulation from the Three.js sun/ambient mix. Day and night are now primarily created by the surface normal versus the shared solar vector, with restrained ambient light keeping the night hemisphere readable rather than black.
+
+## Compatibility / preserved systems
+
+- Save format remains 4.
+- Browser 1245 Simulation AI stream recovery and flat-map smooth-clock stability remain unchanged.
+- Browser 1115 aircraft shortest-route dateline logic and Browser 1055 flat-map world-wrap copies remain unchanged.
+- Base/incident/UFO/aircraft marker interaction remains in the SVG command overlay; only the redundant visible Earth surface and screen-space night mask are removed.
+
+## Regression coverage
+
+- Build Health now requires the globe visual contract to report `surfaceAuthority: "three-js"`, `solarAuthority: "geoscapeSubsolarPoint"`, zero SVG terminator opacity, zero duplicate SVG land/gloss opacity, and `farSideNightOverlay: false`.
+- A solar-surface contract projects the current subsolar point into the same camera-centered frame as the Three.js geography and requires its dot product with the light vector to be approximately +1; the antipode must be approximately -1.
+- The WebGL globe mount exposes diagnostics identifying Three.js as the surface authority and the far-side night overlay as off.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+
+## Manual test gates
+
+1. Put the flat Terminator Map and globe at the same strategic time. Choose a clearly daylit region and a clearly dark region on the map, rotate/focus each on the globe, and confirm the same day/night state.
+2. Rotate the globe while time is paused. Geography should move under a fixed solar direction; the day/night boundary must not behave like a decal attached to the screen.
+3. Run time at each Geoscape speed and confirm the globe terminator advances smoothly using the same clock direction as the flat map.
+4. Inspect the globe rim/night side and confirm no stars or separate circular shadow are visible through the Earth.
+5. Recheck bases, incidents, UFOs, range rings, ferry links, Skyranger/interceptor markers, and globe click/drag/zoom interaction after removing the duplicate SVG surface.
 
 # v0.26.08.18.1245 - Simulation AI Stream Recovery + Terminator Stability / Globe Parity
 
