@@ -2,11 +2,59 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-18
-Current handoff build: `v0.26.08.18.0015_CIVILIAN_VIP_VEHICLE_FOOTPRINT_PATHING_AUTHORITY_PATCH`
+Current handoff build: `v0.26.08.18.0045_FIRE_SMOKE_HAZARD_AWARE_PATHING_AND_AI_RESPONSE_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0015 closes a civilian/VIP movement-authority seam around multi-hex land vehicles. Every live hard-cover footprint cell—not only the vehicle anchor cell—is now consumed by shared reachable-cell searches, AI movement plans, extraction/no-reentry routing, search/guard target selection, and battlefield integrity repair. VIPs and civilians therefore cannot route, flee, be assigned, or be repaired into the occupied body of a sedan, van, truck, bus, or other multi-cell land vehicle. Destroyed vehicles still release their full footprint, Skyranger hull/ramp rules remain unchanged, Browser 2355 fire/smoke, Browser 2315 TPV/FPV ground parity, Browser 2215 destructible lights/building power, Browser 2115 fog-free Iso unit readability, Browser 1545 VIP extraction pathing, Browser 1515 night visibility/accuracy, Browser 1335 tactical control/vehicle/Skyranger/voice fixes, and Browser 1235 exact Fit Map framing remain active. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 0045 makes Browser 2355's fire/smoke hazards part of tactical movement authority instead of consequences that AI can ignore. AEGIS soldiers, aliens, civilians, VIPs, escorts, fire-team movement, rescue/extraction routes, search/guard assignment, and AI playback now prefer lower-hazard routes when practical. Active fire carries a very large movement penalty—strongest for civilians/VIPs—while dense smoke also discourages movement through obscured corridors. Fire remains traversable as a desperate fallback if no legal safer route exists, so hazards do not become invisible hard walls. Browser 0015 full land-vehicle footprint pathing authority remains active, Browser 2315 TPV/FPV ground parity remains active, Browser 2215 destructible lights/building power remains active, Browser 2115 fog-free Iso unit readability remains active, Browser 1545 VIP extraction pathing remains active, Browser 1515 night visibility/accuracy remains active, and Browser 1335 tactical control/vehicle/Skyranger/voice fixes remain active. Save format remains 4; native Godot remains at 0026.**
 
-Roadmap-only planning update (2026-08-17): **Future Stage 3 tactical work now explicitly includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior designed to work across levels. No code or build-number change is part of this documentation update.**
+Roadmap-only planning update (2026-08-17): **Future Stage 3 tactical work explicitly includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior designed to work across levels. No implementation of that Stage 3 verticality is part of Browser 0045.**
+
+
+# v0.26.08.18.0045 - Fire / Smoke Hazard-Aware Pathing + AI Response
+
+## Dynamic-hazard movement authority
+
+- Browser 2355 established gameplay-authoritative fire and smoke but intentionally left richer AI hazard response for a later patch. Browser 0045 closes that gap by giving tactical movement planners a shared hazard-cost model.
+- Active fire is strongly undesirable rather than absolutely impassable. AEGIS soldiers assign a large penalty, civilians/VIPs assign an even larger survival-oriented penalty, and aliens also avoid severe fire unless their route options are constrained.
+- Smoke is a softer movement penalty. Dense smoke receives an additional cost because it can break LOS and degrade situational awareness, encouraging AI to seek clearer lanes when doing so does not require an unreasonable detour.
+- Because hazard cost is finite, a trapped unit may still cross a burning or smoky hex if every practical legal route requires it. This prevents dynamic fire from silently turning into hard-cover geometry or deadlocking rescue/exfil logic.
+
+## Shared path-selection behavior
+
+- `tacticalAiHazardAwarePath()` performs bounded weighted path selection using the existing hard-cover/occupied-cell authority plus dynamic fire/smoke cost.
+- `tacticalAiReachablePlan()` and `tacticalAiThreatAwareReachablePlan()` now retain safer alternate paths to the same reachable cell rather than locking the first shortest route that happens to be discovered. Their returned cells carry cumulative `hazardCost`, `fireSteps`, and `smokeSteps` metadata.
+- General combat movement subtracts hazard exposure from destination scoring, with additional penalties for routes that actually cross fire.
+- Direct-contact movement, formation following, hybrid player-command movement, aggressive flanking, alien beacon close assaults, alien exfil, rescue movement, and extraction movement all consume the same hazard-aware path authority.
+
+## Civilian / VIP / escort safety
+
+- Panic movement now sorts legal escape neighbors by fire exposure first, then total hazard cost, before ordinary threat-distance tie-breaking. A panicked civilian should therefore run around a burning cell instead of stepping into it merely because it is one hex farther from an alien.
+- Escorted civilians and VIPs use hazard-aware one-step formation choices, and VIP catch-up routing to the Skyranger ramp now uses weighted path selection while retaining the no-unrelated-building-cut-through rule.
+- Search-sector and rescue-perimeter assignment generators no longer select actively burning cells as their destination when constructing ordinary AI tasks.
+- Building exit and no-building-reentry extraction routing now include hazard cost in route selection, allowing an escort column to change exits or approach lanes when fire spreads near the previous route.
+
+## Fire-team cohesion and tactical orders
+
+- Formation followers, hybrid fire-team orders, flanking movement, and other autonomous fire-team path selection now inherit the same fire/smoke awareness instead of blindly following a stored shortest path through a newly hazardous cell.
+- Fire-team movement still preserves the existing pacing, reserve-TU, formation, command-distance, and contact-acquisition rules; hazard avoidance is an additional route-quality dimension rather than a replacement doctrine.
+
+## Playback revalidation
+
+- Recorded AI movement trails are rechecked against the *current* battlefield hazard state before animation.
+- If fire or smoke spreads after a trail was generated, playback attempts to reconstruct a safer legal route to the same resolved destination. The authoritative simulation result does not change—the presentation path is repaired so the soldier does not visibly march through a stale hazard route when a safer current path exists.
+- If there is no lower-hazard legal route, playback retains the necessary route rather than teleporting the unit or inventing an impossible destination.
+
+## Compatibility / performance
+
+- Save format remains **4**. No new save fields are required; hazard-awareness is derived from the existing fire/smoke cover records already present in tactical state.
+- The weighted searches remain bounded by the existing tactical candidate limits and reuse the current footprint-aware hard-cover blocker index introduced/strengthened by Browser 0015.
+- Manual player movement is not silently forbidden from entering fire. Browser 0045 targets autonomous path selection and AI playback while leaving final manual risk-taking under player control.
+
+## Validation
+
+- Build Health now verifies that a soldier routes around an avoidable fire/smoke lane, that fire remains traversable when a full blocking barrier makes the burning gap the only legal crossing, that a panicked VIP does not choose a burning adjacent hex when a safer neighbor exists, and that a recorded movement trail through newly active fire is reconstructed onto a safer current path.
+- The existing Browser 0015 vehicle-footprint regression remains in the suite to ensure hazard changes do not reopen civilian/VIP pathing through land vehicles.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Manual priority: create a night mission with a burning vehicle or structure between a VIP escort group and the Skyranger, then confirm the group visibly reroutes; also verify trapped units can still cross fire when no safe route exists.
 
 
 # v0.26.08.18.0015 - Civilian / VIP Vehicle-Footprint Pathing Authority
