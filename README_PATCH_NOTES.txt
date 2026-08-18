@@ -1,75 +1,47 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.18.1055_AI_STREAM_WATCHDOG_SMOOTH_TERMINATOR_WORLD_WRAP_AND_RADIO_STATIC_PATCH
+Build: v0.26.08.18.1115_AI_FIRST_ROUND_STREAM_CONTINUATION_AND_DATELINE_SHORTEST_ROUTE_PATCH
 Save format: 4 (unchanged)
-Previous playable browser build: v0.26.08.18.0215_BREACH_INTERIOR_FLOORS_AND_PERSPECTIVE_BACKDROPS_PATCH
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
-SUMMARY
--------
-Fixes the streamed Simulation AI end-buffer failure mode reported during a no-contact Alien Hunt, smooths the Geoscape day/night terminator in both globe and flat-map views at the currently selected time speed, adds flat-map world-wrap presentation for moving UFOs/Skyrangers/interceptors, and makes tactical soldier radio static more prominent. Browser 0215 breaching, building interior floors, and FPV/TPV mission backdrops remain active.
+CURRENT PATCH SUMMARY
+---------------------
+Fixes two live-test regressions from Browser 1055: Simulation AI could still expose Continue Mission Result after the first round of an unresolved mission, and moving aircraft could visually follow the long side of the flat terminator map instead of crossing the ±180° seam when that was the shorter world route. Browser 1115 makes first-round AI streaming use the same continuation contract as later rounds and makes aircraft flight curves explicitly dateline-aware.
 
-SIMULATION AI END-BUFFER / FALSE RESULT GUARD
-----------------------------------------------
-- Exhausting the currently buffered playback frames is no longer sufficient to expose Continue Mission Result.
-- A genuine terminal Simulation AI state is now required before mission finalization.
-- Unresolved Alien Hunt/search rounds remain live even when no aliens have been sighted or killed and the current one-round playback buffer has ended.
-- Prefetch exceptions preserve the current battlefield, retain the error text as streamError, and retain the last stable continuation snapshot when one is available.
-- Interrupted playback is identified as Simulation AI Stream Interrupted instead of looking like a completed mission.
-- Retry AI Continuation and Take Back Control are available without falsely resolving the mission.
-- A bounded watchdog makes one automatic retry from the last stable continuation after the current playback buffer ends. Repeated failure remains visible instead of looping forever.
-- An unresolved batch that returns no continuation is still prevented from finalizing; the preserved battlefield can be returned to player control.
-- Hybrid support-round completion/return behavior is unchanged.
+SIMULATION AI FIRST-ROUND CONTINUATION FIX
+------------------------------------------
+- The remaining first-round bug was caused by the chunk-return branch requiring an existing `initialBattleState` (`continuing === true`).
+- The opening streamed round begins without an existing continuation state, so an unresolved first round could hit its one-round safety limit without generating the next continuation snapshot.
+- The chunk-return branch now applies to any unresolved bounded Simulation AI batch, including the opening round.
+- The stream wrapper now marks a batch complete only for a genuine terminal result: mission success, legitimate objective failure, squad defeat, or deliberate AI rescue dust-off.
+- A nonterminal batch that somehow returns without a continuation snapshot now raises an explicit stream interruption instead of ever enabling Continue Mission Result.
+- Hybrid AI round return behavior is unchanged.
 
-SMOOTH, SPEED-SCALED DAY/NIGHT TERMINATOR
------------------------------------------
-- The visual day/night boundary now interpolates continuously between authoritative Geoscape clock ticks.
-- The apparent slide speed scales with the player's selected Geoscape time mode.
-- Pause stops visual interpolation.
-- The flat terminator map refreshes its light/twilight/night mask on a bounded animation cadence.
-- The 3D globe updates directional sunlight from the interpolated presentation clock during its normal render loop.
-- The fallback globe terminator overlay follows the same interpolated clock.
-- Strategic simulation remains tied to the authoritative clock; this change does not add fractional hidden campaign ticks.
+DATELINE SHORTEST-ROUTE AIRCRAFT PATHING
+----------------------------------------
+- Added an explicit shortest-longitude-delta helper for world-seam movement.
+- Skyranger/interceptor curved flight presentation is calculated with an unwrapped destination longitude before final normalization.
+- Routes such as 170E -> 170W now cross the nearby map seam (~20 degrees) rather than visually traversing the long side (~340 degrees).
+- Eastbound and westbound seam crossings are symmetric.
+- Great-circle distance, ETA, fuel, ferry routing, and existing 1055 edge-wrap marker copies remain authoritative/compatible.
 
-FLAT TERMINATOR-MAP WORLD WRAP
-------------------------------
-- UFO, Skyranger, and interceptor markers now gain opposite-edge wrap copies near the +/-180 degree seam.
-- Westbound craft can leave the western edge and appear on the eastern edge; eastbound craft behave symmetrically.
-- Wrap copies are presentation-only and do not duplicate aircraft/UFO state, combat, fuel use, or arrivals.
-- Existing normalized-longitude/great-circle travel logic remains authoritative.
-- Fixed bases/incidents are not duplicated solely for this craft-wrap effect.
-
-TACTICAL MISSION RADIO STATIC
------------------------------
-- Soldier mission voice clips now use stronger radio-static bookends: approximately 0.11s lead, 0.14s tail, and a higher static burst level.
-- Tactical soldier dialogue also receives a low-level band-passed static/crackle bed underneath the spoken clip.
-- The static bed is intentionally much quieter than the voice and remains under the existing voice-volume/limiter chain.
-- Strategic computer and aircraft dialogue profiles are unchanged.
-
-COMPATIBILITY / REGRESSION COVERAGE
------------------------------------
-- Save format remains 4.
-- Browser 0215 campaign saves remain in the same save-format generation.
-- Build Health checks unresolved/interrupted/terminal AI states, visual-clock interpolation, east/west map-wrap points, retry/watchdog hooks, globe time-speed metadata, and the stronger tactical radio-static profile.
-- All six non-empty embedded JavaScript blocks pass node --check.
+REGRESSION COVERAGE
+-------------------
+- Build Health checks that first-round chunk generation no longer depends on an already-existing continuation state.
+- Build Health checks that streamed completion is terminal-result based and unresolved/no-continuation batches fail safe.
+- Dateline regression checks verify 170E -> 170W = +20 degrees, 170W -> 170E = -20 degrees, and midpoint aircraft positions stay at the world seam.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
 
 MANUAL TEST GATES
 -----------------
-1. Run a no-contact Alien Hunt through several streamed Simulation AI rounds and confirm an end-of-buffer state cannot become a false mission result.
-2. If an AI continuation fails, confirm the battlefield is preserved, the interruption is explicit, and Retry AI / Take Back Control work without resolving the operation.
-3. Cycle Pause, 5s, 1m, 5m, 30m, 1h, 6h, and 1d Geoscape speeds and confirm the day/night boundary slides continuously at correspondingly different apparent speeds on both map and globe.
-4. Watch UFOs, Skyrangers, and interceptors cross the flat-map dateline in both directions and confirm they visually re-enter from the opposite edge.
-5. Play several in-mission soldier voice clips and confirm radio static is clearly noticeable but speech remains intelligible.
+1. Start Simulation AI on a fresh no-contact Alien Hunt and let at least 3-5 rounds play. Continue Mission Result must not appear after round one.
+2. Confirm playback automatically streams another round whenever the current frame buffer is exhausted and the mission remains unresolved.
+3. Send a Skyranger/interceptor across the dateline in both directions and verify it takes the short seam route on the flat terminator map.
+4. Confirm ETA/fuel/distance match the short route and ordinary non-dateline routes are unchanged.
 
-PREVIOUS BUILD 0215 - BREACH / INTERIOR FLOORS / PERSPECTIVE BACKDROPS
------------------------------------------------------------------------
-The 0215 deliberate-breach, building-interior floor, and FPV/TPV perspective-backdrop features are preserved in full. See the synchronized Roadmap / Game Bible for the complete 0215 implementation record.
-
-Build: v0.26.08.17.2115_ISO_UNIT_FOG_FREE_READABILITY_PATCH
-Save format: 4 (unchanged)
-Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
-
+PREVIOUS BUILD 2115 - ISO UNIT FOG-FREE READABILITY PATCH
+---------------------------------------------------------
 SUMMARY
 -------
 Fixes the remaining 3D Iso night-unit readability problem shown in live testing. Browser 2045 made visible units unlit in Iso, but the temporary readability materials still participated in the dark Night Operations scene fog, and unit pieces that were already MeshBasicMaterial could bypass the conversion. Browser 2115 makes the Iso-only unit materials both unlit and fog-free. FPV, TPV, and incoming-fire reaction cameras still restore the original light-reactive materials and retain the normal night atmosphere.

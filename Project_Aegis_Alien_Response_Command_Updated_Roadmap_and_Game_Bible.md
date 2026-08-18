@@ -2,12 +2,47 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-18
-Current handoff build: `v0.26.08.18.1055_AI_STREAM_WATCHDOG_SMOOTH_TERMINATOR_WORLD_WRAP_AND_RADIO_STATIC_PATCH`
+Current handoff build: `v0.26.08.18.1115_AI_FIRST_ROUND_STREAM_CONTINUATION_AND_DATELINE_SHORTEST_ROUTE_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1055 hardens streamed Simulation AI so the end of the currently buffered playback frames—or a failed one-round look-ahead—can no longer masquerade as a completed mission. Unresolved tactical states preserve the battlefield, retain the continuation error, offer Retry AI Continuation / Take Back Control, and make one bounded automatic recovery attempt from the last stable continuation when one exists. Genuine terminal mission state is now required before Continue Mission Result is enabled. Geoscape day/night presentation now interpolates continuously between authoritative clock ticks on both the 3D globe and the flat terminator map, with apparent motion scaling directly with the player's selected time speed and stopping when paused. UFO, Skyranger, and interceptor markers on the flat terminator map now visually wrap across the ±180° world seam so westbound/eastbound craft can leave one edge and appear on the other. Tactical soldier recorded dialogue now uses stronger radio-static bookends plus a subtle continuous static/crackle bed, while strategic computer/aircraft voice treatment is unchanged. Browser 0215 deliberate breaching, interior floors, and perspective mission backdrops plus all earlier tactical/pathing/lighting fixes remain active. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 1115 fixes the remaining first-round Simulation AI stream bug by allowing the very first unresolved one-round batch to create the same continuation snapshot used by later streamed rounds. A second terminal guard now refuses to mark any nonterminal batch complete merely because no continuation flag was returned, so no-contact Alien Hunt missions cannot expose Continue Mission Result after round one. Geoscape aircraft routing/display now uses an explicit shortest-longitude delta across the ±180° dateline: Skyrangers and interceptors can choose the western/eastern map seam whenever it is the shorter route, and their curved flight presentation is calculated in an unwrapped longitude frame before being normalized back onto the globe/map. Browser 1055 smooth terminator motion, flat-map wrap copies, radio-static emphasis, and all earlier tactical/pathing/lighting fixes remain active. Save format remains 4; native Godot remains at 0026.**
 
-Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1055 preserves Browser 0215's single-level building interaction/presentation improvements but does not implement vertical levels.**
 
+Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1115 preserves Browser 0215's single-level building interaction/presentation improvements but does not implement vertical levels.**
+
+
+# v0.26.08.18.1115 - Simulation AI First-Round Continuation + Dateline Shortest-Route Pathing
+
+## Simulation AI first-round stream continuity fix
+
+- Root cause of the remaining false **Continue Mission Result** state was in the first streamed AI batch: chunk continuation was only emitted when `initialBattleState` already existed. The opening one-round batch therefore could reach its round limit while the mission was unresolved, but fail to create the continuation snapshot that every later streamed round depended on.
+- Browser 1115 removes that first-round exception. Any unresolved bounded Simulation AI batch now serializes the next tactical continuation state, including the opening batch that begins from a fresh deployment.
+- No-contact Alien Hunt missions can therefore search for multiple rounds without round one being mistaken for a completed tactical operation.
+- The async stream wrapper now computes completion from an actual terminal result (`success`, legitimate objective failure, squad defeat, or deliberate AI rescue dust-off) rather than from the absence of `tacticalChunkContinuationRequired`.
+- If a nonterminal streamed batch ever ends without a continuation snapshot again, it throws a visible stream-interruption error and preserves tactical control instead of enabling **Continue Mission Result**. This is a second defense around the same failure class.
+- Hybrid one-round support behavior is unchanged.
+
+## Dateline-aware shortest aircraft routes
+
+- Aircraft route distance already used normalized great-circle longitude deltas, but the visible curved Skyranger/interceptor flight path still built its Bezier control point from normalized longitudes. Near ±180°, that could visually bend a craft across the long side of the flat map even when the world seam was the shorter route.
+- Browser 1115 adds a shared shortest-longitude-delta helper and performs flight-curve math in an **unwrapped longitude frame** anchored on the departure point. The final displayed longitude is normalized only after the path position has been calculated.
+- Example: a route from 170°E to 170°W now advances about 20° eastward across the dateline rather than appearing to travel roughly 340° westward across the map. The reverse route behaves symmetrically.
+- Ferry legs, direct sorties, Skyranger mission travel, interceptor pursuit/return legs, and flat-map route interpolation all use the same shortest-world-seam doctrine. Fuel/distance calculations remain great-circle authoritative.
+- The flat terminator map still uses the 1055 opposite-edge presentation copies so a craft remains visually continuous as its normalized longitude crosses from +180° to -180° or vice versa.
+
+## Regression coverage
+
+- Build Health verifies the stream source no longer requires `continuing` before creating a bounded unresolved chunk continuation.
+- Build Health verifies the async stream wrapper requires an actual terminal result before `complete` can become true and guards unresolved/no-continuation batches with an explicit interruption error.
+- Dateline tests verify 170°E → 170°W resolves to +20°, 170°W → 170°E resolves to -20°, and both midpoint paths stay at the ±180° seam instead of crossing the center of the map.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+
+## Manual test gates
+
+1. Start a fresh Simulation AI-controlled Alien Hunt with no initial contact and let it play through several complete rounds. **Continue Mission Result must not appear after the first round.**
+2. Let the same mission reach the end of a current playback buffer and confirm AI continues into the next streamed round automatically.
+3. On the flat terminator map, send a Skyranger or interceptor between two points on opposite sides of the dateline where crossing the edge is shorter. Confirm the craft exits one edge and enters the opposite edge rather than traversing the long way across the map.
+4. Repeat eastbound and westbound and confirm ETA/fuel/distance are consistent with the short route.
+5. Confirm ordinary routes that do not cross the dateline look unchanged.
 
 # v0.26.08.18.1055 - AI Stream End-Buffer Safety, Smooth Terminator, Map World Wrap + Tactical Radio Static
 
