@@ -1,6 +1,72 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.19.0315_ALIEN_BEACON_PHASE3_AND_AI_VICTORY_COMMIT_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Completes the next planned Alien Field Beacon interface milestone and rolls in a live-reported Simulation AI victory-logic repair. AEGIS can research intact beacon hacking, recover a Pale Commander command badge for a faster override, and Simulation AI can use the same doctrine. Separately, streamed AI victory and the live tactical presentation now share reinforcement authority and terminal success hard-commits the final battlefield state, so killing the last hostile in a genuinely completed operation immediately enables victory music/dance instead of requiring an extra manual round.
+
+ALIEN FIELD BEACON PHASE 3 INTERFACE
+------------------------------------
+- Adds `Alien Beacon Interface Protocols` after `Command Signal Triangulation`.
+- Confirmed/revealed beacons can be disabled intact by a living adjacent soldier after the research is complete.
+- Normal interface hack: 16 TU.
+- Recover Pale Commander command badge from an adjacent fallen Pale Commander: 4 TU.
+- Badge local override: 8 TU.
+- An active shield still requires the soldier to enter the beacon field before using the local interface.
+- Intact disable collapses the shield, marks the beacon OFF, cancels pending beacon reinforcement transit, and records a distinct disabled-intact mission history result.
+- Simulation AI can recover a nearby badge and perform the same research-gated disable while assigned to the beacon objective.
+
+SIMULATION AI TERMINAL VICTORY FIX
+----------------------------------
+- Reproduced the authority mismatch implicated by the reported Sunken Relay behavior: streamed AI could stop on a terminal result while live tactical victory presentation was still derived independently.
+- `tacticalAiMissionResolution()` now consumes the same alien-reinforcement state as the live `tacticalMissionTerminalState()` authority.
+- A commander missed-check-in countdown that has not actually called a force does not block a secured mission.
+- An already-called inbound reinforcement force still prevents premature victory.
+- Unfinished mandatory VIP/rescue or confirmed-beacon objectives still prevent victory.
+- Adds `tacticalAiPlaybackVictoryPresentationState()` as the bridge between a genuinely terminal streamed `Mission success` result and live tactical presentation.
+- At terminal AI victory the final playback frame is committed to live units/covers with deaths finalized immediately (`deferDeaths:false`).
+- Victory dance and Operation Vindicator music therefore activate without requiring Take Back Control + one extra empty round.
+- The final-contact soldier callout (`that's the last of them`) is fired once for Simulation AI victory, matching manual victory behavior.
+- The final battlefield remains available for review; the player still controls when to continue the mission result / return to base.
+
+PRESERVED SYSTEMS
+-----------------
+- Browser 0215 fixed-radius Globe operational-overlay alignment and no-zoom doctrine are unchanged.
+- Browser 0045 stable Geoscape React component identity remains intact; do not regress it.
+- Globe/Terminator no-flicker behavior, cloudless Globe, dateline shortest-route/world-wrap, FPV/TPV ground alignment, backdrop depth occlusion, fire/smoke, hazard-aware pathing, and vehicle-footprint pathing are preserved.
+- Save format remains 4.
+
+REGRESSION COVERAGE
+-------------------
+- Adds `TACTICAL_AI_TERMINAL_VICTORY_COMMIT_PATCH`.
+- Adds `tacticalAiTerminalVictoryCommitContractTest()` using a Sunken Relay-style optional-rescue setup.
+- Contract verifies all hostiles dead + no actually-called reinforcement = terminal victory.
+- Contract verifies already-called inbound reinforcement = mission remains live.
+- Contract verifies terminal AI playback enables victory presentation and final-frame hard commit.
+- Existing Alien Beacon Phase 3 hack/badge contract passes.
+- Browser self-tests report no failures in the isolated harness.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+
+MANUAL TEST GATES
+-----------------
+1. Launch the attached/current campaign and replay Sunken Relay (Oceania, Threat 2, Glass Wraith) under Simulation AI.
+2. Kill the final hostile with all required objectives satisfied. Confirm victory music begins and surviving soldiers immediately enter their victory dance in the current view.
+3. Confirm AI does not ask for another ordinary tactical round and the player does not need to Take Back Control to trigger victory.
+4. Confirm the final battlefield remains visible until the player chooses to continue the mission result.
+5. In a test where reinforcements have actually been called and are inbound, confirm the mission remains active until that force/state is resolved.
+6. Research Alien Beacon Interface Protocols; test a normal 16-TU hack and a Pale Commander badge 8-TU override from inside a shield field.
+
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.19.0215_GEOSCAPE_FIXED_RADIUS_OVERLAY_AND_GLOBE_ZOOM_REMOVAL_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

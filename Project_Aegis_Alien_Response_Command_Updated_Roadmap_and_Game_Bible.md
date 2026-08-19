@@ -2,9 +2,9 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.0215_GEOSCAPE_FIXED_RADIUS_OVERLAY_AND_GLOBE_ZOOM_REMOVAL_PATCH`
+Current handoff build: `v0.26.08.19.0315_ALIEN_BEACON_PHASE3_AND_AI_VICTORY_COMMIT_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0215 removes the player-facing Globe zoom system and fixes the remaining operational-overlay detachment by giving the Three.js Earth, coordinate projection, interaction math, range/ferry overlays, bases, incidents, UFOs, alien bases, aircraft, and placement crosshair one fixed 150 px screen-space globe radius. The legacy zoom authority is reduced to a single 1.0 scale for compatibility, persisted older zoom values are ignored, mouse-wheel Globe zoom is disabled, and the Zoom 1–4 controls/instructions are removed. Earth-bound command graphics are additionally clipped to the visible globe disc so markers approaching the limb cannot visibly float beyond the planet silhouette. Browser 0045’s live-confirmed stable React component identity—the actual fix for the strategic-tick flicker—is preserved unchanged. Save format remains 4. Native Godot remains at 0026.**
+Current patch status: **Browser 0315 advances the Stage 3 Alien Field Beacon roadmap with research-gated intact beacon hacking and Pale Commander command-badge recovery/override, and also repairs Simulation AI terminal-victory authority after live Sunken Relay testing exposed a split between streamed AI mission resolution and the live tactical presentation state. AI and live tactical resolution now consume the same reinforcement state; a genuinely terminal streamed victory hard-commits its final battlefield frame, immediately enables the existing victory dance/music presentation, and can play the final-contact soldier callout without requiring the player to take control and play an extra empty round. A merely scheduled commander missed-check-in that has not actually called reinforcements does not block a secured mission, while already-called inbound reinforcements and unfinished mandatory beacon/VIP objectives still correctly keep the operation open. Browser 0215's fixed-radius Globe overlays and Browser 0045's live-confirmed stable Geoscape component lifecycle remain preserved. Save format remains 4. Native Godot remains at 0026.**
 
 
 Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1945 preserves Browser 0215's single-level building interaction/presentation improvements, Browser 1845's FPV/TPV backdrop depth correction, and now aligns the continuous FPV/TPV floor texture to the same world-space hex centers used by 3D Iso; it does not implement vertical levels.**
@@ -14,6 +14,39 @@ Roadmap-only planning update: **Future Stage 3 tactical work still includes mult
 
 
 
+
+
+## Browser 0315 — Alien Beacon Phase 3 Interface + Simulation AI Terminal Victory Commit
+
+**Status:** Implemented; live tactical verification recommended with the supplied Sunken Relay campaign state.
+
+### Alien Field Beacon Phase 3 interface milestone
+- Adds `Alien Beacon Interface Protocols` research after `Command Signal Triangulation`.
+- Once AEGIS has confirmed a beacon's reinforcement role and completed that research, a living soldier adjacent to a revealed beacon can disable it intact from inside an active shield field.
+- Standard local hacking costs **16 TU**. A soldier can recover a **Pale Commander command badge** from an adjacent fallen commander for **4 TU**; carrying the badge enables a faster **8 TU** local override.
+- Disabling a beacon intact collapses its shield, marks the device `OFF`, cancels pending reinforcement transit through that beacon, and records the outcome distinctly from outright destruction.
+- Simulation AI can recover an available commander badge and use the same research-gated disable authority when its assigned beacon-strike fire team reaches the device.
+- Existing adaptive shield doctrine remains intact: Phase 1 unshielded, Phase 2 kinetic shielding, and Phase 3 combined kinetic/energy shielding still require the player to physically enter the field or use an appropriate breach method before an intact interface action can be performed.
+
+### Simulation AI terminal-victory authority repair
+- Live testing of **Sunken Relay / Oceania / Threat 2 / Glass Wraith** exposed a state split: streamed Simulation AI could decide the mission was terminal and stop generating movement while the live tactical layer still did not enter victory presentation. The result was no victory music/dance until the player reclaimed control and advanced another round.
+- `tacticalAiMissionResolution()` now receives the same alien-reinforcement state used by `tacticalMissionTerminalState()`. Stream completion and the live battlefield therefore agree about whether reinforcements are still genuinely pending.
+- A scheduled commander **missed-check-in countdown** does not by itself block victory because no reinforcement force has yet been called. An already-called force that has not arrived still blocks victory, as do unresolved mandatory VIP or confirmed-beacon objectives.
+- A final streamed `Mission success` frame now has an explicit terminal-victory presentation authority. When reached, the live tactical battlefield commits that frame immediately with deaths finalized rather than waiting for another player round.
+- The existing all-view victory dance and Operation Vindicator victory-music path now activate from that terminal AI victory authority even if live React state is one render behind the streamed result.
+- The final-contact soldier line (`that's the last of them`) can fire once when Simulation AI reaches terminal victory, matching manual victory behavior.
+- The battlefield remains available for post-victory review; the player still chooses when to continue the mission result / return to base rather than the patch auto-closing the tactical scene.
+
+### Regression coverage
+- Adds `TACTICAL_AI_TERMINAL_VICTORY_COMMIT_PATCH`.
+- Adds a Sunken Relay-style contract with living AEGIS troops, all Glass Wraith hostiles dead, an optional civilian objective, and a commander check-in countdown. It must resolve as victory without an extra round.
+- The same contract verifies that an **already-called** inbound reinforcement force prevents premature victory.
+- Build Health verifies terminal streamed success drives the final-frame hard commit, tactical victory presentation, and final-contact dialogue.
+- Existing Alien Beacon Phase 3 hacking/badge contract remains enabled.
+- All six non-empty embedded JavaScript blocks pass `node --check`; browser self-tests report no failures in the isolated test harness.
+- Save format remains **4**.
+
+**Manual gate:** replay the reported Sunken Relay under Simulation AI. After the last actual hostile is killed and all required objectives are satisfied, AI movement should stop because the mission is truly over, the surviving soldiers should immediately perform their victory dance in the active tactical view, victory music should begin, and no manual extra round should be required. If an alien reinforcement force has already been called and is still inbound, the AI should instead keep the mission live until that reinforcement state is resolved.
 
 
 ## Browser 0215 — Fixed-Radius Globe Overlay Surface + Zoom Removal
@@ -7391,7 +7424,7 @@ Still planned:
 - Add civilians, rescue/extraction zones, and structure-specific objectives for terror, abduction, harvest, and supply missions.
 - VIP Rescue AI fire-team distribution is implemented in Browser 1850: the senior tactical coordinator assigns distinct fire teams across distinct marked VIPs before allowing duplicate coverage, while extra teams remain available for security, combat, escort support, or later reassignment.
 - Adaptive Alien Field Beacon Phase 2 is implemented in Browser 1552: three recorded beacon destructions trigger ballistic-blocking kinetic fields on later beacon deployments, and reinforcement arrivals preserve the original beacon or crashed-UFO landmark.
-- Next beacon milestone after live playtesting: Phase 3 combined kinetic/energy shielding plus intact hacking and commander-badge disablement. This remains behind research/evidence gates rather than being enabled automatically.
+- Adaptive Alien Field Beacon Phase 3 combined shielding is implemented in Browser 1204, and Browser 0315 now adds the research-gated intact interface layer: soldiers can hack a confirmed beacon from inside its field after `Alien Beacon Interface Protocols`, recover a Pale Commander command badge, and use that badge for a faster local override. Future beacon work should build on this completed three-phase adaptation/interface foundation rather than duplicating it.
 - Add **multi-floor / multi-level tactical structures and multi-deck alien craft** after the single-level cutaway maps remain readable and performant. This includes upper floors, stairs/ladders/ramps/lifts where appropriate, roof access, floor-aware LOS and ballistics, vertical AI pathfinding, camera/floor cutaways, structural destruction across levels, and fire/smoke propagation between connected spaces. See the dedicated roadmap addition below.
 
 Completed in browser 0945:
