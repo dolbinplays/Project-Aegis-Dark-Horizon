@@ -2,17 +2,15 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.1115_SECURE_RESCUE_FACING_SCOPE_HOTFIX_PATCH`
+Current handoff build: `v0.26.08.19.0945_SIMULATION_AI_CONTINUATION_SELF_HEAL_AND_SEARCH_STALL_RECOVERY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1115 hotfixes a Simulation-AI secure-rescue interruption reported as `updateFacing is not defined`. The root cause was a tactical facing helper declared only inside `TacticalMission` while shared resolver helpers such as deliberate breach / rescue planning run at module scope. `updateFacing()` is now a single shared tactical helper beside `facingToward()`, the nested duplicate is removed, and a behavioral regression executes a real deliberate breach from shared scope to prove the rescue path can update facing without a ReferenceError. Browser 1045 handoff optimization, Browser 0945 continuation self-healing/search-stall recovery, Browser 0315 terminal-victory authority, and all roadmap-only additions remain intact. Save format remains 4. Native Godot remains at 0026.**
+Current patch status: **Browser 0945 hardens streamed Simulation AI after another live Sunken Relay / Oceania / Threat 2 / Glass Wraith run stalled and exposed a Retry AI Continuation button that could not recover. The stream no longer has a mission-global 72-round dead end; every generated round remains individually bounded while long operations can continue beyond that diagnostic window. Missing continuation snapshots are reconstructed from the completed tactical frame, transient continuation/planning failures receive up to three automatic fresh-search replans, successful rounds reset the retry budget, manual Retry AI Continuation now immediately starts a new continuation request instead of merely toggling state and waiting for an effect, and repeated no-progress search rounds automatically clear stale hunt/search/patrol targets while preserving the battlefield. Hazard-aware long-route A* also uses a priority queue and a bounded grid-scaled search depth to reduce pathological AI planning stalls on large maps. Browser 0315's terminal-victory hard commit and Alien Beacon Phase 3 systems remain intact, as do Browser 0215's fixed-radius Globe overlays and Browser 0045's live-confirmed stable Geoscape lifecycle. Save format remains 4. Native Godot remains at 0026.**
 
 Roadmap-only planning update (2026-08-19): **Smooth Geoscape craft flight animation is now explicitly roadmapped so Skyrangers, interceptors, UFOs, and future strategic craft interpolate continuously across both Globe and Terminator Map at a speed matching the selected time compression, while authoritative route/fuel/ETA logic remains unchanged. Dateline/world-wrap travel, Globe surface attachment, stable component lifecycle, and no-camera-recenter doctrine are explicit requirements. No code or build-number change is part of this documentation update.**
 
 Roadmap-only planning update (2026-08-19): **Active alien missions should expose the same `Menu / Save` access from both the minimized command header and the tactical screen's left-hand control bar. These entry points should open the existing shared Menu/Save flow rather than create a separate tactical save system, remain available without expanding the header or leaving the mission view, preserve active tactical/Simulation-AI state, and avoid obstructing soldier, fire-team, inventory, or camera controls. No code or build-number change is part of this documentation update.**
 
 Roadmap-only planning update (2026-08-19): **Independent Skyranger incident response is now explicitly roadmapped. One Skyranger being Outbound, in tactical ownership, Returning, or otherwise committed to Incident A must not globally prevent a different Ready Skyranger from launching to Incident B. Strategic transport ownership should become per-aircraft/per-operation rather than a single global flight lock, while preserving atomic multi-Skyranger launch when several transports intentionally belong to the same operation. No code or build-number change is part of this documentation update.**
-
-Roadmap-only planning update (2026-08-19): **Incoming-fire reaction TPV should use short cinematic slow motion when an AEGIS soldier is hit or narrowly survives a resolved hostile shot. The slowdown is presentation-only: targeting, hit/damage resolution, RNG, Time Units, ammunition, AI action order, and tactical authority remain unchanged. The goal is to make the impact, target reaction, projectile/VFX, armor hit, wounds/gibbing, and nearby context easier to read before returning smoothly to the player's prior Iso/FPV/TPV observer mode. No code or build-number change is part of this documentation update.**
 
 
 Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1945 preserves Browser 0215's single-level building interaction/presentation improvements, Browser 1845's FPV/TPV backdrop depth correction, and now aligns the continuous FPV/TPV floor texture to the same world-space hex centers used by 3D Iso; it does not implement vertical levels.**
@@ -22,66 +20,6 @@ Roadmap-only planning update: **Future Stage 3 tactical work still includes mult
 
 
 
-
-
-## Browser 1115 — Secure Rescue Facing Scope Hotfix
-
-**Status:** Implemented; live retry of the interrupted rescue mission is the primary manual gate.
-
-### Why this patch exists
-- Live Simulation AI reached **Frame 230/230 — Secure rescue 0/2** and interrupted with `updateFacing is not defined`.
-- The error occurred only after the AI entered a late rescue/breach branch, so startup checks and earlier combat rounds could all pass.
-
-### Root cause
-- `updateFacing()` was declared inside the React `TacticalMission` component.
-- Shared tactical helpers outside that component—most importantly `tacticalDeliberateBreachResult()` used by AI rescue/breach planning—called the same helper by name but could not see the component-local declaration.
-- When secure-rescue AI chose a deliberate breach, JavaScript therefore raised a `ReferenceError` and the streamed continuation stopped.
-
-### Fix
-- Promotes `updateFacing(unit,x,y)` to shared tactical scope immediately beside the authoritative `facingToward()` helper.
-- Removes the duplicate component-local declaration so manual tactical actions, Simulation AI, rescue logic, deliberate breach actions, and future shared planners all use the same facing authority.
-- No AI objective, pathfinding, combat, TU, ammunition, rescue, or victory rules are otherwise changed.
-
-### Regression coverage
-- Adds `TACTICAL_SECURE_RESCUE_FACING_SCOPE_HOTFIX_PATCH`.
-- Build Health now performs a real shared-scope deliberate breach with a living ballistic soldier and adjacent structural wall, verifies the wall is breached, verifies the soldier faces the breach, and verifies `TacticalMission` no longer owns a private `updateFacing()` declaration.
-- All six non-empty embedded JavaScript blocks pass `node --check`.
-- Save format remains **4**.
-
-**Manual gate:** replay or retry the reported rescue operation under Simulation AI past the previous **Secure rescue 0/2** interruption. The AI should continue planning/moving instead of exposing `Retry AI Continuation` because of a missing facing helper.
-
-
-## Browser 1045 — Simulation AI Handoff Long-Task Reduction
-
-**Status:** Implemented; live incident-mission handoff timing is the primary manual gate.
-
-### Why this patch exists
-- Some incident missions still take long enough when the player transfers tactical command to Simulation AI that the browser can display a **Wait for page to respond** warning.
-- Browser 0945 fixed long-running continuation/search stalls, but the first AI-controlled round is still generated synchronously on the browser main thread. Browser 1045 reduces the amount of work in that first command-transfer round without weakening the planning budget used by later streamed rounds.
-
-### First-round fast-handoff planning budget
-- `startSimulationAiStream()` marks only the initial command-transfer batch with `fastHandoff:true`.
-- During that one batch, hazard-aware A* caps expanded search nodes at a tighter bounded budget and reachable-cell planners use a smaller candidate budget. Legal movement, hard-cover blocking, occupied-cell blocking, fire avoidance, smoke avoidance, escort rules, and objective authority remain unchanged.
-- If the fast first-round planner cannot justify a long route within the reduced breadth, the existing bounded fallback/search doctrine remains available. Once playback begins, subsequent one-round prefetches automatically return to the normal full planning budget.
-
-### Hazard spatial indexing
-- `tacticalPathBlockerIndex()` now creates hard-cover, occupied-cell, fire-intensity, and smoke-density lookup structures in one pass.
-- Hazard-aware A* and the common reachable/threat-aware movement planners therefore perform O(1)-style fire/smoke lookup by tactical cell instead of repeatedly scanning the full cover array for every expanded neighbor.
-- This is especially valuable on generated incident maps with buildings, vehicle footprints, street props, burning cover, smoke records, and many soldiers independently considering movement.
-
-### Handoff responsiveness / diagnostics
-- The transfer overlay is allowed to paint before the synchronous first-round resolver begins, and the stream yields once more after that resolver before frame normalization/playback setup.
-- The overlay reports the measured first-round AI planning time when playback is about to begin.
-- `window.__AEGIS_TACTICAL_AI_PERF__` records handoff count, last handoff planning milliseconds, maximum observed handoff planning milliseconds, and the most recent handoff timestamp for live diagnostics.
-- This patch does not pretend the synchronous resolver is fully off-main-thread; the goal is to materially shorten the long task and make the remaining cost measurable. A future worker/chunked-resolver migration remains available if desktop profiling still shows multi-second handoff spikes.
-
-### Regression coverage
-- Adds `TACTICAL_AI_HANDOFF_LONG_TASK_REDUCTION_PATCH` and `TACTICAL_PATH_HAZARD_SPATIAL_INDEX_PATCH`.
-- Build Health verifies indexed fire/smoke/hard-cover data, the fast-handoff flag, bounded first-round search expansion, indexed hazard consumption in route planners, and handoff planning timing.
-- All six non-empty embedded JavaScript blocks pass `node --check`.
-- Save format remains **4**.
-
-**Manual gate:** on several incident types—especially a no-contact Alien Hunt with many soldiers—hand command to Simulation AI and time the transfer. The browser should remain responsive enough to avoid its unresponsive-page prompt. If a slow case remains, inspect `window.__AEGIS_TACTICAL_AI_PERF__` immediately afterward so the next optimization can target measured first-round planning time rather than guessing.
 
 
 ## Browser 0945 — Simulation AI Continuation Self-Heal + Search-Stall Recovery
@@ -1204,8 +1142,6 @@ Browser 0725 roadmap completion note: **Both Browser 0630 documentation-only ref
 - The cut derives from the authoritative shot that has already been chosen/resolved. It cannot alter targeting, RNG, damage, ammunition, Time Units, AI decisions, or action order.
 - The reaction view is transient renderer state rather than a player control-mode toggle. When the shot presentation ends, camera ownership returns to the player's previous Iso, FPV, or TPV observer mode.
 - The target soldier is made visible during the reaction cut even when that same soldier was the hidden self-model of an FPV camera.
-- **Future presentation refinement:** when the resolved hostile shot hits the observed soldier, the incoming-fire reaction TPV should briefly enter slow motion around the impact window, then ease back to normal speed before returning camera ownership. The slowdown must apply to presentation playback only; it must never rerun or alter shot resolution, RNG, damage, armor penetration, Time Units, ammunition, reaction-fire sequencing, or AI state.
-- The slow-motion window should be long enough to read muzzle/projectile/VFX travel, the target pose/impact reaction, wounds or critical/gib effects, and nearby cover context, but short enough that repeated incoming shots do not make AI playback tedious. Multiple hits in one burst should share one bounded cinematic window rather than stacking several long slowdowns.
 
 ## FPV victory celebration doctrine
 

@@ -1,58 +1,86 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.19.0945_SIMULATION_AI_CONTINUATION_SELF_HEAL_AND_SEARCH_STALL_RECOVERY_PATCH
+Build: v0.26.08.19.1115_SECURE_RESCUE_FACING_SCOPE_HOTFIX_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
 SUMMARY
 -------
-Fixes the remaining Simulation AI continuation failure reported in Sunken Relay / Oceania / Threat 2 / Glass Wraith. Streamed AI can no longer permanently dead-end at its old mission-global 72-round safety window, successful rounds reset their retry budget, missing continuation snapshots can be reconstructed, transient continuation failures automatically generate fresh search plans, repeated no-progress search states are broken automatically, and the manual Retry AI Continuation button now immediately starts a new continuation request rather than only toggling state.
+Fixes the live Simulation-AI interruption reported at `Frame 230/230: Secure rescue 0/2 - updateFacing is not defined`. The tactical facing helper was scoped inside the React TacticalMission component even though shared AI/rescue helpers can execute outside that scope.
 
-SIMULATION AI CONTINUATION SELF-HEAL
-------------------------------------
-- One-round AI chunks remain bounded for browser responsiveness.
-- The old `AI streaming simulation reached its bounded interval` mission-global failure is removed. `streamSimulatedRounds` can continue beyond 72 while each individual resolver call remains capped to one round.
-- Unresolved batches that unexpectedly omit `tacticalChunkContinuation` attempt reconstruction from their completed tactical frame and the last stable strategic/tactical continuation authority.
-- Automatic recovery preserves battlefield state but clears stale AI-only hunt/search/patrol targets and movement-visited caches.
-- Up to three automatic replans are attempted before the UI asks the player to intervene.
-- A successful batch resets `streamRetryCount` to zero.
-- Repeated no-progress continuation signatures trigger a fresh deterministic sector-search target.
-- Manual Retry now directly queues `prefetchNextAiStreamBatch()` from a fresh recovery continuation.
+ROOT CAUSE
+----------
+- `tacticalDeliberateBreachResult()` is a shared tactical helper used by rescue/breach planning.
+- It updates the acting soldier's facing through `updateFacing()`.
+- `updateFacing()` existed only inside `TacticalMission`, so the shared helper could not resolve it when the secure-rescue branch executed.
+- Earlier combat/search rounds could therefore work normally before a late rescue action triggered the ReferenceError.
 
-PATHING PERFORMANCE HARDENING
------------------------------
-- Hazard-aware long-route A* now uses a binary priority queue instead of repeated linear scans of the open list.
-- Search depth is bounded to the tactical grid scale, reducing pathological planning stalls during wide-area no-contact searches.
-- Existing fire/smoke hazard costs, vehicle footprints, cover blockers, TU limits, and formation movement authority remain unchanged.
+FIX
+---
+- Promotes `updateFacing(unit,x,y)` into shared tactical scope directly beside `facingToward()`.
+- Removes the duplicate TacticalMission-local helper so all tactical systems use one facing authority.
+- Preserves Browser 1045 AI handoff optimization, Browser 0945 continuation recovery, and Browser 0315 terminal victory behavior.
+
+REGRESSION COVERAGE
+-------------------
+- Adds a behavioral shared-scope deliberate-breach regression that verifies a soldier can breach an adjacent wall and turn to face the breach without throwing.
+- Verifies TacticalMission no longer contains a private updateFacing declaration.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+
+MANUAL TEST GATE
+----------------
+Replay/continue a rescue mission under Simulation AI through the previous `Secure rescue 0/2` point. The AI should continue instead of interrupting with `updateFacing is not defined`.
+
+PREVIOUS PATCH NOTES
+====================
+
+Build: v0.26.08.19.1045_SIMULATION_AI_HANDOFF_LONG_TASK_REDUCTION_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Reduces the long browser-main-thread task that can occur when handing an active incident mission to Simulation AI. The initial streamed round now uses a bounded fast-handoff search budget, and movement planners use indexed fire/smoke hazard lookups instead of rescanning every cover record for every candidate cell. Subsequent streamed rounds return to the normal full planning budget. Browser 0945 continuation self-healing and Browser 0315 terminal-victory logic remain active.
+
+AI HANDOFF PERFORMANCE
+----------------------
+- Only the first streamed batch created by an explicit player-to-AI handoff uses the fast-handoff planning budget.
+- Hazard-aware A* reduces its maximum node-expansion budget during that first batch.
+- Reachable-cell and threat-aware movement planners use a reduced first-batch candidate budget, then restore the normal budget for subsequent prefetched rounds.
+- Hard-cover, occupied-cell, fire-intensity, and smoke-density data are indexed by tactical cell; pathfinding no longer scans the complete cover list every time it evaluates fire/smoke on a neighbor.
+- The handoff yields to the browser before planning and again immediately after the synchronous resolver so the transfer UI gets additional paint opportunities.
+
+DIAGNOSTICS
+-----------
+- The final handoff loading stage reports measured first-round planning milliseconds.
+- `window.__AEGIS_TACTICAL_AI_PERF__` exposes handoffRuns, lastHandoffPlanningMs, maxHandoffPlanningMs, and lastHandoffAt.
+- These measurements are intended to identify any remaining mission/map combinations that still produce multi-second main-thread stalls.
 
 PRESERVED BEHAVIOR
 ------------------
-- Browser 0315 terminal-victory hard commit remains active: a genuine AI victory still commits the final battlefield, plays victory presentation, and does not require an extra manual round.
-- Alien Beacon Phase 3 hacking / Pale Commander badge behavior remains active.
-- Browser 0045 stable Geoscape component lifecycle and Browser 0215 fixed-radius Globe overlays remain untouched.
-- Save format remains 4.
+- Browser 0945 AI continuation reconstruction, automatic replans, direct Retry behavior, and search-stall recovery remain unchanged.
+- Browser 0315 terminal-victory hard commit, victory music/dance authority, and Alien Beacon Phase 3 remain unchanged.
+- Fire/smoke avoidance, vehicle/path blockers, VIP/civilian rules, Skyranger extraction geometry, and save format 4 remain authoritative.
 
-VALIDATION
-----------
+REGRESSION COVERAGE
+-------------------
+- Build Health validates indexed hazard/blocker data and fast-handoff planner wiring.
 - All six non-empty embedded JavaScript blocks pass `node --check`.
-- Browser self-test chain: 11 tests, 0 failures.
-- A harness based on the supplied Sunken Relay / Oceania / Glass Wraith campaign state successfully requested a streamed batch with `simulatedRounds: 72`; it returned `simulatedRounds: 73` plus a valid continuation instead of throwing the former bounded-interval error.
-- A deterministic streamed Sunken Relay harness completed through ten one-round batches and reached terminal victory, including the reinforcement cycle.
 
 MANUAL TEST GATES
 -----------------
-1. Replay Sunken Relay / Oceania / Threat 2 / Glass Wraith under Simulation AI for an extended run.
-2. Confirm streamed rounds keep generating rather than entering a permanent Retry AI Continuation state.
-3. If a transient planning error occurs, confirm the AI logs an automatic replan and continues without player intervention.
-4. If Retry AI Continuation is ever shown, press it and confirm a new AI planning attempt begins immediately.
-5. Confirm final victory still triggers the Browser 0315 victory music/dance flow with no extra player round.
+1. Enter several incident missions and transfer control to Simulation AI. Confirm the page remains responsive and the browser does not ask whether to wait for the page.
+2. Repeat on a no-contact Alien Hunt / larger map, which is the most important stress case.
+3. Inspect `window.__AEGIS_TACTICAL_AI_PERF__` after a slow handoff and record `lastHandoffPlanningMs` if a warning still occurs.
+4. Let AI continue for several rounds and confirm later streamed movement retains normal pathing quality and Browser 0945 recovery behavior.
 
-PREVIOUS PATCH HISTORY
-======================
+ROADMAP-ONLY ADDITION
+---------------------
+Incoming-fire reaction TPV should eventually use a short presentation-only slow-motion window around a resolved hit so the player can read the impact and target reaction. It must not alter combat resolution or tactical timing authority.
 
-PROJECT AEGIS / ALIEN RESPONSE COMMAND
-PATCH NOTES
+PREVIOUS PATCH NOTES
+====================
 
 Build: v0.26.08.17.2115_ISO_UNIT_FOG_FREE_READABILITY_PATCH
 Save format: 4 (unchanged)
