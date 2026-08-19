@@ -2,9 +2,9 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-18
-Current handoff build: `v0.26.08.18.2115_GEOSCAPE_NO_SNAP_SOLAR_AND_CLOUDLESS_GLOBE_PATCH`
+Current handoff build: `v0.26.08.18.2225_GEOSCAPE_UNIFIED_SOLAR_RENDERER_REBUILD_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2115 makes another targeted pass on the still-reported running-time Geoscape flash after Browser 2045 reduced it to an intermittent whole-map/globe event. The strategic tick is now scheduled as an actual post-paint task (`requestAnimationFrame` followed by `setTimeout(0)`) instead of running inside the pre-paint animation-frame callback. The shared solar presentation no longer repays a blocked frame in a large slice: it advances by at most one ideal 60 Hz frame plus only 2 ms of gentle catch-up debt, preventing the terminator from visibly jumping forward at the one-second strategic tick. The Terminator Map front buffer no longer uses canvas `copy` compositing, which could transiently invalidate/clear the visible surface; each completed opaque back-buffer frame is now painted with normal source-over replacement. The SVG marker glow filter is removed to reduce full-map compositor churn. Globe cloud graphics are intentionally disabled because they no longer fit the current clean Three.js globe presentation. Browser 1945 FPV/TPV ground alignment, Browser 1845 backdrop depth occlusion, Browser 1345 globe solar authority, dateline routing/world wrap, Simulation AI safeguards, tactical fire/smoke, and all earlier systems are preserved. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 2225 replaces the repeatedly patched Geoscape day/night presentation rather than adding another timing workaround. One shared monotonic solar presentation clock now drives both the globe and Terminator Map and explicitly ignores ordinary same-speed strategic ticks as visual reposition commands. The Terminator Map solar surface is rebuilt as a persistent WebGL shader: ocean, land and grid are static texture data while day/night/twilight are calculated analytically from the shared Sun vector each rendered frame. The globe surface is likewise rebuilt as a separate persistent Three.js Earth renderer driven by the same solar clock and `geoscapeSubsolarPoint()` authority. React and the strategic simulation continue to update bases, incidents, UFOs, aircraft, routes and interaction overlays, but they no longer own, clear, reconstruct or directly reposition either Earth/day-night surface. Globe clouds remain disabled. Dateline shortest-route/world-wrap behavior, Browser 1945 FPV/TPV ground alignment, Browser 1845 backdrop depth occlusion, Simulation AI safeguards, tactical fire/smoke, and all earlier gameplay systems are preserved. Save format remains 4; native Godot remains at 0026.**
 
 
 Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1945 preserves Browser 0215's single-level building interaction/presentation improvements, Browser 1845's FPV/TPV backdrop depth correction, and now aligns the continuous FPV/TPV floor texture to the same world-space hex centers used by 3D Iso; it does not implement vertical levels.**
@@ -14,6 +14,22 @@ Roadmap-only planning update: **Future Stage 3 tactical work still includes mult
 
 
 
+
+## Browser 2225 — Unified Geoscape Solar Renderer Rebuild
+
+**Status:** Implemented replacement architecture; live desktop verification required.
+
+- Repeated desktop testing through Browsers 1515, 1645, 1845, 1945, 2045, and 2115 showed that the remaining Geoscape flash was architectural rather than a single bad interpolation constant. The globe and flat map could still flash at or near the once-per-second strategic update even after persistent canvases, post-paint scheduling, bounded frame debt, opaque commits, and cloud removal.
+- Browser 2225 therefore replaces the rendered **Earth/day-night presentation pipeline** while preserving the strategic simulation, geographic data, globe controls, markers, aircraft routing, dateline wrap, selection/focus behavior, and save format.
+- A single `GEOSCAPE_UNIFIED_SOLAR_CLOCK` is now the presentation-time authority for both views. It advances continuously from monotonic browser time at the player's selected Geoscape speed. Ordinary strategic ticks are recorded as authoritative campaign progress but are explicitly ignored as commands to move or re-anchor the visible Sun. Pause/rate changes change the clock rate without snapping the currently displayed terminator. Genuine large discontinuities such as load/time jumps may deliberately re-anchor.
+- The **Terminator Map** no longer regenerates a CPU night bitmap or copies a composed front buffer every frame. Its background is a persistent WebGL renderer. Ocean, landmasses, and grid are rendered into one static texture; a lightweight fragment shader computes solar factor, twilight, and night shading analytically from latitude/longitude and the shared Sun vector. React owns only the dynamic SVG overlays above it.
+- The **globe** no longer uses the Browser 2115 solar-integrator component as its rendered Earth. A new persistent surface-only Three.js globe owns the opaque ocean, landmasses, atmosphere, and Sun lighting. It samples the same unified presentation clock as the Terminator Map, so the two displays cannot derive different visual times from separate animation loops.
+- The previous Browser 2115 globe/map implementations remain dormant in the file for compatibility/self-test history but are no longer mounted as the player-facing solar surfaces. This avoids stacking another renderer on top of the old system.
+- Globe clouds remain disabled by design.
+- A new Build Health contract requires the unified WebGL map shader, shared solar clock, cloudless unified globe, and ordinary-tick no-reanchor behavior. All six non-empty embedded JavaScript blocks pass `node --check`.
+- Save format remains **4**.
+
+**Manual gate:** run the Geoscape for at least 30 seconds at 1h, 6h, and 1d speeds in both views. Confirm there is no once-per-tick whole-surface flash and no forward snap in the terminator. Switch Globe ↔ Terminator Map repeatedly and confirm the visible day/night boundary corresponds between the two views. Pause should freeze both exactly. Confirm aircraft markers/routes and dateline wrapping continue updating above the new persistent surfaces.
 
 ## Browser 2115 — Geoscape No-Snap Solar Motion + Opaque Front-Buffer Commit + Cloudless Globe
 
