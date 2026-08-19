@@ -1,6 +1,57 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.19.0115_GEOSCAPE_GLOBE_OVERLAY_SURFACE_ZOOM_PARITY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Fixes the Operational Overlay layer floating beyond the visible 3D Geoscape globe. Browser 0045 successfully stopped the strategic-tick flicker, but it exposed a separate projection mismatch: command markers and range/ferry overlays honored the selected Globe zoom while the fixed-step Three.js Earth stayed at a constant apparent radius. Browser 0115 makes the WebGL Earth consume the same zoom scale as the overlay projection.
+
+GLOBE / OVERLAY SURFACE PARITY
+------------------------------
+- Operational overlays use a screen-space projection radius of `150 * GLOBE_ZOOM_LEVELS[zoomIndex]`.
+- The fixed-step Three.js Earth previously used a constant orthographic projection whose apparent radius was 150 pixels.
+- Since `GLOBE_ZOOM_LEVELS` begins at 1.25, even Zoom 1 could put bases, incidents, UFOs and aircraft roughly 25% farther from globe center than the visible surface. Higher zoom settings made the separation larger.
+- Browser 0115 passes `cameraRadius / 150` into the persistent Three.js globe as `zoomScale`.
+- `OrthographicCamera.zoom` now uses that scale, so the WebGL Earth and the command overlay share the same visible radius.
+- Changing Globe zoom updates the existing camera projection matrix in place rather than recreating the globe.
+- The fixed-step globe memo comparator now includes zoom scale so player zoom changes propagate correctly.
+
+PRESERVED ARCHITECTURE
+----------------------
+- Browser 0045 stable React component identity remains unchanged.
+- The live-confirmed strategic-tick flicker fix is preserved.
+- Globe remains cloudless.
+- Terminator Map behavior is unchanged.
+- Solar parity, dateline world wrapping, shortest-route aircraft pathing, range calculations and ferry routing are unchanged.
+- Save format remains 4.
+
+REGRESSION COVERAGE
+-------------------
+- Build Health verifies that the fixed-step Three.js globe consumes a zoom scale.
+- Build Health verifies the orthographic camera applies that scale and updates its projection matrix.
+- Build Health verifies `EarthBaseGlobe` passes `cameraRadius / 150` to the surface renderer.
+- Build Health verifies the memo comparator includes zoom scale.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+
+MANUAL TEST GATES
+-----------------
+1. Launch and open the Geoscape Globe.
+2. Check all four Zoom buttons.
+3. Confirm bases, incidents, UFOs, Skyrangers and interceptors remain attached to the visible Earth surface.
+4. Confirm range rings and ferry routes scale with the same globe surface rather than floating beyond it.
+5. Rotate the globe and inspect markers near the limb.
+6. Confirm the Browser 0045 strategic-tick flicker remains absent in both Globe and Terminator Map views.
+
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.19.0045_GEOSCAPE_STABLE_COMPONENT_LIFECYCLE_ISOLATION_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

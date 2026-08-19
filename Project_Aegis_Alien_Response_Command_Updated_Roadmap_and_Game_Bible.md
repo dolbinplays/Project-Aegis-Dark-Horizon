@@ -2,9 +2,9 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.0045_GEOSCAPE_STABLE_COMPONENT_LIFECYCLE_ISOLATION_PATCH`
+Current handoff build: `v0.26.08.19.0115_GEOSCAPE_GLOBE_OVERLAY_SURFACE_ZOOM_PARITY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0045 targets the remaining once-per-strategic-tick Geoscape flash at the React lifecycle level rather than changing the solar math again. Live testing showed the flash persisted through multiple independent globe/map renderers but stopped when paused. Inspection found `EarthBaseGlobe` itself was declared inside `AlienResponseCommand`, so every parent render created a new component function identity. Browser 0045 pins that nested globe/map root in a `useRef` so React receives the same component type across strategic ticks instead of being allowed to unmount/remount the Geoscape subtree. The two dynamic parent values that the old closure read directly (`panic` and `regionalFundingBonusPct`) are now explicit props so lifecycle stabilization does not freeze those displays. Lifecycle diagnostics count mounts/unmounts for the Earth root, Terminator map root, globe command canvas, and globe solar surface, plus WebGL context-loss/restore and actual resize events. The Browser 2355 persistent-canvas command overlays, compositor Terminator surface, fixed-step cloudless globe, corrected solar parity, dateline routing, and recent tactical fixes remain in place. Save format remains 4. Native Godot remains at 0026.**
+Current patch status: **Browser 0115 fixes a Geoscape globe zoom-parity regression exposed after Browser 0045 successfully eliminated the strategic-tick flashing. The persistent operational-overlay canvas (bases, incidents, UFOs, aircraft, range rings, ferry routes, placement markers) was still projecting against `cameraRadius = 150 * GLOBE_ZOOM_LEVELS[...]`, while the fixed-step Three.js Earth remained rendered at a constant 150-pixel apparent radius. Because the available zoom levels begin at 1.25×, overlays were visibly floating beyond the globe surface even at the closest view. Browser 0115 gives the Three.js globe the same zoom scale as the overlay projection, updates its orthographic camera without remounting the stable 0045 Geoscape component, and includes that scale in the memo comparator. Operational overlays should therefore remain pinned to the visible Earth surface at every Globe zoom level. Browser 0045 lifecycle isolation remains authoritative and its flicker fix is preserved. Save format remains 4. Native Godot remains at 0026.**
 
 
 Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1945 preserves Browser 0215's single-level building interaction/presentation improvements, Browser 1845's FPV/TPV backdrop depth correction, and now aligns the continuous FPV/TPV floor texture to the same world-space hex centers used by 3D Iso; it does not implement vertical levels.**
@@ -14,6 +14,23 @@ Roadmap-only planning update: **Future Stage 3 tactical work still includes mult
 
 
 
+
+
+## Browser 0115 — Geoscape Globe Overlay / Surface Zoom Parity
+
+**Status:** Implemented; live desktop verification required.
+
+- Browser 0045 was live-confirmed to eliminate the long-running once-per-strategic-tick Globe/Terminator flashing by stabilizing the `EarthBaseGlobe` React component identity. That lifecycle fix remains unchanged and should be treated as Geoscape architecture doctrine.
+- After the flicker fix, the operational overlays on the 3D Globe were visibly detached from the Earth surface. Bases, incidents, UFOs, aircraft, range rings, ferry routes, and placement markers all use `projectGlobePoint(..., cameraRadius, ...)`, where `cameraRadius = 150 * GLOBE_ZOOM_LEVELS[...]`.
+- The fixed-step Three.js globe introduced during the solar-renderer work used an orthographic camera with a fixed apparent Earth radius of 150 pixels and did not consume the selected Globe zoom level. `GLOBE_ZOOM_LEVELS` currently begins at 1.25×, so the command overlay was already projected 25% farther from globe center than the visible Earth at the first zoom level, and the mismatch grew at higher zoom.
+- Browser 0115 passes `zoomScale: cameraRadius / 150` into the persistent Three.js globe and applies it through `OrthographicCamera.zoom`. The WebGL Earth and the canvas command overlay therefore use the same screen-space globe radius.
+- Zoom changes update the existing camera projection matrix and render in place; they do **not** remount the globe renderer or undo Browser 0045's stable component lifecycle.
+- The memo comparator now includes `zoomScale`, ensuring legitimate player zoom changes reach the Three.js surface while ordinary strategic ticks with unchanged zoom remain ignored.
+- The change is presentation-only. Geographic locations, aircraft routes, dateline wrapping, range/ferry calculations, solar lighting, strategic simulation, and save data are unchanged.
+- Adds a Build Health contract requiring the fixed-step globe camera to consume the same zoom scale used by the operational overlay projection.
+- Save format remains **4**. All six non-empty embedded JavaScript blocks pass `node --check`.
+
+**Manual gate:** open the Globe and check all four Zoom buttons. A base/incident/UFO near the visible limb should remain attached to the Earth surface as the globe zooms, and range/ferry overlays should expand/contract with the same surface. Confirm Globe/Terminator tick flicker remains absent.
 
 
 ## Browser 0045 — Geoscape Stable Component Lifecycle Isolation
