@@ -1,55 +1,58 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.19.1415_ACTIVE_MISSION_MENU_SAVE_AND_TACTICAL_CONTINUITY_PATCH
+Build: v0.26.08.19.1515_INCOMING_FIRE_REACTION_SLOW_MOTION_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
 SUMMARY
 -------
-Implements the roadmap item for persistent Menu / Save access during active missions and makes manual saves capable of resuming an in-progress tactical battlefield. The minimized command header and active tactical left-hand command bar now both open the existing shared Save / Load screen. A save created during a manual tactical mission now carries a JSON-safe tactical snapshot and restores it before the tactical mission remounts.
+Implements the roadmap's incoming-fire TPV slow-motion presentation pass. During Simulation-AI Tactical Map playback, a resolved alien hit on an AEGIS soldier now receives a short cinematic reaction window: projectile travel is slowed and visibly animated, the impact flash appears at contact instead of immediately, the struck soldier gives a brief readable flinch, and the reaction TPV camera eases more slowly before returning to the prior observer mode. Tactical resolution is unchanged.
 
-ACTIVE MISSION MENU / SAVE ACCESS
----------------------------------
-- Added `Menu / Save` to the minimized command header.
-- Added `Menu / Save` to the active alien-mission left command bar.
-- Both buttons call the same existing `openSaveMenuFrom("game")` flow.
-- Returning from the menu resumes the existing in-memory tactical cache without regenerating the map.
+INCOMING-FIRE TPV SLOW MOTION
+------------------------------
+- Applies only to resolved alien-to-AEGIS hits during Simulation-AI Tactical Map playback.
+- Misses retain normal timing so suppressive fire does not constantly interrupt AI playback.
+- Slow-motion duration remains bounded and still respects the player's Battle Speed setting.
+- A visible Three.js tracer now advances toward the targeted soldier during the slowed travel window.
+- Impact light/blast is hidden until the authoritative impact time, then appears at contact.
+- The targeted soldier receives a short vertical/side flinch during the impact hold.
+- The incoming-fire TPV camera uses gentler damping during the reaction window.
+- Armor-hit metadata is now forwarded through AI playback presentation so held armor impacts can be presented correctly.
 
-TACTICAL SAVE / LOAD CONTINUITY
--------------------------------
-- `getCurrentGameData()` now includes an optional `activeTacticalState` while a manual tactical mission is active.
-- The snapshot preserves deployment, covers/destruction, units, floor items, selected soldier, camera/view state, 2D/3D Iso mode, FPV/TPV observer state, explored cells, current turn/round, tactical log/timeline settings, fire-team/command-map state, Simulation-AI playback state, escort prompt state, and alien reinforcement transit state.
-- Loading clears stale tactical caches, restores the saved battlefield, then remounts the active mission.
-- Restored AI playback forces `streamPending=false` and refreshes its stream token so a save cannot resume an orphaned background continuation task.
-- Older saves with no tactical snapshot remain compatible. If a partial/legacy save claims a manual mission without a usable snapshot, it safely falls back to Mission Control instead of generating a misleading new battlefield.
+AI PLAYBACK SAFETY
+------------------
+- Automatic AI frame progression now accounts for the incoming-hit cinematic duration.
+- Deferred AI death application now also waits for the slow-motion impact window, so a fatal hit cannot remove the target before the slowed projectile reaches them.
+- The next AI action cannot visually overrun the slow-motion hit reaction.
+- Existing frame-level burst aggregation remains authoritative, so one burst uses one bounded reaction window rather than stacking a slow-motion pause for every projectile.
+- Camera ownership returns through the existing Iso/FPV/TPV observer flow after the shot presentation clears.
 
-COMPATIBILITY
--------------
-- Save format remains 4; the new tactical snapshot field is optional and backward compatible.
-- Browser 1315 beacon endgame behavior is unchanged.
-- Browser 1245 smooth Geoscape craft interpolation is unchanged.
-- The stable Geoscape lifecycle fix that eliminated tick flicker is unchanged.
+GAMEPLAY AUTHORITY UNCHANGED
+----------------------------
+- No rerolls or changes to hit chance, RNG, damage, armor penetration, wound/fatal outcomes, ammunition, Time Units, reaction order, AI decisions, reinforcements, or mission results.
+- No save migration is required; save format remains 4.
+- Browser 1415 active-mission Menu / Save continuity, 1315 beacon-endgame recovery, 1245 smooth Geoscape craft flight, and the stable Geoscape lifecycle/flicker fix remain intact.
 
 REGRESSION COVERAGE
 -------------------
-- New Build Health contract round-trips a synthetic tactical state through save/restore.
-- Verifies 3D/FPV view state survives.
-- Verifies alien reinforcement transit survives.
-- Verifies transient AI stream execution flags are reset safely.
-- Verifies both new Menu / Save entry points exist and use the shared handler.
+- Build Health verifies alien hits activate slow-motion timing while misses and non-AI/manual presentation do not.
+- Build Health verifies the AI scheduler reserves the reaction duration before advancing.
+- Build Health verifies the persistent Three.js reaction tracer/impact state and bounded soldier flinch.
 - All six non-empty embedded JavaScript blocks pass `node --check`.
 
 MANUAL TEST GATES
 -----------------
-1. Start a manual tactical mission and change soldier selection and camera mode.
-2. Open `Menu / Save` from the tactical left bar, then Return to Game; confirm the exact battlefield and view return.
-3. Hand the mission to Simulation AI, open Menu / Save during a stable playback state, return, and confirm AI ownership/playback state remains coherent.
-4. Save the campaign from the menu, load that slot, and confirm the same tactical battlefield resumes rather than a fresh deployment.
-5. Collapse the normal command header and confirm `Menu / Save` remains accessible there as well.
+1. Let Simulation AI fight a mission in Tactical Map / 3D Iso and wait for an alien to hit an AEGIS soldier.
+2. Confirm the camera cuts to incoming-fire TPV, projectile travel is visibly slower, impact occurs at contact, and the soldier gives a short reaction.
+3. Confirm an alien miss does not get the full slow-motion hold.
+4. Test Battle Speed at a low, middle, and high setting and confirm the reaction remains readable without becoming an excessive pause.
+5. Confirm a burst/full-auto hit creates one bounded reaction sequence rather than several stacked slowdowns.
+6. Confirm the camera returns to the previously selected Iso/FPV/TPV observer mode and AI playback continues normally afterward.
 
-PREVIOUS PATCH-NOTE HISTORY
-===========================
+
+HISTORICAL PATCH NOTES BELOW
+============================
 
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES

@@ -2,9 +2,41 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.1415_ACTIVE_MISSION_MENU_SAVE_AND_TACTICAL_CONTINUITY_PATCH`
+Current handoff build: `v0.26.08.19.1515_INCOMING_FIRE_REACTION_SLOW_MOTION_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1415 implements the planned Active Mission Menu / Save access and extends the tactical continuity cache into manual campaign saves. The minimized command header and active tactical left-hand command bar now both expose the same shared Menu / Save flow. Opening the menu suspends the live tactical view without discarding the battlefield, and a manual save made from that state now serializes the active tactical battlefield, selected unit/view including FPV/TPV observer state, current turn/round, fire-team/command state, AI playback/ownership state, and alien reinforcement state. Loading that save restores the tactical cache and resumes the same manual mission instead of silently downgrading it to Mission Control. Older saves without a tactical snapshot retain the previous safe fallback behavior. Browser 1315 beacon-endgame recovery, 1245 smooth craft flight, 0045 stable flicker-free Geoscape lifecycle, and all current tactical presentation/pathing fixes remain intact. Save format remains 4. Native Godot remains at 0026.**
+Current patch status: **Browser 1515 implements the planned incoming-fire reaction TPV slow-motion pass. Resolved alien hits against AEGIS soldiers now receive a bounded cinematic reaction window during Simulation-AI map playback: projectile travel is visibly slowed, the impact flash is delayed until contact, the struck soldier receives a short readable flinch, and the reaction TPV camera eases more slowly before returning to the player's prior observer mode. Misses retain normal timing, burst fire uses the existing single aggregated reaction event rather than stacking multiple long slowdowns, and Battle Speed still governs overall playback pace. Shot resolution, RNG, armor, damage, TU, ammunition, AI decisions, and mission authority are unchanged. Browser 1415 tactical Menu / Save continuity, 1315 beacon-endgame recovery, 1245 smooth craft flight, 0045 stable flicker-free Geoscape lifecycle, and all current tactical presentation/pathing fixes remain intact. Save format remains 4. Native Godot remains at 0026.**
+
+Implementation update (2026-08-19): **Browser 1515 completes the first incoming-fire reaction slow-motion roadmap slice. During Simulation-AI Tactical Map playback, a resolved alien hit on an AEGIS soldier now receives a bounded presentation-only slow-motion window. The shot effect carries explicit reaction timing metadata, the automatic playback scheduler waits for the reaction window rather than advancing into the next action, the persistent Three.js renderer animates a visible tracer toward the target, reveals the impact flash only at contact, and applies a brief hit flinch to the soldier. The reaction TPV camera itself uses gentler damping during the slow-motion window. Misses are not slowed, and the existing single-shot-event aggregation prevents a burst from stacking several long cinematic pauses.**
+
+## Browser 1515 — Incoming-Fire Reaction TPV Slow Motion
+
+**Status:** Implemented; live manual gate is an AI-controlled mission where an alien hits an AEGIS soldier while Tactical Map / 3D presentation is active.
+
+### Presentation behavior
+- Alien-to-AEGIS **hits** during Simulation-AI Tactical Map playback trigger the existing incoming-fire TPV camera and mark that shot as a slow-motion reaction event.
+- Misses keep the existing normal-speed reaction presentation so ordinary suppressive fire does not constantly interrupt playback.
+- Projectile travel receives a bounded presentation scale that remains responsive to the player's Battle Speed setting rather than replacing it.
+- The persistent Three.js effect now includes a visible tracer that advances toward the target during the slowed travel window instead of showing the impact state immediately.
+- The impact light/blast becomes visible at the resolved contact time, and the targeted soldier receives a short vertical/side flinch so armor hits, wounds, and fatal impacts are easier to read.
+- The reaction TPV camera uses gentler positional/look damping during the slow-motion window, then automatically gives camera ownership back through the existing observer-mode logic when the shot presentation clears.
+
+### Playback / burst handling
+- AI automatic playback now accounts for the incoming-hit cinematic duration before advancing to the next frame, preventing the next AI action from visually overrunning the reaction shot.
+- Deferred death application also waits through the reaction impact window, so a fatal incoming shot cannot make the targeted soldier disappear before the slowed projectile visibly reaches them.
+- Existing frame-level shot aggregation remains authoritative: a burst/full-auto attack uses one bounded cinematic reaction event rather than restarting slow motion for every projectile.
+- Armor-hit metadata is now carried into AI playback presentation so the slower reaction can distinguish a held armor impact from an ordinary wound.
+
+### Gameplay authority unchanged
+- Slow motion is presentation-only. It does not reroll or modify hit chance, RNG, damage, armor penetration, wound/fatal outcomes, ammunition, TU, reaction-fire order, AI decision-making, reinforcement state, or mission results.
+- Save format remains 4; no new persistent campaign data is required.
+- The stable persistent tactical renderer and the Browser 0045 stable Geoscape lifecycle doctrine remain unchanged.
+
+### Regression coverage
+- Build Health verifies alien hits activate the slow-motion timing while misses and non-AI/manual presentation paths do not.
+- Build Health verifies the reaction duration delays automatic AI frame progression, the persistent renderer creates the reaction tracer/impact state, and the targeted unit receives a bounded flinch.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+
+**Manual gate:** watch several alien shots at different Battle Speed settings. A hit should cut to reaction TPV, visibly slow projectile/impact presentation, show a brief soldier reaction, and then return to the previously selected Iso/FPV/TPV mode without changing the actual tactical result.
 
 Implementation update (2026-08-19): **Browser 1415 completes the Active Mission Menu / Save roadmap slice. `Menu / Save` is now present in both the minimized strategic header and the tactical left command bar. The shared save path captures a JSON-safe `activeTacticalState` snapshot for an in-progress manual mission, including the persistent battlefield cache and current alien reinforcement transit state. On load, the tactical caches are rebuilt before the active mission remounts, transient AI stream flags are reset safely, and the mission resumes at its saved battlefield rather than regenerating from deployment. FPV/TPV observer choice is now included in the live tactical cache as well as 2D/3D Iso mode. Older saves that mark a mission manual but contain no tactical snapshot are deliberately downgraded to the pre-1415 Mission Control fallback instead of attempting an unsafe partial resume.**
 
@@ -1346,8 +1378,8 @@ Browser 0725 roadmap completion note: **Both Browser 0630 documentation-only ref
 - The cut derives from the authoritative shot that has already been chosen/resolved. It cannot alter targeting, RNG, damage, ammunition, Time Units, AI decisions, or action order.
 - The reaction view is transient renderer state rather than a player control-mode toggle. When the shot presentation ends, camera ownership returns to the player's previous Iso, FPV, or TPV observer mode.
 - The target soldier is made visible during the reaction cut even when that same soldier was the hidden self-model of an FPV camera.
-- **Future presentation refinement:** when the resolved hostile shot hits the observed soldier, the incoming-fire reaction TPV should briefly enter slow motion around the impact window, then ease back to normal speed before returning camera ownership. The slowdown must apply to presentation playback only; it must never rerun or alter shot resolution, RNG, damage, armor penetration, Time Units, ammunition, reaction-fire sequencing, or AI state.
-- The slow-motion window should be long enough to read muzzle/projectile/VFX travel, the target pose/impact reaction, wounds or critical/gib effects, and nearby cover context, but short enough that repeated incoming shots do not make AI playback tedious. Multiple hits in one burst should share one bounded cinematic window rather than stacking several long slowdowns.
+- **Browser 1515 implemented:** when the resolved hostile shot hits the observed soldier, the incoming-fire reaction TPV briefly enters bounded slow motion around the impact window, then returns camera ownership through the existing observer-mode flow. The slowdown remains presentation-only and never reruns or alters shot resolution, RNG, damage, armor penetration, Time Units, ammunition, reaction-fire sequencing, or AI state.
+- Browser 1515 uses one bounded reaction window per aggregated shot/burst event, with visible tracer travel, delayed impact flash, target flinch, and Battle-Speed-aware timing so repeated incoming fire does not stack several long cinematic pauses.
 
 ## FPV victory celebration doctrine
 
