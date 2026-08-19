@@ -2,17 +2,58 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-18
-Current handoff build: `v0.26.08.18.1645_GEOSCAPE_FREE_RUNNING_SOLAR_CLOCK_FLICKER_FIX_PATCH`
+Current handoff build: `v0.26.08.18.1845_GEOSCAPE_TICK_RENDER_DECOUPLE_AND_PERSPECTIVE_DEPTH_OCCLUSION_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1645 removes the remaining once-per-strategic-tick solar flash by decoupling the animated day/night presentation from the exact arrival time of the one-second Geoscape state update. Browser 1515 still reduced rendering work and removed cloud remounts, but live testing showed both the Three.js globe lighting and flat Terminator Map night mask could still visibly pulse at the authoritative tick boundary while remaining perfectly stable when paused. Root cause: the shared smooth-clock helper still replaced its presentation anchor on every ordinary tick, so even a slightly early/late React/timer handoff changed the solar phase. Browser 1645 now lets the presentation solar clock free-run continuously at the selected time-compression rate and treats ordinary strategic ticks as observations only: they update the authoritative reference without replacing the animation origin. Speed changes, pause/resume, loads, and real time jumps still re-anchor intentionally. Globe and flat map continue to share `geoscapeSubsolarPoint()`, Browser 1345 remains the authoritative Three.js globe-surface foundation, Browser 1515 persistent-canvas/cloud optimizations remain active, and all earlier AI/pathing/world-wrap/radio/lighting fixes are preserved. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 1845 attacks the remaining once-per-running-tick Geoscape flash at the rendering layer as well as the clock layer. Live testing after Browser 1645 showed the globe and Terminator Map still flashed in sync with strategic ticks but remained stable while paused, indicating that ordinary React/layout/repaint work could still invalidate the visual surfaces even when the solar math itself no longer jumped. Same-rate running clock updates are now forbidden from re-anchoring even if multiple authoritative ticks are batched; the flat-map terminator draws into an offscreen back buffer and copies the completed frame atomically; the globe WebGL context preserves its last frame, avoids forced CSS GPU transforms, and only resizes/clears when its rounded pixel size actually changes. Browser 1845 also fixes the FPV/TPV mission backdrop ghosting shown in live screenshots: distant city/forest/mountain backdrop meshes and stars now depth-test against buildings, vehicles, units, and other tactical geometry instead of rendering through them. Browser 1345 globe solar authority, dateline world-wrap/pathing, Simulation AI safeguards, tactical lighting, and all earlier systems are preserved. Save format remains 4; native Godot remains at 0026.**
 
 
-Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1645 preserves Browser 0215's single-level building interaction/presentation improvements but does not implement vertical levels.**
+Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1845 preserves Browser 0215's single-level building interaction/presentation improvements and corrects their FPV/TPV backdrop depth behavior, but does not implement vertical levels.**
 
 
 
 
 
+
+# v0.26.08.18.1845 - Geoscape Tick Render Decouple + Perspective Depth Occlusion
+
+## Goal
+
+Eliminate the remaining live-tested once-per-tick Geoscape flash without disturbing the corrected globe/map solar geometry, and fix the FPV/TPV mission-horizon objects that could appear as translucent ghosts through foreground tactical geometry.
+
+## Geoscape flicker: render-layer hardening
+
+- Browser 1645 proved the presentation clock itself can free-run across ordinary strategic ticks, but live testing still showed a flash synchronized to the running tick and no flash while paused. Browser 1845 therefore treats the remaining problem as a **render/compositor invalidation path**, not just another solar-position interpolation problem.
+- While the clock remains running at the same selected rate, **no authoritative update is allowed to replace the visual animation anchor**, even if browser batching causes the update to represent more than one expected strategic tick. Normal tick observation can therefore never create a presentation-time discontinuity.
+- The Terminator Map now calculates each night-mask frame in an offscreen 2D canvas and copies the completed bitmap to the visible canvas with `globalCompositeOperation = "copy"`. The player should never see a partially rewritten mask.
+- The prior forced `translateZ(0)` / `will-change: contents` compositor hints were removed from the terminator layer. The map instead uses ordinary paint containment/isolation and a persistent double buffer, avoiding an extra GPU layer that could be invalidated when the surrounding React Geoscape updates.
+- The Three.js globe now requests `preserveDrawingBuffer:true`, so its last completed frame remains available across unrelated DOM/React repaint work rather than depending on a newly presented WebGL buffer every UI tick.
+- Globe resize handling now rounds to an actual CSS pixel size and only calls `renderer.setSize()` when that size changes. Minor/subpixel layout observations can no longer clear/reallocate the WebGL drawing buffer every strategic update.
+- The globe also drops its forced `translateZ(0)`/`will-change` compositor hints and uses normal paint isolation instead.
+
+## FPV / TPV perspective backdrop depth fix
+
+- The Browser 0215 setting-specific geometric horizons (cityscape, town, farm, forest, mountain) were intentionally translucent and distant, but their materials used `depthTest:false`. That made them draw regardless of foreground depth and could make skyline/forest shapes appear visibly **through buildings, vehicles, soldiers, aliens, and props**.
+- Backdrop geometry now uses `depthTest:true` with `depthWrite:false`. It remains lightweight and translucent, but normal tactical objects in front of it correctly occlude it.
+- Backdrop materials use double-sided rendering so the simplified geometric silhouettes remain stable from arbitrary FPV/TPV headings without disabling depth authority.
+- Tactical night stars now also depth-test. A star behind a wall, vehicle, roofline, unit, or other foreground object can no longer shine through it.
+- The atmospheric sky dome itself remains the far background and does not become tactical collision/LOS geometry. This is a presentation/depth correction only.
+
+## Preserved systems
+
+- Browser 1345 Three.js globe surface and shared `geoscapeSubsolarPoint()` solar authority remain unchanged.
+- Globe and Terminator Map still advance day/night continuously at the selected Geoscape time speed.
+- Browser 1115 dateline shortest-route behavior and Browser 1055 world-wrap presentation remain unchanged.
+- Tactical LOS, collision, cover, lighting, night visibility, FPV/TPV camera rules, and mission simulation are unchanged by the backdrop fix.
+- Save format remains 4.
+
+## Regression coverage / manual gates
+
+- Build Health injects a same-rate **batched two-tick** clock update and requires the original visual anchor to survive unchanged.
+- It verifies the Terminator Map uses an offscreen back buffer and atomic copy rather than `will-change: contents`.
+- It verifies the globe WebGL renderer preserves its drawing buffer and guards `renderer.setSize()` behind an actual rounded-size change.
+- It verifies perspective backdrop materials and tactical stars have depth testing enabled.
+- Manual gate: leave the globe and Terminator Map running for at least 15 seconds at 1m, 30m, 1h, 6h, and 1d. Neither surface should flash in sync with the strategic tick; pausing should still freeze solar movement.
+- Manual gate: in FPV and TPV, put a building, vehicle, or unit between the camera and a distant city/forest/mountain silhouette. The backdrop must disappear behind the foreground object rather than showing through it.
 
 # v0.26.08.18.1645 - Geoscape Free-Running Solar Clock Flicker Fix
 
