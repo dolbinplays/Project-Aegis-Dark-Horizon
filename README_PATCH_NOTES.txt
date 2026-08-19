@@ -1,6 +1,49 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.19.0145_GLOBE_ZOOM_PARITY_SELF_TEST_SCOPE_HOTFIX_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Startup hotfix for Browser 0115. The globe zoom-parity gameplay code was not the source of the crash; its new Build Health contract directly referenced nested Geoscape helper functions from outside their lexical scope, causing `ReferenceError: FixedStepGeoscapeGlobeSurface is not defined` during launch. Browser 0145 makes the contract scope-safe without changing the actual 0115 globe behavior.
+
+STARTUP SELF-TEST FIX
+---------------------
+- `FixedStepGeoscapeGlobeSurface` and `geoscapeFixedStepGlobePropsEqual` are nested inside `AlienResponseCommand`.
+- The Browser 0115 contract was declared outside that scope and executed `String(FixedStepGeoscapeGlobeSurface)` / `String(geoscapeFixedStepGlobePropsEqual)`.
+- That source-inspection test could therefore crash the application before the start screen rendered.
+- Browser 0145 now inspects `String(AlienResponseCommand)` for the same nested implementation evidence rather than evaluating inaccessible identifiers.
+- Adds `GEOSCAPE_GLOBE_ZOOM_PARITY_SELF_TEST_SCOPE_HOTFIX_PATCH`.
+
+PRESERVED BEHAVIOR
+------------------
+- Browser 0115 globe/operational-overlay zoom parity is unchanged.
+- Browser 0045 stable Geoscape component lifecycle/flicker fix is unchanged.
+- Terminator Map, solar rendering, aircraft routing/world wrap, tactical systems and save format are unchanged.
+
+REGRESSION COVERAGE
+-------------------
+- Build Health still verifies that the fixed-step globe consumes `zoomScale`.
+- It still verifies camera zoom/projection updates, memo-comparator zoom handling, and the `cameraRadius / 150` handoff.
+- The contract no longer crosses the nested component's lexical scope.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+
+MANUAL TEST GATES
+-----------------
+1. Launch local `index.html` and confirm the start screen appears without a `FixedStepGeoscapeGlobeSurface` ReferenceError.
+2. Open Geoscape Globe.
+3. Cycle all four zoom levels and verify bases/incidents/UFOs/aircraft remain attached to the Earth surface.
+4. Confirm the Browser 0045 no-flicker behavior remains intact.
+
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.19.0115_GEOSCAPE_GLOBE_OVERLAY_SURFACE_ZOOM_PARITY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

@@ -2,9 +2,9 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.0115_GEOSCAPE_GLOBE_OVERLAY_SURFACE_ZOOM_PARITY_PATCH`
+Current handoff build: `v0.26.08.19.0145_GLOBE_ZOOM_PARITY_SELF_TEST_SCOPE_HOTFIX_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0115 fixes a Geoscape globe zoom-parity regression exposed after Browser 0045 successfully eliminated the strategic-tick flashing. The persistent operational-overlay canvas (bases, incidents, UFOs, aircraft, range rings, ferry routes, placement markers) was still projecting against `cameraRadius = 150 * GLOBE_ZOOM_LEVELS[...]`, while the fixed-step Three.js Earth remained rendered at a constant 150-pixel apparent radius. Because the available zoom levels begin at 1.25×, overlays were visibly floating beyond the globe surface even at the closest view. Browser 0115 gives the Three.js globe the same zoom scale as the overlay projection, updates its orthographic camera without remounting the stable 0045 Geoscape component, and includes that scale in the memo comparator. Operational overlays should therefore remain pinned to the visible Earth surface at every Globe zoom level. Browser 0045 lifecycle isolation remains authoritative and its flicker fix is preserved. Save format remains 4. Native Godot remains at 0026.**
+Current patch status: **Browser 0145 is a startup-only hotfix for Browser 0115. The 0115 globe zoom-parity gameplay change remains intact, but its new Build Health contract directly referenced `FixedStepGeoscapeGlobeSurface` and `geoscapeFixedStepGlobePropsEqual` from outside the lexical scope that owns those nested helpers. That caused a launch-time `ReferenceError` before the game could render. Browser 0145 makes the contract inspect `AlienResponseCommand` source for the same zoom-parity evidence instead of executing out-of-scope identifiers, and adds an explicit self-test-scope hotfix flag. No gameplay, Geoscape rendering, solar behavior, save data, or 0045 lifecycle architecture changes are made. Save format remains 4. Native Godot remains at 0026.**
 
 
 Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1945 preserves Browser 0215's single-level building interaction/presentation improvements, Browser 1845's FPV/TPV backdrop depth correction, and now aligns the continuous FPV/TPV floor texture to the same world-space hex centers used by 3D Iso; it does not implement vertical levels.**
@@ -14,6 +14,20 @@ Roadmap-only planning update: **Future Stage 3 tactical work still includes mult
 
 
 
+
+
+## Browser 0145 — Globe Zoom-Parity Self-Test Scope Startup Hotfix
+
+**Status:** Implemented startup hotfix; desktop launch verification required.
+
+- Browser 0115's operational-overlay/surface zoom-parity implementation remains unchanged.
+- The startup failure was caused by the new Build Health contract, not by the Three.js globe itself. `geoscapeGlobeOverlaySurfaceZoomParityContractTest()` is declared outside `AlienResponseCommand`, while `FixedStepGeoscapeGlobeSurface` and `geoscapeFixedStepGlobePropsEqual` are nested inside that component's lexical scope. Calling `String(FixedStepGeoscapeGlobeSurface)` from the outer self-test therefore threw `ReferenceError: FixedStepGeoscapeGlobeSurface is not defined` during launch.
+- Browser 0145 removes those direct out-of-scope references. The contract now inspects `String(AlienResponseCommand)` for the nested fixed-step globe implementation, `zoomScale`, camera zoom/projection update, memo-comparator zoom handling, and the `cameraRadius / 150` handoff.
+- Adds `GEOSCAPE_GLOBE_ZOOM_PARITY_SELF_TEST_SCOPE_HOTFIX_PATCH` so Build Health explicitly records that this startup-scope regression is covered.
+- No changes were made to Globe zoom behavior, operational-overlay projection, the Browser 0045 stable component identity fix, Terminator rendering, aircraft pathing, tactical systems, or save data.
+- Save format remains **4**. All six non-empty embedded JavaScript blocks pass `node --check`.
+
+**Manual gate:** launch the local `index.html` first. Confirm the game reaches the start screen without the `FixedStepGeoscapeGlobeSurface is not defined` exception, then open the Globe and verify Browser 0115's overlay/surface zoom alignment at all four zoom levels.
 
 
 ## Browser 0115 — Geoscape Globe Overlay / Surface Zoom Parity
