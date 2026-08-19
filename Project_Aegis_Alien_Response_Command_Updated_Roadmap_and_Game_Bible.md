@@ -2,9 +2,9 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-18
-Current handoff build: `v0.26.08.18.2225_GEOSCAPE_UNIFIED_SOLAR_RENDERER_REBUILD_PATCH`
+Current handoff build: `v0.26.08.18.2315_COMPOSITOR_SOLAR_DECOUPLE_AND_FIXED_STEP_GLOBE_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2225 replaces the repeatedly patched Geoscape day/night presentation rather than adding another timing workaround. One shared monotonic solar presentation clock now drives both the globe and Terminator Map and explicitly ignores ordinary same-speed strategic ticks as visual reposition commands. The Terminator Map solar surface is rebuilt as a persistent WebGL shader: ocean, land and grid are static texture data while day/night/twilight are calculated analytically from the shared Sun vector each rendered frame. The globe surface is likewise rebuilt as a separate persistent Three.js Earth renderer driven by the same solar clock and `geoscapeSubsolarPoint()` authority. React and the strategic simulation continue to update bases, incidents, UFOs, aircraft, routes and interaction overlays, but they no longer own, clear, reconstruct or directly reposition either Earth/day-night surface. Globe clouds remain disabled. Dateline shortest-route/world-wrap behavior, Browser 1945 FPV/TPV ground alignment, Browser 1845 backdrop depth occlusion, Simulation AI safeguards, tactical fire/smoke, and all earlier gameplay systems are preserved. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 2315 responds to live testing that still showed intermittent once-per-tick flashes even after Browser 2225 rebuilt the Geoscape solar system. The flat Terminator Map no longer relies on a continuously rendered WebGL Earth surface at all: ocean, land, and grid are a static 2D canvas, while a transparent repeating night/twilight mask is moved by the browser compositor through the Web Animations API. Ordinary strategic ticks therefore do not clear, repaint, or directly advance the visible map shadow. The globe keeps its corrected Three.js solar geometry but now renders with `preserveDrawingBuffer:false` and a bounded ~30 FPS fixed-step loop; blocked strategic frames freeze briefly and recover gently instead of applying a large one-frame catch-up. Globe clouds remain disabled. Dateline shortest-route/world-wrap behavior, Browser 1945 FPV/TPV ground alignment, Browser 1845 backdrop depth occlusion, Simulation AI safeguards, tactical fire/smoke, and all earlier gameplay systems are preserved. Save format remains 4; native Godot remains at 0026.**
 
 
 Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1945 preserves Browser 0215's single-level building interaction/presentation improvements, Browser 1845's FPV/TPV backdrop depth correction, and now aligns the continuous FPV/TPV floor texture to the same world-space hex centers used by 3D Iso; it does not implement vertical levels.**
@@ -14,6 +14,25 @@ Roadmap-only planning update: **Future Stage 3 tactical work still includes mult
 
 
 
+
+## Browser 2315 — Compositor Solar Decouple + Fixed-Step Globe
+
+**Status:** Implemented; live desktop verification required because this patch deliberately changes the rendering mechanism after Browser 2225 still flashed in real use.
+
+- Live testing of Browser 2225 confirmed that rebuilding both views around persistent WebGL surfaces did **not** eliminate the intermittent flash tied to strategic time ticks. That indicates the remaining artifact is not simply a stale clock anchor; it is tied to the browser main-thread / paint / WebGL presentation boundary during the large strategic React commit.
+- The **Terminator Map** therefore stops using a continuously rendered WebGL Earth surface. Its ocean, landmasses, and geographic grid are drawn once into a static opaque 2D canvas that strategic ticks do not clear or regenerate.
+- Day/night is now a separate transparent repeating mask. For a fixed solar declination, the equirectangular day/night pattern moves horizontally as subsolar longitude changes, so the mask can be animated accurately across one full day by translating it exactly one map width.
+- That translation is driven by the browser **Web Animations compositor**, not a JavaScript `requestAnimationFrame()` solar loop. The animation uses `playbackRate` to match 5s / 1m / 5m / 30m / 1h / 6h / 1d Geoscape speeds. An ordinary strategic tick does not touch its phase. Pause freezes it; speed changes change only playback rate.
+- The night mask is tripled horizontally and wraps continuously, so there is no visible seam at ±180° while the terminator slides across the flat map. Existing aircraft/world-wrap behavior remains separate and unchanged.
+- Solar declination is refreshed on a coarse seasonal/month bucket rather than every strategic tick. This avoids rebuilding the mask during the once-per-second simulation while retaining seasonal tilt over campaign time.
+- The **globe** remains Three.js because its spherical lighting and user-rotatable viewpoint benefit from real 3D depth. Its renderer now uses `preserveDrawingBuffer:false` and a bounded ~33 ms fixed-step presentation loop rather than applying elapsed wall-clock time directly after a blocked frame.
+- When a strategic tick blocks the main thread, the globe can momentarily hold the last completed frame; it then advances by one normal step plus only a very small debt catch-up. The design preference is a tiny temporary slowdown over any visible solar jump or full-surface flash.
+- The globe renderer is paused when the flat Terminator Map is the active view and re-anchors when brought back on screen, reducing unnecessary GPU work while hidden.
+- Globe clouds remain disabled. Browser 1345 solar-direction correctness, Browser 1115 dateline shortest-route pathing, Browser 1945 FPV/TPV ground alignment, and all current tactical systems are preserved.
+- Build Health adds a compositor/fixed-step contract requiring the Terminator Map to avoid `WebGLRenderer`, require a compositor animation with `playbackRate`, require the globe to disable drawing-buffer preservation, and confirm the player-facing map/globe mount points use the new components.
+- All six non-empty embedded JavaScript blocks pass `node --check`. Save format remains **4**.
+
+**Manual gate:** run the Terminator Map at 1h, 6h, and especially 1d for at least 30 seconds. The base map should never disappear or flash, and the night boundary should continue at a constant apparent speed across strategic ticks. Repeat on the Globe: a heavy tick may at worst cause a tiny hold, never a full-surface flash or forward snap. Pause must freeze both. Switch between views and confirm the regions shown as day/night remain consistent.
 
 ## Browser 2225 — Unified Geoscape Solar Renderer Rebuild
 
