@@ -2,9 +2,9 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.0015_GEOSCAPE_OVERLAY_SELF_TEST_SCOPE_STARTUP_HOTFIX_PATCH`
+Current handoff build: `v0.26.08.19.0045_GEOSCAPE_STABLE_COMPONENT_LIFECYCLE_ISOLATION_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0015 is a startup hotfix for Browser 2355. The 2355 Build Health overlay contract attempted to stringify `EarthBaseGlobe` from a scope where that component was not available, causing `ReferenceError: EarthBaseGlobe is not defined` during launch-time self-tests before the player could reach the game. Browser 0015 makes the overlay contract inspect the top-level `AlienResponseCommand` source instead, which safely contains the nested globe mount code without evaluating or directly referencing the nested component. Three older Geoscape visual contracts that made the same unsafe source-inspection assumption were hardened the same way so the next self-test in the chain cannot fail for the same reason. The 2355 persistent-canvas Geoscape rendering experiment itself is otherwise unchanged; the tick-linked flicker still requires live desktop verification after startup is restored. Save format remains 4. Native Godot remains at 0026.**
+Current patch status: **Browser 0045 targets the remaining once-per-strategic-tick Geoscape flash at the React lifecycle level rather than changing the solar math again. Live testing showed the flash persisted through multiple independent globe/map renderers but stopped when paused. Inspection found `EarthBaseGlobe` itself was declared inside `AlienResponseCommand`, so every parent render created a new component function identity. Browser 0045 pins that nested globe/map root in a `useRef` so React receives the same component type across strategic ticks instead of being allowed to unmount/remount the Geoscape subtree. The two dynamic parent values that the old closure read directly (`panic` and `regionalFundingBonusPct`) are now explicit props so lifecycle stabilization does not freeze those displays. Lifecycle diagnostics count mounts/unmounts for the Earth root, Terminator map root, globe command canvas, and globe solar surface, plus WebGL context-loss/restore and actual resize events. The Browser 2355 persistent-canvas command overlays, compositor Terminator surface, fixed-step cloudless globe, corrected solar parity, dateline routing, and recent tactical fixes remain in place. Save format remains 4. Native Godot remains at 0026.**
 
 
 Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1945 preserves Browser 0215's single-level building interaction/presentation improvements, Browser 1845's FPV/TPV backdrop depth correction, and now aligns the continuous FPV/TPV floor texture to the same world-space hex centers used by 3D Iso; it does not implement vertical levels.**
@@ -15,6 +15,22 @@ Roadmap-only planning update: **Future Stage 3 tactical work still includes mult
 
 
 
+
+## Browser 0045 — Geoscape Stable Component Lifecycle Isolation
+
+**Status:** Implemented; live desktop verification required.
+
+- Desktop testing after Browser 0015 confirmed the Geoscape still flashed intermittently at the strategic tick even after the day/night surfaces, command overlays, frame timing, clouds, solar interpolation, and compositor paths had been replaced or isolated. The fact that pausing the clock stops the flash remains the strongest diagnostic signal.
+- Inspection found `EarthBaseGlobe` was declared **inside** `AlienResponseCommand`. A normal strategic clock update rerenders `AlienResponseCommand`; JavaScript therefore created a new `EarthBaseGlobe` function object on every parent render. React is allowed to treat a new function object as a new component type, which can unmount the old globe/map subtree and mount a replacement. A fast remount can appear only intermittently because some commits finish before the browser paints while others expose a blank/initial surface for one frame.
+- Browser 0045 stabilizes the Geoscape root identity with `EarthBaseGlobeStableRef`. The component implementation is captured once and the same function object is reused for subsequent parent renders. This is intentionally narrower than another renderer rewrite: strategic state can continue updating while the Globe/Terminator root remains the same mounted React component.
+- `panic` and `regionalFundingBonusPct` were the two changing parent values still read from the old nested closure. They are now explicit `EarthBaseGlobe` props at both the initial-base placement and normal Geoscape call sites, avoiding stale first-render data after the component identity is pinned.
+- Adds non-player-facing lifecycle diagnostics at `window.__AEGIS_GEOSCAPE_LIFECYCLE__`. Mount/unmount counts are recorded for `earth-base-globe-root`, `terminator-map-root`, `globe-command-overlay`, and `globe-solar-surface`. The fixed-step WebGL globe also records real renderer resizes and `webglcontextlost` / `webglcontextrestored` events. The event list is bounded so diagnostics cannot grow without limit.
+- The purpose of the diagnostics is to make the next desktop test conclusive. While leaving the Geoscape running for many ticks, the active root/surface should remain mounted once; a rising mount/unmount count would identify a remaining lifecycle replacement, while context-loss or resize counters would point to a different browser-level cause.
+- The Browser 2355 persistent canvas command overlays, Browser 2315/2345 compositor Terminator architecture, fixed-step cloudless globe, current solar math, dateline shortest-route behavior, and FPV/TPV ground/backdrop fixes are otherwise unchanged.
+- Adds a Build Health contract requiring the stable ref, explicit dynamic props, and lifecycle-instrumented map/globe overlay paths.
+- Save format remains **4**. All six non-empty embedded JavaScript blocks pass `node --check`.
+
+**Manual gate:** launch the Geoscape, run 1h/6h/1d speeds for 30–60 seconds in both Globe and Terminator views, and watch the once-per-second tick boundary. If a flash remains, inspect `window.__AEGIS_GEOSCAPE_LIFECYCLE__` in the browser console. During ordinary running ticks, `earth-base-globe-root` should not repeatedly unmount/remount. Also confirm Panic/Funding labels continue to update normally, because those values were converted from closure reads to explicit props.
 
 ## Browser 0015 — Geoscape Overlay Self-Test Scope Startup Hotfix
 
