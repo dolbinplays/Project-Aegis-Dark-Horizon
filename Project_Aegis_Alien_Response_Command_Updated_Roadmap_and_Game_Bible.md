@@ -2,11 +2,11 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.1145_AI_HANDOFF_CONTRACT_CALL_SHAPE_STARTUP_HOTFIX_PATCH`
+Current handoff build: `v0.26.08.19.1245_SMOOTH_GEOSCAPE_CRAFT_FLIGHT_VISUAL_INTERPOLATION_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1145 fixes a launch-time Build Health regression introduced by the recent Simulation-AI optimization test chain. `tacticalAiHandoffLongTaskReductionContractTest` had been materialized as an immediately-evaluated Boolean, while `runSelfTestsWith0945AiStreamRecovery()` later invoked it as a function, producing `TypeError: tacticalAiHandoffLongTaskReductionContractTest is not a function` before the game could start. Browser 1145 restores the contract to a callable arrow function, preserving the exact 1045 assertions and the 0945/1115 AI behavior. A source-level audit found no other immediately-evaluated Boolean contract being invoked through the same `pass:...()` pattern. Browser 1115 secure-rescue facing scope, Browser 1045 handoff optimization, Browser 0945 continuation self-healing/search-stall recovery, Browser 0315 terminal-victory authority, and all roadmap-only additions remain intact. Save format remains 4. Native Godot remains at 0026.**
+Current patch status: **Browser 1245 implements the first live slice of the Smooth Geoscape Craft Flight roadmap. Skyranger, interceptor, and detected flying-UFO presentation positions now interpolate continuously between authoritative strategic-tick anchors inside the already-stable Browser 0045 Geoscape component lifecycle. Globe and Terminator Map consume the same visual craft coordinates; Skyranger/interceptor interpolation still follows the existing shortest-longitude route path, while UFO interpolation also crosses the dateline through the short seam instead of sweeping across the long side of the map. Pause freezes the synthetic craft-visual clock, resume continues from the displayed position, time compression naturally changes apparent flight speed because larger authoritative progress deltas are spread across the same tick interval, and reduced-motion mode can remain authoritative/stepped. Route/fuel/ETA/ferry/interception/arrival authority is unchanged. Browser 1145 startup contract repair, 1115 secure-rescue facing fix, 1045/0945 Simulation-AI recovery/optimization, 0315 victory authority, and the stable flicker-free Geoscape lifecycle remain intact. Save format remains 4. Native Godot remains at 0026.**
 
-Roadmap-only planning update (2026-08-19): **Smooth Geoscape craft flight animation is now explicitly roadmapped so Skyrangers, interceptors, UFOs, and future strategic craft interpolate continuously across both Globe and Terminator Map at a speed matching the selected time compression, while authoritative route/fuel/ETA logic remains unchanged. Dateline/world-wrap travel, Globe surface attachment, stable component lifecycle, and no-camera-recenter doctrine are explicit requirements. No code or build-number change is part of this documentation update.**
+Implementation update (2026-08-19): **Browser 1245 now implements the shared visual-position foundation for smooth Geoscape craft flight. Skyrangers, interceptors, and detected flying UFOs interpolate between strategic-tick anchors using one visual coordinate stream consumed by both Globe and Terminator Map. Authoritative route/fuel/ETA logic is unchanged. Remaining roadmap work is focused on richer route-transition/stop polish, optional heading/trail readability, and future craft types rather than basic tick-to-tick smooth movement.**
 
 Roadmap-only planning update (2026-08-19): **Active alien missions should expose the same `Menu / Save` access from both the minimized command header and the tactical screen's left-hand control bar. These entry points should open the existing shared Menu/Save flow rather than create a separate tactical save system, remain available without expanding the header or leaving the mission view, preserve active tactical/Simulation-AI state, and avoid obstructing soldier, fire-team, inventory, or camera controls. No code or build-number change is part of this documentation update.**
 
@@ -22,6 +22,43 @@ Roadmap-only planning update: **Future Stage 3 tactical work still includes mult
 
 
 
+
+
+## Browser 1245 — Smooth Geoscape Craft Flight Visual Interpolation
+
+**Status:** Implemented; live Geoscape flight playtesting is the primary manual gate.
+
+### Why this patch exists
+- The rebuilt day/night system now moves continuously while aircraft and UFO markers still advanced in visible strategic-tick steps.
+- The roadmap explicitly calls for one shared visual craft position so Globe and Terminator Map show the same continuously moving aircraft without changing strategic route authority.
+
+### Shared visual-position foundation
+- Adds a presentation-only craft progress interpolator for active Skyranger and interceptor travel.
+- Each new authoritative progress anchor is approached smoothly across the strategic tick interval instead of being applied as an instantaneous marker jump.
+- Both Globe and Terminator Map receive the same interpolated `travelAircraft` and `interceptorAircraft` coordinates.
+- Detected flying UFOs receive the same location interpolation treatment using their authoritative current/previous positions.
+- The interpolation clock is local to the stable Geoscape component and advances only while Geoscape time is running and visible craft are active.
+- Pause freezes the visual interpolation clock exactly where it is; resume continues from that displayed phase rather than recomputing a new independent route state.
+- Reduced-motion preference bypasses the interpolation duration so accessibility does not force continuous marker motion.
+
+### Route/world-wrap parity
+- Skyranger/interceptor markers continue to use `skyrangerFlightPath()`, including the existing shortest-longitude/dateline route authority.
+- UFO location interpolation uses shortest-longitude interpolation too, so a craft moving from roughly 170°E to 170°W crosses near ±180° rather than sweeping across the long side of the map.
+- The Terminator Map's existing opposite-edge presentation duplicates continue to be presentation-only; authoritative craft state remains singular.
+- Globe markers remain attached to the fixed Browser 0215 Earth radius and use the same interpolated coordinates as the flat map.
+
+### Gameplay authority unchanged
+- No change to ETA, route duration, fuel, ferry/refuel stops, hangar ownership, launch availability, interception timing, mission arrival, repair, or return-home resolution.
+- Strategic ticks remain authoritative; this patch only smooths the marker path between those anchors.
+- No save schema fields are added. Save format remains **4**.
+
+### Regression coverage
+- Build Health verifies a progress track moves halfway from 0 to 20 at the halfway point of a one-second interpolation interval.
+- Build Health verifies a UFO moving 170°E -> 170°W interpolates through the dateline seam rather than longitude 0°.
+- Source contract verifies the stable Geoscape component owns the craft visual clock and feeds `visualTravel`, `visualInterceptorTravel`, and `visualAlienCraft` into the shared Globe/Terminator rendering path.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+
+**Manual gate:** launch a Skyranger and interceptor at several Geoscape speeds, watch a detected UFO drift, switch repeatedly between Globe and Terminator Map, pause/resume mid-flight, and confirm the marker never snaps to a different coordinate when changing view.
 
 
 ## Browser 1145 — AI Handoff Contract Call-Shape Startup Hotfix
@@ -7964,7 +8001,7 @@ Suggested future patch names:
 - `SKYRANGER_MULTI_OPERATION_TACTICAL_HANDOFF_AND_SAVE_PARITY`
 
 ### Future Roadmap Addition — Smooth Geoscape Craft Flight Animation
-Status: **Roadmapped / presentation polish after stable Geoscape lifecycle**
+Status: **First implementation complete in Browser 1245 / route-transition polish still planned**
 
 Design goal:
 - Match the now-smooth Geoscape day/night presentation with equally smooth aircraft and UFO travel. Craft should appear to fly continuously across the world rather than advancing in visible strategic-tick steps, while the underlying campaign simulation remains deterministic and clock-authoritative.
@@ -7996,11 +8033,11 @@ Readability and interaction:
 - Do not add camera auto-follow or forced recentering as part of this feature; the established rule that time progression does not seize camera ownership remains authoritative.
 
 Recommended staged implementation:
-1. **Shared craft visual-position authority** — derive one interpolated lat/lon from authoritative route progress and selected time compression.
-2. **Terminator Map parity** — smooth world-wrap movement and matching hit targets/labels.
-3. **Globe parity** — smooth spherical movement at the fixed surface radius with no overlay drift.
-4. **Route-transition polish** — ferry stops, attack/return legs, UFO landing/departure, and speed changes without snaps.
-5. **Optional motion readability polish** — restrained trails/heading orientation only if live testing shows they improve readability.
+1. **Shared craft visual-position authority — IMPLEMENTED IN BROWSER 1245** — derives presentation progress/lat-lon from authoritative route anchors without changing strategic travel state.
+2. **Terminator Map parity — IMPLEMENTED IN BROWSER 1245 FOR CURRENT CRAFT** — Skyrangers, interceptors, and detected flying UFOs consume the shared visual coordinates, including seam wrapping.
+3. **Globe parity — IMPLEMENTED IN BROWSER 1245 FOR CURRENT CRAFT** — the fixed-radius Globe consumes those same coordinates, so switching views does not relocate the craft.
+4. **Route-transition polish — STILL PLANNED** — refine ferry stops, attack/return boundaries, UFO landing/departure, and unusual multi-leg transitions if live testing reveals visible discontinuities.
+5. **Optional motion readability polish — STILL PLANNED** — restrained heading/trails only if they improve readability without clutter.
 
 Suggested future patch names:
 - `GEOSCAPE_SHARED_CRAFT_VISUAL_POSITION_FOUNDATION`
@@ -8010,7 +8047,7 @@ Suggested future patch names:
 Still planned:
 - Command Objectives Tracker.
 - Alien escalation over months.
-- Smooth Geoscape craft-flight animation where aircraft and UFO markers interpolate continuously along their authoritative routes, with apparent movement speed scaling to the selected clock rate without changing route duration, fuel, repair, refuel, interception, ferry, or event timing. This must work identically on the Globe and Terminator Map, including dateline/world-wrap routes.
+- Smooth Geoscape craft-flight follow-up polish after Browser 1245: validate ferry/refuel pauses, attack/return phase boundaries, UFO landing/departure transitions, and optional restrained heading/trail cues. Basic Skyranger/interceptor/detected-UFO tick-to-tick interpolation and Globe/Terminator coordinate parity are implemented.
 - Concurrent independent Skyranger incident response: one committed/outbound transport must not globally block a different Ready Skyranger from responding to another incident. Same-incident multi-transport launches remain atomic, while different incidents own separate operation/travel/tactical/return state.
 - Base-centered radar range and contact-quality model where UFO detection depends on distance from each base's radar facilities.
 - Geoscape overlay filter controls for showing/hiding radar and aircraft range rings around each existing base.

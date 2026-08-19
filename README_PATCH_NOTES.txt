@@ -1,47 +1,63 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.19.1145_AI_HANDOFF_CONTRACT_CALL_SHAPE_STARTUP_HOTFIX_PATCH
+Build: v0.26.08.19.1245_SMOOTH_GEOSCAPE_CRAFT_FLIGHT_VISUAL_INTERPOLATION_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
 SUMMARY
 -------
-Fixes the Browser 1115 launch failure: `TypeError: tacticalAiHandoffLongTaskReductionContractTest is not a function`. The 1045 AI-handoff Build Health contract had been executed immediately at declaration time and stored as a Boolean, but a later self-test wrapper called that Boolean as if it were a function. Browser 1145 converts the contract back to a callable arrow function without changing its assertions or any gameplay behavior.
+Implements the first live Smooth Geoscape Craft Flight roadmap slice. Skyrangers, interceptors, and detected flying UFOs now move continuously between authoritative strategic-tick route anchors instead of visibly stepping once per tick. Globe and Terminator Map consume the same visual craft coordinates, while route duration, ETA, fuel, ferry/refuel logic, interception timing, mission arrival, repair, and save data remain authoritative and unchanged.
 
-ROOT CAUSE / FIX
-----------------
-- Before: `const tacticalAiHandoffLongTaskReductionContractTest = (()=>{ ... })();`
-- The identifier therefore held `true` or `false`.
-- `runSelfTestsWith0945AiStreamRecovery()` later executed `tacticalAiHandoffLongTaskReductionContractTest()`.
-- Browser startup aborted with a TypeError before the game UI mounted.
-- Now: the same contract body is stored as `()=>{ ... }`, matching the callable pattern used by the self-test wrapper.
+SMOOTH CRAFT VISUAL POSITION
+----------------------------
+- Active Skyranger progress is interpolated across the strategic tick interval before `skyrangerFlightPath()` calculates the visible route position.
+- Active interceptor progress uses the same presentation clock, including outbound and return/multi-leg route phases.
+- Detected flying UFO locations interpolate from their prior/current authoritative anchors instead of stepping to the new longitude/latitude immediately.
+- One synthetic craft-visual clock inside the stable Geoscape component feeds both Globe and Terminator Map.
+- Normal strategic ticks retarget the interpolation without changing campaign travel authority.
 
-PRESERVED SYSTEMS
------------------
-- Browser 1115 secure-rescue/shared-facing fix remains intact.
-- Browser 1045 Simulation-AI handoff optimization remains intact.
-- Browser 0945 continuation self-healing/search-stall recovery remains intact.
-- Browser 0315 victory hard-commit logic remains intact.
-- No save-format, tactical-rule, campaign, rendering, or audio changes.
+TIME SPEED / PAUSE BEHAVIOR
+---------------------------
+- Larger strategic progress deltas at faster Geoscape time settings naturally produce faster continuous marker travel over the same tick interval.
+- Pausing stops the synthetic craft visual clock at the displayed position.
+- Resuming continues from that visual phase instead of creating a separate route simulation.
+- Reduced-motion preference bypasses the continuous interpolation duration.
 
-VALIDATION
-----------
+WORLD WRAP / VIEW PARITY
+------------------------
+- Skyranger/interceptor movement still uses the existing shortest-longitude route path.
+- UFO interpolation also uses shortest-longitude math, so 170E -> 170W crosses the nearby dateline seam.
+- Existing Terminator Map edge duplicates remain presentation-only.
+- Globe and Terminator Map receive the same interpolated coordinates, preventing view-switch position jumps.
+- Fixed-radius Globe overlay attachment and the Browser 0045 stable lifecycle/flicker fix are preserved.
+
+GAMEPLAY UNCHANGED
+------------------
+- Route duration and ETA unchanged.
+- Fuel/range/ferry/refuel rules unchanged.
+- Hangar/aircraft ownership unchanged.
+- Interception and mission-arrival timing unchanged.
+- Save format remains 4.
+
+REGRESSION COVERAGE
+-------------------
+- Progress interpolation test verifies 0 -> 20 renders at 10 halfway through a one-second interval.
+- Dateline interpolation test verifies 170E -> 170W crosses near +/-180 rather than longitude 0.
+- Source contract verifies the stable Geoscape component owns `craftVisualTimeMs` and feeds visual Skyranger/interceptor/UFO positions into the shared Globe/Terminator render path.
 - All six non-empty embedded JavaScript blocks pass `node --check`.
-- Source scan confirms the handoff contract is callable.
-- Audit of Build Health `pass:<contract>()` call sites found no other immediately-evaluated Boolean contract with the same call-shape mismatch.
 
 MANUAL TEST GATES
 -----------------
-1. Launch the game and confirm the start screen loads without the reported TypeError.
-2. Open Build Health and confirm the Simulation-AI handoff optimization contract evaluates normally.
-3. Retry the previously interrupted secure-rescue mission and confirm Browser 1115 can proceed beyond the prior `updateFacing` failure.
+1. Launch a Skyranger and watch it at 1m, 30m, 1h, 6h, and 1d speeds; marker movement should be continuous rather than one jump per strategic tick.
+2. Launch an interceptor and verify outbound/return movement remains smooth.
+3. Watch a detected flying UFO for several ticks and verify drift is continuous.
+4. Switch repeatedly between Globe and Terminator Map while craft are moving; visible positions should agree.
+5. Pause mid-flight, wait several seconds, and resume; the craft should not jump simply because real time passed while paused.
+6. Observe a dateline-crossing route and confirm the marker uses the short world seam.
 
---- HISTORICAL PATCH-NOTE ARCHIVE FOLLOWS ---
-
-PROJECT AEGIS / ALIEN RESPONSE COMMAND
-PATCH NOTES
-
+HISTORICAL PATCH NOTES
+----------------------
 Build: v0.26.08.17.2115_ISO_UNIT_FOG_FREE_READABILITY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
