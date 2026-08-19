@@ -2,9 +2,9 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-18
-Current handoff build: `v0.26.08.18.1945_GEOSCAPE_PERSISTENT_SOLAR_SURFACE_AND_PERSPECTIVE_GROUND_ALIGNMENT_PATCH`
+Current handoff build: `v0.26.08.18.2045_GEOSCAPE_FRAME_DEBT_SMOOTH_SOLAR_AND_TRANSITION_TICK_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1945 attacks the still-live once-per-tick Geoscape flicker by removing the solar surfaces themselves from ordinary React tick repaint authority. The Three.js Earth now renders into an opaque WebGL surface and is memoized as a surface-only component, so normal one-second strategic clock updates do not reconcile or rebuild the globe surface; SVG remains responsible for interactive markers/overlays. The flat Terminator Map now owns ocean, land, grid, twilight, and night shading inside one persistent opaque canvas with offscreen base/shade/back buffers; the React SVG above it contains only interactive overlays, so normal tick commits cannot momentarily expose an unshaded map. Browser 1945 also fixes the FPV/TPV continuous-ground world/texture mismatch reported in live missions: CanvasTexture vertical orientation now matches the rotated Three.js ground plane, the perspective hexes use exact world-space hex scale rather than the former 1.5% enlargement, and building interior floor patterns therefore remain centered under the same buildings/units that already aligned correctly in 3D Iso. Browser 1845 backdrop depth occlusion, Browser 1345 globe solar authority, dateline routing/world wrap, Simulation AI safeguards, tactical fire/smoke, and all earlier systems are preserved. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 2045 addresses the still-reported once-per-running-tick Geoscape flicker after Browser 1945 proved that persistent opaque surfaces alone were not sufficient. The remaining failure mode is treated as main-thread tick starvation followed by an absolute-time solar catch-up jump: strategic simulation work can delay a render frame, then both the globe and Terminator Map previously advanced the Sun by the entire blocked wall-clock interval in one frame. Browser 2045 gives both surfaces a frame-debt solar integrator that consumes missed time in bounded slices, so a long strategic tick produces a brief smooth catch-up rather than a single flash/jump. Strategic ticks are also queued immediately after a browser paint and their React state updates run at transition priority when supported, reducing competition with the globe/map presentation frame. The expensive whole-globe SVG drop-shadow compositor effect and the per-tick Terminator Map subsolar text mutation are removed. Browser 1945 FPV/TPV ground alignment, Browser 1845 backdrop depth occlusion, Browser 1345 globe solar authority, dateline routing/world wrap, Simulation AI safeguards, tactical fire/smoke, and all earlier systems are preserved. Save format remains 4; native Godot remains at 0026.**
 
 
 Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1945 preserves Browser 0215's single-level building interaction/presentation improvements, Browser 1845's FPV/TPV backdrop depth correction, and now aligns the continuous FPV/TPV floor texture to the same world-space hex centers used by 3D Iso; it does not implement vertical levels.**
@@ -13,6 +13,25 @@ Roadmap-only planning update: **Future Stage 3 tactical work still includes mult
 
 
 
+
+
+## Browser 2045 — Geoscape Frame-Debt Solar Smoothing + Transition-Scheduled Strategic Ticks
+
+**Status:** Implemented browser patch; live desktop verification required.
+
+- Live testing confirmed that Browser 1945 improved FPV/TPV ground alignment but the globe and Terminator Map could still visibly flicker at the exact one-second strategic tick cadence, with no flicker while paused.
+- Because the persistent WebGL/canvas surfaces were already protected from ordinary React remount/rebuilds, Browser 2045 treats the remaining artifact as **render starvation/catch-up**, not another surface-ownership or solar-geometry problem.
+- Both solar surfaces now advance through `geoscapeSolarVisualIntegratorStep()`. If a strategic tick blocks the main thread long enough to miss animation frames, the missed wall-clock interval becomes bounded frame debt rather than being applied to the Sun in one large jump.
+- Frame debt is consumed across subsequent frames (24 ms maximum per animation frame, bounded backlog) so the day/night boundary can catch up smoothly instead of flashing to a new position.
+- The globe and flat map retain the same `geoscapeSubsolarPoint()` solar authority and the selected Geoscape speed still controls the intended overall movement rate.
+- The recurring strategic tick is queued through `requestAnimationFrame()` so the heavy simulation update starts immediately after a presentation frame rather than colliding arbitrarily with the middle of a paint.
+- When available, the tick's React state updates run inside `React.startTransition()`, allowing presentation work to retain higher responsiveness during the large Geoscape commit.
+- The large SVG command overlay no longer applies a whole-surface CSS drop shadow that could force expensive compositor work every strategic update.
+- The Terminator Map's changing subsolar coordinate/time readout was replaced by a static authority label so the overlay does not mutate text every strategic tick solely because the clock advanced.
+- Browser 1945's corrected FPV/TPV world/UV alignment is unchanged.
+- Save format remains 4.
+
+**Manual gate:** run the Geoscape at 1m, 30m, 1h, 6h, and especially 1d for at least 15–20 seconds in both Globe and Terminator Map views. The boundary may briefly ease/catch up if a heavy strategic tick consumes a frame, but there should be no single-frame flash or sudden solar jump at the one-second cadence.
 
 # v0.26.08.18.1945 - Persistent Geoscape Solar Surfaces + FPV/TPV Ground Alignment
 
