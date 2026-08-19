@@ -2,9 +2,9 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-18
-Current handoff build: `v0.26.08.18.2315_COMPOSITOR_SOLAR_DECOUPLE_AND_FIXED_STEP_GLOBE_PATCH`
+Current handoff build: `v0.26.08.18.2345_COMPOSITOR_TERMINATOR_SCOPE_STARTUP_HOTFIX_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2315 responds to live testing that still showed intermittent once-per-tick flashes even after Browser 2225 rebuilt the Geoscape solar system. The flat Terminator Map no longer relies on a continuously rendered WebGL Earth surface at all: ocean, land, and grid are a static 2D canvas, while a transparent repeating night/twilight mask is moved by the browser compositor through the Web Animations API. Ordinary strategic ticks therefore do not clear, repaint, or directly advance the visible map shadow. The globe keeps its corrected Three.js solar geometry but now renders with `preserveDrawingBuffer:false` and a bounded ~30 FPS fixed-step loop; blocked strategic frames freeze briefly and recover gently instead of applying a large one-frame catch-up. Globe clouds remain disabled. Dateline shortest-route/world-wrap behavior, Browser 1945 FPV/TPV ground alignment, Browser 1845 backdrop depth occlusion, Simulation AI safeguards, tactical fire/smoke, and all earlier gameplay systems are preserved. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 2345 is a startup hotfix for Browser 2315. Live launch testing exposed `ReferenceError: TickStableCompositorTerminatorSolarSurface is not defined` when the Terminator Map rendered. The cause was lexical scope: Browser 2315 declared the compositor solar component inside `AlienResponseCommand`, while the top-level `TerminatorGeoscapeMap` component attempted to reference it from global scope. Browser 2345 mounts a dedicated globally scoped compositor Terminator component defined before the map component and adds a scope/order regression contract. The Browser 2315 static-map/compositor terminator architecture and fixed-step cloudless globe are otherwise unchanged, as are dateline routing, FPV/TPV ground alignment, tactical systems, and save format 4. Native Godot remains at 0026.**
 
 
 Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1945 preserves Browser 0215's single-level building interaction/presentation improvements, Browser 1845's FPV/TPV backdrop depth correction, and now aligns the continuous FPV/TPV floor texture to the same world-space hex centers used by 3D Iso; it does not implement vertical levels.**
@@ -14,6 +14,19 @@ Roadmap-only planning update: **Future Stage 3 tactical work still includes mult
 
 
 
+
+## Browser 2345 — Compositor Terminator Scope Startup Hotfix
+
+**Status:** Implemented startup hotfix; desktop launch verification required.
+
+- Browser 2315 could fail immediately on the Geoscape with `ReferenceError: TickStableCompositorTerminatorSolarSurface is not defined`.
+- The failure was not a WebGL/compositor capability problem. `TerminatorGeoscapeMap` is a top-level component, but Browser 2315 accidentally declared `TickStableCompositorTerminatorSolarSurface` and its helper functions inside the lexical scope of `AlienResponseCommand`. The map component therefore had no identifier to resolve when React rendered it.
+- Browser 2345 defines a dedicated `TickStableCompositorTerminatorSolarSurfaceGlobal` authority in global pre-mount scope, before `TerminatorGeoscapeMap` is declared, and the map now mounts that component explicitly.
+- The compositor behavior itself is intentionally unchanged: static opaque map base, repeating day/night mask driven by Web Animations, no ordinary strategic-tick phase reset, and the fixed-step cloudless Three.js globe remain the current presentation architecture.
+- A startup scope contract checks that the globally scoped component exists and that the player-facing map source references it. This regression should be treated similarly to previous startup TDZ/order fixes: renderer components needed during initial React render must be declared in a scope visible to their caller before mounting begins.
+- All six non-empty embedded JavaScript blocks pass `node --check`. Save format remains **4**.
+
+**Manual gate:** launch the game, enter/load a campaign, open the Geoscape, and switch to Terminator Map. Confirm no runtime error is raised and both Globe and Terminator Map render. Then resume the Browser 2315 flicker test; Browser 2345 fixes startup scope only and does not claim the underlying tick-linked flicker has been resolved.
 
 ## Browser 2315 — Compositor Solar Decouple + Fixed-Step Globe
 
