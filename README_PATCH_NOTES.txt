@@ -1,3 +1,51 @@
+# v0.26.08.18.2115 - Geoscape No-Snap Solar Motion + Cloudless Globe
+
+## Goal
+
+Remove the remaining intermittent whole-surface Geoscape flash and eliminate the visible terminator jump at the one-second strategic tick, while simplifying the globe by removing cloud graphics.
+
+## Geoscape tick / paint scheduling
+
+- Browser 2045 queued strategic work in `requestAnimationFrame`, but rAF callbacks execute before the browser paints. A heavy Geoscape simulation update could therefore still block the solar frame it was meant to follow.
+- Browser 2115 now queues the tick in rAF and then executes the strategic update from `setTimeout(0)`, allowing the prepared frame to paint before the large React/simulation commit begins.
+- Existing `React.startTransition()` priority handling is retained where available.
+
+## Smooth no-snap solar progression
+
+- The globe and Terminator Map still share the same solar presentation integrator and `geoscapeSubsolarPoint()` authority.
+- A blocked frame no longer catches up by as much as 24 ms of presentation time at once.
+- Each rendered frame advances by at most one ideal 60 Hz frame plus 2 ms of gentle catch-up debt.
+- Missed time remains bounded as debt and is repaid gradually over subsequent frames.
+- This prevents the nighttime boundary from jumping forward when the strategic clock ticks.
+
+## Terminator Map whole-surface flash hardening
+
+- The map still renders its complete ocean/land/day-night frame offscreen first.
+- The visible canvas no longer commits the completed frame with `globalCompositeOperation = "copy"`; it uses an opaque normal `source-over` draw so the front buffer is never intentionally cleared during the commit.
+- Removed the SVG Gaussian marker glow filter that could force a full filtered overlay recomposite during strategic state updates.
+
+## Globe presentation
+
+- Removed/disabled globe cloud graphics at the user's request.
+- The authoritative opaque Three.js globe, solar lighting, atmosphere, stars, bases, incidents, UFOs, aircraft, route/range overlays, and globe controls remain.
+
+## Preserved systems
+
+- Browser 1945 FPV/TPV ground/indoor-floor alignment is unchanged.
+- Browser 1845 FPV/TPV perspective backdrop depth occlusion is unchanged.
+- Dateline shortest-route/world-wrap behavior is unchanged.
+- Simulation AI continuation safeguards and tactical fire/smoke systems are unchanged.
+- Save format remains 4.
+
+## Validation
+
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Build Health includes a no-snap solar contract that injects a simulated long blocked frame and verifies the next visual step stays within one ideal frame plus the 2 ms catch-up allowance while leaving the rest as debt.
+- The contract also verifies the visible Terminator Map front-buffer uses source-over, the marker glow filter is not applied, strategic ticks use the post-paint timeout path, and the globe cloud contract is disabled.
+- Final verification still requires a live desktop browser because the reported flash depends on real browser scheduling/compositing.
+
+---
+
 # v0.26.08.18.2045 - Geoscape Frame-Debt Smooth Solar + Transition Tick
 
 ## Goal

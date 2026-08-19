@@ -2,9 +2,9 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-18
-Current handoff build: `v0.26.08.18.2045_GEOSCAPE_FRAME_DEBT_SMOOTH_SOLAR_AND_TRANSITION_TICK_PATCH`
+Current handoff build: `v0.26.08.18.2115_GEOSCAPE_NO_SNAP_SOLAR_AND_CLOUDLESS_GLOBE_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2045 addresses the still-reported once-per-running-tick Geoscape flicker after Browser 1945 proved that persistent opaque surfaces alone were not sufficient. The remaining failure mode is treated as main-thread tick starvation followed by an absolute-time solar catch-up jump: strategic simulation work can delay a render frame, then both the globe and Terminator Map previously advanced the Sun by the entire blocked wall-clock interval in one frame. Browser 2045 gives both surfaces a frame-debt solar integrator that consumes missed time in bounded slices, so a long strategic tick produces a brief smooth catch-up rather than a single flash/jump. Strategic ticks are also queued immediately after a browser paint and their React state updates run at transition priority when supported, reducing competition with the globe/map presentation frame. The expensive whole-globe SVG drop-shadow compositor effect and the per-tick Terminator Map subsolar text mutation are removed. Browser 1945 FPV/TPV ground alignment, Browser 1845 backdrop depth occlusion, Browser 1345 globe solar authority, dateline routing/world wrap, Simulation AI safeguards, tactical fire/smoke, and all earlier systems are preserved. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 2115 makes another targeted pass on the still-reported running-time Geoscape flash after Browser 2045 reduced it to an intermittent whole-map/globe event. The strategic tick is now scheduled as an actual post-paint task (`requestAnimationFrame` followed by `setTimeout(0)`) instead of running inside the pre-paint animation-frame callback. The shared solar presentation no longer repays a blocked frame in a large slice: it advances by at most one ideal 60 Hz frame plus only 2 ms of gentle catch-up debt, preventing the terminator from visibly jumping forward at the one-second strategic tick. The Terminator Map front buffer no longer uses canvas `copy` compositing, which could transiently invalidate/clear the visible surface; each completed opaque back-buffer frame is now painted with normal source-over replacement. The SVG marker glow filter is removed to reduce full-map compositor churn. Globe cloud graphics are intentionally disabled because they no longer fit the current clean Three.js globe presentation. Browser 1945 FPV/TPV ground alignment, Browser 1845 backdrop depth occlusion, Browser 1345 globe solar authority, dateline routing/world wrap, Simulation AI safeguards, tactical fire/smoke, and all earlier systems are preserved. Save format remains 4; native Godot remains at 0026.**
 
 
 Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1945 preserves Browser 0215's single-level building interaction/presentation improvements, Browser 1845's FPV/TPV backdrop depth correction, and now aligns the continuous FPV/TPV floor texture to the same world-space hex centers used by 3D Iso; it does not implement vertical levels.**
@@ -13,6 +13,24 @@ Roadmap-only planning update: **Future Stage 3 tactical work still includes mult
 
 
 
+
+
+## Browser 2115 — Geoscape No-Snap Solar Motion + Opaque Front-Buffer Commit + Cloudless Globe
+
+**Status:** Implemented browser patch; live desktop verification required because the remaining artifact is browser scheduling/compositor-sensitive.
+
+- Live testing of Browser 2045 showed improvement, but the Terminator Map could still intermittently flash as a whole surface and the globe could still flash less frequently while time was running. Both stopped flashing when paused.
+- The day/night boundary could also visibly jump forward at the one-second strategic tick, interrupting the desired continuous sliding motion.
+- Browser 2115 changes the shared solar integrator so a delayed animation frame never applies the entire blocked wall-clock interval—or a large 24 ms debt slice—in one presentation frame. A running surface advances by at most one ideal 60 Hz frame plus **2 ms** of catch-up debt. Remaining debt is repaid gradually over later frames. This intentionally prioritizes visually continuous motion over instantly snapping the presentation clock back to the strategic clock after a blocked tick.
+- The strategic one-second tick is now queued with `requestAnimationFrame()` and then executed from `setTimeout(0)`. This matters because an rAF callback runs **before** paint; Browser 2045's heavy strategic update was therefore still able to block the very paint it was intended to follow. Browser 2115 lets the already-prepared solar frame paint first, then performs the strategic state work.
+- The Terminator Map continues to build each solar frame in an offscreen opaque back buffer, but the visible front buffer no longer uses `globalCompositeOperation = "copy"`. The finished opaque frame is committed with normal `source-over` drawing, avoiding a possible transient clear/compositor invalidation of the whole visible map.
+- The SVG base-marker Gaussian glow filter is removed from the Terminator Map so strategic marker updates do not force an extra full-surface filtered compositor pass.
+- The corrected `geoscapeSubsolarPoint()` globe/map solar authority remains unchanged.
+- Globe clouds are removed/disabled. The cleaner Three.js Earth, land, atmosphere, lighting, stars, command markers, craft, routes, and range overlays remain.
+- Browser 1945 FPV/TPV ground alignment remains unchanged.
+- Save format remains 4.
+
+**Manual gate:** run the Terminator Map and Globe for at least 20–30 seconds at 1h, 6h, and 1d speeds. The terminator should move at a steady visual velocity through strategic ticks, without a forward snap. Watch especially for any whole-map flash. Confirm the globe has no cloud graphics and that base/UFO/aircraft overlays still update normally.
 
 
 ## Browser 2045 — Geoscape Frame-Debt Solar Smoothing + Transition-Scheduled Strategic Ticks
