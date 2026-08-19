@@ -1,288 +1,55 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.19.0315_ALIEN_BEACON_PHASE3_AND_AI_VICTORY_COMMIT_PATCH
+Build: v0.26.08.19.0945_SIMULATION_AI_CONTINUATION_SELF_HEAL_AND_SEARCH_STALL_RECOVERY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
 SUMMARY
 -------
-Completes the next planned Alien Field Beacon interface milestone and rolls in a live-reported Simulation AI victory-logic repair. AEGIS can research intact beacon hacking, recover a Pale Commander command badge for a faster override, and Simulation AI can use the same doctrine. Separately, streamed AI victory and the live tactical presentation now share reinforcement authority and terminal success hard-commits the final battlefield state, so killing the last hostile in a genuinely completed operation immediately enables victory music/dance instead of requiring an extra manual round.
+Fixes the remaining Simulation AI continuation failure reported in Sunken Relay / Oceania / Threat 2 / Glass Wraith. Streamed AI can no longer permanently dead-end at its old mission-global 72-round safety window, successful rounds reset their retry budget, missing continuation snapshots can be reconstructed, transient continuation failures automatically generate fresh search plans, repeated no-progress search states are broken automatically, and the manual Retry AI Continuation button now immediately starts a new continuation request rather than only toggling state.
 
-ALIEN FIELD BEACON PHASE 3 INTERFACE
+SIMULATION AI CONTINUATION SELF-HEAL
 ------------------------------------
-- Adds `Alien Beacon Interface Protocols` after `Command Signal Triangulation`.
-- Confirmed/revealed beacons can be disabled intact by a living adjacent soldier after the research is complete.
-- Normal interface hack: 16 TU.
-- Recover Pale Commander command badge from an adjacent fallen Pale Commander: 4 TU.
-- Badge local override: 8 TU.
-- An active shield still requires the soldier to enter the beacon field before using the local interface.
-- Intact disable collapses the shield, marks the beacon OFF, cancels pending beacon reinforcement transit, and records a distinct disabled-intact mission history result.
-- Simulation AI can recover a nearby badge and perform the same research-gated disable while assigned to the beacon objective.
+- One-round AI chunks remain bounded for browser responsiveness.
+- The old `AI streaming simulation reached its bounded interval` mission-global failure is removed. `streamSimulatedRounds` can continue beyond 72 while each individual resolver call remains capped to one round.
+- Unresolved batches that unexpectedly omit `tacticalChunkContinuation` attempt reconstruction from their completed tactical frame and the last stable strategic/tactical continuation authority.
+- Automatic recovery preserves battlefield state but clears stale AI-only hunt/search/patrol targets and movement-visited caches.
+- Up to three automatic replans are attempted before the UI asks the player to intervene.
+- A successful batch resets `streamRetryCount` to zero.
+- Repeated no-progress continuation signatures trigger a fresh deterministic sector-search target.
+- Manual Retry now directly queues `prefetchNextAiStreamBatch()` from a fresh recovery continuation.
 
-SIMULATION AI TERMINAL VICTORY FIX
-----------------------------------
-- Reproduced the authority mismatch implicated by the reported Sunken Relay behavior: streamed AI could stop on a terminal result while live tactical victory presentation was still derived independently.
-- `tacticalAiMissionResolution()` now consumes the same alien-reinforcement state as the live `tacticalMissionTerminalState()` authority.
-- A commander missed-check-in countdown that has not actually called a force does not block a secured mission.
-- An already-called inbound reinforcement force still prevents premature victory.
-- Unfinished mandatory VIP/rescue or confirmed-beacon objectives still prevent victory.
-- Adds `tacticalAiPlaybackVictoryPresentationState()` as the bridge between a genuinely terminal streamed `Mission success` result and live tactical presentation.
-- At terminal AI victory the final playback frame is committed to live units/covers with deaths finalized immediately (`deferDeaths:false`).
-- Victory dance and Operation Vindicator music therefore activate without requiring Take Back Control + one extra empty round.
-- The final-contact soldier callout (`that's the last of them`) is fired once for Simulation AI victory, matching manual victory behavior.
-- The final battlefield remains available for review; the player still controls when to continue the mission result / return to base.
-
-PRESERVED SYSTEMS
------------------
-- Browser 0215 fixed-radius Globe operational-overlay alignment and no-zoom doctrine are unchanged.
-- Browser 0045 stable Geoscape React component identity remains intact; do not regress it.
-- Globe/Terminator no-flicker behavior, cloudless Globe, dateline shortest-route/world-wrap, FPV/TPV ground alignment, backdrop depth occlusion, fire/smoke, hazard-aware pathing, and vehicle-footprint pathing are preserved.
-- Save format remains 4.
-
-REGRESSION COVERAGE
--------------------
-- Adds `TACTICAL_AI_TERMINAL_VICTORY_COMMIT_PATCH`.
-- Adds `tacticalAiTerminalVictoryCommitContractTest()` using a Sunken Relay-style optional-rescue setup.
-- Contract verifies all hostiles dead + no actually-called reinforcement = terminal victory.
-- Contract verifies already-called inbound reinforcement = mission remains live.
-- Contract verifies terminal AI playback enables victory presentation and final-frame hard commit.
-- Existing Alien Beacon Phase 3 hack/badge contract passes.
-- Browser self-tests report no failures in the isolated harness.
-- All six non-empty embedded JavaScript blocks pass `node --check`.
-
-MANUAL TEST GATES
------------------
-1. Launch the attached/current campaign and replay Sunken Relay (Oceania, Threat 2, Glass Wraith) under Simulation AI.
-2. Kill the final hostile with all required objectives satisfied. Confirm victory music begins and surviving soldiers immediately enter their victory dance in the current view.
-3. Confirm AI does not ask for another ordinary tactical round and the player does not need to Take Back Control to trigger victory.
-4. Confirm the final battlefield remains visible until the player chooses to continue the mission result.
-5. In a test where reinforcements have actually been called and are inbound, confirm the mission remains active until that force/state is resolved.
-6. Research Alien Beacon Interface Protocols; test a normal 16-TU hack and a Pale Commander badge 8-TU override from inside a shield field.
-
-
-PREVIOUS PATCH NOTES
-====================
-
-PROJECT AEGIS / ALIEN RESPONSE COMMAND
-PATCH NOTES
-
-Build: v0.26.08.19.0215_GEOSCAPE_FIXED_RADIUS_OVERLAY_AND_GLOBE_ZOOM_REMOVAL_PATCH
-Save format: 4 (unchanged)
-Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
-
-SUMMARY
--------
-Removes Globe zoom controls and fixes the remaining Operational Overlay detachment by returning the player-facing Geoscape Globe to one authoritative screen-space Earth radius. Bases, incidents, UFOs, alien bases, aircraft, range rings, ferry links, placement markers, globe hit-testing and the Three.js Earth now use the same fixed scale. Earth-bound overlays are also clipped to the visible globe disc so horizon markers cannot appear suspended beyond the planet silhouette.
-
-FIXED-RADIUS GLOBE SURFACE
---------------------------
-- Adds `GEOSCAPE_GLOBE_SURFACE_RADIUS_PX = 150` as the player-facing Globe surface authority.
-- Operational overlay projection now uses that fixed radius instead of `150 * selectedZoom`.
-- Globe interaction/hit testing uses the same fixed radius.
-- Travel/autofocus no longer changes the camera scale.
-- The legacy `GLOBE_ZOOM_LEVELS` array is reduced to `[1]` for compatibility with older helpers and persisted camera records.
-- Older saved zoom indices are ignored by the active Globe.
-
-GLOBE ZOOM REMOVAL
-------------------
-- Removes the Globe `Zoom` label and Zoom 1–4 buttons.
-- Mouse-wheel Globe zoom is disabled.
-- Base-placement help now tells the player to drag the globe for precise positioning.
-- Instructions no longer describe multiple Globe detail/zoom levels.
-
-OPERATIONAL OVERLAY SURFACE ATTACHMENT
---------------------------------------
-- Bases, incidents, detected UFOs, alien bases, Skyrangers, interceptors, range rings, ferry links and the placement crosshair all share the visible Earth radius.
-- The persistent command canvas now clips Earth-bound graphics to the visible globe disc.
-- Markers approaching the limb are therefore partially occluded by the planet silhouette instead of drawing their whole icon outside the Earth and looking like they are floating above it.
-- Background stars remain outside the Earth clip.
-
-PRESERVED ARCHITECTURE
-----------------------
-- Browser 0045's live-confirmed stable React component identity/flicker fix is unchanged.
-- Globe remains cloudless.
-- Globe/Terminator solar behavior is unchanged.
-- Terminator Map is unchanged.
-- Dateline shortest-route and world-wrap aircraft behavior is unchanged.
-- Recent FPV/TPV ground and skyline fixes are unchanged.
-- Save format remains 4.
-
-REGRESSION COVERAGE
--------------------
-- Adds `GEOSCAPE_FIXED_RADIUS_OVERLAY_SURFACE_PATCH`.
-- Adds `GEOSCAPE_GLOBE_ZOOM_CONTROLS_REMOVED_PATCH`.
-- Build Health verifies the active Globe component starts at zoom index 0, uses the fixed radius for interaction and projection, does not render the old `GLOBE_ZOOM_LEVELS.map(...)` control block, leaves wheel zoom inert, and clips the command canvas to the globe disc.
-- The older 0115 parity contract now treats the one-scale fixed-radius model as the current valid surface-parity doctrine.
-- All six non-empty embedded JavaScript blocks pass `node --check`.
-
-MANUAL TEST GATES
------------------
-1. Launch local `index.html` and confirm the start screen loads without a Build Health ReferenceError.
-2. Open Geoscape Globe and confirm there are no Zoom 1–4 controls.
-3. Rotate a base, incident or UFO near the visible globe edge. Its center should remain attached to the Earth and the icon should be naturally clipped at the limb.
-4. Check aircraft, range rings and ferry links near the limb for the same behavior.
-5. Scroll the mouse wheel over the Globe and confirm the Earth scale does not change.
-6. Let Geoscape time run and confirm Browser 0045's no-flicker behavior remains intact.
-
-
-PREVIOUS PATCH NOTES
-====================
-
-PROJECT AEGIS / ALIEN RESPONSE COMMAND
-PATCH NOTES
-
-Build: v0.26.08.19.0145_GLOBE_ZOOM_PARITY_SELF_TEST_SCOPE_HOTFIX_PATCH
-Save format: 4 (unchanged)
-Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
-
-SUMMARY
--------
-Startup hotfix for Browser 0115. The globe zoom-parity gameplay code was not the source of the crash; its new Build Health contract directly referenced nested Geoscape helper functions from outside their lexical scope, causing `ReferenceError: FixedStepGeoscapeGlobeSurface is not defined` during launch. Browser 0145 makes the contract scope-safe without changing the actual 0115 globe behavior.
-
-STARTUP SELF-TEST FIX
----------------------
-- `FixedStepGeoscapeGlobeSurface` and `geoscapeFixedStepGlobePropsEqual` are nested inside `AlienResponseCommand`.
-- The Browser 0115 contract was declared outside that scope and executed `String(FixedStepGeoscapeGlobeSurface)` / `String(geoscapeFixedStepGlobePropsEqual)`.
-- That source-inspection test could therefore crash the application before the start screen rendered.
-- Browser 0145 now inspects `String(AlienResponseCommand)` for the same nested implementation evidence rather than evaluating inaccessible identifiers.
-- Adds `GEOSCAPE_GLOBE_ZOOM_PARITY_SELF_TEST_SCOPE_HOTFIX_PATCH`.
+PATHING PERFORMANCE HARDENING
+-----------------------------
+- Hazard-aware long-route A* now uses a binary priority queue instead of repeated linear scans of the open list.
+- Search depth is bounded to the tactical grid scale, reducing pathological planning stalls during wide-area no-contact searches.
+- Existing fire/smoke hazard costs, vehicle footprints, cover blockers, TU limits, and formation movement authority remain unchanged.
 
 PRESERVED BEHAVIOR
 ------------------
-- Browser 0115 globe/operational-overlay zoom parity is unchanged.
-- Browser 0045 stable Geoscape component lifecycle/flicker fix is unchanged.
-- Terminator Map, solar rendering, aircraft routing/world wrap, tactical systems and save format are unchanged.
-
-REGRESSION COVERAGE
--------------------
-- Build Health still verifies that the fixed-step globe consumes `zoomScale`.
-- It still verifies camera zoom/projection updates, memo-comparator zoom handling, and the `cameraRadius / 150` handoff.
-- The contract no longer crosses the nested component's lexical scope.
-- All six non-empty embedded JavaScript blocks pass `node --check`.
-
-MANUAL TEST GATES
------------------
-1. Launch local `index.html` and confirm the start screen appears without a `FixedStepGeoscapeGlobeSurface` ReferenceError.
-2. Open Geoscape Globe.
-3. Cycle all four zoom levels and verify bases/incidents/UFOs/aircraft remain attached to the Earth surface.
-4. Confirm the Browser 0045 no-flicker behavior remains intact.
-
-
-PREVIOUS PATCH NOTES
-====================
-
-PROJECT AEGIS / ALIEN RESPONSE COMMAND
-PATCH NOTES
-
-Build: v0.26.08.19.0115_GEOSCAPE_GLOBE_OVERLAY_SURFACE_ZOOM_PARITY_PATCH
-Save format: 4 (unchanged)
-Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
-
-SUMMARY
--------
-Fixes the Operational Overlay layer floating beyond the visible 3D Geoscape globe. Browser 0045 successfully stopped the strategic-tick flicker, but it exposed a separate projection mismatch: command markers and range/ferry overlays honored the selected Globe zoom while the fixed-step Three.js Earth stayed at a constant apparent radius. Browser 0115 makes the WebGL Earth consume the same zoom scale as the overlay projection.
-
-GLOBE / OVERLAY SURFACE PARITY
-------------------------------
-- Operational overlays use a screen-space projection radius of `150 * GLOBE_ZOOM_LEVELS[zoomIndex]`.
-- The fixed-step Three.js Earth previously used a constant orthographic projection whose apparent radius was 150 pixels.
-- Since `GLOBE_ZOOM_LEVELS` begins at 1.25, even Zoom 1 could put bases, incidents, UFOs and aircraft roughly 25% farther from globe center than the visible surface. Higher zoom settings made the separation larger.
-- Browser 0115 passes `cameraRadius / 150` into the persistent Three.js globe as `zoomScale`.
-- `OrthographicCamera.zoom` now uses that scale, so the WebGL Earth and the command overlay share the same visible radius.
-- Changing Globe zoom updates the existing camera projection matrix in place rather than recreating the globe.
-- The fixed-step globe memo comparator now includes zoom scale so player zoom changes propagate correctly.
-
-PRESERVED ARCHITECTURE
-----------------------
-- Browser 0045 stable React component identity remains unchanged.
-- The live-confirmed strategic-tick flicker fix is preserved.
-- Globe remains cloudless.
-- Terminator Map behavior is unchanged.
-- Solar parity, dateline world wrapping, shortest-route aircraft pathing, range calculations and ferry routing are unchanged.
+- Browser 0315 terminal-victory hard commit remains active: a genuine AI victory still commits the final battlefield, plays victory presentation, and does not require an extra manual round.
+- Alien Beacon Phase 3 hacking / Pale Commander badge behavior remains active.
+- Browser 0045 stable Geoscape component lifecycle and Browser 0215 fixed-radius Globe overlays remain untouched.
 - Save format remains 4.
 
-REGRESSION COVERAGE
--------------------
-- Build Health verifies that the fixed-step Three.js globe consumes a zoom scale.
-- Build Health verifies the orthographic camera applies that scale and updates its projection matrix.
-- Build Health verifies `EarthBaseGlobe` passes `cameraRadius / 150` to the surface renderer.
-- Build Health verifies the memo comparator includes zoom scale.
+VALIDATION
+----------
 - All six non-empty embedded JavaScript blocks pass `node --check`.
+- Browser self-test chain: 11 tests, 0 failures.
+- A harness based on the supplied Sunken Relay / Oceania / Glass Wraith campaign state successfully requested a streamed batch with `simulatedRounds: 72`; it returned `simulatedRounds: 73` plus a valid continuation instead of throwing the former bounded-interval error.
+- A deterministic streamed Sunken Relay harness completed through ten one-round batches and reached terminal victory, including the reinforcement cycle.
 
 MANUAL TEST GATES
 -----------------
-1. Launch and open the Geoscape Globe.
-2. Check all four Zoom buttons.
-3. Confirm bases, incidents, UFOs, Skyrangers and interceptors remain attached to the visible Earth surface.
-4. Confirm range rings and ferry routes scale with the same globe surface rather than floating beyond it.
-5. Rotate the globe and inspect markers near the limb.
-6. Confirm the Browser 0045 strategic-tick flicker remains absent in both Globe and Terminator Map views.
+1. Replay Sunken Relay / Oceania / Threat 2 / Glass Wraith under Simulation AI for an extended run.
+2. Confirm streamed rounds keep generating rather than entering a permanent Retry AI Continuation state.
+3. If a transient planning error occurs, confirm the AI logs an automatic replan and continues without player intervention.
+4. If Retry AI Continuation is ever shown, press it and confirm a new AI planning attempt begins immediately.
+5. Confirm final victory still triggers the Browser 0315 victory music/dance flow with no extra player round.
 
-
-PREVIOUS PATCH NOTES
-====================
-
-PROJECT AEGIS / ALIEN RESPONSE COMMAND
-PATCH NOTES
-
-Build: v0.26.08.19.0045_GEOSCAPE_STABLE_COMPONENT_LIFECYCLE_ISOLATION_PATCH
-Save format: 4 (unchanged)
-Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
-
-SUMMARY
--------
-Targets the still-unresolved once-per-strategic-tick Globe/Terminator flash at the React component-lifecycle level. The Geoscape renderer has already survived multiple solar-clock, canvas, WebGL, compositor, cloud, and overlay rewrites while the flash remained correlated with the parent strategic tick. Browser 0045 stabilizes the nested `EarthBaseGlobe` React component identity so a parent rerender cannot silently turn the entire Globe/Terminator subtree into a new component type.
-
-STABLE GEOSCAPE ROOT IDENTITY
-------------------------------
-- `EarthBaseGlobe` was defined inside `AlienResponseCommand`. Every rerender of the parent created a fresh function object.
-- Browser 0045 stores the globe/map implementation in `EarthBaseGlobeStableRef` and reuses the same function object for the lifetime of `AlienResponseCommand`.
-- Normal strategic clock ticks may rerender the parent and update props, but React should no longer interpret the Geoscape root as a newly defined component and unmount/remount its subtree.
-- This keeps the existing persistent Terminator surface, globe WebGL surface, and command canvases mounted across ordinary ticks.
-
-DYNAMIC CLOSURE VALUES MADE EXPLICIT
-------------------------------------
-- The previous nested component directly read `panic` and `regionalFundingBonusPct` from the parent closure.
-- Because the component implementation is now captured once, those two changing values are explicitly passed as props at both EarthBaseGlobe call sites.
-- Region Panic/Funding readouts therefore continue to use current campaign state rather than first-render values.
-
-LIFECYCLE DIAGNOSTICS
----------------------
-- Adds `window.__AEGIS_GEOSCAPE_LIFECYCLE__` for desktop diagnosis.
-- Records mount/unmount counts for the Earth root, Terminator Map root, Globe command overlay, and Globe solar surface.
-- Records actual WebGL resize events plus `webglcontextlost` and `webglcontextrestored`.
-- The diagnostic event history is bounded to the most recent 120 events.
-- If flicker survives this patch, these counters should distinguish React remounts from WebGL context loss/resizing or a higher-level browser repaint issue.
-
-UNCHANGED SYSTEMS
------------------
-- Existing solar math and Globe/Terminator parity are unchanged.
-- Globe remains cloudless.
-- Persistent canvas command overlays remain active.
-- Dateline world wrapping and shortest-route aircraft pathing remain unchanged.
-- Recent tactical AI, fire/smoke, breach, backdrop-depth, and FPV/TPV ground-alignment fixes remain unchanged.
-- Save format remains 4.
-
-REGRESSION COVERAGE
--------------------
-- Build Health requires the stable `EarthBaseGlobeStableRef` path.
-- Build Health requires explicit Panic/Funding props so lifecycle pinning cannot freeze those values.
-- Build Health confirms the map and globe command-overlay roots carry lifecycle instrumentation.
-- All six non-empty embedded JavaScript blocks pass `node --check`.
-
-MANUAL TEST GATES
------------------
-1. Launch from local `file://` and confirm startup is clean.
-2. Run the Terminator Map for 30-60 seconds at 1d speed, then repeat on the Globe.
-3. Confirm ordinary strategic ticks no longer flash the Earth surface or cause a visible one-frame remount.
-4. In the browser console inspect `window.__AEGIS_GEOSCAPE_LIFECYCLE__`; ordinary ticks should not continuously increase Earth/map/globe mount and unmount counts.
-5. Confirm Panic/Funding labels still update after strategic-state changes.
-6. Confirm globe drag/zoom, incident selection, aircraft markers, ranges, ferry links, day/night motion, and map world wrapping still operate normally.
-
-
-PREVIOUS PATCH NOTES
-====================
+PREVIOUS PATCH HISTORY
+======================
 
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES

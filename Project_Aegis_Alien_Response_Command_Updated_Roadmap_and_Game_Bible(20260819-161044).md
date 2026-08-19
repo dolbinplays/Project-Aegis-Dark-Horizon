@@ -2,13 +2,11 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.0945_SIMULATION_AI_CONTINUATION_SELF_HEAL_AND_SEARCH_STALL_RECOVERY_PATCH`
+Current handoff build: `v0.26.08.19.0315_ALIEN_BEACON_PHASE3_AND_AI_VICTORY_COMMIT_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0945 hardens streamed Simulation AI after another live Sunken Relay / Oceania / Threat 2 / Glass Wraith run stalled and exposed a Retry AI Continuation button that could not recover. The stream no longer has a mission-global 72-round dead end; every generated round remains individually bounded while long operations can continue beyond that diagnostic window. Missing continuation snapshots are reconstructed from the completed tactical frame, transient continuation/planning failures receive up to three automatic fresh-search replans, successful rounds reset the retry budget, manual Retry AI Continuation now immediately starts a new continuation request instead of merely toggling state and waiting for an effect, and repeated no-progress search rounds automatically clear stale hunt/search/patrol targets while preserving the battlefield. Hazard-aware long-route A* also uses a priority queue and a bounded grid-scaled search depth to reduce pathological AI planning stalls on large maps. Browser 0315's terminal-victory hard commit and Alien Beacon Phase 3 systems remain intact, as do Browser 0215's fixed-radius Globe overlays and Browser 0045's live-confirmed stable Geoscape lifecycle. Save format remains 4. Native Godot remains at 0026.**
+Current patch status: **Browser 0315 advances the Stage 3 Alien Field Beacon roadmap with research-gated intact beacon hacking and Pale Commander command-badge recovery/override, and also repairs Simulation AI terminal-victory authority after live Sunken Relay testing exposed a split between streamed AI mission resolution and the live tactical presentation state. AI and live tactical resolution now consume the same reinforcement state; a genuinely terminal streamed victory hard-commits its final battlefield frame, immediately enables the existing victory dance/music presentation, and can play the final-contact soldier callout without requiring the player to take control and play an extra empty round. A merely scheduled commander missed-check-in that has not actually called reinforcements does not block a secured mission, while already-called inbound reinforcements and unfinished mandatory beacon/VIP objectives still correctly keep the operation open. Browser 0215's fixed-radius Globe overlays and Browser 0045's live-confirmed stable Geoscape component lifecycle remain preserved. Save format remains 4. Native Godot remains at 0026.**
 
 Roadmap-only planning update (2026-08-19): **Smooth Geoscape craft flight animation is now explicitly roadmapped so Skyrangers, interceptors, UFOs, and future strategic craft interpolate continuously across both Globe and Terminator Map at a speed matching the selected time compression, while authoritative route/fuel/ETA logic remains unchanged. Dateline/world-wrap travel, Globe surface attachment, stable component lifecycle, and no-camera-recenter doctrine are explicit requirements. No code or build-number change is part of this documentation update.**
-
-Roadmap-only planning update (2026-08-19): **Active alien missions should expose the same `Menu / Save` access from both the minimized command header and the tactical screen's left-hand control bar. These entry points should open the existing shared Menu/Save flow rather than create a separate tactical save system, remain available without expanding the header or leaving the mission view, preserve active tactical/Simulation-AI state, and avoid obstructing soldier, fire-team, inventory, or camera controls. No code or build-number change is part of this documentation update.**
 
 
 Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1945 preserves Browser 0215's single-level building interaction/presentation improvements, Browser 1845's FPV/TPV backdrop depth correction, and now aligns the continuous FPV/TPV floor texture to the same world-space hex centers used by 3D Iso; it does not implement vertical levels.**
@@ -18,45 +16,6 @@ Roadmap-only planning update: **Future Stage 3 tactical work still includes mult
 
 
 
-
-
-## Browser 0945 — Simulation AI Continuation Self-Heal + Search-Stall Recovery
-
-**Status:** Implemented; live replay of the reported Sunken Relay is the primary manual gate.
-
-### Why this patch exists
-- Live testing of **Sunken Relay / Oceania / Threat 2 / Glass Wraith** showed that Simulation AI could still reach a streamed-round boundary, mark the stream interrupted, expose **Retry AI Continuation**, and then fail to resume. The player had to take back control to finish the mission.
-- The previous streamed-AI implementation had two structural weaknesses: `streamSimulatedRounds` was treated as a mission-global **72-round cap**, so a long operation could permanently enter the same bounded-interval error on every retry; and a retry reused the same stale continuation/search state, so deterministic planning failures could simply repeat forever.
-
-### Stream continuation authority repair
-- The one-round stream itself remains bounded (`maxRoundsOverride: 1`), but **the mission as a whole no longer expires merely because 72 streamed rounds have elapsed**. A long search/rescue/reinforcement operation can continue as long as the tactical state remains legitimately unresolved.
-- `resolveMissionAiStreamBatchAsync()` now always asks `resolveMission()` for one simulation chunk. Terminal success/failure can still resolve inside that chunk; unresolved chunks return the next tactical continuation.
-- If an unresolved batch unexpectedly fails to return its normal continuation snapshot, the streamer attempts to reconstruct one from the completed final tactical frame plus the last stable Skyranger/reinforcement/fire-mode state instead of immediately presenting a dead-end Retry button.
-- `streamRetryCount` resets after every successful streamed round. One transient failure earlier in a mission therefore cannot silently consume the retry budget for every later round.
-
-### Automatic self-healing replans
-- A continuation exception now gets up to **three bounded automatic recovery attempts** before command intervention is requested.
-- A recovery continuation preserves units, HP, ammunition, cover destruction, fire/smoke, explored cells, Skyranger geometry, reinforcement state, and round authority, but clears stale AI-only hunt/search/patrol targets and movement-visited caches.
-- A per-unit recovery epoch changes deterministic no-contact search target selection without skipping a tactical round or fabricating movement.
-- If consecutive streamed continuations have the same meaningful battlefield-progress signature, Simulation AI automatically issues a fresh sector-search plan rather than endlessly replaying a no-progress search state.
-- **Retry AI Continuation** now directly schedules a new streamed batch from this fresh recovery continuation. It no longer only changes React state and hopes the ordinary prefetch effect notices later.
-
-### Large-map path-planning performance
-- Hazard-aware long-route A* no longer scans the entire open list linearly for every expansion. It now uses a bounded binary priority queue.
-- Search depth is capped to a grid-scaled limit sufficient to cross the current tactical map instead of accepting accidental values such as the candidate-count constant as an effectively unbounded movement depth.
-- This specifically reduces the chance that hidden-contact Alien Hunt rounds monopolize the main thread while multiple fire teams independently search a large map.
-
-### Regression coverage
-- Adds `TACTICAL_AI_STREAM_SELF_HEAL_AND_SEARCH_STALL_RECOVERY_PATCH` and `TACTICAL_HAZARD_PATH_PRIORITY_QUEUE_PATCH`.
-- Build Health verifies that a recovered continuation preserves the authoritative round while clearing stale search state and producing a different deterministic search target.
-- Build Health rejects the old `AI streaming simulation reached its bounded interval` mission-global dead end.
-- Build Health requires automatic replanning, direct Retry rescheduling, progress-signature stall detection, and the priority-queue pathfinder.
-- Browser harness verification against the supplied Sunken Relay campaign mission confirmed that a stream invoked with `simulatedRounds: 72` advances to round-count 73 with a valid continuation instead of throwing.
-- A deterministic full streamed Sunken Relay harness completed successfully through ten one-round batches, including reinforcement arrival and terminal victory.
-- All six non-empty embedded JavaScript blocks pass `node --check`; the browser self-test chain reports no failed contracts.
-- Save format remains **4**.
-
-**Manual gate:** replay the same Sunken Relay with Simulation AI. It should continue generating rounds without exposing a permanent Retry state. If a transient AI planning exception occurs, the game should first replan automatically; if the manual Retry button ever appears, pressing it should visibly begin a fresh continuation attempt. The player should not have to take control merely to get an otherwise valid Alien Hunt moving again.
 
 
 ## Browser 0315 — Alien Beacon Phase 3 Interface + Simulation AI Terminal Victory Commit
@@ -7210,18 +7169,6 @@ Still planned:
 - More unified visual styling.
 - Improved tactical screen space usage.
 - Better music selector UI.
-
-### Roadmap Addition — Active Mission Menu / Save Access
-**Status:** Planned UI/accessibility refinement.
-
-- Add a persistent **Menu / Save** button to the **minimized command header** so collapsing the header never removes access to campaign/menu/save controls.
-- Add the same **Menu / Save** action to the **left-hand control bar of an active alien tactical mission**, including manual, Hybrid, and Simulation-AI-controlled missions.
-- Both entry points should open the existing shared Menu/Save interface and use the same save/load/menu authority as the rest of the game; do not create a second mission-specific save implementation.
-- Opening Menu / Save from an active mission must preserve the current tactical battlefield, selected unit/view, AI ownership/playback state, victory-review state, and other resumable mission state already supported by the tactical continuity/save architecture.
-- The control should remain accessible without expanding the header, changing tactical camera mode, or leaving the active mission screen first.
-- Place the left-bar button where it does not compete with soldier selection, fire-team controls, inventory/hand actions, camera controls, or mission-critical tactical buttons. It should read as a global command action rather than a unit action.
-- If a particular tactical transition is temporarily unsafe to save, keep Menu access available and communicate the specific save restriction inside the shared Menu/Save flow instead of hiding the button.
-- Keep desktop and compact layouts consistent, preserve keyboard/focus visibility, and ensure the two buttons invoke one shared handler so their behavior cannot drift apart over time.
 
 ---
 
