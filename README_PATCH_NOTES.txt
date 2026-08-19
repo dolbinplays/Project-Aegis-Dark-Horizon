@@ -1,6 +1,70 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.18.1945_GEOSCAPE_PERSISTENT_SOLAR_SURFACE_AND_PERSPECTIVE_GROUND_ALIGNMENT_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Moves the actual Geoscape day/night surfaces out of ordinary once-per-second React tick repaint authority and fixes the FPV/TPV continuous-ground world/UV mismatch that shifted building interior floors south of their structures and made units look off-center relative to the visible hex artwork.
+
+GEOSCAPE TICK FLICKER - PERSISTENT SURFACE AUTHORITY
+-----------------------------------------------------
+- The globe WebGL renderer is now opaque (`alpha:false`) with an opaque dark clear buffer. It no longer depends on transparent compositor blending behind the Earth surface.
+- The Three.js Earth is now a memoized **surface-only** component. At an unchanged running time rate, ordinary Geoscape minute/date ticks do not reconcile the WebGL Earth surface.
+- The globe's own `requestAnimationFrame` solar loop continues moving daylight/night smoothly. Pause/resume, speed changes, occupation state, and camera rotation/focus still update intentionally.
+- Dynamic bases, incidents, UFOs, aircraft, range/ferry overlays, and other command graphics remain in the SVG overlay and can update without rebuilding the Earth surface.
+
+TERMINATOR MAP - OPAQUE CANVAS AUTHORITY
+-----------------------------------------
+- Ocean, land, coordinate grid, twilight, and night shading now render together in one persistent opaque canvas.
+- A static base canvas is built once from the ocean/grid/land layers.
+- Night/twilight shading uses a reusable shade canvas.
+- A back buffer composites the static world plus current shade before the completed opaque frame is copied to the visible map surface.
+- The React SVG above it now carries only markers, aircraft, routes, rings, selection, and interaction—not the visible world surface.
+- The solar canvas is memoized across normal same-speed strategic ticks, preventing an ordinary React clock commit from clearing/repainting the visible night layer.
+- Globe and map continue to share `geoscapeSubsolarPoint()` and the same selected-time-speed behavior.
+
+FPV / TPV GROUND HEX + BUILDING FLOOR ALIGNMENT
+------------------------------------------------
+- Corrected the vertical texture orientation of the perspective continuous ground.
+- The canvas was authored in tactical world coordinates, but Three.js `CanvasTexture` retained its default vertical flip while the texture was placed on a plane rotated into the X/Z ground plane. This reversed the apparent tactical Z relationship in FPV/TPV.
+- Both FPV and TPV continuous-ground textures now use `flipY=false`.
+- Added an explicit `tacticalPerspectiveGroundCanvasPoint()` world-to-canvas mapping.
+- Perspective hex paint scale changed from 1.015 to exact 1.0 world-space scale.
+- Soldiers, vehicles, buildings, and building-specific interior floor patterns should therefore align to the same hex centers seen in 3D Iso.
+- TPV retains its softened texture treatment; the correction changes alignment, not the intended TPV visual softness.
+
+PRESERVED
+---------
+- Browser 1845 FPV/TPV backdrop depth occlusion is preserved.
+- Browser 1345 globe lighting/parity is preserved.
+- Dateline shortest-route/world-wrap behavior is preserved.
+- AI-stream safeguards, fire/smoke, tactical pathing, lighting, LOS, and save format are unchanged.
+
+REGRESSION COVERAGE
+-------------------
+- Build Health checks opaque WebGL globe surface ownership and same-rate surface memoization.
+- Build Health checks the opaque Terminator Map base/shade/back-buffer path and canvas surface authority.
+- Build Health checks exact perspective-ground mapping, exact hex scale, and `CanvasTexture.flipY=false`.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+
+MANUAL TEST GATES
+-----------------
+1. Run the globe at several Geoscape speeds for 15+ seconds and confirm no one-second tick flash.
+2. Repeat on the Terminator Map and confirm the opaque day/night surface slides continuously while markers/routes can still update.
+3. Pause and confirm solar movement freezes.
+4. Enter FPV and stand a soldier on a clearly readable ground hex; the soldier should sit at its center.
+5. Enter a building in FPV/TPV and confirm interior floor hex/pattern placement remains directly beneath the building footprint instead of being shifted south.
+6. Compare the same building in 3D Iso; FPV/TPV and Iso should agree on the floor's world position.
+
+PREVIOUS PATCH HISTORY
+======================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.18.1845_GEOSCAPE_TICK_RENDER_DECOUPLE_AND_PERSPECTIVE_DEPTH_OCCLUSION_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

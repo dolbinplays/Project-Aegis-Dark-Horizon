@@ -2,17 +2,67 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-18
-Current handoff build: `v0.26.08.18.1845_GEOSCAPE_TICK_RENDER_DECOUPLE_AND_PERSPECTIVE_DEPTH_OCCLUSION_PATCH`
+Current handoff build: `v0.26.08.18.1945_GEOSCAPE_PERSISTENT_SOLAR_SURFACE_AND_PERSPECTIVE_GROUND_ALIGNMENT_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1845 attacks the remaining once-per-running-tick Geoscape flash at the rendering layer as well as the clock layer. Live testing after Browser 1645 showed the globe and Terminator Map still flashed in sync with strategic ticks but remained stable while paused, indicating that ordinary React/layout/repaint work could still invalidate the visual surfaces even when the solar math itself no longer jumped. Same-rate running clock updates are now forbidden from re-anchoring even if multiple authoritative ticks are batched; the flat-map terminator draws into an offscreen back buffer and copies the completed frame atomically; the globe WebGL context preserves its last frame, avoids forced CSS GPU transforms, and only resizes/clears when its rounded pixel size actually changes. Browser 1845 also fixes the FPV/TPV mission backdrop ghosting shown in live screenshots: distant city/forest/mountain backdrop meshes and stars now depth-test against buildings, vehicles, units, and other tactical geometry instead of rendering through them. Browser 1345 globe solar authority, dateline world-wrap/pathing, Simulation AI safeguards, tactical lighting, and all earlier systems are preserved. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 1945 attacks the still-live once-per-tick Geoscape flicker by removing the solar surfaces themselves from ordinary React tick repaint authority. The Three.js Earth now renders into an opaque WebGL surface and is memoized as a surface-only component, so normal one-second strategic clock updates do not reconcile or rebuild the globe surface; SVG remains responsible for interactive markers/overlays. The flat Terminator Map now owns ocean, land, grid, twilight, and night shading inside one persistent opaque canvas with offscreen base/shade/back buffers; the React SVG above it contains only interactive overlays, so normal tick commits cannot momentarily expose an unshaded map. Browser 1945 also fixes the FPV/TPV continuous-ground world/texture mismatch reported in live missions: CanvasTexture vertical orientation now matches the rotated Three.js ground plane, the perspective hexes use exact world-space hex scale rather than the former 1.5% enlargement, and building interior floor patterns therefore remain centered under the same buildings/units that already aligned correctly in 3D Iso. Browser 1845 backdrop depth occlusion, Browser 1345 globe solar authority, dateline routing/world wrap, Simulation AI safeguards, tactical fire/smoke, and all earlier systems are preserved. Save format remains 4; native Godot remains at 0026.**
 
 
-Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1845 preserves Browser 0215's single-level building interaction/presentation improvements and corrects their FPV/TPV backdrop depth behavior, but does not implement vertical levels.**
+Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1945 preserves Browser 0215's single-level building interaction/presentation improvements, Browser 1845's FPV/TPV backdrop depth correction, and now aligns the continuous FPV/TPV floor texture to the same world-space hex centers used by 3D Iso; it does not implement vertical levels.**
 
 
 
 
 
+
+# v0.26.08.18.1945 - Persistent Geoscape Solar Surfaces + FPV/TPV Ground Alignment
+
+## Goal
+
+Eliminate the still-reported once-per-running-tick flicker by making the actual globe/map solar surfaces independent of ordinary React Geoscape commits, and correct the FPV/TPV continuous-ground texture so hex centers and building interior floors occupy the same world positions as soldiers, buildings, vehicles, and the already-correct 3D Iso board.
+
+## Geoscape solar-surface architecture
+
+- Live testing through Browsers 1515, 1645, and 1845 established that the solar math was continuous and the globe/map agreed, yet a visible flash could still occur at the exact strategic-tick cadence and disappeared when paused.
+- Browser 1945 therefore treats the remaining problem as **surface ownership**, not another clock-interpolation correction.
+- The Three.js Earth renderer is now opaque (`alpha:false`) with an opaque dark clear color. The globe can no longer briefly expose a transparent compositor layer behind the Earth during surrounding UI work.
+- The Three.js Earth is rendered as a **surface-only memoized component**. Ordinary minute/date progression at an unchanged time-compression rate does not reconcile that React subtree; its own `requestAnimationFrame` loop continues moving the Sun smoothly.
+- Dynamic bases, incidents, UFOs, Skyrangers, interceptors, route lines, range overlays, clouds, and player interaction remain in the existing SVG command layer, so they can update without forcing the WebGL Earth surface through the same React paint path.
+- Speed changes, pause/resume, globe rotation/focus, and occupation-state changes still intentionally update the globe surface.
+
+## Terminator Map persistent opaque surface
+
+- Ocean, landmasses, latitude/longitude grid, and the live day/night/twilight shading now belong to **one persistent opaque canvas**.
+- The map pre-renders its static ocean/grid/land layer once, keeps a separate reusable night-shade image, composites both into an offscreen back buffer, and copies the finished opaque frame to the visible surface.
+- The React SVG above the canvas now owns only interactive/dynamic overlays such as bases, incidents, UFOs, aircraft, range rings, ferry routes, and selection controls.
+- The solar canvas is memoized against ordinary clock ticks at the same running rate, so the strategic tick can update the surrounding Geoscape without resetting/reconciling the night surface.
+- The day/night boundary still advances continuously at a speed proportional to the selected Geoscape time compression and still uses the same `geoscapeSubsolarPoint()` authority as the globe.
+
+## FPV / TPV tactical ground world alignment
+
+- Live testing showed that 3D Iso building floors aligned correctly while FPV/TPV interior floor patterns appeared south of the actual buildings and soldiers did not consistently sit at the centers of the visible continuous-ground hexes.
+- Root cause: the continuous perspective ground was painted with a top-down canvas convention while `CanvasTexture` retained Three.js's default vertical flip. The rotated ground plane therefore sampled the texture with the tactical Z axis reversed relative to the world-space objects.
+- Browser 1945 sets the FPV and TPV continuous-ground `CanvasTexture.flipY = false`, matching canvas top-to-bottom orientation to the plane's world-space Z orientation.
+- The canvas cell-center mapping is now explicit through `tacticalPerspectiveGroundCanvasPoint()`.
+- Perspective hex artwork now uses exact `1.0` world-space hex scale rather than the previous `1.015` paint expansion. This removes the small accumulated visual size mismatch around units and building footprints.
+- FPV keeps its original sharper continuous texture; TPV keeps its parity-smoothed treatment. Both now use the same corrected world/UV alignment.
+- 3D Iso explicit hex geometry is unchanged because it was already the authoritative correctly aligned reference.
+
+## Preserved behavior
+
+- Browser 1845 backdrop depth testing remains active; skyline/forest/mountain shapes and stars stay behind foreground tactical geometry.
+- Browser 1345 globe day/night authority and globe/map parity remain active.
+- Dateline shortest-route aircraft pathing and flat-map world wrap remain active.
+- Tactical LOS, cover, collision, movement, night visibility, fire/smoke, and save data are unchanged.
+- Save format remains 4.
+
+## Regression coverage / manual gates
+
+- Build Health verifies the globe solar surface uses an opaque WebGL context and surface-only memoization at unchanged clock rates.
+- Build Health verifies the Terminator Map uses a persistent opaque base/shade/back-buffer canvas and that the React SVG no longer owns the visible land/ocean surface.
+- Build Health verifies the perspective-ground world-to-canvas mapping and requires `flipY=false`, exact hex scale, and the alignment diagnostic markers.
+- All six non-empty embedded JavaScript blocks must pass `node --check`.
+- Manual gate: run both Geoscape views for at least 15 seconds at 1m, 30m, 1h, 6h, and 1d. The solar surface must not flash at the one-second strategic tick.
+- Manual gate: in FPV and TPV, compare a soldier against the visible ground hex under their feet and inspect a building with interior flooring. The soldier should sit at the same cell center used in Iso, and interior floor tiles should remain directly under the building rather than shifted south.
 
 # v0.26.08.18.1845 - Geoscape Tick Render Decouple + Perspective Depth Occlusion
 
