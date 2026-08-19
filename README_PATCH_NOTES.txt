@@ -1,86 +1,46 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.19.1115_SECURE_RESCUE_FACING_SCOPE_HOTFIX_PATCH
+Build: v0.26.08.19.1145_AI_HANDOFF_CONTRACT_CALL_SHAPE_STARTUP_HOTFIX_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
 SUMMARY
 -------
-Fixes the live Simulation-AI interruption reported at `Frame 230/230: Secure rescue 0/2 - updateFacing is not defined`. The tactical facing helper was scoped inside the React TacticalMission component even though shared AI/rescue helpers can execute outside that scope.
+Fixes the Browser 1115 launch failure: `TypeError: tacticalAiHandoffLongTaskReductionContractTest is not a function`. The 1045 AI-handoff Build Health contract had been executed immediately at declaration time and stored as a Boolean, but a later self-test wrapper called that Boolean as if it were a function. Browser 1145 converts the contract back to a callable arrow function without changing its assertions or any gameplay behavior.
 
-ROOT CAUSE
-----------
-- `tacticalDeliberateBreachResult()` is a shared tactical helper used by rescue/breach planning.
-- It updates the acting soldier's facing through `updateFacing()`.
-- `updateFacing()` existed only inside `TacticalMission`, so the shared helper could not resolve it when the secure-rescue branch executed.
-- Earlier combat/search rounds could therefore work normally before a late rescue action triggered the ReferenceError.
-
-FIX
----
-- Promotes `updateFacing(unit,x,y)` into shared tactical scope directly beside `facingToward()`.
-- Removes the duplicate TacticalMission-local helper so all tactical systems use one facing authority.
-- Preserves Browser 1045 AI handoff optimization, Browser 0945 continuation recovery, and Browser 0315 terminal victory behavior.
-
-REGRESSION COVERAGE
--------------------
-- Adds a behavioral shared-scope deliberate-breach regression that verifies a soldier can breach an adjacent wall and turn to face the breach without throwing.
-- Verifies TacticalMission no longer contains a private updateFacing declaration.
-- All six non-empty embedded JavaScript blocks pass `node --check`.
-
-MANUAL TEST GATE
+ROOT CAUSE / FIX
 ----------------
-Replay/continue a rescue mission under Simulation AI through the previous `Secure rescue 0/2` point. The AI should continue instead of interrupting with `updateFacing is not defined`.
+- Before: `const tacticalAiHandoffLongTaskReductionContractTest = (()=>{ ... })();`
+- The identifier therefore held `true` or `false`.
+- `runSelfTestsWith0945AiStreamRecovery()` later executed `tacticalAiHandoffLongTaskReductionContractTest()`.
+- Browser startup aborted with a TypeError before the game UI mounted.
+- Now: the same contract body is stored as `()=>{ ... }`, matching the callable pattern used by the self-test wrapper.
 
-PREVIOUS PATCH NOTES
-====================
+PRESERVED SYSTEMS
+-----------------
+- Browser 1115 secure-rescue/shared-facing fix remains intact.
+- Browser 1045 Simulation-AI handoff optimization remains intact.
+- Browser 0945 continuation self-healing/search-stall recovery remains intact.
+- Browser 0315 victory hard-commit logic remains intact.
+- No save-format, tactical-rule, campaign, rendering, or audio changes.
 
-Build: v0.26.08.19.1045_SIMULATION_AI_HANDOFF_LONG_TASK_REDUCTION_PATCH
-Save format: 4 (unchanged)
-Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
-
-SUMMARY
--------
-Reduces the long browser-main-thread task that can occur when handing an active incident mission to Simulation AI. The initial streamed round now uses a bounded fast-handoff search budget, and movement planners use indexed fire/smoke hazard lookups instead of rescanning every cover record for every candidate cell. Subsequent streamed rounds return to the normal full planning budget. Browser 0945 continuation self-healing and Browser 0315 terminal-victory logic remain active.
-
-AI HANDOFF PERFORMANCE
-----------------------
-- Only the first streamed batch created by an explicit player-to-AI handoff uses the fast-handoff planning budget.
-- Hazard-aware A* reduces its maximum node-expansion budget during that first batch.
-- Reachable-cell and threat-aware movement planners use a reduced first-batch candidate budget, then restore the normal budget for subsequent prefetched rounds.
-- Hard-cover, occupied-cell, fire-intensity, and smoke-density data are indexed by tactical cell; pathfinding no longer scans the complete cover list every time it evaluates fire/smoke on a neighbor.
-- The handoff yields to the browser before planning and again immediately after the synchronous resolver so the transfer UI gets additional paint opportunities.
-
-DIAGNOSTICS
------------
-- The final handoff loading stage reports measured first-round planning milliseconds.
-- `window.__AEGIS_TACTICAL_AI_PERF__` exposes handoffRuns, lastHandoffPlanningMs, maxHandoffPlanningMs, and lastHandoffAt.
-- These measurements are intended to identify any remaining mission/map combinations that still produce multi-second main-thread stalls.
-
-PRESERVED BEHAVIOR
-------------------
-- Browser 0945 AI continuation reconstruction, automatic replans, direct Retry behavior, and search-stall recovery remain unchanged.
-- Browser 0315 terminal-victory hard commit, victory music/dance authority, and Alien Beacon Phase 3 remain unchanged.
-- Fire/smoke avoidance, vehicle/path blockers, VIP/civilian rules, Skyranger extraction geometry, and save format 4 remain authoritative.
-
-REGRESSION COVERAGE
--------------------
-- Build Health validates indexed hazard/blocker data and fast-handoff planner wiring.
+VALIDATION
+----------
 - All six non-empty embedded JavaScript blocks pass `node --check`.
+- Source scan confirms the handoff contract is callable.
+- Audit of Build Health `pass:<contract>()` call sites found no other immediately-evaluated Boolean contract with the same call-shape mismatch.
 
 MANUAL TEST GATES
 -----------------
-1. Enter several incident missions and transfer control to Simulation AI. Confirm the page remains responsive and the browser does not ask whether to wait for the page.
-2. Repeat on a no-contact Alien Hunt / larger map, which is the most important stress case.
-3. Inspect `window.__AEGIS_TACTICAL_AI_PERF__` after a slow handoff and record `lastHandoffPlanningMs` if a warning still occurs.
-4. Let AI continue for several rounds and confirm later streamed movement retains normal pathing quality and Browser 0945 recovery behavior.
+1. Launch the game and confirm the start screen loads without the reported TypeError.
+2. Open Build Health and confirm the Simulation-AI handoff optimization contract evaluates normally.
+3. Retry the previously interrupted secure-rescue mission and confirm Browser 1115 can proceed beyond the prior `updateFacing` failure.
 
-ROADMAP-ONLY ADDITION
----------------------
-Incoming-fire reaction TPV should eventually use a short presentation-only slow-motion window around a resolved hit so the player can read the impact and target reaction. It must not alter combat resolution or tactical timing authority.
+--- HISTORICAL PATCH-NOTE ARCHIVE FOLLOWS ---
 
-PREVIOUS PATCH NOTES
-====================
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
 
 Build: v0.26.08.17.2115_ISO_UNIT_FOG_FREE_READABILITY_PATCH
 Save format: 4 (unchanged)

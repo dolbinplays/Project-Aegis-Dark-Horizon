@@ -2,9 +2,9 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.1115_SECURE_RESCUE_FACING_SCOPE_HOTFIX_PATCH`
+Current handoff build: `v0.26.08.19.1145_AI_HANDOFF_CONTRACT_CALL_SHAPE_STARTUP_HOTFIX_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1115 hotfixes a Simulation-AI secure-rescue interruption reported as `updateFacing is not defined`. The root cause was a tactical facing helper declared only inside `TacticalMission` while shared resolver helpers such as deliberate breach / rescue planning run at module scope. `updateFacing()` is now a single shared tactical helper beside `facingToward()`, the nested duplicate is removed, and a behavioral regression executes a real deliberate breach from shared scope to prove the rescue path can update facing without a ReferenceError. Browser 1045 handoff optimization, Browser 0945 continuation self-healing/search-stall recovery, Browser 0315 terminal-victory authority, and all roadmap-only additions remain intact. Save format remains 4. Native Godot remains at 0026.**
+Current patch status: **Browser 1145 fixes a launch-time Build Health regression introduced by the recent Simulation-AI optimization test chain. `tacticalAiHandoffLongTaskReductionContractTest` had been materialized as an immediately-evaluated Boolean, while `runSelfTestsWith0945AiStreamRecovery()` later invoked it as a function, producing `TypeError: tacticalAiHandoffLongTaskReductionContractTest is not a function` before the game could start. Browser 1145 restores the contract to a callable arrow function, preserving the exact 1045 assertions and the 0945/1115 AI behavior. A source-level audit found no other immediately-evaluated Boolean contract being invoked through the same `pass:...()` pattern. Browser 1115 secure-rescue facing scope, Browser 1045 handoff optimization, Browser 0945 continuation self-healing/search-stall recovery, Browser 0315 terminal-victory authority, and all roadmap-only additions remain intact. Save format remains 4. Native Godot remains at 0026.**
 
 Roadmap-only planning update (2026-08-19): **Smooth Geoscape craft flight animation is now explicitly roadmapped so Skyrangers, interceptors, UFOs, and future strategic craft interpolate continuously across both Globe and Terminator Map at a speed matching the selected time compression, while authoritative route/fuel/ETA logic remains unchanged. Dateline/world-wrap travel, Globe surface attachment, stable component lifecycle, and no-camera-recenter doctrine are explicit requirements. No code or build-number change is part of this documentation update.**
 
@@ -22,6 +22,34 @@ Roadmap-only planning update: **Future Stage 3 tactical work still includes mult
 
 
 
+
+
+## Browser 1145 — AI Handoff Contract Call-Shape Startup Hotfix
+
+**Status:** Implemented; startup is the primary manual gate.
+
+### Why this patch exists
+- Live Browser 1115 startup failed before the main game UI with `TypeError: tacticalAiHandoffLongTaskReductionContractTest is not a function`.
+- The failure came from the Build Health/self-test chain, not from mission AI execution itself.
+
+### Root cause
+- The 1045 handoff optimization contract was declared as an immediately invoked function expression: `const tacticalAiHandoffLongTaskReductionContractTest = (()=>{ ... })();`.
+- That means the identifier stored the resulting Boolean pass/fail value.
+- The later 0945 self-test wrapper used the standard callable-contract pattern and executed `tacticalAiHandoffLongTaskReductionContractTest()`.
+- Calling the stored Boolean produced the launch-blocking TypeError.
+
+### Fix
+- Converts `tacticalAiHandoffLongTaskReductionContractTest` into a callable arrow function while preserving every existing assertion inside the contract.
+- Leaves Browser 1045 AI handoff optimization, Browser 0945 continuation recovery, and Browser 1115 shared `updateFacing()` rescue fix unchanged.
+- No tactical rules, AI planning rules, save data, rendering, audio, or campaign state are modified.
+
+### Regression coverage
+- Source-level contract audit confirms the handoff contract is callable before the self-test wrapper invokes it.
+- A scan of `pass:<contract>()` usages found no other immediately-evaluated Boolean contract with the same call-shape error.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+- Save format remains **4**.
+
+**Manual gate:** launch the build and confirm the start screen appears without the `tacticalAiHandoffLongTaskReductionContractTest is not a function` runtime error; then reopen/retry the previously reported Simulation-AI rescue mission to continue validating Browser 1115.
 
 
 ## Browser 1115 — Secure Rescue Facing Scope Hotfix
