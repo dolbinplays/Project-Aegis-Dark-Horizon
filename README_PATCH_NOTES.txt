@@ -1,63 +1,61 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.19.1245_SMOOTH_GEOSCAPE_CRAFT_FLIGHT_VISUAL_INTERPOLATION_PATCH
+Build: v0.26.08.19.1315_BEACON_ENDGAME_AI_ASSAULT_RECOVERY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
 SUMMARY
 -------
-Implements the first live Smooth Geoscape Craft Flight roadmap slice. Skyrangers, interceptors, and detected flying UFOs now move continuously between authoritative strategic-tick route anchors instead of visibly stepping once per tick. Globe and Terminator Map consume the same visual craft coordinates, while route duration, ETA, fuel, ferry/refuel logic, interception timing, mission arrival, repair, and save data remain authoritative and unchanged.
+Fixes a late Simulation-AI mission stall where all aliens were dead and the required VIP/rescue work was complete, but a confirmed Alien Field Beacon remained active. The AI could keep rebuilding ordinary fire-team/search plans, eventually interrupt the stream, and leave Retry AI Continuation unable to make useful progress. Browser 1315 gives the beacon-only endgame a dedicated lightweight assault doctrine.
 
-SMOOTH CRAFT VISUAL POSITION
-----------------------------
-- Active Skyranger progress is interpolated across the strategic tick interval before `skyrangerFlightPath()` calculates the visible route position.
-- Active interceptor progress uses the same presentation clock, including outbound and return/multi-leg route phases.
-- Detected flying UFO locations interpolate from their prior/current authoritative anchors instead of stepping to the new longitude/latitude immediately.
-- One synthetic craft-visual clock inside the stable Geoscape component feeds both Globe and Terminator Map.
-- Normal strategic ticks retarget the interpolation without changing campaign travel authority.
+BEACON-ONLY ENDGAME AI
+----------------------
+- When no living aliens remain and rescue/VIP work is already resolved, a pending confirmed beacon becomes the AI's sole tactical objective.
+- The AI selects one genuinely capable assaulter rather than running full-squad movement/formation planning.
+- It prefers a soldier already inside the shield, then a soldier with a loaded ranged weapon, then the nearest suitable candidate.
+- The rest of the squad holds a perimeter so allies do not crowd the shield ring or consume late-mission pathfinding time.
+- Firearms with explicit zero ammunition and no grenade are no longer counted as beacon-breach capability.
 
-TIME SPEED / PAUSE BEHAVIOR
----------------------------
-- Larger strategic progress deltas at faster Geoscape time settings naturally produce faster continuous marker travel over the same tick interval.
-- Pausing stops the synthetic craft visual clock at the displayed position.
-- Resuming continues from that visual phase instead of creating a separate route simulation.
-- Reduced-motion preference bypasses the continuous interpolation duration.
+COMBINED SHIELD CLOSE ASSAULT
+-----------------------------
+- A loaded ranged-weapon user now deliberately walks through a combined beacon shield before attacking.
+- The presence of a Frag Grenade elsewhere in the fire team no longer prevents this physical close-assault solution.
+- The dedicated assaulter ignores normal fire-team pace limiting and uses zero movement reserve once no hostile alien shooters remain.
+- If the chosen assaulter is already inside the seven-hex shield, the AI stays there and immediately proceeds to firing or the researched interface action instead of moving away.
 
-WORLD WRAP / VIEW PARITY
-------------------------
-- Skyranger/interceptor movement still uses the existing shortest-longitude route path.
-- UFO interpolation also uses shortest-longitude math, so 170E -> 170W crosses the nearby dateline seam.
-- Existing Terminator Map edge duplicates remain presentation-only.
-- Globe and Terminator Map receive the same interpolated coordinates, preventing view-switch position jumps.
-- Fixed-radius Globe overlay attachment and the Browser 0045 stable lifecycle/flicker fix are preserved.
+RETRY / STREAM RECOVERY
+-----------------------
+- Beacon-only recovery clears stale fire-team command waypoints/status as well as search/patrol targets and movement history.
+- Retry AI Continuation therefore starts from the preserved battlefield with a fresh beacon-assault plan instead of recreating the same blocked formation/search state.
+- Casualties, HP, ammo, cover destruction, beacon HP/state, reinforcement state and tactical round remain authoritative.
 
-GAMEPLAY UNCHANGED
-------------------
-- Route duration and ETA unchanged.
-- Fuel/range/ferry/refuel rules unchanged.
-- Hangar/aircraft ownership unchanged.
-- Interception and mission-arrival timing unchanged.
-- Save format remains 4.
+VICTORY FLOW
+------------
+- Browser 0315 terminal-victory authority remains unchanged.
+- After the final beacon is destroyed or disabled, the mission should resolve immediately if no real reinforcement/objective gate remains.
+- Victory music, victory dance and result presentation should not require an extra manual round.
 
 REGRESSION COVERAGE
 -------------------
-- Progress interpolation test verifies 0 -> 20 renders at 10 halfway through a one-second interval.
-- Dateline interpolation test verifies 170E -> 170W crosses near +/-180 rather than longitude 0.
-- Source contract verifies the stable Geoscape component owns `craftVisualTimeMs` and feeds visual Skyranger/interceptor/UFO positions into the shared Globe/Terminator render path.
+- Dedicated Build Health contract covers loaded-vs-empty weapon capability, combined-shield close assault, already-inside assaulter selection, zero-step attack readiness and retry-state cleanup.
+- Source contract verifies the beacon-neutralize phase bypasses stale command/formation pacing and holds non-assaulting soldiers clear.
 - All six non-empty embedded JavaScript blocks pass `node --check`.
 
-MANUAL TEST GATES
------------------
-1. Launch a Skyranger and watch it at 1m, 30m, 1h, 6h, and 1d speeds; marker movement should be continuous rather than one jump per strategic tick.
-2. Launch an interceptor and verify outbound/return movement remains smooth.
-3. Watch a detected flying UFO for several ticks and verify drift is continuous.
-4. Switch repeatedly between Globe and Terminator Map while craft are moving; visible positions should agree.
-5. Pause mid-flight, wait several seconds, and resume; the craft should not jump simply because real time passed while paused.
-6. Observe a dateline-crossing route and confirm the marker uses the short world seam.
+MANUAL TEST GATE
+----------------
+1. Use a mission where all aliens are dead, mandatory VIPs are already rescued/removed, and the confirmed Alien Field Beacon remains active.
+2. Leave Simulation AI in control.
+3. Confirm only one capable soldier becomes the direct beacon assaulter while the rest hold clear.
+4. With a combined shield, confirm the assaulter physically enters the shield and attacks/disables the beacon even if another soldier carries a grenade.
+5. Confirm the mission transitions directly into victory after the beacon is neutralized and never exposes a dead-end Retry AI Continuation state.
 
-HISTORICAL PATCH NOTES
-----------------------
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.17.2115_ISO_UNIT_FOG_FREE_READABILITY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

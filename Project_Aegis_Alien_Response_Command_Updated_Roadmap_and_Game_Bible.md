@@ -2,9 +2,53 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.1245_SMOOTH_GEOSCAPE_CRAFT_FLIGHT_VISUAL_INTERPOLATION_PATCH`
+Current handoff build: `v0.26.08.19.1315_BEACON_ENDGAME_AI_ASSAULT_RECOVERY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1245 implements the first live slice of the Smooth Geoscape Craft Flight roadmap. Skyranger, interceptor, and detected flying-UFO presentation positions now interpolate continuously between authoritative strategic-tick anchors inside the already-stable Browser 0045 Geoscape component lifecycle. Globe and Terminator Map consume the same visual craft coordinates; Skyranger/interceptor interpolation still follows the existing shortest-longitude route path, while UFO interpolation also crosses the dateline through the short seam instead of sweeping across the long side of the map. Pause freezes the synthetic craft-visual clock, resume continues from the displayed position, time compression naturally changes apparent flight speed because larger authoritative progress deltas are spread across the same tick interval, and reduced-motion mode can remain authoritative/stepped. Route/fuel/ETA/ferry/interception/arrival authority is unchanged. Browser 1145 startup contract repair, 1115 secure-rescue facing fix, 1045/0945 Simulation-AI recovery/optimization, 0315 victory authority, and the stable flicker-free Geoscape lifecycle remain intact. Save format remains 4. Native Godot remains at 0026.**
+Current patch status: **Browser 1315 hardens the Simulation-AI mission endgame when the alien force and required VIP/rescue work are already resolved but a confirmed Alien Field Beacon remains active. Instead of continuing full-squad search/formation logic, the AI now enters a dedicated beacon-neutralization phase, selects one genuinely capable loaded/armed assaulter (preferring a soldier already inside the shield), clears stale temporary command orders during recovery, releases that assaulter from fire-team pace and reserve-TU constraints, and holds the rest of the squad clear. Combined shields explicitly drive a physical close assault so an available grenade elsewhere in the team can no longer suppress the safer/reliable walk-through-and-fire solution. A soldier with an empty firearm and no grenade is no longer counted as beacon-breach capable. Once the assaulter is inside the seven-hex field, the AI attacks or uses the researched interface normally and the existing 0315 victory authority resolves the mission immediately after the beacon is neutralized. Browser 1245 smooth craft flight, 1145 startup repair, 1115 secure-rescue facing fix, 1045/0945 Simulation-AI recovery/optimization, and the stable flicker-free Geoscape lifecycle remain intact. Save format remains 4. Native Godot remains at 0026.**
+
+
+Implementation update (2026-08-19): **Browser 1315 adds a dedicated beacon-only tactical endgame doctrine for Simulation AI. When no living aliens remain, mandatory rescue/VIP work is resolved, and the confirmed beacon is the sole remaining objective, one capable soldier is assigned direct neutralization responsibility while the rest of the squad holds clear. The assaulter ignores stale temporary fire-team waypoints, uses zero movement reserve, bypasses normal fire-team pace limits, prefers an already-inside soldier when possible, and physically enters combined shielding before firing if a loaded ranged weapon is available. Stream-recovery retries also clear stale command/search state in this beacon-only condition. This specifically targets the live failure where AI could stall at `Continue Beacon Assault` / `Retry AI Continuation` after all aliens and VIPs were already resolved.**
+
+## Browser 1315 — Beacon Endgame AI Assault Recovery
+
+**Status:** Implemented; manual gate is an AI-controlled mission with all aliens eliminated, VIP/rescue requirements complete, and a live confirmed beacon remaining.
+
+### Why this patch exists
+- Live testing reached a valid late-mission state with all aliens dead and no VIPs left on the map, but the confirmed Alien Field Beacon remained at full health.
+- Simulation AI could stop making useful progress, eventually interrupt its stream, and expose `Retry AI Continuation`; retrying could rebuild essentially the same blocked plan.
+- The prior beacon logic still depended heavily on ordinary fire-team formation/pacing and could treat the presence of a Frag Grenade elsewhere in the team as sufficient external breach capability even when the grenade was unsafe or never selected.
+
+### Dedicated beacon-only endgame doctrine
+- Activates only when no living aliens remain, rescue/VIP work no longer needs active handling, beacon knowledge is confirmed, and the active beacon is the remaining objective.
+- Chooses one capable assaulter rather than running expensive movement/formation planning for the entire squad.
+- Prefers a capable soldier already standing inside the beacon shield, then a loaded ranged-weapon user, then shortest distance/command suitability.
+- A firearm with explicit `ammo: 0` and no grenade no longer counts as usable beacon-breach capability.
+- Non-assaulting soldiers hold a beacon perimeter instead of crowding the approach cells or repeatedly recalculating formation paths.
+
+### Combined-shield close assault
+- A loaded ranged-weapon assaulter facing the combined shield now deliberately walks through the field even if another fire-team member still carries a grenade.
+- The dedicated assaulter bypasses normal fire-team pace limiting so support members cannot keep the chosen soldier from reaching the shield.
+- Movement reserve is set to zero during the beacon-only assault because there are no live alien shooters left to reserve reaction fire against.
+- If the chosen soldier is already inside the shield, the close-assault planner does not move them away again; the attack/interface step can happen immediately.
+
+### Retry/self-heal behavior
+- Beacon-only stream recovery clears stale temporary fire-team command targets/status, prior search targets, patrol targets, and movement-history state.
+- Recovery also resets movement reserve so Retry AI Continuation does not reconstruct the same blocked waypoint/formation plan.
+- The authoritative HP, cover destruction, casualties, beacon state, ammunition, and tactical round remain preserved.
+
+### Victory authority
+- The existing Browser 0315 terminal victory commit remains authoritative.
+- Once the final beacon is destroyed or disabled and no genuine reinforcement/objective gate remains, victory music/dance/result presentation should trigger without requiring the player to take control and play another round.
+
+### Regression coverage
+- Build Health verifies an empty ballistic weapon with no grenade is not treated as beacon-breach capable.
+- Build Health verifies an already-inside capable soldier is preferred as the endgame assaulter and receives a zero-step close-assault plan.
+- Build Health verifies a loaded weapon against combined shielding requires physical close assault.
+- Build Health verifies beacon-only continuation recovery clears stale fire-team orders and reserve TU.
+- Source contract verifies the dedicated `beaconNeutralizePhase`, solo assaulter, perimeter hold, zero reserve, and close-assault override are present in the shared Simulation-AI resolver.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+
+**Manual gate:** run the same kind of late mission state with all aliens dead, required VIPs already rescued/removed, and an active confirmed beacon. Simulation AI should nominate one soldier, move them into/onto a valid breach solution, neutralize the beacon, and flow into victory without `Retry AI Continuation`.
 
 Implementation update (2026-08-19): **Browser 1245 now implements the shared visual-position foundation for smooth Geoscape craft flight. Skyrangers, interceptors, and detected flying UFOs interpolate between strategic-tick anchors using one visual coordinate stream consumed by both Globe and Terminator Map. Authoritative route/fuel/ETA logic is unchanged. Remaining roadmap work is focused on richer route-transition/stop polish, optional heading/trail readability, and future craft types rather than basic tick-to-tick smooth movement.**
 
@@ -13,6 +57,8 @@ Roadmap-only planning update (2026-08-19): **Active alien missions should expose
 Roadmap-only planning update (2026-08-19): **Independent Skyranger incident response is now explicitly roadmapped. One Skyranger being Outbound, in tactical ownership, Returning, or otherwise committed to Incident A must not globally prevent a different Ready Skyranger from launching to Incident B. Strategic transport ownership should become per-aircraft/per-operation rather than a single global flight lock, while preserving atomic multi-Skyranger launch when several transports intentionally belong to the same operation. No code or build-number change is part of this documentation update.**
 
 Roadmap-only planning update (2026-08-19): **Incoming-fire reaction TPV should use short cinematic slow motion when an AEGIS soldier is hit or narrowly survives a resolved hostile shot. The slowdown is presentation-only: targeting, hit/damage resolution, RNG, Time Units, ammunition, AI action order, and tactical authority remain unchanged. The goal is to make the impact, target reaction, projectile/VFX, armor hit, wounds/gibbing, and nearby context easier to read before returning smoothly to the player's prior Iso/FPV/TPV observer mode. No code or build-number change is part of this documentation update.**
+
+Roadmap-only planning update (2026-08-19): **AEGIS tactical AI should treat distance from visible aliens as an explicit ranged-combat consideration. Unless a soldier is intentionally committing to a melee attack, the default preference is to avoid crowding an alien, maintain roughly a 3–4 hex minimum standoff when terrain and objectives allow, stay inside the effective range of the equipped weapon, and favor legal cover positions that preserve useful line of sight. This is a weighted tactical preference rather than an absolute movement wall: rescue/extraction duties, blocked routes, close-quarters interiors, immediate survival, weapon characteristics, explicit player orders, and other higher-authority objectives may justify closer positioning. No code or build-number change is part of this documentation update.**
 
 
 Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1945 preserves Browser 0215's single-level building interaction/presentation improvements, Browser 1845's FPV/TPV backdrop depth correction, and now aligns the continuous FPV/TPV floor texture to the same world-space hex centers used by 3D Iso; it does not implement vertical levels.**
@@ -7612,6 +7658,7 @@ Still planned:
 - VIP Rescue AI fire-team distribution is implemented in Browser 1850: the senior tactical coordinator assigns distinct fire teams across distinct marked VIPs before allowing duplicate coverage, while extra teams remain available for security, combat, escort support, or later reassignment.
 - Adaptive Alien Field Beacon Phase 2 is implemented in Browser 1552: three recorded beacon destructions trigger ballistic-blocking kinetic fields on later beacon deployments, and reinforcement arrivals preserve the original beacon or crashed-UFO landmark.
 - Adaptive Alien Field Beacon Phase 3 combined shielding is implemented in Browser 1204, and Browser 0315 now adds the research-gated intact interface layer: soldiers can hack a confirmed beacon from inside its field after `Alien Beacon Interface Protocols`, recover a Pale Commander command badge, and use that badge for a faster local override. Future beacon work should build on this completed three-phase adaptation/interface foundation rather than duplicating it.
+- Add **AEGIS ranged standoff + cover-seeking combat doctrine**: unless deliberately entering melee, AI-controlled soldiers should generally keep at least 3–4 hexes from a visible alien when practical, remain inside effective weapon range, and choose cover-preserving firing positions instead of unnecessarily closing to point-blank distance. See the dedicated roadmap addition below.
 - Add **multi-floor / multi-level tactical structures and multi-deck alien craft** after the single-level cutaway maps remain readable and performant. This includes upper floors, stairs/ladders/ramps/lifts where appropriate, roof access, floor-aware LOS and ballistics, vertical AI pathfinding, camera/floor cutaways, structural destruction across levels, and fire/smoke propagation between connected spaces. See the dedicated roadmap addition below.
 
 Completed in browser 0945:
@@ -7622,6 +7669,95 @@ Completed browser Stage 3 feedback seed:
 
 Power-loss/destructible-light foundation completed in Browser 2215. Possible follow-up after playtest:
 `TACTICAL_FIRE_SMOKE_PROPAGATION_FOUNDATION_INDEX_ONLY`
+
+
+
+### Future Roadmap Addition — AEGIS Ranged Standoff and Cover-Seeking Combat Doctrine
+Status: **Roadmapped / future tactical-AI refinement**
+
+#### Design goal
+
+AEGIS soldiers carrying ranged weapons should behave like trained operators who understand that standing next to a hostile alien is usually an unnecessary risk. Unless a soldier is deliberately executing a melee attack, movement planning should weigh **safe engagement distance, usable cover, line of sight, and the equipped weapon's effective range together** rather than simply moving as close to a target as the pathfinder permits.
+
+The intended default is a **3–4 hex minimum standoff preference** from a visible alien when the battlefield gives the soldier a reasonable choice. This is a tactical preference, not a new hard collision radius: the AI must still be able to move closer when terrain, mission objectives, weapon constraints, emergency survival, or explicit command authority require it.
+
+#### Core ranged-positioning doctrine
+
+For a soldier who is not intentionally committing to melee:
+
+- Prefer to end movement **at least 3–4 hexes from the nearest relevant visible alien** when a legal and tactically useful position exists.
+- Avoid voluntarily ending adjacent to an alien or at 1–2 hex range merely because that cell is geometrically closer to the target.
+- Stay **inside the equipped weapon's useful firing range**. The AI should not back away beyond practical engagement range just to satisfy the standoff preference.
+- Prefer positions with **real cover** against the engaged alien, especially full cover and then useful half cover, provided the cell still offers a viable shot or meaningful overwatch/reaction-fire opportunity.
+- Prefer a slightly longer covered route or firing position over an exposed point-blank approach when both accomplish the same tactical goal.
+- Treat several visible aliens as a local threat field rather than considering distance from only the selected target. A position that is four hexes from one alien but adjacent to another is not a good standoff cell.
+- Re-evaluate the desired position as aliens move, die, become hidden, or new contacts appear; the preference must not become a stale destination that makes soldiers oscillate back and forth.
+
+#### Weapon-aware distance
+
+The 3–4 hex value is the general doctrine floor, not a universal ideal range for every weapon:
+
+- Rifles, precision weapons, and other medium/long-range weapons should normally be comfortable maintaining or increasing separation when good LOS and cover are available.
+- Shotguns, short-range weapons, flamethrower-like future weapons, or other close-range tools may legitimately prefer a closer band while still avoiding unnecessary adjacency.
+- Heavy/support weapons may prioritize stable covered firing positions and lane control over closing distance.
+- Pistols and emergency sidearms should use their actual practical range rather than retreating to a distance where they cannot contribute.
+- A soldier explicitly assigned a **melee attack** is exempt from the ranged standoff preference for that attack plan and may close directly to the required melee cell.
+- Future alien weapons and human upgrades can expose preferred/minimum/maximum engagement bands rather than forcing special-case logic into the pathfinder.
+
+#### Cover authority
+
+Cover selection must use the same authoritative tactical geometry already used for LOS, ballistic blocking, destruction, building breaches, vehicles, fire/smoke, and movement:
+
+- Do not select a visually plausible "cover" cell if the actual shot angle leaves the soldier exposed to the target.
+- Intact vehicles, walls, building corners, trees/appropriate environmental cover, and other valid structures may contribute according to their existing cover authority.
+- Destroyed/breached cover must immediately lose or reduce its defensive value in positioning decisions.
+- Fire, smoke, and other hazards remain part of route and destination scoring; a covered cell that is actively burning should not automatically beat a safer open fallback.
+- When practical, the AI should seek **cover that faces the threat** rather than cover that merely exists somewhere adjacent to the soldier.
+
+#### Fire-team integration
+
+This doctrine should work with existing fire-team behavior rather than turning every soldier into an independent sniper:
+
+- The fire-team leader chooses a tactically useful engagement area while respecting cohesion pacing and player Command Map orders.
+- Supporting soldiers seek distinct nearby firing/cover cells that preserve formation without stacking everyone into the same hex band or clustering around the alien.
+- Contact-rush behavior should mean **closing to an effective engagement position**, not automatically rushing into point-blank range.
+- A support soldier should not blindly copy the leader's distance if doing so places that support adjacent to an alien or strips away useful cover.
+- Regrouping after contact should avoid repeated advance/retreat oscillation around the 3–4 hex threshold; use hysteresis/tolerance so a stable legal firing position remains stable.
+
+#### Higher-authority exceptions
+
+The standoff preference may be overridden when necessary for:
+
+- a deliberate melee attack;
+- an explicit player movement/Command Map order;
+- VIP/civilian rescue, escort, extraction, or ramp-guard responsibilities;
+- entering or clearing a building when no longer-range firing lane exists;
+- beacon hacking/override, objective interaction, breaching, item recovery, or other adjacency-required actions;
+- escaping fire, smoke, explosions, collapse, or another immediate hazard;
+- a blocked route or very small interior where 3–4 hex separation is physically impossible;
+- a weapon whose effective range makes closer positioning tactically necessary;
+- emergency survival, retreat, casualty response, or other higher-priority tactical state.
+
+Even during an exception, the AI should return to normal ranged spacing once the reason for closing distance is gone.
+
+#### Suggested implementation approach
+
+1. Add a shared **engagement-position score** used by human tactical AI rather than independent distance checks in every behavior branch.
+2. Score candidate cells using alien-distance band, effective weapon range, LOS, cover quality/direction, local alien threat count, hazard cost, movement/TU cost, and fire-team cohesion.
+3. Give the 3–4 hex standoff a strong but finite penalty inside the preferred floor rather than treating those cells as blocked.
+4. Add tolerance/hysteresis so soldiers do not oscillate between neighboring cells whenever an alien moves one hex.
+5. Reuse the same scoring authority in Simulation AI, Hybrid support behavior, search-to-contact transitions, rescue security, and future multi-level combat.
+
+#### Regression / playtest targets
+
+- A rifleman with open choices should not run adjacent to a visible alien when a covered firing cell 3–5 hexes away is available and in range.
+- A soldier already in good cover four hexes from the alien should usually hold/fire rather than advance solely to reduce geometric distance.
+- A shotgun/short-range soldier may close further when required by weapon range but should still avoid unnecessary adjacency.
+- A melee order should close normally and must not be blocked by the standoff doctrine.
+- A rescue/escort unit may temporarily violate spacing to complete its higher-authority duty, then recover normal combat distance afterward.
+- Multiple visible aliens should prevent the AI from choosing a cell that satisfies distance from one target while standing dangerously close to another.
+- Fire-team members should spread into useful nearby cover rather than forming a point-blank cluster around the contact.
+- The doctrine must preserve existing deterministic Simulation-AI playback and remain bounded enough not to reintroduce long browser stalls during AI handoff.
 
 
 ### Future Roadmap Addition — Multi-Floor Structures and Multi-Deck Alien Craft
