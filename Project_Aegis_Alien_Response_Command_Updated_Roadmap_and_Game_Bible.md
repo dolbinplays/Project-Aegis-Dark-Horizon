@@ -1,10 +1,10 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-08-18
-Current handoff build: `v0.26.08.18.2355_GEOSCAPE_IMPERATIVE_CANVAS_OVERLAY_TICK_ISOLATION_PATCH`
+Last updated: 2026-08-19
+Current handoff build: `v0.26.08.19.0015_GEOSCAPE_OVERLAY_SELF_TEST_SCOPE_STARTUP_HOTFIX_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2355 targets the still-reproducible tick-linked Geoscape flash after Browser 2345 restored startup. Live testing showed that the flash survived multiple solar-clock and surface-renderer rewrites, which strongly implicates React/SVG overlay repaint churn during the once-per-second strategic commit rather than the day/night math itself. Browser 2355 therefore removes the player-facing Terminator Map and Globe command overlays from React SVG rendering: the flat map now keeps its compositor-driven solar surface but draws bases, missions, UFOs, aircraft, routes, range rings, ferry links, and selection state into one persistent transparent canvas; the globe keeps the fixed-step cloudless Three.js Earth and replaces its large SVG command tree with a persistent transparent canvas overlay. The previous SVG globe overlay is no longer mounted. Ordinary clock/day/minute changes also no longer drive the obsolete unified-solar observer in `EarthBaseGlobe`. Save format remains 4. Native Godot remains at 0026. Desktop verification is still required before calling the flicker resolved.**
+Current patch status: **Browser 0015 is a startup hotfix for Browser 2355. The 2355 Build Health overlay contract attempted to stringify `EarthBaseGlobe` from a scope where that component was not available, causing `ReferenceError: EarthBaseGlobe is not defined` during launch-time self-tests before the player could reach the game. Browser 0015 makes the overlay contract inspect the top-level `AlienResponseCommand` source instead, which safely contains the nested globe mount code without evaluating or directly referencing the nested component. Three older Geoscape visual contracts that made the same unsafe source-inspection assumption were hardened the same way so the next self-test in the chain cannot fail for the same reason. The 2355 persistent-canvas Geoscape rendering experiment itself is otherwise unchanged; the tick-linked flicker still requires live desktop verification after startup is restored. Save format remains 4. Native Godot remains at 0026.**
 
 
 Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1945 preserves Browser 0215's single-level building interaction/presentation improvements, Browser 1845's FPV/TPV backdrop depth correction, and now aligns the continuous FPV/TPV floor texture to the same world-space hex centers used by 3D Iso; it does not implement vertical levels.**
@@ -15,6 +15,20 @@ Roadmap-only planning update: **Future Stage 3 tactical work still includes mult
 
 
 
+
+## Browser 0015 — Geoscape Overlay Self-Test Scope Startup Hotfix
+
+**Status:** Implemented startup hotfix; desktop launch verification required.
+
+- Browser 2355 could fail during launch-time Build Health with `ReferenceError: EarthBaseGlobe is not defined`.
+- Root cause: `geoscapeImperativeCanvasOverlayTickIsolationContractTest()` was declared outside the scope that owns `EarthBaseGlobe`, but attempted to execute `String(EarthBaseGlobe)` while `runSelfTests()` was running. The gameplay renderer itself had not yet failed; the regression test crashed the application first.
+- The 2355 overlay contract now inspects `String(AlienResponseCommand)` for the globe/map mount-point evidence instead of directly referencing the nested `EarthBaseGlobe` component. This verifies the same architectural intent without crossing a lexical-scope boundary.
+- The older Browser 1515, 2045, and 2115 Geoscape visual contracts also contained direct `String(EarthBaseGlobe)` source inspections. Browser 0015 hardens those contracts to inspect `AlienResponseCommand` as well, preventing a follow-on startup failure later in the self-test chain.
+- Adds `GEOSCAPE_OVERLAY_SELF_TEST_SCOPE_STARTUP_HOTFIX_PATCH` and updates the 2355 Build Health label to make the startup-scope guarantee explicit.
+- No player-facing Geoscape rendering behavior was intentionally changed in this hotfix. The Browser 2355 persistent canvas overlays, compositor Terminator surface, fixed-step cloudless globe, and existing tactical fixes remain intact for continued flicker testing.
+- Save format remains **4**. All six non-empty embedded JavaScript blocks pass `node --check`.
+
+**Manual gate:** launch from `file://` and GitHub Pages, confirm the start screen appears with no `EarthBaseGlobe` self-test exception, then resume the existing Globe/Terminator flicker test.
 
 ## Browser 2355 — Imperative Canvas Overlay Tick Isolation
 
