@@ -1,56 +1,82 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.18.2345_COMPOSITOR_TERMINATOR_SCOPE_STARTUP_HOTFIX_PATCH
+Build: v0.26.08.18.2355_GEOSCAPE_IMPERATIVE_CANVAS_OVERLAY_TICK_ISOLATION_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
 SUMMARY
 -------
-Fixes the Browser 2315 startup crash:
+Targets the still-reproducible once-per-strategic-tick Geoscape flash after Browser 2345 restored startup.
 
-  ReferenceError: TickStableCompositorTerminatorSolarSurface is not defined
+Live testing has now shown that the flash can survive changes to the solar clock, WebGL surface, compositor night mask, front-buffer commit strategy, cloud rendering, and tick scheduling. Browser 2355 therefore attacks a different layer: the large React SVG command overlays that were still being reconciled/repainted over both Earth views every strategic commit.
 
-The Browser 2315 Terminator Map renderer was implemented in the wrong lexical scope. TerminatorGeoscapeMap is a top-level component, but the TickStableCompositorTerminatorSolarSurface memoized component and its helper functions were declared inside AlienResponseCommand. When React rendered the top-level map, that identifier did not exist in the map component's scope.
+TERMINATOR MAP
+--------------
+- Keeps the static opaque Earth base and compositor-driven repeating night/twilight mask from the 2315/2345 architecture.
+- Replaces the player-facing React SVG command layer with one persistent transparent 720x360 canvas.
+- Canvas draws:
+  - bases and labels;
+  - incidents;
+  - detected UFOs;
+  - alien bases;
+  - Skyrangers and interceptors;
+  - opposite-edge world-wrap craft copies;
+  - aircraft/base range rings;
+  - ferry links;
+  - placement/selection crosshair.
+- Incident hit testing and map-coordinate selection now occur directly on the canvas.
+- A strategic tick can update backing data, but it no longer causes React to diff/repaint a large SVG tree over the solar surface.
 
-STARTUP SCOPE FIX
------------------
-- Adds a dedicated globally scoped compositor Terminator Map component before TerminatorGeoscapeMap is declared.
-- TerminatorGeoscapeMap now mounts TickStableCompositorTerminatorSolarSurfaceGlobal explicitly.
-- The global renderer retains the Browser 2315 design:
-  - static opaque 2D ocean/land/grid base;
-  - separate repeating night/twilight mask;
-  - Web Animations compositor movement;
-  - playback-rate changes for Geoscape time speed;
-  - ordinary running strategic ticks do not directly reposition the mask;
-  - paused clock changes may re-anchor the mask deliberately.
-- Browser 2315's fixed-step cloudless Three.js globe remains unchanged.
-- Dateline shortest-route/world-wrap behavior is unchanged.
-- Browser 1945 FPV/TPV ground alignment and Browser 1845 perspective backdrop depth fix are unchanged.
-- Tactical AI, fire/smoke, breach, lighting, and other gameplay systems are unchanged.
-- Save format remains 4.
+GLOBE
+-----
+- Keeps the fixed-step, cloudless Three.js Earth and corrected solar lighting.
+- The legacy SVG globe command overlay is explicitly not mounted.
+- A persistent transparent 360x360 canvas now draws command information over WebGL:
+  - exterior stars;
+  - selected-region outline;
+  - range rings and ferry links;
+  - bases, incidents, UFOs, alien bases;
+  - Skyrangers and interceptors;
+  - placement crosshair;
+  - lightweight occupation markers.
+- Globe click, drag, pointer, and wheel interaction is handled by that canvas.
+- The previous completed WebGL/canvas pixels remain visible through a heavy strategic tick instead of relying on a large SVG repaint.
+
+TICK DECOUPLING
+---------------
+- EarthBaseGlobe no longer re-observes the obsolete unified solar clock on every minute/day tick.
+- That observer now reacts only to run/pause and time-speed changes.
+- This removes another tick-coupled presentation side effect while preserving the current fixed-step globe and compositor map solar motion.
 
 REGRESSION COVERAGE
 -------------------
-- Adds GEOSCAPE_COMPOSITOR_TERMINATOR_SCOPE_STARTUP_HOTFIX_PATCH.
-- Adds geoscapeCompositorTerminatorScopeStartupContractTest(), which requires the globally visible compositor component and verifies that TerminatorGeoscapeMap mounts it.
-- Static ordering verification confirms the global compositor authority is declared before TerminatorGeoscapeMap and before AlienResponseCommand mounts.
+- Adds GEOSCAPE_IMPERATIVE_CANVAS_OVERLAY_TICK_ISOLATION_PATCH.
+- Adds GEOSCAPE_REACT_SVG_TICK_REPAINT_REMOVAL_PATCH.
+- Adds a Build Health contract requiring:
+  - player-facing Terminator Map canvas overlay;
+  - player-facing Globe canvas overlay;
+  - legacy globe SVG explicitly disabled;
+  - compositor solar map surface retained underneath.
 - All 6 non-empty embedded JavaScript blocks pass node --check.
+- Save format remains 4.
 
 MANUAL TEST GATES
 -----------------
-1. Launch the browser build and confirm the start screen appears without a runtime error.
-2. Start or load a campaign and enter the Geoscape.
-3. Switch to Terminator Map and confirm it renders instead of throwing TickStableCompositorTerminatorSolarSurface is not defined.
-4. Switch Globe <-> Terminator Map several times.
-5. Resume the Browser 2315 live flicker test at 1h, 6h, and 1d speeds.
+1. Launch and load/start a campaign.
+2. Run Terminator Map at 1h, 6h, then 1d for at least 30-60 seconds.
+3. Watch the entire map at the once-per-second strategic tick; it should not blank/flash.
+4. Confirm the night shadow keeps moving continuously and does not jump because of ordinary ticks.
+5. Switch to Globe and repeat. A heavy tick may momentarily delay the next drawn frame, but the previous completed globe frame should remain visible.
+6. Confirm globe drag, click, zoom/wheel, incidents, bases, UFOs, aircraft, range rings, and ferry links remain usable.
+7. Confirm Terminator Map incident clicking and location selection still work.
 
 IMPORTANT
 ---------
-Browser 2345 is deliberately a startup hotfix. It fixes the component-scope crash that prevented Browser 2315 from being tested. It does not claim that the still-under-investigation tick-linked Geoscape flicker is resolved.
+This patch deliberately changes the dynamic command-overlay presentation path rather than making another solar-clock adjustment. It is based on the live evidence that the remaining flash survived multiple independent solar-renderer implementations and appears only while the strategic React update is running. Desktop verification is still required before declaring the flicker resolved.
 
-PREVIOUS BUILD 2315
+PREVIOUS BUILD 2345
 -------------------
-v0.26.08.18.2315_COMPOSITOR_SOLAR_DECOUPLE_AND_FIXED_STEP_GLOBE_PATCH
+v0.26.08.18.2345_COMPOSITOR_TERMINATOR_SCOPE_STARTUP_HOTFIX_PATCH
 
-Browser 2315 moved the flat-map day/night presentation onto a static 2D Earth plus a compositor-driven repeating night/twilight mask and changed the globe to a bounded fixed-step, cloudless Three.js solar renderer. Its purpose was to decouple the visible solar presentation from the once-per-second strategic simulation tick. Browser 2345 preserves that architecture and only repairs the startup scope error discovered in live testing.
+Browser 2345 repaired the startup scope error in the 2315 compositor Terminator renderer. It intentionally did not claim to fix the tick-linked flicker.

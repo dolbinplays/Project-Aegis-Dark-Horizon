@@ -2,9 +2,9 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-18
-Current handoff build: `v0.26.08.18.2345_COMPOSITOR_TERMINATOR_SCOPE_STARTUP_HOTFIX_PATCH`
+Current handoff build: `v0.26.08.18.2355_GEOSCAPE_IMPERATIVE_CANVAS_OVERLAY_TICK_ISOLATION_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2345 is a startup hotfix for Browser 2315. Live launch testing exposed `ReferenceError: TickStableCompositorTerminatorSolarSurface is not defined` when the Terminator Map rendered. The cause was lexical scope: Browser 2315 declared the compositor solar component inside `AlienResponseCommand`, while the top-level `TerminatorGeoscapeMap` component attempted to reference it from global scope. Browser 2345 mounts a dedicated globally scoped compositor Terminator component defined before the map component and adds a scope/order regression contract. The Browser 2315 static-map/compositor terminator architecture and fixed-step cloudless globe are otherwise unchanged, as are dateline routing, FPV/TPV ground alignment, tactical systems, and save format 4. Native Godot remains at 0026.**
+Current patch status: **Browser 2355 targets the still-reproducible tick-linked Geoscape flash after Browser 2345 restored startup. Live testing showed that the flash survived multiple solar-clock and surface-renderer rewrites, which strongly implicates React/SVG overlay repaint churn during the once-per-second strategic commit rather than the day/night math itself. Browser 2355 therefore removes the player-facing Terminator Map and Globe command overlays from React SVG rendering: the flat map now keeps its compositor-driven solar surface but draws bases, missions, UFOs, aircraft, routes, range rings, ferry links, and selection state into one persistent transparent canvas; the globe keeps the fixed-step cloudless Three.js Earth and replaces its large SVG command tree with a persistent transparent canvas overlay. The previous SVG globe overlay is no longer mounted. Ordinary clock/day/minute changes also no longer drive the obsolete unified-solar observer in `EarthBaseGlobe`. Save format remains 4. Native Godot remains at 0026. Desktop verification is still required before calling the flicker resolved.**
 
 
 Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1945 preserves Browser 0215's single-level building interaction/presentation improvements, Browser 1845's FPV/TPV backdrop depth correction, and now aligns the continuous FPV/TPV floor texture to the same world-space hex centers used by 3D Iso; it does not implement vertical levels.**
@@ -14,6 +14,24 @@ Roadmap-only planning update: **Future Stage 3 tactical work still includes mult
 
 
 
+
+
+## Browser 2355 — Imperative Canvas Overlay Tick Isolation
+
+**Status:** Implemented; live desktop verification required.
+
+- Browser 2345 fixed the compositor-component startup scope error, but desktop testing confirmed the original Geoscape flicker remained. The artifact still correlated with strategic time ticks and disappeared while paused.
+- Earlier patches had already replaced/reworked solar clocks, WebGL surfaces, front-buffer commits, compositor scheduling, clouds, and tick timing. Because the flash survived those changes, Browser 2355 treats the remaining likely trigger as **React/SVG overlay repaint churn during the large once-per-second strategic commit**.
+- The player-facing **Terminator Map no longer mounts the large React SVG command overlay**. Its already-persistent static Earth + compositor-driven night/twilight surface remains underneath, while dynamic command information is now painted into one transparent 720×360 canvas.
+- That canvas carries bases, incidents, detected UFOs, alien bases, Skyrangers, interceptors, range rings, ferry links, dateline duplicate craft, and placement crosshairs. Incident hit-testing and map-location selection are handled directly by the canvas surface.
+- The player-facing **Globe keeps the Browser 2315/2345 fixed-step cloudless Three.js Earth**, but its large SVG overlay is now explicitly not mounted. A persistent transparent 360×360 canvas draws the visible command layer instead: stars outside the Earth disc, range/ferry overlays, base/incident/UFO/alien-base markers, aircraft, selected-location crosshair, and lightweight occupation markers. The same canvas owns globe click/drag/wheel interaction.
+- Canvas overlays are updated imperatively with `useLayoutEffect`; strategic ticks may update their backing data, but React no longer creates/diffs/repaints hundreds of SVG nodes over the Earth surfaces. During a heavy tick the previous completed canvas/WebGL pixels remain visible until the next completed frame.
+- `EarthBaseGlobe` no longer re-observes the obsolete unified solar clock on every minute/day tick. It observes only run/pause and speed changes, removing another unnecessary tick-coupled presentation side effect.
+- Previous map/globe renderers remain in source for compatibility and historical Build Health contracts, but the player-facing mount points use the new canvas overlay path.
+- Browser 1945 FPV/TPV ground alignment, Browser 1845 perspective-backdrop depth fix, Browser 1115 dateline shortest-route behavior, and current tactical systems are unchanged.
+- Save format remains **4**. All six non-empty embedded JavaScript blocks pass `node --check`.
+
+**Manual gate:** run both Globe and Terminator Map at 1h, 6h, and especially 1d for at least 30–60 seconds. Watch specifically at the once-per-second strategic tick. A heavy tick may delay the next marker update, but the Earth/map surface should remain continuously visible with no white/blank/brightness flash. Confirm incident clicking, globe drag/zoom, range rings, ferry links, and aircraft markers still work.
 
 ## Browser 2345 — Compositor Terminator Scope Startup Hotfix
 
