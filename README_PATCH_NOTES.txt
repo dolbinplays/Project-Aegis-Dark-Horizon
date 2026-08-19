@@ -1,57 +1,55 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.19.1315_BEACON_ENDGAME_AI_ASSAULT_RECOVERY_PATCH
+Build: v0.26.08.19.1415_ACTIVE_MISSION_MENU_SAVE_AND_TACTICAL_CONTINUITY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
 SUMMARY
 -------
-Fixes a late Simulation-AI mission stall where all aliens were dead and the required VIP/rescue work was complete, but a confirmed Alien Field Beacon remained active. The AI could keep rebuilding ordinary fire-team/search plans, eventually interrupt the stream, and leave Retry AI Continuation unable to make useful progress. Browser 1315 gives the beacon-only endgame a dedicated lightweight assault doctrine.
+Implements the roadmap item for persistent Menu / Save access during active missions and makes manual saves capable of resuming an in-progress tactical battlefield. The minimized command header and active tactical left-hand command bar now both open the existing shared Save / Load screen. A save created during a manual tactical mission now carries a JSON-safe tactical snapshot and restores it before the tactical mission remounts.
 
-BEACON-ONLY ENDGAME AI
-----------------------
-- When no living aliens remain and rescue/VIP work is already resolved, a pending confirmed beacon becomes the AI's sole tactical objective.
-- The AI selects one genuinely capable assaulter rather than running full-squad movement/formation planning.
-- It prefers a soldier already inside the shield, then a soldier with a loaded ranged weapon, then the nearest suitable candidate.
-- The rest of the squad holds a perimeter so allies do not crowd the shield ring or consume late-mission pathfinding time.
-- Firearms with explicit zero ammunition and no grenade are no longer counted as beacon-breach capability.
+ACTIVE MISSION MENU / SAVE ACCESS
+---------------------------------
+- Added `Menu / Save` to the minimized command header.
+- Added `Menu / Save` to the active alien-mission left command bar.
+- Both buttons call the same existing `openSaveMenuFrom("game")` flow.
+- Returning from the menu resumes the existing in-memory tactical cache without regenerating the map.
 
-COMBINED SHIELD CLOSE ASSAULT
------------------------------
-- A loaded ranged-weapon user now deliberately walks through a combined beacon shield before attacking.
-- The presence of a Frag Grenade elsewhere in the fire team no longer prevents this physical close-assault solution.
-- The dedicated assaulter ignores normal fire-team pace limiting and uses zero movement reserve once no hostile alien shooters remain.
-- If the chosen assaulter is already inside the seven-hex shield, the AI stays there and immediately proceeds to firing or the researched interface action instead of moving away.
+TACTICAL SAVE / LOAD CONTINUITY
+-------------------------------
+- `getCurrentGameData()` now includes an optional `activeTacticalState` while a manual tactical mission is active.
+- The snapshot preserves deployment, covers/destruction, units, floor items, selected soldier, camera/view state, 2D/3D Iso mode, FPV/TPV observer state, explored cells, current turn/round, tactical log/timeline settings, fire-team/command-map state, Simulation-AI playback state, escort prompt state, and alien reinforcement transit state.
+- Loading clears stale tactical caches, restores the saved battlefield, then remounts the active mission.
+- Restored AI playback forces `streamPending=false` and refreshes its stream token so a save cannot resume an orphaned background continuation task.
+- Older saves with no tactical snapshot remain compatible. If a partial/legacy save claims a manual mission without a usable snapshot, it safely falls back to Mission Control instead of generating a misleading new battlefield.
 
-RETRY / STREAM RECOVERY
------------------------
-- Beacon-only recovery clears stale fire-team command waypoints/status as well as search/patrol targets and movement history.
-- Retry AI Continuation therefore starts from the preserved battlefield with a fresh beacon-assault plan instead of recreating the same blocked formation/search state.
-- Casualties, HP, ammo, cover destruction, beacon HP/state, reinforcement state and tactical round remain authoritative.
-
-VICTORY FLOW
-------------
-- Browser 0315 terminal-victory authority remains unchanged.
-- After the final beacon is destroyed or disabled, the mission should resolve immediately if no real reinforcement/objective gate remains.
-- Victory music, victory dance and result presentation should not require an extra manual round.
+COMPATIBILITY
+-------------
+- Save format remains 4; the new tactical snapshot field is optional and backward compatible.
+- Browser 1315 beacon endgame behavior is unchanged.
+- Browser 1245 smooth Geoscape craft interpolation is unchanged.
+- The stable Geoscape lifecycle fix that eliminated tick flicker is unchanged.
 
 REGRESSION COVERAGE
 -------------------
-- Dedicated Build Health contract covers loaded-vs-empty weapon capability, combined-shield close assault, already-inside assaulter selection, zero-step attack readiness and retry-state cleanup.
-- Source contract verifies the beacon-neutralize phase bypasses stale command/formation pacing and holds non-assaulting soldiers clear.
+- New Build Health contract round-trips a synthetic tactical state through save/restore.
+- Verifies 3D/FPV view state survives.
+- Verifies alien reinforcement transit survives.
+- Verifies transient AI stream execution flags are reset safely.
+- Verifies both new Menu / Save entry points exist and use the shared handler.
 - All six non-empty embedded JavaScript blocks pass `node --check`.
 
-MANUAL TEST GATE
-----------------
-1. Use a mission where all aliens are dead, mandatory VIPs are already rescued/removed, and the confirmed Alien Field Beacon remains active.
-2. Leave Simulation AI in control.
-3. Confirm only one capable soldier becomes the direct beacon assaulter while the rest hold clear.
-4. With a combined shield, confirm the assaulter physically enters the shield and attacks/disables the beacon even if another soldier carries a grenade.
-5. Confirm the mission transitions directly into victory after the beacon is neutralized and never exposes a dead-end Retry AI Continuation state.
+MANUAL TEST GATES
+-----------------
+1. Start a manual tactical mission and change soldier selection and camera mode.
+2. Open `Menu / Save` from the tactical left bar, then Return to Game; confirm the exact battlefield and view return.
+3. Hand the mission to Simulation AI, open Menu / Save during a stable playback state, return, and confirm AI ownership/playback state remains coherent.
+4. Save the campaign from the menu, load that slot, and confirm the same tactical battlefield resumes rather than a fresh deployment.
+5. Collapse the normal command header and confirm `Menu / Save` remains accessible there as well.
 
-PREVIOUS PATCH NOTES
-====================
+PREVIOUS PATCH-NOTE HISTORY
+===========================
 
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES

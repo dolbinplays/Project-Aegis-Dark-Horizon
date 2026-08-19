@@ -2,9 +2,40 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.1315_BEACON_ENDGAME_AI_ASSAULT_RECOVERY_PATCH`
+Current handoff build: `v0.26.08.19.1415_ACTIVE_MISSION_MENU_SAVE_AND_TACTICAL_CONTINUITY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1315 hardens the Simulation-AI mission endgame when the alien force and required VIP/rescue work are already resolved but a confirmed Alien Field Beacon remains active. Instead of continuing full-squad search/formation logic, the AI now enters a dedicated beacon-neutralization phase, selects one genuinely capable loaded/armed assaulter (preferring a soldier already inside the shield), clears stale temporary command orders during recovery, releases that assaulter from fire-team pace and reserve-TU constraints, and holds the rest of the squad clear. Combined shields explicitly drive a physical close assault so an available grenade elsewhere in the team can no longer suppress the safer/reliable walk-through-and-fire solution. A soldier with an empty firearm and no grenade is no longer counted as beacon-breach capable. Once the assaulter is inside the seven-hex field, the AI attacks or uses the researched interface normally and the existing 0315 victory authority resolves the mission immediately after the beacon is neutralized. Browser 1245 smooth craft flight, 1145 startup repair, 1115 secure-rescue facing fix, 1045/0945 Simulation-AI recovery/optimization, and the stable flicker-free Geoscape lifecycle remain intact. Save format remains 4. Native Godot remains at 0026.**
+Current patch status: **Browser 1415 implements the planned Active Mission Menu / Save access and extends the tactical continuity cache into manual campaign saves. The minimized command header and active tactical left-hand command bar now both expose the same shared Menu / Save flow. Opening the menu suspends the live tactical view without discarding the battlefield, and a manual save made from that state now serializes the active tactical battlefield, selected unit/view including FPV/TPV observer state, current turn/round, fire-team/command state, AI playback/ownership state, and alien reinforcement state. Loading that save restores the tactical cache and resumes the same manual mission instead of silently downgrading it to Mission Control. Older saves without a tactical snapshot retain the previous safe fallback behavior. Browser 1315 beacon-endgame recovery, 1245 smooth craft flight, 0045 stable flicker-free Geoscape lifecycle, and all current tactical presentation/pathing fixes remain intact. Save format remains 4. Native Godot remains at 0026.**
+
+Implementation update (2026-08-19): **Browser 1415 completes the Active Mission Menu / Save roadmap slice. `Menu / Save` is now present in both the minimized strategic header and the tactical left command bar. The shared save path captures a JSON-safe `activeTacticalState` snapshot for an in-progress manual mission, including the persistent battlefield cache and current alien reinforcement transit state. On load, the tactical caches are rebuilt before the active mission remounts, transient AI stream flags are reset safely, and the mission resumes at its saved battlefield rather than regenerating from deployment. FPV/TPV observer choice is now included in the live tactical cache as well as 2D/3D Iso mode. Older saves that mark a mission manual but contain no tactical snapshot are deliberately downgraded to the pre-1415 Mission Control fallback instead of attempting an unsafe partial resume.**
+
+## Browser 1415 — Active Mission Menu / Save and Tactical Continuity
+
+**Status:** Implemented; manual gate is opening Menu / Save from an active manual or AI-controlled tactical mission, saving, returning without state loss, and loading that save back into the same battlefield.
+
+### Persistent access
+- The minimized command header now includes `Menu / Save`.
+- The active tactical left-hand command bar now includes the same `Menu / Save` action.
+- Both use the existing shared Save / Load screen and `openSaveMenuFrom("game")` authority; no second tactical-only save UI was created.
+
+### Tactical save continuity
+- Manual campaign saves made during an active tactical mission now include `activeTacticalState`.
+- The snapshot carries deployment geometry, cover/destruction state, unit HP/TU/ammo/positions, floor items, selected unit, zoom, 2D/3D Iso mode, FPV/TPV observer state, explored cells, fire/reserve/targeting modes, tactical log/timeline state, command-map state, turn/round, Simulation-AI playback ownership/progress, escort prompt state, and current alien reinforcement transit state.
+- Loading rebuilds `TACTICAL_LIVE_STATE_CACHE` and `TACTICAL_REINFORCEMENT_STATE_CACHE` before the tactical mission remounts.
+- Transient AI stream execution flags are normalized on restore (`streamPending` false and a fresh stream token) so loading cannot resurrect an orphaned background task.
+- Existing in-memory Menu -> Return to Game continuity remains unchanged.
+
+### Compatibility / safety
+- Save format remains 4 because the new field is optional and backward compatible.
+- Older saves without `activeTacticalState` load normally.
+- If an older/partial save marks a mission as manual but does not contain a valid tactical snapshot, the game falls back to Mission Control ownership rather than regenerating a misleading fresh battlefield.
+
+### Regression coverage
+- Build Health round-trips a synthetic tactical battlefield through the new save payload and restore helpers.
+- The contract verifies selected 3D/FPV state survives, alien reinforcement state survives, and transient AI stream flags are reset.
+- Source coverage requires Menu / Save entry points in both the minimized header and tactical left-hand command bar.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+
+**Manual gate:** enter a tactical mission, change view/selection, optionally hand control to Simulation AI, open `Menu / Save` from the left bar, return and confirm the battlefield is unchanged. Then make a manual save, reload it, and confirm the same tactical battlefield/view/AI state resumes rather than returning to a regenerated mission.
 
 
 Implementation update (2026-08-19): **Browser 1315 adds a dedicated beacon-only tactical endgame doctrine for Simulation AI. When no living aliens remain, mandatory rescue/VIP work is resolved, and the confirmed beacon is the sole remaining objective, one capable soldier is assigned direct neutralization responsibility while the rest of the squad holds clear. The assaulter ignores stale temporary fire-team waypoints, uses zero movement reserve, bypasses normal fire-team pace limits, prefers an already-inside soldier when possible, and physically enters combined shielding before firing if a loaded ranged weapon is available. Stream-recovery retries also clear stale command/search state in this beacon-only condition. This specifically targets the live failure where AI could stall at `Continue Beacon Assault` / `Retry AI Continuation` after all aliens and VIPs were already resolved.**
@@ -7389,12 +7420,12 @@ Still planned:
 - Better music selector UI.
 
 ### Roadmap Addition — Active Mission Menu / Save Access
-**Status:** Planned UI/accessibility refinement.
+**Status:** **Implemented in Browser 1415 / pending live save-load playtest confirmation.**
 
-- Add a persistent **Menu / Save** button to the **minimized command header** so collapsing the header never removes access to campaign/menu/save controls.
-- Add the same **Menu / Save** action to the **left-hand control bar of an active alien tactical mission**, including manual, Hybrid, and Simulation-AI-controlled missions.
-- Both entry points should open the existing shared Menu/Save interface and use the same save/load/menu authority as the rest of the game; do not create a second mission-specific save implementation.
-- Opening Menu / Save from an active mission must preserve the current tactical battlefield, selected unit/view, AI ownership/playback state, victory-review state, and other resumable mission state already supported by the tactical continuity/save architecture.
+- **Implemented 1415:** a persistent **Menu / Save** button is present in the **minimized command header**, so collapsing the header no longer removes access to campaign/menu/save controls.
+- **Implemented 1415:** the same **Menu / Save** action is present in the **left-hand control bar of an active alien tactical mission**, including manual, Hybrid, and Simulation-AI-controlled missions.
+- **Implemented 1415:** both entry points open the existing shared Menu/Save interface and use the same save/load/menu authority; there is no second mission-specific save implementation.
+- **Implemented 1415:** opening Menu / Save preserves the current in-memory tactical battlefield, and manual saves now serialize the live tactical cache so selected unit/view, AI ownership/playback state, battlefield state, and reinforcement state can resume after loading. Victory-review edge cases remain part of manual playtest coverage.
 - The control should remain accessible without expanding the header, changing tactical camera mode, or leaving the active mission screen first.
 - Place the left-bar button where it does not compete with soldier selection, fire-team controls, inventory/hand actions, camera controls, or mission-critical tactical buttons. It should read as a global command action rather than a unit action.
 - If a particular tactical transition is temporarily unsafe to save, keep Menu access available and communicate the specific save restriction inside the shared Menu/Save flow instead of hiding the button.
