@@ -2,17 +2,64 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-18
-Current handoff build: `v0.26.08.18.1515_GEOSCAPE_TICK_FLICKER_ELIMINATION_PATCH`
+Current handoff build: `v0.26.08.18.1645_GEOSCAPE_FREE_RUNNING_SOLAR_CLOCK_FLICKER_FIX_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1515 removes the remaining once-per-Geoscape-tick visual flicker from both the Three.js globe and flat Terminator Map. The smooth solar clock now uses bounded one-tick interpolation with an authoritative tick handoff instead of extrapolating past a delayed strategic tick and snapping backward when React catches up. The flat night mask now reuses one persistent `ImageData` buffer with precomputed latitude/longitude trig tables instead of rebuilding and recalculating location objects for every pixel, reducing the main-thread spike that coincides with the strategic tick. Globe cloud drift is no longer randomly reseeded every strategic time advance, and cloud SVG keys remain stable, preventing the white cloud layer from unmounting/remounting once per second. The WebGL globe and flat-map night canvas are isolated on persistent compositor layers. Browser 1345 remains the authoritative globe-surface/solar-parity foundation; Browser 1245 AI-stream recovery, Browser 1115 dateline-shortest aircraft routing, Browser 1055 world-wrap/radio-static emphasis, and all earlier tactical/pathing/lighting fixes remain active. Save format remains 4; native Godot remains at 0026.**
+Current patch status: **Browser 1645 removes the remaining once-per-strategic-tick solar flash by decoupling the animated day/night presentation from the exact arrival time of the one-second Geoscape state update. Browser 1515 still reduced rendering work and removed cloud remounts, but live testing showed both the Three.js globe lighting and flat Terminator Map night mask could still visibly pulse at the authoritative tick boundary while remaining perfectly stable when paused. Root cause: the shared smooth-clock helper still replaced its presentation anchor on every ordinary tick, so even a slightly early/late React/timer handoff changed the solar phase. Browser 1645 now lets the presentation solar clock free-run continuously at the selected time-compression rate and treats ordinary strategic ticks as observations only: they update the authoritative reference without replacing the animation origin. Speed changes, pause/resume, loads, and real time jumps still re-anchor intentionally. Globe and flat map continue to share `geoscapeSubsolarPoint()`, Browser 1345 remains the authoritative Three.js globe-surface foundation, Browser 1515 persistent-canvas/cloud optimizations remain active, and all earlier AI/pathing/world-wrap/radio/lighting fixes are preserved. Save format remains 4; native Godot remains at 0026.**
 
 
-Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1515 preserves Browser 0215's single-level building interaction/presentation improvements but does not implement vertical levels.**
+Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1645 preserves Browser 0215's single-level building interaction/presentation improvements but does not implement vertical levels.**
 
 
 
 
 
+
+# v0.26.08.18.1645 - Geoscape Free-Running Solar Clock Flicker Fix
+
+## Goal
+
+Eliminate the remaining once-per-tick flash still visible in live testing on both the Three.js globe and the flat Terminator Map, while preserving the player-facing behavior that day/night appears to slide continuously across the world at a speed proportional to the selected Geoscape time compression.
+
+## Root cause found after Browser 1515
+
+- Browser 1515 removed cloud remounts, reduced Terminator Map rendering cost, and prevented the old delayed-tick backward correction, but it still **re-anchored the shared presentation solar clock every time the authoritative one-second Geoscape tick arrived**.
+- The browser's interval timer, React commit, and `requestAnimationFrame` are not phase-locked. If the strategic tick arrived even slightly before or after the visual frame's expected boundary, replacing the clock anchor changed the apparent solar phase for one frame.
+- At high time compression the same few milliseconds represent many in-game minutes, so the correction could read as a visible brightness/night-mask flash even though the underlying math was otherwise correct.
+- The fact that live testing showed no flash while paused strongly isolated the issue to the running tick handoff rather than the Three.js globe surface, Terminator Map canvas, or solar-parity geometry.
+
+## Free-running visual solar clock
+
+- `geoscapeVisualClockAtElapsed()` no longer clamps presentation motion to exactly one strategic tick interval. While the clock is running, it advances continuously according to `tickMinutes / tickIntervalMs`.
+- An ordinary authoritative Geoscape tick no longer replaces the visual `clock` or `anchorMs`. It updates only `authoritativeClock` and records `tick-observed-no-reanchor`.
+- Therefore the solar phase immediately before and immediately after a normal strategic tick is mathematically identical. The globe light and flat-map night mask keep moving through the tick boundary instead of being restarted there.
+- This applies to every running speed, including the visually sensitive 6h and 1d compression modes.
+
+## Intentional re-anchor events
+
+The presentation clock still re-anchors when the rate or timeline genuinely changes:
+
+- player changes Geoscape speed;
+- clock is paused/resumed;
+- a save/load or explicit strategic time jump changes the authoritative timeline;
+- other non-ordinary clock changes occur.
+
+These are deliberate discontinuities rather than the once-per-second background tick and should not create a recurring pulse.
+
+## Preserved systems
+
+- Browser 1345 Three.js globe solar-surface authority remains unchanged.
+- Globe and Terminator Map still use the same `geoscapeSubsolarPoint()` solar geometry.
+- Browser 1515 persistent Terminator `ImageData`, trig lookup tables, compositor isolation, and stable cloud keys remain active.
+- Aircraft shortest dateline routing/world-wrap, Simulation AI fixes, tactical radio/static, and all tactical systems are unchanged.
+- Save format remains 4.
+
+## Regression coverage / manual gates
+
+- Build Health now tests an **early** ordinary tick and a **late** ordinary tick at 1d/sec and requires zero presentation-minute discontinuity across both handoffs.
+- It verifies that ordinary ticks retain the original animation anchor instead of creating a new one.
+- It also verifies that changing time speed re-anchors at the exact currently displayed visual minute so speed changes do not themselves jump.
+- Manual gate: run the globe and Terminator Map for at least 15 seconds at 1m, 30m, 1h, 6h, and 1d. The terminator should move continuously through every one-second strategic tick with no synchronized flash.
+- Manual gate: pause time and confirm the day/night presentation freezes exactly as before.
 
 # v0.26.08.18.1515 - Geoscape Tick Flicker Elimination
 
