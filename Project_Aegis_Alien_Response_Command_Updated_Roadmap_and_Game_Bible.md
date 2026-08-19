@@ -2,9 +2,9 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.0145_GLOBE_ZOOM_PARITY_SELF_TEST_SCOPE_HOTFIX_PATCH`
+Current handoff build: `v0.26.08.19.0215_GEOSCAPE_FIXED_RADIUS_OVERLAY_AND_GLOBE_ZOOM_REMOVAL_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0145 is a startup-only hotfix for Browser 0115. The 0115 globe zoom-parity gameplay change remains intact, but its new Build Health contract directly referenced `FixedStepGeoscapeGlobeSurface` and `geoscapeFixedStepGlobePropsEqual` from outside the lexical scope that owns those nested helpers. That caused a launch-time `ReferenceError` before the game could render. Browser 0145 makes the contract inspect `AlienResponseCommand` source for the same zoom-parity evidence instead of executing out-of-scope identifiers, and adds an explicit self-test-scope hotfix flag. No gameplay, Geoscape rendering, solar behavior, save data, or 0045 lifecycle architecture changes are made. Save format remains 4. Native Godot remains at 0026.**
+Current patch status: **Browser 0215 removes the player-facing Globe zoom system and fixes the remaining operational-overlay detachment by giving the Three.js Earth, coordinate projection, interaction math, range/ferry overlays, bases, incidents, UFOs, alien bases, aircraft, and placement crosshair one fixed 150 px screen-space globe radius. The legacy zoom authority is reduced to a single 1.0 scale for compatibility, persisted older zoom values are ignored, mouse-wheel Globe zoom is disabled, and the Zoom 1–4 controls/instructions are removed. Earth-bound command graphics are additionally clipped to the visible globe disc so markers approaching the limb cannot visibly float beyond the planet silhouette. Browser 0045’s live-confirmed stable React component identity—the actual fix for the strategic-tick flicker—is preserved unchanged. Save format remains 4. Native Godot remains at 0026.**
 
 
 Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1945 preserves Browser 0215's single-level building interaction/presentation improvements, Browser 1845's FPV/TPV backdrop depth correction, and now aligns the continuous FPV/TPV floor texture to the same world-space hex centers used by 3D Iso; it does not implement vertical levels.**
@@ -14,6 +14,25 @@ Roadmap-only planning update: **Future Stage 3 tactical work still includes mult
 
 
 
+
+
+## Browser 0215 — Fixed-Radius Globe Overlay Surface + Zoom Removal
+
+**Status:** Implemented; desktop visual verification required.
+
+- Browser 0045 remains the authoritative lifecycle fix for the long-running Geoscape tick flicker and must not be regressed. The Globe/Terminator root stays pinned to one stable React component identity across strategic ticks.
+- Browser 0115 attempted to solve detached command overlays by scaling the Three.js globe to the player-selected zoom level. Desktop testing showed the operational overlays could still appear well above the Earth surface, and the player no longer wants Globe zoom controls.
+- Browser 0215 therefore removes variable Globe scale from the player-facing Geoscape. The visible Three.js Earth and all operational-overlay projection math now share `GEOSCAPE_GLOBE_SURFACE_RADIUS_PX = 150`.
+- The legacy `GLOBE_ZOOM_LEVELS` authority is retained as a single `[1]` entry only for compatibility with older helper/state code. Persisted camera zoom values from older saves are ignored by the live Globe and normalized back to the one supported scale.
+- The `Zoom` label and Zoom 1–4 buttons are removed from the Globe/Terminator view selector. Mouse-wheel Globe zoom is inert, so wheel input no longer changes planet scale.
+- Base-placement and Instructions copy no longer tells the player to use Zoom 1–4; precise Globe positioning is now done by dragging/rotating the planet.
+- `cameraRadius` is fixed at the same 150 px radius consumed by `projectGlobePoint()`, `screenPointToGlobeLocation()`, range-ring rendering, ferry-link rendering, aircraft rendering, bases, incidents, UFOs, alien bases, and the placement crosshair.
+- The imperative command canvas now clips Earth-bound overlays to the visible globe disc (`GEOSCAPE_GLOBE_OVERLAY_CLIP_RADIUS_PX`). This means a marker near the horizon is naturally clipped by the planet silhouette instead of drawing its full icon outside the Earth and appearing suspended above the surface. Background stars remain outside the clip.
+- The fixed-step Three.js globe remains cloudless, the shared solar/day-night system is unchanged, Terminator Map behavior is unchanged, and dateline shortest-route/world-wrap behavior is preserved.
+- Build Health adds a scope-safe contract based on `AlienResponseCommand` and the global canvas-draw helper; it does not directly execute nested component identifiers. The older 0115 surface-parity contract now recognizes the new one-scale fixed-radius doctrine instead of requiring obsolete player zoom behavior.
+- Save format remains **4**. All six non-empty embedded JavaScript blocks pass `node --check`.
+
+**Manual gate:** open the Globe and inspect bases/incidents/UFOs/aircraft at the center and near the visible limb. Their projected centers should remain on the Earth surface, and icons approaching the horizon should be clipped by the globe rather than floating outside it. Confirm there are no Zoom controls, mouse-wheel input does not change globe scale, Globe rotation still works, and the Browser 0045 no-flicker behavior remains intact.
 
 
 ## Browser 0145 — Globe Zoom-Parity Self-Test Scope Startup Hotfix

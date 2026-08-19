@@ -1,6 +1,71 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.19.0215_GEOSCAPE_FIXED_RADIUS_OVERLAY_AND_GLOBE_ZOOM_REMOVAL_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Removes Globe zoom controls and fixes the remaining Operational Overlay detachment by returning the player-facing Geoscape Globe to one authoritative screen-space Earth radius. Bases, incidents, UFOs, alien bases, aircraft, range rings, ferry links, placement markers, globe hit-testing and the Three.js Earth now use the same fixed scale. Earth-bound overlays are also clipped to the visible globe disc so horizon markers cannot appear suspended beyond the planet silhouette.
+
+FIXED-RADIUS GLOBE SURFACE
+--------------------------
+- Adds `GEOSCAPE_GLOBE_SURFACE_RADIUS_PX = 150` as the player-facing Globe surface authority.
+- Operational overlay projection now uses that fixed radius instead of `150 * selectedZoom`.
+- Globe interaction/hit testing uses the same fixed radius.
+- Travel/autofocus no longer changes the camera scale.
+- The legacy `GLOBE_ZOOM_LEVELS` array is reduced to `[1]` for compatibility with older helpers and persisted camera records.
+- Older saved zoom indices are ignored by the active Globe.
+
+GLOBE ZOOM REMOVAL
+------------------
+- Removes the Globe `Zoom` label and Zoom 1–4 buttons.
+- Mouse-wheel Globe zoom is disabled.
+- Base-placement help now tells the player to drag the globe for precise positioning.
+- Instructions no longer describe multiple Globe detail/zoom levels.
+
+OPERATIONAL OVERLAY SURFACE ATTACHMENT
+--------------------------------------
+- Bases, incidents, detected UFOs, alien bases, Skyrangers, interceptors, range rings, ferry links and the placement crosshair all share the visible Earth radius.
+- The persistent command canvas now clips Earth-bound graphics to the visible globe disc.
+- Markers approaching the limb are therefore partially occluded by the planet silhouette instead of drawing their whole icon outside the Earth and looking like they are floating above it.
+- Background stars remain outside the Earth clip.
+
+PRESERVED ARCHITECTURE
+----------------------
+- Browser 0045's live-confirmed stable React component identity/flicker fix is unchanged.
+- Globe remains cloudless.
+- Globe/Terminator solar behavior is unchanged.
+- Terminator Map is unchanged.
+- Dateline shortest-route and world-wrap aircraft behavior is unchanged.
+- Recent FPV/TPV ground and skyline fixes are unchanged.
+- Save format remains 4.
+
+REGRESSION COVERAGE
+-------------------
+- Adds `GEOSCAPE_FIXED_RADIUS_OVERLAY_SURFACE_PATCH`.
+- Adds `GEOSCAPE_GLOBE_ZOOM_CONTROLS_REMOVED_PATCH`.
+- Build Health verifies the active Globe component starts at zoom index 0, uses the fixed radius for interaction and projection, does not render the old `GLOBE_ZOOM_LEVELS.map(...)` control block, leaves wheel zoom inert, and clips the command canvas to the globe disc.
+- The older 0115 parity contract now treats the one-scale fixed-radius model as the current valid surface-parity doctrine.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+
+MANUAL TEST GATES
+-----------------
+1. Launch local `index.html` and confirm the start screen loads without a Build Health ReferenceError.
+2. Open Geoscape Globe and confirm there are no Zoom 1–4 controls.
+3. Rotate a base, incident or UFO near the visible globe edge. Its center should remain attached to the Earth and the icon should be naturally clipped at the limb.
+4. Check aircraft, range rings and ferry links near the limb for the same behavior.
+5. Scroll the mouse wheel over the Globe and confirm the Earth scale does not change.
+6. Let Geoscape time run and confirm Browser 0045's no-flicker behavior remains intact.
+
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.19.0145_GLOBE_ZOOM_PARITY_SELF_TEST_SCOPE_HOTFIX_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
