@@ -275,6 +275,17 @@ const required = [
   "TACTICAL_THREE_LIVING_UNIT_POSE_HOTFIX",
   "TACTICAL_VIP_QUOTA_DEATH_FLAG_TERMINAL_FIX",
   "BUILD_HEALTH_AND_RUNTIME_HOTPATH_HARDENING_PATCH",
+  "HOVER_HELP_DETAIL_DELAY_AND_TOGGLE_PATCH",
+  "TACTICAL_THREE_RENDER_KEY_MEMOIZATION_PATCH",
+  "TACTICAL_ALIEN_CRAFT_INTERIOR_HULL_OCCLUSION_PATCH",
+  "AEGIS_HOVER_HELP_POINTER_DELAY_MS=3000",
+  "data-aegis-hover-help-toggle",
+  "aegisHoverHelpDescriptionIsGeneric",
+  "const unitsKey=useMemo",
+  "const coversKey=useMemo",
+  "runtime.unitLightingPresentationKey===presentationKey",
+  "saucer-bay-roof-shroud",
+  "hullThetaLength",
   "runCombinedFullBuildHealthTests",
   "AEGIS_RENDER_SCOPED_BUILD_HEALTH_RUNNER",
   "AEGIS_POST_DEFERRED_BUILD_HEALTH_RUNNER",
@@ -556,6 +567,15 @@ if (html.includes("useEffect(()=>()=>cancelAiPlaybackTimers(),[])")) {
 if (html.includes("runSelfTestsWith2225Patch") || html.includes("runSelfTestsWith2315Patch")) {
   missing.push("render-scoped Geoscape diagnostics must not reassign the boot test runner");
 }
+if (html.includes('return`Click to activate “${clean}”.`') || html.includes('description||"Click to activate this control."')) {
+  missing.push("generic hover activation descriptions must remain removed");
+}
+const alienCraftModelStart = html.indexOf("function addTacticalSkyrangerThreeModel");
+const alienCraftModelEnd = html.indexOf("const AEGIS_TACTICAL_DEPLOYMENT_WITH_FIELD_BEACON_FINAL", alienCraftModelStart);
+const alienCraftModelSource = alienCraftModelStart >= 0 ? html.slice(alienCraftModelStart, alienCraftModelEnd > alienCraftModelStart ? alienCraftModelEnd : undefined) : "";
+if (!alienCraftModelSource || alienCraftModelSource.includes("alienInteriorMaterial.depthTest=false") || alienCraftModelSource.includes("alienInteriorGlow.depthTest=false") || alienCraftModelSource.includes("part.renderOrder=55")) {
+  missing.push("alien craft interior meshes must remain depth-tested behind the bounded hull aperture");
+}
 if (!html.includes('pointermove",event=>{if(!active||event.pointerType==="touch")return;lastPoint={x:event.clientX,y:event.clientY};if(tooltip.style.display!=="none")schedulePlace()')) {
   missing.push("global hover placement must remain animation-frame throttled");
 }
@@ -817,7 +837,7 @@ if (!nativeContent.soldiers?.every((soldier) => Number.isFinite(soldier.reaction
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "complete-classic-battlescape-command-set" && entry?.reason)) {
   missing.push("remaining classic battlescape command depth must be recorded as a temporary gameplay parity exception");
 }
-for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening"]) {
+for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement"]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser optimization parity exception missing: ${system}`);
   }

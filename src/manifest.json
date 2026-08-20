@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.20.1130_BUILD_HEALTH_AND_RUNTIME_HOTPATH_HARDENING_PATCH",
+  "currentBuild": "v0.26.08.20.1310_HOVER_HELP_AND_PERSISTENT_RENDERER_REFINEMENT_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "build-health-runtime-hotpath-hardening-static-passed",
+  "status": "hover-help-persistent-renderer-refinement-static-passed",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.20.1130_BUILD_HEALTH_AND_RUNTIME_HOTPATH_HARDENING_PATCH",
+  "lastInspectedBuild": "v0.26.08.20.1310_HOVER_HELP_AND_PERSISTENT_RENDERER_REFINEMENT_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.20.1130_BUILD_HEALTH_AND_RUNTIME_HOTPATH_HARDENING_PATCH",
+    "browserBuild": "v0.26.08.20.1310_HOVER_HELP_AND_PERSISTENT_RENDERER_REFINEMENT_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -274,6 +274,10 @@
       {
         "system": "build-health-runtime-hotpath-hardening",
         "reason": "The browser now keeps every full Build Health contract behind the diagnostics panel, throttles global hover placement, consolidates tactical unmount cleanup, and suspends the hidden Three.js globe loop. Native Godot uses separate diagnostic, input, scene-tree, and renderer lifecycles."
+      },
+      {
+        "system": "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement",
+        "reason": "The browser now offers persistent optional three-second contextual hover help, memoizes repeated tactical Three.js invalidation keys/material passes, and depth-occludes alien craft interiors behind a bounded hull aperture. Native Godot uses separate Control hints, scene resources, and renderer occlusion."
       },
       {
         "system": "threejs-armor-matched-soldier-helmets",

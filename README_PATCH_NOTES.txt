@@ -1,6 +1,53 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.20.1310_HOVER_HELP_AND_PERSISTENT_RENDERER_REFINEMENT_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Makes contextual hover help deliberate, optional, and useful; avoids repeated persistent-renderer key/material work; and prevents the alien reinforcement craft's troop bay from drawing through its hull.
+
+HOVER HELP
+----------
+- Pointer hover descriptions now wait 3 seconds before appearing. Keyboard focus retains a short delay for accessibility.
+- Generic “Activates X” / “Click to activate X” descriptions are suppressed. Recognized controls explain their purpose, consequences, and state; an unsupported control shows no tooltip until it has useful guidance.
+- Detailed descriptions were added for Build Health, patch history, audio/SFX controls, incident and UFO lists, tactical shot results, Simulation/Hybrid handoff, fire-team cycling, and Command Map pause/resume.
+- Hover Help: On / Off buttons appear on the start screen, in Command Settings, and on Save / Load.
+- The setting is stored locally, does not affect campaign saves, and immediately dismisses a visible/pending tooltip when turned off.
+
+PERSISTENT THREE.JS TACTICAL RENDERER
+-------------------------------------
+- Unit, cover, reachable-cell, movement-path, camera-focus, and Skyranger invalidation keys are memoized while their authoritative inputs are unchanged.
+- Iso/perspective unit-material traversal now runs only after a unit-layer change or camera-lighting presentation transition.
+- Renderer, scene, geometry/material caches, static terrain, cover, fog, and unit nodes remain persistent across movement and selection updates.
+
+ALIEN CRAFT INTERIOR OCCLUSION
+------------------------------
+- Alien reinforcement craft now use a deliberately bounded rear hull aperture sized to the ramp.
+- Troop-bay materials again use normal depth testing and depth writes instead of forced foreground rendering.
+- An opaque roof shroud prevents the interior ceiling, seats, and glow strips from appearing through the top of the saucer while retaining a readable rear-ramp view.
+
+VALIDATION
+----------
+- Embedded JavaScript parsing, manifest/build parity, whitespace, static build seams, deferred boot diagnostics, hover preference persistence, renderer memoization, and alien-craft depth contracts are checked.
+- Save format remains 4.
+
+MANUAL TEST GATES
+-----------------
+1. Rest the pointer over Build Health for less than 3 seconds, then longer than 3 seconds; confirm no early tooltip and a detailed delayed explanation.
+2. Turn Hover Help off from each exposed settings location and confirm pending/visible descriptions disappear and remain off after reload; turn it back on and confirm behavior returns.
+3. Hover an unmapped control and confirm no generic activation-only tooltip appears.
+4. In 3D Iso and FPV/TPV, inspect a landed alien reinforcement craft from above, the side, and the rear ramp. The bay must be hidden by intact hull/roof surfaces and visible only through the rear opening.
+5. Move/select soldiers repeatedly in 3D Iso and confirm the persistent renderer ID remains stable while units, fog, cover, and camera presentation update correctly.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.20.1130_BUILD_HEALTH_AND_RUNTIME_HOTPATH_HARDENING_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
@@ -3615,6 +3662,5 @@ A complete live Chromium tactical/geoscape smoke test remains the final validati
 4. Confirm no two living soldiers finish a round on the same hex.
 5. Escort a VIP/civilian with a fire-team leader, spot an alien, test both escort-support choices, and confirm detached supports return afterward.
 6. Station Ready interceptors at several bases, select `All Bases`, verify staggered arrivals, destroy the UFO before every interceptor arrives, and follow the remaining aircraft home through normal ferry routing.
-
 
 

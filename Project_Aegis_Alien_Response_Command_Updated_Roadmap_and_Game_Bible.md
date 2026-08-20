@@ -2,12 +2,39 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-20
-Current handoff build: `v0.26.08.20.1130_BUILD_HEALTH_AND_RUNTIME_HOTPATH_HARDENING_PATCH`
+Current handoff build: `v0.26.08.20.1310_HOVER_HELP_AND_PERSISTENT_RENDERER_REFINEMENT_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1130 restores the authoritative dead-VIP rescue-quota safeguard and hardens four runtime lifecycle seams. Full Build Health now combines the original and post-deferral contracts only after its panel opens, global hover positioning is animation-frame throttled with cached measurements, tactical AI/shot timer teardown is consolidated into one unmount hook, and the persistent Three.js globe suspends its fixed-step loop while hidden. Manifest, in-game version history, and external validation now agree with the playable build. Browser 1045 global hover help, Browser 1035 draggable tutorial windows, Browser 1015 startup-scope correction, Browser 2325 beacon recovery, and Browser 2155 AI recovery remain active. Save format remains 4.**
+Current patch status: **Browser 1310 makes global hover help optional and useful instead of immediate/generic: pointer help waits three seconds, unsupported activation-only descriptions are suppressed, detailed mappings cover important strategic/tactical controls, and persistent on/off buttons are available from the title screen, Command Settings, and Save / Load. The persistent tactical renderer now memoizes repeated invalidation keys and skips unchanged unit-material traversal. Alien reinforcement craft regain correct hull occlusion through a bounded rear aperture, normal interior depth testing, and an opaque roof shroud. Browser 1130 deferred Build Health and runtime hardening, Browser 1045 global hover help, Browser 1035 tutorial windows, Browser 2325 beacon recovery, and Browser 2155 AI recovery remain active. Save format remains 4.**
 
 
 Implementation update (2026-08-19): **Browser 2325 targets the live reproduction where the last VIP had just been rescued, no living aliens remained, and a confirmed Alien Field Beacon was the sole remaining objective, yet Simulation AI rapidly advanced rounds without useful movement or fire. Browser 1315 already had a dedicated beacon assaulter, but it did not guarantee round-level progress. The new must-progress watchdog treats beacon-only neutralization as a mandatory action phase: nearby non-assault troops clear the shield/approach, close-assault routing ignores temporary same-side traffic along the path, and after the normal AEGIS pass the resolver compares beacon HP plus assaulter distance/inside-shield state. If nothing improved, the assaulter receives a zero-reserve same-round retry and immediately attacks when a legal shot becomes available. A truly no-breach squad now halts streamed continuation instead of manufacturing endless empty rounds.**
+
+
+## Browser 1310 — Hover Help + Persistent Renderer Refinement
+
+**Status:** Implemented the next optimization/UI cleanup slice plus the reported alien-craft hull-occlusion correction.
+
+### Contextual hover help
+- Pointer hover requires a continuous three-second dwell before the tooltip appears; keyboard focus stays responsive for accessibility.
+- Generic activation-only fallback descriptions are removed. Known controls explain their use, relevant consequences, and whether they change presentation or authoritative game state; unknown controls remain silent.
+- The locally persisted **Hover Help: On / Off** control is exposed on the title screen, in Command Settings, and on Save / Load. Disabling it cancels pending placement and dismisses a visible tooltip immediately.
+
+### Persistent tactical renderer refinement
+- Expensive unit, cover, reachability, movement, camera-focus, and Skyranger key strings are memoized between unrelated parent renders.
+- Unit-material traversal is gated by unit invalidation or an actual Iso/perspective lighting-presentation transition.
+- Renderer, scene, geometry/material caches, static battlefield layers, and normal fire-team/tactical behavior remain persistent and unchanged.
+
+### Alien reinforcement craft hull occlusion
+- The saucer hull now has a bounded rear aperture aligned to its ramp rather than relying on interior meshes that ignored depth.
+- Bay walls, seats, and glow strips use normal depth testing/depth writing.
+- A hull-colored roof shroud hides the bay from overhead and side views while the rear opening remains readable in FPV/TPV.
+
+### Validation gates
+1. Verify pointer descriptions appear only after three seconds and never show generic “Activates X” filler.
+2. Toggle Hover Help in all three settings locations, reload, and confirm the local preference persists.
+3. Exercise unit selection/movement/camera changes in 3D Iso and confirm the persistent renderer ID does not change.
+4. Inspect the alien reinforcement saucer from overhead, sides, and rear; interior geometry may only be visible through the rear aperture.
+5. Save format remains **4**.
 
 
 ## Browser 1130 — Build Health + Runtime Hotpath Hardening
