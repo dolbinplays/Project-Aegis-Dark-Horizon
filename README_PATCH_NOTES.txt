@@ -1,6 +1,123 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.19.2325_BEACON_ENDGAME_MUST_PROGRESS_WATCHDOG_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Fixes a live beacon-only Simulation-AI stall reproduced immediately after the final VIP was rescued. With no living aliens or unresolved VIPs left, a confirmed Alien Field Beacon could remain as the sole mandatory objective while the streamed AI rapidly advanced tactical rounds without useful movement or fire. Browser 1315 already assigned a beacon assaulter, but the round resolver did not require that assignment to make measurable progress before another continuation was generated.
+
+BEACON MUST-PROGRESS WATCHDOG
+-----------------------------
+- Beacon-only endgame now measures progress using beacon HP/state plus the selected assaulter's distance/inside-shield state.
+- If the normal AEGIS pass does not damage/disable/destroy the beacon, move the assaulter closer, or put the assaulter inside the shield, the assaulter receives an immediate same-round retry.
+- The watchdog clears the assaulter's movement reserve and stale temporary command fields, retries the beacon approach, and fires immediately when a legal loaded ranged shot is available.
+- The resolver therefore does not silently treat an empty beacon-only round as satisfactory progress.
+
+FRIENDLY-TRAFFIC CLEARING
+-------------------------
+- Non-assaulting soldiers occupying the seven-hex beacon field or crowding the immediate approach now move to a short legal perimeter position rather than simply freezing in place.
+- The close-assault pathfinder ignores same-side AEGIS traffic along the path so a capable assaulter can pass through teammates.
+- Final destination occupancy remains authoritative; the assaulter cannot finish movement on an occupied hex.
+- These changes are specifically intended to prevent support troops from trapping the only capable soldier outside a combined shield.
+
+NO-BREACH STREAM GUARD
+----------------------
+- If no living AEGIS soldier has a loaded ranged weapon or Frag Grenade available for a legal beacon breach solution, the existing no-breach state is preserved.
+- Full Simulation AI now treats that state as blocked and stops automatic continuation.
+- The live battlefield is preserved for Take Back Control or Dust Off instead of rapidly consuming empty rounds.
+- The patch does not invent ammunition, grenades, beacon damage, or victory.
+
+PRESERVED BEHAVIOR
+------------------
+- Unshielded, kinetic, and combined beacon shield rules are unchanged.
+- Research-gated intact beacon disable/hacking and Pale Commander badge behavior are unchanged.
+- Browser 2155 AI exception/grid-search recovery, Browser 2255 timeline report archive, and Browser 2305 shot-feedback accessibility remain intact.
+- Hit chance, damage, TU costs, ammunition, LOS, cover, rescue scoring, mission victory authority, and save format are unchanged.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added a perimeter-clear helper regression using a soldier standing inside the beacon shield.
+- Added a combined-shield close-assault regression with friendly traffic in the approach.
+- Added progress-state validation for reduced beacon HP / improved assaulter position.
+- Added source contracts requiring the same-round watchdog retry, perimeter-clear action, and blocked no-breach stream handling.
+- Focused helper harness confirmed a shield-adjacent non-assault soldier moves to a legal cell outside the field.
+- All 6 non-empty embedded JavaScript blocks pass `node --check`.
+- Save format remains 4.
+
+MANUAL TEST GATES
+-----------------
+1. Complete the VIP rescue portion of a mission so the beacon is the only objective and confirm Simulation AI immediately commits to it.
+2. Confirm a capable assaulter moves closer/inside and damages or neutralizes the beacon instead of rapidly advancing empty rounds.
+3. Place friendly troops around the shield and confirm non-assault troops clear outward while the assaulter can pass through their traffic.
+4. Confirm combined shielding still requires the loaded ranged assaulter to enter the field before firing.
+5. Exhaust all usable ranged ammunition and Frag Grenades, then confirm auto-streaming stops in the no-breach state and preserves the battlefield.
+6. Confirm Hybrid AI, VIP extraction, Browser 2155 grid-search recovery, save/load, and Browser 2305 shot-result settings are unchanged.
+
+PREVIOUS BUILD - 2305
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
+Build: v0.26.08.19.2305_TACTICAL_SHOT_FEEDBACK_ACCESSIBILITY_SETTINGS_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Implements the next Stage 3 Tactical Readability accessibility follow-up. Tactical HIT / MISS / ARMOR HIT / TARGET DOWN / CRITICAL KILL result cards now support persistent Brief (3s), Standard (10s), and Extended (20s) visibility choices plus Standard or Reduced Motion presentation. Shot Results On/Off now persists across missions as part of the same presentation preference. Reduced Motion removes the card slide/scale transition and the first-run default honors the operating-system/browser reduced-motion preference when available.
+
+SHOT RESULT DURATION
+--------------------
+- Brief: 3 seconds.
+- Standard: 10 seconds and remains the existing default.
+- Extended: 20 seconds.
+- Changing the duration clears currently scheduled shot cards/timers before applying the new timing so mixed old/new expiry rules cannot overlap.
+
+REDUCED MOTION
+--------------
+- Standard Motion retains the existing opacity + translate/scale exit animation.
+- Reduced Motion removes transform/transition animation and removes each card directly when its selected duration expires.
+- First-run motion preference follows `prefers-reduced-motion: reduce` when the browser exposes it.
+- Projectile effects, Critical Kill cinematics, incoming-fire reaction slow motion, tactical movement, and camera motion are not changed by this card-only setting.
+
+PERSISTENCE / SAVE CONTINUITY
+-----------------------------
+- Shot Results On/Off, duration, and motion are stored in local presentation preferences.
+- Active tactical state also stores optional duration/motion values so Menu / Save continuity preserves the current mission presentation.
+- Older saves normalize safely. Save format remains 4.
+
+GAMEPLAY / AI UNCHANGED
+-----------------------
+- Hit chance, RNG, damage, armor, ammunition, TU, AI decisions, Simulation/Hybrid playback pacing, mission resolution, tactical timeline generation, and Browser 2255 report archiving are unchanged.
+- Browser 2155 AI exception containment and emergency grid-search recovery are untouched; this build intentionally avoids changing the AI behavior that is currently testing without stalls.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added bounded helper validation for 3s / 10s / 20s duration normalization and invalid-value fallback.
+- Added validation that Reduced Motion produces no translate/scale transform and no transition.
+- Build Health requires the duration and motion controls plus settings-aware timer scheduling in TacticalMission.
+- All 6 non-empty embedded JavaScript blocks pass `node --check`.
+- Save format remains 4.
+
+MANUAL TEST GATES
+-----------------
+1. Select Brief and fire several shots; confirm result cards clear after about 3 seconds.
+2. Repeat with Standard and Extended; confirm approximately 10-second and 20-second visibility.
+3. Toggle Reduced Motion and confirm cards no longer slide/scale when leaving.
+4. Turn Shot Results Off, leave/re-enter tactical play, and confirm the preference persists.
+5. Change duration/motion, save and reload an active tactical mission, and confirm the current presentation settings remain selected.
+6. Confirm shot results, combat timing, tactical timeline, Simulation/Hybrid AI behavior, incoming-fire reaction shots, and Critical Kill cinematics are otherwise unchanged.
+
+PREVIOUS BUILD - 2255
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.19.2255_TACTICAL_TIMELINE_MISSION_REPORT_ARCHIVE_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

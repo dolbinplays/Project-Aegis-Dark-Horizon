@@ -2,9 +2,89 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.2255_TACTICAL_TIMELINE_MISSION_REPORT_ARCHIVE_PATCH`
+Current handoff build: `v0.26.08.19.2325_BEACON_ENDGAME_MUST_PROGRESS_WATCHDOG_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2255 implements the next Stage 3 Tactical Readability follow-up by archiving the live categorized Mission Timeline into permanent mission reports. Manual tactical, Hybrid-AI terminal, and full Simulation-AI Tactical Map completion all route through one archive wrapper; reports retain up to 48 event records with category, round, acting side, and text; the existing Mission Action Log remains intact; pre-2255 reports remain backward compatible; and the event classifier no longer mistakes `Mission success` / `Mission failed` for missed-shot Combat events. Browser 2155 AI exception/grid-search recovery remains unchanged beneath this reporting-only slice. Save format remains 4.**
+Current patch status: **Browser 2325 hardens the beacon-only tactical endgame after live VIP testing reproduced a rapid empty-round loop once the final VIP was extracted and the Alien Field Beacon became the only remaining objective. Beacon neutralization is now a must-progress phase: non-assaulting soldiers actively clear the seven-hex shield/approach, the chosen assaulter can route through same-side traffic while still requiring an unoccupied destination, and a no-progress normal pass triggers an immediate same-round watchdog retry that moves and/or attacks the beacon before another round is allowed to begin. If no usable loaded ranged weapon or Frag Grenade remains, streamed Simulation AI stops instead of auto-advancing empty rounds and returns the preserved battlefield for player command/Dust Off. Browser 2155 exception/grid-search recovery, Browser 2255 timeline archiving, and Browser 2305 shot-feedback accessibility remain intact. Save format remains 4.**
+
+
+Implementation update (2026-08-19): **Browser 2325 targets the live reproduction where the last VIP had just been rescued, no living aliens remained, and a confirmed Alien Field Beacon was the sole remaining objective, yet Simulation AI rapidly advanced rounds without useful movement or fire. Browser 1315 already had a dedicated beacon assaulter, but it did not guarantee round-level progress. The new must-progress watchdog treats beacon-only neutralization as a mandatory action phase: nearby non-assault troops clear the shield/approach, close-assault routing ignores temporary same-side traffic along the path, and after the normal AEGIS pass the resolver compares beacon HP plus assaulter distance/inside-shield state. If nothing improved, the assaulter receives a zero-reserve same-round retry and immediately attacks when a legal shot becomes available. A truly no-breach squad now halts streamed continuation instead of manufacturing endless empty rounds.**
+
+
+## Browser 2325 — Beacon Endgame Must-Progress Watchdog
+
+**Status:** Implemented live-stall hotfix; primary manual gate is a VIP mission immediately after the final VIP is extracted with no living aliens and one active confirmed beacon remaining.
+
+### Beacon-only must-progress authority
+- Once no living aliens remain, rescue/VIP work is complete, and a confirmed active beacon is the remaining mandatory objective, the AI enters a strict beacon-only endgame.
+- The round is no longer considered useful merely because tactical time advanced. Progress is measured by beacon HP/state, the selected assaulter entering the shield, or the assaulter reducing distance to the beacon.
+- If the ordinary AI pass produces none of those changes, the designated assaulter receives an immediate **same-round watchdog retry** with zero reserve TU.
+- The watchdog moves the assaulter toward/through the shield and fires immediately if a legal loaded ranged shot becomes available.
+- This keeps Browser 1315's existing beacon knowledge/shield rules; it does not reveal a hidden beacon or invent damage through an incompatible shield.
+
+### Friendly-traffic clearing
+- Non-assaulting soldiers no longer simply freeze in `beacon-perimeter` if they are occupying the seven-hex shield or crowding the approach.
+- Those soldiers receive a short bounded perimeter-clear move toward a legal cell outside the shield, preferring roughly 3-4 hexes from the device.
+- The selected beacon assaulter's close-assault path may pass through friendly AEGIS traffic, matching the game's existing pass-through presentation expectations, while its destination must still be unoccupied and legal.
+- This specifically prevents support troops from physically locking the only capable assaulter outside a combined shield.
+
+### Impossible-breach stream guard
+- If the beacon is discovered but no living AEGIS soldier has a loaded ballistic/laser/plasma weapon or Frag Grenade capable of beginning a legal breach solution, the resolver still reports the existing `no-breach` state.
+- Full Simulation AI now treats that condition as **blocked**, not as another ordinary continuation round.
+- Automatic prefetch stops and the battlefield is preserved for **Take Back Control** or **Dust Off** instead of rapidly consuming empty tactical rounds.
+- No synthetic beacon destruction, ammunition, grenades, or victory is created.
+
+### Preserved behavior
+- Beacon shield progression remains: unshielded, kinetic, and combined shielding keep their existing weapon/inside-field interaction rules.
+- Research-gated intact beacon disable/hacking and commander-badge behavior are unchanged.
+- Browser 2155 shared AI exception containment/grid search remains available outside the specialized beacon-only phase.
+- Browser 2255 tactical timeline archiving and Browser 2305 shot-result accessibility settings are unchanged.
+- Hit chance, weapon damage, TU costs, ammunition, grenade charges, LOS, cover, rescue credit, mission victory authority, and save format **4** are unchanged except for the new same-round beacon retry using already-authoritative movement/fire actions.
+
+### Build Health / manual gates
+1. Reproduce the reported state: mandatory VIP mission, extract the last VIP, kill all living aliens, leave one confirmed active beacon. Hand control to Simulation AI.
+2. Confirm the AI does not rapidly advance empty rounds. A capable assaulter should visibly move closer/enter the shield and then damage or destroy/disable the beacon.
+3. Put another AEGIS soldier in the assaulter's shield approach and confirm that soldier clears outward while the assaulter can route through friendly traffic.
+4. Test a combined shield with a loaded ballistic soldier and confirm the assaulter physically enters the field before firing.
+5. Test a kinetic shield with a compatible energy weapon and confirm external fire remains legal when LOS/range permit it.
+6. Exhaust every loaded weapon and Frag Grenade, then reach beacon-only endgame; confirm Simulation AI stops and returns command/Dust Off options rather than auto-streaming empty rounds.
+7. Confirm Hybrid/Simulation AI ordinary combat, VIP rescue, Browser 2155 grid-search recovery, save/load, and Browser 2305 accessibility controls remain unchanged.
+8. All six non-empty embedded JavaScript blocks must pass `node --check`; save format remains 4.
+
+Implementation update (2026-08-19): **Browser 2305 completes the next bounded Stage 3 Tactical Readability follow-up without changing the mission AI behavior now passing live testing. Shot-result cards keep their existing HIT / MISS / ARMOR HIT / TARGET DOWN / CRITICAL KILL authority, but the player can choose Brief (3s), Standard (10s), or Extended (20s) visibility and can switch the card animation to Reduced Motion. Shot Results On/Off, duration, and motion are stored as local presentation preferences and are also carried in the optional active tactical snapshot. Reduced Motion removes the slide/scale transition entirely; on first use the game honors the browser/OS `prefers-reduced-motion` signal when available.**
+
+
+## Browser 2305 — Tactical Shot-Feedback Accessibility Settings
+
+**Status:** Implemented Stage 3 Tactical Readability accessibility slice; manual gate is changing the shot-feedback controls during a tactical mission and confirming the preference carries into a later mission.
+
+### Duration choices
+- Shot-result cards now support **Brief (3 seconds)**, **Standard (10 seconds)**, and **Extended (20 seconds)** visibility.
+- Standard remains the existing 10-second behavior for players who do not change the setting.
+- Changing duration clears already-scheduled cards/timers so old and new timing rules cannot overlap unpredictably.
+
+### Reduced-motion presentation
+- The existing slide/scale fade remains available as **Standard Motion**.
+- **Reduced Motion** removes the translate/scale transition and removes the result card directly when its visibility duration expires.
+- On first use, the default honors the browser/OS `prefers-reduced-motion: reduce` preference when available.
+- This setting affects only the shot-result cards; projectile travel, incoming-fire reaction cameras, Critical Kill cinematics, unit movement, and tactical camera behavior are unchanged.
+
+### Persistence / compatibility
+- Shot Results On/Off, duration, and motion are persisted as presentation preferences in local storage.
+- Active tactical snapshots also carry the optional duration/motion fields so Menu / Save continuity does not unexpectedly change the current mission presentation.
+- Older saves and missions without the fields normalize to the stored preference or safe defaults. Save format remains **4**.
+
+### Gameplay authority unchanged
+- Hit chance, RNG, damage, armor, ammunition, TU, reaction order, AI decisions, Simulation/Hybrid playback pacing, mission resolution, timeline generation, and report archiving are unchanged.
+- Browser 2155 AI exception/grid-search recovery and Browser 2255 timeline archive behavior remain untouched.
+
+### Build Health / manual gates
+1. Fire a shot with Brief selected and confirm the card clears after about 3 seconds.
+2. Repeat with Standard and Extended and confirm roughly 10-second and 20-second visibility.
+3. Toggle Reduced Motion and confirm shot cards no longer slide/scale as they disappear.
+4. Turn Shot Results Off, start another mission, and confirm the preference remains Off; turn it back On and confirm duration/motion also persist.
+5. Save/reload an active tactical mission after changing the controls and confirm the current mission retains them.
+6. Confirm shot outcomes, tactical timeline entries, AI playback speed, Critical Kill/incoming-fire cinematics, and Browser 2155 AI behavior are unchanged.
+7. All six non-empty embedded JavaScript blocks must pass `node --check`; save format remains 4.
 
 Implementation update (2026-08-19): **Browser 2255 completes the next Stage 3 Tactical Readability follow-up without changing the live AI behavior under test. The existing tactical Mission Timeline already retained the latest 48 categorized events but those structured records were not carried into long-term Mission Reports. All tactical terminal handoffs now pass through one archive wrapper that snapshots the live events, merges any not-yet-committed terminal result lines, and stores the JSON-safe archive on the mission report. The Reports screen renders the archive below the legacy Mission Action Log with category, round, acting side, and event text. Older reports remain compatible, and Browser 2155 AI recovery/grid-search logic is untouched.**
 
@@ -7632,7 +7712,7 @@ Tactical missions should be readable, dramatic, and paced well. Even if lightwei
 
 ## Still Planned Tactical Readability Improvements
 - Richer long-term mission-log export and report filtering if the 48-event live timeline proves useful.
-- Additional accessibility options for shot-result duration and motion.
+- **Implemented in Browser 2305:** shot-result duration choices (3s / 10s / 20s), persistent Shot Results On/Off, and Standard / Reduced Motion card presentation.
 - Playback speed controls.
 - Continue battlefield-space optimization for the 2D Hex view and future free-pan camera controls; Three.js rectangular viewport fill is implemented in browser build 2312.
 - Simulated mission paper-doll/layered sprite consistency.
@@ -8050,7 +8130,7 @@ Completed:
 
 Still planned:
 - **Implemented in Browser 2255:** persist the expanded categorized tactical timeline into long-term Mission Reports (up to 48 events with category, round, acting side, and text). Explicit external file export remains optional future QoL if useful after report playtesting.
-- Add optional shot-feedback duration/accessibility settings.
+- **Implemented in Browser 2305:** optional shot-feedback duration/accessibility settings with persistent 3s / 10s / 20s duration and Standard / Reduced Motion presentation.
 - Battlefield-space optimization.
 - Simulated mission sprite consistency.
 - Improve the Three.js battle option for alien incidents so manual tactical missions feel more readable, responsive, and worth choosing over auto-resolve.
