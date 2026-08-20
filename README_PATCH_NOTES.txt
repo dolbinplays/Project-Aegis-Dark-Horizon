@@ -1,6 +1,67 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.20.0045_NEW_PLAYER_TUTORIAL_OVERLAY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Implements the first release-prep onboarding slice: a lightweight, optional, skippable new-player tutorial overlay that guides a fresh commander through Project Aegis's first-base choice and the core strategic workflow without replacing the existing Instructions reference screen.
+
+NEW-PLAYER TUTORIAL OVERLAY
+---------------------------
+- Fresh players who have not skipped/completed the tutorial see a non-blocking coaching card when they enter First Base Setup.
+- The overlay does not darken or intercept the whole screen; the player can use the globe, base-selection controls, command sections, and Save / Load controls underneath it.
+- Hide closes the current card without losing progress.
+- Skip Tutorial suppresses automatic continuation.
+- Tutorial completion is stored as browser-local onboarding preference data and does not change campaign save format.
+- The Base Setup screen includes a Tutorial button so guidance can be deliberately restarted.
+- Expanded and minimized normal command headers include What should I do next? to reopen the current tutorial step later.
+
+FIRST 15 MINUTES GUIDANCE
+-------------------------
+1. First Base Setup: site selection, opening reach rings, base naming, and paused-time reassurance.
+2. Command Overview / Geoscape: player role, command sections, opening incidents, panic, aircraft/base awareness, and time controls.
+3. Squad Assignment: assign available soldiers to a Skyranger squad and point toward Soldiers/Quartermaster for equipment details.
+4. First Mission Response: select an incident, review threat/readiness, plan a Skyranger response, and explain manual/Hybrid/Simulation tactical options.
+5. Research: Laboratory scientists, research progression, and technology unlocks.
+6. Workshop: production requirements and how unlocked designs become physical equipment.
+7. Save / Export: shared Menu / Save, manual/autosaves, and Download Current Backup as the safest portable campaign copy.
+8. Alien Base Discovery: non-spoilery explanation that deeper alien infrastructure is revealed through accumulated missions, tracked contacts, command-signal research, Mainframe discoveries, and reports rather than passive scanning alone.
+
+NAVIGATION / SAFETY
+-------------------
+- Next automatically opens the relevant command section for the following lesson.
+- The base-site lesson closes after acknowledgment so the player can interact freely; after Confirm Site - Begin Campaign the guide resumes automatically at Command Overview.
+- The Save / Export lesson follows the player into the existing shared Menu / Save screen and returns to Geoscape for the last lesson.
+- Tutorial state is separate from campaign simulation and does not change funds, time, mission state, AI, research, aircraft, squad composition, or combat.
+- Browser 2325 beacon must-progress recovery and Browser 2155 mission-AI recovery remain unchanged.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added NEW_PLAYER_TUTORIAL_OVERLAY_PATCH and an eight-step tutorial contract.
+- Focused helper validation confirms tutorial state clamps safely, defaults to step 0, and retains skip/completion flags independently of campaign saves.
+- Source coverage requires the non-blocking overlay, Base Setup Tutorial button, What should I do next? control, skip behavior, backup guidance, and alien-base discovery explanation.
+- All 6 non-empty embedded JavaScript blocks pass node --check.
+- Save format remains 4.
+
+MANUAL TEST GATES
+-----------------
+1. Start a fresh campaign and confirm the base-site tutorial opens without blocking globe/site controls.
+2. Hide and reopen it from Base Setup Tutorial.
+3. Confirm site and verify Command Overview resumes automatically.
+4. Advance through Squads, Missions, Research, Workshop, Save / Export, and Alien Base Discovery; confirm each destination opens correctly.
+5. Verify What should I do next? works in expanded and minimized normal headers.
+6. Skip the tutorial and confirm it does not force itself open again.
+7. Finish the tutorial, start another campaign, and confirm automatic onboarding stays suppressed while manual guidance remains available.
+
+PREVIOUS BUILD - 2325
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.19.2325_BEACON_ENDGAME_MUST_PROGRESS_WATCHDOG_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

@@ -1,13 +1,55 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.2325_BEACON_ENDGAME_MUST_PROGRESS_WATCHDOG_PATCH`
+Last updated: 2026-08-20
+Current handoff build: `v0.26.08.20.0045_NEW_PLAYER_TUTORIAL_OVERLAY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2325 hardens the beacon-only tactical endgame after live VIP testing reproduced a rapid empty-round loop once the final VIP was extracted and the Alien Field Beacon became the only remaining objective. Beacon neutralization is now a must-progress phase: non-assaulting soldiers actively clear the seven-hex shield/approach, the chosen assaulter can route through same-side traffic while still requiring an unoccupied destination, and a no-progress normal pass triggers an immediate same-round watchdog retry that moves and/or attacks the beacon before another round is allowed to begin. If no usable loaded ranged weapon or Frag Grenade remains, streamed Simulation AI stops instead of auto-advancing empty rounds and returns the preserved battlefield for player command/Dust Off. Browser 2155 exception/grid-search recovery, Browser 2255 timeline archiving, and Browser 2305 shot-feedback accessibility remain intact. Save format remains 4.**
+Current patch status: **Browser 0045 implements the first release-prep onboarding slice as a lightweight, optional, skippable new-player tutorial overlay. Fresh players are guided through first-base placement, command/Geoscape orientation, squad assignment, the first mission response, Research, Workshop, save/export safety, and a non-spoilery explanation of how alien-base discovery emerges from campaign evidence. The tutorial is a non-blocking coaching card so the underlying controls remain usable, it persists its progress in local browser tutorial settings rather than changing campaign save format, it can be hidden or skipped at any time, and a persistent `What should I do next?` control reopens guidance later. Browser 2325 beacon must-progress recovery, Browser 2155 AI grid-search recovery, Browser 2255 timeline archiving, and Browser 2305 shot-feedback accessibility remain intact. Save format remains 4.**
 
 
 Implementation update (2026-08-19): **Browser 2325 targets the live reproduction where the last VIP had just been rescued, no living aliens remained, and a confirmed Alien Field Beacon was the sole remaining objective, yet Simulation AI rapidly advanced rounds without useful movement or fire. Browser 1315 already had a dedicated beacon assaulter, but it did not guarantee round-level progress. The new must-progress watchdog treats beacon-only neutralization as a mandatory action phase: nearby non-assault troops clear the shield/approach, close-assault routing ignores temporary same-side traffic along the path, and after the normal AEGIS pass the resolver compares beacon HP plus assaulter distance/inside-shield state. If nothing improved, the assaulter receives a zero-reserve same-round retry and immediately attacks when a legal shot becomes available. A truly no-breach squad now halts streamed continuation instead of manufacturing endless empty rounds.**
+
+
+## Browser 0045 — New Player Tutorial Overlay
+
+**Status:** Implemented first-run onboarding foundation; live manual gate is a fresh campaign from Start New Game through the eight guided steps.
+
+### Lightweight / optional tutorial doctrine
+- The tutorial is a **non-blocking coaching overlay**, not a modal wizard. Players can continue clicking and using the game screen underneath the tutorial card while reading guidance.
+- First-run tutorial progress is stored in a small browser-local tutorial preference record rather than inside campaign saves. Save format remains **4**.
+- **Hide** closes the card without losing the current step.
+- **Skip Tutorial** suppresses automatic tutorial continuation but does not remove access to guidance.
+- A persistent **What should I do next?** control in the ordinary expanded/minimized command header reopens the tutorial at its current guidance step.
+- Base setup also exposes a dedicated **Tutorial** button so a player who skipped/completed the guide can deliberately restart it before beginning a new campaign.
+- Completing the tutorial marks it complete for automatic first-run purposes, while the guidance control remains available for later review.
+
+### Guided first-15-minutes sequence
+1. **First Base Setup** — choose a land site, compare the opening Shortwave/aircraft reach rings, name the base, and understand that the campaign starts paused.
+2. **Command Overview / Geoscape** — explain the player role, Command Sections, opening incidents, aircraft/base awareness, panic, and time controls.
+3. **Squad Assignment** — direct the player to Squads, assign available soldiers to a Skyranger response squad, and point toward Soldiers/Quartermaster for equipment and personnel details.
+4. **First Mission Response** — open Missions, select an incident, review threat/response readiness, launch a Skyranger, and explain that manual, Hybrid AI, and Simulation AI operate on the same tactical battlefield.
+5. **Research** — explain Laboratory scientist assignment, strategic-time progress, and how new alien-response capabilities unlock.
+6. **Workshop** — explain production as the bridge between unlocked designs and physical equipment, including facility/engineer/fund/time requirements.
+7. **Save / Export** — open the existing shared Menu / Save screen, explain manual saves/autosaves, and explicitly recommend **Download Current Backup** as the safest portable campaign copy.
+8. **Alien Base Discovery** — explain without exact threshold spoilers that hidden alien command sites emerge from accumulated field operations, tracked craft/contact evidence, command-signal research, Mainframe discoveries, and reports rather than simply appearing through passive scanning.
+
+### Navigation / behavior
+- Moving **Next** between guide steps automatically opens the relevant command section so the player sees the feature being discussed.
+- The base-placement briefing is special: acknowledging it closes the coaching card so the player can freely choose the actual site; after **Confirm Site - Begin Campaign**, the guide resumes at Command Overview.
+- The Save / Export step follows the player into the existing Menu / Save screen; advancing from there returns to the Geoscape for the final discovery explanation.
+- The tutorial does not alter Geoscape time, funds, research progress, mission availability, squad membership, aircraft readiness, or tactical outcomes.
+- Existing Instructions remain available as the broader reference manual; the tutorial is deliberately shorter and action-oriented.
+
+### Build Health / manual gates
+1. Clear/refresh tutorial local state, click **Start New Game**, and confirm the First Base Setup coaching card appears without blocking globe/base controls.
+2. Click **Hide**, then the Base Setup **Tutorial** button, and confirm the same step reopens.
+3. Acknowledge the base briefing, choose/confirm a site, and confirm tutorial guidance resumes at Command Overview after campaign creation.
+4. Advance through Squads, Missions, Research, Workshop, Save / Export, and Alien Base Discovery; confirm each step opens the intended command screen.
+5. On Save / Export, confirm the coaching card remains visible over the shared Save / Load screen and **Download Current Backup** remains usable.
+6. Click **Skip Tutorial**, continue play, and confirm the overlay does not force itself back open.
+7. Use **What should I do next?** from both expanded and minimized normal headers and confirm guidance reopens at the saved step.
+8. Finish the tutorial and confirm a later new campaign does not auto-open it, while the Base Setup Tutorial button and in-game guidance control can still reopen it deliberately.
+9. Confirm all six non-empty embedded JavaScript blocks pass `node --check`; save format remains 4.
 
 
 ## Browser 2325 — Beacon Endgame Must-Progress Watchdog
@@ -49,6 +91,41 @@ Implementation update (2026-08-19): **Browser 2325 targets the live reproduction
 6. Exhaust every loaded weapon and Frag Grenade, then reach beacon-only endgame; confirm Simulation AI stops and returns command/Dust Off options rather than auto-streaming empty rounds.
 7. Confirm Hybrid/Simulation AI ordinary combat, VIP rescue, Browser 2155 grid-search recovery, save/load, and Browser 2305 accessibility controls remain unchanged.
 8. All six non-empty embedded JavaScript blocks must pass `node --check`; save format remains 4.
+
+Roadmap-only planning update (2026-08-20): **Delay Alien Field Beacon visual removal until the lethal shot presentation has visibly completed. When a resolved projectile reduces the beacon to 0 HP, gameplay authority may immediately mark the beacon destroyed for AI/objective/victory purposes, but the tactical renderer must keep the beacon mesh/effect present long enough for the lethal projectile/tracer to visibly travel to the beacon, register the impact, and then play a dedicated beacon-destruction animation before removing the model. The destruction beat should work in 3D Iso, FPV, TPV, incoming-fire/observer playback, manual fire, Hybrid AI, and full Simulation AI without rerolling the attack or delaying authoritative damage resolution. A terminal beacon kill must also delay victory cleanup/presentation only as needed to let that final hit and destruction animation read clearly; no beacon should disappear before the shot that killed it is shown to connect. No code or build-number change is part of this roadmap-only update.**
+
+### Future tactical presentation — Beacon lethal-hit destruction sequencing
+- A beacon reduced to **0 HP** must enter a short presentation-only `destroying` state rather than disappearing from the tactical renderer immediately.
+- The resolved lethal projectile/tracer must remain visible through its normal travel and visibly reach the beacon before the destruction effect begins.
+- The impact frame should visibly register on the beacon first; the destruction animation then plays, and only after that animation completes is the beacon mesh/effect removed from the battlefield scene.
+- Authoritative gameplay state remains immediate: HP, destroyed/disabled state, reinforcement cancellation, AI objective completion, recovery bookkeeping, and mission-terminal evaluation may resolve when the lethal shot is committed. The delayed removal is presentation-only.
+- If destroying the beacon completes the mission, victory music/dance/result authority should remain valid but battlefield cleanup/camera transition must not obscure the final projectile impact or beacon destruction beat.
+- Manual control, Hybrid AI, full Simulation AI Tactical Map playback, 3D Iso, FPV, and TPV must all consume the same destruction-sequencing authority rather than implementing separate camera-specific hacks.
+- The sequencing must also coexist with kinetic/combined shield presentation, intact research-gated beacon disabling, replacement-beacon generations, and Browser 2325's beacon must-progress watchdog.
+- Save/load during the very short presentation window should safely normalize to the authoritative destroyed beacon state rather than resurrecting a destroyed beacon or requiring a new save-format field.
+
+**Planned validation gate:** fire the final shot that reduces an active beacon to 0 HP in manual control and under Simulation AI. Confirm the projectile/tracer visibly reaches the beacon, an impact is shown, a beacon-destruction animation plays, and only then does the beacon disappear. Repeat when the beacon is the final mission objective and confirm victory presentation does not pre-empt the lethal-hit/destruction sequence.
+
+Roadmap-only planning update (2026-08-20): **Add real death/destruction transition animations for tactical units instead of snapping directly from a living standing pose to a prone corpse or disappearing object. A lethal resolved hit should remain gameplay-authoritative immediately, but presentation should visibly show the projectile/impact, a cause-appropriate hit reaction, and then a short death/collapse/destruction animation before the renderer settles into the persistent corpse/wreck/removed state. This applies to AEGIS soldiers, civilians/VIPs where applicable, alien units, and destructible objective units such as Alien Field Beacons. Existing Critical Kill gib/dismemberment presentation remains a specialized lethal variant rather than being replaced. Manual control, Hybrid AI, full Simulation AI, 3D Iso, FPV, TPV, incoming-fire reaction cameras, victory sequencing, save/load, and post-mission cleanup must all respect the same authoritative presentation state. No code or build-number change is part of this roadmap-only update.**
+
+Roadmap-only planning update (2026-08-20): **Expand tactical first aid into a staged battlefield casualty-care system built on the existing Medkit authority. The immediate paired medical step should still add adjacent ally treatment and the focused Sickbay patient roster without destabilizing the current 12-HP / 12-TU baseline. A later casualty-care slice should prototype nonfatal incapacitation, bleeding/critical wounds, stabilization, and physical casualty rescue. Some severe hits that are not immediately lethal may leave an AEGIS agent unconscious/downed rather than converting directly to KIA; these casualties should remain authoritative living units with a distinct downed state, clear death-vs-unconscious presentation, and a time-sensitive need for aid when appropriate. Any soldier may perform basic first aid with the proper equipment, while future Medic specialization can improve speed, effectiveness, stabilization reliability, or treatment options without making non-medics helpless. The preferred equipment doctrine is a two-tier field-medical loadout: ordinary agents may carry one or more compact **Medpacs** intended for a small number of emergency treatments, while a designated Medic can equip a larger **Field Medkit** carrying roughly **10 or more Medpac-equivalent treatments** in one item. The large kit should not be a free upgrade: prototype encumbrance, inventory-slot use, TU access/use costs, resupply expense, and possible movement/weapon-handling tradeoffs so bringing a Medic creates a real squad-composition decision. The Field Medkit should use the same authoritative treatment/stabilization rules as individual Medpacs rather than becoming a separate healing system, and its larger supply should support repeated stabilization, bleeding control, adjacent treatment, and casualty extraction during long missions. Non-medics must remain capable of emergency aid if they carry Medpacs; Medics should be valuable because they carry more medical capacity and use it more efficiently, not because only they are allowed to save a casualty. A conscious rescuer should be able to drag an unconscious agent from an exposed hex into nearby cover before treatment, sacrificing movement/TU efficiency and potentially limiting weapon use while dragging. Future prototypes may also explore assisted carry/extraction for longer distances, but dragging is the preferred first implementation because it creates readable rescue decisions without requiring a heavy physics system. Unconscious/stabilized agents should be physically extractable through the Skyranger rather than automatically counted safe, and AI/Hybrid AI must recognize casualty rescue as a high-priority duty while preserving existing civilian/VIP escorts and immediate self-preservation/combat authority. The casualty system should create cinematic battlefield moments through the existing persistent renderer and observer cameras: a soldier going down under fire, a teammate sprinting or crawling to them, dragging them behind a wall or vehicle, administering aid while rounds pass nearby, and then escorting/hauling them toward extraction. These moments must remain presentation layered over deterministic tactical authority rather than rerolling wounds or pausing the simulation indefinitely. Exact bleeding rates, stabilization TU costs, drag speed/penalties, Medic bonuses, body-part trauma, multiple Medkit charges, and crawl/carry mechanics remain prototype/balance items rather than approved final values. Save/load, Simulation-AI playback, Hybrid AI, manual control, death animations, future prone stance, incoming-fire slow motion, mission reports, wound recovery, Sickbay, and post-mission KIA/recovery ownership must all share the same authoritative casualty state. No code or build-number change is part of this roadmap-only update.**
+
+### Future tactical presentation — Unit death / destruction transition animations
+- **No living-to-corpse snap:** a unit that receives a lethal resolved hit must not be standing in one rendered frame and instantly prone/dead in the next. The renderer should enter a short presentation-only death state first.
+- **Human deaths:** AEGIS soldiers and other human units should visibly react to the lethal impact and collapse/fall into their final body pose. The final corpse orientation may remain the existing authoritative corpse presentation, but it should be reached through animation rather than an instantaneous state swap.
+- **Alien deaths:** ordinary alien kills should receive a readable hit-and-collapse/death animation appropriate to the current modular alien body rather than instantly switching to a fallen pose. Existing rare Critical Kill dismemberment/gib behavior remains the more dramatic special-case lethal animation.
+- **Beacon/object destruction:** destructible tactical objectives such as Alien Field Beacons should use a destruction transition rather than disappearing. The previously roadmapped beacon rule remains authoritative: lethal projectile travel -> visible impact -> destruction animation -> visual removal.
+- **Cause-aware variants:** where practical, presentation may differentiate ballistic/energy impacts, explosions, burning, melee, and Critical Kill outcomes, but every lethal result needs at least a baseline readable transition even when no specialized animation exists.
+- **Authoritative gameplay remains immediate:** HP reaching 0, KIA/dead state, AI target invalidation, objective completion, reinforcement cancellation, kill credit, recovery bookkeeping, and terminal mission evaluation may resolve when the lethal action is committed. The animation is a presentation layer and must not reroll or delay game rules.
+- **Corpse/wreck persistence:** after the transition finishes, the normal fallen body, gib pieces, wreck state, or removed-object state becomes authoritative for subsequent rendering, cover/occupancy rules, recovery, and post-battle review.
+- **Camera parity:** 3D Iso, FPV, TPV, incoming-fire reaction TPV, manual fire, Hybrid AI, and full Simulation AI Tactical Map playback should consume the same death/destruction presentation state rather than using separate camera-specific substitutions.
+- **Playback sequencing:** AI playback and deferred death application must leave enough time for the lethal projectile/impact and death animation to be readable before the next action visually overruns it. Burst/full-auto fire should still aggregate sensibly rather than restarting a long death animation for each projectile.
+- **Victory sequencing:** when the final hostile or final objective is killed/destroyed, victory music/dance/result authority may become valid immediately, but camera cleanup, unit removal, or transition away from the battlefield must not pre-empt the final lethal impact and death/destruction animation.
+- **Living-prone distinction:** future prone stance work must remain visually distinct from a dead/unconscious body. A living prone soldier should never be mistaken for a completed death animation state.
+- **Save/load safety:** saving/loading during a short death/destruction presentation window should normalize safely to the authoritative dead/destroyed state if the transient animation cannot be resumed exactly. Avoid requiring a new save-format field unless later implementation proves one is necessary.
+- **Performance:** use the existing persistent tactical renderer, modular unit parts, and bounded effect timers. Do not create a separate physics simulation or expensive ragdoll requirement as a prerequisite for baseline death animation.
+
+**Planned validation gate:** kill ordinary AEGIS/human and alien units with standard ranged fire in 3D Iso, FPV, TPV, Hybrid AI, and Simulation AI and confirm each visibly transitions from impact through a fall/collapse into its final corpse state rather than snapping. Repeat with a Critical Kill, an explosive kill, and the final Alien Field Beacon; confirm specialized effects coexist with the baseline transition and that mission victory never hides the final death/destruction beat.
 
 Implementation update (2026-08-19): **Browser 2305 completes the next bounded Stage 3 Tactical Readability follow-up without changing the mission AI behavior now passing live testing. Shot-result cards keep their existing HIT / MISS / ARMOR HIT / TARGET DOWN / CRITICAL KILL authority, but the player can choose Brief (3s), Standard (10s), or Extended (20s) visibility and can switch the card animation to Reduced Motion. Shot Results On/Off, duration, and motion are stored as local presentation preferences and are also carried in the optional active tactical snapshot. Reduced Motion removes the slide/scale transition entirely; on first use the game honors the browser/OS `prefers-reduced-motion` signal when available.**
 
@@ -8711,10 +8788,13 @@ Recommended design: Stage 4 should focus on making the campaign finishable while
 ---
 
 ## Stage 5 — Release Prep / Paid Alpha
-Status: **Not yet started in earnest**
+Status: **Started — Browser 0045 implements the first-run tutorial/onboarding foundation; broader release prep remains pending**
 
-Planned:
-- Tutorial/onboarding.
+Implemented foundation:
+- Lightweight optional/skippable new-player tutorial overlay covering first base setup, command orientation, squad assignment, mission launch, Research, Workshop, save/export, and non-spoilery alien-base discovery guidance.
+- Persistent **What should I do next?** reopening control plus Base Setup tutorial restart.
+
+Still planned:
 - Difficulty settings.
 - Balance pass.
 - Bug-fix pass.
@@ -10456,10 +10536,10 @@ Manual validation still required:
 
 Known risks:
 
-- Self-treatment is the current paired scope. Adjacent ally aid, unconscious stabilization, body-part trauma, bleeding, multiple charges, and ground-item interaction remain deferred.
+- Self-treatment is the current paired scope. Adjacent ally treatment is the next bounded medical step. The broader casualty-care roadmap now explicitly includes nonfatal unconscious/downed states, bleeding/critical wounds, stabilization, drag-to-cover rescue, physical extraction of incapacitated agents, Medic-specialization bonuses, and cinematic casualty-rescue presentation. Body-part trauma, multiple Medkit charges, ground-item interaction, crawl/carry variants, and final balance values remain deferred/prototype items.
 - Browser and native Sickbay presentation differs because the browser campaign already models bed capacity and overflow. Any future shared rule change must still be implemented and checked in both versions.
 
-Next paired step after live validation: `TACTICAL_ADJACENT_FIELD_AID_AND_SICKBAY_PATIENT_ROSTER_PARITY_PATCH`, adding adjacent ally treatment and a focused patient roster to both versions without broad medical simulation.
+Next paired step after live validation: `TACTICAL_ADJACENT_FIELD_AID_AND_SICKBAY_PATIENT_ROSTER_PARITY_PATCH`, adding adjacent ally treatment and a focused patient roster to both versions without broad medical simulation. After that bounded parity step is stable, prototype the broader battlefield casualty-care layer: downed-but-alive agents, bleeding/stabilization, drag-to-cover rescue, incapacitated extraction, Medic specialization, and cinematic casualty-rescue presentation.
 
 ## v0.26.07.19.GODOT.0010 - Tactical Medkit and Wounded Status Recovery Vertical Slice
 
@@ -10500,10 +10580,10 @@ Manual validation still required:
 
 Known risks:
 
-- This slice supports self-treatment only. Adjacent ally treatment, stabilized unconscious soldiers, body-part trauma, bleeding, multiple charges, and item-ground interaction remain deferred.
+- This slice supports self-treatment only. Adjacent ally treatment is the next bounded native parity step. The broader medical roadmap now includes stabilized unconscious/downed soldiers, bleeding/critical wounds, drag-to-cover rescue, physical casualty extraction, Medic specialization, and cinematic rescue presentation; body-part trauma, multiple charges, item-ground interaction, crawl/carry variants, and final balance values remain deferred/prototype work.
 - Recovery duration uses final missing HP and does not yet model Sickbay capacity, staff, facility damage, or treatment priority.
 
-Next native step after live validation: `GODOT.0011_ADJACENT_FIELD_AID_AND_SICKBAY_PATIENT_ROSTER_VERTICAL_SLICE`, adding adjacent ally treatment and a focused patient view without broad medical simulation.
+Next native step after live validation: `GODOT.0011_ADJACENT_FIELD_AID_AND_SICKBAY_PATIENT_ROSTER_VERTICAL_SLICE`, adding adjacent ally treatment and a focused patient view without broad medical simulation. Once that parity slice is stable, native planning should mirror the broader casualty-care prototype: downed-but-alive agents, stabilization/bleeding, drag-to-cover rescue, incapacitated extraction, Medic specialization, and cinematic casualty-rescue presentation.
 
 ## v0.26.07.19.GODOT.0009 - Local Base Inventory and Soldier Loadout Vertical Slice
 
