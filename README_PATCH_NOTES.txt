@@ -1,84 +1,65 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.19.1935_TACTICAL_KNEEL_MOVEMENT_AND_POSE_PARITY_PATCH
+Build: v0.26.08.19.2045_HIDDEN_CONTACT_VIP_RESCUE_AND_AI_HANDOFF_RECOVERY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
 SUMMARY
 -------
-Closes the kneeling consistency gap identified during the tactical stance review. Kneeling is now one authoritative stationary stance across manual play and Simulation AI: it persists between rounds while the soldier stays put, automatically clears when the soldier actually begins moving, does not charge an extra stance cost just to stand for movement, and updates the 2D/3D Iso/FPV/TPV presentation immediately. Existing kneeling combat modifiers are unchanged. Prone remains roadmap exploration only.
+Fixes the Simulation-AI stall reproduced on a mandatory VIP mission where several VIPs remained active and one living alien was hidden. The key fault was not the VIP pathing alone: a previously seen but currently hidden alien could retain a last-known position and be treated as global combat priority. That suppressed autonomous VIP rescue assignments and sent the squad back into repeated hidden-contact searching. Hybrid AI could still complete its bounded support round, but full Simulation AI could stall or fail to produce a useful continuation until the hidden alien was manually killed.
 
-KNEEL / MOVEMENT AUTHORITY
---------------------------
-- Added shared `tacticalAutoStandForMovement()` authority for living human soldiers.
-- Manual path movement clears kneeling immediately before/with the first visible movement step, so a moving soldier cannot retain kneeling combat bonuses.
-- The shared escort/fire-team movement helper clears kneeling for a moving human leader or support member as well.
-- Simulation-AI movement now uses the same shared auto-stand authority rather than a separate stance reset.
-- Auto-standing as part of movement has no extra stance TU charge; movement keeps its existing 4 TU per hex.
-- Explicit stationary Kneel/Stand remains a 4-TU action through the shared `TACTICAL_STANCE_CHANGE_TU` constant.
+HIDDEN-CONTACT / VIP SPLIT-TASK DOCTRINE
+----------------------------------------
+- Rescue arbitration now distinguishes an alien that is currently observed from a merely remembered/hidden contact.
+- A currently visible alien still creates normal immediate combat priority.
+- If living aliens remain but none are currently observed and mandatory VIPs are still active, Simulation AI can search and rescue concurrently.
+- With two or more eligible free fire-team leaders, one fire team continues the hidden-contact search while the remaining free teams continue VIP recovery.
+- The search-team lead prefers the nearest legitimate last-known alien position when one exists.
+- With only one eligible free fire-team leader, no search reservation is created; the sole team continues the mandatory rescue first rather than deadlocking itself on the hunt.
+- Hidden aliens remain hidden. The searching team uses only legitimate last-known information or the existing systematic map-sweep doctrine.
 
-ROUND / RESERVE PARITY
-----------------------
-- Simulation-AI human round refresh no longer forcibly resets every living soldier to standing.
-- A stationary kneeling soldier therefore remains kneeling across round boundaries, matching manual-control behavior.
-- `Reserve: Kneel` continues protecting 4 TU even if the soldier is currently kneeling, because any movement auto-stands them and may require re-kneeling afterward.
-- Adaptive AI `Kneel + Snap` likewise keeps the conservative stance reserve, but the actual 4-TU kneel cost is paid only when the soldier truly transitions from standing to kneeling; an already-kneeling stationary soldier is not charged again.
+VIP RESCUE STALL RECOVERY
+-------------------------
+- Multiple tracked VIPs continue to be distributed across available rescue fire teams.
+- Rescue-authority phases can clear stale autonomous fire-team command orders for non-player-owned teams so required rescue work can resume.
+- Rescue leader pathing ignores temporary same-fire-team traffic when building a route, preventing forming supports from falsely blocking the leader's path.
+- Rescue teams can use independent pacing when no alien is currently observed, avoiding zero-progress formation locks.
+- Repeated no-progress rescue routes reset bounded rescue-route memory rather than replaying the same failed route indefinitely.
 
-POSE / CAMERA PARITY
---------------------
-- 2D tactical presentation now gives a living kneeling AEGIS soldier a visibly lowered upright silhouette distinct from a fallen body.
-- Persistent 3D Iso units use the authoritative `kneeling` flag to lower/compress the soldier silhouette.
-- FPV eye and aim height lower while kneeling.
-- TPV and incoming-fire reaction TPV camera/look heights lower around a kneeling soldier.
-- Persistent/legacy tactical render dependency keys now include kneeling state, so a stance-only change can update without waiting for movement or an unrelated render trigger.
+SIMULATION AI / RETRY RECOVERY
+------------------------------
+- Retry AI Continuation now treats active VIP rescue with no currently visible alien as a rescue-recovery state even if a hidden alien is still alive.
+- Recovery clears stale hunt/search/patrol state as before and also resets stale rescue target/visited/stall state and non-player autonomous fire-team orders for this condition.
+- This is intended to make a retry generate a genuinely fresh rescue/search split rather than reconstructing the same deadlock.
+- Existing 1045 first-handoff planning limits and 0945 continuation self-heal remain intact.
 
-COMBAT / SAVE AUTHORITY UNCHANGED
----------------------------------
-- Kneeling outgoing-fire bonus remains +10 accuracy.
-- Alien hit chance against a kneeling human remains -8.
-- No changes to damage, armor, cover values, LOS, weapon range, RNG, reaction order, ammo, movement cost, or mission authority.
-- Kneeling already exists on tactical unit state, so no schema migration is required.
-- Save format remains 4 and Browser 1415 active-tactical save continuity continues to preserve stance.
-- Prone is NOT implemented by this patch; it remains a future design/prototype item in the Roadmap/Game Bible.
+PRESERVED BEHAVIOR
+------------------
+- Fog of war and hidden-information rules are unchanged.
+- VIP tracker information is used only where the mission legitimately provides it.
+- Hit chance, damage, armor, TU costs, ammunition, weapon ranges, LOS, cover, AI action order, mission victory authority, kneeling balance, and save format are unchanged.
+- Browser 1935 kneeling movement/pose parity and Browser 1815 concurrent Skyranger operations are preserved.
 
-REGRESSION COVERAGE
--------------------
-- Added Browser 1935 Build Health coverage for:
-  * auto-standing without an extra TU charge;
-  * kneeling persistence across AI round refresh;
-  * shared escort/movement stance clearing;
-  * conservative 4-TU Kneel reserve plus transition-only actual stance spending;
-  * lowered FPV camera pose;
-  * 2D stance marker/presentation;
-  * persistent 3D stance application;
-  * TPV/reaction-TPV kneeling camera awareness;
-  * AI adaptive reserve use of the shared stance cost.
-- All six non-empty embedded JavaScript blocks pass `node --check`.
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added a regression covering three active VIPs, a living hidden alien, three fire-team leaders, one reserved search leader, concurrent rescue assignments, the single-team no-deadlock fallback, and hidden-contact Retry recovery.
+- All 6 non-empty embedded JavaScript blocks pass `node --check`.
+- Full live browser/Three.js mission validation remains a desktop test gate.
 
 MANUAL TEST GATES
 -----------------
-1. Kneel a soldier, end the tactical round, and verify they remain kneeling at the start of the next round.
-2. Move that soldier and verify they rise before/with the first step, spend only normal movement TU, and no longer receive kneeling modifiers while moving.
-3. Repeat with Simulation AI and confirm stationary kneeling persists but any actual AI movement stands the soldier.
-4. Use Reserve Kneel while already kneeling: staying put must not pay another stance charge, while moving must preserve enough reserve to re-kneel afterward.
-5. Explicitly Kneel and Stand while stationary and confirm each deliberate stance change still costs 4 TU.
-6. Compare 2D, 3D Iso, FPV, TPV, and incoming-fire reaction TPV while kneeling and standing.
-7. Save/reload during a tactical mission with a kneeling soldier and confirm the stance and perspective height restore correctly.
+1. Reproduce a mandatory rescue with 3 active VIPs and one previously seen alien hidden from all current AEGIS LOS.
+2. Hand full control to Simulation AI and confirm it does not stall at takeover.
+3. Confirm one free fire team searches while other free teams continue VIP rescue.
+4. Repeat with only one free fire-team leader and confirm that team rescues rather than being reserved for an endless search.
+5. Reveal the hidden alien and confirm immediate combat priority resumes.
+6. Hide it again and confirm split rescue/search can resume.
+7. If an AI stream is interrupted in this state, press Retry AI Continuation and confirm it produces a fresh plan.
+8. Confirm Hybrid AI still works normally and switching from Hybrid to full Simulation AI does not require manually killing the hidden alien.
 
-RECENT BUILD CONTINUITY
------------------------
-- 1815: concurrent independent Skyranger operations foundation.
-- 1715: ranged standoff and cover-seeking tactical AI.
-- 1515: incoming-fire reaction TPV slow motion.
-- 1415: active-mission Menu / Save and tactical save continuity.
-- 1315: beacon-endgame AI assault/recovery.
-- 1245: smooth Geoscape craft-flight visual interpolation.
-- 1145/1115: Build Health startup and secure-rescue facing-scope hotfixes.
-- 1045/0945: Simulation-AI handoff long-task reduction and continuation self-heal.
-
-PREVIOUS PATCH NOTES (legacy file history follows)
-==================================================
+PREVIOUS PATCH NOTES
+====================
 
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES

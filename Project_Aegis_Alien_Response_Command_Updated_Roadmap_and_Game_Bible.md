@@ -2,11 +2,61 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.1935_TACTICAL_KNEEL_MOVEMENT_AND_POSE_PARITY_PATCH`
+Current handoff build: `v0.26.08.19.2045_HIDDEN_CONTACT_VIP_RESCUE_AND_AI_HANDOFF_RECOVERY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1935 implements the first Tactical Stance consistency slice for kneeling. Kneeling now persists authoritatively between tactical rounds in both manual and Simulation-AI control until the soldier explicitly changes stance or actually begins movement. Any real human movement clears kneeling through shared movement authority before/with the first step, preventing a moving soldier from retaining the +10 firing accuracy / -8 incoming-hit modifier. Auto-standing as part of movement does not add a second TU charge; the deliberate stationary Kneel/Stand command remains 4 TU. AI only pays the 4-TU kneel cost when it actually transitions from standing to kneeling; conservative Kneel reserve still protects 4 TU so a soldier who moves and auto-stands can re-kneel afterward. 2D, persistent 3D Iso, FPV, TPV, and incoming-fire reaction TPV now consume the same kneeling state and present a visibly lowered stance/camera. Existing combat balance values are unchanged, Prone remains design exploration only, Browser 1815 concurrent Skyranger operations remains intact, save format remains 4, and native Godot remains at 0026.**
+Current patch status: **Browser 2045 fixes a Simulation-AI deadlock exposed by live VIP-rescue testing: one living alien could remain hidden while several mandatory VIPs were still active, causing remembered-contact combat priority to suppress rescue work and making full Simulation AI appear unable to take command or generate a useful continuation. The AI now distinguishes an actually observed alien from a merely remembered/hidden contact. When no alien is currently observed but mandatory VIPs remain, it enters split-task rescue/search doctrine: one free fire-team lead continues the hidden-contact search when multiple free teams exist, while the remaining free teams keep locating, escorting, and extracting VIPs. A one-fire-team squad prioritizes the rescue instead of deadlocking itself by reserving its only leader for a search. The 2045 rescue-route independence and stale-order recovery work is retained, Retry AI Continuation also treats active VIPs plus no currently visible alien as a rescue-recovery state, save format remains 4, Browser 1935 kneeling parity and Browser 1815 concurrent Skyranger operations remain intact, and native Godot remains at 0026.**
 
-Implementation update (2026-08-19): **Browser 1935 closes the kneeling parity gap discovered during the tactical stance review. Manual movement previously could leave `kneeling=true` while a soldier walked, and Simulation-AI round refresh previously forced all human units standing even when they had deliberately ended the prior round kneeling. The shared stance/movement rule is now: kneeling persists while stationary across round boundaries; beginning movement automatically returns a living human soldier to the moving/standing stance at no extra TU beyond the movement itself; an explicit stationary stance change costs 4 TU. Movement helpers used by escorts/fire-team formation share the same auto-stand authority, and AI actual stance spending remains transition-based so an already-kneeling stationary soldier is not charged again. Rendering/camera dependency keys now include kneeling so stance-only changes update immediately.**
+Implementation update (2026-08-19): **The hidden alien was the key reproduction detail. The previous rescue logic treated any remembered alien contact with a last-known position as global `combatPriority`, even when nobody currently had line of sight to that alien. On mandatory rescue missions that could prevent fire-team leaders from accepting VIP recovery assignments for round after round while every free team chased the same stale/hidden contact. Browser 2045 changes combat priority to current observation for rescue arbitration, preserves remembered-contact search as a separate task, and reserves at most one eligible fire-team lead for that search when two or more free leaders are available. The remaining teams receive independent VIP assignments and rescue pacing. If only one free fire-team lead exists, no search reservation is created; that team rescues the mandatory VIPs first, after which the normal hidden-alien hunt can continue. This directly targets the reported state where Hybrid AI could still execute bounded support rounds but full Simulation AI would stall until the hidden alien was manually killed.**
+
+
+## Browser 2045 — Hidden-Contact VIP Rescue and AI Handoff Recovery
+
+**Status:** Implemented browser hotfix; live reproduction gate is a mandatory VIP mission with at least one living alien hidden from current AEGIS line of sight.
+
+### Root cause
+- A living alien that had previously been seen could remain `revealed` with a valid last-known position after slipping back into fog of war.
+- The resolver treated that remembered contact as full combat priority for the entire squad, even though no soldier currently observed the alien.
+- Mandatory VIP recovery therefore stopped receiving autonomous fire-team leaders while the squad repeatedly searched for the hidden alien.
+- Full Simulation AI could spend repeated continuation rounds in that state and appear unable to take over again; Hybrid AI was less visibly affected because it resolves only a bounded support round before returning leader control.
+- Manually killing the hidden alien removed that global combat-priority condition, which is why Simulation AI immediately became available/useful again in the live reproduction.
+
+### Split-task rescue/search doctrine
+- Current line of sight, not remembered contact alone, now decides whether rescue work is globally suspended for immediate combat.
+- If an alien is currently observed, ordinary combat priority remains authoritative.
+- If living aliens remain but none are currently observed and mandatory VIPs are still active, Simulation AI may run rescue and hidden-contact search concurrently.
+- With two or more eligible free fire-team leaders, one leader/fire team is reserved for the remembered/systematic hidden-contact search; the remaining free teams continue VIP recovery.
+- The search-team selector prefers the free leader nearest a legitimate last-known alien position when one exists, then uses commander-quality/tie-breaking rules.
+- With only one eligible fire-team leader, no search reservation is created. The sole team continues the mandatory rescue so the mission cannot deadlock itself by assigning its only leader to search duty.
+- Rescue teams remain excluded from ordinary per-soldier hunt movement for that round, which both preserves objective focus and reduces unnecessary large-map search/pathfinding work.
+
+### VIP rescue stall recovery retained
+- Multiple active tracked VIPs are distributed across available rescue fire teams rather than all teams collapsing onto the same target.
+- During rescue-authority phases, stale autonomous command-map orders can be cleared for non-player-owned teams so those teams can accept required rescue work.
+- Rescue movement ignores temporary same-fire-team traffic when building a leader route, preventing its own forming supports from making a valid VIP route look blocked.
+- Once the immediate area has no observed alien threat, rescue leaders can use independent rescue pacing rather than remaining frozen by zero-progress formation pacing.
+- Repeated rescue-route stalls reset the bounded rescue route memory instead of replaying the same failed micro-route forever.
+
+### Retry / Simulation-AI continuation
+- Recovery now recognizes an active-rescue state with no currently visible living alien even if a hidden alien still exists.
+- Retry clears stale search/hunt/patrol state as before and also resets stale rescue target/visited/stall state and non-player autonomous fire-team orders for that recovery case.
+- This is intended to make **Retry AI Continuation** genuinely rebuild the round instead of reconstructing the same hidden-contact/VIP deadlock.
+- The 1045 first-handoff bounded planning budget and 0945 continuation self-heal remain in force.
+
+### Authority / hidden-information rules
+- The patch does **not** reveal the hidden alien or grant AI omniscient targeting. The search team receives only legitimate remembered contact data or the existing systematic hunt doctrine.
+- VIP tracker information remains limited to missions where the VIP objective legitimately provides trackers.
+- When an alien becomes visible again, immediate combat priority resumes and rescue behavior can yield to the live threat.
+- Hit resolution, RNG, TU costs, weapon ranges, cover, LOS, fog of war, and mission victory conditions are unchanged.
+
+### Build Health / manual gates
+1. Start a mandatory rescue mission with three active VIPs and at least two fire teams. Leave one previously seen alien alive but hidden from all current AEGIS LOS. Hand full control to Simulation AI.
+2. Confirm one free fire team continues searching for the hidden alien while other free teams continue locating/escorting/extracting VIPs.
+3. Repeat with only one free fire-team leader and confirm the sole team continues the VIP rescue rather than being reserved for an endless alien search.
+4. Make the alien visible again and confirm normal combat priority immediately resumes.
+5. Hide the alien again after combat and confirm rescue/search split can resume without a stalled handoff.
+6. Force or reproduce an interrupted continuation in the hidden-alien + active-VIP state and press Retry AI Continuation; confirm a fresh rescue/search plan is generated.
+7. Confirm Hybrid AI still returns fire-team-leader control after its bounded round and that switching from Hybrid to full Simulation AI no longer depends on manually killing the hidden alien.
+8. Confirm save/load, kneeling state, beacon behavior, and concurrent Skyranger operations remain unchanged.
 
 ## Browser 1935 — Tactical Kneel Movement and Pose Parity
 
