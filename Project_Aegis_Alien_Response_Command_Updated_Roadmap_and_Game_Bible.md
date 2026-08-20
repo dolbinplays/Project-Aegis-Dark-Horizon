@@ -2,12 +2,53 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.2045_HIDDEN_CONTACT_VIP_RESCUE_AND_AI_HANDOFF_RECOVERY_PATCH`
+Current handoff build: `v0.26.08.19.2050_TACTICAL_AI_RESERVE_AND_FINAL_ACTION_PLAYBACK_HUD_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2045 fixes a Simulation-AI deadlock exposed by live VIP-rescue testing: one living alien could remain hidden while several mandatory VIPs were still active, causing remembered-contact combat priority to suppress rescue work and making full Simulation AI appear unable to take command or generate a useful continuation. The AI now distinguishes an actually observed alien from a merely remembered/hidden contact. When no alien is currently observed but mandatory VIPs remain, it enters split-task rescue/search doctrine: one free fire-team lead continues the hidden-contact search when multiple free teams exist, while the remaining free teams keep locating, escorting, and extracting VIPs. A one-fire-team squad prioritizes the rescue instead of deadlocking itself by reserving its only leader for a search. The 2045 rescue-route independence and stale-order recovery work is retained, Retry AI Continuation also treats active VIPs plus no currently visible alien as a rescue-recovery state, save format remains 4, Browser 1935 kneeling parity and Browser 1815 concurrent Skyranger operations remain intact, and native Godot remains at 0026.**
+Current patch status: **Browser 2050 implements the next tactical-AI playback-readability refinement called out by the roadmap. During Simulation-AI Tactical Map playback, the persistent upper-right observer panel now shows the acting soldier’s chosen TU reserve and resolved final turn action from the authoritative frame-unit metadata already produced by the AI resolver. The display works across Iso, FPV, and TPV, uses readable labels for movement/fire/grenade/kneel/beacon/formation outcomes, and remains presentation-only: AI planning, TU spending, RNG, fog of war, ammunition, objective authority, save format 4, Browser 2045 hidden-contact VIP rescue recovery, Browser 1935 kneeling parity, and Browser 1815 concurrent Skyranger operations are unchanged.**
+
+Implementation update (2026-08-19): **Browser 2050 completes the roadmap follow-up to make adaptive Simulation-AI turns easier to understand while watching them. The resolver already persisted each acting human soldier’s `aiReserveLabel`, `reserveTu`, `aiTurnAction`, `aiTurnReassessed`, and movement-leg metadata into playback frame units. The observer HUD now consumes those fields directly, so the player can see what action the soldier reserved TU for and how the turn actually concluded without adding a second AI state or recomputing decisions from live state.**
 
 Implementation update (2026-08-19): **The hidden alien was the key reproduction detail. The previous rescue logic treated any remembered alien contact with a last-known position as global `combatPriority`, even when nobody currently had line of sight to that alien. On mandatory rescue missions that could prevent fire-team leaders from accepting VIP recovery assignments for round after round while every free team chased the same stale/hidden contact. Browser 2045 changes combat priority to current observation for rescue arbitration, preserves remembered-contact search as a separate task, and reserves at most one eligible fire-team lead for that search when two or more free leaders are available. The remaining teams receive independent VIP assignments and rescue pacing. If only one free fire-team lead exists, no search reservation is created; that team rescues the mandatory VIPs first, after which the normal hidden-alien hunt can continue. This directly targets the reported state where Hybrid AI could still execute bounded support rounds but full Simulation AI would stall until the hidden alien was manually killed.**
 
+
+
+## Browser 2050 — Tactical AI Reserve and Final-Action Playback HUD
+
+**Status:** Implemented browser readability patch; live manual gate is a Simulation-AI Tactical Map mission observed in Iso, FPV, and TPV while soldiers choose different reserve modes and final actions.
+
+### Roadmap target
+- Implements the explicit follow-up: expose the chosen reserve and final turn action more prominently in playback HUD text using metadata already stored on frame units.
+- Keeps the existing adaptive coherent AI turn model authoritative. No movement, targeting, reserve-selection, formation, rescue, beacon, or firing doctrine is recalculated by the HUD.
+
+### Frame-metadata authority
+- The active AI action actor is resolved from the current playback frame.
+- The HUD reads the matching human snapshot from `aiPlaybackFrame.soldiers`.
+- `aiReserveLabel` supplies the human-readable reserve choice and `reserveTu` supplies the associated TU reservation.
+- `aiTurnAction` is translated into readable outcomes such as Move, Move + Fire, Move + Throw Frag Grenade, Move + Kneel, Regroup with Fire Team, Disable Beacon, Hybrid Flank, ranged standoff/cover positioning, or Hold Position.
+- Legacy/cached frames with incomplete metadata fail safely to readable fallbacks rather than exposing undefined values.
+
+### Observer HUD behavior
+- A compact **AI Turn Plan** block is added to the established upper-right tactical observer panel.
+- It names the acting AEGIS soldier so the plan readout remains clear even if another soldier is selected in the underlying tactical UI.
+- **Chosen Reserve** shows the recorded reserve label and TU amount when non-zero.
+- **Final Turn Action** shows the resolved turn outcome.
+- If the existing single checkpoint reassessment occurred, the panel notes that the soldier reassessed after movement.
+- The block is available during Simulation-AI Tactical Map playback in 3D Iso, First Person, and Third Person.
+
+### Gameplay / compatibility
+- Presentation only: hit chance, damage, RNG, TU costs, ammunition, reserve selection, movement paths, formation pacing, rescue/search arbitration, beacon logic, hidden information, and mission resolution are unchanged.
+- Save format remains **4**.
+- Browser 2045 hidden-contact VIP rescue / AI handoff recovery remains intact.
+- Browser 1935 kneeling parity and Browser 1815 concurrent independent Skyranger operations remain intact.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+
+### Build Health / manual gates
+1. Hand a mission to Simulation AI and watch Tactical Map playback in Iso. Confirm the active soldier’s reserve and final action update with the current action frame.
+2. Observe an Aimed Shot reservation and confirm the panel reads **Aimed Shot** with the recorded TU amount.
+3. Observe Burst/Full Auto/Snap/Kneel + Snap decisions and confirm labels match the resolver’s selected reserve.
+4. Watch turns that end in movement-only, Move + Fire, grenade, kneel, formation catch-up, and beacon actions where available; confirm **Final Turn Action** is readable and does not leak a future action before the current frame owns it.
+5. Toggle FPV and TPV during AI playback and confirm the same turn-plan block remains synchronized with the acting soldier.
+6. Confirm manual tactical control, Hybrid player orders, fog of war, save/load, and mission outcomes are unchanged.
 
 ## Browser 2045 — Hidden-Contact VIP Rescue and AI Handoff Recovery
 

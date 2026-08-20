@@ -1,6 +1,53 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.19.2050_TACTICAL_AI_RESERVE_AND_FINAL_ACTION_PLAYBACK_HUD_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Implements the next tactical-AI readability refinement explicitly called out by the roadmap. During Simulation-AI Tactical Map playback, the established upper-right observer panel now shows the acting soldier's chosen TU reserve and resolved final turn action from the authoritative metadata already stored on playback frame units. The feature is presentation-only and does not change AI decisions or combat results.
+
+AI TURN PLAN HUD
+----------------
+- Adds a compact AI Turn Plan block to the persistent upper-right tactical observer panel.
+- The readout follows the current AI action actor from the active playback frame rather than whichever soldier may still be selected underneath AI control.
+- Chosen Reserve uses the recorded `aiReserveLabel` and displays the recorded `reserveTu` when non-zero.
+- Final Turn Action translates `aiTurnAction` into readable outcomes including Move, Move + Fire, Move + Throw Frag Grenade, Move + Kneel, Regroup with Fire Team, Disable Beacon, Hybrid Flank, ranged cover/standoff movement, and Hold Position.
+- If the resolver performed its existing single movement checkpoint reassessment, the HUD notes that reassessment.
+- The block remains visible during Simulation-AI Tactical Map playback in Iso, FPV, and TPV.
+
+AUTHORITATIVE METADATA / COMPATIBILITY
+--------------------------------------
+- The UI consumes the active frame's human soldier snapshot; it does not infer or recalculate an AI plan from current live state.
+- Older/incomplete cached playback data receives safe readable fallbacks instead of undefined labels.
+- No changes to adaptive reserve selection, movement planning, fire-team pacing, rescue/search doctrine, beacon logic, hit chance, damage, RNG, TU costs, ammunition, fog of war, or mission resolution.
+- Save format remains 4.
+- Browser 2045 hidden-contact VIP rescue and AI handoff recovery remains intact.
+- Browser 1935 kneeling movement/pose parity and Browser 1815 concurrent Skyranger operations remain intact.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added a deterministic metadata-to-HUD contract that verifies an Aimed Shot / 22 TU reserve and Move + Fire final action resolve to the expected display values.
+- The contract requires the current frame soldier authority and the AI Turn Plan DOM marker in TacticalMission.
+- All 6 non-empty embedded JavaScript blocks pass `node --check`.
+
+MANUAL TEST GATES
+-----------------
+1. Hand a mission to Simulation AI and watch Tactical Map playback in Iso. Confirm the active soldier's Chosen Reserve and Final Turn Action update with each action frame.
+2. Confirm Aimed Shot, Snap Shot, Burst, Full Auto, and Kneel + Snap labels match actual AI behavior when those reserves occur.
+3. Confirm movement-only, Move + Fire, grenade, kneel, formation catch-up, and beacon outcomes use readable final-action labels.
+4. Toggle FPV and TPV and confirm the same AI Turn Plan stays synchronized with the acting soldier.
+5. Confirm no hidden alien/VIP information is exposed by the new block.
+6. Save/reload and verify tactical continuity remains unchanged.
+
+PREVIOUS BUILD - 2045
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.19.2045_HIDDEN_CONTACT_VIP_RESCUE_AND_AI_HANDOFF_RECOVERY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
