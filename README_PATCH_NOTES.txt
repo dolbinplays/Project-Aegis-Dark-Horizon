@@ -1,6 +1,70 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.19.2155_AI_EXCEPTION_GRID_SEARCH_RECOVERY_AND_MISSION_SCOPE_HOTFIX_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Hotfixes the newly reproduced tactical-AI failure where manual movement/end-turn could make AI takeover responsive again, only for the resolver to throw `mission is not defined`. The crash came from the shared fallback patrol/search helper passing a bare `mission` identifier that was not in scope. The same patch also turns fallback patrol into a deterministic fire-team sector/grid sweep and contains per-soldier planner exceptions so one bad movement/order branch cannot abort the entire Hybrid or Simulation AI round. Escorting soldiers remain dedicated to civilian/VIP extraction and do not get diverted into the emergency search.
+
+MISSION-SCOPE CRASH FIX
+-----------------------
+- `tacticalAiFallbackPatrolPlan(...)` now binds the mission explicitly from `options.mission` before calling reachable/path helpers.
+- The former free `mission` reference that produced `ReferenceError: mission is not defined` is removed.
+- This specifically covers the fallback branch reached after some manually altered/end-turn battlefield states.
+
+EMERGENCY GRID / SECTOR SEARCH
+------------------------------
+- The old generic fallback patrol now uses the existing systematic alien-hunt grid cells and fire-team slot assignment.
+- Different fire teams receive different portions of the sweep where possible instead of collapsing onto one patrol point.
+- Search movement remains bounded by available TU, reserve TU, hard-cover/occupancy blockers, hazard costs, and the shared fast-planning budget.
+- Repeated/visited cells are penalized so a stalled unit is encouraged to make fresh map progress.
+- If a soldier legitimately acquires LOS to a living alien partway through the fallback route, the emergency route stops at that contact checkpoint rather than blindly finishing the sweep.
+
+PER-SOLDIER EXCEPTION CONTAINMENT
+---------------------------------
+- Each non-escort human AI turn is now executed through a safe wrapper.
+- If normal tactical planning throws, only that soldier's normal plan is abandoned; the rest of the AI round continues.
+- The affected soldier performs the bounded grid-search fallback from its current authoritative position/TU state.
+- If a valid visible alien is acquired and the soldier still has a legal firing reserve, the soldier immediately returns to combat and fires using the normal hit/damage/shield/window rules.
+- If no legal movement exists, the soldier holds instead of blocking the entire mission AI.
+
+VIP / CIVILIAN ESCORT AUTHORITY
+------------------------------
+- Soldiers already claimed by the civilian/VIP rescue pass remain outside the emergency grid-search wrapper.
+- They continue escort/extraction duty using the existing rescue authority and Skyranger routing rules.
+- Emergency search therefore cannot pull an escort away from a civilian/VIP simply because another AI planner failed.
+
+SHARED HYBRID / SIMULATION SAFEGUARDS RETAINED
+----------------------------------------------
+- The in-progress 2150 bounded-planning work is included in this hotfix: Hybrid one-round resolution now uses the same fast bounded planning authority as Simulation-AI round generation.
+- Stale Hybrid animation latches are cleared when no movement/playback/timer actually owns them.
+- These changes reduce the chance of a long pathological path search making either AI mode appear unresponsive.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added a regression that executes the fallback plan with a real mission object and rejects the old out-of-scope `mission` failure.
+- Build Health also requires sector-grid fallback wiring, per-soldier exception containment, escort exclusion, and contact reacquisition behavior.
+- All 6 non-empty embedded JavaScript blocks pass `node --check`.
+- Save format remains 4.
+
+MANUAL TEST GATES
+-----------------
+1. Retry the mission that produced `mission is not defined`; hand control to Hybrid and Simulation AI after a manual move/end-turn and confirm the exception does not recur.
+2. Force a no-contact/search-heavy state and confirm non-escort fire teams spread through different grid sectors instead of freezing on one stale target.
+3. Confirm soldiers actively escorting civilians/VIPs continue toward extraction and are never reassigned into emergency grid search.
+4. During an emergency sweep, reveal an alien and confirm the searching soldier stops the blind sweep and returns to normal combat behavior/fire when TU permits.
+5. Create a blocked soldier with no legal fallback move and confirm that soldier holds while other AI units continue acting.
+6. Confirm Hybrid AI returns control after its bounded round and full Simulation AI can continue streamed rounds normally.
+
+PREVIOUS BUILD - 2050
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.19.2050_TACTICAL_AI_RESERVE_AND_FINAL_ACTION_PLAYBACK_HUD_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

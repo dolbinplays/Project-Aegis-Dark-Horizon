@@ -672,6 +672,8 @@ const TACTICAL_BEACON_ENDGAME_AI_ASSAULT_RECOVERY_PATCH=true;
 const TACTICAL_VIP_RESCUE_AI_STALL_RECOVERY_PATCH=true;
 const TACTICAL_HIDDEN_CONTACT_VIP_RESCUE_CONCURRENCY_PATCH=true;
 const TACTICAL_AI_RESERVE_AND_FINAL_ACTION_PLAYBACK_HUD_PATCH=true;
+const TACTICAL_SHARED_AI_BOUNDED_PLANNING_AND_HYBRID_STALL_RECOVERY_PATCH=true;
+const TACTICAL_AI_EXCEPTION_GRID_SEARCH_RECOVERY_AND_MISSION_SCOPE_HOTFIX_PATCH=true;
 const TACTICAL_RANGED_STANDOFF_AND_COVER_SEEKING_AI_PATCH=true;
 const TACTICAL_RANGED_STANDOFF_RULES=Object.freeze({preferredMin:4,shortRangePreferredMin:3,adjacentPenalty:320,twoHexPenalty:210,insideFloorPenalty:90,preferredBandReward:58,holdPositionReward:28,escapePerHexReward:70,beyondRangePenalty:120,beyondRangePerHex:28,closeThreatPenalty:58,lineLossPenalty:28,coveredShotBonus:24});
 const TACTICAL_HAZARD_PATH_RULES=Object.freeze({humanFire:44,civilianFire:96,alienFire:34,humanSmoke:4,civilianSmoke:7,alienSmoke:3,denseSmokeExtra:7});
@@ -683,7 +685,7 @@ const ACTIVE_MISSION_MENU_SAVE_TACTICAL_CONTINUITY_PATCH=true;
 const CONCURRENT_INDEPENDENT_SKYRANGER_OPERATIONS_FOUNDATION_PATCH=true;
 const TACTICAL_KNEEL_MOVEMENT_AND_POSE_PARITY_PATCH=true;
 const TACTICAL_STANCE_CHANGE_TU=4;
-const CURRENT_GAME_BUILD="v0.26.08.19.2050_TACTICAL_AI_RESERVE_AND_FINAL_ACTION_PLAYBACK_HUD_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
+const CURRENT_GAME_BUILD="v0.26.08.19.2155_AI_EXCEPTION_GRID_SEARCH_RECOVERY_AND_MISSION_SCOPE_HOTFIX_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
 function runCriticalBootSmokeTests(){
   const checks=[
     {name:"Game root is available",pass:typeof document!=="undefined"&&Boolean(document.getElementById("root"))},
@@ -1724,10 +1726,46 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
         if (target.hp <= 0 && target.alive) { target.alive = false; human.kills += 1; }
       }
     };
-    humanTurnOrder.forEach((human)=>processHumanAiTurn(human,true));
+    const processHumanEmergencyGridTurn=(human,error=null)=>{
+      if(!human||!human.alive||civilianDutyIds.has(human.id))return false;
+      const reason=String(error?.message||error||"normal tactical planner returned no usable action").slice(0,180);
+      const plan=tacticalAiFallbackPatrolPlan(human,covers,allUnits(),Math.max(0,Number(human.reserveTu)||0),human.aiMoveVisited||[],{mission,round:initialRound+round-1,preferInterior:true,emergency:true});
+      human.aiPatrolIndex=Math.max(0,Number(plan.aiPatrolIndex)||0);human.aiPatrolTargetX=Number(plan.aiPatrolTargetX);human.aiPatrolTargetY=Number(plan.aiPatrolTargetY);
+      const path=Array.isArray(plan.path)&&plan.path.length?plan.path:[{x:human.x,y:human.y}];
+      if(plan.steps>0){
+        tacticalMovementTrailAppend(frameMovementTrails,human.id,path);
+        const cell=path[path.length-1];human.x=cell.x;human.y=cell.y;human.tu=Math.max(0,Number(human.tu)-Math.max(0,Number(plan.steps)||0)*4);Object.assign(human,tacticalAutoStandForMovement(human));
+        human.aiMoveVisited=[...(human.aiMoveVisited||[]),...path.map(point=>tacticalKey(point.x,point.y))].slice(-24);human.aiTurnAction="emergency-grid-search";human.aiEmergencyGridRecovery=true;human.aiTurnReassessed=true;roundMovementCommittedIds.add(human.id);roundActedIds.add(human.id);
+      }else{human.aiTurnAction="emergency-grid-hold";human.aiEmergencyGridRecovery=true;}
+      tacticalVisibleCellSet(allUnits(),covers,mission).forEach(key=>exploredCells.add(key));
+      const range=human.weaponKind==="ballistic"?18:20;
+      const contacts=aliens.filter(alien=>alien.alive&&Number(alien.hp)>0&&tacticalDistance(alien,human)<=range&&hasLineOfSight(human,alien.x,alien.y,covers,mission)).sort((left,right)=>tacticalDistance(left,human)-tacticalDistance(right,human)||String(left.id).localeCompare(String(right.id)));
+      const target=contacts[0]||null;
+      if(target){
+        human.facing=facingToward(human,target.x,target.y);human.aiAlienHuntMode=null;human.aiAlienHuntTargetX=null;human.aiAlienHuntTargetY=null;
+        const reserve=tacticalAiAdaptiveReserveDecision({unit:human,visibleAliens:contacts,covers,mission,upgrades:weaponUpgrades,round:initialRound+round-1});
+        if(reserve.tu<=human.tu){human.reserveTu=reserve.tu;human.aiReserveMode=reserve.reserveMode;human.aiReserveLabel=reserve.label;human.aiShotModeKey=reserve.shotModeKey;human.aiReserveWantsKneel=Boolean(reserve.kneel);}
+        const shot=spendHumanShot(human);
+        if(shot){
+          roundActedIds.add(human.id);human.aiTurnAction=plan.steps>0?"emergency-grid-contact-fire":"emergency-contact-fire";let hits=0;const distance=tacticalDistance(target,human);const hitChance=clamp(humanHitChance(human)+(human.kneeling?10:0)-shot.mode.accPenalty-Math.floor(distance*1.4)-tacticalDarknessAccuracyPenalty(human,target,covers,mission),8,92);let windowShattered=false;
+          for(let index=0;index<Math.max(1,shot.rounds);index+=1){const windowShot=tacticalShatterWindowInShotPath(human,target,covers);if(windowShot.window){covers.splice(0,covers.length,...windowShot.covers);windowShattered=true;}if(rand(1,100)<=clamp(hitChance-windowShot.penalty,8,92))hits+=1;}
+          const shieldShot=hits>0?tacticalAlienBeaconShieldShotState({attacker:human,target,covers,weaponKind:human.weaponKind}):{blocked:false};const damage=shieldShot.blocked?0:hits*humanDamage(human);if(shieldShot.blocked)covers.splice(0,covers.length,...tacticalAlienBeaconShieldImpactCovers(covers,human.weaponKind));
+          shots.push({fromId:human.id,toId:target.id,fromX:human.x,fromY:human.y,toX:target.x,toY:target.y,color:shotColorForWeapon(human.weaponKind),side:"human",weaponKind:human.weaponKind,modeKey:shot.modeKey,windowShattered,shieldBlocked:Boolean(shieldShot.blocked),hit:hits>0,hits,rounds:Math.max(1,shot.rounds),damage,hitChance,targetHpBefore:target.hp,targetMaxHp:target.maxHp||target.hp,targetAlienType:target.alienType||target.name,killed:damage>0&&target.hp-damage<=0,observable:true});
+          if(damage>0){target.hp-=damage;if(target.hp<=0&&target.alive){target.alive=false;human.kills=Math.max(0,Number(human.kills)||0)+1;}}
+          logs.push(`AI recovery: ${human.name} reacquired ${target.name||"a hostile"} during the grid sweep and immediately returned to combat.`);
+        }else logs.push(`AI recovery: ${human.name} reacquired ${target.name||"a hostile"} during the grid sweep but held because the selected reserve could not be fired safely.`);
+      }
+      logs.push(`AI recovery grid search: ${human.name} isolated planner failure (${reason}) and ${plan.steps>0?`swept toward sector ${Number(plan.searchTeamSlot)+1}`:"held the nearest legal search position"}. Escort/extraction duties remain outside this fallback.`);
+      return true;
+    };
+    const processHumanAiTurnSafely=(human,allowFriendlyTrafficDefer=true)=>{
+      try{return processHumanAiTurn(human,allowFriendlyTrafficDefer);}
+      catch(error){return processHumanEmergencyGridTurn(human,error);}
+    };
+    humanTurnOrder.forEach((human)=>processHumanAiTurnSafely(human,true));
     deferredFriendlyTrafficIds.forEach((unitId)=>{
       const human=humans.find((unit)=>unit.id===unitId&&unit.alive);
-      if(human)processHumanAiTurn(human,false);
+      if(human)processHumanAiTurnSafely(human,false);
     });
     const preGuardById=Object.fromEntries(allUnits().map(unit=>[unit.id,{x:unit.x,y:unit.y,team:unit.team}]));
     const humanPhaseGuard=tacticalRepairBattlefieldState({units:allUnits(),covers,mission,skyranger:rescuePlacement});
@@ -3161,7 +3199,7 @@ const TACTICAL_AI_MAX_CANDIDATES=192;
 const TACTICAL_AI_HANDOFF_MAX_CANDIDATES=144;
 const TACTICAL_AI_HANDOFF_MAX_EXPANDED=512;
 let TACTICAL_AI_FAST_HANDOFF_ACTIVE=false;
-const TACTICAL_AI_PERF_METRICS={handoffRuns:0,lastHandoffPlanningMs:0,maxHandoffPlanningMs:0,lastHandoffAt:0};
+const TACTICAL_AI_PERF_METRICS={handoffRuns:0,lastHandoffPlanningMs:0,maxHandoffPlanningMs:0,lastHandoffAt:0,boundedRoundRuns:0,hybridBoundedRuns:0,lastBoundedPlanningMs:0,maxBoundedPlanningMs:0,lastBoundedKind:""};
 if(typeof window!=="undefined")window.__AEGIS_TACTICAL_AI_PERF__=TACTICAL_AI_PERF_METRICS;
 const TACTICAL_AI_DOCTRINES=[
   {key:"wedge",label:"Protected Wedge",rank:"Rookie",missions:0},
@@ -3950,31 +3988,43 @@ function tacticalAiThreatAwareReachablePlan(unit,covers=[],units=[],threats=[],m
   const limit=clamp(Math.floor(Number(maxSteps)||0),0,TACTICAL_AI_MAX_MOVE_STEPS);const gridSize=tacticalGridSizeFrom(unit,units,covers,mission);const blockers=tacticalPathBlockerIndex(covers,units,unit.id),blocked=blockers.hardCover,occupied=blockers.occupied;const candidateLimit=TACTICAL_AI_FAST_HANDOFF_ACTIVE?TACTICAL_AI_HANDOFF_MAX_CANDIDATES:TACTICAL_AI_MAX_CANDIDATES;const start={x:unit.x,y:unit.y,key:tacticalKey(unit.x,unit.y),steps:0,path:[{x:unit.x,y:unit.y}],threatSteps:0,reentries:0,exposure:tacticalAiAlienThreatExposure(unit,threats,covers,mission),hazardCost:0,fireSteps:0,smokeSteps:0};const queue=[start],bestByKey=new Map([[start.key,start]]);let head=0;while(head<queue.length&&head<candidateLimit*4){const current=queue[head++];if(bestByKey.get(current.key)!==current||current.steps>=limit)continue;for(const next of tacticalNeighbors(current.x,current.y,gridSize)){const key=tacticalKey(next.x,next.y);if(blocked.has(key)||occupied.has(key))continue;const exposure=tacticalAiAlienThreatExposure(next,threats,covers,mission),fire=blockers.fireByKey.get(key)||0,smoke=blockers.smokeByKey.get(key)||0;const candidate={...next,key,steps:current.steps+1,path:[...current.path,{x:next.x,y:next.y}],threatSteps:current.threatSteps+(exposure>0?1:0),reentries:current.reentries+(current.exposure===0&&exposure>0?1:0),exposure,hazardCost:current.hazardCost+tacticalMovementHazardCostIndexed(unit,next,blockers,covers),fireSteps:current.fireSteps+(fire>0?1:0),smokeSteps:current.smokeSteps+(smoke>0?1:0)};const previous=bestByKey.get(key);const improves=!previous||candidate.fireSteps<previous.fireSteps||candidate.fireSteps===previous.fireSteps&&(candidate.hazardCost<previous.hazardCost||candidate.hazardCost===previous.hazardCost&&(candidate.reentries<previous.reentries||candidate.reentries===previous.reentries&&(candidate.threatSteps<previous.threatSteps||candidate.threatSteps===previous.threatSteps&&candidate.steps<previous.steps)));if(!improves||!previous&&bestByKey.size>=candidateLimit)continue;bestByKey.set(key,candidate);queue.push(candidate);}}return{cells:Array.from(bestByKey.values()),pathTo:cell=>cell?.path||[{x:unit.x,y:unit.y}]};
 }
 function tacticalAiFallbackPatrolPlan(unit,covers=[],units=[],reserveTu=14,visitedCells=[],options={}){
+  const mission=options?.mission||null;
   const maxSteps=clamp(Math.floor((Math.max(0,Number(unit?.tu)||0)-Math.max(0,reserveTu))/4),0,TACTICAL_AI_MAX_MOVE_STEPS);
   const reachable=tacticalAiReachablePlan(unit,covers,units,maxSteps,mission);
   const moving=reachable.cells.filter(cell=>cell.steps>0);
-  if(!moving.length)return{cell:unit,path:[{x:unit.x,y:unit.y}],steps:0,reserveTu,aiPatrolIndex:Number(unit?.aiPatrolIndex)||0};
-  const gridSize=tacticalGridSizeFrom(unit,units,covers,options?.mission);
-  const visited=new Set(visitedCells||[]);
+  const gridSize=tacticalGridSizeFrom(unit,units,covers,mission);
+  const team=tacticalAiAlienHuntTeamSlot(unit,units);
+  const gridCells=tacticalAiAlienHuntGridCells({gridSize,covers,mission});
+  const assignedGrid=gridCells.filter(cell=>cell.index%Math.max(1,team.count)===team.slot);
+  const sweepCells=assignedGrid.length?assignedGrid:gridCells;
   let patrolIndex=Math.max(0,Math.floor(Number(unit?.aiPatrolIndex)||0));
-  let target=Number.isFinite(Number(unit?.aiPatrolTargetX))&&Number.isFinite(Number(unit?.aiPatrolTargetY))?{x:Number(unit.aiPatrolTargetX),y:Number(unit.aiPatrolTargetY)}:tacticalAiPatrolWaypoint(unit,gridSize,patrolIndex);
-  if(tacticalDistance(unit,target)<=2){patrolIndex+=1;target=tacticalAiPatrolWaypoint(unit,gridSize,patrolIndex);}
+  const validStored=tacticalValidCoordinatePair(unit?.aiPatrolTargetX,unit?.aiPatrolTargetY,gridSize);
+  let target=validStored&&tacticalDistance(unit,validStored)>2?validStored:(sweepCells[patrolIndex%Math.max(1,sweepCells.length)]||tacticalAiPatrolWaypoint(unit,gridSize,patrolIndex));
+  if(tacticalDistance(unit,target)<=2&&sweepCells.length){patrolIndex+=1;target=sweepCells[patrolIndex%sweepCells.length];}
+  if(!moving.length)return{cell:{x:unit.x,y:unit.y},path:[{x:unit.x,y:unit.y}],steps:0,reserveTu,aiPatrolIndex:patrolIndex,aiPatrolTargetX:target.x,aiPatrolTargetY:target.y,patrolTarget:target,emergencyGridSearch:true,searchTeamSlot:team.slot};
+  const visited=new Set(visitedCells||[]);
   const rank=(cell,currentTarget)=>{
     const originDistance=tacticalDistance(unit,currentTarget);
     const gain=originDistance-tacticalDistance(cell,currentTarget);
     const separation=Math.min(8,...units.filter(other=>other.id!==unit.id&&other.team===unit.team&&other.hp>0&&!other.rescued).map(other=>tacticalDistance(cell,other)),8);
-    return gain*95+cell.steps*5+tacticalAiCellCoverScore(cell,covers)+tacticalAiEdgeClearance(cell,gridSize)*(options?.preferInterior?10:6)+separation*7-tacticalAiCrowdingPenalty(cell,unit,units)-(visited.has(cell.key)?180:0);
+    return gain*120-cell.hazardCost*45-cell.fireSteps*120-cell.smokeSteps*12+cell.steps*4+tacticalAiCellCoverScore(cell,covers)+tacticalAiEdgeClearance(cell,gridSize)*(options?.preferInterior?10:6)+separation*6-tacticalAiCrowdingPenalty(cell,unit,units)-(visited.has(cell.key)?220:0);
   };
   let ordered=[...moving].sort((left,right)=>rank(right,target)-rank(left,target)||tacticalAiCellTieValue(unit,right,patrolIndex)-tacticalAiCellTieValue(unit,left,patrolIndex));
   let best=ordered[0];
-  if(!best||tacticalDistance(best,target)>=tacticalDistance(unit,target)){
-    patrolIndex+=1;
-    target=tacticalAiPatrolWaypoint(unit,gridSize,patrolIndex);
+  if((!best||tacticalDistance(best,target)>=tacticalDistance(unit,target))&&sweepCells.length){
+    patrolIndex+=1;target=sweepCells[patrolIndex%sweepCells.length];
     ordered=[...moving].sort((left,right)=>rank(right,target)-rank(left,target)||tacticalAiCellTieValue(unit,right,patrolIndex)-tacticalAiCellTieValue(unit,left,patrolIndex));
     best=ordered[0];
   }
-  const path=reachable.pathTo(best);
-  return{cell:{x:best.x,y:best.y},path,steps:Math.max(0,path.length-1),reserveTu,aiPatrolIndex:patrolIndex,aiPatrolTargetX:target.x,aiPatrolTargetY:target.y,patrolTarget:target};
+  best=best||moving[0];
+  let path=reachable.pathTo(best);
+  let contactId=null;
+  for(let index=1;index<path.length;index+=1){
+    const observer={...unit,x:path[index].x,y:path[index].y};
+    const contact=tacticalAiPersonallyObservedAliens(observer,units,covers,mission).sort((left,right)=>tacticalDistance(observer,left)-tacticalDistance(observer,right)||String(left.id).localeCompare(String(right.id)))[0];
+    if(contact){contactId=contact.id;path=path.slice(0,index+1);best={...best,x:path[index].x,y:path[index].y};break;}
+  }
+  return{cell:{x:best.x,y:best.y},path,steps:Math.max(0,path.length-1),reserveTu,aiPatrolIndex:patrolIndex,aiPatrolTargetX:target.x,aiPatrolTargetY:target.y,patrolTarget:target,emergencyGridSearch:true,searchTeamSlot:team.slot,contactId};
 }
 function tacticalAiAlienHuntTeamSlot(unit=null,units=[]){
   const livingHumans=(units||[]).filter(candidate=>candidate?.team==="human"&&candidate.hp>0&&candidate.alive!==false);
@@ -7448,7 +7498,7 @@ function tacticalDeployment({ squad = [], mission = {}, covers = makeBattlefield
   alienPositions.forEach((cell) => occupied.add(tacticalKey(cell.x, cell.y)));
   const civilianPositions = tacticalCivilianPositions(mission, beaconCovers, occupied);
   return { covers: beaconCovers, humanPositions, alienPositions, civilianPositions, humanCenter, alienCenter, alienBeacon, skyranger, gridSize };
-}function findClearTacticalCenter(center,covers=[],seed=0){if(!isHardCoverAt(covers,center.x,center.y))return center;for(let radius=1;radius<12;radius+=1){for(let i=0;i<radius*8;i+=1){const angle=i/Math.max(1,radius*8)*Math.PI*2;const x=clamp(Math.round(center.x+Math.cos(angle)*radius+seed%3-1),2,TACTICAL_GRID_SIZE-3);const y=clamp(Math.round(center.y+Math.sin(angle)*radius),2,TACTICAL_GRID_SIZE-3);if(!isHardCoverAt(covers,x,y))return{x,y};}}return{x:8,y:8};}function tacticalPathBlockerIndex(covers=[],units=[],ignoreId=null){const hardCover=new Set(),fireByKey=new Map(),smokeByKey=new Map();for(const cover of Array.isArray(covers)?covers:[]){if(!cover||Number(cover.hp)<=0)continue;const hard=cover.kind==="hard";const fire=tacticalIsFireHazard(cover)||cover.burning?clamp(Number(cover.fireIntensity)||1,1,3):0;const smoke=tacticalSmokeDensityForCover(cover);if(!hard&&fire<=0&&smoke<=0)continue;const cells=tacticalCoverFootprintCells(cover);for(const cell of cells){const key=tacticalKey(cell.x,cell.y);if(hard)hardCover.add(key);if(fire>0)fireByKey.set(key,Math.max(fireByKey.get(key)||0,fire));if(smoke>0)smokeByKey.set(key,Math.max(smokeByKey.get(key)||0,smoke));}}const occupied=new Set();for(const unit of Array.isArray(units)?units:[]){if(unit?.hp>0&&!unit.rescued&&unit.id!==ignoreId)occupied.add(tacticalKey(unit.x,unit.y));}return{hardCover,occupied,fireByKey,smokeByKey};}function tacticalReachableCellSet(start,covers=[],units=[],maxSteps=8){const reachable=new Set();if(!start||maxSteps<=0)return reachable;const gridSize=tacticalGridSizeFrom(start,units,covers);const blockers=tacticalPathBlockerIndex(covers,units,start.id);const queue=[{x:start.x,y:start.y,steps:0}];const visited=new Set([tacticalKey(start.x,start.y)]);let head=0;while(head<queue.length){const current=queue[head++];if(current.steps>=maxSteps)continue;for(const{x,y}of tacticalNeighbors(current.x,current.y,gridSize)){const key=tacticalKey(x,y);if(visited.has(key)||blockers.hardCover.has(key)||blockers.occupied.has(key))continue;visited.add(key);reachable.add(key);queue.push({x,y,steps:current.steps+1});}}return reachable;}function tacticalPathSearch(start,target,covers=[],units=[],maxSteps=8,blockers=null,distanceOnly=false){if(!start||!target)return null;const indexed=blockers||tacticalPathBlockerIndex(covers,units,start.id);const targetKey=tacticalKey(target.x,target.y);if(indexed.hardCover.has(targetKey)||indexed.occupied.has(targetKey))return null;const gridSize=tacticalGridSizeFrom(start,target,covers,units);const startKey=tacticalKey(start.x,start.y);const queue=[{x:start.x,y:start.y,key:startKey,steps:0,parent:-1}];const visited=new Set([startKey]);let head=0;while(head<queue.length){const currentIndex=head++;const current=queue[currentIndex];if(current.key===targetKey){if(distanceOnly)return{steps:current.steps,path:null};const path=[];let pathIndex=currentIndex;while(pathIndex>=0){const node=queue[pathIndex];path.push({x:node.x,y:node.y});pathIndex=node.parent;}path.reverse();return{steps:current.steps,path};}if(current.steps>=maxSteps)continue;for(const{x,y}of tacticalNeighbors(current.x,current.y,gridSize)){const key=tacticalKey(x,y);if(visited.has(key)||indexed.hardCover.has(key)||indexed.occupied.has(key))continue;visited.add(key);queue.push({x,y,key,steps:current.steps+1,parent:currentIndex});}}return null;}function tacticalPathDistance(start,target,covers=[],units=[],maxSteps=8,blockers=null){const result=tacticalPathSearch(start,target,covers,units,maxSteps,blockers,true);return result?result.steps:null;}function tacticalPath(start,target,covers=[],units=[],maxSteps=8,blockers=null){const result=tacticalPathSearch(start,target,covers,units,maxSteps,blockers,false);return result?.path||null;}function tacticalMovementTrailAppend(trails=null,unitId=null,path=[]){if(!trails||!unitId||!Array.isArray(path))return trails;const existing=Array.isArray(trails[unitId])?trails[unitId]:[];path.forEach(point=>{const x=Number(point?.x),y=Number(point?.y);if(!Number.isFinite(x)||!Number.isFinite(y))return;const last=existing[existing.length-1];if(last&&last.x===x&&last.y===y)return;existing.push({x,y});});if(existing.length)trails[unitId]=existing.slice(-64);return trails;}function tacticalMovementTrailMerge(target=null,source=null){if(!target||!source||typeof source!=="object")return target;Object.entries(source).forEach(([unitId,path])=>tacticalMovementTrailAppend(target,unitId,path));return target;}function tacticalMovementTrailSnapshot(trails=null){const result={};if(!trails||typeof trails!=="object")return result;Object.entries(trails).forEach(([unitId,path])=>{if(Array.isArray(path)&&path.length>1)result[unitId]=path.map(point=>({x:Number(point.x),y:Number(point.y)}));});return result;}function tacticalPlaybackMovementPath(frame=null,unitId=null,previous=null,target=null,covers=[],units=[]){
+}function findClearTacticalCenter(center,covers=[],seed=0){if(!isHardCoverAt(covers,center.x,center.y))return center;for(let radius=1;radius<12;radius+=1){for(let i=0;i<radius*8;i+=1){const angle=i/Math.max(1,radius*8)*Math.PI*2;const x=clamp(Math.round(center.x+Math.cos(angle)*radius+seed%3-1),2,TACTICAL_GRID_SIZE-3);const y=clamp(Math.round(center.y+Math.sin(angle)*radius),2,TACTICAL_GRID_SIZE-3);if(!isHardCoverAt(covers,x,y))return{x,y};}}return{x:8,y:8};}function tacticalPathBlockerIndex(covers=[],units=[],ignoreId=null){const hardCover=new Set(),fireByKey=new Map(),smokeByKey=new Map();for(const cover of Array.isArray(covers)?covers:[]){if(!cover||Number(cover.hp)<=0)continue;const hard=cover.kind==="hard";const fire=tacticalIsFireHazard(cover)||cover.burning?clamp(Number(cover.fireIntensity)||1,1,3):0;const smoke=tacticalSmokeDensityForCover(cover);if(!hard&&fire<=0&&smoke<=0)continue;const cells=tacticalCoverFootprintCells(cover);for(const cell of cells){const key=tacticalKey(cell.x,cell.y);if(hard)hardCover.add(key);if(fire>0)fireByKey.set(key,Math.max(fireByKey.get(key)||0,fire));if(smoke>0)smokeByKey.set(key,Math.max(smokeByKey.get(key)||0,smoke));}}const occupied=new Set();for(const unit of Array.isArray(units)?units:[]){if(unit?.hp>0&&!unit.rescued&&unit.id!==ignoreId)occupied.add(tacticalKey(unit.x,unit.y));}return{hardCover,occupied,fireByKey,smokeByKey};}function tacticalReachableCellSet(start,covers=[],units=[],maxSteps=8){const reachable=new Set();if(!start||maxSteps<=0)return reachable;const gridSize=tacticalGridSizeFrom(start,units,covers);const blockers=tacticalPathBlockerIndex(covers,units,start.id);const queue=[{x:start.x,y:start.y,steps:0}];const visited=new Set([tacticalKey(start.x,start.y)]);let head=0;while(head<queue.length){const current=queue[head++];if(current.steps>=maxSteps)continue;for(const{x,y}of tacticalNeighbors(current.x,current.y,gridSize)){const key=tacticalKey(x,y);if(visited.has(key)||blockers.hardCover.has(key)||blockers.occupied.has(key))continue;visited.add(key);reachable.add(key);queue.push({x,y,steps:current.steps+1});}}return reachable;}function tacticalPathSearch(start,target,covers=[],units=[],maxSteps=8,blockers=null,distanceOnly=false){if(!start||!target)return null;const indexed=blockers||tacticalPathBlockerIndex(covers,units,start.id);const targetKey=tacticalKey(target.x,target.y);if(indexed.hardCover.has(targetKey)||indexed.occupied.has(targetKey))return null;const gridSize=tacticalGridSizeFrom(start,target,covers,units);const startKey=tacticalKey(start.x,start.y);const queue=[{x:start.x,y:start.y,key:startKey,steps:0,parent:-1}];const visited=new Set([startKey]);let head=0;const searchExpansionLimit=TACTICAL_AI_FAST_HANDOFF_ACTIVE?TACTICAL_AI_HANDOFF_MAX_EXPANDED:Math.max(TACTICAL_AI_HANDOFF_MAX_EXPANDED,gridSize*gridSize);while(head<queue.length&&head<searchExpansionLimit){const currentIndex=head++;const current=queue[currentIndex];if(current.key===targetKey){if(distanceOnly)return{steps:current.steps,path:null};const path=[];let pathIndex=currentIndex;while(pathIndex>=0){const node=queue[pathIndex];path.push({x:node.x,y:node.y});pathIndex=node.parent;}path.reverse();return{steps:current.steps,path};}if(current.steps>=maxSteps)continue;for(const{x,y}of tacticalNeighbors(current.x,current.y,gridSize)){const key=tacticalKey(x,y);if(visited.has(key)||indexed.hardCover.has(key)||indexed.occupied.has(key))continue;visited.add(key);queue.push({x,y,key,steps:current.steps+1,parent:currentIndex});}}return null;}function tacticalPathDistance(start,target,covers=[],units=[],maxSteps=8,blockers=null){const result=tacticalPathSearch(start,target,covers,units,maxSteps,blockers,true);return result?result.steps:null;}function tacticalPath(start,target,covers=[],units=[],maxSteps=8,blockers=null){const result=tacticalPathSearch(start,target,covers,units,maxSteps,blockers,false);return result?.path||null;}function tacticalMovementTrailAppend(trails=null,unitId=null,path=[]){if(!trails||!unitId||!Array.isArray(path))return trails;const existing=Array.isArray(trails[unitId])?trails[unitId]:[];path.forEach(point=>{const x=Number(point?.x),y=Number(point?.y);if(!Number.isFinite(x)||!Number.isFinite(y))return;const last=existing[existing.length-1];if(last&&last.x===x&&last.y===y)return;existing.push({x,y});});if(existing.length)trails[unitId]=existing.slice(-64);return trails;}function tacticalMovementTrailMerge(target=null,source=null){if(!target||!source||typeof source!=="object")return target;Object.entries(source).forEach(([unitId,path])=>tacticalMovementTrailAppend(target,unitId,path));return target;}function tacticalMovementTrailSnapshot(trails=null){const result={};if(!trails||typeof trails!=="object")return result;Object.entries(trails).forEach(([unitId,path])=>{if(Array.isArray(path)&&path.length>1)result[unitId]=path.map(point=>({x:Number(point.x),y:Number(point.y)}));});return result;}function tacticalPlaybackMovementPath(frame=null,unitId=null,previous=null,target=null,covers=[],units=[]){
   if(!previous||!target||!unitId)return[];const blockers=tacticalPathBlockerIndex(covers,units,unitId);const gridSize=tacticalGridSizeFrom(previous,target,covers,units);const actor=units.find(unit=>unit?.id===unitId)||{...previous,id:unitId,team:previous.team||"human"};const routeLegal=(candidate=[])=>candidate.every((point,index)=>{const key=tacticalKey(point.x,point.y);if(index===0&&point.x===previous.x&&point.y===previous.y)return true;return!blockers.hardCover.has(key)&&!blockers.occupied.has(key);});const saferRoute=(candidate=[])=>{const maxSteps=Math.max(12,Math.min(320,gridSize*4));const rebuilt=tacticalAiHazardAwarePath({...actor,...previous,id:unitId},target,covers,units,maxSteps,blockers,null);if(!rebuilt?.length||!routeLegal(rebuilt))return candidate;const oldStats=tacticalPathHazardStats(candidate,actor,covers),newStats=tacticalPathHazardStats(rebuilt,actor,covers);return newStats.fireSteps<oldStats.fireSteps||newStats.fireSteps===oldStats.fireSteps&&newStats.hazardCost<oldStats.hazardCost?rebuilt:candidate;};
   const recorded=Array.isArray(frame?.movementTrails?.[unitId])?frame.movementTrails[unitId]:[];let path=recorded.filter(point=>Number.isFinite(Number(point?.x))&&Number.isFinite(Number(point?.y))).map(point=>({x:Number(point.x),y:Number(point.y)}));if(path.length){const startIndex=path.findIndex(point=>point.x===previous.x&&point.y===previous.y);if(startIndex>=0)path=path.slice(startIndex);else path.unshift({x:previous.x,y:previous.y});const last=path[path.length-1];if(!last||last.x!==target.x||last.y!==target.y){const tailStart={...actor,...previous,id:unitId,x:last?.x??previous.x,y:last?.y??previous.y};const tailMax=Math.max(12,Math.min(320,gridSize*4));const tail=tacticalAiHazardAwarePath(tailStart,target,covers,units,tailMax,blockers,null);if(tail?.length>1)path.push(...tail.slice(1));else path=[];}if(path.length&&routeLegal(path)){path=saferRoute(path);return path.slice(1);}}
   const maxSteps=Math.max(12,Math.min(320,gridSize*4));const reconstructed=tacticalAiHazardAwarePath({...actor,...previous,id:unitId},target,covers,units,maxSteps,blockers,null);if(reconstructed?.length>1&&routeLegal(reconstructed))return reconstructed.slice(1);const direct=lineCells(previous.x,previous.y,target.x,target.y);if(direct.length>1&&routeLegal(direct))return direct.slice(1);return[];
@@ -8432,6 +8482,21 @@ members.map(member=>React.createElement("div",{key:member.id,className:`rounded-
 
 const TACTICAL_DEPLOYMENT_PREP_CACHE=new Map;
 function tacticalStartupYield(){return new Promise(resolve=>{if(typeof requestAnimationFrame==="function")requestAnimationFrame(()=>setTimeout(resolve,0));else setTimeout(resolve,0);});}
+function tacticalResolveBoundedAiRound(options={},kind="stream"){
+  const priorFastBudget=TACTICAL_AI_FAST_HANDOFF_ACTIVE;
+  const planningStarted=typeof performance!=="undefined"?performance.now():Date.now();
+  TACTICAL_AI_FAST_HANDOFF_ACTIVE=true;
+  try{
+    const result=resolveMission(options);
+    const planningMs=Math.max(0,(typeof performance!=="undefined"?performance.now():Date.now())-planningStarted);
+    TACTICAL_AI_PERF_METRICS.boundedRoundRuns+=1;
+    if(kind==="hybrid")TACTICAL_AI_PERF_METRICS.hybridBoundedRuns+=1;
+    TACTICAL_AI_PERF_METRICS.lastBoundedPlanningMs=Math.round(planningMs);
+    TACTICAL_AI_PERF_METRICS.maxBoundedPlanningMs=Math.max(TACTICAL_AI_PERF_METRICS.maxBoundedPlanningMs,Math.round(planningMs));
+    TACTICAL_AI_PERF_METRICS.lastBoundedKind=String(kind||"stream");
+    return{result,planningMs};
+  }finally{TACTICAL_AI_FAST_HANDOFF_ACTIVE=priorFastBudget;}
+}
 async function resolveMissionAiStreamBatchAsync({squad=[],mission=null,tech=[],leaderInstruction="simulation AI assumed tactical command",weaponUpgrades=normalizeWeaponUpgrades(),initialBattleState=null,revealAllPlaybackActions=false,onProgress=()=>{},maxSimulationRounds=72,batchRounds=1,simulatedRounds=0,hadPriorPlaybackShots=false,alienFieldBeaconKnowledge="unknown",fastHandoff=false}={}){
   const safeBatch=clamp(Math.floor(Number(batchRounds)||1),1,2);
   const already=Math.max(0,Math.floor(Number(simulatedRounds)||0));
@@ -8440,7 +8505,7 @@ async function resolveMissionAiStreamBatchAsync({squad=[],mission=null,tech=[],l
   const toRound=fromRound+thisBatch-1;
   onProgress(`Preparing AI tactical round ${fromRound}${toRound>fromRound?`-${toRound}`:""}`,Math.min(92,18+Math.round(72*(already%Math.max(1,Number(maxSimulationRounds)||72))/Math.max(1,Number(maxSimulationRounds)||72))));
   await tacticalStartupYield();
-  const planningStarted=typeof performance!=="undefined"?performance.now():Date.now();const priorFastBudget=TACTICAL_AI_FAST_HANDOFF_ACTIVE;TACTICAL_AI_FAST_HANDOFF_ACTIVE=Boolean(fastHandoff);let result;try{result=resolveMission({squad,mission,tech,mode:"auto",leaderInstruction,weaponUpgrades,initialBattleState,revealAllPlaybackActions,maxRoundsOverride:thisBatch,simulationChunkOnly:true,hadPriorPlaybackShots,alienFieldBeaconKnowledge});}finally{TACTICAL_AI_FAST_HANDOFF_ACTIVE=priorFastBudget;}const planningMs=Math.max(0,(typeof performance!=="undefined"?performance.now():Date.now())-planningStarted);if(fastHandoff){TACTICAL_AI_PERF_METRICS.handoffRuns+=1;TACTICAL_AI_PERF_METRICS.lastHandoffPlanningMs=Math.round(planningMs);TACTICAL_AI_PERF_METRICS.maxHandoffPlanningMs=Math.max(TACTICAL_AI_PERF_METRICS.maxHandoffPlanningMs,Math.round(planningMs));TACTICAL_AI_PERF_METRICS.lastHandoffAt=Date.now();}onProgress(`AI tactical planning complete${fastHandoff?` (${Math.round(planningMs)} ms)`:""}`,86);await tacticalStartupYield();
+  const boundedRound=tacticalResolveBoundedAiRound({squad,mission,tech,mode:"auto",leaderInstruction,weaponUpgrades,initialBattleState,revealAllPlaybackActions,maxRoundsOverride:thisBatch,simulationChunkOnly:true,hadPriorPlaybackShots,alienFieldBeaconKnowledge},fastHandoff?"handoff":"stream");const result=boundedRound.result;const planningMs=boundedRound.planningMs;if(fastHandoff){TACTICAL_AI_PERF_METRICS.handoffRuns+=1;TACTICAL_AI_PERF_METRICS.lastHandoffPlanningMs=Math.round(planningMs);TACTICAL_AI_PERF_METRICS.maxHandoffPlanningMs=Math.max(TACTICAL_AI_PERF_METRICS.maxHandoffPlanningMs,Math.round(planningMs));TACTICAL_AI_PERF_METRICS.lastHandoffAt=Date.now();}onProgress(`AI tactical planning complete${fastHandoff?` (${Math.round(planningMs)} ms)`:""}`,86);await tacticalStartupYield();
   const frames=result.frames||buildMissionSimulationFrames({squad,mission,result});
   const consumed=Math.max(1,Number(result.chunkRounds)||thisBatch);
   let continuation=result.tacticalChunkContinuationRequired?result.tacticalChunkContinuation:null;
@@ -8618,7 +8683,7 @@ async function restartHybridAiAfterEscortDecision(nextUnits=[],message="Escort s
     await tacticalStartupYield();
     const initialBattleState=tacticalAiContinuationState({units:preparedUnits,covers:coversRef.current,round:tacticalRound,explored,skyranger:initialDeployment.skyranger,fireMode:fireModeRef.current,alienContactSeen:alienContactSeenRef.current,alienReinforcement:TACTICAL_REINFORCEMENT_STATE_CACHE.get(mission.id)||null,beaconReinforcementObserved:alienFieldBeaconKnowledgeConfirmed(alienFieldBeaconKnowledge)});
     setAiHandoffLoading({stage:"Hybrid supports are resuming their selected escort and engagement duties",progress:62});
-    const result=resolveMission({squad,mission,tech,mode:"auto",leaderInstruction:"hybrid escort-support decision applied while fire-team leads held player positions",weaponUpgrades,initialBattleState,revealAllPlaybackActions:false,maxRoundsOverride:1,simulationChunkOnly:true,alienFieldBeaconKnowledge});
+    const boundedRound=tacticalResolveBoundedAiRound({squad,mission,tech,mode:"auto",leaderInstruction:"hybrid escort-support decision applied while fire-team leads held player positions",weaponUpgrades,initialBattleState,revealAllPlaybackActions:false,maxRoundsOverride:1,simulationChunkOnly:true,alienFieldBeaconKnowledge},"hybrid");const result=boundedRound.result;
     if(streamToken!==aiStreamEpochRef.current)return;
     const frames=result.frames||buildMissionSimulationFrames({squad,mission,result});
     const firstActionFrame=frames.find(frame=>frame?.actionActorId)||null;
@@ -9020,7 +9085,9 @@ function selectHybridFireTeamLeader(step){
   setSelected(leaders[nextIndex].id);
 }
 async function endHybridBattleTurn(){
-  if(movingUnit||aiFrameAnimating||aiPlayback)return setLog(old=>["Wait for the current tactical animation to finish before ending the hybrid turn.",...old].slice(0,8));
+  const staleAnimationLatch=Boolean(aiFrameAnimating&&!movingUnit&&!aiPlayback&&aiPlaybackTimersRef.current.size===0);
+  if(staleAnimationLatch)setAiFrameAnimating(false);
+  if(movingUnit||aiPlayback||(aiFrameAnimating&&!staleAnimationLatch))return setLog(old=>["Wait for the current tactical animation to finish before ending the hybrid turn.",...old].slice(0,8));
   const leaders=tacticalHybridFireTeamLeaders(unitsRef.current);
   if(!leaders.length)return setLog(old=>["No living fire-team lead is available for Hybrid AI Command.",...old].slice(0,8));
   setTargetingMode("move");setCommandMapPaused(false);setCommandMapPauseRequested(false);invalidateAiStream();cancelAiPlaybackTimers();
@@ -9032,7 +9099,7 @@ async function endHybridBattleTurn(){
     await tacticalStartupYield();
     const initialBattleState=tacticalAiContinuationState({units:preparedUnits,covers:coversRef.current,round:tacticalRound,explored,skyranger:initialDeployment.skyranger,fireMode:fireModeRef.current,alienContactSeen:alienContactSeenRef.current,alienReinforcement:TACTICAL_REINFORCEMENT_STATE_CACHE.get(mission.id)||null,beaconReinforcementObserved:alienFieldBeaconKnowledgeConfirmed(alienFieldBeaconKnowledge)});
     setAiHandoffLoading({stage:"AI moving supporting soldiers and resolving contact",progress:58});
-    const result=resolveMission({squad,mission,tech,mode:"auto",leaderInstruction:"fire-team leads held player positions while supporting soldiers formed up and engaged",weaponUpgrades,initialBattleState,revealAllPlaybackActions:false,maxRoundsOverride:1,simulationChunkOnly:true,alienFieldBeaconKnowledge});
+    const boundedRound=tacticalResolveBoundedAiRound({squad,mission,tech,mode:"auto",leaderInstruction:"fire-team leads held player positions while supporting soldiers formed up and engaged",weaponUpgrades,initialBattleState,revealAllPlaybackActions:false,maxRoundsOverride:1,simulationChunkOnly:true,alienFieldBeaconKnowledge},"hybrid");const result=boundedRound.result;
     if(streamToken!==aiStreamEpochRef.current)return;
     const frames=result.frames||buildMissionSimulationFrames({squad,mission,result});
     const firstActionFrame=frames.find(frame=>frame?.actionActorId)||null;
@@ -10153,6 +10220,40 @@ const AEGIS_RUN_SELF_TESTS_BEFORE_AI_TERMINAL_VICTORY_COMMIT=runSelfTests;
 runSelfTests=function runSelfTestsWithAiTerminalVictoryCommit(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_AI_TERMINAL_VICTORY_COMMIT(),{name:"AI terminal victory commit / Sunken Relay no-extra-round contract",pass:tacticalAiTerminalVictoryCommitContractTest()}];};
 
 
+function tacticalAiExceptionGridSearchRecoveryContractTest(){
+  const mission={id:"qa-grid-recovery",kind:"Alien Incident",region:"Europe",threat:2,tacticalMapTier:"small"};
+  const human={id:"qa-grid-human",name:"Grid Lead",team:"human",side:"human",hp:40,maxHp:40,alive:true,x:6,y:6,tu:48,maxTu:48,weaponKind:"ballistic",ammo:12,gridSize:32,fireTeamRole:"leader",fireTeamId:"qa-team",fireTeamIndex:0,aiMoveVisited:[]};
+  const alien={id:"qa-grid-alien",name:"Glass Wraith",alienType:"Glass Wraith",team:"alien",side:"alien",hp:28,maxHp:28,alive:true,x:26,y:26,gridSize:32,revealed:false};
+  let plan=null;try{plan=tacticalAiFallbackPatrolPlan(human,[],[human,alien],14,[],{mission,round:4,preferInterior:true,emergency:true});}catch(error){return false;}
+  const resolverSource=String(resolveMission);const fallbackSource=String(tacticalAiFallbackPatrolPlan);
+  return Boolean(TACTICAL_AI_EXCEPTION_GRID_SEARCH_RECOVERY_AND_MISSION_SCOPE_HOTFIX_PATCH
+    &&plan?.emergencyGridSearch===true&&Array.isArray(plan.path)&&plan.path.length>=1
+    &&Number.isFinite(Number(plan.aiPatrolTargetX))&&Number.isFinite(Number(plan.aiPatrolTargetY))
+    &&fallbackSource.includes("const mission=options?.mission||null")
+    &&fallbackSource.includes("tacticalAiAlienHuntGridCells")
+    &&fallbackSource.includes("contactId")
+    &&resolverSource.includes("processHumanAiTurnSafely")
+    &&resolverSource.includes("processHumanEmergencyGridTurn")
+    &&resolverSource.includes("civilianDutyIds.has(human.id)")
+    &&resolverSource.includes("reacquired")
+    &&resolverSource.includes("catch(error)"));
+}
+const AEGIS_RUN_SELF_TESTS_BEFORE_2155_GRID_RECOVERY=runSelfTests;
+runSelfTests=function runSelfTestsWith2155GridRecovery(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_2155_GRID_RECOVERY(),{name:"AI planner exceptions fall back to sector grid search while rescue escorts retain extraction duty",pass:tacticalAiExceptionGridSearchRecoveryContractTest()}];};
+
+function tacticalSharedAiBoundedPlanningAndHybridStallRecoveryContractTest(){
+  const streamSource=String(resolveMissionAiStreamBatchAsync);
+  const missionSource=String(TacticalMission);
+  const pathSource=String(tacticalPathSearch);
+  return Boolean(TACTICAL_SHARED_AI_BOUNDED_PLANNING_AND_HYBRID_STALL_RECOVERY_PATCH
+    &&String(tacticalResolveBoundedAiRound).includes("TACTICAL_AI_FAST_HANDOFF_ACTIVE=true")
+    &&streamSource.includes("tacticalResolveBoundedAiRound")
+    &&streamSource.includes('fastHandoff?"handoff":"stream"')
+    &&missionSource.includes('},"hybrid");const result=boundedRound.result;')
+    &&missionSource.includes("staleAnimationLatch")
+    &&pathSource.includes("searchExpansionLimit")
+    &&pathSource.includes("TACTICAL_AI_HANDOFF_MAX_EXPANDED"));
+}
 const tacticalAiHandoffLongTaskReductionContractTest=()=>{const blocker=tacticalPathBlockerIndex([tacticalFireHazardCover(5,5,{round:1,intensity:2}),tacticalSmokeHazardCover(6,5,{round:1,density:3}),{id:"fast-wall",x:7,y:5,hp:40,kind:"hard",block:1}],[],null);const helperSource=String(resolveMissionAiStreamBatchAsync);const pathSource=String(tacticalAiHazardAwarePath);const reachSource=String(tacticalAiReachablePlan)+String(tacticalAiThreatAwareReachablePlan);return Boolean(TACTICAL_AI_HANDOFF_LONG_TASK_REDUCTION_PATCH&&TACTICAL_PATH_HAZARD_SPATIAL_INDEX_PATCH&&blocker.fireByKey.get("5,5")===2&&blocker.smokeByKey.get("6,5")===3&&blocker.hardCover.has("7,5")&&helperSource.includes("fastHandoff")&&helperSource.includes("TACTICAL_AI_FAST_HANDOFF_ACTIVE")&&helperSource.includes("planningMs")&&pathSource.includes("tacticalMovementHazardCostIndexed")&&pathSource.includes("TACTICAL_AI_HANDOFF_MAX_EXPANDED")&&reachSource.includes("blockers.fireByKey")&&reachSource.includes("candidateLimit"));};
 function tacticalAiContinuationSelfHealAndSearchStallRecoveryContractTest(){
   const mission={id:"qa-stream-recovery",kind:"Sunken Relay",region:"Oceania",threat:2,alien:"Glass Wraith"};
@@ -10172,7 +10273,8 @@ function tacticalAiContinuationSelfHealAndSearchStallRecoveryContractTest(){
     &&pathSource.includes("heapPush")&&pathSource.includes("heapPop");
 }
 const AEGIS_RUN_SELF_TESTS_BEFORE_0945_AI_STREAM_RECOVERY=runSelfTests;
-runSelfTests=function runSelfTestsWith0945AiStreamRecovery(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_0945_AI_STREAM_RECOVERY(),{name:"Simulation AI handoff bounds first-round search work and uses indexed hazards",pass:tacticalAiHandoffLongTaskReductionContractTest()},
+runSelfTests=function runSelfTestsWith0945AiStreamRecovery(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_0945_AI_STREAM_RECOVERY(),{name:"Shared Simulation and Hybrid AI rounds use bounded planning and stale-latch recovery",pass:tacticalSharedAiBoundedPlanningAndHybridStallRecoveryContractTest()},
+{name:"Simulation AI handoff bounds first-round search work and uses indexed hazards",pass:tacticalAiHandoffLongTaskReductionContractTest()},
 {name:"Simulation AI streamed continuation self-heals, resets stalled searches, and no longer dead-ends at a global 72-round cap",pass:tacticalAiContinuationSelfHealAndSearchStallRecoveryContractTest()}];};
 
 

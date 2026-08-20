@@ -2,9 +2,63 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.2050_TACTICAL_AI_RESERVE_AND_FINAL_ACTION_PLAYBACK_HUD_PATCH`
+Current handoff build: `v0.26.08.19.2155_AI_EXCEPTION_GRID_SEARCH_RECOVERY_AND_MISSION_SCOPE_HOTFIX_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2050 implements the next tactical-AI playback-readability refinement called out by the roadmap. During Simulation-AI Tactical Map playback, the persistent upper-right observer panel now shows the acting soldier’s chosen TU reserve and resolved final turn action from the authoritative frame-unit metadata already produced by the AI resolver. The display works across Iso, FPV, and TPV, uses readable labels for movement/fire/grenade/kneel/beacon/formation outcomes, and remains presentation-only: AI planning, TU spending, RNG, fog of war, ammunition, objective authority, save format 4, Browser 2045 hidden-contact VIP rescue recovery, Browser 1935 kneeling parity, and Browser 1815 concurrent Skyranger operations are unchanged.**
+Current patch status: **Browser 2155 hotfixes the live `mission is not defined` AI-takeover crash and adds a shared emergency recovery doctrine for both Hybrid and Simulation AI. The out-of-scope mission reference in `tacticalAiFallbackPatrolPlan(...)` is repaired; fallback patrol is now a deterministic fire-team sector/grid sweep; each non-escort soldier turn is exception-contained so one planner failure cannot abort the whole AI round; searching soldiers stop the sweep and immediately return to combat when they legitimately reacquire a visible target; civilian/VIP escorts remain dedicated to extraction; and the in-progress Browser 2150 shared bounded-planning safeguards are retained so Hybrid uses the same reduced path-search budget as Simulation handoff. Save format remains 4.**
+
+Implementation update (2026-08-19): **Live testing exposed a second, more concrete failure after the earlier stall: manually moving soldiers and ending the turn could restore AI takeover, but the next AI pass could throw `mission is not defined`. The fault was in `tacticalAiFallbackPatrolPlan(...)`, which accepted the mission via `options.mission` but passed a bare `mission` identifier into the reachable-cell planner. Browser 2155 repairs that scope bug and promotes the fallback into an explicit emergency sector/grid-search doctrine. Normal planning still gets first authority; civilian/VIP escorts remain on extraction duty; but if a non-escort soldier's normal planner throws, that soldier alone drops into a bounded systematic sweep while the rest of the round continues. If the sweep legitimately acquires a living alien, it stops at contact and returns to combat immediately when TU permits.**
+
+Implementation update (2026-08-19): **Browser 2155 also includes the shared bounded-planning work begun as Browser 2150 after Hybrid AI itself became unresponsive. Hybrid one-round resolution now uses the same bounded fast-planning authority as Simulation-AI round generation, and stale Hybrid animation latches are cleared when no movement/playback/timer actually owns them. The purpose is defense in depth: expensive/pathological planning is bounded before it can monopolize the browser, and planner exceptions that still occur are contained to the affected non-escort soldier rather than terminating the mission AI.**
+
+
+## Browser 2155 — AI Exception Grid-Search Recovery + Mission-Scope Hotfix
+
+**Status:** Implemented emergency-recovery hotfix; primary live gate is the mission state that previously recovered after manual movement/end-turn and then failed on AI takeover with `mission is not defined`.
+
+### Root cause repaired
+- `tacticalAiFallbackPatrolPlan(...)` receives mission context through `options.mission`.
+- Its reachable-cell call incorrectly referenced a bare `mission` identifier that does not exist in that helper's lexical scope.
+- The bug was latent until the AI reached the fallback patrol/search branch, which explains why ordinary combat/rescue rounds could work and a manually altered battlefield could then expose the exception.
+- Browser 2155 binds `const mission = options?.mission || null` and sends that explicit authority through reachable/path/LOS calculations.
+
+### Emergency sector/grid-search doctrine
+- The fallback patrol now reuses the established alien-hunt grid cells instead of choosing loose patrol waypoints.
+- Fire-team slot assignment partitions the sweep where possible so several teams search different sectors.
+- The fallback remains TU-aware, reserve-aware, collision-aware, hazard-aware, and bounded by the shared candidate budget.
+- Previously visited cells are penalized to reduce deterministic loops around the same stalled route.
+- If no legal move exists, the unit holds; a blocked unit is not allowed to block the entire AI round.
+
+### Planner exception containment
+- Each non-escort human AI turn now executes through a safe wrapper.
+- A planner exception is caught at that soldier boundary. The current authoritative battlefield state is preserved and the remaining soldiers still get turns.
+- The affected soldier receives an emergency grid-search plan from its current position/TU state rather than rebuilding the same failed high-level plan.
+- Recovery is deliberately lightweight and does not attempt to replay every specialized AI branch that just failed.
+
+### Contact reacquisition
+- The emergency path checks legitimate personal observation along its movement checkpoints.
+- When a living alien becomes visible, the search route ends at that checkpoint.
+- The soldier re-evaluates its adaptive reserve and, when a legal shot remains, immediately fires using the normal hit chance, darkness, window, shield, damage, ammo, TU, and kill-credit authorities.
+- Hidden aliens are not revealed merely because recovery mode is active.
+
+### Escort/extraction authority preserved
+- Soldiers assigned by the civilian/VIP rescue pass remain excluded from emergency grid search.
+- They continue the existing escort/ramp/extraction doctrine even when another soldier's planner fails.
+- This avoids solving AI stalls by sacrificing the mission objective that was already making progress.
+
+### Shared bounded-planning layer retained
+- Hybrid one-round resolution uses `tacticalResolveBoundedAiRound(..., "hybrid")`, the same fast-planning authority used by streamed Simulation rounds.
+- Path candidate/expansion budgets therefore apply to both AI modes during synchronous handoff/Hybrid resolution.
+- A stale `aiFrameAnimating` latch can be cleared when no moving unit, playback, or playback timer actually owns it.
+- This layer addresses main-thread stalls; the emergency grid layer addresses planner exceptions/no-usable-plan states.
+
+### Build Health / manual gates
+1. Reproduce the prior post-manual-move takeover state and confirm `mission is not defined` no longer occurs.
+2. Confirm a hidden/no-contact mission sends free teams into distinct grid sectors rather than endlessly retrying one stale search point.
+3. Confirm active civilian/VIP escorts keep moving toward extraction when another soldier drops into recovery.
+4. Reveal an alien during an emergency sweep and confirm the searching soldier stops the sweep and returns to combat when it has TU/ammo.
+5. Block one soldier completely and confirm that soldier holds while other AI turns continue.
+6. Exercise both Hybrid and full Simulation AI and confirm neither depends on the other mode to clear a stale animation/planning lock.
+7. All six non-empty embedded JavaScript blocks must pass `node --check`; save format remains 4.
 
 Implementation update (2026-08-19): **Browser 2050 completes the roadmap follow-up to make adaptive Simulation-AI turns easier to understand while watching them. The resolver already persisted each acting human soldier’s `aiReserveLabel`, `reserveTu`, `aiTurnAction`, `aiTurnReassessed`, and movement-leg metadata into playback frame units. The observer HUD now consumes those fields directly, so the player can see what action the soldier reserved TU for and how the turn actually concluded without adding a second AI state or recomputing decisions from live state.**
 
