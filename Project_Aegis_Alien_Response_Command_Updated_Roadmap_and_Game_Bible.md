@@ -2,9 +2,51 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.2155_AI_EXCEPTION_GRID_SEARCH_RECOVERY_AND_MISSION_SCOPE_HOTFIX_PATCH`
+Current handoff build: `v0.26.08.19.2255_TACTICAL_TIMELINE_MISSION_REPORT_ARCHIVE_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2155 hotfixes the live `mission is not defined` AI-takeover crash and adds a shared emergency recovery doctrine for both Hybrid and Simulation AI. The out-of-scope mission reference in `tacticalAiFallbackPatrolPlan(...)` is repaired; fallback patrol is now a deterministic fire-team sector/grid sweep; each non-escort soldier turn is exception-contained so one planner failure cannot abort the whole AI round; searching soldiers stop the sweep and immediately return to combat when they legitimately reacquire a visible target; civilian/VIP escorts remain dedicated to extraction; and the in-progress Browser 2150 shared bounded-planning safeguards are retained so Hybrid uses the same reduced path-search budget as Simulation handoff. Save format remains 4.**
+Current patch status: **Browser 2255 implements the next Stage 3 Tactical Readability follow-up by archiving the live categorized Mission Timeline into permanent mission reports. Manual tactical, Hybrid-AI terminal, and full Simulation-AI Tactical Map completion all route through one archive wrapper; reports retain up to 48 event records with category, round, acting side, and text; the existing Mission Action Log remains intact; pre-2255 reports remain backward compatible; and the event classifier no longer mistakes `Mission success` / `Mission failed` for missed-shot Combat events. Browser 2155 AI exception/grid-search recovery remains unchanged beneath this reporting-only slice. Save format remains 4.**
+
+Implementation update (2026-08-19): **Browser 2255 completes the next Stage 3 Tactical Readability follow-up without changing the live AI behavior under test. The existing tactical Mission Timeline already retained the latest 48 categorized events but those structured records were not carried into long-term Mission Reports. All tactical terminal handoffs now pass through one archive wrapper that snapshots the live events, merges any not-yet-committed terminal result lines, and stores the JSON-safe archive on the mission report. The Reports screen renders the archive below the legacy Mission Action Log with category, round, acting side, and event text. Older reports remain compatible, and Browser 2155 AI recovery/grid-search logic is untouched.**
+
+
+## Browser 2255 — Tactical Timeline Mission-Report Archive
+
+**Status:** Implemented Stage 3 Tactical Readability persistence slice; manual gate is completing tactical missions through manual, Hybrid, and full Simulation-AI control and then reviewing the resulting Reports entry.
+
+### Persistent timeline handoff
+- The live Mission Timeline remains bounded to the latest 48 events.
+- Tactical terminal completion snapshots the current structured events into `result.tacticalTimeline` before campaign aftermath begins.
+- Manual tactical completion, Hybrid terminal completion, and full Simulation-AI Tactical Map completion all use the same `finishTacticalMission(...)` archive wrapper.
+- Any terminal result-log text not yet present in the React timeline state is merged into the archive at the final tactical round, preventing the success/failure line from being lost to UI commit timing.
+
+### Mission report storage
+- `addMissionReport(...)` stores the normalized archive as optional `tacticalTimeline` data on the report object.
+- Each record retains `text`, `category`, `round`, and `turn` plus a stable local ID.
+- The existing `entries` / Mission Action Log remains untouched for historical compatibility and existing Council/report assumptions.
+- Save format remains **4** because older reports may simply omit the new optional field.
+
+### Reports presentation
+- Newly completed reports display an **Archived Tactical Timeline** below the existing Mission Action Log.
+- Events show their Combat / Rescue / Move / System classification, tactical round, acting side, and original event text.
+- The report archive is vertically scroll-bounded so a full 48-event record does not make the report page unwieldy.
+- Pre-2255 reports display a legacy note rather than assuming a timeline exists.
+
+### Event-classification correction
+- The older combat classifier used the substring `miss`, which also matched the beginning of `mission`.
+- Browser 2255 changes missed-shot recognition to word-boundary variants so `Mission success` and `Mission failed` remain System events while real `miss` / `missed` shot text remains Combat.
+
+### Gameplay authority unchanged
+- This patch does not change AI planning, Browser 2155 exception containment/grid search, escort priorities, combat, TU, RNG, pathfinding, fog of war, mission victory conditions, or tactical event generation.
+- It archives information the live mission already had instead of creating a second event source.
+
+### Build Health / manual gates
+1. Generate all four tactical event categories and complete a manual mission; confirm the archived timeline appears in Reports with preserved rounds.
+2. Complete a Hybrid-AI mission and confirm the same archive handoff occurs.
+3. Complete a full Simulation-AI Tactical Map mission and confirm the same archive handoff occurs.
+4. Confirm mission-result lines classify as System and genuine missed-shot lines remain Combat.
+5. Load an older report with no `tacticalTimeline` and confirm it still renders normally with the legacy note.
+6. Save/reload after a 2255 mission and confirm the archive survives inside `missionReports`.
+7. All six non-empty embedded JavaScript blocks must pass `node --check`; save format remains 4.
 
 Implementation update (2026-08-19): **Live testing exposed a second, more concrete failure after the earlier stall: manually moving soldiers and ending the turn could restore AI takeover, but the next AI pass could throw `mission is not defined`. The fault was in `tacticalAiFallbackPatrolPlan(...)`, which accepted the mission via `options.mission` but passed a bare `mission` identifier into the reachable-cell planner. Browser 2155 repairs that scope bug and promotes the fallback into an explicit emergency sector/grid-search doctrine. Normal planning still gets first authority; civilian/VIP escorts remain on extraction duty; but if a non-escort soldier's normal planner throws, that soldier alone drops into a bounded systematic sweep while the rest of the round continues. If the sweep legitimately acquires a living alien, it stops at contact and returns to combat immediately when TU permits.**
 
@@ -8007,7 +8049,7 @@ Completed:
 - Three.js view-size, pixel-ratio, shadow, light, material, ring, fog-mesh, and idle-frame budgets to prevent tactical timeouts.
 
 Still planned:
-- Persist or export the expanded tactical timeline into long-term mission reports after playtesting confirms the event density.
+- **Implemented in Browser 2255:** persist the expanded categorized tactical timeline into long-term Mission Reports (up to 48 events with category, round, acting side, and text). Explicit external file export remains optional future QoL if useful after report playtesting.
 - Add optional shot-feedback duration/accessibility settings.
 - Battlefield-space optimization.
 - Simulated mission sprite consistency.

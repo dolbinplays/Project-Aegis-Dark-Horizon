@@ -1,6 +1,67 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.19.2255_TACTICAL_TIMELINE_MISSION_REPORT_ARCHIVE_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Implements the next Stage 3 Tactical Readability roadmap follow-up by carrying the live 48-event categorized Mission Timeline into the permanent Mission Report when a tactical operation ends. Manual tactical play, Hybrid AI, and full Simulation-AI Tactical Map completion all pass through the same archive wrapper. Existing Mission Action Log entries remain intact for compatibility, while newly completed reports gain a scrollable archived timeline with category, round, acting side, and event text. Older reports remain readable and explicitly identify that they predate timeline archiving.
+
+TACTICAL TIMELINE ARCHIVE
+-------------------------
+- The live tactical Mission Timeline remains bounded to the latest 48 events.
+- Mission completion now snapshots those events into `result.tacticalTimeline` before control returns to campaign aftermath.
+- Missing terminal result-log lines are merged into the archive so success/failure/withdrawal text is not lost if React state has not yet committed the final UI update.
+- Timeline records retain text, Combat/Rescue/Movement/System category, tactical round, and acting side.
+- The archive is JSON-safe and stored directly on the existing mission report object; save format remains 4 because the field is optional and backward compatible.
+
+ALL CONTROL MODES SHARE THE SAME HANDOFF
+----------------------------------------
+- Manual `finish(...)` routes through the timeline archive wrapper.
+- Full Simulation-AI playback completion routes through the same wrapper.
+- Hybrid-AI terminal completion routes through the same wrapper.
+- Taking back control or continuing an unfinished mission does not prematurely create a permanent report archive.
+- Browser 2155 AI recovery/search behavior is unchanged.
+
+REPORTS UI
+----------
+- The existing Mission Action Log remains unchanged and continues to support older campaign/report assumptions.
+- New mission reports add an **Archived Tactical Timeline** section below the Action Log.
+- Each archived event shows category, round, acting side, and the original tactical event text.
+- The archive is scroll-bounded in the Reports view so a 48-event mission does not excessively expand the page.
+- Reports created before Browser 2255 display a clear legacy note instead of failing on a missing timeline field.
+
+CATEGORY CORRECTION
+-------------------
+- The tactical event classifier previously used a raw `miss` substring test, which could classify `Mission success` / `Mission failed` as Combat because `mission` begins with `miss`.
+- Miss classification now uses a word-boundary form (`miss`, `missed`, `misses`, `missing`) so mission-result/system lines remain System events while genuine missed-shot text remains Combat.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added a direct archive regression covering Movement, Rescue, and terminal System events with preserved round data.
+- Build Health now requires completed mission reports to archive the categorized tactical timeline.
+- Static verification confirms all TacticalMission terminal `onFinish(...)` paths route through `finishTacticalMission(...)`.
+- All 6 non-empty embedded JavaScript blocks pass `node --check`.
+- Save format remains 4.
+
+MANUAL TEST GATES
+-----------------
+1. Complete a manual tactical mission after generating Combat, Rescue, Movement, and System events; open Reports and confirm the Archived Tactical Timeline appears beneath the existing Mission Action Log.
+2. Complete a Hybrid-AI-controlled mission and confirm its terminal report also contains the archive.
+3. Complete a full Simulation-AI Tactical Map mission and confirm its terminal report contains the archive.
+4. Confirm event rounds/categories remain readable and that `Mission success` / `Mission failed` is categorized as System rather than Combat.
+5. Load an older save with pre-2255 mission reports and confirm those reports still open and show the legacy-timeline note without migration errors.
+6. Save/reload after completing a 2255 mission and confirm the archived timeline survives because it is stored with `missionReports`.
+7. Continue stress-testing Browser 2155 AI recovery behavior and confirm this patch does not change AI planning, search, escort, TU, combat, or mission-resolution rules.
+
+PREVIOUS BUILD - 2155
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.19.2155_AI_EXCEPTION_GRID_SEARCH_RECOVERY_AND_MISSION_SCOPE_HOTFIX_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
@@ -3041,6 +3102,7 @@ A complete live Chromium tactical/geoscape smoke test remains the final validati
 4. Confirm no two living soldiers finish a round on the same hex.
 5. Escort a VIP/civilian with a fire-team leader, spot an alien, test both escort-support choices, and confirm detached supports return afterward.
 6. Station Ready interceptors at several bases, select `All Bases`, verify staggered arrivals, destroy the UFO before every interceptor arrives, and follow the remaining aircraft home through normal ferry routing.
+
 
 
 
