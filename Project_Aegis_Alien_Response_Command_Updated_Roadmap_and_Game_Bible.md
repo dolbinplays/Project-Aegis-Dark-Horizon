@@ -2,9 +2,57 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.1715_RANGED_STANDOFF_AND_COVER_SEEKING_AI_PATCH`
+Current handoff build: `v0.26.08.19.1815_CONCURRENT_INDEPENDENT_SKYRANGER_OPERATIONS_FOUNDATION_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1715 implements the planned AEGIS ranged-standoff and cover-seeking tactical-AI doctrine. Human ranged movement now uses one shared engagement-position score that weighs the nearest currently visible alien threat field, a weapon-aware 3–4 hex minimum standoff preference, practical weapon range, preserved LOS, threat-facing authoritative cover, hazard cost, movement efficiency, fire-team cohesion, and stability/hysteresis. Soldiers no longer treat geometric closeness as inherently desirable: when a safe in-range firing cell exists they strongly avoid voluntary adjacency and 1–2 hex crowding, while short-range weapons adapt the preferred floor and higher-authority player orders, rescue/extraction, beacon work, breaching, and other adjacency-required duties remain exempt. Hybrid support/flank movement consumes the same standoff authority and can fall back to the shared safe engagement planner. Browser 1515 incoming-fire slow motion, 1415 tactical Menu / Save continuity, 1315 beacon-endgame recovery, 1245 smooth craft flight, 0045 stable flicker-free Geoscape lifecycle, and all current tactical presentation/pathing fixes remain intact. Save format remains 4. Native Godot remains at 0026.**
+Current patch status: **Browser 1815 implements the first concurrent independent Skyranger operations foundation. Strategic Skyranger travel is no longer a singleton: separate incidents can own separate outbound/return travel records at the same time, each aircraft is reserved by its own operation, squads cannot be reused across concurrent responses, incident claims are operation-specific, all active Skyranger routes advance on the same Geoscape clock, and Globe/Terminator presentation receives the full travel collection rather than only one transport operation. Save/load now persists the optional `skyrangerTravels` collection while retaining the legacy single `skyrangerTravel` field for compatibility. Tactical execution remains intentionally serialized in this first foundation: if another response reaches 100% while a tactical mission or aftermath owns the tactical slot, it waits in a Tactical Ready state and automatically hands off once that slot is free. Browser 1715 ranged standoff, 1515 incoming-fire slow motion, 1415 tactical Menu / Save continuity, 1315 beacon-endgame recovery, 1245 smooth craft flight, and the stable flicker-free Geoscape lifecycle remain intact. Save format remains 4. Native Godot remains at 0026.**
+
+Implementation update (2026-08-19): **Browser 1815 begins the Concurrent Independent Skyranger Incident Responses roadmap. The campaign now stores a collection of Skyranger operations instead of treating one `skyrangerTravel` record as a global launch lock. A committed aircraft and squad remain reserved to their own incident, but a different Ready Skyranger and different response squad can launch to another incident while the first transport is outbound or returning. Same-incident duplicate response is blocked, same-squad reuse is blocked, existing same-incident multi-transport atomic launch remains intact, and all active Skyranger operations are shown in the route timeline and fed to both Geoscape views. Tactical-ready operations are queued by their completed travel records until the single tactical presentation slot is free; fully simultaneous background tactical resolution is a later phase, not part of 1815.**
+
+## Browser 1815 — Concurrent Independent Skyranger Operations Foundation
+
+**Status:** Implemented foundation; live manual gate is two incidents, two Ready Skyrangers, and two distinct squads. Launch response A, keep it outbound, then launch response B without releasing or redirecting A.
+
+### Strategic operation collection
+- Replaces the live singleton Skyranger travel state with `skyrangerTravels[]`, while exposing the first record as a legacy compatibility alias where older helpers still need one record.
+- Each travel record retains its own incident/mission, aircraft IDs, response squad IDs, fuel plan, ferry/staging data, route phases, progress, home/return hangar reservation, and phase.
+- Geoscape ticks advance every active Skyranger travel independently.
+- Returning one operation removes only that operation's travel record; unrelated outbound/returning transports remain active.
+
+### Per-aircraft / per-squad ownership
+- A launch transaction no longer fails merely because another Skyranger flight exists.
+- Aircraft availability still comes from the authoritative fleet status, so an Outbound/Returning craft cannot be selected while a different Ready craft can.
+- Response squads are reserved across active travels, the active tactical mission, and Simulation playback. Reusing the same squad in another concurrent operation is blocked with a named squad-level reason.
+- An incident already claimed by an outbound, Tactical Ready, tactical, or Simulation operation cannot accidentally receive a second independent response. Existing atomic multi-Skyranger launch to one incident remains unchanged.
+
+### Tactical-ready serialization
+- Browser tactical presentation still owns one battlefield at a time. This patch does not pretend multiple interactive battles can be displayed simultaneously.
+- If a second outbound response reaches the incident while another committed tactical mission, Simulation playback, or mission aftermath is active, its travel record remains at 100% and is preserved as Tactical Ready.
+- Once the tactical slot is free, completed return processing is handled first and then the next Tactical Ready outbound operation can hand off to manual/Simulation tactical play.
+- Beginning a return clears the just-finished tactical ownership so a different ready operation can use the tactical slot while the first Skyranger flies home.
+
+### Geoscape / UI / save continuity
+- Globe and Terminator Map craft interpolation now consume every active Skyranger travel and can draw multiple independent transport markers simultaneously.
+- Active Route Timeline lists each Skyranger operation separately.
+- Incident details display Response En Route / Tactical Ready / Returning and disable Plan Response when that incident is already claimed.
+- Save files now persist `skyrangerTravels` and also write legacy `skyrangerTravel` as the first record for backward compatibility.
+- Migration preserves legacy single-operation saves by wrapping the old travel record into the new collection; new multi-operation saves bypass the old singleton launch-repair path so legitimate concurrent Outbound aircraft are not falsely recovered as stale.
+- Save format remains 4 because the collection is an optional backward-compatible field.
+
+### Deferred follow-up
+- Player-selectable ordering when several operations are Tactical Ready at once rather than automatic next-ready handoff.
+- Fully independent background Simulation-AI tactical resolution for more than one incident at the same time.
+- Stronger per-route ferry/staging capacity reservations when several unrelated operations share a staging base.
+- Dedicated concurrent-operation panel with explicit incident/craft/squad ownership and return-state controls.
+- Broader mission-card status styling across every Mission Control list, not only incident details and route timeline.
+
+### Build Health / manual gates
+1. Two incidents + two Ready Skyrangers + two distinct squads: launch A, then launch B while A is still Outbound.
+2. Confirm A's aircraft remains Outbound and B consumes only B's aircraft/fuel.
+3. Attempt to reuse A's squad for B and confirm the launch is blocked without changing either operation.
+4. Attempt to launch the same incident twice and confirm the second independent response is blocked.
+5. Let both responses fly simultaneously and verify both markers appear on Globe and Terminator Map and both route timelines advance.
+6. Save/reload while both are airborne and verify both travel records and aircraft statuses survive.
+7. Allow B to reach 100% while A owns tactical play; B should wait rather than overwrite A, then hand off after A frees the tactical slot.
 
 Implementation update (2026-08-19): **Browser 1715 completes the first AEGIS ranged-standoff and cover-seeking AI implementation slice. The shared human movement planner now scores visible-alien distance bands, actual weapon range, target LOS, authoritative threat-facing cover, multi-alien proximity, hazards, movement cost, fire-team cohesion, and current-position hysteresis together. A ranged soldier who already has a stable covered shot around the preferred distance is encouraged to hold and fire rather than advance solely to reduce geometric distance. Hybrid support/flank movement uses the same authority, while rescue, explicit player Command Map movement, beacon interaction/close assault, breaching, and other higher-authority duties keep their existing behavior.**
 
@@ -8177,7 +8225,9 @@ Completed / first pass:
 - Air Defense Battery seed facility.
 
 ### Future Roadmap Addition — Concurrent Independent Skyranger Incident Responses
-Status: **Roadmapped / strategic air-operations architecture expansion**
+Status: **Foundation implemented in Browser 1815 / broader concurrent tactical and staging work remains**
+
+Implementation status (Browser 1815): independent outbound/return travel records, per-aircraft fleet reservation, per-squad operation reservation, incident-specific claims, concurrent Geoscape advancement/presentation, route-list parity, backward-compatible save/load, and Tactical Ready serialization are implemented. Fully simultaneous background tactical resolution, player-selectable ready-operation ordering, and deeper shared-staging reservation arbitration remain future work.
 
 Design goal:
 - AEGIS should be able to respond to more than one ground incident at the same time when it owns enough available transports and squads. **Skyranger A being committed to Incident A must not prevent Skyranger B from launching to Incident B.** Transport availability should be determined per aircraft, not by a campaign-wide "a Skyranger operation already exists" lock.

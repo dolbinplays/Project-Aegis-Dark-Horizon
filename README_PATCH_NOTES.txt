@@ -1,6 +1,78 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.19.1815_CONCURRENT_INDEPENDENT_SKYRANGER_OPERATIONS_FOUNDATION_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Begins the roadmap's Concurrent Independent Skyranger Incident Responses architecture. A Skyranger already committed to Incident A no longer creates a campaign-wide transport lock that prevents a different Ready Skyranger and different response squad from launching to Incident B. Strategic Skyranger travel is now stored as a collection of independent operations rather than one singleton flight record.
+
+CONCURRENT OPERATION OWNERSHIP
+------------------------------
+- Adds live `skyrangerTravels[]` state while preserving the first record as legacy `skyrangerTravel` compatibility data.
+- Each operation retains its own incident, aircraft IDs/names, response squad IDs/deployments, route, fuel budget, ferry/staging information, progress, return reservation, and phase.
+- A launch is blocked only by the actual transaction, incident claim, selected squad ownership, aircraft readiness/fuel/range/stationing, or other real resource restrictions.
+- Another unrelated Skyranger already being Outbound or Returning is no longer itself a launch blocker.
+- Existing atomic multi-Skyranger launch for two transports intentionally assigned to the same incident is preserved.
+
+AIRCRAFT / SQUAD / INCIDENT RESERVATION
+---------------------------------------
+- Outbound/Returning aircraft remain unavailable through their authoritative aircraft status; other Ready Skyrangers remain selectable.
+- Response squads already owned by an active Skyranger operation, active tactical mission, or Simulation playback cannot be reused for a second operation.
+- The blocker names the reserved squad rather than reporting a vague global Skyranger lock.
+- Incidents already claimed by an outbound/Tactical Ready/tactical/Simulation operation cannot accidentally receive a second independent response.
+
+CONCURRENT GEOSCAPE TRAVEL
+--------------------------
+- Every active Skyranger travel record advances independently on each Geoscape time step.
+- Globe and Terminator Map smooth-flight presentation now consume the full active Skyranger travel collection and can draw multiple transport operations at once.
+- Active Route Timeline lists each Skyranger operation separately.
+- Incident details show Response En Route, Tactical Ready, Returning, or tactical-operation ownership and disable Plan Response when already claimed.
+
+TACTICAL READY HANDOFF
+----------------------
+- Browser tactical presentation remains intentionally single-battlefield in this first foundation.
+- If a second response reaches 100% while another committed tactical mission, Simulation playback, or mission aftermath owns the tactical slot, its travel record remains intact at Tactical Ready instead of overwriting the current mission.
+- Completed return processing is handled before the next waiting outbound handoff once the tactical slot is free.
+- Beginning a mission return releases the just-finished `activeMission` ownership so another Tactical Ready operation can use the tactical slot while the first Skyranger returns home.
+
+SAVE / LOAD
+-----------
+- Save data now includes optional `skyrangerTravels` while also writing legacy `skyrangerTravel` as the first record.
+- Legacy one-operation saves are wrapped into the collection on load.
+- New multi-operation saves bypass the old singleton launch-repair path so legitimate concurrent Outbound craft are not falsely treated as stale/orphaned aircraft.
+- Save format remains 4.
+
+BUILD HEALTH / REGRESSION COVERAGE
+----------------------------------
+- New contract verifies two concurrent Skyranger travel records reserve two different aircraft and squads, keep both Outbound aircraft valid, claim only their own incidents, persist the collection in source/save authority, and feed the full collection to Geoscape presentation.
+- Updated smooth-flight contract recognizes the multi-Skyranger visual-track map used by the Globe/Terminator renderer.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+
+MANUAL TEST GATES
+-----------------
+1. With two active incidents, two Ready Skyrangers, and two different squads, launch Incident A and leave that Skyranger Outbound.
+2. Select Incident B, choose the other squad, and confirm the second Ready Skyranger can launch without recalling or releasing A.
+3. Confirm both craft move simultaneously on Globe and Terminator Map and both Active Route Timeline entries advance.
+4. Attempt to reuse the first squad or launch the first incident again; each should block without consuming fuel or aircraft state.
+5. Save and reload while both craft are airborne; both operations should remain present and both aircraft should remain Outbound.
+6. Let one operation become Tactical Ready while another tactical battle owns the tactical slot; the waiting operation should remain preserved and hand off only after the current tactical ownership is released.
+
+DEFERRED FOLLOW-UP
+------------------
+- Player-selectable ordering when several operations are Tactical Ready simultaneously.
+- Fully independent background Simulation-AI tactical resolution for multiple incidents at once.
+- Deeper concurrent ferry/staging hangar-capacity arbitration.
+- Dedicated concurrent-operation management panel and broader Mission Control status styling.
+
+PREVIOUS PATCH NOTES ARCHIVE
+============================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.19.1715_RANGED_STANDOFF_AND_COVER_SEEKING_AI_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
