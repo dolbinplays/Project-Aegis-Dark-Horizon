@@ -1,6 +1,59 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.20.1130_BUILD_HEALTH_AND_RUNTIME_HOTPATH_HARDENING_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Restores authoritative dead-VIP mission resolution and removes avoidable work from boot diagnostics, global hover movement, tactical unmount cleanup, and the hidden Three.js Geoscape globe. Build metadata and the external validator are synchronized with the playable artifact again.
+
+VIP TERMINAL RESOLUTION
+-----------------------
+- A civilian or VIP marked alive: false is now an authoritative casualty even if staged playback temporarily retains positive display HP.
+- An impossible mandatory rescue quota can therefore resolve as a failed objective with the existing per-VIP partial credit instead of continuing AI search rounds indefinitely.
+- A deterministic regression contract recreates the 2-rescued / 2-dead / 3-required case.
+
+BUILD HEALTH LIFECYCLE
+----------------------
+- Full Build Health now combines both the original test suite and contracts added after the deferral patch only when the diagnostics panel is opened.
+- Startup continues to expose only the small critical smoke result; later patch wrappers no longer leak tests back into synchronous boot.
+- The manifest, browser build label, in-game patch-history head, and external build checker now agree on the current build.
+
+RUNTIME HOTPATH HARDENING
+-------------------------
+- Global hover help measures the tooltip only when its content changes and limits pointer-follow placement to one requestAnimationFrame callback per visual frame.
+- Tooltip motion uses a transform and bounds contextual label text before description matching.
+- TacticalMission now owns one combined unmount cleanup for AI streams, playback timers, and shot-feedback timers instead of five overlapping hooks.
+- The persistent Three.js globe stops scheduling its fixed-step loop while inactive and wakes with a fresh timing baseline when the Globe view returns.
+
+PRESERVED BEHAVIOR
+------------------
+- Persistent Three.js scenes and caches remain intact while their hidden render loop sleeps.
+- Hover descriptions, keyboard focus help, AI tactical rules, combat timing, campaign data, and save format remain unchanged.
+- Native Godot parity remains recorded separately.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Embedded JavaScript syntax, whitespace, manifest parity, current lighting/terrain contracts, VIP death-flag resolution, hover throttling, consolidated cleanup, and hidden-globe suspension are checked.
+- The deferred 477-contract suite now runs to completion without a runtime exception. It still reports 40 older stale assertion rows; those remain visible for follow-up instead of being suppressed or run during boot.
+- Save format remains 4.
+
+MANUAL TEST GATES
+-----------------
+1. Load or create a mandatory 3-of-4 VIP mission, leave two rescued and two explicitly dead, eliminate remaining aliens, and confirm the operation resolves as an objective failure with partial rescue credit.
+2. Launch the game and confirm the start screen appears before opening Build Health; then open Build Health and confirm the complete suite runs.
+3. Move the pointer rapidly across controls and confirm hover help follows smoothly without intercepting clicks.
+4. Switch repeatedly between Terminator Map and Globe views and confirm the persistent globe resumes with correct lighting and no jump or blank frame.
+5. Enter and exit tactical battles, including AI playback, and confirm no stale playback or shot-result timers survive mission teardown.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.20.1045_GLOBAL_CLICKABLE_HOVER_HELP_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
@@ -3562,8 +3615,6 @@ A complete live Chromium tactical/geoscape smoke test remains the final validati
 4. Confirm no two living soldiers finish a round on the same hex.
 5. Escort a VIP/civilian with a fire-team leader, spot an alien, test both escort-support choices, and confirm detached supports return afterward.
 6. Station Ready interceptors at several bases, select `All Bases`, verify staggered arrivals, destroy the UFO before every interceptor arrives, and follow the remaining aircraft home through normal ferry routing.
-
-
 
 
 

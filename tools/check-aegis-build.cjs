@@ -102,7 +102,7 @@ const required = [
   "Tactical enclosures and street props remain gameplay-only terrain",
   "Three.js tactical performance mode caps expensive rendering and idles on demand",
   "Three.js tactical instanced ground preserves picking gapless hexes and 2D recovery",
-  "Tactical lighting is removed from gameplay and render hot paths",
+  "Tactical lighting stays bounded while day/night visibility uses the indexed hot path",
   "Tactical civilians rescue actions and breach feedback share 2D and 3D state",
   "Tactical rescue extraction state and mission-intent rewards stay distinct from casualties",
   "Mandatory civilian objectives continue through a bounded secure rescue phase",
@@ -274,6 +274,11 @@ const required = [
   "TACTICAL_2D_CELL_RENDER_INDEX_PATCH",
   "TACTICAL_THREE_LIVING_UNIT_POSE_HOTFIX",
   "TACTICAL_VIP_QUOTA_DEATH_FLAG_TERMINAL_FIX",
+  "BUILD_HEALTH_AND_RUNTIME_HOTPATH_HARDENING_PATCH",
+  "runCombinedFullBuildHealthTests",
+  "AEGIS_RENDER_SCOPED_BUILD_HEALTH_RUNNER",
+  "AEGIS_POST_DEFERRED_BUILD_HEALTH_RUNNER",
+  "loopWakeRef.current",
   "TacticalIsoThreeViewPersistent",
   "data-aegis-persistent-three-tactical",
   "dataset.aegisTacticalRendererId",
@@ -412,7 +417,7 @@ const required = [
   "Soldier dialogue uses radio static bookends and gates strategic aircraft playback",
   "Three.js tactical ground shares exact 2D cell gradients",
   "Three.js tactical hex centers and footprints match the 2D board",
-  "Three.js tactical seam underlay closes raster junctions",
+  "Three.js tactical ground uses stable non-overlapping surfaces over one lower terrain bed",
   "Base facility construction uses a compact dropdown with the complete catalog",
   "Fit Map frames complete Small Medium and Large grids in 2D and isometric views",
   "Out-of-combat soldiers approach and contact their nearest unescorted VIP",
@@ -545,6 +550,15 @@ for (const obsoleteNeedle of [
 ]) {
   if (html.includes(obsoleteNeedle)) missing.push(`obsolete current-patch implementation remains: ${obsoleteNeedle}`);
 }
+if (html.includes("useEffect(()=>()=>cancelAiPlaybackTimers(),[])")) {
+  missing.push("duplicate tactical playback-only cleanup hooks must remain consolidated");
+}
+if (html.includes("runSelfTestsWith2225Patch") || html.includes("runSelfTestsWith2315Patch")) {
+  missing.push("render-scoped Geoscape diagnostics must not reassign the boot test runner");
+}
+if (!html.includes('pointermove",event=>{if(!active||event.pointerType==="touch")return;lastPoint={x:event.clientX,y:event.clientY};if(tooltip.style.display!=="none")schedulePlace()')) {
+  missing.push("global hover placement must remain animation-frame throttled");
+}
 
 if (manifest.playableArtifact !== "index.html") {
   missing.push("manifest playableArtifact must remain index.html");
@@ -560,6 +574,9 @@ if (manifest.gameplayParity?.policy !== "paired-browser-godot") {
 
 if (manifest.gameplayParity?.browserBuild !== manifest.currentBuild) {
   missing.push("manifest gameplayParity browserBuild must match currentBuild");
+}
+if (manifest.lastInspectedBuild !== manifest.currentBuild) {
+  missing.push("manifest lastInspectedBuild must match currentBuild");
 }
 
 if (manifest.gameplayParity?.nativeBuild !== manifest.nativePrototype?.build || nativeContent.build !== manifest.nativePrototype?.build) {
@@ -800,7 +817,7 @@ if (!nativeContent.soldiers?.every((soldier) => Number.isFinite(soldier.reaction
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "complete-classic-battlescape-command-set" && entry?.reason)) {
   missing.push("remaining classic battlescape command depth must be recorded as a temporary gameplay parity exception");
 }
-for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution"]) {
+for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening"]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser optimization parity exception missing: ${system}`);
   }

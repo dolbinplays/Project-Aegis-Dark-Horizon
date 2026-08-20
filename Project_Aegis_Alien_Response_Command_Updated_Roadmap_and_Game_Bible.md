@@ -2,12 +2,45 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-20
-Current handoff build: `v0.26.08.20.1045_GLOBAL_CLICKABLE_HOVER_HELP_PATCH`
+Current handoff build: `v0.26.08.20.1130_BUILD_HEALTH_AND_RUNTIME_HOTPATH_HARDENING_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1045 adds a global contextual hover/focus help layer for interactive controls across the game. Buttons, links, form controls, map/battlefield interactions, cursor-based clickable markers, and tutorial drag handles automatically expose a short explanation of what activation will do. Existing authored help/title text remains authoritative when it is more descriptive, while important controls such as Auto/Performance/Quality rendering, tactical views, Battle Speed, Command Map, AI handoff, End Turn, medical/reload/stance actions, Save/Load, destructive actions, and command-section navigation receive explicit contextual descriptions. Unknown/new controls still receive a safe generated fallback, so future clickable UI inherits basic hover help without requiring one-off wiring. Keyboard focus exposes the same help for accessibility. Browser 1035 draggable tutorial windows, Browser 1015 startup-scope correction, Browser 0945 vehicle/visibility authority, Browser 2325 beacon recovery, and Browser 2155 AI recovery remain unchanged. Save format remains 4.**
+Current patch status: **Browser 1130 restores the authoritative dead-VIP rescue-quota safeguard and hardens four runtime lifecycle seams. Full Build Health now combines the original and post-deferral contracts only after its panel opens, global hover positioning is animation-frame throttled with cached measurements, tactical AI/shot timer teardown is consolidated into one unmount hook, and the persistent Three.js globe suspends its fixed-step loop while hidden. Manifest, in-game version history, and external validation now agree with the playable build. Browser 1045 global hover help, Browser 1035 draggable tutorial windows, Browser 1015 startup-scope correction, Browser 2325 beacon recovery, and Browser 2155 AI recovery remain active. Save format remains 4.**
 
 
 Implementation update (2026-08-19): **Browser 2325 targets the live reproduction where the last VIP had just been rescued, no living aliens remained, and a confirmed Alien Field Beacon was the sole remaining objective, yet Simulation AI rapidly advanced rounds without useful movement or fire. Browser 1315 already had a dedicated beacon assaulter, but it did not guarantee round-level progress. The new must-progress watchdog treats beacon-only neutralization as a mandatory action phase: nearby non-assault troops clear the shield/approach, close-assault routing ignores temporary same-side traffic along the path, and after the normal AEGIS pass the resolver compares beacon HP plus assaulter distance/inside-shield state. If nothing improved, the assaulter receives a zero-reserve same-round retry and immediately attacks when a legal shot becomes available. A truly no-breach squad now halts streamed continuation instead of manufacturing endless empty rounds.**
+
+
+## Browser 1130 — Build Health + Runtime Hotpath Hardening
+
+**Status:** Implemented first optimization/correctness cleanup pass; primary manual gates are the impossible VIP-quota terminal case, deferred Build Health, rapid hover movement, tactical mission teardown, and hidden/visible globe transitions.
+
+### Authoritative VIP casualty state
+- `tacticalAiRescueProgress()` again treats `alive === false` as authoritative even if a staged animation frame retains positive display HP.
+- Mandatory rescue missions therefore stop searching once every unresolved VIP is truly dead and the quota can no longer be met.
+- Partial rescue credit and the existing objective-failure outcome remain intact.
+- A deterministic contract recreates two rescued VIPs, two dead VIPs, a three-VIP requirement, no remaining living aliens, and a surviving AEGIS soldier.
+
+### Fully deferred Build Health
+- The original full suite remains captured before the lightweight boot result replaces `runSelfTests()`.
+- Contracts added by later patches are captured separately at the end of the artifact and merged with the original suite only when Build Health is explicitly opened.
+- Duplicate names and the temporary deferred-status row are removed from the combined result.
+- At normal application mount, `runSelfTests()` again points only to the small deferred/critical-smoke result.
+
+### Pointer, cleanup, and hidden-renderer hotpaths
+- Global hover help caches its rendered dimensions until the hovered control/content changes.
+- Pointer-follow updates are coalesced through `requestAnimationFrame`, and movement uses `translate3d` instead of rewriting layout coordinates for every raw pointer event.
+- Tactical mission teardown now invalidates the AI stream and clears AI-playback and shot-feedback timers in one hook rather than registering five overlapping cleanup effects.
+- The persistent Three.js Geoscape globe retains its renderer/scene/cache while hidden, but its 33 ms loop stops scheduling work. Returning to Globe view resets the timing baseline and wakes the existing renderer.
+
+### Validation and handoff
+1. Reproduce the 3-of-4 mandatory rescue objective with two rescued and two explicit casualties; confirm the mission resolves as an objective failure rather than another AI search round.
+2. Confirm startup reaches the start screen with only critical smoke diagnostics, then open Build Health and confirm both the original and later contract sets appear.
+3. Move rapidly between interactive controls and confirm hover help remains smooth, bounded, and click-transparent.
+4. Toggle between Terminator Map and Globe while time is running and paused; confirm lighting resumes without remounting, blanking, or a large catch-up jump.
+5. Enter and leave tactical AI playback repeatedly and confirm no delayed movement, shot-feedback, or stream callbacks fire after teardown.
+6. Run `node tools/check-aegis-build.cjs` and embedded-script syntax checks. Save format remains **4**.
+
+The full deferred suite currently reaches completion with 477 results and no harness/runtime exception. Forty historical contract assertions remain stale against the current consolidated implementation; keep them visible and clean them up in later focused passes rather than restoring them to synchronous boot.
 
 
 ## Browser 1045 — Global Clickable Hover Help
