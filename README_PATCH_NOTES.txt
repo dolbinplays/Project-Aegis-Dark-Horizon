@@ -1,144 +1,84 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.19.1815_CONCURRENT_INDEPENDENT_SKYRANGER_OPERATIONS_FOUNDATION_PATCH
+Build: v0.26.08.19.1935_TACTICAL_KNEEL_MOVEMENT_AND_POSE_PARITY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
 SUMMARY
 -------
-Begins the roadmap's Concurrent Independent Skyranger Incident Responses architecture. A Skyranger already committed to Incident A no longer creates a campaign-wide transport lock that prevents a different Ready Skyranger and different response squad from launching to Incident B. Strategic Skyranger travel is now stored as a collection of independent operations rather than one singleton flight record.
+Closes the kneeling consistency gap identified during the tactical stance review. Kneeling is now one authoritative stationary stance across manual play and Simulation AI: it persists between rounds while the soldier stays put, automatically clears when the soldier actually begins moving, does not charge an extra stance cost just to stand for movement, and updates the 2D/3D Iso/FPV/TPV presentation immediately. Existing kneeling combat modifiers are unchanged. Prone remains roadmap exploration only.
 
-CONCURRENT OPERATION OWNERSHIP
-------------------------------
-- Adds live `skyrangerTravels[]` state while preserving the first record as legacy `skyrangerTravel` compatibility data.
-- Each operation retains its own incident, aircraft IDs/names, response squad IDs/deployments, route, fuel budget, ferry/staging information, progress, return reservation, and phase.
-- A launch is blocked only by the actual transaction, incident claim, selected squad ownership, aircraft readiness/fuel/range/stationing, or other real resource restrictions.
-- Another unrelated Skyranger already being Outbound or Returning is no longer itself a launch blocker.
-- Existing atomic multi-Skyranger launch for two transports intentionally assigned to the same incident is preserved.
-
-AIRCRAFT / SQUAD / INCIDENT RESERVATION
----------------------------------------
-- Outbound/Returning aircraft remain unavailable through their authoritative aircraft status; other Ready Skyrangers remain selectable.
-- Response squads already owned by an active Skyranger operation, active tactical mission, or Simulation playback cannot be reused for a second operation.
-- The blocker names the reserved squad rather than reporting a vague global Skyranger lock.
-- Incidents already claimed by an outbound/Tactical Ready/tactical/Simulation operation cannot accidentally receive a second independent response.
-
-CONCURRENT GEOSCAPE TRAVEL
+KNEEL / MOVEMENT AUTHORITY
 --------------------------
-- Every active Skyranger travel record advances independently on each Geoscape time step.
-- Globe and Terminator Map smooth-flight presentation now consume the full active Skyranger travel collection and can draw multiple transport operations at once.
-- Active Route Timeline lists each Skyranger operation separately.
-- Incident details show Response En Route, Tactical Ready, Returning, or tactical-operation ownership and disable Plan Response when already claimed.
+- Added shared `tacticalAutoStandForMovement()` authority for living human soldiers.
+- Manual path movement clears kneeling immediately before/with the first visible movement step, so a moving soldier cannot retain kneeling combat bonuses.
+- The shared escort/fire-team movement helper clears kneeling for a moving human leader or support member as well.
+- Simulation-AI movement now uses the same shared auto-stand authority rather than a separate stance reset.
+- Auto-standing as part of movement has no extra stance TU charge; movement keeps its existing 4 TU per hex.
+- Explicit stationary Kneel/Stand remains a 4-TU action through the shared `TACTICAL_STANCE_CHANGE_TU` constant.
 
-TACTICAL READY HANDOFF
+ROUND / RESERVE PARITY
 ----------------------
-- Browser tactical presentation remains intentionally single-battlefield in this first foundation.
-- If a second response reaches 100% while another committed tactical mission, Simulation playback, or mission aftermath owns the tactical slot, its travel record remains intact at Tactical Ready instead of overwriting the current mission.
-- Completed return processing is handled before the next waiting outbound handoff once the tactical slot is free.
-- Beginning a mission return releases the just-finished `activeMission` ownership so another Tactical Ready operation can use the tactical slot while the first Skyranger returns home.
+- Simulation-AI human round refresh no longer forcibly resets every living soldier to standing.
+- A stationary kneeling soldier therefore remains kneeling across round boundaries, matching manual-control behavior.
+- `Reserve: Kneel` continues protecting 4 TU even if the soldier is currently kneeling, because any movement auto-stands them and may require re-kneeling afterward.
+- Adaptive AI `Kneel + Snap` likewise keeps the conservative stance reserve, but the actual 4-TU kneel cost is paid only when the soldier truly transitions from standing to kneeling; an already-kneeling stationary soldier is not charged again.
 
-SAVE / LOAD
------------
-- Save data now includes optional `skyrangerTravels` while also writing legacy `skyrangerTravel` as the first record.
-- Legacy one-operation saves are wrapped into the collection on load.
-- New multi-operation saves bypass the old singleton launch-repair path so legitimate concurrent Outbound craft are not falsely treated as stale/orphaned aircraft.
-- Save format remains 4.
+POSE / CAMERA PARITY
+--------------------
+- 2D tactical presentation now gives a living kneeling AEGIS soldier a visibly lowered upright silhouette distinct from a fallen body.
+- Persistent 3D Iso units use the authoritative `kneeling` flag to lower/compress the soldier silhouette.
+- FPV eye and aim height lower while kneeling.
+- TPV and incoming-fire reaction TPV camera/look heights lower around a kneeling soldier.
+- Persistent/legacy tactical render dependency keys now include kneeling state, so a stance-only change can update without waiting for movement or an unrelated render trigger.
 
-BUILD HEALTH / REGRESSION COVERAGE
-----------------------------------
-- New contract verifies two concurrent Skyranger travel records reserve two different aircraft and squads, keep both Outbound aircraft valid, claim only their own incidents, persist the collection in source/save authority, and feed the full collection to Geoscape presentation.
-- Updated smooth-flight contract recognizes the multi-Skyranger visual-track map used by the Globe/Terminator renderer.
-- All six non-empty embedded JavaScript blocks pass `node --check`.
-
-MANUAL TEST GATES
------------------
-1. With two active incidents, two Ready Skyrangers, and two different squads, launch Incident A and leave that Skyranger Outbound.
-2. Select Incident B, choose the other squad, and confirm the second Ready Skyranger can launch without recalling or releasing A.
-3. Confirm both craft move simultaneously on Globe and Terminator Map and both Active Route Timeline entries advance.
-4. Attempt to reuse the first squad or launch the first incident again; each should block without consuming fuel or aircraft state.
-5. Save and reload while both craft are airborne; both operations should remain present and both aircraft should remain Outbound.
-6. Let one operation become Tactical Ready while another tactical battle owns the tactical slot; the waiting operation should remain preserved and hand off only after the current tactical ownership is released.
-
-DEFERRED FOLLOW-UP
-------------------
-- Player-selectable ordering when several operations are Tactical Ready simultaneously.
-- Fully independent background Simulation-AI tactical resolution for multiple incidents at once.
-- Deeper concurrent ferry/staging hangar-capacity arbitration.
-- Dedicated concurrent-operation management panel and broader Mission Control status styling.
-
-PREVIOUS PATCH NOTES ARCHIVE
-============================
-
-PROJECT AEGIS / ALIEN RESPONSE COMMAND
-PATCH NOTES
-
-Build: v0.26.08.19.1715_RANGED_STANDOFF_AND_COVER_SEEKING_AI_PATCH
-Save format: 4 (unchanged)
-Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
-
-SUMMARY
--------
-Implements the roadmap's AEGIS ranged-standoff and cover-seeking combat doctrine. AI-controlled ranged soldiers now evaluate useful firing distance and threat-facing cover instead of treating movement toward the selected alien as inherently good. The default medium/long-range behavior strongly prefers roughly 3–4+ hex separation, preserved LOS, practical weapon range, and authoritative cover while still allowing rescue, explicit player orders, beacon/objective interaction, breaching, close quarters, and future melee behavior to override the preference.
-
-RANGED STANDOFF AUTHORITY
--------------------------
-- Human ranged movement now builds a shared engagement context from aliens currently visible to that soldier.
-- Candidate destinations are strongly penalized for voluntary adjacency and 1–2 hex crowding when safer legal firing cells exist.
-- The ordinary preferred floor is about 3–4 hexes; shorter-range weapons adapt the floor and explicit `weaponRange` values are honored.
-- Positions beyond the equipped weapon's useful range are strongly penalized so standoff does not become uncontrolled retreat.
-- If a soldier starts too close, increasing separation toward the preferred band receives a strong positive score.
-
-THREAT-FACING COVER
--------------------
-- Destination cover is no longer scored solely because some cover object exists nearby.
-- A wall, vehicle footprint, or other live cover receives the strongest defensive score only when its authoritative footprint lies between the soldier and a visible alien.
-- Hard cover is preferred over softer cover. A covered position that also preserves LOS receives an additional firing-position bonus.
-- Destroyed cover stops contributing immediately because the score consumes the live cover HP/footprint authority.
-- Existing fire/smoke hazard costs remain in force.
-
-MULTI-ALIEN SAFETY
-------------------
-- The local threat field includes all aliens currently visible to the moving soldier.
-- A cell that is acceptably spaced from the selected target but dangerously close to another visible alien receives an additional penalty.
-- This reduces point-blank clustering when several contacts are present.
-
-HYSTERESIS / STABLE FIRING POSITIONS
-------------------------------------
-- A soldier already in a useful in-range standoff band receives a hold-position benefit.
-- Moving within the same good band costs score, reducing needless 4↔5 hex oscillation and creeping forward solely to reduce target distance.
-- Existing fire-team cohesion still applies, so soldiers remain a team rather than scattering across the map.
-
-HYBRID SUPPORT
---------------
-- Hybrid aggressive-flank support now consumes the same engagement-position authority.
-- A strong cross-angle no longer makes a point-blank flank cell automatically desirable.
-- If normal flank geometry cannot find a sensible destination, Hybrid support falls back to the shared ranged-safe planner before ordinary formation fallback.
-
-HIGHER-AUTHORITY EXCEPTIONS
----------------------------
-- Explicit player Command Map movement remains authoritative.
-- VIP/civilian rescue, escort/extraction, beacon work, deliberate breach/objective actions, pre-contact search, and other specialized adjacency-required planners retain their existing behavior.
-- No invisible hard radius was placed around aliens; the doctrine is a weighted preference.
+COMBAT / SAVE AUTHORITY UNCHANGED
+---------------------------------
+- Kneeling outgoing-fire bonus remains +10 accuracy.
+- Alien hit chance against a kneeling human remains -8.
+- No changes to damage, armor, cover values, LOS, weapon range, RNG, reaction order, ammo, movement cost, or mission authority.
+- Kneeling already exists on tactical unit state, so no schema migration is required.
+- Save format remains 4 and Browser 1415 active-tactical save continuity continues to preserve stance.
+- Prone is NOT implemented by this patch; it remains a future design/prototype item in the Roadmap/Game Bible.
 
 REGRESSION COVERAGE
 -------------------
-- Build Health covers a rifleman starting too close to an alien and requires movement toward safer spacing rather than closer contact.
-- Build Health covers threat-facing hard cover and a second alien creating a local close-threat penalty.
-- Source coverage requires the shared standoff authority in both ordinary Simulation-AI movement and Hybrid flank support.
+- Added Browser 1935 Build Health coverage for:
+  * auto-standing without an extra TU charge;
+  * kneeling persistence across AI round refresh;
+  * shared escort/movement stance clearing;
+  * conservative 4-TU Kneel reserve plus transition-only actual stance spending;
+  * lowered FPV camera pose;
+  * 2D stance marker/presentation;
+  * persistent 3D stance application;
+  * TPV/reaction-TPV kneeling camera awareness;
+  * AI adaptive reserve use of the shared stance cost.
 - All six non-empty embedded JavaScript blocks pass `node --check`.
-- Save format remains 4.
 
 MANUAL TEST GATES
 -----------------
-1. Put a rifleman 1–2 hexes from a visible alien with open legal cells behind/aside; AI should normally increase separation rather than close.
-2. Give the soldier a covered firing cell around 3–5 hexes away and confirm it is favored over an exposed point-blank approach.
-3. Put a second alien near one candidate cell and confirm the soldier avoids satisfying distance from target A while standing next to target B.
-4. Let a soldier already in good covered range take another turn and confirm it normally holds/fires instead of creeping closer.
-5. Verify rescue, beacon, breach, and explicit player movement orders can still override standoff when required.
+1. Kneel a soldier, end the tactical round, and verify they remain kneeling at the start of the next round.
+2. Move that soldier and verify they rise before/with the first step, spend only normal movement TU, and no longer receive kneeling modifiers while moving.
+3. Repeat with Simulation AI and confirm stationary kneeling persists but any actual AI movement stands the soldier.
+4. Use Reserve Kneel while already kneeling: staying put must not pay another stance charge, while moving must preserve enough reserve to re-kneel afterward.
+5. Explicitly Kneel and Stand while stationary and confirm each deliberate stance change still costs 4 TU.
+6. Compare 2D, 3D Iso, FPV, TPV, and incoming-fire reaction TPV while kneeling and standing.
+7. Save/reload during a tactical mission with a kneeling soldier and confirm the stance and perspective height restore correctly.
 
-PREVIOUS PATCH NOTES ARCHIVE
-============================
+RECENT BUILD CONTINUITY
+-----------------------
+- 1815: concurrent independent Skyranger operations foundation.
+- 1715: ranged standoff and cover-seeking tactical AI.
+- 1515: incoming-fire reaction TPV slow motion.
+- 1415: active-mission Menu / Save and tactical save continuity.
+- 1315: beacon-endgame AI assault/recovery.
+- 1245: smooth Geoscape craft-flight visual interpolation.
+- 1145/1115: Build Health startup and secure-rescue facing-scope hotfixes.
+- 1045/0945: Simulation-AI handoff long-task reduction and continuation self-heal.
+
+PREVIOUS PATCH NOTES (legacy file history follows)
+==================================================
 
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES

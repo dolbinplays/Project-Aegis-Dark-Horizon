@@ -2,11 +2,49 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.1815_CONCURRENT_INDEPENDENT_SKYRANGER_OPERATIONS_FOUNDATION_PATCH`
+Current handoff build: `v0.26.08.19.1935_TACTICAL_KNEEL_MOVEMENT_AND_POSE_PARITY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1815 implements the first concurrent independent Skyranger operations foundation. Strategic Skyranger travel is no longer a singleton: separate incidents can own separate outbound/return travel records at the same time, each aircraft is reserved by its own operation, squads cannot be reused across concurrent responses, incident claims are operation-specific, all active Skyranger routes advance on the same Geoscape clock, and Globe/Terminator presentation receives the full travel collection rather than only one transport operation. Save/load now persists the optional `skyrangerTravels` collection while retaining the legacy single `skyrangerTravel` field for compatibility. Tactical execution remains intentionally serialized in this first foundation: if another response reaches 100% while a tactical mission or aftermath owns the tactical slot, it waits in a Tactical Ready state and automatically hands off once that slot is free. Browser 1715 ranged standoff, 1515 incoming-fire slow motion, 1415 tactical Menu / Save continuity, 1315 beacon-endgame recovery, 1245 smooth craft flight, and the stable flicker-free Geoscape lifecycle remain intact. Save format remains 4. Native Godot remains at 0026.**
+Current patch status: **Browser 1935 implements the first Tactical Stance consistency slice for kneeling. Kneeling now persists authoritatively between tactical rounds in both manual and Simulation-AI control until the soldier explicitly changes stance or actually begins movement. Any real human movement clears kneeling through shared movement authority before/with the first step, preventing a moving soldier from retaining the +10 firing accuracy / -8 incoming-hit modifier. Auto-standing as part of movement does not add a second TU charge; the deliberate stationary Kneel/Stand command remains 4 TU. AI only pays the 4-TU kneel cost when it actually transitions from standing to kneeling; conservative Kneel reserve still protects 4 TU so a soldier who moves and auto-stands can re-kneel afterward. 2D, persistent 3D Iso, FPV, TPV, and incoming-fire reaction TPV now consume the same kneeling state and present a visibly lowered stance/camera. Existing combat balance values are unchanged, Prone remains design exploration only, Browser 1815 concurrent Skyranger operations remains intact, save format remains 4, and native Godot remains at 0026.**
 
-Implementation update (2026-08-19): **Browser 1815 begins the Concurrent Independent Skyranger Incident Responses roadmap. The campaign now stores a collection of Skyranger operations instead of treating one `skyrangerTravel` record as a global launch lock. A committed aircraft and squad remain reserved to their own incident, but a different Ready Skyranger and different response squad can launch to another incident while the first transport is outbound or returning. Same-incident duplicate response is blocked, same-squad reuse is blocked, existing same-incident multi-transport atomic launch remains intact, and all active Skyranger operations are shown in the route timeline and fed to both Geoscape views. Tactical-ready operations are queued by their completed travel records until the single tactical presentation slot is free; fully simultaneous background tactical resolution is a later phase, not part of 1815.**
+Implementation update (2026-08-19): **Browser 1935 closes the kneeling parity gap discovered during the tactical stance review. Manual movement previously could leave `kneeling=true` while a soldier walked, and Simulation-AI round refresh previously forced all human units standing even when they had deliberately ended the prior round kneeling. The shared stance/movement rule is now: kneeling persists while stationary across round boundaries; beginning movement automatically returns a living human soldier to the moving/standing stance at no extra TU beyond the movement itself; an explicit stationary stance change costs 4 TU. Movement helpers used by escorts/fire-team formation share the same auto-stand authority, and AI actual stance spending remains transition-based so an already-kneeling stationary soldier is not charged again. Rendering/camera dependency keys now include kneeling so stance-only changes update immediately.**
+
+## Browser 1935 — Tactical Kneel Movement and Pose Parity
+
+**Status:** Implemented kneeling consistency slice; live tactical camera/pose testing remains the primary manual gate. Prone is not implemented in this build.
+
+### Shared stance authority
+- A living AEGIS soldier who is kneeling remains kneeling across round refreshes in both manual and Simulation-AI control until a real movement or deliberate stance command changes that state.
+- Beginning movement automatically clears kneeling. This applies to manual path movement, Simulation-AI movement, escorted-civilian leader movement, and automated fire-team formation movement.
+- Auto-standing to move is part of movement presentation/authority and does **not** add a separate 4-TU stance charge. The explicit Kneel/Stand command still costs **4 TU** when the player or AI deliberately changes posture while remaining in position.
+- Kneel reserve remains a conservative **4 TU** even when the soldier is currently kneeling, because any subsequent movement auto-stands them and may require re-kneeling afterward. The actual 4-TU stance cost is charged only when the unit truly transitions into kneeling, so remaining stationary and already kneeling does not pay it again.
+
+### Combat balance preserved
+- Kneeling outgoing fire remains **+10 accuracy**.
+- Incoming alien fire against a kneeling human remains **-8 hit chance** before the existing cover/distance/darkness/etc. modifiers.
+- No changes are made to weapon range, damage, armor, cover values, LOS, movement TU per hex, RNG, reaction order, or AI action authority.
+
+### Pose / camera parity
+- 2D tactical unit presentation now visibly compresses/lowers a living kneeling soldier while keeping the silhouette upright and distinct from a fallen/unconscious body.
+- Persistent 3D Iso units consume the same kneeling flag and use a lower crouched silhouette rather than remaining full-height.
+- FPV eye/aim height is lower while kneeling.
+- TPV and incoming-fire reaction TPV target/look heights also lower around a kneeling soldier.
+- Renderer dependency keys include stance state so a stationary Kneel/Stand command updates the persistent 3D and perspective cameras immediately rather than waiting for movement or another unrelated unit change.
+
+### Save / compatibility
+- Kneeling remains the existing per-unit tactical field; no new save schema is required.
+- Browser 1415 tactical save continuity therefore continues preserving stance in active tactical saves.
+- Save format remains **4**.
+
+### Build Health / manual gates
+1. Kneel manually, end the round, and confirm the soldier remains kneeling next round with the same combat modifiers.
+2. Move that soldier and confirm the stance visibly rises before/with the first movement step, with no extra 4-TU charge beyond movement.
+3. Repeat under Simulation AI and confirm AI round refresh does not force a stationary kneeling soldier to stand, while actual movement does.
+4. Use Reserve Kneel while already kneeling, then test both staying put and moving: staying put must not pay another stance charge, while the 4-TU reserve must remain available to re-kneel after movement.
+5. Toggle Kneel/Stand while stationary and confirm the explicit command still costs 4 TU each time.
+6. Check the same soldier in 2D, 3D Iso, FPV, TPV, and incoming-fire reaction TPV for a visibly consistent lowered stance that cannot be confused with death/fall presentation.
+7. Save/reload an active tactical mission with a kneeling soldier and confirm stance and camera presentation restore correctly.
+
+**Deferred stance work:** Prone remains a future design/prototype item. Any future prone implementation must build on this shared authoritative stance/movement model rather than creating a parallel animation-only state.
 
 ## Browser 1815 — Concurrent Independent Skyranger Operations Foundation
 
@@ -214,6 +252,27 @@ Roadmap-only planning update (2026-08-19): **Independent Skyranger incident resp
 Roadmap-only planning update (2026-08-19): **Incoming-fire reaction TPV should use short cinematic slow motion when an AEGIS soldier is hit or narrowly survives a resolved hostile shot. The slowdown is presentation-only: targeting, hit/damage resolution, RNG, Time Units, ammunition, AI action order, and tactical authority remain unchanged. The goal is to make the impact, target reaction, projectile/VFX, armor hit, wounds/gibbing, and nearby context easier to read before returning smoothly to the player's prior Iso/FPV/TPV observer mode. No code or build-number change is part of this documentation update.**
 
 Roadmap-only planning update (2026-08-19): **AEGIS tactical AI should treat distance from visible aliens as an explicit ranged-combat consideration. Unless a soldier is intentionally committing to a melee attack, the default preference is to avoid crowding an alien, maintain roughly a 3–4 hex minimum standoff when terrain and objectives allow, stay inside the effective range of the equipped weapon, and favor legal cover positions that preserve useful line of sight. This is a weighted tactical preference rather than an absolute movement wall: rescue/extraction duties, blocked routes, close-quarters interiors, immediate survival, weapon characteristics, explicit player orders, and other higher-authority objectives may justify closer positioning. No code or build-number change is part of this documentation update.**
+
+
+Implementation update (2026-08-19, Browser 1935): **The first tactical stance consistency slice is now implemented for kneeling. Manual and Simulation-AI control share the same movement transition: kneeling persists while stationary across rounds, actual movement clears kneeling, auto-standing to move carries no extra stance charge, explicit stationary Kneel/Stand remains 4 TU, already-kneeling stationary logic does not pay the stance cost twice, and 2D/3D Iso/FPV/TPV/reaction-TPV presentation consumes the same stance. The current +10 outgoing accuracy / -8 incoming-hit balance is intentionally unchanged. A future balance pass may still explore stronger directional-cover/exposed-profile interactions, but those are not part of Browser 1935.**
+
+### Future tactical stance exploration — Prone
+
+**Status:** Design exploration only; no implementation or final balance values are approved yet.
+
+- Explore a deliberate **Go Prone / Stand Up** stance as a deeper defensive-fire option rather than an automatic reaction.
+- Prone should generally trade mobility and flexibility for a smaller exposed profile and a steadier firing platform. Candidate benefits to prototype include stronger incoming-fire protection in open or low-cover situations, improved accuracy or recoil control for suitable ranged weapons, and stronger synergy with low cover.
+- Candidate costs should be substantial enough that prone is not always superior to kneeling: meaningful TU to go prone and stand, inability to move normally until standing or using a deliberately slower crawl system, slower target switching/turning if appropriate, and vulnerability to close assault/melee or grenades.
+- Weapon handling should be reviewed by class rather than given one universal modifier. Rifles, marksman weapons, machine guns, pistols, heavy weapons, launchers, grenades, melee weapons, and future specialist equipment may each interact differently with prone.
+- LOS/ballistics should use the same authoritative stance state for both attack and defense. A prone soldier should not gain concealment merely because the animation is lower; any reduced profile must be represented explicitly in the tactical hit/cover model.
+- Cover interaction needs clear doctrine: prone may improve the value of low cover, may be impractical behind some tall obstacles depending on firing angle, and must never create shots through geometry that should block the weapon.
+- Manual and Simulation AI need full parity. AI should consider going prone primarily when holding a firing lane, under heavy ranged pressure, defending an objective, or supporting from a stable position; it should avoid doing so when rapid movement, rescue, breaching, melee, evacuation, or close-range threat makes the recovery cost dangerous.
+- Fire-team doctrine should distinguish **standing maneuver**, **kneeling firing position**, and **prone hold/support position** so multiple soldiers do not all collapse into the same stance simply because one numeric modifier is attractive.
+- Camera/readability work should ensure prone soldiers remain easy to identify in 3D Iso while FPV/TPV accurately show the lowered body profile. Fallen/unconscious body presentation must remain visually distinct from a living soldier intentionally prone.
+- Save/load, AI playback, victory presentation, hit reactions, incoming-fire slow motion, and soldier animation state must preserve and restore the authoritative stance without confusing prone with death-state rotation.
+- Before implementation, prototype the stance against the current kneeling baseline and measure whether it creates interesting positional decisions rather than a mandatory pre-fire button.
+
+**Planned validation gate:** Browser 1935 now supplies the manual/AI move-from-kneel parity baseline. Before approving prone modifiers, prototype prone in open ground, low cover, hard cover, long-range firing, close assault, grenade exposure, rescue movement, AI hold positions, FPV/TPV transitions, save/reload, and victory/death presentation.
 
 
 Roadmap-only planning update: **Future Stage 3 tactical work still includes multi-floor / multi-level human structures and multi-deck alien craft, with vertical movement, floor-aware LOS/ballistics, camera cutaways, AI pathfinding, structural destruction, and fire/smoke behavior across levels. Browser 1945 preserves Browser 0215's single-level building interaction/presentation improvements, Browser 1845's FPV/TPV backdrop depth correction, and now aligns the continuous FPV/TPV floor texture to the same world-space hex centers used by 3D Iso; it does not implement vertical levels.**
