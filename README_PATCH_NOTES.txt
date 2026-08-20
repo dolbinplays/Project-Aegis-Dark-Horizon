@@ -1,57 +1,71 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
-Build: v0.26.08.19.1515_INCOMING_FIRE_REACTION_SLOW_MOTION_PATCH
+Build: v0.26.08.19.1715_RANGED_STANDOFF_AND_COVER_SEEKING_AI_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
 
 SUMMARY
 -------
-Implements the roadmap's incoming-fire TPV slow-motion presentation pass. During Simulation-AI Tactical Map playback, a resolved alien hit on an AEGIS soldier now receives a short cinematic reaction window: projectile travel is slowed and visibly animated, the impact flash appears at contact instead of immediately, the struck soldier gives a brief readable flinch, and the reaction TPV camera eases more slowly before returning to the prior observer mode. Tactical resolution is unchanged.
+Implements the roadmap's AEGIS ranged-standoff and cover-seeking combat doctrine. AI-controlled ranged soldiers now evaluate useful firing distance and threat-facing cover instead of treating movement toward the selected alien as inherently good. The default medium/long-range behavior strongly prefers roughly 3–4+ hex separation, preserved LOS, practical weapon range, and authoritative cover while still allowing rescue, explicit player orders, beacon/objective interaction, breaching, close quarters, and future melee behavior to override the preference.
 
-INCOMING-FIRE TPV SLOW MOTION
-------------------------------
-- Applies only to resolved alien-to-AEGIS hits during Simulation-AI Tactical Map playback.
-- Misses retain normal timing so suppressive fire does not constantly interrupt AI playback.
-- Slow-motion duration remains bounded and still respects the player's Battle Speed setting.
-- A visible Three.js tracer now advances toward the targeted soldier during the slowed travel window.
-- Impact light/blast is hidden until the authoritative impact time, then appears at contact.
-- The targeted soldier receives a short vertical/side flinch during the impact hold.
-- The incoming-fire TPV camera uses gentler damping during the reaction window.
-- Armor-hit metadata is now forwarded through AI playback presentation so held armor impacts can be presented correctly.
+RANGED STANDOFF AUTHORITY
+-------------------------
+- Human ranged movement now builds a shared engagement context from aliens currently visible to that soldier.
+- Candidate destinations are strongly penalized for voluntary adjacency and 1–2 hex crowding when safer legal firing cells exist.
+- The ordinary preferred floor is about 3–4 hexes; shorter-range weapons adapt the floor and explicit `weaponRange` values are honored.
+- Positions beyond the equipped weapon's useful range are strongly penalized so standoff does not become uncontrolled retreat.
+- If a soldier starts too close, increasing separation toward the preferred band receives a strong positive score.
 
-AI PLAYBACK SAFETY
+THREAT-FACING COVER
+-------------------
+- Destination cover is no longer scored solely because some cover object exists nearby.
+- A wall, vehicle footprint, or other live cover receives the strongest defensive score only when its authoritative footprint lies between the soldier and a visible alien.
+- Hard cover is preferred over softer cover. A covered position that also preserves LOS receives an additional firing-position bonus.
+- Destroyed cover stops contributing immediately because the score consumes the live cover HP/footprint authority.
+- Existing fire/smoke hazard costs remain in force.
+
+MULTI-ALIEN SAFETY
 ------------------
-- Automatic AI frame progression now accounts for the incoming-hit cinematic duration.
-- Deferred AI death application now also waits for the slow-motion impact window, so a fatal hit cannot remove the target before the slowed projectile reaches them.
-- The next AI action cannot visually overrun the slow-motion hit reaction.
-- Existing frame-level burst aggregation remains authoritative, so one burst uses one bounded reaction window rather than stacking a slow-motion pause for every projectile.
-- Camera ownership returns through the existing Iso/FPV/TPV observer flow after the shot presentation clears.
+- The local threat field includes all aliens currently visible to the moving soldier.
+- A cell that is acceptably spaced from the selected target but dangerously close to another visible alien receives an additional penalty.
+- This reduces point-blank clustering when several contacts are present.
 
-GAMEPLAY AUTHORITY UNCHANGED
-----------------------------
-- No rerolls or changes to hit chance, RNG, damage, armor penetration, wound/fatal outcomes, ammunition, Time Units, reaction order, AI decisions, reinforcements, or mission results.
-- No save migration is required; save format remains 4.
-- Browser 1415 active-mission Menu / Save continuity, 1315 beacon-endgame recovery, 1245 smooth Geoscape craft flight, and the stable Geoscape lifecycle/flicker fix remain intact.
+HYSTERESIS / STABLE FIRING POSITIONS
+------------------------------------
+- A soldier already in a useful in-range standoff band receives a hold-position benefit.
+- Moving within the same good band costs score, reducing needless 4↔5 hex oscillation and creeping forward solely to reduce target distance.
+- Existing fire-team cohesion still applies, so soldiers remain a team rather than scattering across the map.
+
+HYBRID SUPPORT
+--------------
+- Hybrid aggressive-flank support now consumes the same engagement-position authority.
+- A strong cross-angle no longer makes a point-blank flank cell automatically desirable.
+- If normal flank geometry cannot find a sensible destination, Hybrid support falls back to the shared ranged-safe planner before ordinary formation fallback.
+
+HIGHER-AUTHORITY EXCEPTIONS
+---------------------------
+- Explicit player Command Map movement remains authoritative.
+- VIP/civilian rescue, escort/extraction, beacon work, deliberate breach/objective actions, pre-contact search, and other specialized adjacency-required planners retain their existing behavior.
+- No invisible hard radius was placed around aliens; the doctrine is a weighted preference.
 
 REGRESSION COVERAGE
 -------------------
-- Build Health verifies alien hits activate slow-motion timing while misses and non-AI/manual presentation do not.
-- Build Health verifies the AI scheduler reserves the reaction duration before advancing.
-- Build Health verifies the persistent Three.js reaction tracer/impact state and bounded soldier flinch.
+- Build Health covers a rifleman starting too close to an alien and requires movement toward safer spacing rather than closer contact.
+- Build Health covers threat-facing hard cover and a second alien creating a local close-threat penalty.
+- Source coverage requires the shared standoff authority in both ordinary Simulation-AI movement and Hybrid flank support.
 - All six non-empty embedded JavaScript blocks pass `node --check`.
+- Save format remains 4.
 
 MANUAL TEST GATES
 -----------------
-1. Let Simulation AI fight a mission in Tactical Map / 3D Iso and wait for an alien to hit an AEGIS soldier.
-2. Confirm the camera cuts to incoming-fire TPV, projectile travel is visibly slower, impact occurs at contact, and the soldier gives a short reaction.
-3. Confirm an alien miss does not get the full slow-motion hold.
-4. Test Battle Speed at a low, middle, and high setting and confirm the reaction remains readable without becoming an excessive pause.
-5. Confirm a burst/full-auto hit creates one bounded reaction sequence rather than several stacked slowdowns.
-6. Confirm the camera returns to the previously selected Iso/FPV/TPV observer mode and AI playback continues normally afterward.
+1. Put a rifleman 1–2 hexes from a visible alien with open legal cells behind/aside; AI should normally increase separation rather than close.
+2. Give the soldier a covered firing cell around 3–5 hexes away and confirm it is favored over an exposed point-blank approach.
+3. Put a second alien near one candidate cell and confirm the soldier avoids satisfying distance from target A while standing next to target B.
+4. Let a soldier already in good covered range take another turn and confirm it normally holds/fires instead of creeping closer.
+5. Verify rescue, beacon, breach, and explicit player movement orders can still override standoff when required.
 
-
-HISTORICAL PATCH NOTES BELOW
+PREVIOUS PATCH NOTES ARCHIVE
 ============================
 
 PROJECT AEGIS / ALIEN RESPONSE COMMAND

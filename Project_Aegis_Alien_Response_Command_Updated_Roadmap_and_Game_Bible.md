@@ -2,9 +2,53 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-19
-Current handoff build: `v0.26.08.19.1515_INCOMING_FIRE_REACTION_SLOW_MOTION_PATCH`
+Current handoff build: `v0.26.08.19.1715_RANGED_STANDOFF_AND_COVER_SEEKING_AI_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1515 implements the planned incoming-fire reaction TPV slow-motion pass. Resolved alien hits against AEGIS soldiers now receive a bounded cinematic reaction window during Simulation-AI map playback: projectile travel is visibly slowed, the impact flash is delayed until contact, the struck soldier receives a short readable flinch, and the reaction TPV camera eases more slowly before returning to the player's prior observer mode. Misses retain normal timing, burst fire uses the existing single aggregated reaction event rather than stacking multiple long slowdowns, and Battle Speed still governs overall playback pace. Shot resolution, RNG, armor, damage, TU, ammunition, AI decisions, and mission authority are unchanged. Browser 1415 tactical Menu / Save continuity, 1315 beacon-endgame recovery, 1245 smooth craft flight, 0045 stable flicker-free Geoscape lifecycle, and all current tactical presentation/pathing fixes remain intact. Save format remains 4. Native Godot remains at 0026.**
+Current patch status: **Browser 1715 implements the planned AEGIS ranged-standoff and cover-seeking tactical-AI doctrine. Human ranged movement now uses one shared engagement-position score that weighs the nearest currently visible alien threat field, a weapon-aware 3–4 hex minimum standoff preference, practical weapon range, preserved LOS, threat-facing authoritative cover, hazard cost, movement efficiency, fire-team cohesion, and stability/hysteresis. Soldiers no longer treat geometric closeness as inherently desirable: when a safe in-range firing cell exists they strongly avoid voluntary adjacency and 1–2 hex crowding, while short-range weapons adapt the preferred floor and higher-authority player orders, rescue/extraction, beacon work, breaching, and other adjacency-required duties remain exempt. Hybrid support/flank movement consumes the same standoff authority and can fall back to the shared safe engagement planner. Browser 1515 incoming-fire slow motion, 1415 tactical Menu / Save continuity, 1315 beacon-endgame recovery, 1245 smooth craft flight, 0045 stable flicker-free Geoscape lifecycle, and all current tactical presentation/pathing fixes remain intact. Save format remains 4. Native Godot remains at 0026.**
+
+Implementation update (2026-08-19): **Browser 1715 completes the first AEGIS ranged-standoff and cover-seeking AI implementation slice. The shared human movement planner now scores visible-alien distance bands, actual weapon range, target LOS, authoritative threat-facing cover, multi-alien proximity, hazards, movement cost, fire-team cohesion, and current-position hysteresis together. A ranged soldier who already has a stable covered shot around the preferred distance is encouraged to hold and fire rather than advance solely to reduce geometric distance. Hybrid support/flank movement uses the same authority, while rescue, explicit player Command Map movement, beacon interaction/close assault, breaching, and other higher-authority duties keep their existing behavior.**
+
+## Browser 1715 — Ranged Standoff and Cover-Seeking Tactical AI
+
+**Status:** Implemented; live manual gate is an AI-controlled mission with several visible aliens and enough open/covered terrain to compare point-blank, exposed, and 3–5 hex covered firing positions.
+
+### Shared engagement-position authority
+- Adds one human ranged-engagement score used by the ordinary Simulation-AI movement planner instead of relying mainly on geometric progress toward the selected alien.
+- The score uses the nearest currently visible alien threat field, not only the selected target, so a cell cannot be considered safe merely because it is four hexes from one alien while adjacent to another.
+- The default long/medium-range preference is to finish at least roughly **3–4 hexes from the nearest visible alien** when a legal useful firing cell exists.
+- Adjacency and two-hex endings receive strong but finite penalties; they remain legal when higher-authority duties or terrain make them necessary.
+- Shorter-range weapons adapt the preferred floor instead of blindly retreating outside their useful engagement envelope. Explicit per-unit `weaponRange` is honored when present.
+
+### Cover + LOS doctrine
+- Cover seeking is now direction-aware for AI destination scoring. A nearby wall/vehicle/other cover only receives the strongest defensive value when its authoritative footprint is actually between the soldier and a visible alien.
+- Hard cover is favored over softer cover, with an additional bonus when the covered destination still retains LOS to the selected alien.
+- Destroyed cover immediately stops contributing because the score consumes the same live cover HP/footprint authority used by movement, LOS, ballistics, vehicles, and destruction.
+- Fire/smoke hazard penalties and existing path costs remain active; the AI does not choose a burning covered cell simply because it has a wall.
+
+### Hysteresis / no unnecessary contact rush
+- A soldier already inside a useful in-range standoff band receives a hold-position bonus and movement cost penalty, reducing 4↔5 hex oscillation and unnecessary creeping toward the alien.
+- A soldier who starts too close receives a strong reward for increasing separation toward the preferred band.
+- A candidate beyond practical weapon range is strongly penalized so standoff does not become uncontrolled retreat.
+- Existing fire-team cohesion scoring remains active, so the doctrine changes engagement geometry without turning every operator into an independent sniper.
+
+### Hybrid support integration
+- Hybrid aggressive-flank support now consumes the same ranged engagement score.
+- Its old permissive near-contact geometry no longer treats a 1–2 hex flank cell as desirable simply because it has a good cross-angle.
+- If the normal Hybrid flank geometry cannot find a sensible cell, it falls back to the shared ranged-safe engagement planner before reverting to ordinary formation following.
+
+### Higher-authority exceptions preserved
+- Explicit Command Map movement remains authoritative.
+- VIP/civilian rescue, escort, extraction, ramp guarding, beacon close assault/interface work, deliberate breaching, search movement before personal contact, and other adjacency-required objective actions keep their existing specialized planners.
+- No hard collision radius was added around aliens. The doctrine is weighted tactical preference only.
+
+### Regression coverage
+- Build Health verifies a rifleman starting too close selects a destination that increases separation rather than closing to point blank.
+- Build Health verifies threat-facing hard cover contributes to the destination score.
+- Build Health verifies a second visible alien makes a locally dangerous candidate worse even when the selected target remains at acceptable distance.
+- Source coverage verifies the shared authority is used in both the normal human movement planner and Hybrid aggressive-flank support.
+- All six non-empty embedded JavaScript blocks pass `node --check`.
+
+**Manual gate:** place AI-controlled riflemen around one or more visible aliens. When useful terrain exists, they should spread into covered firing positions around the 3–5 hex band, avoid voluntary adjacency, stay within weapon range, and normally hold/fire once they have a stable covered shot.
 
 Implementation update (2026-08-19): **Browser 1515 completes the first incoming-fire reaction slow-motion roadmap slice. During Simulation-AI Tactical Map playback, a resolved alien hit on an AEGIS soldier now receives a bounded presentation-only slow-motion window. The shot effect carries explicit reaction timing metadata, the automatic playback scheduler waits for the reaction window rather than advancing into the next action, the persistent Three.js renderer animates a visible tracer toward the target, reveals the impact flash only at contact, and applies a brief hit flinch to the soldier. The reaction TPV camera itself uses gentler damping during the slow-motion window. Misses are not slowed, and the existing single-shot-event aggregation prevents a burst from stacking several long cinematic pauses.**
 
@@ -7721,7 +7765,7 @@ Still planned:
 - VIP Rescue AI fire-team distribution is implemented in Browser 1850: the senior tactical coordinator assigns distinct fire teams across distinct marked VIPs before allowing duplicate coverage, while extra teams remain available for security, combat, escort support, or later reassignment.
 - Adaptive Alien Field Beacon Phase 2 is implemented in Browser 1552: three recorded beacon destructions trigger ballistic-blocking kinetic fields on later beacon deployments, and reinforcement arrivals preserve the original beacon or crashed-UFO landmark.
 - Adaptive Alien Field Beacon Phase 3 combined shielding is implemented in Browser 1204, and Browser 0315 now adds the research-gated intact interface layer: soldiers can hack a confirmed beacon from inside its field after `Alien Beacon Interface Protocols`, recover a Pale Commander command badge, and use that badge for a faster local override. Future beacon work should build on this completed three-phase adaptation/interface foundation rather than duplicating it.
-- Add **AEGIS ranged standoff + cover-seeking combat doctrine**: unless deliberately entering melee, AI-controlled soldiers should generally keep at least 3–4 hexes from a visible alien when practical, remain inside effective weapon range, and choose cover-preserving firing positions instead of unnecessarily closing to point-blank distance. See the dedicated roadmap addition below.
+- **Implemented in Browser 1715 — AEGIS ranged standoff + cover-seeking combat doctrine:** unless deliberately entering melee or obeying a higher-authority objective/order, AI-controlled ranged soldiers now strongly prefer roughly 3–4+ hex separation from visible aliens, practical weapon range, preserved LOS, and threat-facing cover rather than unnecessarily closing to point-blank distance. See the dedicated section below for current implementation and future tuning.
 - Add **multi-floor / multi-level tactical structures and multi-deck alien craft** after the single-level cutaway maps remain readable and performant. This includes upper floors, stairs/ladders/ramps/lifts where appropriate, roof access, floor-aware LOS and ballistics, vertical AI pathfinding, camera/floor cutaways, structural destruction across levels, and fire/smoke propagation between connected spaces. See the dedicated roadmap addition below.
 
 Completed in browser 0945:
@@ -7736,7 +7780,7 @@ Power-loss/destructible-light foundation completed in Browser 2215. Possible fol
 
 
 ### Future Roadmap Addition — AEGIS Ranged Standoff and Cover-Seeking Combat Doctrine
-Status: **Roadmapped / future tactical-AI refinement**
+Status: **Implemented in Browser 1715; future tuning remains for weapon-specific bands, future melee weapons, and multi-level combat.**
 
 #### Design goal
 
