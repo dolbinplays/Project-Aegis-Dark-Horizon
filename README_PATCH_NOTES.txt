@@ -1,6 +1,176 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.20.1015_TACTICAL_TUTORIAL_SELF_TEST_SCOPE_STARTUP_HOTFIX_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Hotfixes the Browser 0945 startup failure `ReferenceError: tacticalAiFrameNewContactShot is not defined`. The new tactical tutorial/path/visibility regression test was global, while `tacticalAiFrameNewContactShot(...)` is intentionally local to the `TacticalMission` component. The test crossed that lexical-scope boundary during `runSelfTests()` and prevented application startup before any tactical gameplay ran.
+
+SELF-TEST SCOPE FIX
+-------------------
+- Keeps the actual first-contact playback helper local to `TacticalMission`; gameplay behavior is unchanged.
+- The global Browser 0945 contract now computes the synthetic new-contact fixture with equivalent local test logic rather than directly calling the component-local helper.
+- Source coverage still requires `TacticalMission` to contain the real `tacticalAiFrameNewContactShot` helper and `contactRevealLead` playback wiring.
+- The Browser 0945 vehicle-footprint final movement validation, lighting-aware pre-shot LOS revalidation, reveal-before-shot timing, and Battle Tutorial are unchanged.
+- Browser 2155 AI recovery and Browser 2325 beacon must-progress recovery remain unchanged.
+- Save format remains 4.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- The launch-time contract no longer contains an out-of-scope direct call to `tacticalAiFrameNewContactShot(currentFrame,previousFrame)`.
+- The fixture still verifies a previously hidden alien becomes a legitimate first-contact shot candidate when the current frame reveals it.
+- Source inspection confirms the real tactical helper remains in `TacticalMission`.
+- All 6 non-empty embedded JavaScript blocks pass `node --check`.
+
+MANUAL TEST GATES
+-----------------
+1. Launch the local `index.html` and confirm the start screen appears without the reported ReferenceError.
+2. Open Build Health and confirm the Browser 0945 contract passes.
+3. Re-test a first AI shot at a newly illuminated/revealed alien and confirm reveal precedes projectile playback.
+4. Re-test land-vehicle path blocking and lighting-aware AI target validation.
+
+PREVIOUS BUILD - 0945
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
+Build: v0.26.08.20.0945_TACTICAL_INCIDENT_TUTORIAL_VEHICLE_PATH_AND_VISIBILITY_AUTHORITY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Adds an independent spoiler-free tutorial overlay for the incident battle screen and fixes two live tactical correctness issues found during testing. Simulation movement now performs a final hard-cover/vehicle-footprint validation before any human or alien coordinate commit, so a stale or malformed planner route cannot carry a unit through a land vehicle. Human Simulation AI also revalidates lighting-aware line of sight immediately before firing and synchronizes first-contact reveal with playback so soldiers cannot shoot legitimately unseen contacts or appear to fire before a newly visible alien has rendered.
+
+TACTICAL INCIDENT BATTLE TUTORIAL
+---------------------------------
+- Adds a separate tactical tutorial preference record; strategic tutorial completion/skip does not suppress battle guidance.
+- First tactical incident auto-opens a non-blocking Battle Tutorial card unless that tactical tutorial was skipped or completed previously.
+- Hide preserves the current step.
+- Skip Tutorial suppresses automatic reopening.
+- A Battle Tutorial button remains in the tactical command bar so guidance can be reopened/restarted deliberately.
+- Eight lessons cover:
+  1. soldier selection, legal movement and TU;
+  2. 2D Hex vs 3D Iso, zoom/Fit Map and Iso drag-pan;
+  3. FPV/TPV Simulation-AI observer cameras;
+  4. Battle Speed;
+  5. Command Map orders plus Pause Action / Resume Action;
+  6. Hybrid AI vs Simulation AI and Take Back Control;
+  7. inventory, stance, shot feedback and night-light tools;
+  8. mission objectives, extraction, timeline, Menu / Save and Dust Off.
+- The tactical guide follows the Browser 0845 spoiler rule and does not name/foreshadow unrevealed late-campaign systems.
+
+LAND-VEHICLE / HARD-COVER MOVEMENT AUTHORITY
+---------------------------------------------
+- Existing path planners already expand multi-hex vehicle footprints, but the final Simulation resolver coordinate mutation could still trust a bad/stale plan path.
+- New `tacticalAuthoritativeMovementPlan(...)` rechecks every route step and destination immediately before movement is committed.
+- The guard consumes the same authoritative hard-cover footprint index used by movement, LOS and vehicle collision.
+- An illegal path is rerouted with the shared hazard-aware pathfinder.
+- If the legal detour exceeds the current movement allowance, only the legal prefix is used.
+- If no legal path exists, the unit holds instead of moving through a vehicle/hard-cover cell.
+- The guard covers ordinary AEGIS Simulation movement, emergency grid-search recovery, beacon-watchdog movement, and alien Simulation movement.
+- Manual pathing continues using its existing footprint-aware reachable/path authority.
+- Vehicle dimensions, HP, destruction and cover values are unchanged.
+
+LIGHTING-AWARE AI TARGET VALIDATION
+-----------------------------------
+- Human AI actual visible contacts now use the same `hasLineOfSight(...)` authority as the tactical battlefield, including daylight/twilight/night vision range, local artificial light, Weapon Lights, Field Flares, smoke, facing cone and physical LOS.
+- Immediately before a normal AI shot spends TU or ammunition, the target is revalidated against current lighting-aware LOS.
+- If the contact is no longer currently visible, the shot is cancelled and the acting soldier records contact lost.
+- Legitimately visible alien contacts are marked revealed and receive current last-known coordinates before frame capture.
+- Tactical frame snapshots derive reveal state from current legitimate human visibility as an additional synchronization guard.
+- Newly acquired human-shot contacts receive a short reveal lead during Tactical Map playback so Iso/FPV/TPV renders the alien before the projectile is animated.
+- Reaction fire already uses lighting-aware LOS and remains unchanged.
+
+PRESERVED BEHAVIOR
+------------------
+- Browser 2155 grid-search/exception recovery remains intact.
+- Browser 2325 beacon must-progress recovery remains intact.
+- Night vision ranges and darkness accuracy penalties are unchanged.
+- Fog of war is unchanged; remembered/hidden contacts are not made targetable.
+- TU costs, ammunition, hit/damage RNG, vehicle destruction, AI authority and save format are unchanged.
+- Browser 0845 strategic onboarding remains independently spoiler-free.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added a combined Browser 0945 contract with:
+  - a deliberately illegal path through a multi-hex vehicle footprint;
+  - a full-night target beyond unaided AEGIS vision;
+  - the same contact becoming legitimate under a Field Flare;
+  - contact reveal-before-first-shot playback detection;
+  - source coverage for human, emergency, beacon-watchdog and alien movement commit guards;
+  - tactical tutorial presence and spoiler rejection.
+- All 6 non-empty embedded JavaScript blocks pass `node --check`.
+- Live Three.js/lighting/AI playback remains the desktop manual gate.
+- Save format remains 4.
+
+MANUAL TEST GATES
+-----------------
+1. Clear tactical tutorial local state and enter an incident battle. Confirm the Battle Tutorial appears independently of strategic tutorial state.
+2. Test Hide, Skip, completion, and reopening through Battle Tutorial.
+3. Confirm tutorial guidance accurately covers views, Battle Speed, Command Map, Hybrid/Simulation AI and battle controls without campaign spoilers.
+4. In a map with cars/vans/trucks/buses, watch both friendly and alien AI path around every live vehicle footprint.
+5. Destroy a vehicle and confirm the footprint can reopen under the normal destruction rules.
+6. At night, keep an alien beyond unaided human vision and confirm AEGIS AI does not shoot it.
+7. Illuminate the contact with a Field Flare/local light or Weapon Light and confirm it becomes targetable.
+8. Observe the first shot at a newly acquired contact and confirm the alien is visibly rendered before the projectile fires.
+9. Remove LOS/light before firing and confirm the shot is cancelled rather than spending TU/ammunition.
+10. Re-run AI grid-search and beacon-only cleanup scenarios to confirm Browsers 2155/2325 remain stable.
+
+PREVIOUS BUILD - 0845
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
+Build: v0.26.08.20.0845_TUTORIAL_SPOILER_FREE_ONBOARDING_HOTFIX_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Removes alien-base and hidden-command-site references from the new-player tutorial so those campaign discoveries remain genuine surprises revealed only through gameplay. Browser 0045's tutorial mechanics are preserved; only onboarding content and its regression contract are changed.
+
+SPOILER-FREE TUTORIAL
+---------------------
+- The former Alien Base Discovery lesson is removed.
+- The eighth lesson is now Continue the Campaign / Campaign Readiness.
+- The final lesson tells players that future threats, opportunities, technologies, and strategic information will emerge naturally through missions, research, reports, contacts, and the Mainframe without naming or foreshadowing specific late-campaign discoveries.
+- Tutorial titles, body text, bullets, and regression coverage must not contain `alien base` or `alien command site`.
+- This restriction is tutorial-only; alien-base gameplay, progression, Mainframe logic, strategic rendering, and campaign documentation remain unchanged.
+
+PRESERVED BEHAVIOR
+------------------
+- Eight-step, non-blocking tutorial structure remains intact.
+- First Base Setup, Command Overview, Squad Assignment, First Mission Response, Research, Workshop, and Save / Export are unchanged.
+- Hide, Skip Tutorial, Base Setup Tutorial, and What should I do next? remain available.
+- Tutorial state remains browser-local and save format remains 4.
+- Browser 2325 beacon must-progress recovery and Browser 2155 mission-AI recovery remain unchanged.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Updated the tutorial contract to require the final `campaign-readiness` step.
+- The contract explicitly rejects `alien base` and `alien command site` strings inside the tutorial-step payload.
+- All non-empty embedded JavaScript blocks must pass node --check.
+
+MANUAL TEST GATES
+-----------------
+1. Start a fresh campaign and progress through all eight tutorial cards.
+2. Confirm no tutorial card mentions, names, or foreshadows alien bases or hidden command sites.
+3. Confirm the final lesson is Continue the Campaign / Campaign Readiness and returns to the Geoscape.
+4. Confirm Hide, Skip Tutorial, Base Setup Tutorial, and What should I do next? still work normally.
+5. Confirm later campaign discoveries remain available through their normal gameplay progression.
+
+PREVIOUS BUILD - 0045
+=====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.20.0045_NEW_PLAYER_TUTORIAL_OVERLAY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

@@ -2,12 +2,121 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-20
-Current handoff build: `v0.26.08.20.0045_NEW_PLAYER_TUTORIAL_OVERLAY_PATCH`
+Current handoff build: `v0.26.08.20.1015_TACTICAL_TUTORIAL_SELF_TEST_SCOPE_STARTUP_HOTFIX_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0045 implements the first release-prep onboarding slice as a lightweight, optional, skippable new-player tutorial overlay. Fresh players are guided through first-base placement, command/Geoscape orientation, squad assignment, the first mission response, Research, Workshop, save/export safety, and a non-spoilery explanation of how alien-base discovery emerges from campaign evidence. The tutorial is a non-blocking coaching card so the underlying controls remain usable, it persists its progress in local browser tutorial settings rather than changing campaign save format, it can be hidden or skipped at any time, and a persistent `What should I do next?` control reopens guidance later. Browser 2325 beacon must-progress recovery, Browser 2155 AI grid-search recovery, Browser 2255 timeline archiving, and Browser 2305 shot-feedback accessibility remain intact. Save format remains 4.**
+Current patch status: **Browser 1015 is a startup-scope hotfix for Browser 0945. Live launch testing exposed that the new Build Health contract was declared outside the `TacticalMission` lexical scope but directly called the component-local `tacticalAiFrameNewContactShot(...)` helper, causing `ReferenceError: tacticalAiFrameNewContactShot is not defined` before the start screen could finish mounting. The gameplay helper and first-contact reveal behavior remain unchanged. The contract now evaluates the same synthetic previous/current-frame fixture locally and separately verifies that `TacticalMission` contains the real helper and `contactRevealLead` playback wiring, avoiding an out-of-scope call during `runSelfTests()`. Browser 0945 tactical tutorial, vehicle-footprint final movement authority, lighting-aware pre-shot validation, Browser 2325 beacon recovery, and Browser 2155 AI recovery remain intact. Save format remains 4.**
 
 
 Implementation update (2026-08-19): **Browser 2325 targets the live reproduction where the last VIP had just been rescued, no living aliens remained, and a confirmed Alien Field Beacon was the sole remaining objective, yet Simulation AI rapidly advanced rounds without useful movement or fire. Browser 1315 already had a dedicated beacon assaulter, but it did not guarantee round-level progress. The new must-progress watchdog treats beacon-only neutralization as a mandatory action phase: nearby non-assault troops clear the shield/approach, close-assault routing ignores temporary same-side traffic along the path, and after the normal AEGIS pass the resolver compares beacon HP plus assaulter distance/inside-shield state. If nothing improved, the assaulter receives a zero-reserve same-round retry and immediately attacks when a legal shot becomes available. A truly no-breach squad now halts streamed continuation instead of manufacturing endless empty rounds.**
+
+
+## Browser 1015 — Tactical Tutorial Self-Test Scope Startup Hotfix
+
+**Status:** Implemented startup hotfix; primary manual gate is launching the local `index.html` and reaching the start screen / campaign UI without a Build Health exception.
+
+### Root cause
+- Browser 0945 added `tacticalAiFrameNewContactShot(frame, previousFrame)` inside the `TacticalMission` component because it consumes tactical playback frames and is only needed by that component.
+- The Browser 0945 Build Health contract was declared outside `TacticalMission` but directly called that local helper while `runSelfTests()` executed during application startup.
+- JavaScript lexical scope therefore could not resolve the identifier and launch failed with `ReferenceError: tacticalAiFrameNewContactShot is not defined`.
+- The failure was in the regression test, not in the lighting-aware target validation, contact reveal synchronization, or shot playback implementation itself.
+
+### Fix
+- Keeps the real `tacticalAiFrameNewContactShot(...)` helper in `TacticalMission`; no gameplay scope or playback behavior is changed.
+- The global Build Health contract now evaluates its synthetic previous/current-frame new-contact fixture with equivalent local logic instead of crossing the component scope boundary.
+- The contract separately inspects `String(TacticalMission)` and requires the real `function tacticalAiFrameNewContactShot` plus `contactRevealLead` playback wiring to remain present.
+- Vehicle route authority, night-lighting visibility rules, first-contact reveal timing, tactical tutorial content, and all AI recovery behavior remain unchanged from Browser 0945.
+
+### Regression coverage / manual gates
+1. Launch from `file://` and confirm the game reaches the start screen without `tacticalAiFrameNewContactShot is not defined`.
+2. Open Build Health and confirm the Browser 0945 tactical tutorial/path/visibility contract still passes.
+3. Enter a night/twilight tactical mission and verify a newly acquired legitimate contact is visibly revealed before the first AI shot animation.
+4. Confirm an unlit/out-of-range alien is not targeted and that vehicle footprints remain movement blockers.
+5. All six non-empty embedded JavaScript blocks must pass `node --check`.
+
+
+
+## Browser 0945 — Tactical Incident Tutorial + Vehicle Path / Visibility Authority
+
+**Status:** Implemented combined tactical onboarding/correctness patch; primary manual gates are a first incident battle, dense urban vehicle pathing under Hybrid/Simulation AI, and a twilight/night contact acquisition immediately before an AI shot.
+
+### Independent tactical battle tutorial
+- Adds a separate browser-local **Battle Tutorial** state instead of reusing the strategic new-player tutorial completion/skip record.
+- A player who skipped or completed strategic onboarding can therefore still receive tactical guidance on their first incident battle.
+- The tutorial is a non-blocking coaching card; the battle remains visible and usable underneath it.
+- **Hide** closes the card without changing progress. **Skip Tutorial** suppresses automatic reopening. Completing it marks only the battle tutorial complete.
+- A persistent **Battle Tutorial** button in the tactical command bar reopens/restarts the guide later.
+- The eight tactical lessons cover:
+  1. soldier selection, legal movement, and Time Units;
+  2. 2D Hex vs 3D Iso, zoom levels, Fit Map, and Iso drag-pan;
+  3. First Person / Third Person Simulation-AI observer cameras;
+  4. Battle Speed and the fact that it changes presentation rather than tactical math;
+  5. Command Map fire-team orders plus Pause Action / Resume Action;
+  6. Hybrid AI vs full Simulation AI and Take Back Control;
+  7. inventory, stance, firing/shot feedback, and night Weapon Light / Field Flare concepts;
+  8. mission objectives, extraction, tactical timeline, Menu / Save, and deliberate Dust Off.
+- The battle tutorial follows Browser 0845 spoiler doctrine: it does not name or foreshadow unrevealed late-campaign systems.
+
+### Final authoritative land-vehicle / hard-cover movement gate
+- Existing planners and blocker indexes already expand multi-hex road vehicles, but live testing showed a remaining seam: the Simulation resolver could trust a malformed/stale `plan.path` at the final coordinate mutation.
+- Adds `tacticalAuthoritativeMovementPlan(...)` as the final movement-commit guard.
+- Every planned route step and destination is rechecked against the current shared hard-cover footprint and occupied-cell index immediately before coordinates/TU are committed.
+- A route that crosses a living car/van/truck/bus footprint is rebuilt with the shared hazard-aware pathfinder.
+- If the legal detour is longer than the current movement allowance, the actor advances only along the safe prefix. If no legal route exists, the actor holds rather than teleporting/walking through cover.
+- The final guard is used by ordinary human Simulation-AI movement, Browser 2155 emergency grid-search recovery, Browser 2325 beacon-watchdog recovery movement, and alien Simulation-AI movement.
+- Manual movement continues using the existing authoritative reachable/path blockers; this patch closes the final resolver-commit seam rather than changing vehicle dimensions/HP.
+
+### Lighting-aware target authority + reveal-before-shot sequencing
+- Human AI visible-target acquisition now runs through the same `hasLineOfSight(...)` authority that includes mission light phase, artificial illumination, Weapon Lights, Field Flares, smoke, facing cone, and hard-cover LOS.
+- Immediately before a normal AEGIS AI shot spends TU/ammunition, the selected alien is revalidated against **current** lighting-aware LOS. If the target is no longer legitimately visible, the shot is cancelled and the unit records contact lost instead of firing at stale information.
+- Actual personally visible alien contacts are marked `revealed` and receive current `lastKnownX/Y` before the tactical frame is captured.
+- Frame snapshots also derive alien reveal state from current legitimate human visibility, preventing a valid newly acquired target from remaining presentation-hidden in the shot frame.
+- When a human AI shot is the first frame in which that alien becomes visible/revealed, Tactical Map playback inserts a short contact-reveal lead before the shot effect. This lets Iso/FPV/TPV show the target before the projectile animation reaches it.
+- Reaction fire already uses lighting-aware `hasLineOfSight` and retains that authority.
+
+### Gameplay authority preserved
+- Vehicle size, HP, cover values, destructibility, TU cost per movement hex, path hazard scoring, and occupancy rules are unchanged.
+- Night/twilight vision ranges and darkness accuracy penalties are unchanged.
+- No hidden alien is revealed merely because Simulation AI knows a remembered contact position.
+- FPV/TPV, Hybrid AI, Simulation AI, Command Map orders, Browser 2155 grid-search recovery, and Browser 2325 beacon recovery all remain on one battlefield state.
+- Save format remains **4**.
+
+### Build Health / manual gates
+1. Clear the tactical-tutorial browser-local record, enter an incident mission, and confirm the independent Battle Tutorial appears even if strategic onboarding has been skipped/completed.
+2. Walk through all eight cards, Hide/reopen, Skip, and complete/restart using the Battle Tutorial command-bar button.
+3. Confirm no tactical tutorial card contains alien-base/hidden-command-site spoilers.
+4. In an urban battle, deliberately exercise Hybrid/Simulation AI around cars, vans, trucks, and buses; no human or alien may cross any live vehicle footprint cell.
+5. Destroy a vehicle and confirm its normal destruction authority can reopen that footprint as before.
+6. At full night, place an alien beyond unaided human vision and confirm AI does not fire at it.
+7. Illuminate that same contact with a Field Flare / local light or Weapon Light and confirm it becomes a legitimate target.
+8. Watch a newly acquired lit contact in Tactical Map playback and confirm the alien renders/reveals before the first AI projectile is animated.
+9. If illumination/LOS is lost before the shot, confirm the AI cancels the shot rather than spending ammunition/TU against an unseen target.
+10. Confirm all six non-empty embedded JavaScript blocks pass `node --check`; save format remains 4.
+
+
+## Browser 0845 — Tutorial Spoiler-Free Onboarding Hotfix
+
+**Status:** Implemented tutorial-content hotfix; manual gate is a fresh tutorial run confirming no onboarding text mentions or foreshadows alien bases or hidden command sites.
+
+### Spoiler-free onboarding doctrine
+- New-player onboarding must teach only systems the player needs to operate Project Aegis in the opening campaign.
+- The tutorial must **not** mention alien bases, hidden command sites, their existence, their discovery requirements, or the fact that they may later appear. Those are campaign surprises and should be learned only when gameplay legitimately reveals them.
+- The prior eighth lesson, **Alien Base Discovery**, is replaced by **Continue the Campaign / Campaign Readiness**.
+- The final lesson tells the player that later threats, opportunities, technologies, and strategic information will emerge naturally through missions, research, reports, contacts, and the Mainframe, then ends onboarding without previewing specific late-campaign content.
+- This spoiler rule applies to tutorial titles, body copy, bullet points, helper labels, and Build Health/source contracts. It does not remove alien-base mechanics or documentation from the game itself.
+
+### Preserved tutorial behavior
+- The tutorial remains eight steps, non-blocking, optional, hideable, skippable, and reopenable through **What should I do next?**.
+- First Base Setup, Command Overview, Squad Assignment, First Mission Response, Research, Workshop, and Save / Export are unchanged.
+- The final tutorial step still returns the player to the Geoscape, but now simply hands them back to the campaign.
+- Save format remains **4**; tutorial preference storage remains browser-local.
+
+### Build Health / manual gates
+1. Clear tutorial local state and run all eight onboarding steps. Confirm no tutorial card contains `alien base`, `alien command site`, or equivalent direct foreshadowing.
+2. Confirm the final step is **Continue the Campaign** / campaign readiness guidance rather than late-campaign discovery explanation.
+3. Confirm the final step returns to the Geoscape and completes normally.
+4. Confirm Hide, Skip Tutorial, Base Setup Tutorial, and **What should I do next?** still behave as Browser 0045 intended.
+5. Continue a campaign far enough for late strategic discoveries to occur and confirm those systems still reveal themselves through their authoritative gameplay progression, untouched by this tutorial-only hotfix.
+6. Confirm all six non-empty embedded JavaScript blocks pass `node --check`; save format remains 4.
 
 
 ## Browser 0045 — New Player Tutorial Overlay
@@ -31,12 +140,12 @@ Implementation update (2026-08-19): **Browser 2325 targets the live reproduction
 5. **Research** — explain Laboratory scientist assignment, strategic-time progress, and how new alien-response capabilities unlock.
 6. **Workshop** — explain production as the bridge between unlocked designs and physical equipment, including facility/engineer/fund/time requirements.
 7. **Save / Export** — open the existing shared Menu / Save screen, explain manual saves/autosaves, and explicitly recommend **Download Current Backup** as the safest portable campaign copy.
-8. **Alien Base Discovery** — explain without exact threshold spoilers that hidden alien command sites emerge from accumulated field operations, tracked craft/contact evidence, command-signal research, Mainframe discoveries, and reports rather than simply appearing through passive scanning.
+8. **Continue the Campaign** — end onboarding with a spoiler-free handoff explaining that future threats, opportunities, technologies, and strategic information should be learned naturally through missions, research, reports, contacts, and the Mainframe. Do not preview specific late-campaign discoveries.
 
 ### Navigation / behavior
 - Moving **Next** between guide steps automatically opens the relevant command section so the player sees the feature being discussed.
 - The base-placement briefing is special: acknowledging it closes the coaching card so the player can freely choose the actual site; after **Confirm Site - Begin Campaign**, the guide resumes at Command Overview.
-- The Save / Export step follows the player into the existing Menu / Save screen; advancing from there returns to the Geoscape for the final discovery explanation.
+- The Save / Export step follows the player into the existing Menu / Save screen; advancing from there returns to the Geoscape for the spoiler-free campaign-readiness handoff.
 - The tutorial does not alter Geoscape time, funds, research progress, mission availability, squad membership, aircraft readiness, or tactical outcomes.
 - Existing Instructions remain available as the broader reference manual; the tutorial is deliberately shorter and action-oriented.
 
@@ -44,7 +153,7 @@ Implementation update (2026-08-19): **Browser 2325 targets the live reproduction
 1. Clear/refresh tutorial local state, click **Start New Game**, and confirm the First Base Setup coaching card appears without blocking globe/base controls.
 2. Click **Hide**, then the Base Setup **Tutorial** button, and confirm the same step reopens.
 3. Acknowledge the base briefing, choose/confirm a site, and confirm tutorial guidance resumes at Command Overview after campaign creation.
-4. Advance through Squads, Missions, Research, Workshop, Save / Export, and Alien Base Discovery; confirm each step opens the intended command screen.
+4. Advance through Squads, Missions, Research, Workshop, Save / Export, and Continue the Campaign; confirm each step opens the intended command screen and contains no late-campaign spoilers.
 5. On Save / Export, confirm the coaching card remains visible over the shared Save / Load screen and **Download Current Backup** remains usable.
 6. Click **Skip Tutorial**, continue play, and confirm the overlay does not force itself back open.
 7. Use **What should I do next?** from both expanded and minimized normal headers and confirm guidance reopens at the saved step.
@@ -8791,7 +8900,7 @@ Recommended design: Stage 4 should focus on making the campaign finishable while
 Status: **Started — Browser 0045 implements the first-run tutorial/onboarding foundation; broader release prep remains pending**
 
 Implemented foundation:
-- Lightweight optional/skippable new-player tutorial overlay covering first base setup, command orientation, squad assignment, mission launch, Research, Workshop, save/export, and non-spoilery alien-base discovery guidance.
+- Lightweight optional/skippable new-player tutorial overlay covering first base setup, command orientation, squad assignment, mission launch, Research, Workshop, save/export, and a spoiler-free campaign-readiness handoff. Tutorial doctrine explicitly forbids mentioning or foreshadowing alien bases/hidden command sites before gameplay reveals them.
 - Persistent **What should I do next?** reopening control plus Base Setup tutorial restart.
 
 Still planned:
