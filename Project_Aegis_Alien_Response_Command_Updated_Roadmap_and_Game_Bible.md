@@ -2,13 +2,81 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-20
-Current handoff build: `v0.26.08.20.1015_TACTICAL_TUTORIAL_SELF_TEST_SCOPE_STARTUP_HOTFIX_PATCH`
+Current handoff build: `v0.26.08.20.1045_GLOBAL_CLICKABLE_HOVER_HELP_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1015 is a startup-scope hotfix for Browser 0945. Live launch testing exposed that the new Build Health contract was declared outside the `TacticalMission` lexical scope but directly called the component-local `tacticalAiFrameNewContactShot(...)` helper, causing `ReferenceError: tacticalAiFrameNewContactShot is not defined` before the start screen could finish mounting. The gameplay helper and first-contact reveal behavior remain unchanged. The contract now evaluates the same synthetic previous/current-frame fixture locally and separately verifies that `TacticalMission` contains the real helper and `contactRevealLead` playback wiring, avoiding an out-of-scope call during `runSelfTests()`. Browser 0945 tactical tutorial, vehicle-footprint final movement authority, lighting-aware pre-shot validation, Browser 2325 beacon recovery, and Browser 2155 AI recovery remain intact. Save format remains 4.**
+Current patch status: **Browser 1045 adds a global contextual hover/focus help layer for interactive controls across the game. Buttons, links, form controls, map/battlefield interactions, cursor-based clickable markers, and tutorial drag handles automatically expose a short explanation of what activation will do. Existing authored help/title text remains authoritative when it is more descriptive, while important controls such as Auto/Performance/Quality rendering, tactical views, Battle Speed, Command Map, AI handoff, End Turn, medical/reload/stance actions, Save/Load, destructive actions, and command-section navigation receive explicit contextual descriptions. Unknown/new controls still receive a safe generated fallback, so future clickable UI inherits basic hover help without requiring one-off wiring. Keyboard focus exposes the same help for accessibility. Browser 1035 draggable tutorial windows, Browser 1015 startup-scope correction, Browser 0945 vehicle/visibility authority, Browser 2325 beacon recovery, and Browser 2155 AI recovery remain unchanged. Save format remains 4.**
 
 
 Implementation update (2026-08-19): **Browser 2325 targets the live reproduction where the last VIP had just been rescued, no living aliens remained, and a confirmed Alien Field Beacon was the sole remaining objective, yet Simulation AI rapidly advanced rounds without useful movement or fire. Browser 1315 already had a dedicated beacon assaulter, but it did not guarantee round-level progress. The new must-progress watchdog treats beacon-only neutralization as a mandatory action phase: nearby non-assault troops clear the shield/approach, close-assault routing ignores temporary same-side traffic along the path, and after the normal AEGIS pass the resolver compares beacon HP plus assaulter distance/inside-shield state. If nothing improved, the assaulter receives a zero-reserve same-round retry and immediately attacks when a legal shot becomes available. A truly no-breach squad now halts streamed continuation instead of manufacturing endless empty rounds.**
 
+
+## Browser 1045 — Global Clickable Hover Help
+
+**Status:** Implemented UI discoverability/accessibility slice; primary manual gate is hovering and keyboard-focusing controls across strategic and tactical screens and confirming each interactive item explains the effect of activating it.
+
+### Global contextual help authority
+- Adds one delegated hover/focus help layer instead of requiring every screen to hand-build its own tooltip component.
+- Semantic buttons, links, inputs, selects, text fields, menu/tab/switch roles, keyboard-focusable controls, interactive canvases/maps, cursor-pointer markers, and tutorial drag handles are covered.
+- Because event handling is delegated at the document level, controls created later by React or future patches inherit the system automatically.
+- Existing authored `title`, `aria-description`, or `data-aegis-help` copy remains usable as the explanation when it is more informative than the generated fallback. Native `title` text is captured into the AEGIS tooltip path to avoid duplicate browser/tooltips on the same control.
+
+### Important hand-authored explanations
+- **Auto / Performance / Quality** explain the actual tactical Three.js tradeoffs instead of merely naming the selected mode.
+- Tactical camera/view controls explain that 2D/3D/FPV/TPV affect presentation rather than simulation authority.
+- **Battle Speed** +/- explains that it changes playback speed only.
+- **Command Map**, Hybrid AI, Simulation AI, End Turn, Weapon Light, Field Flare, Medkit/Medpac, Reload, Kneel/Stand, Dust Off, attack buttons, and tactical zoom choices describe the consequences relevant to their current system.
+- Strategic command-section buttons explain that they open another command panel without advancing campaign time.
+- Save/Load, backup/download/import, confirmation/cancel/back/next/finish, retry, removal, and destructive actions receive purpose-specific descriptions.
+- Disabled controls explicitly say they are unavailable right now before explaining what the control normally does.
+
+### Safe fallback + accessibility
+- Any interactive control without authored/specialized copy receives a fallback of the form **Click to activate “<label>”** rather than showing no guidance.
+- Keyboard focus invokes the same tooltip layer, so the help is not mouse-hover-only.
+- Tooltip placement follows the pointer when hovering, anchors beside the focused control for keyboard use, and clamps inside the browser viewport.
+- Touch input does not open hover popups merely from tapping; ordinary touch activation remains unchanged.
+- The layer is presentation-only and changes no campaign/tactical authority, click handlers, timing, save data, or tutorial position state. Save format remains **4**.
+
+### Build Health / manual gates
+1. Hover Auto, Performance, and Quality on both the start screen and battle screen; confirm each describes the actual rendering consequences.
+2. Hover strategic navigation, mission/squad/research/workshop controls, Save/Load actions, and confirmation/destructive controls; confirm each produces understandable outcome text.
+3. In battle, hover 2D/3D, zoom, Battle Speed, FPV/TPV, Command Map, AI/Hybrid handoff, End Turn, stance/reload/medical/fire controls, and interactive map areas.
+4. Hover a disabled action and confirm the help says it is currently unavailable while still explaining its purpose.
+5. Tab through keyboard-focusable controls and confirm the same contextual help appears without requiring a mouse.
+6. Reopen/move both tutorial windows and confirm their drag handles and buttons receive help without affecting Browser 1035 drag behavior.
+7. Confirm clicking controls still performs exactly the same action as before and the tooltip itself never intercepts pointer input.
+8. Confirm all six non-empty embedded JavaScript blocks pass `node --check`.
+
+
+## Browser 1035 — Draggable Tutorial Window Position Memory
+
+**Status:** Implemented; manual gate is dragging both the strategic and tactical tutorial panels to new locations, hiding/reopening them, and confirming each returns where the player left it.
+
+### Movable tutorial windows
+- The strategic **New Player Tutorial** and tactical **Battle Tutorial** now behave as movable utility windows rather than fixed overlays.
+- Both panels default to the **lower-left** corner when no prior position has been stored.
+- The tutorial title/header region is an explicit drag handle and displays **Drag to move**.
+- Buttons such as Hide, Back, Next, Finish, and Skip remain ordinary clickable controls and do not accidentally start a drag.
+- Pointer movement is clamped to the current viewport so the tutorial cannot be dragged completely off-screen and become difficult to recover.
+
+### Independent position memory
+- Strategic and tactical tutorials use separate browser-local position keys. Moving one does not change the other.
+- The chosen position is committed when the drag ends. Hiding and reopening the tutorial returns it to that position.
+- Tactical position memory survives leaving one incident and entering another because it is not stored only in the active mission state.
+- Position memory is presentation preference data only; campaign save format remains **4**.
+
+### Preserved tutorial behavior
+- Strategic onboarding steps, spoiler-free doctrine, skip/completion behavior, and **What should I do next?** reopening remain unchanged.
+- The Battle Tutorial remains independently skippable/reopenable and retains its existing views, speed, Command Map, AI handoff, movement/TU, night tools, objectives, timeline, and Menu/Save guidance.
+- Browser 1015 self-test scope safety and Browser 0945 vehicle/lighting-aware target authority are unchanged.
+
+### Build Health / manual gates
+1. Start a new campaign with no tutorial position preference and confirm the strategic tutorial opens at the lower-left.
+2. Drag it by the title bar to another part of the screen, Hide it, reopen **What should I do next?**, and confirm the position is remembered.
+3. Enter an incident and confirm the Battle Tutorial independently defaults lower-left the first time.
+4. Drag the battle guide elsewhere, Hide/reopen it, and confirm the tactical position is remembered without moving the strategic tutorial.
+5. Attempt to drag either panel beyond each screen edge and confirm enough of the panel remains onscreen to recover it.
+6. Confirm all tutorial buttons remain clickable and dragging does not alter campaign/tactical state.
+7. Reload the page and confirm saved tutorial positions are restored.
 
 ## Browser 1015 — Tactical Tutorial Self-Test Scope Startup Hotfix
 

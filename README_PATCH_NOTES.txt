@@ -1,6 +1,118 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.20.1045_GLOBAL_CLICKABLE_HOVER_HELP_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Extends the descriptive hover behavior used by the tactical Auto / Performance / Quality rendering choices to the rest of the game. A global delegated tooltip layer now gives every supported interactive control a concise explanation of what activation will do, while preserving richer authored help when it already exists. New controls automatically inherit a safe fallback instead of silently having no tooltip.
+
+GLOBAL CLICKABLE HOVER / FOCUS HELP
+-----------------------------------
+- Covers buttons, links, form controls, keyboard-focusable UI, tabs/switches/menu roles, interactive maps/canvases, cursor-pointer markers, and tutorial drag handles.
+- Delegated document-level handling means React controls created later automatically participate; individual screens do not need their own tooltip component.
+- Keyboard focus shows the same contextual explanation for non-mouse navigation.
+- Hover help follows the pointer and stays inside the viewport; the tooltip is pointer-transparent and cannot block clicks.
+- Touch taps do not open hover popups merely because a touch pointer entered a control.
+
+DETAILED HIGH-VALUE DESCRIPTIONS
+--------------------------------
+- Auto explains automatic hardware-based tactical 3D quality selection.
+- Performance explains its frame-rate/stability tradeoffs: 1x rendering, fewer lights, no dynamic shadows, simpler materials, and smaller overview budget.
+- Quality explains the higher-resolution/antialiasing/shadow/light/view-size tradeoff and potential performance cost.
+- 2D Hex / 3D Iso / First Person / Third Person explain presentation-only camera/view changes.
+- Battle Speed +/- explicitly states that only playback speed changes.
+- Command Map, Hybrid AI, Simulation AI, End Turn, Weapon Light, Field Flare, Medkit/Medpac, Reload, Kneel/Stand, Dust Off, attacks, and tactical zoom choices receive system-specific explanations.
+- Strategic command sections, Save/Load, portable backup/download/import, retry, confirmation, cancellation, navigation, removal, and destructive actions receive action-specific explanations.
+- Disabled controls begin with an Unavailable right now notice while still explaining their normal purpose.
+
+FALLBACK BEHAVIOR
+-----------------
+- Existing data-aegis-help / aria-description / sufficiently descriptive title text remains authoritative when present.
+- A control with no authored or known description still receives a generated Click to activate <label> explanation.
+- Interactive map/battlefield surfaces explain click/selection and drag/pan/rotation behavior generically where the exact object under the pointer determines the action.
+
+PRESERVED BEHAVIOR
+------------------
+- No click handler, campaign rule, tactical AI rule, TU cost, combat rule, rendering setting value, tutorial state, or save/load authority is changed.
+- Browser 1035 tutorial dragging/position memory remains intact.
+- Browser 1015 startup-scope safety, Browser 0945 vehicle/lighting-aware target authority, Browser 2325 beacon recovery, and Browser 2155 AI recovery remain intact.
+- Save format remains 4.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added a safe global contract covering semantic/control selector coverage, Auto/Performance/Quality descriptions, generic fallback generation, pointer hover, keyboard focus, and disabled-control messaging.
+- Focused helper validation confirms detailed quality-mode copy plus Battle Speed/navigation/fallback text.
+- All 6 non-empty embedded JavaScript blocks pass `node --check`.
+
+MANUAL TEST GATES
+-----------------
+1. Hover Auto / Performance / Quality on the start screen and during a 3D battle.
+2. Hover controls throughout Geoscape, Missions, Squads, Soldiers, Research, Workshop, Mainframe, Reports, Save/Load, and tutorial screens.
+3. During a battle, hover view/zoom/speed, FPV/TPV, Command Map, AI handoff, End Turn, movement/combat/medical/stance controls, and interactive map surfaces.
+4. Hover disabled controls and confirm the tooltip explains both the unavailable state and normal purpose.
+5. Tab through keyboard-focusable controls and confirm help appears on focus.
+6. Confirm tooltips never intercept clicks and existing actions behave unchanged.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
+Build: v0.26.08.20.1035_DRAGGABLE_TUTORIAL_WINDOW_POSITION_MEMORY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Makes both tutorial overlays draggable and remembers where the player places them. The strategic New Player Tutorial and tactical Battle Tutorial now default to the lower-left corner, can be dragged by their title bars when they obstruct something the player wants to inspect, remain clamped inside the viewport, and reopen at the last player-selected position.
+
+DRAGGABLE TUTORIAL WINDOWS
+--------------------------
+- Strategic and tactical tutorial panels both expose a title-bar **Drag to move** handle.
+- Buttons inside the header remain clickable and do not initiate drag operations.
+- Both tutorial types default to the lower-left when no saved position exists.
+- Dragging is viewport-clamped so the entire panel cannot be lost off-screen.
+
+POSITION MEMORY
+---------------
+- Strategic and tactical positions are stored independently in browser-local tutorial preference keys.
+- Hiding and reopening a tutorial restores its most recently placed position.
+- Tactical positioning persists across different incident missions and ordinary page reloads.
+- This is presentation preference data only; save format remains 4.
+
+PRESERVED BEHAVIOR
+------------------
+- Tutorial step/progress/skip/completion state is unchanged.
+- Strategic onboarding remains spoiler-free.
+- Battle Tutorial content remains unchanged.
+- Browser 1015 startup-scope hotfix, Browser 0945 vehicle-footprint/lighting-aware targeting fixes, Browser 2325 beacon recovery, and Browser 2155 AI recovery are unchanged.
+
+BUILD HEALTH / VALIDATION
+-------------------------
+- Added a Browser 1035 contract requiring separate position keys, lower-left default styling, normalized stored coordinates, drag handles in both tutorial components, and pointer-drag wiring.
+- All 6 non-empty embedded JavaScript blocks pass `node --check`.
+- Save format remains 4.
+
+MANUAL TEST GATES
+-----------------
+1. Open the strategic tutorial with no stored position and confirm it starts lower-left.
+2. Drag it by the title bar, Hide it, reopen it, and confirm the new location is retained.
+3. Enter an incident, drag the Battle Tutorial independently, hide/reopen it, and confirm its location is retained.
+4. Confirm moving the Battle Tutorial does not move the strategic tutorial.
+5. Drag against all four screen edges and confirm the panel remains recoverable onscreen.
+6. Confirm Hide / Skip / Back / Next / Finish controls still work normally.
+7. Reload the page and confirm both saved positions restore.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.20.1015_TACTICAL_TUTORIAL_SELF_TEST_SCOPE_STARTUP_HOTFIX_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
