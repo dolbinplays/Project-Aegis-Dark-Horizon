@@ -309,6 +309,10 @@ const required = [
   "UnderstrengthMissionConfirmModal.displayName",
   "WorkshopFundingConfirmModal.displayName",
   "FacilityBuildConfirmModal.displayName",
+  "ARCHITECTURAL_STABLE_MISSION_LAUNCH_CONFIRMATION_BOUNDARY_PATCH",
+  "stableMissionLaunchConfirmationBoundaryContractTest",
+  "MissionLaunchConfirmModal.displayName",
+  "data-aegis-mission-launch-confirmation",
   "TACTICAL_COMMAND_MAP_AUTONOMOUS_SEARCH_RESUME_HOTFIX",
   "tacticalReleaseCompletedCommandMapWaypoint",
   "tacticalCommandMapAutonomousSearchResumeContractTest",
@@ -674,6 +678,22 @@ for (const component of ["UnderstrengthMissionConfirmModal", "WorkshopFundingCon
     missing.push(`${component} must have exactly one stable declaration`);
   }
 }
+for (const component of ["MissionLaunchConfirmModal"]) {
+  const declaration = `const ${component}=React.memo(`;
+  const declarationIndex = html.indexOf(declaration);
+  if (declarationIndex < 0 || campaignComponentIndex < 0 || declarationIndex > campaignComponentIndex) {
+    missing.push(`${component} must remain a memoized module-scope boundary outside AlienResponseCommand`);
+  }
+  if (html.indexOf(declaration, declarationIndex + declaration.length) >= 0) {
+    missing.push(`${component} must have exactly one stable declaration`);
+  }
+}
+if (!html.includes('const missionLaunchConfirmation=confirmMissionLaunch?') || !html.includes('React.createElement(MissionLaunchConfirmModal,{...missionLaunchConfirmation,onCancel:cancelMissionLaunch,onProceed:proceedMissionLaunch})')) {
+  missing.push("mission launch confirmation must receive its controller-built view snapshot and action callbacks explicitly");
+}
+if (!html.includes('selectSkyrangerSortieForMission(mission,responseForce,aircraftFleet,bases') || !html.includes('missionLaunchLoadoutSummary(responseForce,previewInventory,normalizedEquipmentTransfers')) {
+  missing.push("mission sortie selection and local loadout assembly must remain controller-owned");
+}
 if (!html.includes('pointermove",event=>{if(!active||event.pointerType==="touch")return;lastPoint={x:event.clientX,y:event.clientY};if(tooltip.style.display!=="none")schedulePlace()')) {
   missing.push("global hover placement must remain animation-frame throttled");
 }
@@ -937,7 +957,7 @@ if (!nativeContent.soldiers?.every((soldier) => Number.isFinite(soldier.reaction
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "complete-classic-battlescape-command-set" && entry?.reason)) {
   missing.push("remaining classic battlescape command depth must be recorded as a temporary gameplay parity exception");
 }
-for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity", "stable-settings-component-boundaries", "stable-campaign-list-boundaries", "stable-transient-overlay-boundaries", "stable-campaign-confirmation-boundaries", "stable-operational-approval-boundaries", "command-map-autonomous-search-resume"]) {
+for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity", "stable-settings-component-boundaries", "stable-campaign-list-boundaries", "stable-transient-overlay-boundaries", "stable-campaign-confirmation-boundaries", "stable-operational-approval-boundaries", "stable-mission-launch-confirmation-boundary", "command-map-autonomous-search-resume"]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser optimization parity exception missing: ${system}`);
   }

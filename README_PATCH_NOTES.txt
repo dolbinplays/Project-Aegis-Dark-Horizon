@@ -1,6 +1,41 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.21.1130_STABLE_MISSION_LAUNCH_CONFIRMATION_BOUNDARY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Continues architectural consolidation by extracting the mission launch confirmation from the monolithic campaign component without moving launch authority.
+
+STABLE MISSION LAUNCH CONFIRMATION
+----------------------------------
+- MissionLaunchConfirmModal now has one module-scope React.memo identity with explicit confirmation, sortie, loadout, roster, squad-label, and action inputs.
+- AlienResponseCommand still assembles the authoritative response force, launch-base fallback, local base inventory, loadout warning, eligible Skyranger, and launch-block reason only while confirmation is open.
+- Cancel and Confirm Launch continue calling controller-owned actions. Transport assignment, deployment mode, spending, travel, active-mission state, and save data are unchanged.
+- Unrelated campaign updates can reconcile an open launch dialog without manufacturing a new component type or remounting its DOM and scroll state.
+- The unused local Skyranger-name preview value was removed from the assembly path.
+
+VALIDATION
+----------
+- Build Health renders the extracted boundary directly, verifies its displayed mission/sortie/loadout/roster data, and exercises both action callbacks.
+- Static validation requires exactly one memoized MissionLaunchConfirmModal declaration before AlienResponseCommand and preserves controller-owned sortie assembly.
+- Save format remains 4.
+
+MANUAL TEST GATES
+-----------------
+1. Open a mission launch confirmation and verify incident, region, threat, response count, launch base / transport, local loadout, and roster labels.
+2. Cancel and confirm that the launch chooser remains available with no mission started.
+3. Reopen the confirmation, choose Confirm Launch, and verify the selected deployment mode and Skyranger travel begin normally.
+4. Run deferred Build Health and verify the stable mission-launch confirmation contract passes.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.21.1000_COMMAND_MAP_SEARCH_RESUME_HOTFIX
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

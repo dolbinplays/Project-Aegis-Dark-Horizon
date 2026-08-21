@@ -2,12 +2,39 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-21
-Current handoff build: `v0.26.08.21.1000_COMMAND_MAP_SEARCH_RESUME_HOTFIX`
+Current handoff build: `v0.26.08.21.1130_STABLE_MISSION_LAUNCH_CONFIRMATION_BOUNDARY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1000 fixes the Command Map arrival deadlock that could leave Simulation AI burning empty rounds after a player-directed fire team reached its waypoint. Quiet completed player waypoints now release to autonomous search during the same AI round, active-contact holds and flanking remain intact, standard supporting-soldier formation follow continues, Hybrid round orders keep their separate ownership, and streamed no-progress recovery clears already-retained completed waypoints. Browser 0845 stable operational approvals and the earlier architectural, renderer, pathing, rescue, beacon, and AI recovery work remain active. Save format remains 4.**
+Current patch status: **Browser 1130 continues architectural consolidation by extracting the remaining Mission Launch confirmation into one stable memoized module-scope boundary. AlienResponseCommand still owns response-force selection, Skyranger eligibility, launch-base fallback, local inventory/loadout validation, travel, deployment mode, and every launch mutation; only the dialog rendering moved. Browser 1000 Command Map autonomous-search recovery, the two approved escort/reinforcement-source roadmap doctrines, and all earlier tactical and performance work remain active. Save format remains 4.**
 
 
 Implementation update (2026-08-19): **Browser 2325 targets the live reproduction where the last VIP had just been rescued, no living aliens remained, and a confirmed Alien Field Beacon was the sole remaining objective, yet Simulation AI rapidly advanced rounds without useful movement or fire. Browser 1315 already had a dedicated beacon assaulter, but it did not guarantee round-level progress. The new must-progress watchdog treats beacon-only neutralization as a mandatory action phase: nearby non-assault troops clear the shield/approach, close-assault routing ignores temporary same-side traffic along the path, and after the normal AEGIS pass the resolver compares beacon HP plus assaulter distance/inside-shield state. If nothing improved, the assaulter receives a zero-reserve same-round retry and immediately attacks when a legal shot becomes available. A truly no-breach squad now halts streamed continuation instead of manufacturing endless empty rounds.**
+
+
+## Browser 1130 — Stable Mission Launch Confirmation Boundary
+
+**Status:** Implemented the sixth bounded component-extraction slice from the architectural-consolidation roadmap.
+
+### Extracted module-scope boundary
+- `MissionLaunchConfirmModal` no longer belongs to the `AlienResponseCommand` closure.
+- The dialog has one stable module-scope `React.memo` identity, an explicit display name, and explicit confirmation, sortie, loadout, roster, squad-label, and action inputs.
+- The campaign controller prepares the view snapshot only while confirmation is open. It still selects the response force, evaluates every Skyranger sortie, resolves the launch-base fallback, reads local base inventory, summarizes loadout readiness, and derives any launch-block reason.
+
+### Preserved launch authority
+- `cancelMissionLaunch` and `proceedMissionLaunch` remain controller-owned callbacks.
+- Aircraft assignment, capacity validation, deployment mode, understrength approval, equipment transfers, travel, active-mission state, funding, tactical setup, and save data are unchanged.
+- The extraction removes only unstable nested component identity and one unused local Skyranger-name preview value; it does not duplicate launch rules in the dialog.
+
+### Runtime and correctness benefit
+- Unrelated strategic updates no longer create a new Mission Launch component type while the dialog is open.
+- The open dialog can reconcile its DOM, focus, and scroll position instead of remounting solely because the campaign parent rendered.
+- Build Health renders the stable boundary independently, verifies its explicit display inputs, exercises Cancel and Confirm Launch, and confirms sortie/loadout assembly remains inside the controller.
+
+### Validation gates
+1. Open Mission Launch and verify incident, region, threat, response count, sortie/base, loadout status, and roster assignment labels.
+2. Cancel and verify no mission or travel begins.
+3. Reopen and confirm launch; verify the selected mode and Skyranger flow behave exactly as before.
+4. Run deferred Build Health and confirm the stable mission-launch confirmation contract passes.
+5. Save format remains **4**.
 
 
 ## Browser 1000 — Command Map Autonomous Search Resume Hotfix
@@ -40,6 +67,84 @@ Implementation update (2026-08-19): **Browser 2325 targets the live reproduction
 4. Confirm a `hybrid-round:` support order is not mistaken for a completed player waypoint.
 5. Feed a retained quiet `holding` waypoint through streamed recovery and confirm its order fields clear as `waypoint-complete`.
 6. Save format remains **4**.
+
+
+## Roadmap Addition — Default Civilian Escort Support Doctrine
+
+**Status:** Approved design item; retain the existing per-contact assignment board while allowing the player to preselect its normal response for the current mission.
+
+### Mission-level player choice
+- Add a **Civilian Escort Support** control to the tactical battle controls and Command Map.
+- The control provides three explicit defaults:
+  - **Ask When Contact Is Spotted** — preserve the current escort-support decision prompt whenever a qualifying new alien-contact episode begins.
+  - **Stay With Escort** — supporting soldiers remain with their escort leader and protect the civilian/VIP column without opening the routine contact prompt.
+  - **Engage Spotted Aliens** — supporting soldiers may break from the escort formation and use normal combat/flanking AI against visible aliens without opening the routine contact prompt.
+- **Ask When Contact Is Spotted** should remain the initial default so existing campaigns and players retain the current behavior until they deliberately choose otherwise.
+- The selection is scoped to the active mission, stored in its tactical snapshot, and restored through save/load. A later global preference may initialize new missions, but must not silently replace an active mission's saved choice.
+
+### Escort and control-mode authority
+- The fire-team leader retains the civilian/VIP escort and continues toward extraction under every setting. The preference governs supporting soldiers only.
+- **Engage Spotted Aliens** applies only while a living alien is currently visible or engaged. When contact ends, detached supports automatically return to their original leader and resume the applicable escort formation.
+- The setting must preserve the control mode that invoked it: Hybrid AI replans only its bounded support handoff and returns fire-team-leader control; full Simulation AI continues its stream; manual control remains manual.
+- The existing multi-team assignment board remains available as an override. A player may temporarily give individual escort teams different orders even when a mission-wide default is selected.
+- Changing the default affects the next eligible decision/replan boundary. It must not erase movement already shown, duplicate an action, reset TU, or transfer the whole mission to another control mode.
+
+### Interface and feedback
+- Display the selected default near the Hybrid/Simulation AI controls and in the Command Map escort section.
+- Escort-support objective text should distinguish **default stay**, **default engage**, and a temporary per-team override so the player can understand why each support soldier is guarding, returning, flanking, or attacking.
+- When an automatic default is applied, add one concise tactical log/radio acknowledgement at the start of the contact episode rather than repeating it every round.
+
+### Acceptance gates
+1. Save and reload an active mission under all three settings and confirm the selected doctrine survives.
+2. Under **Stay With Escort**, spot an alien and confirm supports protect the column without a routine prompt or an unauthorized break-off.
+3. Under **Engage Spotted Aliens**, confirm supports break off, use normal formation/flanking/TU/targeting rules, and return after contact ends.
+4. Under **Ask When Contact Is Spotted**, confirm the existing mixed per-fire-team assignment board still opens once per contact episode.
+5. Exercise all three settings in manual, Hybrid, and full Simulation AI and confirm none changes the owning control mode.
+6. Confirm escort leaders, VIP/civilian pathing, extraction-zone traffic rules, lost-escort recovery, and fire-team formation movement remain unchanged.
+
+
+## Roadmap Addition — Reinforcement-Source Investigation and Clearance Doctrine
+
+**Status:** Approved design item; extends the existing confirmed-beacon knowledge doctrine to immediate field investigation, UFO-bay clearance, and explicit reinforcement-source verification.
+
+### Knowledge-gated tactical priority
+- Before AEGIS understands the relationship between alien devices/craft and reinforcement arrival, an unfamiliar beacon or UFO bay may be treated as an unknown object or ordinary terrain feature under the existing discovery rules.
+- Once AEGIS has confirmed that Alien Field Beacons or alien craft bays can deliver reinforcements, every newly spotted active beacon, landed UFO, or accessible crashed-UFO bay becomes an immediate investigation and neutralization concern.
+- “Immediate” means the AI assigns a suitable available fire team as soon as the source is observed instead of waiting until every visible alien is dead.
+- Only two tactical responsibilities may outrank a confirmed reinforcement-source investigation: **an active civilian/VIP escort already in progress** or **a living alien the soldiers currently know is present** through direct sight, current squad contact, or another authoritative live-contact report.
+- Routine patrols, fog searches, stale last-known-contact searches, ordinary Command Map waypoints under AI ownership, extraction guards without an active escort column, and other lower-priority tasks must yield or be safely requeued. A source cannot be forgotten when the escort resolves or the known living-alien contact ends.
+- Manual control remains manual: the interface should mark the source as urgent without forcibly moving a player-controlled soldier. This exception preserves player agency rather than changing the AI priority hierarchy.
+- Full Simulation AI must create and retain a reinforcement-source objective. Hybrid AI should identify the source and allow the player to direct a leader while supporting soldiers use the established formation, breach, clearance, and engagement logic. Manual control should receive the same objective/status information without forced movement.
+
+### UFO bay investigation and clearance
+- A spotted landed or crashed UFO with an accessible troop bay/interior must not be considered secure merely because no alien is visible outside it.
+- AEGIS should approach the craft, inspect its ramp/openings, enter or gain line of sight into every accessible troop bay or deployment compartment, and verify that no living or concealed reinforcement force remains aboard.
+- Multi-deck craft should require clearance of every reinforcement-capable bay/deck rather than a single exterior glance. A simplified wreck with no navigable interior should instead require verification of its ramp/deployment ring and relevant hull-adjacent concealment cells.
+- The clearance state should progress explicitly through **Unverified**, **Investigation Assigned**, **Clearing**, and **Bay Clear**. The tactical UI, AI continuation, save data, and debrief should expose that state.
+- A cleared bay may be reopened as a threat only by a real later event—such as newly detected occupants, an activated reserve compartment, or an incoming deployment—not by arbitrary round advancement.
+
+### Beacon neutralization verification
+- After reinforcement function is confirmed, a spotted beacon should receive a dedicated investigation/neutralization assignment even while other aliens remain active.
+- Beacon clearance requires more than momentarily losing sight of it. AEGIS must verify that the beacon is destroyed, disabled, captured under a secure shutdown state, or otherwise no longer capable of receiving reinforcements.
+- Verification must include the authoritative beacon state, shield state, pending reinforcement transit, and any already-arrived reinforcement units. Destroying or disabling the beacon cancels only valid pending transit; it never erases aliens that have already materialized.
+- A damaged but active beacon, a temporarily obstructed reinforcement ring, or a beacon hidden again by fog remains unresolved. The AI must retain or reassign the objective rather than silently returning to an ordinary patrol.
+
+### Mission-resolution authority
+- In missions requiring alien-force defeat, confirmed reinforcement-source knowledge makes every observed active beacon and every accessible, not-yet-cleared reinforcement-capable UFO bay part of the hostile-force completion gate.
+- Victory cannot be declared until living alien forces are defeated, required rescue/capture/hacking objectives are resolved, active confirmed beacons are neutralized, pending beacon transit is cancelled or resolved, and required UFO bays are verified clear.
+- If a bay is physically inaccessible or a beacon cannot be breached with the surviving force, the AI must stop empty-round streaming and report a specific blocked/impossible clearance state with player recovery or withdrawal options.
+- Debriefs should distinguish **UFO Bay Clear**, **Beacon Neutralized**, **Beacon Captured/Disabled**, **Reinforcement Transit Cancelled**, **Reinforcements Already Deployed**, and **Source Not Verified**.
+
+### Acceptance gates
+1. With reinforcement doctrine still unknown, spot a beacon/UFO bay and confirm the AI does not claim knowledge it has not earned.
+2. After campaign confirmation, spot an active beacon while aliens remain and confirm a capable team is assigned immediately and retains the objective across streamed rounds.
+3. Confirm only an active escort assignment or an authoritative known-living-alien contact may delay that assignment; routine searches, patrols, waypoints, and unrelated guard tasks may not.
+4. Clear the visible exterior of a landed/crashed UFO but leave its accessible bay unobserved; confirm the mission does not report the source secure.
+5. Sweep every required bay/deck and confirm **Bay Clear** persists through save/load and AI continuation.
+6. Damage or temporarily lose sight of a beacon without disabling it and confirm its neutralization objective remains unresolved.
+7. Destroy or securely disable the beacon and confirm pending transit is cancelled while already-arrived aliens remain valid targets.
+8. Reproduce an inaccessible bay or impossible beacon breach and confirm Simulation AI halts with a specific blocked state rather than advancing empty rounds.
+9. Verify manual, Hybrid, and full Simulation AI share the same clearance records, mission gate, and debrief outcome.
 
 
 ## Roadmap Addition — Expanded Mission Sites, Objectives, and High-Value VIP Briefings
@@ -8277,6 +8382,7 @@ Implemented or first-pass:
 - Shootdowns create crash incidents.
 - Some UFOs should eventually land or complete a mission profile, creating alien ground incidents such as terror raids, abductions, harvest sites, scouting operations, or landed UFO missions if not intercepted in time.
 - Larger landed/crashed UFO missions should eventually use the Stage 3 multi-deck alien-craft system, allowing combat to move through distinct interior decks and mission-critical ship systems rather than treating every craft as a single flat interior.
+- Once AEGIS understands reinforcement delivery, observed landed/crashed UFO bays and active Alien Field Beacons should create immediate investigation/neutralization objectives, retain explicit clearance state, and block alien-force victory until required bays are verified empty and beacon reinforcement capability is conclusively shut down.
 - Live alien research should eventually reveal alien command sites.
 - Highest-tier live alien research gates alien base/final command-site discovery.
 - Endgame final mission should become available after the correct chain of detection/research/escalation.
@@ -8936,6 +9042,8 @@ Once AEGIS has directly witnessed or otherwise firmly established the connection
 - Future research/intelligence progression can add deeper knowledge such as shielding, hacking, capture value, reinforcement timing, or alien command-network behavior without erasing the basic reinforcement-source discovery.
 
 ### AI targeting doctrine after discovery
+
+**Planned priority refinement:** the later **Reinforcement-Source Investigation and Clearance Doctrine** raises a confirmed source above every routine AI task. Once that roadmap item ships, only an active escort already in progress or an authoritative known-living-alien contact may outrank it. The bullets below describe the currently implemented Browser 1850 distribution behavior until that refinement is implemented.
 
 Once confirmed:
 
