@@ -1,6 +1,42 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.20.2300_STABLE_CAMPAIGN_CONFIRMATION_BOUNDARIES_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Continues architectural consolidation by moving New Game, End Month, and Surrender confirmations out of the monolithic campaign component.
+
+STABLE CAMPAIGN CONFIRMATIONS
+-----------------------------
+- NewGameConfirmModal, EndMonthConfirmModal, and SurrenderConfirmModal now have stable module-scope React.memo identities.
+- Each dialog receives only the campaign values it displays and the action callbacks it invokes.
+- Campaign reset, monthly processing, unresolved-incident consequences, and surrender remain owned by AlienResponseCommand.
+- Open dialog DOM, focus, and scroll state can reconcile through unrelated campaign updates instead of remounting under newly created component functions.
+- Existing warnings, incident ordering, button labels, and consequences are unchanged.
+
+VALIDATION
+----------
+- Static validation requires exactly one memoized declaration for each extracted confirmation before AlienResponseCommand.
+- Build Health includes an explicit-prop and controller-ownership contract for all three boundaries.
+- Browser checks cover live New Game, End Month, and Surrender display/action wiring and cancellation without campaign mutation.
+- Direct startup, monthly rules, campaign reset, surrender consequences, tactical behavior, and save format remain unchanged.
+
+MANUAL TEST GATES
+-----------------
+1. Open New Game from Save / Load, verify the campaign snapshot, and cancel back to the current game.
+2. Request End Month with active incidents and confirm the warning list remains threat-sorted; cancel without advancing time.
+3. Request Surrender, verify campaign/date/incident/living-soldier counts, and cancel without changing campaign state.
+4. Run deferred Build Health and verify the stable campaign-confirmation contract passes.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.20.2230_STABLE_TRANSIENT_OVERLAY_BOUNDARIES_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
