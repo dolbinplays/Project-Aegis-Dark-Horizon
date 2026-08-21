@@ -2,12 +2,33 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-20
-Current handoff build: `v0.26.08.20.1310_HOVER_HELP_AND_PERSISTENT_RENDERER_REFINEMENT_PATCH`
+Current handoff build: `v0.26.08.20.1705_PRECOMPILED_TAILWIND_AND_STYLE_INTEGRITY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1310 makes global hover help optional and useful instead of immediate/generic: pointer help waits three seconds, unsupported activation-only descriptions are suppressed, detailed mappings cover important strategic/tactical controls, and persistent on/off buttons are available from the title screen, Command Settings, and Save / Load. The persistent tactical renderer now memoizes repeated invalidation keys and skips unchanged unit-material traversal. Alien reinforcement craft regain correct hull occlusion through a bounded rear aperture, normal interior depth testing, and an opaque roof shroud. Browser 1130 deferred Build Health and runtime hardening, Browser 1045 global hover help, Browser 1035 tutorial windows, Browser 2325 beacon recovery, and Browser 2155 AI recovery remain active. Save format remains 4.**
+Current patch status: **Browser 1705 removes runtime Tailwind compilation from startup and embeds a retained 74 KB Tailwind 3.4.17 utility inventory in the standalone playable file. It also repairs invalid opacity utilities that previously generated no CSS. Browser 1310 optional three-second hover help, renderer memoization, and alien-craft hull occlusion; Browser 1130 deferred Build Health and runtime hardening; Browser 2325 beacon recovery; and Browser 2155 AI recovery remain active. Save format remains 4.**
 
 
 Implementation update (2026-08-19): **Browser 2325 targets the live reproduction where the last VIP had just been rescued, no living aliens remained, and a confirmed Alien Field Beacon was the sole remaining objective, yet Simulation AI rapidly advanced rounds without useful movement or fire. Browser 1315 already had a dedicated beacon assaulter, but it did not guarantee round-level progress. The new must-progress watchdog treats beacon-only neutralization as a mandatory action phase: nearby non-assault troops clear the shield/approach, close-assault routing ignores temporary same-side traffic along the path, and after the normal AEGIS pass the resolver compares beacon HP plus assaulter distance/inside-shield state. If nothing improved, the assaulter receives a zero-reserve same-round retry and immediately attacks when a legal shot becomes available. A truly no-breach squad now halts streamed continuation instead of manufacturing endless empty rounds.**
+
+
+## Browser 1705 — Precompiled Tailwind + Style Integrity
+
+**Status:** Implemented the next startup/architecture optimization and a bounded concrete style-cleanup pass.
+
+### Retained standalone stylesheet
+- The embedded Tailwind browser compiler and its DOM mutation observer are removed from the playable startup path.
+- A precompiled Tailwind 3.4.17 stylesheet inventories the project's static, conditional, responsive, state, and arbitrary-value utilities and remains embedded for offline single-file play.
+- This removes roughly 330 KB from `index.html` while eliminating runtime CSS compilation and its development warning.
+
+### Concrete class repairs
+- Invalid `/350`, `/300`, and `/800` opacity suffixes are normalized to `/35`, `/30`, and `/80`.
+- Invalid doubled `/45/90` soldier-card opacity suffixes are normalized to `/45`.
+- The repaired utilities cover incident-marker interactions, backup controls, AI animation states, modal layers, and soldier assignment/status presentation.
+
+### Validation gates
+1. Visit the title screen, Save / Load, Command Settings, Geoscape, Barracks, Memorial, and both tactical render modes; compare layout and colors with Browser 1310.
+2. Confirm the browser console has no Tailwind compiler warning and no runtime error overlay.
+3. Run deferred Build Health and confirm the precompiled-style contract passes.
+4. Save format remains **4**.
 
 
 ## Browser 1310 — Hover Help + Persistent Renderer Refinement
@@ -2766,7 +2787,7 @@ Browser 0725 roadmap completion note: **Both Browser 0630 documentation-only ref
 
 ## Next cleanup priorities
 
-- Replace the embedded runtime Tailwind compiler with retained precompiled CSS after a complete class inventory and visual-regression pass.
+- Completed in Browser 1705: replace the embedded runtime Tailwind compiler with retained precompiled CSS after a complete class inventory and visual-regression pass.
 - Lazily index the large Memorial message library so tribute selection does not scan and lowercase the entire catalog per request.
 - Continue component and patch-layer consolidation, especially hoisting stable React component identities and removing duplicate authoritative helper definitions.
 
@@ -2855,7 +2876,7 @@ Browser 0725 roadmap completion note: **Both Browser 0630 documentation-only ref
 - Unit indexing preserves living-unit display, fallen human markers, and resolved-battle inspection. Cover indexing still excludes destroyed objects. Floor-item indexing still excludes upper levels. Repeated path cells keep their first displayed step.
 - Indexes invalidate independently from terrain and visibility caches: units rebuild on unit updates, cover on cover updates, equipment on floor-item changes, and path on movement-path changes.
 - This is a rendering optimization only and does not alter movement legality, Time Units, reserved shots, fire-team formation, Hybrid/full AI, fog, window ballistics, escort/extraction, beacon behavior, or mission resolution.
-- Completed in Browser 1930: `tacticalPath` now uses parent-pointer reconstruction and indexed occupancy/cover blockers while preserving route choice and formation behavior. The next cleanup priorities are precompiled CSS, lazy Memorial indexing, and component/patch-layer consolidation.
+- Completed in Browser 1930: `tacticalPath` now uses parent-pointer reconstruction and indexed occupancy/cover blockers while preserving route choice and formation behavior. Browser 1705 completed precompiled CSS and Browser 2335 completed lazy Memorial indexing; component/patch-layer consolidation is now the next architectural priority.
 
 ---
 
@@ -2907,7 +2928,7 @@ Browser build `v0.26.08.15.1342_PERSISTENT_THREE_TACTICAL_RENDERER_INDEX_ONLY_PA
 - Build Health adds a persistent-runtime contract covering scene ownership, instanced terrain, stable unit-node mutation, disposal, and layer-specific invalidation. The new contract passes at the established full-suite baseline.
 - Live browser validation launched a Small 64 x 64 mission, entered 3D Iso, changed selected soldiers, and completed a turn update. The renderer identity remained `tactical-three-1`, exactly one persistent 3D root remained mounted, and no runtime-error overlay appeared.
 - The next performance patch should optimize the 2D tactical grid and fog/visibility together: pre-index units/covers/items, cache static terrain, reuse visibility contexts, and avoid recomputing observers unaffected by a state change.
-- Browser 1930 completed the `tacticalPath` modernization. Following work should replace runtime Tailwind with embedded precompiled CSS, lazily index the Memorial library, and begin component/patch-layer consolidation before minor allocation and class-string cleanup.
+- Browser 1930 completed the `tacticalPath` modernization, Browser 2335 lazily indexed the Memorial library, and Browser 1705 replaced runtime Tailwind with embedded precompiled CSS plus the first malformed-class cleanup. Following work should begin component/patch-layer consolidation before the remaining minor allocation and class-string cleanup.
 
 ---
 
@@ -2935,7 +2956,7 @@ Browser build `v0.26.08.15.1208_DEFERRED_BUILD_HEALTH_AND_STABLE_GEOCLOCK_INDEX_
 
 - Completed in Browser 1342: make the Three.js tactical renderer persistent across movement, selection, and soldier-state updates; retain renderer, scene, caches, and static battlefield objects while mutating changed actors/effects.
 - Next tactical patch: combine 2D grid indexing, static terrain caching, fog/visibility context reuse, and observer-level visibility invalidation.
-- Browser 1930 completed the `tacticalPath` modernization. Subsequent patches should replace runtime Tailwind with embedded precompiled CSS, lazily index the Memorial library, and begin component/patch-layer consolidation before minor allocation and class-string cleanup.
+- Browser 1930 completed the `tacticalPath` modernization, Browser 2335 lazily indexed the Memorial library, and Browser 1705 replaced runtime Tailwind with embedded precompiled CSS plus the first malformed-class cleanup. Subsequent patches should begin component/patch-layer consolidation before the remaining minor allocation and class-string cleanup.
 - Every performance patch must preserve fire-team formation, Hybrid AI, escort/extraction, visibility, window ballistics, and save-format behavior.
 
 ## Validation and native roadmap

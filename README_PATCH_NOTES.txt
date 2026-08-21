@@ -1,6 +1,45 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.20.1705_PRECOMPILED_TAILWIND_AND_STYLE_INTEGRITY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Removes Tailwind compilation from normal startup, embeds the complete retained utility stylesheet, and repairs malformed opacity classes that previously produced no visual rule.
+
+STARTUP / STANDALONE CSS
+------------------------
+- The browser no longer executes the embedded Tailwind 3.4.17 compiler or its mutation observer when the game opens.
+- A 74 KB precompiled stylesheet covers the utility inventory used by strategic, tactical, menu, report, Memorial, responsive, hover/focus, and arbitrary-value layouts.
+- The standalone index shrinks by roughly 330 KB while remaining offline-capable. Gameplay and save data do not depend on CSS generation.
+
+STYLE INTEGRITY
+---------------
+- Invalid `/350`, `/300`, and `/800` opacity suffixes now use valid `/35`, `/30`, and `/80` forms.
+- Corrupted double suffixes such as `/45/90` now resolve to the intended `/45` status-card backgrounds.
+- Incident-marker hover/focus states, backup controls, AI animation controls, modal backgrounds, and soldier assignment/status cards now receive their intended styles.
+
+VALIDATION
+----------
+- Static validation rejects a restored runtime compiler, an undersized precompiled inventory, missing responsive/arbitrary selectors, and the known malformed opacity forms.
+- Chromium startup and deferred Build Health verify the embedded stylesheet and the absence of a runtime Tailwind script.
+- Save format remains 4.
+
+MANUAL TEST GATES
+-----------------
+1. Open the title screen, Save / Load, Command Settings, Geoscape, Barracks, and a 2D/3D tactical battle; confirm layout, colors, responsive panels, and hover/focus states remain styled.
+2. Confirm the browser console no longer reports Tailwind's development/runtime compiler warning.
+3. Inspect incident markers, Backup All Slots, Simulation-AI controls, modal overlays, and assigned/wounded/overflow soldier cards for the corrected opacity styling.
+4. Run Build Health from Save / Load and confirm the precompiled Tailwind contract passes.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.20.1310_HOVER_HELP_AND_PERSISTENT_RENDERER_REFINEMENT_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
@@ -3662,5 +3701,3 @@ A complete live Chromium tactical/geoscape smoke test remains the final validati
 4. Confirm no two living soldiers finish a round on the same hex.
 5. Escort a VIP/civilian with a fire-team leader, spot an alien, test both escort-support choices, and confirm detached supports return afterward.
 6. Station Ready interceptors at several bases, select `All Bases`, verify staggered arrivals, destroy the UFO before every interceptor arrives, and follow the remaining aircraft home through normal ferry routing.
-
-

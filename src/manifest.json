@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.20.1310_HOVER_HELP_AND_PERSISTENT_RENDERER_REFINEMENT_PATCH",
+  "currentBuild": "v0.26.08.20.1705_PRECOMPILED_TAILWIND_AND_STYLE_INTEGRITY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "hover-help-persistent-renderer-refinement-static-passed",
+  "status": "precompiled-tailwind-style-integrity-static-passed",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.20.1310_HOVER_HELP_AND_PERSISTENT_RENDERER_REFINEMENT_PATCH",
+  "lastInspectedBuild": "v0.26.08.20.1705_PRECOMPILED_TAILWIND_AND_STYLE_INTEGRITY_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.20.1310_HOVER_HELP_AND_PERSISTENT_RENDERER_REFINEMENT_PATCH",
+    "browserBuild": "v0.26.08.20.1705_PRECOMPILED_TAILWIND_AND_STYLE_INTEGRITY_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -278,6 +278,10 @@
       {
         "system": "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement",
         "reason": "The browser now offers persistent optional three-second contextual hover help, memoizes repeated tactical Three.js invalidation keys/material passes, and depth-occludes alien craft interiors behind a bounded hull aperture. Native Godot uses separate Control hints, scene resources, and renderer occlusion."
+      },
+      {
+        "system": "precompiled-tailwind-and-style-integrity",
+        "reason": "The standalone browser build now embeds retained Tailwind CSS rather than executing the browser compiler at startup, and invalid opacity utilities are normalized. Native Godot uses engine-native themes and does not consume Tailwind utilities."
       },
       {
         "system": "threejs-armor-matched-soldier-helmets",

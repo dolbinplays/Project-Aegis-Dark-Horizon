@@ -278,6 +278,11 @@ const required = [
   "HOVER_HELP_DETAIL_DELAY_AND_TOGGLE_PATCH",
   "TACTICAL_THREE_RENDER_KEY_MEMOIZATION_PATCH",
   "TACTICAL_ALIEN_CRAFT_INTERIOR_HULL_OCCLUSION_PATCH",
+  "PRECOMPILED_EMBEDDED_TAILWIND_CSS_PATCH",
+  "TAILWIND_CLASS_INTEGRITY_CLEANUP_PATCH",
+  "aegis-tailwind-precompiled",
+  "tailwindcss v3.4.17",
+  "precompiledTailwindAndStyleIntegrityContractTest",
   "AEGIS_HOVER_HELP_POINTER_DELAY_MS=3000",
   "data-aegis-hover-help-toggle",
   "aegisHoverHelpDescriptionIsGeneric",
@@ -576,6 +581,17 @@ const alienCraftModelSource = alienCraftModelStart >= 0 ? html.slice(alienCraftM
 if (!alienCraftModelSource || alienCraftModelSource.includes("alienInteriorMaterial.depthTest=false") || alienCraftModelSource.includes("alienInteriorGlow.depthTest=false") || alienCraftModelSource.includes("part.renderOrder=55")) {
   missing.push("alien craft interior meshes must remain depth-tested behind the bounded hull aperture");
 }
+if (html.includes('data-offline-dependency="tailwindcss"')) {
+  missing.push("runtime Tailwind compiler must not return to the playable startup path");
+}
+const precompiledTailwindMatch = html.match(/<style id="aegis-tailwind-precompiled"[^>]*>([\s\S]*?)<\/style>/);
+const precompiledTailwindCss = precompiledTailwindMatch?.[1] || "";
+if (precompiledTailwindCss.length < 70000 || !precompiledTailwindCss.includes("tailwindcss v3.4.17") || !precompiledTailwindCss.includes(".lg\\:grid-cols-\\[minmax\\(0\\2c 1fr\\)_320px\\]")) {
+  missing.push("embedded precompiled Tailwind inventory must retain base, responsive, state, and arbitrary-value utilities");
+}
+for (const malformedClass of ["bg-amber-950/350", "bg-cyan-950/300", "bg-slate-900/800", "bg-red-950/350", "bg-yellow-950/45/90", "bg-orange-950/45/90", "bg-sky-950/45/90", "bg-green-950/45/90"]) {
+  if (html.includes(malformedClass)) missing.push(`malformed Tailwind opacity utility remains: ${malformedClass}`);
+}
 if (!html.includes('pointermove",event=>{if(!active||event.pointerType==="touch")return;lastPoint={x:event.clientX,y:event.clientY};if(tooltip.style.display!=="none")schedulePlace()')) {
   missing.push("global hover placement must remain animation-frame throttled");
 }
@@ -837,7 +853,7 @@ if (!nativeContent.soldiers?.every((soldier) => Number.isFinite(soldier.reaction
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "complete-classic-battlescape-command-set" && entry?.reason)) {
   missing.push("remaining classic battlescape command depth must be recorded as a temporary gameplay parity exception");
 }
-for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement"]) {
+for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity"]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser optimization parity exception missing: ${system}`);
   }
