@@ -313,6 +313,19 @@ const required = [
   "stableMissionLaunchConfirmationBoundaryContractTest",
   "MissionLaunchConfirmModal.displayName",
   "data-aegis-mission-launch-confirmation",
+  "ARCHITECTURAL_STABLE_STRATEGIC_INCIDENT_ROUTE_BOUNDARIES_PATCH",
+  "stableStrategicIncidentRouteBoundariesContractTest",
+  "IncidentListModal.displayName",
+  "IncidentDetailsModal.displayName",
+  "ActiveAircraftRouteTimelinePanel.displayName",
+  "data-aegis-incident-priority-board",
+  "data-aegis-incident-details-modal",
+  "data-aegis-active-aircraft-route-timeline",
+  "TACTICAL_THREE_ISO_NIGHT_VIBRANCE_PATCH",
+  "tacticalThreeNightPresentationProfile",
+  "tacticalThreePersistentApplyNightPresentation",
+  "tacticalThreeIsoNightVibranceContractTest",
+  "aegisIsoNightVibrance",
   "TACTICAL_COMMAND_MAP_AUTONOMOUS_SEARCH_RESUME_HOTFIX",
   "tacticalReleaseCompletedCommandMapWaypoint",
   "tacticalCommandMapAutonomousSearchResumeContractTest",
@@ -688,6 +701,31 @@ for (const component of ["MissionLaunchConfirmModal"]) {
     missing.push(`${component} must have exactly one stable declaration`);
   }
 }
+for (const component of ["IncidentListModal", "IncidentDetailsModal", "ActiveAircraftRouteTimelinePanel"]) {
+  const declaration = `const ${component}=React.memo(`;
+  const declarationIndex = html.indexOf(declaration);
+  if (declarationIndex < 0 || campaignComponentIndex < 0 || declarationIndex > campaignComponentIndex) {
+    missing.push(`${component} must remain a memoized module-scope boundary outside AlienResponseCommand`);
+  }
+  if (html.indexOf(declaration, declarationIndex + declaration.length) >= 0) {
+    missing.push(`${component} must have exactly one stable declaration`);
+  }
+}
+if (!html.includes('React.createElement(IncidentListModal,{entries:incidentPriorityEntries,onClose:closeIncidentPriorityBoard,onSelect:selectIncidentFromPriorityBoard})')) {
+  missing.push("incident priority board must receive memoized entries and controller callbacks explicitly");
+}
+if (!html.includes('React.createElement(IncidentDetailsModal,{presentation:incidentDetailsPresentation,onPlan:planIncidentResponse,onClose:closeIncidentDetails})')) {
+  missing.push("incident details must receive a controller-built presentation snapshot and actions explicitly");
+}
+if (!html.includes('React.createElement(ActiveAircraftRouteTimelinePanel,{interceptorTravel:interceptorTravel,skyrangerTravels:skyrangerTravels})')) {
+  missing.push("active aircraft route timeline must receive travel records explicitly");
+}
+if (!html.includes('night:{exposure:0.62,ambientScale:1.45,keyScale:1.28,rimIntensity:0.3,localLightScale:1.42}') || !html.includes('twilight:{exposure:0.72,ambientScale:1.16,keyScale:1.12,rimIntensity:0.3,localLightScale:1.22}')) {
+  missing.push("3D Iso night and twilight vibrance profiles must retain their bounded presentation-only values");
+}
+if (!html.includes('pointLight.userData.aegisTacticalPresentationBaseIntensity=visualIntensity') || !html.includes('Math.max(4,localLight.radius*1.18)')) {
+  missing.push("3D Iso local-light vibrance must scale intensity while preserving the existing PointLight distance");
+}
 if (!html.includes('const missionLaunchConfirmation=confirmMissionLaunch?') || !html.includes('React.createElement(MissionLaunchConfirmModal,{...missionLaunchConfirmation,onCancel:cancelMissionLaunch,onProceed:proceedMissionLaunch})')) {
   missing.push("mission launch confirmation must receive its controller-built view snapshot and action callbacks explicitly");
 }
@@ -957,7 +995,7 @@ if (!nativeContent.soldiers?.every((soldier) => Number.isFinite(soldier.reaction
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "complete-classic-battlescape-command-set" && entry?.reason)) {
   missing.push("remaining classic battlescape command depth must be recorded as a temporary gameplay parity exception");
 }
-for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity", "stable-settings-component-boundaries", "stable-campaign-list-boundaries", "stable-transient-overlay-boundaries", "stable-campaign-confirmation-boundaries", "stable-operational-approval-boundaries", "stable-mission-launch-confirmation-boundary", "command-map-autonomous-search-resume"]) {
+for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity", "stable-settings-component-boundaries", "stable-campaign-list-boundaries", "stable-transient-overlay-boundaries", "stable-campaign-confirmation-boundaries", "stable-operational-approval-boundaries", "stable-mission-launch-confirmation-boundary", "stable-strategic-incident-route-boundaries", "threejs-iso-night-vibrance-presentation", "command-map-autonomous-search-resume"]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser optimization parity exception missing: ${system}`);
   }

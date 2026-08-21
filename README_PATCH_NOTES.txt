@@ -1,6 +1,55 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.21.1245_STABLE_INCIDENT_BOUNDARIES_AND_ISO_NIGHT_VIBRANCE_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Continues strategic UI consolidation and makes illuminated night scenes more colorful in 3D Iso without changing tactical light range or battle rules.
+
+STABLE STRATEGIC INCIDENT PRESENTATION
+--------------------------------------
+- IncidentListModal, IncidentDetailsModal, and ActiveAircraftRouteTimelinePanel now have stable module-scope React.memo identities.
+- Threat sorting and public alien labels feed the incident list through a memoized explicit entry snapshot.
+- Incident claim state, committed-response status, and alien identification feed the details dialog through a memoized explicit presentation snapshot.
+- Incident selection, response planning, active-mission state, aircraft travel, and campaign mutations remain owned by AlienResponseCommand.
+- The aircraft route timeline now recomputes only when its memoized interceptor or Skyranger travel inputs change.
+
+3D ISO NIGHT VIBRANCE
+----------------------
+- Night 3D Iso raises tone-mapped exposure from 0.50 to 0.62 while retaining a clearly dark sky, fog, and battlefield atmosphere.
+- Night ambient, key, rim, and local-light presentation intensities receive restrained view-specific boosts so building, vehicle, terrain, and prop colors do not collapse into black blocks.
+- Twilight receives a smaller version of the same adjustment.
+- First Person, Third Person, and incoming-fire reaction cameras retain the existing darker physical-light response.
+- Point-light distances, authoritative light radii, LOS, visibility, darkness accuracy, fog range, power circuits, and destructible-light behavior are unchanged.
+
+ROADMAP ADDITION
+----------------
+- Recorded the remaining report that soldiers can sometimes path through or finish movement inside multi-hex land vehicles.
+- The future fix must unify planning, fallback movement, playback, and integrity repair around every live vehicle footprint cell without making destroyed vehicles permanently impassable.
+
+VALIDATION
+----------
+- Build Health covers the three extracted boundaries, explicit callbacks, derived incident data, route rendering, Iso-only night boosts, perspective restoration, and unchanged PointLight distance.
+- Static validation requires one declaration for each extracted boundary before AlienResponseCommand and records both browser-only parity exceptions.
+- Save format remains 4.
+
+MANUAL TEST GATES
+-----------------
+1. Open the incident list, select an incident, close/reopen its details, and plan a response.
+2. Launch or relocate aircraft and verify the active route timeline updates normally.
+3. Compare a night mission in 3D Iso and FPV/TPV; Iso objects should retain more color while the perspective views remain unchanged.
+4. Confirm street lamps, windows, headlights, flares, fire, and Skyranger lamps do not illuminate additional hexes.
+5. Run deferred Build Health and verify both Browser 1245 contracts pass.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.21.1130_STABLE_MISSION_LAUNCH_CONFIRMATION_BOUNDARY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

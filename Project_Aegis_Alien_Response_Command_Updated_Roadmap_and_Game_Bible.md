@@ -2,12 +2,67 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-21
-Current handoff build: `v0.26.08.21.1130_STABLE_MISSION_LAUNCH_CONFIRMATION_BOUNDARY_PATCH`
+Current handoff build: `v0.26.08.21.1245_STABLE_INCIDENT_BOUNDARIES_AND_ISO_NIGHT_VIBRANCE_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1130 continues architectural consolidation by extracting the remaining Mission Launch confirmation into one stable memoized module-scope boundary. AlienResponseCommand still owns response-force selection, Skyranger eligibility, launch-base fallback, local inventory/loadout validation, travel, deployment mode, and every launch mutation; only the dialog rendering moved. Browser 1000 Command Map autonomous-search recovery, the two approved escort/reinforcement-source roadmap doctrines, and all earlier tactical and performance work remain active. Save format remains 4.**
+Current patch status: **Browser 1245 continues architectural consolidation by extracting incident priority, incident details, and active aircraft route timelines into stable memoized module-scope boundaries. It also gives night/twilight 3D Iso a restrained presentation-only exposure and light-intensity lift so objects retain visible color without changing light distance, LOS, visibility, accuracy, fog, power circuits, or battle logic. The remaining live-vehicle footprint pathing report is recorded as a separate roadmap defect. Browser 1130 Mission Launch extraction, Browser 1000 Command Map recovery, and all earlier tactical work remain active. Save format remains 4.**
 
 
 Implementation update (2026-08-19): **Browser 2325 targets the live reproduction where the last VIP had just been rescued, no living aliens remained, and a confirmed Alien Field Beacon was the sole remaining objective, yet Simulation AI rapidly advanced rounds without useful movement or fire. Browser 1315 already had a dedicated beacon assaulter, but it did not guarantee round-level progress. The new must-progress watchdog treats beacon-only neutralization as a mandatory action phase: nearby non-assault troops clear the shield/approach, close-assault routing ignores temporary same-side traffic along the path, and after the normal AEGIS pass the resolver compares beacon HP plus assaulter distance/inside-shield state. If nothing improved, the assaulter receives a zero-reserve same-round retry and immediately attacks when a legal shot becomes available. A truly no-breach squad now halts streamed continuation instead of manufacturing endless empty rounds.**
+
+
+## Browser 1245 — Stable Strategic Incident Boundaries + 3D Iso Night Vibrance
+
+**Status:** Implemented the seventh bounded component-extraction slice and the requested 3D Iso night-presentation refinement.
+
+### Extracted strategic presentation boundaries
+- `IncidentListModal`, `IncidentDetailsModal`, and `ActiveAircraftRouteTimelinePanel` no longer belong to the `AlienResponseCommand` closure.
+- Each has one module-scope `React.memo` identity, an explicit display name, and explicit data/action inputs.
+- The threat-priority board receives a memoized list of sorted mission records and public alien labels.
+- Incident Details receives a memoized presentation snapshot containing the selected mission, claim state, committed-response status, and public alien label.
+- The aircraft timeline receives interceptor and Skyranger travel records and performs its route-summary rendering only when those memoized component inputs change.
+
+### Preserved strategic authority
+- `AlienResponseCommand` still owns incident selection, detail visibility, claim evaluation, response planning, active-mission assignment, aircraft travel, and campaign mutation.
+- The extracted components do not sort campaign state, reveal alien information, claim incidents, launch aircraft, select squads, advance time, or alter saves.
+
+### 3D Iso night-vibrance presentation
+- Night 3D Iso tone-mapped exposure increases from **0.50** to **0.62**. Twilight increases from **0.66** to **0.72**.
+- Night Iso receives a restrained ambient/key/rim presentation lift and **1.42x** local PointLight intensity; twilight uses smaller boosts.
+- The boost is applied only while 3D Iso owns the view. FPV, TPV, and incoming-fire reaction cameras restore the original physical-light presentation immediately.
+- PointLight distance is never changed by the view profile. Authoritative hex radii, tactical illumination sampling, LOS, vision range, darkness accuracy, fog distance, light-circuit state, destruction, and save data remain unchanged.
+- The goal is a battlefield that still reads unmistakably as night while illuminated structures, vehicles, vegetation, terrain, and props retain authored hue and surface separation instead of appearing as black blocks.
+
+### Validation gates
+1. Open/close the incident priority board, select an entry, and verify the correct details snapshot.
+2. Plan a response and confirm controller-owned Mission Control behavior is unchanged.
+3. Launch or relocate aircraft and confirm route rows, ETA, progress, and completion update normally.
+4. Compare the same night scene in Iso and perspective views; Iso should be more colorful/readable and perspective views should retain their prior darkness.
+5. Confirm PointLight distance and authoritative illumination radius remain unchanged under every view.
+6. Save format remains **4**.
+
+
+## Roadmap Addition — Live Land-Vehicle Footprint Movement Integrity
+
+**Status:** Confirmed field report; implementation is queued as a separate bounded gameplay/pathing patch.
+
+### Reported defect
+- Soldiers can still sometimes plan or animate a route through a living land vehicle and may finish movement inside part of its multi-hex footprint.
+- Earlier vehicle-footprint work correctly improved several blocker consumers, but at least one movement-planning, fallback, playback, continuation, or state-repair seam still accepts anchor-cell-only occupancy or an incomplete blocker set.
+
+### Required correction
+- Every cell returned by `tacticalCoverFootprintCells(...)` for a living hard-cover land vehicle must be authoritative for manual preview, manual execution, Simulation AI, Hybrid support movement, fire-team formation following, civilian/VIP routing, fallback movement, streamed continuation, and playback validation.
+- Route destinations and every intermediate movement step must reject live vehicle footprint cells. A path may not merely end outside the vehicle after visibly traversing its body.
+- Battlefield integrity repair must relocate any living unit restored or resolved inside a live vehicle footprint to the nearest legal reachable cell without duplicating TU cost or replaying movement.
+- Destroyed vehicles remain governed by their post-destruction cover/rubble state and must not stay permanently blocked merely because their original footprint was once solid.
+- Skyranger hull/ramp rules, UFO hulls, building walls/doors, formation movement, escort routing, and the selected fire-team leader’s authority must remain intact.
+
+### Acceptance gates
+1. Test cars, vans, utility vehicles, trucks, and buses across every footprint orientation and map archetype.
+2. Confirm manual path preview and committed movement reject every living vehicle footprint cell.
+3. Confirm Simulation AI, Hybrid support soldiers, fire-team catch-up, and rescue pathing never traverse or stop inside a living vehicle.
+4. Load or construct an invalid unit-inside-vehicle state and confirm integrity repair moves the unit to a legal cell.
+5. Destroy the vehicle and confirm its intended rubble/passability rules still apply.
+6. Verify 2D and Three.js playback show the same authoritative route without snapping through the vehicle.
 
 
 ## Browser 1130 — Stable Mission Launch Confirmation Boundary
