@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.20.1705_PRECOMPILED_TAILWIND_AND_STYLE_INTEGRITY_PATCH",
+  "currentBuild": "v0.26.08.20.1745_STABLE_SETTINGS_COMPONENT_BOUNDARIES_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "precompiled-tailwind-style-integrity-static-passed",
+  "status": "stable-settings-component-boundaries-static-passed",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.20.1705_PRECOMPILED_TAILWIND_AND_STYLE_INTEGRITY_PATCH",
+  "lastInspectedBuild": "v0.26.08.20.1745_STABLE_SETTINGS_COMPONENT_BOUNDARIES_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.20.1705_PRECOMPILED_TAILWIND_AND_STYLE_INTEGRITY_PATCH",
+    "browserBuild": "v0.26.08.20.1745_STABLE_SETTINGS_COMPONENT_BOUNDARIES_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -282,6 +282,10 @@
       {
         "system": "precompiled-tailwind-and-style-integrity",
         "reason": "The standalone browser build now embeds retained Tailwind CSS rather than executing the browser compiler at startup, and invalid opacity utilities are normalized. Native Godot uses engine-native themes and does not consume Tailwind utilities."
+      },
+      {
+        "system": "stable-settings-component-boundaries",
+        "reason": "The browser moves reusable settings panels and custom range styles out of the monolithic React campaign component and memoizes their stable boundaries. Native Godot uses separate scenes and Control nodes rather than React component identity."
       },
       {
         "system": "threejs-armor-matched-soldier-helmets",

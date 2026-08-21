@@ -2,12 +2,34 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-20
-Current handoff build: `v0.26.08.20.1705_PRECOMPILED_TAILWIND_AND_STYLE_INTEGRITY_PATCH`
+Current handoff build: `v0.26.08.20.1745_STABLE_SETTINGS_COMPONENT_BOUNDARIES_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1705 removes runtime Tailwind compilation from startup and embeds a retained 74 KB Tailwind 3.4.17 utility inventory in the standalone playable file. It also repairs invalid opacity utilities that previously generated no CSS. Browser 1310 optional three-second hover help, renderer memoization, and alien-craft hull occlusion; Browser 1130 deferred Build Health and runtime hardening; Browser 2325 beacon recovery; and Browser 2155 AI recovery remain active. Save format remains 4.**
+Current patch status: **Browser 1745 begins architectural consolidation by moving custom range styles plus the reusable reinforcement-difficulty and incident-limit panels out of the monolithic campaign component. Their module-scope React.memo identities now survive unrelated campaign renders and preserve live input DOM/focus state. Browser 1705 precompiled Tailwind, Browser 1310 hover/renderer/craft refinements, Browser 1130 runtime hardening, Browser 2325 beacon recovery, and Browser 2155 AI recovery remain active. Save format remains 4.**
 
 
 Implementation update (2026-08-19): **Browser 2325 targets the live reproduction where the last VIP had just been rescued, no living aliens remained, and a confirmed Alien Field Beacon was the sole remaining objective, yet Simulation AI rapidly advanced rounds without useful movement or fire. Browser 1315 already had a dedicated beacon assaulter, but it did not guarantee round-level progress. The new must-progress watchdog treats beacon-only neutralization as a mandatory action phase: nearby non-assault troops clear the shield/approach, close-assault routing ignores temporary same-side traffic along the path, and after the normal AEGIS pass the resolver compares beacon HP plus assaulter distance/inside-shield state. If nothing improved, the assaulter receives a zero-reserve same-round retry and immediately attacks when a legal shot becomes available. A truly no-breach squad now halts streamed continuation instead of manufacturing endless empty rounds.**
+
+
+## Browser 1745 — Stable Settings Component Boundaries
+
+**Status:** Implemented the first bounded component-extraction slice from the architectural-consolidation roadmap.
+
+### Extracted module-scope boundaries
+- `RangeSliderStyles`, `ReinforcementDifficultyPanel`, and `IncidentMapLimitPanel` no longer belong to the `AlienResponseCommand` closure.
+- Each extracted component has one stable module-scope `React.memo` identity and an explicit display name.
+- The campaign component retains authoritative state and passes the same values/setters; no save, simulation, or gameplay owner moved.
+
+### Runtime benefit
+- Unrelated campaign updates no longer manufacture new component types for these settings controls.
+- Mounted range/select DOM nodes can be reconciled in place, preserving focus and interaction continuity.
+- Memoization skips their render work when primitive props and stable React state setters are unchanged.
+
+### Validation gates
+1. Open Command Settings and Save / Load, focus/change Incident Map Limit, and confirm the same input node retains focus after the parent state update.
+2. Change Alien Reinforcement Difficulty from campaign settings and initial setup; confirm values and descriptions remain synchronized.
+3. Confirm one range-style element remains mounted while unrelated settings change.
+4. Run deferred Build Health and verify the stable-boundary contract passes.
+5. Save format remains **4**.
 
 
 ## Browser 1705 — Precompiled Tailwind + Style Integrity
@@ -349,6 +371,18 @@ The full deferred suite currently reaches completion with 477 results and no har
 6. Exhaust every loaded weapon and Frag Grenade, then reach beacon-only endgame; confirm Simulation AI stops and returns command/Dust Off options rather than auto-streaming empty rounds.
 7. Confirm Hybrid/Simulation AI ordinary combat, VIP rescue, Browser 2155 grid-search recovery, save/load, and Browser 2305 accessibility controls remain unchanged.
 8. All six non-empty embedded JavaScript blocks must pass `node --check`; save format remains 4.
+
+Roadmap-only planning update (2026-08-20): **Improve nighttime environmental-object readability in the 3D Iso tactical view without changing battle logic. Buildings, vehicles, cover, furniture, vegetation, landed craft, and other legitimately visible battlefield objects should retain a subdued amount of their authored color instead of collapsing into flat black silhouettes. The preferred implementation is a presentation-only, Iso-specific color-preserving ambient/fill or material treatment with bounded minimum brightness and saturation; it must not create gameplay illumination, expose hidden cells or objects, extend LOS, remove darkness accuracy penalties, influence AI knowledge or targeting, change fog of war, or weaken the tactical value of streetlights, windows, headlights, Weapon Lights, Field Flares, fires, Skyranger lights, or Alien Field Beacons. Night must remain visibly darker than twilight/day, and truly illuminated objects must remain clearly brighter than objects receiving only the readability floor. Reuse persistent material caches and mode-level invalidation so the improvement does not restore full-scene material traversal on ordinary movement or selection updates. No code or build-number change is part of this roadmap-only update.**
+
+### Future tactical presentation — 3D Iso nighttime environmental color readability
+- Apply only after normal fog-of-war and object-visibility authority has decided that an object may be rendered; the readability treatment must never reveal undiscovered terrain, concealed units, or unseen objectives.
+- Preserve recognizable low-light color families for walls, roofs, road vehicles, hard/soft cover, props, vegetation, Skyrangers, alien craft, and destructible environmental objects instead of reducing them to uniform black.
+- Keep the treatment deliberately subdued: darkness should remain obvious, silhouettes and shadows should retain depth, and real tactical light sources should still produce the strongest local color, contrast, and highlights.
+- Keep 2D Hex, FPV, TPV, visibility range, LOS, cover, accuracy, weapon-light behavior, AI decisions, mission objectives, and save data unchanged. FPV/TPV should continue using their existing light-reactive materials unless separately reviewed.
+- Prefer cached Iso-only material variants, a low-intensity color-preserving fill, or an equivalent bounded renderer-level solution. Do not clone materials or traverse every environmental mesh on each React render, selection change, or movement frame.
+- Ensure destroyed, burning, smoke-obscured, powered-off, and shielded objects still consume their authoritative state and existing effects; the readability layer must not visually imply that an inactive light is powered.
+
+**Planned validation gate:** load night missions across urban, rural, forest, desert, snow, and alien-craft settings in 3D Iso. Confirm visible environmental objects retain restrained identifiable color while unexplored/hidden content stays concealed, true light sources remain visibly stronger, and toggling between 2D, Iso, FPV, and TPV does not change LOS, hit chances, AI behavior, fog knowledge, object state, renderer identity, or save format.
 
 Roadmap-only planning update (2026-08-20): **Delay Alien Field Beacon visual removal until the lethal shot presentation has visibly completed. When a resolved projectile reduces the beacon to 0 HP, gameplay authority may immediately mark the beacon destroyed for AI/objective/victory purposes, but the tactical renderer must keep the beacon mesh/effect present long enough for the lethal projectile/tracer to visibly travel to the beacon, register the impact, and then play a dedicated beacon-destruction animation before removing the model. The destruction beat should work in 3D Iso, FPV, TPV, incoming-fire/observer playback, manual fire, Hybrid AI, and full Simulation AI without rerolling the attack or delaying authoritative damage resolution. A terminal beacon kill must also delay victory cleanup/presentation only as needed to let that final hit and destruction animation read clearly; no beacon should disappear before the shot that killed it is shown to connect. No code or build-number change is part of this roadmap-only update.**
 
@@ -2876,7 +2910,7 @@ Browser 0725 roadmap completion note: **Both Browser 0630 documentation-only ref
 - Unit indexing preserves living-unit display, fallen human markers, and resolved-battle inspection. Cover indexing still excludes destroyed objects. Floor-item indexing still excludes upper levels. Repeated path cells keep their first displayed step.
 - Indexes invalidate independently from terrain and visibility caches: units rebuild on unit updates, cover on cover updates, equipment on floor-item changes, and path on movement-path changes.
 - This is a rendering optimization only and does not alter movement legality, Time Units, reserved shots, fire-team formation, Hybrid/full AI, fog, window ballistics, escort/extraction, beacon behavior, or mission resolution.
-- Completed in Browser 1930: `tacticalPath` now uses parent-pointer reconstruction and indexed occupancy/cover blockers while preserving route choice and formation behavior. Browser 1705 completed precompiled CSS and Browser 2335 completed lazy Memorial indexing; component/patch-layer consolidation is now the next architectural priority.
+- Completed in Browser 1930: `tacticalPath` now uses parent-pointer reconstruction and indexed occupancy/cover blockers while preserving route choice and formation behavior. Browser 1705 completed precompiled CSS and Browser 2335 completed lazy Memorial indexing. Browser 1745 begins component consolidation with three stable settings boundaries; further nested-component and patch-layer consolidation remains the next architectural priority.
 
 ---
 
@@ -2928,7 +2962,7 @@ Browser build `v0.26.08.15.1342_PERSISTENT_THREE_TACTICAL_RENDERER_INDEX_ONLY_PA
 - Build Health adds a persistent-runtime contract covering scene ownership, instanced terrain, stable unit-node mutation, disposal, and layer-specific invalidation. The new contract passes at the established full-suite baseline.
 - Live browser validation launched a Small 64 x 64 mission, entered 3D Iso, changed selected soldiers, and completed a turn update. The renderer identity remained `tactical-three-1`, exactly one persistent 3D root remained mounted, and no runtime-error overlay appeared.
 - The next performance patch should optimize the 2D tactical grid and fog/visibility together: pre-index units/covers/items, cache static terrain, reuse visibility contexts, and avoid recomputing observers unaffected by a state change.
-- Browser 1930 completed the `tacticalPath` modernization, Browser 2335 lazily indexed the Memorial library, and Browser 1705 replaced runtime Tailwind with embedded precompiled CSS plus the first malformed-class cleanup. Following work should begin component/patch-layer consolidation before the remaining minor allocation and class-string cleanup.
+- Browser 1930 completed the `tacticalPath` modernization, Browser 2335 lazily indexed the Memorial library, and Browser 1705 replaced runtime Tailwind with embedded precompiled CSS plus the first malformed-class cleanup. Browser 1745 begins component consolidation with stable range/difficulty/incident-limit boundaries; following work should continue extracting safe nested components and then consolidate patch-layer definitions before the remaining minor allocation and class-string cleanup.
 
 ---
 
@@ -2956,7 +2990,7 @@ Browser build `v0.26.08.15.1208_DEFERRED_BUILD_HEALTH_AND_STABLE_GEOCLOCK_INDEX_
 
 - Completed in Browser 1342: make the Three.js tactical renderer persistent across movement, selection, and soldier-state updates; retain renderer, scene, caches, and static battlefield objects while mutating changed actors/effects.
 - Next tactical patch: combine 2D grid indexing, static terrain caching, fog/visibility context reuse, and observer-level visibility invalidation.
-- Browser 1930 completed the `tacticalPath` modernization, Browser 2335 lazily indexed the Memorial library, and Browser 1705 replaced runtime Tailwind with embedded precompiled CSS plus the first malformed-class cleanup. Subsequent patches should begin component/patch-layer consolidation before the remaining minor allocation and class-string cleanup.
+- Browser 1930 completed the `tacticalPath` modernization, Browser 2335 lazily indexed the Memorial library, and Browser 1705 replaced runtime Tailwind with embedded precompiled CSS plus the first malformed-class cleanup. Browser 1745 begins component consolidation with stable range/difficulty/incident-limit boundaries; subsequent patches should continue safe component extraction and then consolidate patch-layer definitions before the remaining minor allocation and class-string cleanup.
 - Every performance patch must preserve fire-team formation, Hybrid AI, escort/extraction, visibility, window ballistics, and save-format behavior.
 
 ## Validation and native roadmap

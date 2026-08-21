@@ -283,6 +283,11 @@ const required = [
   "aegis-tailwind-precompiled",
   "tailwindcss v3.4.17",
   "precompiledTailwindAndStyleIntegrityContractTest",
+  "ARCHITECTURAL_STABLE_SETTINGS_COMPONENT_BOUNDARIES_PATCH",
+  "stableSettingsComponentBoundariesContractTest",
+  "RangeSliderStyles.displayName",
+  "ReinforcementDifficultyPanel.displayName",
+  "IncidentMapLimitPanel.displayName",
   "AEGIS_HOVER_HELP_POINTER_DELAY_MS=3000",
   "data-aegis-hover-help-toggle",
   "aegisHoverHelpDescriptionIsGeneric",
@@ -592,6 +597,17 @@ if (precompiledTailwindCss.length < 70000 || !precompiledTailwindCss.includes("t
 for (const malformedClass of ["bg-amber-950/350", "bg-cyan-950/300", "bg-slate-900/800", "bg-red-950/350", "bg-yellow-950/45/90", "bg-orange-950/45/90", "bg-sky-950/45/90", "bg-green-950/45/90"]) {
   if (html.includes(malformedClass)) missing.push(`malformed Tailwind opacity utility remains: ${malformedClass}`);
 }
+const campaignComponentIndex = html.indexOf("function AlienResponseCommand(){");
+for (const component of ["RangeSliderStyles", "ReinforcementDifficultyPanel", "IncidentMapLimitPanel"]) {
+  const declaration = `const ${component}=React.memo(`;
+  const declarationIndex = html.indexOf(declaration);
+  if (declarationIndex < 0 || campaignComponentIndex < 0 || declarationIndex > campaignComponentIndex) {
+    missing.push(`${component} must remain a memoized module-scope boundary outside AlienResponseCommand`);
+  }
+  if (html.indexOf(declaration, declarationIndex + declaration.length) >= 0) {
+    missing.push(`${component} must have exactly one stable declaration`);
+  }
+}
 if (!html.includes('pointermove",event=>{if(!active||event.pointerType==="touch")return;lastPoint={x:event.clientX,y:event.clientY};if(tooltip.style.display!=="none")schedulePlace()')) {
   missing.push("global hover placement must remain animation-frame throttled");
 }
@@ -853,7 +869,7 @@ if (!nativeContent.soldiers?.every((soldier) => Number.isFinite(soldier.reaction
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "complete-classic-battlescape-command-set" && entry?.reason)) {
   missing.push("remaining classic battlescape command depth must be recorded as a temporary gameplay parity exception");
 }
-for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity"]) {
+for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity", "stable-settings-component-boundaries"]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser optimization parity exception missing: ${system}`);
   }

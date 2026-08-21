@@ -1,6 +1,40 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.20.1745_STABLE_SETTINGS_COMPONENT_BOUNDARIES_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Begins architectural consolidation by moving reusable settings UI out of the monolithic campaign component and giving those controls stable memoized identities.
+
+STABLE COMPONENT BOUNDARIES
+---------------------------
+- RangeSliderStyles, ReinforcementDifficultyPanel, and IncidentMapLimitPanel now live at module scope rather than being redeclared inside AlienResponseCommand on every campaign render.
+- Each boundary uses React.memo. Unchanged primitive values and stable state setters can bypass unrelated parent updates, while genuine setting changes still render immediately.
+- Range and select DOM nodes retain their identity and focus across unrelated campaign rerenders instead of being remounted under a newly created component function.
+- Existing title/setup, Command Settings, and Save / Load placements remain unchanged.
+
+VALIDATION
+----------
+- Static validation requires exactly one memoized declaration for each extracted component before AlienResponseCommand.
+- Chromium checks component identity, focused Incident Map Limit input continuity, range-style node continuity, deferred Build Health, and current build metadata.
+- Reinforcement cadence, incident generation, audio behavior, campaign state, and save format remain unchanged.
+
+MANUAL TEST GATES
+-----------------
+1. Open Command Settings and Save / Load; adjust Alien Reinforcement Difficulty and Incident Map Limit and confirm both update normally.
+2. Focus the Incident Map Limit range control, change it, and confirm focus does not jump or disappear.
+3. Toggle unrelated settings while the panel is open and confirm sliders/selects do not reset.
+4. Start a new campaign and confirm the setup-screen reinforcement selector retains its normal appearance and behavior.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.20.1705_PRECOMPILED_TAILWIND_AND_STYLE_INTEGRITY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
