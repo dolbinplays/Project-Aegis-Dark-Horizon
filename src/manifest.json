@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.21.0845_STABLE_OPERATIONAL_APPROVAL_BOUNDARIES_PATCH",
+  "currentBuild": "v0.26.08.21.1000_COMMAND_MAP_SEARCH_RESUME_HOTFIX",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "stable-operational-approval-boundaries-static-passed",
+  "status": "command-map-search-resume-hotfix-static-passed",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.21.0845_STABLE_OPERATIONAL_APPROVAL_BOUNDARIES_PATCH",
+  "lastInspectedBuild": "v0.26.08.21.1000_COMMAND_MAP_SEARCH_RESUME_HOTFIX",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.21.0845_STABLE_OPERATIONAL_APPROVAL_BOUNDARIES_PATCH",
+    "browserBuild": "v0.26.08.21.1000_COMMAND_MAP_SEARCH_RESUME_HOTFIX",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -133,6 +133,7 @@
       "hybrid-support-full-tu-formation-catch-up",
       "hybrid-escort-contact-decision-mode-preservation",
       "hybrid-opening-escort-support-independent-follow",
+      "command-map-autonomous-search-resume",
       "deferred-full-build-health-with-critical-boot-smoke",
       "single-owner-geoscape-clock-interval",
       "persistent-threejs-tactical-renderer-and-layer-invalidation",
@@ -238,6 +239,10 @@
       {
         "system": "hybrid-opening-escort-support-independent-follow",
         "reason": "Browser Hybrid AI now holds a player-positioned escort leader without marking the support soldiers as completed rescue-duty units, allowing their own TU-driven formation catch-up on the opening and later handoffs. Native tactical parity remains queued."
+      },
+      {
+        "system": "command-map-autonomous-search-resume",
+        "reason": "Browser Simulation AI now releases a completed quiet Command Map waypoint back to autonomous search while retaining active-contact holds and Hybrid round ownership. Native Godot tactical Command Map parity remains queued."
       },
       {
         "system": "deferred-full-build-health-with-critical-boot-smoke",

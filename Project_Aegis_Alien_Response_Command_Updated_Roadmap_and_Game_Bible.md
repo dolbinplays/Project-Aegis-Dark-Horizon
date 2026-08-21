@@ -1,13 +1,45 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-08-20
-Current handoff build: `v0.26.08.21.0845_STABLE_OPERATIONAL_APPROVAL_BOUNDARIES_PATCH`
+Last updated: 2026-08-21
+Current handoff build: `v0.26.08.21.1000_COMMAND_MAP_SEARCH_RESUME_HOTFIX`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0845 continues architectural consolidation by moving understrength deployment, workshop funding, and facility construction approvals out of the monolithic campaign component. These module-scope React.memo boundaries receive explicit display/action inputs while AlienResponseCommand retains Skyranger launch, workshop spending/queue, facility spending, and base-grid ownership. Browser 2300 campaign confirmations, Browser 2230 transient overlays, Browser 2110 stable campaign lists, Browser 1745 stable settings, Browser 1705 precompiled Tailwind, Browser 1310 hover/renderer/craft refinements, Browser 1130 runtime hardening, Browser 2325 beacon recovery, and Browser 2155 AI recovery remain active. Save format remains 4.**
+Current patch status: **Browser 1000 fixes the Command Map arrival deadlock that could leave Simulation AI burning empty rounds after a player-directed fire team reached its waypoint. Quiet completed player waypoints now release to autonomous search during the same AI round, active-contact holds and flanking remain intact, standard supporting-soldier formation follow continues, Hybrid round orders keep their separate ownership, and streamed no-progress recovery clears already-retained completed waypoints. Browser 0845 stable operational approvals and the earlier architectural, renderer, pathing, rescue, beacon, and AI recovery work remain active. Save format remains 4.**
 
 
 Implementation update (2026-08-19): **Browser 2325 targets the live reproduction where the last VIP had just been rescued, no living aliens remained, and a confirmed Alien Field Beacon was the sole remaining objective, yet Simulation AI rapidly advanced rounds without useful movement or fire. Browser 1315 already had a dedicated beacon assaulter, but it did not guarantee round-level progress. The new must-progress watchdog treats beacon-only neutralization as a mandatory action phase: nearby non-assault troops clear the shield/approach, close-assault routing ignores temporary same-side traffic along the path, and after the normal AEGIS pass the resolver compares beacon HP plus assaulter distance/inside-shield state. If nothing improved, the assaulter receives a zero-reserve same-round retry and immediately attacks when a legal shot becomes available. A truly no-breach squad now halts streamed continuation instead of manufacturing endless empty rounds.**
+
+
+## Browser 1000 — Command Map Autonomous Search Resume Hotfix
+
+**Status:** Implemented the live UFO-crash recovery fix for Simulation AI fire teams that reached player-issued Command Map waypoints and then advanced rounds without moving.
+
+### Root cause
+- Command Map arrival changed a fire-team order from `active` to `holding`.
+- `tacticalFireTeamCommandOrderForUnit(...)` intentionally recognizes both states so a team can retain its preferred target and engagement formation.
+- With no visible alien, the leader nevertheless continued selecting the completed waypoint—its current hex—as `playerCommandTarget`.
+- Because a player command was still considered active, the ordinary alien-hunt/search/patrol fallback was suppressed. The stream remained nonterminal and could therefore advance repeated empty rounds.
+
+### Corrected arrival doctrine
+- A `player-order:` Command Map waypoint is temporary navigation authority, not a permanent guard order.
+- When its leader reaches the waypoint with no personally or squad-visible alien contact, the order is cleared in place as `waypoint-complete`.
+- The resolver clears its local command ownership immediately, allowing the leader to use the already-selected alien-hunt, beacon, rescue, or patrol target during the same AI round.
+- Supporting soldiers continue to calculate standard leader-relative formation destinations after release. Clearing the temporary waypoint therefore does not dissolve or bypass fire-team movement.
+- If contact is visible at arrival, the order remains `holding`; preferred-target selection, aggressive enemy-relative support flanks, shooting, and fallback targets remain available.
+- `hybrid-round:` orders are deliberately excluded. They belong to the bounded Hybrid AI support handoff and retain their existing cycle cleanup and player-leader ownership.
+
+### Recovery of affected continuations
+- Stream no-progress recovery clones the authoritative continuation and checks completed quiet player waypoints before rebuilding search state.
+- A retained `holding` waypoint from an affected save or earlier streamed round is released when no living alien is currently visible.
+- Rescue-only and beacon-only recovery rules remain higher-authority special cases and continue clearing or replacing incompatible orders as before.
+
+### Validation gates
+1. Issue a Command Map waypoint during a no-contact UFO crash search and confirm the leader releases it on arrival and moves toward a new autonomous search target without another player command.
+2. Confirm lagging support soldiers continue into leader-relative formation after the waypoint releases.
+3. Reach the waypoint with a visible alien and confirm the order remains active for holding, flanking, and engagement.
+4. Confirm a `hybrid-round:` support order is not mistaken for a completed player waypoint.
+5. Feed a retained quiet `holding` waypoint through streamed recovery and confirm its order fields clear as `waypoint-complete`.
+6. Save format remains **4**.
 
 
 ## Roadmap Addition — Expanded Mission Sites, Objectives, and High-Value VIP Briefings

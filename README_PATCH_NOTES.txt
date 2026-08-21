@@ -1,6 +1,47 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.21.1000_COMMAND_MAP_SEARCH_RESUME_HOTFIX
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Prevents Simulation AI from advancing empty rounds after player-directed fire teams reach their Command Map waypoints.
+
+COMMAND MAP ARRIVAL HANDOFF
+---------------------------
+- A player-issued Command Map waypoint now releases automatically when its fire-team leader arrives and no alien contact is visible.
+- The leader can select the normal alien-hunt, beacon, rescue, or patrol objective during that same AI round instead of repeatedly targeting its current hex.
+- Supporting soldiers continue using standard leader-relative formation movement after the temporary order releases.
+- A waypoint remains active while an alien contact is visible, preserving engagement holds, preferred targets, and enemy-relative support flanking.
+- One-round Hybrid AI support orders use their separate hybrid-round identity and are not cleared by the new Command Map arrival rule.
+
+STREAM RECOVERY
+---------------
+- The no-progress recovery path detects quiet completed player waypoints retained by an affected continuation or save.
+- Those stale orders are cleared before search state is rebuilt, allowing a stalled UFO crash operation to self-heal rather than burn additional empty rounds.
+- Command Map help now explains that a quiet arrival releases the temporary waypoint back to autonomous search.
+
+VALIDATION
+----------
+- Build Health covers quiet waypoint release, active-contact hold retention, Hybrid round ownership, post-release formation following, and streamed recovery.
+- Save format remains 4.
+
+MANUAL TEST GATES
+-----------------
+1. During Simulation AI, issue a Command Map waypoint while no aliens are visible and let the leader reach it.
+2. Confirm the temporary order disappears and the fire team resumes a normal search route without player intervention.
+3. Confirm supporting soldiers keep moving into their leader-relative formation after release.
+4. Reach a waypoint while an alien is visible and confirm the team holds, flanks, and engages instead of abandoning the contact.
+5. Run deferred Build Health and verify the Command Map autonomous-search-resume contract passes.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.21.0845_STABLE_OPERATIONAL_APPROVAL_BOUNDARIES_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

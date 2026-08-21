@@ -309,6 +309,11 @@ const required = [
   "UnderstrengthMissionConfirmModal.displayName",
   "WorkshopFundingConfirmModal.displayName",
   "FacilityBuildConfirmModal.displayName",
+  "TACTICAL_COMMAND_MAP_AUTONOMOUS_SEARCH_RESUME_HOTFIX",
+  "tacticalReleaseCompletedCommandMapWaypoint",
+  "tacticalCommandMapAutonomousSearchResumeContractTest",
+  "the temporary order was released and autonomous search resumed",
+  "quiet arrival releases the order back to autonomous search",
   "AEGIS_HOVER_HELP_POINTER_DELAY_MS=3000",
   "data-aegis-hover-help-toggle",
   "aegisHoverHelpDescriptionIsGeneric",
@@ -838,6 +843,7 @@ for (const system of [
   "enhanced-sfx-per-sound-multipliers",
   "hybrid-escort-contact-decision-mode-preservation",
   "hybrid-opening-escort-support-independent-follow",
+  "command-map-autonomous-search-resume",
   "deferred-full-build-health-with-critical-boot-smoke",
   "single-owner-geoscape-clock-interval",
   "persistent-threejs-tactical-renderer-and-layer-invalidation",
@@ -911,6 +917,7 @@ for (const system of [
   "enhanced-sfx-per-sound-multipliers",
   "hybrid-escort-contact-decision-mode-preservation",
   "hybrid-opening-escort-support-independent-follow",
+  "command-map-autonomous-search-resume",
   "persistent-threejs-tactical-renderer-and-layer-invalidation",
   "threejs-full-ai-fog-of-war-shading",
   "observer-level-tactical-visibility-and-static-terrain-cache",
@@ -930,7 +937,7 @@ if (!nativeContent.soldiers?.every((soldier) => Number.isFinite(soldier.reaction
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "complete-classic-battlescape-command-set" && entry?.reason)) {
   missing.push("remaining classic battlescape command depth must be recorded as a temporary gameplay parity exception");
 }
-for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity", "stable-settings-component-boundaries", "stable-campaign-list-boundaries", "stable-transient-overlay-boundaries", "stable-campaign-confirmation-boundaries", "stable-operational-approval-boundaries"]) {
+for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity", "stable-settings-component-boundaries", "stable-campaign-list-boundaries", "stable-transient-overlay-boundaries", "stable-campaign-confirmation-boundaries", "stable-operational-approval-boundaries", "command-map-autonomous-search-resume"]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser optimization parity exception missing: ${system}`);
   }
