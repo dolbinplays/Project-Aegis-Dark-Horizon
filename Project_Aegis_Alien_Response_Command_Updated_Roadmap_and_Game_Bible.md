@@ -2,12 +2,66 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-20
-Current handoff build: `v0.26.08.20.2300_STABLE_CAMPAIGN_CONFIRMATION_BOUNDARIES_PATCH`
+Current handoff build: `v0.26.08.21.0845_STABLE_OPERATIONAL_APPROVAL_BOUNDARIES_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2300 continues architectural consolidation by moving New Game, End Month, and Surrender confirmations out of the monolithic campaign component. These module-scope React.memo boundaries receive explicit display/action inputs while AlienResponseCommand retains campaign reset, monthly processing, incident consequences, and surrender ownership. Browser 2230 transient overlays, Browser 2110 stable campaign lists, Browser 1745 stable settings, Browser 1705 precompiled Tailwind, Browser 1310 hover/renderer/craft refinements, Browser 1130 runtime hardening, Browser 2325 beacon recovery, and Browser 2155 AI recovery remain active. Save format remains 4.**
+Current patch status: **Browser 0845 continues architectural consolidation by moving understrength deployment, workshop funding, and facility construction approvals out of the monolithic campaign component. These module-scope React.memo boundaries receive explicit display/action inputs while AlienResponseCommand retains Skyranger launch, workshop spending/queue, facility spending, and base-grid ownership. Browser 2300 campaign confirmations, Browser 2230 transient overlays, Browser 2110 stable campaign lists, Browser 1745 stable settings, Browser 1705 precompiled Tailwind, Browser 1310 hover/renderer/craft refinements, Browser 1130 runtime hardening, Browser 2325 beacon recovery, and Browser 2155 AI recovery remain active. Save format remains 4.**
 
 
 Implementation update (2026-08-19): **Browser 2325 targets the live reproduction where the last VIP had just been rescued, no living aliens remained, and a confirmed Alien Field Beacon was the sole remaining objective, yet Simulation AI rapidly advanced rounds without useful movement or fire. Browser 1315 already had a dedicated beacon assaulter, but it did not guarantee round-level progress. The new must-progress watchdog treats beacon-only neutralization as a mandatory action phase: nearby non-assault troops clear the shield/approach, close-assault routing ignores temporary same-side traffic along the path, and after the normal AEGIS pass the resolver compares beacon HP plus assaulter distance/inside-shield state. If nothing improved, the assaulter receives a zero-reserve same-round retry and immediately attacks when a legal shot becomes available. A truly no-breach squad now halts streamed continuation instead of manufacturing endless empty rounds.**
+
+
+## Roadmap Addition — Expanded Mission Sites, Objectives, and High-Value VIP Briefings
+
+**Status:** Approved design item; implementation should be divided into bounded content, objective-logic, AI, and presentation patches.
+
+### Broader mission-site library
+- Add infrastructure points of interest such as container/shipping ports, freight terminals, data centers, oil refineries, power and water facilities, factories, rail yards, airports, research campuses, and communications hubs.
+- Add high-public-impact terror sites such as nationally recognizable monument districts, amusement parks, stadium/event grounds, civic plazas, museums, transit hubs, waterfront attractions, and other crowded symbolic locations.
+- Site generation should preserve readable ingress/egress routes, windows and solid sight-blocking walls, destructible or breached approaches, useful cover, civilian movement space, extraction access, and reliable 2D/Three.js navigation.
+- Regional presentation should use original or generalized landmark geometry rather than requiring exact replicas. Site names, architecture, lighting, civilian density, cover, hazards, and environmental audio should make locations distinct without changing core combat rules.
+
+### New objective families
+- **Capture an alien leader alive:** identify a command-capable alien, incapacitate it without killing it, secure it, and extract it to a base with suitable containment. A dead leader may yield reduced material/intelligence credit but fails the live-capture primary objective.
+- **Hack an alien database:** reach a protected terminal, maintain an uninterrupted interaction for a defined TU/round duration, download intelligence, then preserve or extract the carrier/data package. Damage, interruption, evacuation, and partial-download outcomes must be explicit.
+- **High-value principal rescue:** protect and extract one mandatory principal while other VIPs or staff are optional. The mission is lost if the principal dies or becomes permanently unrecoverable; optional VIP outcomes modify rewards, panic, diplomacy, funding, intelligence, and debrief text without replacing the primary success gate.
+- High-value principals may include the fictional AEGIS director/main political sponsor, presidents, prime ministers, regional leaders, senior scientists, intelligence directors, or other campaign-generated officeholders.
+- A principal's armed security detail should appear as allied personnel with conventional weapons, limited anti-alien effectiveness, self-preservation and principal-protection priorities, and escort/handoff behavior compatible with AEGIS fire teams. Their survival may provide optional credit, but they do not replace the principal objective.
+
+### High-value mission briefing presentation
+- Before a high-value rescue begins, play a short skippable/replayable Three.js first-person command-room briefing, with a 2D/reduced-motion fallback.
+- The briefing should use an original military-science ensemble tone with the pacing associated with a strong Stargate SG-1-style briefing: disciplined command-room staging, concise intelligence, clear tactical assignments, understated dry humor, and an ominous final reminder of the stakes. It must not copy Stargate characters, dialogue, music, set designs, insignia, or story material.
+- Show the principal's title/portrait or silhouette, why that person matters, the site, known threat, mandatory principal marker, optional VIP/security-detail markers, extraction plan, and the exact success/failure rule before deployment.
+- Keep the sequence brief enough for repeated campaigns, allow immediate skipping, retain a Briefing Replay action on the mission screen, and never hide required objective information exclusively in the cinematic.
+
+### Objective and AI acceptance gates
+1. Mission generation records site archetype, principal identity/title, mandatory and optional persons, objective state, briefing data, and rewards in save-compatible records.
+2. Manual, full-AI, and Hybrid control distinguish mandatory principals from optional VIPs and never end a mission while a still-achievable required capture, hack, or principal extraction remains unresolved.
+3. Escort assignment, lost-contact release, building ingress/egress, security-detail movement, extraction-zone traffic management, and impossible-objective termination reuse the existing authoritative pathing/resolution systems.
+4. Debriefs clearly separate primary result, optional rescues/security survivors, intelligence recovered, partial credit, panic/funding consequences, and the exact reason for failure.
+5. Build Health covers each new success, failure, partial-credit, impossible-objective, save/load, and AI-termination branch before the objective family ships broadly.
+
+
+## Browser 0845 — Stable Operational Approval Boundaries
+
+**Status:** Implemented the fifth bounded component-extraction slice from the architectural-consolidation roadmap.
+
+### Extracted module-scope boundaries
+- `UnderstrengthMissionConfirmModal`, `WorkshopFundingConfirmModal`, and `FacilityBuildConfirmModal` no longer belong to the `AlienResponseCommand` closure.
+- Each extracted approval has one stable module-scope `React.memo` identity and an explicit display name.
+- Response-force summaries, funding/queue records, facility placement requests, funds, and actions are passed explicitly. The campaign controller still owns every mutation and consequence.
+
+### Runtime and correctness benefit
+- Unrelated campaign updates no longer manufacture new component types for these operational approvals.
+- Open approval DOM, focus, and internal scroll state can reconcile while the parent campaign updates.
+- Mission capacity/power, workshop cost/affordability, and facility placement calculations remain unchanged and are still supplied from authoritative state.
+- Mission Launch remains nested for a later extraction because its sortie/loadout assembly still depends on several controller-local helpers; this patch does not duplicate or move that authority prematurely.
+
+### Validation gates
+1. Trigger an understrength launch and verify its response-force snapshot plus both controller callbacks.
+2. Render affordable and unaffordable workshop approvals and verify cost, remaining funds, disabled state, and cancellation.
+3. Render a facility approval and verify base, footprint, grid position, funds, and both decision actions.
+4. Run deferred Build Health and verify the stable operational-approval contract passes.
+5. Save format remains **4**.
 
 
 ## Browser 2300 — Stable Campaign Confirmation Boundaries
@@ -2893,7 +2947,8 @@ Browser 0725 roadmap completion note: **Both Browser 0630 documentation-only ref
 
 - Completed in Browser 1705: replace the embedded runtime Tailwind compiler with retained precompiled CSS after a complete class inventory and visual-regression pass.
 - Lazily index the large Memorial message library so tribute selection does not scan and lowercase the entire catalog per request.
-- Continue component and patch-layer consolidation. Browsers 1745, 2110, 2230, and 2300 hoist thirteen stable React boundaries; the next slices should extract additional safe presentation components, then remove duplicate authoritative helper definitions.
+- Approved content track: expand infrastructure/terror locations, live-leader capture, alien-database hacking, principal-versus-optional VIP rescues, allied security details, and original military-science FPV briefings for high-value missions.
+- Continue component and patch-layer consolidation. Browsers 1745, 2110, 2230, 2300, and 0845 hoist sixteen stable React boundaries; the next slices should extract additional safe presentation components, then remove duplicate authoritative helper definitions.
 
 
 ---
@@ -2980,7 +3035,7 @@ Browser 0725 roadmap completion note: **Both Browser 0630 documentation-only ref
 - Unit indexing preserves living-unit display, fallen human markers, and resolved-battle inspection. Cover indexing still excludes destroyed objects. Floor-item indexing still excludes upper levels. Repeated path cells keep their first displayed step.
 - Indexes invalidate independently from terrain and visibility caches: units rebuild on unit updates, cover on cover updates, equipment on floor-item changes, and path on movement-path changes.
 - This is a rendering optimization only and does not alter movement legality, Time Units, reserved shots, fire-team formation, Hybrid/full AI, fog, window ballistics, escort/extraction, beacon behavior, or mission resolution.
-- Completed in Browser 1930: `tacticalPath` now uses parent-pointer reconstruction and indexed occupancy/cover blockers while preserving route choice and formation behavior. Browser 1705 completed precompiled CSS and Browser 2335 completed lazy Memorial indexing. Browsers 1745, 2110, 2230, and 2300 establish thirteen stable settings/list/review/overlay/confirmation boundaries; further safe component extraction and patch-layer consolidation remain the next architectural priority.
+- Completed in Browser 1930: `tacticalPath` now uses parent-pointer reconstruction and indexed occupancy/cover blockers while preserving route choice and formation behavior. Browser 1705 completed precompiled CSS and Browser 2335 completed lazy Memorial indexing. Browsers 1745, 2110, 2230, 2300, and 0845 establish sixteen stable settings/list/review/overlay/confirmation/approval boundaries; further safe component extraction and patch-layer consolidation remain the next architectural priority.
 
 ---
 
@@ -3032,7 +3087,7 @@ Browser build `v0.26.08.15.1342_PERSISTENT_THREE_TACTICAL_RENDERER_INDEX_ONLY_PA
 - Build Health adds a persistent-runtime contract covering scene ownership, instanced terrain, stable unit-node mutation, disposal, and layer-specific invalidation. The new contract passes at the established full-suite baseline.
 - Live browser validation launched a Small 64 x 64 mission, entered 3D Iso, changed selected soldiers, and completed a turn update. The renderer identity remained `tactical-three-1`, exactly one persistent 3D root remained mounted, and no runtime-error overlay appeared.
 - The next performance patch should optimize the 2D tactical grid and fog/visibility together: pre-index units/covers/items, cache static terrain, reuse visibility contexts, and avoid recomputing observers unaffected by a state change.
-- Browser 1930 completed the `tacticalPath` modernization, Browser 2335 lazily indexed the Memorial library, and Browser 1705 replaced runtime Tailwind with embedded precompiled CSS plus the first malformed-class cleanup. Browsers 1745, 2110, 2230, and 2300 continue component consolidation with stable settings, notification, save-list, review, transient-overlay, and campaign-confirmation boundaries; following work should continue extracting safe nested components and then consolidate patch-layer definitions before the remaining minor allocation and class-string cleanup.
+- Browser 1930 completed the `tacticalPath` modernization, Browser 2335 lazily indexed the Memorial library, and Browser 1705 replaced runtime Tailwind with embedded precompiled CSS plus the first malformed-class cleanup. Browsers 1745, 2110, 2230, 2300, and 0845 continue component consolidation with stable settings, notification, save-list, review, transient-overlay, campaign-confirmation, and operational-approval boundaries; following work should continue extracting safe nested components and then consolidate patch-layer definitions before the remaining minor allocation and class-string cleanup.
 
 ---
 
@@ -3060,7 +3115,7 @@ Browser build `v0.26.08.15.1208_DEFERRED_BUILD_HEALTH_AND_STABLE_GEOCLOCK_INDEX_
 
 - Completed in Browser 1342: make the Three.js tactical renderer persistent across movement, selection, and soldier-state updates; retain renderer, scene, caches, and static battlefield objects while mutating changed actors/effects.
 - Next tactical patch: combine 2D grid indexing, static terrain caching, fog/visibility context reuse, and observer-level visibility invalidation.
-- Browser 1930 completed the `tacticalPath` modernization, Browser 2335 lazily indexed the Memorial library, and Browser 1705 replaced runtime Tailwind with embedded precompiled CSS plus the first malformed-class cleanup. Browsers 1745, 2110, 2230, and 2300 continue component consolidation with stable settings, notification, save-list, review, transient-overlay, and campaign-confirmation boundaries; subsequent patches should continue safe component extraction and then consolidate patch-layer definitions before the remaining minor allocation and class-string cleanup.
+- Browser 1930 completed the `tacticalPath` modernization, Browser 2335 lazily indexed the Memorial library, and Browser 1705 replaced runtime Tailwind with embedded precompiled CSS plus the first malformed-class cleanup. Browsers 1745, 2110, 2230, 2300, and 0845 continue component consolidation with stable settings, notification, save-list, review, transient-overlay, campaign-confirmation, and operational-approval boundaries; subsequent patches should continue safe component extraction and then consolidate patch-layer definitions before the remaining minor allocation and class-string cleanup.
 - Every performance patch must preserve fire-team formation, Hybrid AI, escort/extraction, visibility, window ballistics, and save-format behavior.
 
 ## Validation and native roadmap

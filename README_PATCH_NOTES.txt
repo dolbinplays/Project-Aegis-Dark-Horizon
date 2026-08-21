@@ -1,6 +1,49 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.21.0845_STABLE_OPERATIONAL_APPROVAL_BOUNDARIES_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Continues architectural consolidation by moving understrength deployment, workshop funding, and facility construction approvals out of the monolithic campaign component.
+
+STABLE OPERATIONAL APPROVALS
+----------------------------
+- UnderstrengthMissionConfirmModal, WorkshopFundingConfirmModal, and FacilityBuildConfirmModal now have stable module-scope React.memo identities.
+- Each dialog receives explicit display data and controller-owned action callbacks.
+- Skyranger launch, workshop spending/queue mutation, facility spending, and base-grid placement remain owned by AlienResponseCommand.
+- Open approval DOM, focus, and scroll state can reconcile through unrelated campaign updates instead of remounting under newly created component functions.
+- Mission capacity/power, queue cost, affordability, facility footprint, and placement readouts retain their existing calculations.
+
+ROADMAP ADDITION
+----------------
+- Approved a broader library of infrastructure and terror-site locations, including ports, data centers, refineries, factories, monument districts, amusement parks, and other high-impact public sites.
+- Added live alien-leader capture, alien-database hacking, and principal-versus-optional VIP rescue objective designs with armed allied security details.
+- High-value rescues are planned to receive short skippable/replayable Three.js FPV command-room briefings with an original military-science ensemble tone, concise intelligence, restrained dry humor, clear stakes, and a 2D/reduced-motion fallback.
+- Mission resolution and AI acceptance gates explicitly distinguish mandatory principals from optional VIPs and require honest terminal handling for capture, hacking, extraction, and impossible-objective states.
+
+VALIDATION
+----------
+- Static validation requires exactly one memoized declaration for each extracted approval before AlienResponseCommand.
+- Build Health verifies explicit inputs and confirms that controller-local state/action names did not leak into the extracted components.
+- Browser checks cover dialog rendering, displayed calculations, disabled unaffordable funding, callback wiring, cancellation, and clean startup.
+- Launch rules, production rules, construction rules, campaign state, tactical behavior, and save format remain unchanged.
+
+MANUAL TEST GATES
+-----------------
+1. Launch with an understrength response force and verify the selected squads, capacity, power, roster, Cancel, and Proceed actions.
+2. Let an unfunded workshop queue pause and verify approval cost, remaining funds, disabled unaffordable approval, and Keep Queue Paused.
+3. Select a valid facility footprint and verify base, cost, remaining funds, footprint, grid position, Cancel, and Confirm Build.
+4. Run deferred Build Health and verify the stable operational-approval contract passes.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.20.2300_STABLE_CAMPAIGN_CONFIRMATION_BOUNDARIES_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

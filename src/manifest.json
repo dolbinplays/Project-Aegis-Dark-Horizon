@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.20.2300_STABLE_CAMPAIGN_CONFIRMATION_BOUNDARIES_PATCH",
+  "currentBuild": "v0.26.08.21.0845_STABLE_OPERATIONAL_APPROVAL_BOUNDARIES_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "stable-campaign-confirmation-boundaries-static-passed",
+  "status": "stable-operational-approval-boundaries-static-passed",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.20.2300_STABLE_CAMPAIGN_CONFIRMATION_BOUNDARIES_PATCH",
+  "lastInspectedBuild": "v0.26.08.21.0845_STABLE_OPERATIONAL_APPROVAL_BOUNDARIES_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.20.2300_STABLE_CAMPAIGN_CONFIRMATION_BOUNDARIES_PATCH",
+    "browserBuild": "v0.26.08.21.0845_STABLE_OPERATIONAL_APPROVAL_BOUNDARIES_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -298,6 +298,10 @@
       {
         "system": "stable-campaign-confirmation-boundaries",
         "reason": "The browser moves New Game, End Month, and Surrender confirmations to memoized module-scope React boundaries with explicit display and action inputs. Native Godot uses separate dialogs and Control nodes rather than React component identity."
+      },
+      {
+        "system": "stable-operational-approval-boundaries",
+        "reason": "The browser moves understrength deployment, workshop funding, and facility construction approvals to memoized module-scope React boundaries with explicit display and action inputs. Native Godot uses separate dialogs and Control nodes rather than React component identity."
       },
       {
         "system": "threejs-armor-matched-soldier-helmets",
