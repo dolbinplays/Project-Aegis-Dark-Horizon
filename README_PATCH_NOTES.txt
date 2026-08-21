@@ -1,6 +1,41 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.20.2230_STABLE_TRANSIENT_OVERLAY_BOUNDARIES_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Continues architectural consolidation by moving the event-speed prompt, backup reminder, and Build Health overlay out of the monolithic campaign component.
+
+STABLE TRANSIENT OVERLAYS
+-------------------------
+- EventSpeedPromptModal, BackupReminderModal, and SelfTestOverlay now have stable module-scope React.memo identities.
+- The event-speed prompt receives its prompt record, tactical-ownership presentation flag, and authoritative resolver through explicit props.
+- The backup reminder receives a display snapshot plus dismiss/download actions; export and reminder state remain owned by AlienResponseCommand.
+- Build Health receives the current completed test collection and Close action without taking ownership of deferred test execution.
+- Mounted overlay content can reconcile normally through unrelated parent updates instead of remounting under newly created component functions.
+
+VALIDATION
+----------
+- Static validation requires exactly one memoized declaration for each extracted overlay before AlienResponseCommand.
+- Browser checks Build Health opens, retains its root and focused Close button through a parent update, closes normally, and still runs the deferred full suite.
+- Direct startup, Geoscape time authority, tactical handoff, backup format, diagnostics, campaign rules, and save format remain unchanged.
+
+MANUAL TEST GATES
+-----------------
+1. Open Build Health, scroll the test list, and confirm Close returns to the same command screen.
+2. Trigger a UFO/base-logistics speed prompt and verify Pause, 5 Min, 30 Min, and 1 Hour retain their normal result.
+3. Trigger a campaign backup reminder; test Remind Me Later and Download Backup Now with a disposable backup.
+4. Confirm tactical speed prompts still describe and apply their post-battle speed without leaving the active incident.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.20.2110_STABLE_CAMPAIGN_LIST_BOUNDARIES_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

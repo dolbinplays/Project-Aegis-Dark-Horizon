@@ -2,12 +2,35 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-20
-Current handoff build: `v0.26.08.20.2110_STABLE_CAMPAIGN_LIST_BOUNDARIES_PATCH`
+Current handoff build: `v0.26.08.20.2230_STABLE_TRANSIENT_OVERLAY_BOUNDARIES_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2110 continues architectural consolidation by moving notifications, manual save-slot lists, autosave-slot lists, and the Council Review slide frame out of the monolithic campaign component. These module-scope React.memo boundaries receive explicit data/action inputs while AlienResponseCommand retains authoritative campaign and storage ownership. Browser 1745 stable settings boundaries, Browser 1705 precompiled Tailwind, Browser 1310 hover/renderer/craft refinements, Browser 1130 runtime hardening, Browser 2325 beacon recovery, and Browser 2155 AI recovery remain active. Save format remains 4.**
+Current patch status: **Browser 2230 continues architectural consolidation by moving the event-speed prompt, backup reminder, and Build Health overlay out of the monolithic campaign component. These module-scope React.memo boundaries receive explicit display/action inputs while AlienResponseCommand retains Geoscape timing, backup, diagnostic, and campaign ownership. Browser 2110 stable campaign lists, Browser 1745 stable settings, Browser 1705 precompiled Tailwind, Browser 1310 hover/renderer/craft refinements, Browser 1130 runtime hardening, Browser 2325 beacon recovery, and Browser 2155 AI recovery remain active. Save format remains 4.**
 
 
 Implementation update (2026-08-19): **Browser 2325 targets the live reproduction where the last VIP had just been rescued, no living aliens remained, and a confirmed Alien Field Beacon was the sole remaining objective, yet Simulation AI rapidly advanced rounds without useful movement or fire. Browser 1315 already had a dedicated beacon assaulter, but it did not guarantee round-level progress. The new must-progress watchdog treats beacon-only neutralization as a mandatory action phase: nearby non-assault troops clear the shield/approach, close-assault routing ignores temporary same-side traffic along the path, and after the normal AEGIS pass the resolver compares beacon HP plus assaulter distance/inside-shield state. If nothing improved, the assaulter receives a zero-reserve same-round retry and immediately attacks when a legal shot becomes available. A truly no-breach squad now halts streamed continuation instead of manufacturing endless empty rounds.**
+
+
+## Browser 2230 — Stable Transient Overlay Boundaries
+
+**Status:** Implemented the third bounded component-extraction slice from the architectural-consolidation roadmap.
+
+### Extracted module-scope boundaries
+- `EventSpeedPromptModal`, `BackupReminderModal`, and `SelfTestOverlay` no longer belong to the `AlienResponseCommand` closure.
+- Each extracted overlay has one stable module-scope `React.memo` identity and an explicit display name.
+- Prompt records, campaign display snapshots, completed diagnostic results, and actions are passed explicitly. The campaign controller still owns every mutation and side effect.
+
+### Runtime and correctness benefit
+- Unrelated campaign updates no longer manufacture new component types for these transient overlays.
+- Open overlay DOM, focus, and scroll state can reconcile in place rather than resetting due to a new component function identity.
+- Event-speed resolution, backup creation/dismissal, and deferred Build Health execution remain authoritative parent operations.
+
+### Validation gates
+1. Open Build Health, focus its Close button, trigger an unrelated campaign update, and confirm the same overlay/button remains mounted and focused.
+2. Close Build Health and verify it returns to the unchanged command screen.
+3. Exercise Geoscape and tactical event-speed choices and verify their established time-authority behavior.
+4. Exercise both backup-reminder actions and confirm only Download creates the established JSON backup.
+5. Run deferred Build Health and verify the stable transient-overlay contract passes.
+6. Save format remains **4**.
 
 
 ## Browser 2110 — Stable Campaign List Boundaries
@@ -2847,7 +2870,7 @@ Browser 0725 roadmap completion note: **Both Browser 0630 documentation-only ref
 
 - Completed in Browser 1705: replace the embedded runtime Tailwind compiler with retained precompiled CSS after a complete class inventory and visual-regression pass.
 - Lazily index the large Memorial message library so tribute selection does not scan and lowercase the entire catalog per request.
-- Continue component and patch-layer consolidation. Browsers 1745 and 2110 hoist seven stable React boundaries; the next slices should extract additional safe presentation components, then remove duplicate authoritative helper definitions.
+- Continue component and patch-layer consolidation. Browsers 1745, 2110, and 2230 hoist ten stable React boundaries; the next slices should extract additional safe presentation components, then remove duplicate authoritative helper definitions.
 
 
 ---
@@ -2934,7 +2957,7 @@ Browser 0725 roadmap completion note: **Both Browser 0630 documentation-only ref
 - Unit indexing preserves living-unit display, fallen human markers, and resolved-battle inspection. Cover indexing still excludes destroyed objects. Floor-item indexing still excludes upper levels. Repeated path cells keep their first displayed step.
 - Indexes invalidate independently from terrain and visibility caches: units rebuild on unit updates, cover on cover updates, equipment on floor-item changes, and path on movement-path changes.
 - This is a rendering optimization only and does not alter movement legality, Time Units, reserved shots, fire-team formation, Hybrid/full AI, fog, window ballistics, escort/extraction, beacon behavior, or mission resolution.
-- Completed in Browser 1930: `tacticalPath` now uses parent-pointer reconstruction and indexed occupancy/cover blockers while preserving route choice and formation behavior. Browser 1705 completed precompiled CSS and Browser 2335 completed lazy Memorial indexing. Browsers 1745 and 2110 establish seven stable settings/list/review boundaries; further safe component extraction and patch-layer consolidation remain the next architectural priority.
+- Completed in Browser 1930: `tacticalPath` now uses parent-pointer reconstruction and indexed occupancy/cover blockers while preserving route choice and formation behavior. Browser 1705 completed precompiled CSS and Browser 2335 completed lazy Memorial indexing. Browsers 1745, 2110, and 2230 establish ten stable settings/list/review/overlay boundaries; further safe component extraction and patch-layer consolidation remain the next architectural priority.
 
 ---
 
@@ -2986,7 +3009,7 @@ Browser build `v0.26.08.15.1342_PERSISTENT_THREE_TACTICAL_RENDERER_INDEX_ONLY_PA
 - Build Health adds a persistent-runtime contract covering scene ownership, instanced terrain, stable unit-node mutation, disposal, and layer-specific invalidation. The new contract passes at the established full-suite baseline.
 - Live browser validation launched a Small 64 x 64 mission, entered 3D Iso, changed selected soldiers, and completed a turn update. The renderer identity remained `tactical-three-1`, exactly one persistent 3D root remained mounted, and no runtime-error overlay appeared.
 - The next performance patch should optimize the 2D tactical grid and fog/visibility together: pre-index units/covers/items, cache static terrain, reuse visibility contexts, and avoid recomputing observers unaffected by a state change.
-- Browser 1930 completed the `tacticalPath` modernization, Browser 2335 lazily indexed the Memorial library, and Browser 1705 replaced runtime Tailwind with embedded precompiled CSS plus the first malformed-class cleanup. Browsers 1745 and 2110 begin component consolidation with stable settings, notification, save-list, and review boundaries; following work should continue extracting safe nested components and then consolidate patch-layer definitions before the remaining minor allocation and class-string cleanup.
+- Browser 1930 completed the `tacticalPath` modernization, Browser 2335 lazily indexed the Memorial library, and Browser 1705 replaced runtime Tailwind with embedded precompiled CSS plus the first malformed-class cleanup. Browsers 1745, 2110, and 2230 begin component consolidation with stable settings, notification, save-list, review, and transient-overlay boundaries; following work should continue extracting safe nested components and then consolidate patch-layer definitions before the remaining minor allocation and class-string cleanup.
 
 ---
 
@@ -3014,7 +3037,7 @@ Browser build `v0.26.08.15.1208_DEFERRED_BUILD_HEALTH_AND_STABLE_GEOCLOCK_INDEX_
 
 - Completed in Browser 1342: make the Three.js tactical renderer persistent across movement, selection, and soldier-state updates; retain renderer, scene, caches, and static battlefield objects while mutating changed actors/effects.
 - Next tactical patch: combine 2D grid indexing, static terrain caching, fog/visibility context reuse, and observer-level visibility invalidation.
-- Browser 1930 completed the `tacticalPath` modernization, Browser 2335 lazily indexed the Memorial library, and Browser 1705 replaced runtime Tailwind with embedded precompiled CSS plus the first malformed-class cleanup. Browsers 1745 and 2110 begin component consolidation with stable settings, notification, save-list, and review boundaries; subsequent patches should continue safe component extraction and then consolidate patch-layer definitions before the remaining minor allocation and class-string cleanup.
+- Browser 1930 completed the `tacticalPath` modernization, Browser 2335 lazily indexed the Memorial library, and Browser 1705 replaced runtime Tailwind with embedded precompiled CSS plus the first malformed-class cleanup. Browsers 1745, 2110, and 2230 begin component consolidation with stable settings, notification, save-list, review, and transient-overlay boundaries; subsequent patches should continue safe component extraction and then consolidate patch-layer definitions before the remaining minor allocation and class-string cleanup.
 - Every performance patch must preserve fire-team formation, Hybrid AI, escort/extraction, visibility, window ballistics, and save-format behavior.
 
 ## Validation and native roadmap
