@@ -1,6 +1,41 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.20.2110_STABLE_CAMPAIGN_LIST_BOUNDARIES_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Continues architectural consolidation by moving notification, save-list, autosave-list, and Council Review presentation components out of the monolithic campaign component.
+
+STABLE CAMPAIGN LIST BOUNDARIES
+-------------------------------
+- NotificationStack, SaveSlotCards, AutoSaveSlotCards, and CouncilReviewSlidesModal now have stable module-scope React.memo identities.
+- Save and autosave slot collections and actions are explicit component inputs. AlienResponseCommand still owns campaign state, browser storage, and every authoritative action.
+- Notifications can bypass unrelated campaign rerenders when their collection is unchanged.
+- Save / Load list DOM remains reconcilable in place across unrelated parent updates instead of being remounted under newly created component functions.
+- Council Review keeps its existing slide data, framing, highlights, Skip, Next, and Finish behavior.
+
+VALIDATION
+----------
+- Static validation requires exactly one memoized declaration for each extracted component before AlienResponseCommand.
+- Browser checks stable notification/save/autosave DOM identity across a live parent update, explicit component inputs, deferred Build Health, and current build metadata.
+- Save/load/export/clear ownership, notification timing, monthly resolution, tactical behavior, and save format remain unchanged.
+
+MANUAL TEST GATES
+-----------------
+1. Open Save / Load and confirm all ten manual slots and both autosave slots render normally.
+2. Save, load, export, and clear a disposable slot; confirm the same confirmations and campaign results as before.
+3. Trigger several notices while navigating command screens and confirm the stack still fades each notice normally.
+4. Complete a month and confirm Council Review Skip, Next, and Finish retain their normal behavior and layout.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.20.1745_STABLE_SETTINGS_COMPONENT_BOUNDARIES_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

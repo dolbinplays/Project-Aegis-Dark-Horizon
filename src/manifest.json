@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.20.1745_STABLE_SETTINGS_COMPONENT_BOUNDARIES_PATCH",
+  "currentBuild": "v0.26.08.20.2110_STABLE_CAMPAIGN_LIST_BOUNDARIES_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "stable-settings-component-boundaries-static-passed",
+  "status": "stable-campaign-list-boundaries-static-passed",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.20.1745_STABLE_SETTINGS_COMPONENT_BOUNDARIES_PATCH",
+  "lastInspectedBuild": "v0.26.08.20.2110_STABLE_CAMPAIGN_LIST_BOUNDARIES_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.20.1745_STABLE_SETTINGS_COMPONENT_BOUNDARIES_PATCH",
+    "browserBuild": "v0.26.08.20.2110_STABLE_CAMPAIGN_LIST_BOUNDARIES_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -286,6 +286,10 @@
       {
         "system": "stable-settings-component-boundaries",
         "reason": "The browser moves reusable settings panels and custom range styles out of the monolithic React campaign component and memoizes their stable boundaries. Native Godot uses separate scenes and Control nodes rather than React component identity."
+      },
+      {
+        "system": "stable-campaign-list-boundaries",
+        "reason": "The browser moves notifications, save-slot lists, autosave-slot lists, and the Council Review slide frame to memoized module-scope React boundaries with explicit inputs. Native Godot uses separate scenes and Control nodes rather than React component identity."
       },
       {
         "system": "threejs-armor-matched-soldier-helmets",
