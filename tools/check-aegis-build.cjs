@@ -361,6 +361,12 @@ const required = [
   "start-tactical-three-iso-night-brightness",
   "menu-tactical-three-iso-night-brightness",
   "tactical-three-iso-night-brightness-live",
+  "TACTICAL_LIVE_VEHICLE_FOOTPRINT_MOVEMENT_INTEGRITY_PATCH",
+  "tacticalLiveLandVehicleFootprintKeySet",
+  "tacticalMovementCommitCellState",
+  "tacticalThreeCoverWorldAnchor",
+  "tacticalLiveVehicleFootprintMovementIntegrityContractTest",
+  "Live land-vehicle footprints block every movement commit and align the persistent 3D body with its authoritative cells",
   "TACTICAL_COMMAND_MAP_AUTONOMOUS_SEARCH_RESUME_HOTFIX",
   "tacticalReleaseCompletedCommandMapWaypoint",
   "tacticalCommandMapAutonomousSearchResumeContractTest",
@@ -798,6 +804,15 @@ if (!html.includes('tacticalThreeIsoNightBrightnessPresentation(baseProfile,prop
 if (!html.includes('const isoFillLight=new THREE.AmbientLight(0x9fb7d5,0)') || !html.includes('runtime.isoFillLight.intensity=Number(profile.isoFillIntensity)||0')) {
   missing.push("3D Iso Night Brightness must use a persistent zero-at-neutral ambient fill light for readable dark objects");
 }
+if (!html.includes('cover?.hp>0&&cover.kind==="hard"&&cover.solidVehicleFootprint') || !html.includes('tacticalCoverFootprintCells(cover).forEach(cell=>blocked.add(tacticalKey(cell.x,cell.y)))')) {
+  missing.push("live land-vehicle authority must expand every intact hard-cover footprint cell");
+}
+if (!html.includes('const commitState=tacticalMovementCommitCellState(leader,nextCell,covers,units,{requireAdjacent:true})') || !html.includes('const commitState=tacticalMovementCommitCellState(human,plan.cell,covers,allUnits(),{requireAdjacent:false})') || !html.includes('const commitState=tacticalMovementCommitCellState(alien,step,covers,allUnits(),{requireAdjacent:true})')) {
+  missing.push("manual/escort, human AI, and alien movement must recheck blockers at final commit time");
+}
+if (!html.includes('const base=tacticalThreeCoverWorldAnchor(runtime.worldFor,c)') || !html.includes('tacticalCoverFootprintCells(c).some(cell=>runtime.visibleSet.has(tacticalKey(cell.x,cell.y)))')) {
+  missing.push("persistent 3D land vehicles must center and reveal from their authoritative footprint cells");
+}
 if (!html.includes('tacticalThreePersistentApplyIsoNightMaterialLift(runtime,profile)') || !html.includes('runtime?.scene?.traverse?.(object=>') || !html.includes('material.userData.aegisIsoNightBaseEmissive=material.emissive.getHex()') || !html.includes('material.emissive.setHex(baseHex)') || !html.includes('aegisIsoLiftedMaterialCount')) {
   missing.push("3D Iso Night Brightness must reversibly lift cached and directly created lit scene materials, then restore their authored emissive state");
 }
@@ -1074,7 +1089,7 @@ if (!nativeContent.soldiers?.every((soldier) => Number.isFinite(soldier.reaction
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "complete-classic-battlescape-command-set" && entry?.reason)) {
   missing.push("remaining classic battlescape command depth must be recorded as a temporary gameplay parity exception");
 }
-for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity", "stable-settings-component-boundaries", "stable-campaign-list-boundaries", "stable-transient-overlay-boundaries", "stable-campaign-confirmation-boundaries", "stable-operational-approval-boundaries", "stable-mission-launch-confirmation-boundary", "stable-strategic-incident-route-boundaries", "threejs-iso-night-vibrance-presentation", "threejs-iso-color-device-preference", "threejs-iso-night-brightness-device-preference", "command-map-autonomous-search-resume"]) {
+for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity", "stable-settings-component-boundaries", "stable-campaign-list-boundaries", "stable-transient-overlay-boundaries", "stable-campaign-confirmation-boundaries", "stable-operational-approval-boundaries", "stable-mission-launch-confirmation-boundary", "stable-strategic-incident-route-boundaries", "threejs-iso-night-vibrance-presentation", "threejs-iso-color-device-preference", "threejs-iso-night-brightness-device-preference", "command-map-autonomous-search-resume", "live-land-vehicle-footprint-movement-integrity"]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser optimization parity exception missing: ${system}`);
   }

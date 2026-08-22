@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.21.1730_THREE_ISO_NIGHT_BRIGHTNESS_CONTROL_PATCH",
+  "currentBuild": "v0.26.08.21.1845_LIVE_VEHICLE_FOOTPRINT_MOVEMENT_INTEGRITY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "three-iso-night-brightness-control-static-passed",
+  "status": "live-vehicle-footprint-movement-integrity-validated",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.21.1730_THREE_ISO_NIGHT_BRIGHTNESS_CONTROL_PATCH",
+  "lastInspectedBuild": "v0.26.08.21.1845_LIVE_VEHICLE_FOOTPRINT_MOVEMENT_INTEGRITY_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.21.1730_THREE_ISO_NIGHT_BRIGHTNESS_CONTROL_PATCH",
+    "browserBuild": "v0.26.08.21.1845_LIVE_VEHICLE_FOOTPRINT_MOVEMENT_INTEGRITY_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -141,7 +141,8 @@
       "observer-level-tactical-visibility-and-static-terrain-cache",
       "indexed-2d-tactical-cell-render-lookups",
       "threejs-explicit-living-unit-pose-state",
-      "vip-death-flag-impossible-quota-terminal-resolution"
+      "vip-death-flag-impossible-quota-terminal-resolution",
+      "live-land-vehicle-footprint-movement-integrity"
     ],
     "temporaryExceptions": [
       {
@@ -327,6 +328,10 @@
       {
         "system": "threejs-iso-night-brightness-device-preference",
         "reason": "The browser exposes a persistent 50%-200% 3D Iso night/twilight exposure and ambient-shadow presentation preference while preserving PointLight range, tactical illumination, fog, LOS, accuracy, and AI knowledge. Native Godot requires an engine-native presentation setting."
+      },
+      {
+        "system": "live-land-vehicle-footprint-movement-integrity",
+        "reason": "The browser now rechecks every living multi-hex land-vehicle footprint at final movement commit and centers the persistent Three.js vehicle body on those authoritative cells. Native Godot requires equivalent engine-native navigation footprints and scene alignment."
       },
       {
         "system": "threejs-armor-matched-soldier-helmets",

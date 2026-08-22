@@ -2,12 +2,40 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-21
-Current handoff build: `v0.26.08.21.1730_THREE_ISO_NIGHT_BRIGHTNESS_CONTROL_PATCH`
+Current handoff build: `v0.26.08.21.1845_LIVE_VEHICLE_FOOTPRINT_MOVEMENT_INTEGRITY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1730 adds a persistent 3D Iso Night Brightness control beside the color control on the start screen, in Save / Load settings, and in the live 3D Iso toolbar. Its 50%–200% device preference changes only night/twilight renderer exposure, ambient/key/rim presentation, and a reversible shadow-color lift on light-reactive scene materials; 100% exactly preserves Browser 1630. PointLight distance and intensity scaling, illuminated hexes, fog, LOS, visibility, darkness accuracy, AI knowledge, targeting, movement, damage, and save format 4 remain unchanged. Daylight and perspective cameras restore the neutral profile, and live adjustment does not rebuild the persistent renderer or battlefield caches. The live-vehicle footprint pathing report remains queued as the next bounded gameplay/pathing patch.**
+Current patch status: **Browser 1845 makes every cell of a living land vehicle's multi-hex footprint authoritative at final movement commit time across manual/escort stepping, Simulation AI, fallback recovery, beacon-watchdog movement, and alien per-step travel. It also centers persistent Three.js vehicle bodies on the centroid of the same authoritative cells, correcting the visual overhang that could make a legal neighboring unit look as though it stood inside a vehicle. Existing route validation and battlefield integrity repair remain active; destroyed vehicles retain their prior passability, and formations, escorts, Skyranger rules, fog, LOS, battle knowledge, lighting, and save format 4 are unchanged.**
 
 
 Implementation update (2026-08-19): **Browser 2325 targets the live reproduction where the last VIP had just been rescued, no living aliens remained, and a confirmed Alien Field Beacon was the sole remaining objective, yet Simulation AI rapidly advanced rounds without useful movement or fire. Browser 1315 already had a dedicated beacon assaulter, but it did not guarantee round-level progress. The new must-progress watchdog treats beacon-only neutralization as a mandatory action phase: nearby non-assault troops clear the shield/approach, close-assault routing ignores temporary same-side traffic along the path, and after the normal AEGIS pass the resolver compares beacon HP plus assaulter distance/inside-shield state. If nothing improved, the assaulter receives a zero-reserve same-round retry and immediately attacks when a legal shot becomes available. A truly no-breach squad now halts streamed continuation instead of manufacturing endless empty rounds.**
+
+
+## Browser 1845 — Live Land-Vehicle Footprint Movement Integrity
+
+**Status:** Implemented as a bounded pathing, final-commit, and persistent-renderer alignment correction.
+
+### Shared movement authority
+- `tacticalLiveLandVehicleFootprintKeySet(...)` expands every footprint cell of an intact hard-cover land vehicle into one authoritative blocker set.
+- `tacticalMovementCommitCellState(...)` rechecks current hard-cover and living-unit occupancy at the final mutation boundary, after planning but before coordinates change.
+- Manual movement and escort-led formation stepping, Simulation AI normal movement, emergency grid-search fallback, beacon-watchdog movement, and alien per-step movement all consume the final guard.
+- Existing authoritative plan validation continues to reject blocked intermediate cells, and battlefield integrity repair continues to relocate loaded units that overlap living hard-cover footprints.
+- A vehicle with zero HP is absent from the live-vehicle set, preserving existing destruction and rubble/passability behavior.
+
+### 3D footprint alignment
+- Persistent Three.js vehicle bodies now use the world-space centroid of all authoritative footprint cells instead of the generator's single anchor cell.
+- This corrects the asymmetric two-hex-wide generation layout, where the symmetric mesh previously overhung a legal cell on one side and made a soldier appear to occupy the vehicle.
+- Persistent rendering recognizes a visible vehicle when any of its footprint cells is visible, avoiding an anchor-only reveal discrepancy.
+
+### Preserved systems
+- Fire-team formation following, Hybrid leader authority, VIP/civilian escort, command-map orders, Skyranger hull/ramp rules, UFO and building blockers, TU costs, LOS, fog, illumination, targeting, damage, and AI knowledge are unchanged.
+- Save format remains **4**.
+
+### Validation gates
+1. Exercise cars, vans, utility vehicles, trucks, and buses across footprint orientations in 2D, 3D Iso, Simulation AI, and Hybrid mode.
+2. Confirm no preview, intermediate route step, final commit, fallback, or playback state enters a live footprint cell.
+3. Confirm the visible persistent 3D body aligns with the blocked footprint and units no longer appear beneath its side overhang.
+4. Load an invalid overlap and confirm integrity repair relocates the unit to the nearest legal cell.
+5. Destroy the vehicle and confirm existing post-destruction passability resumes.
 
 
 ## Browser 1730 — Player-Adjustable 3D Iso Night Brightness
@@ -96,13 +124,13 @@ Implementation update (2026-08-19): **Browser 2325 targets the live reproduction
 6. Confirm tactical light distances, illuminated hexes, LOS, hit chances, AI decisions, and fog-of-war state remain byte-for-byte behaviorally unchanged at every slider value.
 
 
-## Roadmap Addition — Live Land-Vehicle Footprint Movement Integrity
+## Implemented Roadmap Item — Live Land-Vehicle Footprint Movement Integrity
 
-**Status:** Confirmed field report; implementation is queued as a separate bounded gameplay/pathing patch.
+**Status:** Implemented in Browser 1845; retained here as the long-form requirement and regression checklist.
 
-### Reported defect
-- Soldiers can still sometimes plan or animate a route through a living land vehicle and may finish movement inside part of its multi-hex footprint.
-- Earlier vehicle-footprint work correctly improved several blocker consumers, but at least one movement-planning, fallback, playback, continuation, or state-repair seam still accepts anchor-cell-only occupancy or an incomplete blocker set.
+### Resolved defect
+- Final movement commits now reject current hard-cover and occupied cells even if a stale, fallback, or streamed plan reaches the mutation boundary.
+- Persistent Three.js vehicle bodies now center on the authoritative footprint centroid, resolving the anchor-cell visual overhang that could resemble a movement overlap.
 
 ### Required correction
 - Every cell returned by `tacticalCoverFootprintCells(...)` for a living hard-cover land vehicle must be authoritative for manual preview, manual execution, Simulation AI, Hybrid support movement, fire-team formation following, civilian/VIP routing, fallback movement, streamed continuation, and playback validation.

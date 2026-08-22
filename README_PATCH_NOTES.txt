@@ -1,6 +1,47 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.21.1845_LIVE_VEHICLE_FOOTPRINT_MOVEMENT_INTEGRITY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Makes every live land-vehicle footprint cell authoritative at the final movement-commit boundary and aligns persistent 3D vehicle bodies with those same cells.
+
+LIVE VEHICLE MOVEMENT AUTHORITY
+-------------------------------
+- Cars, vans, utility vehicles, trucks, and buses now expose one shared set containing every occupied footprint hex while they remain intact.
+- Manual and escort step commits, Simulation AI plans, emergency search fallback, beacon-watchdog movement, and alien per-step movement all recheck the destination against current hard cover and unit occupancy immediately before coordinates change.
+- A stale or fallback plan that reaches any live vehicle footprint cell is held in place instead of allowing the unit to enter the vehicle.
+- Existing path authority still rejects every blocked intermediate step, while battlefield integrity repair continues to relocate loaded units that overlap any living hard-cover footprint.
+- Destroyed vehicles are omitted from the live footprint authority and retain their existing post-destruction passability behavior.
+
+PERSISTENT 3D ALIGNMENT
+-----------------------
+- Multi-hex vehicle models are centered on the world-space centroid of their authoritative footprint rather than the single generation anchor hex.
+- A vehicle becomes eligible for persistent rendering when any footprint cell is visible, eliminating anchor-side reveal mismatches.
+- This alignment is presentation-only; vehicle size, cover, HP, path cost, LOS, fog, formations, escorts, Skyranger rules, and battle knowledge are unchanged.
+
+VALIDATION
+----------
+- Build Health covers live and destroyed footprints, blocked final commits, safe route reconstruction, escort-step rejection, 3D centroid alignment, and the existing integrity-repair seam.
+- Static validation requires the shared live-footprint authority, all final commit guards, persistent-renderer centroid use, parity documentation, and save format 4.
+
+MANUAL TEST GATES
+-----------------
+1. Test intact cars and buses in 2D, 3D Iso, Simulation AI, and Hybrid support movement.
+2. Confirm previews, committed routes, and playback never cross or finish inside any vehicle footprint cell.
+3. Confirm the visible 3D body occupies the same cells that pathing blocks, without a soldier visually standing under its side.
+4. Destroy a vehicle and confirm its established rubble/passability behavior returns.
+5. Confirm fire-team formation, VIP/civilian escort, Skyranger ramp movement, and command-map orders still work normally.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.21.1730_THREE_ISO_NIGHT_BRIGHTNESS_CONTROL_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
