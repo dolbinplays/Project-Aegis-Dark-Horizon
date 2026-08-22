@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.22.1349_ALIEN_BASE_VERTICAL_DECK_FOCUS_PRESENTATION_PATCH",
+  "currentBuild": "v0.26.08.22.1552_CRASH_SITE_AI_TERMINAL_STALL_RECOVERY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "alien-base-vertical-deck-focus-presentation-validation",
+  "status": "crash-site-ai-terminal-stall-recovery-validation",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.22.1349_ALIEN_BASE_VERTICAL_DECK_FOCUS_PRESENTATION_PATCH",
+  "lastInspectedBuild": "v0.26.08.22.1552_CRASH_SITE_AI_TERMINAL_STALL_RECOVERY_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.22.1349_ALIEN_BASE_VERTICAL_DECK_FOCUS_PRESENTATION_PATCH",
+    "browserBuild": "v0.26.08.22.1552_CRASH_SITE_AI_TERMINAL_STALL_RECOVERY_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -146,7 +146,8 @@
       "mission-default-civilian-escort-support-doctrine",
       "reinforcement-source-priority-and-ufo-bay-clearance",
       "beacon-linked-procedural-multilevel-alien-base-assault",
-      "alien-base-vertical-deck-focus-presentation"
+      "alien-base-vertical-deck-focus-presentation",
+      "crash-site-ai-terminal-stall-recovery"
     ],
     "temporaryExceptions": [
       {
@@ -260,6 +261,10 @@
       {
         "system": "alien-base-vertical-deck-focus-presentation",
         "reason": "The browser persistent 3D Iso renderer now presents alien-base levels as a vertical command stack with follow-action, all-level, and manual per-level camera focus plus lift-transition callouts. Native Godot requires an engine-native multilevel camera and deck-navigation presentation."
+      },
+      {
+        "system": "crash-site-ai-terminal-stall-recovery",
+        "reason": "The browser resolver now keeps Simulation active for confirmed pending crashed-UFO bay inspection and prevents Hybrid from finalizing an unresolved snapshot as failure. Native Godot needs the same engine-native continuation and explicit-terminal-outcome contract."
       },
       {
         "system": "command-map-autonomous-search-resume",

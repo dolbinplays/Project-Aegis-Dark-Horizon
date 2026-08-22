@@ -2,9 +2,30 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-22
-Current handoff build: `v0.26.08.22.1349_ALIEN_BASE_VERTICAL_DECK_FOCUS_PRESENTATION_PATCH`
+Current handoff build: `v0.26.08.22.1552_CRASH_SITE_AI_TERMINAL_STALL_RECOVERY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1349 gives the procedural three-level alien bases a clearer vertical identity in persistent 3D Iso. A right-side command stack places Level 3 above Level 2 above Level 1, reports surveyed state, AEGIS presence, and visible contacts, and offers Follow Action, All Levels, and direct per-level camera focus. Elevator crossings receive brief ascent/descent callouts. These controls mutate only the camera layer; authoritative coordinates, elevators, fog, LOS, TU, pathfinding, AI knowledge, objectives, and save format 4 remain unchanged.**
+Current patch status: **Browser 1552 fixes the reproduced crash-site Round 8 no-progress loop and false Hybrid failure. A confirmed pending crashed-UFO bay now keeps bounded Simulation rounds active after the last visible alien dies. Hybrid and full Simulation share an explicit terminal-outcome predicate, so an unresolved frame without a continuation can no longer be recorded as failure; Hybrid reconstructs the authoritative frame and returns leader control instead. Save format 4 remains unchanged.**
+
+
+## Browser 1552 - Crash-Site AI Terminal Stall Recovery
+
+**Status:** Implemented from the archived 48-event tactical timeline showing repeated Round 8 continuation reconstruction followed by a false Medium UFO Crash Site failure.
+
+### Confirmed cause and correction
+- The Simulation loop previously continued for living aliens, inbound reinforcements, rescue work, and active field beacons, but omitted the already-implemented crashed-UFO bay clearance objective.
+- When the last visible reinforcement died, the resolver could therefore execute zero tactical rounds even though the confirmed bay remained pending. Streaming rebuilt the same Round 8 snapshot, and Hybrid interpreted the absent continuation as permission to finalize `success:false`.
+- Pending UFO-bay clearance now participates in the resolver continuation predicate. The existing fog-respecting search, free-fire-team assignment, wreck approach, close inspection, and terminal victory gate remain responsible for completing the objective.
+
+### Shared terminal authority
+- A tactical result is terminal only when it has no unresolved continuation state and explicitly records victory, objective failure, squad defeat, or rescue dust-off.
+- Full Simulation streaming and Hybrid playback use that shared rule.
+- An unexpected unresolved Hybrid result without a continuation is recovered from the final authoritative frame. The next player leader phase receives refreshed TU, while unit positions, health, ammunition, cover, fog exploration, reinforcement state, and contact memory are retained. No synthetic result is committed.
+- Optional civilian assistance remains optional. The reported `0/3 rescued, 1 lost; requirement met` state was not the cause of the failure; the uncleared UFO bay was.
+
+### Validation boundary
+- Build Health covers the exact zero-living-alien, living-squad, confirmed-and-revealed uncleared-bay state.
+- It also proves that a cleared bay stops requesting continuation, unresolved Hybrid output cannot finalize, and explicit success and objective-failure results remain terminal.
+- Existing tactical saves and the save schema remain compatible at format **4**.
 
 
 ## Browser 1349 - Alien Base Vertical Deck Focus Presentation

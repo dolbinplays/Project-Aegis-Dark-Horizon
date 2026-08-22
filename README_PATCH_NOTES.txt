@@ -1,6 +1,48 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.22.1552_CRASH_SITE_AI_TERMINAL_STALL_RECOVERY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Fixes the crash-site Round 8 stall and false Hybrid failure documented in the attached tactical timeline. Simulation AI now continues while a confirmed crashed-UFO bay still needs inspection, and Hybrid may finalize only an explicit victory, objective failure, squad defeat, or rescue dust-off.
+
+CRASH-SITE AI CONTINUATION
+--------------------------
+- A pending crashed-UFO bay inspection now participates in the same bounded Simulation continuation gate as living aliens, inbound reinforcements, rescues, and field beacons.
+- Killing the last visible reinforcement no longer produces a zero-action tactical chunk while the UFO deployment bay remains unchecked.
+- Once the bay is observed, the existing free-fire-team assignment, approach, inspection, and victory-gate logic can continue normally. Until then, ordinary fog-respecting search behavior remains authoritative.
+- The mission log now identifies an unfinished reinforcement-source inspection instead of describing every such state only as a beacon or rescue requirement.
+
+HYBRID TERMINAL SAFETY
+----------------------
+- Hybrid playback no longer assumes that a missing continuation snapshot is automatically a terminal mission result.
+- Mission resolution now requires an explicit terminal outcome: victory, objective failure, squad defeat, or rescue dust-off, with no unresolved continuation flag.
+- If an unexpected nonterminal Hybrid snapshot has no continuation, the last authoritative battlefield frame is reconstructed, fire-team-leader control returns for the next round, and no victory or failure is committed.
+- Full Simulation streaming uses the same terminal-outcome predicate, preventing the two control modes from disagreeing about whether a mission is over.
+
+VALIDATION
+----------
+- Build Health reproduces a Medium UFO Crash Site with living AEGIS soldiers, no living aliens, an optional civilian outcome, and a revealed but uncleared UFO bay.
+- The contract proves the bay keeps Simulation active, a cleared bay releases that requirement, an unresolved Hybrid snapshot cannot finalize, and legitimate victory/failure outcomes still can.
+- Save format remains 4; existing active tactical saves use their retained unit, cover, reinforcement, and UFO-bay state.
+
+MANUAL TEST GATES
+-----------------
+1. Load or enter a crash site after AEGIS understands reinforcement sources, allow a reinforcement UFO to arrive, and eliminate every visible alien.
+2. Confirm Simulation continues searching for or approaching the crashed-UFO bay rather than repeatedly reconstructing the same round.
+3. Use Hybrid before the bay is clear and confirm End Turn returns leader control after support action unless a real terminal result occurs.
+4. Inspect the empty bay and confirm the mission succeeds when all other mandatory objectives are complete.
+5. Confirm optional civilian assistance still reports partial rescue/loss results without becoming a mandatory failure.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.22.1349_ALIEN_BASE_VERTICAL_DECK_FOCUS_PRESENTATION_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
