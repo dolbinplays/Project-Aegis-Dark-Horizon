@@ -85,6 +85,13 @@ const required = [
   "Ready aircraft can ferry home or rebase through clock-tracked routes",
   "Aircraft relocation reserves destination hangars across save resume",
   "Aircraft relocation queue preserves reservations and unavailable status",
+  "Captured beacon endpoints generate persistent three-level alien bases with paired elevators and an offline command-core victory gate",
+  "Sixteen procedural alien-base seeds keep every defender elevator and command-core approach reachable while layouts vary",
+  "BEACON_LINKED_PROCEDURAL_MULTILEVEL_ALIEN_BASE_ASSAULT_PATCH",
+  "tacticalAlienBaseBattlefield",
+  "aegis-linked-insertion-beacon",
+  "alien-base-elevator-pad",
+  "alien-field-beacon-command-core",
   "Alien incident duration advances by combat rounds instead of a full day",
   "Aircraft ferry range and home return preserve direct staged and repeat-attack routes",
   "Staged aircraft routes display origin ferry legs",
@@ -1027,6 +1034,12 @@ if (!manifest.gameplayParity?.requiredSystems?.includes("reinforcement-source-pr
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "reinforcement-source-priority-and-ufo-bay-clearance" && entry?.reason)) {
   missing.push("browser-only reinforcement-source priority and UFO-bay clearance must be recorded as a temporary gameplay parity exception");
 }
+if (!manifest.gameplayParity?.requiredSystems?.includes("beacon-linked-procedural-multilevel-alien-base-assault")) {
+  missing.push("browser/native parity must require beacon-linked procedural multilevel alien-base assaults");
+}
+if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "beacon-linked-procedural-multilevel-alien-base-assault" && entry?.reason)) {
+  missing.push("browser-only beacon-linked procedural multilevel alien-base assaults must be recorded as a temporary gameplay parity exception");
+}
 for (const system of [
   "save-load-patch-notes-version-history",
   "tactical-shot-result-stack-and-toggle",
@@ -1042,6 +1055,7 @@ for (const system of [
   "indexed-2d-tactical-cell-render-lookups",
   "threejs-explicit-living-unit-pose-state",
   "vip-death-flag-impossible-quota-terminal-resolution",
+  "beacon-linked-procedural-multilevel-alien-base-assault",
 ]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser-only current-patch system must be recorded as a temporary parity exception: ${system}`);

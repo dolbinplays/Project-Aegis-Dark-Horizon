@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.21.2322_REINFORCEMENT_SOURCE_PRIORITY_AND_UFO_BAY_CLEARANCE_PATCH",
+  "currentBuild": "v0.26.08.22.0017_BEACON_LINKED_PROCEDURAL_MULTILEVEL_ALIEN_BASE_ASSAULT_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "reinforcement-source-priority-and-ufo-bay-clearance-validated",
+  "status": "beacon-linked-procedural-multilevel-alien-base-assault-validation",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.21.2322_REINFORCEMENT_SOURCE_PRIORITY_AND_UFO_BAY_CLEARANCE_PATCH",
+  "lastInspectedBuild": "v0.26.08.22.0017_BEACON_LINKED_PROCEDURAL_MULTILEVEL_ALIEN_BASE_ASSAULT_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.21.2322_REINFORCEMENT_SOURCE_PRIORITY_AND_UFO_BAY_CLEARANCE_PATCH",
+    "browserBuild": "v0.26.08.22.0017_BEACON_LINKED_PROCEDURAL_MULTILEVEL_ALIEN_BASE_ASSAULT_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -144,7 +144,8 @@
       "vip-death-flag-impossible-quota-terminal-resolution",
       "live-land-vehicle-footprint-movement-integrity",
       "mission-default-civilian-escort-support-doctrine",
-      "reinforcement-source-priority-and-ufo-bay-clearance"
+      "reinforcement-source-priority-and-ufo-bay-clearance",
+      "beacon-linked-procedural-multilevel-alien-base-assault"
     ],
     "temporaryExceptions": [
       {
@@ -250,6 +251,10 @@
       {
         "system": "reinforcement-source-priority-and-ufo-bay-clearance",
         "reason": "The browser now elevates confirmed reinforcement sources above routine Simulation AI work, persists simplified crashed-UFO bay clearance state, exposes manual inspection, and gates crash-site victory on verified clearance. Native tactical objective and navigation parity remain queued."
+      },
+      {
+        "system": "beacon-linked-procedural-multilevel-alien-base-assault",
+        "reason": "The browser now turns captured intact beacon endpoints into seeded three-level alien-base assaults with paired elevator galleries, beacon-room insertion, expanded defenders, and a command-core shutdown victory gate. Native Godot needs an engine-native multilevel mission and beacon-transit implementation."
       },
       {
         "system": "command-map-autonomous-search-resume",

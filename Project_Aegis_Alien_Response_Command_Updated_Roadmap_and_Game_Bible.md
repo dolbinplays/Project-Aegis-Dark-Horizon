@@ -2,9 +2,52 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-22
-Current handoff build: `v0.26.08.21.2322_REINFORCEMENT_SOURCE_PRIORITY_AND_UFO_BAY_CLEARANCE_PATCH`
+Current handoff build: `v0.26.08.22.0017_BEACON_LINKED_PROCEDURAL_MULTILEVEL_ALIEN_BASE_ASSAULT_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2322 makes confirmed reinforcement sources durable tactical objectives above routine AI work while preserving active escorts and known living-alien contacts as the only higher priorities. Simplified crashed-UFO deployment bays now persist through Unverified, Investigation Assigned, Clearing, and Bay Clear states; Simulation AI can assign and route a team, Hybrid preserves player-directed leaders, manual control receives an 8-TU inspection action, and applicable crash-site victory waits for verified clearance. Save format remains 4.**
+Current patch status: **Browser 0017 turns securely captured intact field-beacon endpoints into direct access routes to threatening, stable-seeded three-level alien bases. AEGIS inserts in a Level 1 beacon chamber, traverses two paired alien elevator galleries, fights 15 defenders (18 at the final portal base), reaches the Level 3 command center, and must neutralize the reinforcement-and-control core before victory. Four archetypes and seeded bulkhead, room, fixture, elevator, floor, and defender patterns keep bases varied while the same base remains stable across saves. Save format remains 4.**
+
+
+## Browser 0017 - Beacon-Linked Procedural Multilevel Alien Base Assaults
+
+**Status:** Implemented as the first complete browser alien-base assault loop. Native Godot parity remains staged.
+
+### Strategic discovery and link doctrine
+- An intact Alien Field Beacon disabled through researched **Alien Beacon Interface Protocols** exposes a recoverable endpoint address. This is now an alternate alien-base discovery route.
+- The legacy route of successful operations, tracked UFO data, and **Command Signal Triangulation** remains valid so existing campaigns are not forced through one evidence path.
+- A revealed base stores a stable procedural seed, archetype, three level names, threat, physical Geoscape location, beacon-link ID, link origin, and online/offline state.
+- The first base is linked from the captured surface beacon. A later portal base is linked through command-map intelligence recovered from an offline base, preserving the idea that the network sites lead deeper into one another.
+- Base assault launch uses beacon transit rather than a Skyranger sortie. Response-force selection still applies, but no aircraft fuel, travel, ramp, extraction traffic, or transport hull is created.
+
+### Procedural threat identity
+- The initial archetype set is **Signal Bastion**, **War Foundry**, **Bio-Vault**, and **Psionic Labyrinth**.
+- Each archetype supplies distinct deck names, defender roster bias, and floor-light palette. The stable base seed varies bulkheads, internal partitions, door gaps, fixtures, power controls, floor circuits, elevator gallery positions, and defender deployment.
+- Re-entering or reloading one base reconstructs the same seeded site. A different base seed is expected to produce a materially different archetype and/or layout.
+- Ordinary sites deploy 15 defenders across all three levels; the final portal site deploys 18. A Pale Commander is included in the command-level defense.
+
+### Multilevel and elevator authority
+- A base is one authoritative tactical battlescape containing three sealed level sectors. Two narrow paired elevator galleries are the only traversal links between Level 1 and Level 2, and Level 2 and Level 3.
+- Elevator pads carry stable pair IDs, source/destination level metadata, lighting, labels, 2D glyphs, and persistent Three.js fixtures. They are passable navigation cells, not hard cover, so fire teams and AI use the same movement authority as the rest of the map.
+- The side-by-side tactical projection is a command-map abstraction of vertically separated decks. Gameplay treats the paired galleries as the level transitions while avoiding a second overlapping-coordinate pathing system.
+- All existing fog, LOS, accuracy, lighting knowledge, hard-cover blocking, path integrity, fire-team formation, Hybrid leader orders, Simulation search, and sequential action presentation remain active.
+
+### Beacon-room insertion and command shutdown
+- The response force materializes around a cyan **AEGIS Linked Insertion Beacon** in a protected Level 1 chamber modeled after the campaign's initial beacon-link premise.
+- The insertion beacon is a persistent, indestructible AEGIS landmark and is not an enemy reinforcement objective. Reinforcement arrival cannot remove it.
+- Level 3 contains an **Alien Command Core** that owns the base's reinforcement and command network. It deliberately reuses the hardened Alien Field Beacon objective, targeting, shield, AI assault, no-progress recovery, and terminal-gate systems.
+- Living known aliens retain combat priority. After they are defeated, the mission remains unresolved and AI continues toward the core. Victory is legal only after the core is neutralized and the base is offline.
+- Manual control can shoot the core through the normal tactical targeting flow. Hybrid and full Simulation can locate, approach, and destroy it through the existing beacon endgame behavior.
+
+### Persistence and validation gates
+- Existing base records normalize forward without losing ID, region, location, defeated/final state, or campaign progression. New generated fields use safe defaults; save format remains **4**.
+- Active tactical saves already retain the generated covers, insertion beacon, elevator pads, command core, units, fog, and objective damage state.
+- Build Health must prove: intact rather than destroyed beacon evidence; alternate route gating; stable/different seeded records; exactly three level identities; two elevator pairs with two pads apiece; no Skyranger model in beacon transit; Level 1 squad insertion; cross-level defender distribution; command-core victory blocking before shutdown and release afterward; alien-base floor presentation; and save format 4.
+
+### Follow-on alien-base roadmap
+1. Expand beacon access into a full **capture, research, construction, and dial-out progression chain**. AEGIS must recover a physically intact alien beacon from a tactical mission and return it to base for study. Research can then decipher, capture, or deduce alien endpoint addresses and unlock a dedicated beacon-link facility in the Base View. The facility remains completely hidden from the construction interface until its prerequisite research is complete, and direct AEGIS-base launches into alien bases require both an operational facility and a known valid address. The present field-derived endpoint shortcut remains the playable bridge until this strategic layer replaces or absorbs it. Facility name, footprint, cost, power draw, construction time, capture logistics, containment risks, dialing security, return-link behavior, and mission-failure consequences are intentionally deferred for later design.
+2. Add true stacked-deck camera presentation after the authoritative level-transition abstraction has accumulated playtest evidence.
+3. Add level-specific security systems, base alarms, locked elevator states, and optional sabotage/data-recovery rooms without creating unwinnable layouts.
+4. Add persistent consequences for bases left online, partial withdrawals, and later return assaults.
+5. Add native Godot beacon-transit, procedural-base, elevator, and command-core parity.
 
 
 Implementation update (2026-08-19): **Browser 2325 targets the live reproduction where the last VIP had just been rescued, no living aliens remained, and a confirmed Alien Field Beacon was the sole remaining objective, yet Simulation AI rapidly advanced rounds without useful movement or fire. Browser 1315 already had a dedicated beacon assaulter, but it did not guarantee round-level progress. The new must-progress watchdog treats beacon-only neutralization as a mandatory action phase: nearby non-assault troops clear the shield/approach, close-assault routing ignores temporary same-side traffic along the path, and after the normal AEGIS pass the resolver compares beacon HP plus assaulter distance/inside-shield state. If nothing improved, the assaulter receives a zero-reserve same-round retry and immediately attacks when a legal shot becomes available. A truly no-breach squad now halts streamed continuation instead of manufacturing endless empty rounds.**

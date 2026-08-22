@@ -1,6 +1,61 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.22.0017_BEACON_LINKED_PROCEDURAL_MULTILEVEL_ALIEN_BASE_ASSAULT_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Turns captured intact Alien Field Beacons into playable links to threatening, procedurally generated three-level alien bases. AEGIS inserts beside a linked beacon, advances through paired alien elevator galleries, and must take the Level 3 command core offline.
+
+BEACON NETWORK ACCESS
+---------------------
+- A securely disabled intact beacon plus Alien Beacon Interface Protocols now opens an alternate command-site discovery route.
+- The original successful-mission, tracked-UFO, and Command Signal Triangulation route remains valid for old and alternate campaigns.
+- Base assaults transit through the captured beacon network and do not consume a Skyranger sortie. The tactical force materializes inside a Level 1 beacon chamber with no transport hull rendered.
+- Every base records a stable beacon-link ID and origin. The first endpoint links from the captured field beacon; the final portal site links from command-map intelligence recovered from the first offline base.
+
+PROCEDURAL MULTILEVEL BASES
+---------------------------
+- Each base stores a stable seed, three levels, named deck roles, and one of four archetypes: Signal Bastion, War Foundry, Bio-Vault, or Psionic Labyrinth.
+- Bulkheads, room partitions, door gaps, cover fixtures, floor circuits, elevator placement, and defenders vary from the seed. Reloading the same base reproduces its layout; separate base seeds do not all produce the same site.
+- The three authoritative tactical sectors are connected only through two paired elevator galleries. The elevator pads remain visible tactical landmarks in both 2D and persistent Three.js views.
+- Standard fog, LOS, cover, movement, fire-team formation, Hybrid command, and Simulation AI remain authoritative across the whole base map.
+
+THREAT AND SHUTDOWN OBJECTIVE
+-----------------------------
+- Ordinary bases field 15 defenders across all three levels. The final portal base fields 18, with a Pale Commander anchored in the command-level defense.
+- Live aliens remain the immediate combat priority. Once the force is defeated, existing beacon-assault AI carries the squad toward the command center rather than ending the mission or burning empty rounds.
+- The command core is a durable reinforcement-and-control source. Victory is locked until the core is neutralized and the base is taken offline.
+- Manual players can target the command core using the established cover/beacon shooting rules; Hybrid and full Simulation use the same proven assault routing and fire logic.
+
+CONTINUITY
+----------
+- Existing alien-base records normalize forward with stable generated fields while preserving IDs, locations, defeated state, and final-base progression.
+- Base seed, archetype, level names, beacon link, mission metadata, covers, elevator landmarks, and command-core state persist through existing campaign and active-tactical saves.
+- Save format remains 4. The Godot vertical slice does not yet have native beacon transit or multilevel alien-base parity.
+
+VALIDATION
+----------
+- Build Health covers beacon-route eligibility, destroyed-versus-intact beacon evidence, stable/different base seeds, three deck records, two paired elevators, insertion-room deployment, 15-defender distribution, hidden Skyranger transit, command-core terminal gating, alien-base floor presentation, and save format 4.
+- Static build validation requires the current build ID, patch contract, procedural generator, insertion beacon, elevator, command-core, manifest parity system, and documented native exception.
+
+MANUAL TEST GATES
+-----------------
+1. Disable an Alien Field Beacon intact after researching Alien Beacon Interface Protocols, then confirm Command Signal Analysis permits a command-site reveal.
+2. Plan the assault and confirm squad launch enters tactical play without consuming or displaying a Skyranger.
+3. Confirm the squad appears in a Level 1 room beside the cyan linked beacon.
+4. In 2D and 3D Iso, advance through both paired elevator galleries and confirm fog, LOS, formation following, and alien contact remain normal.
+5. Defeat the defenders and confirm the mission remains active until the Level 3 command core is neutralized.
+6. Save/reload the active assault and confirm the same layout, elevator landmarks, unit positions, and core state return.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.21.2322_REINFORCEMENT_SOURCE_PRIORITY_AND_UFO_BAY_CLEARANCE_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
