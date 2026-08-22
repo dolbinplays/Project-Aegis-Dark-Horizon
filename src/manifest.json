@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.22.0017_BEACON_LINKED_PROCEDURAL_MULTILEVEL_ALIEN_BASE_ASSAULT_PATCH",
+  "currentBuild": "v0.26.08.22.1349_ALIEN_BASE_VERTICAL_DECK_FOCUS_PRESENTATION_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "beacon-linked-procedural-multilevel-alien-base-assault-validation",
+  "status": "alien-base-vertical-deck-focus-presentation-validation",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.22.0017_BEACON_LINKED_PROCEDURAL_MULTILEVEL_ALIEN_BASE_ASSAULT_PATCH",
+  "lastInspectedBuild": "v0.26.08.22.1349_ALIEN_BASE_VERTICAL_DECK_FOCUS_PRESENTATION_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.22.0017_BEACON_LINKED_PROCEDURAL_MULTILEVEL_ALIEN_BASE_ASSAULT_PATCH",
+    "browserBuild": "v0.26.08.22.1349_ALIEN_BASE_VERTICAL_DECK_FOCUS_PRESENTATION_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -145,7 +145,8 @@
       "live-land-vehicle-footprint-movement-integrity",
       "mission-default-civilian-escort-support-doctrine",
       "reinforcement-source-priority-and-ufo-bay-clearance",
-      "beacon-linked-procedural-multilevel-alien-base-assault"
+      "beacon-linked-procedural-multilevel-alien-base-assault",
+      "alien-base-vertical-deck-focus-presentation"
     ],
     "temporaryExceptions": [
       {
@@ -255,6 +256,10 @@
       {
         "system": "beacon-linked-procedural-multilevel-alien-base-assault",
         "reason": "The browser now turns captured intact beacon endpoints into seeded three-level alien-base assaults with paired elevator galleries, beacon-room insertion, expanded defenders, and a command-core shutdown victory gate. Native Godot needs an engine-native multilevel mission and beacon-transit implementation."
+      },
+      {
+        "system": "alien-base-vertical-deck-focus-presentation",
+        "reason": "The browser persistent 3D Iso renderer now presents alien-base levels as a vertical command stack with follow-action, all-level, and manual per-level camera focus plus lift-transition callouts. Native Godot requires an engine-native multilevel camera and deck-navigation presentation."
       },
       {
         "system": "command-map-autonomous-search-resume",

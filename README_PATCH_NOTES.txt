@@ -1,6 +1,61 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.22.1349_ALIEN_BASE_VERTICAL_DECK_FOCUS_PRESENTATION_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Adds a persistent 3D Iso vertical-level command stack to alien-base assaults. Players can follow the current action, view the entire facility, or focus the camera on any of the three named levels without changing tactical state.
+
+VERTICAL DECK COMMAND STACK
+---------------------------
+- Alien-base 3D Iso now identifies Levels 1 through 3 as a vertical stack, with each procedural deck's authored name.
+- Every level reports whether it is still unknown or surveyed, how many living AEGIS soldiers occupy it, and how many currently visible hostile contacts are present.
+- Level 3 is presented at the top and Level 1 at the bottom, matching the squad's ascent from the insertion chamber toward the command center.
+- Moving or selecting an actor on another level updates the active-level readout. Crossing between levels produces a short ascending/descending lift callout.
+
+CAMERA CONTROL
+--------------
+- Follow Action preserves normal selected-unit and Simulation-playback camera ownership.
+- All Levels restores an exact full-facility overview.
+- Level 1, Level 2, and Level 3 focus only the persistent camera on that sector; they do not rebuild the renderer or battlefield.
+- FPV, TPV, and incoming-fire reaction cameras retain temporary ownership. Deck controls become available again when the observer camera releases.
+
+AUTHORITY AND PERFORMANCE
+-------------------------
+- The feature is presentation-only. Authoritative side-by-side hex coordinates and paired elevator routes remain the source of truth.
+- Fog, LOS, lighting, accuracy, TU, movement, pathfinding, formations, targeting, AI knowledge, objectives, damage, and victory rules are unchanged.
+- Camera focus invalidates only the camera layer. The renderer, scene, terrain, cover, material caches, fog batches, and unit nodes remain persistent.
+- Save format remains 4; the selected deck view is a transient camera preference and does not alter campaign or tactical save data.
+
+ROADMAP ADDITION
+----------------
+- Added a future Fallout-inspired localized injury system for soldiers and aliens, with human head/torso/left-right arm/left-right leg zones and data-driven alien anatomy equivalents.
+- The planned effects cover accuracy and weapon handling, perception and reactions, movement and TU, bleeding/incapacitation, armor coverage, AI adaptation, first aid, Sickbay recovery, presentation, and save continuity.
+- Hit-location weights, called-shot rules, exact penalties, recovery behavior, and alien anatomy remain intentionally open for later prototyping and balance work.
+
+VALIDATION
+----------
+- Build Health covers three-level presentation state, nearest-deck handling through elevator galleries, Level 3 camera focus, required controls and presentation-only disclosure.
+- Static validation requires the new build ID, patch contract, deck-stack and lift-transition markers, manifest parity system, and documented native exception.
+
+MANUAL TEST GATES
+-----------------
+1. Open an alien-base assault in 3D Iso and confirm the right-side vertical stack shows Level 3 above Level 2 above Level 1 with procedural names.
+2. Select each level and confirm the camera moves without changing any unit, fog, TU, path, or objective state.
+3. Press All Levels, then Follow Action, and confirm full-map framing and normal selected/acting-unit camera ownership return.
+4. Move a unit through both elevator galleries and confirm the level readout plus ascending/descending callout follow the transition.
+5. Switch through FPV, TPV, and incoming-fire presentation and confirm those cameras retain control, then release safely back to the chosen deck behavior.
+6. Confirm the Three.js renderer identity and static rebuild counters do not change while switching deck camera modes.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.22.0017_BEACON_LINKED_PROCEDURAL_MULTILEVEL_ALIEN_BASE_ASSAULT_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

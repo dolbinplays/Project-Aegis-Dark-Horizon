@@ -87,8 +87,13 @@ const required = [
   "Aircraft relocation queue preserves reservations and unavailable status",
   "Captured beacon endpoints generate persistent three-level alien bases with paired elevators and an offline command-core victory gate",
   "Sixteen procedural alien-base seeds keep every defender elevator and command-core approach reachable while layouts vary",
+  "Alien-base 3D Iso deck controls focus the persistent camera and announce vertical transitions without changing tactical authority",
   "BEACON_LINKED_PROCEDURAL_MULTILEVEL_ALIEN_BASE_ASSAULT_PATCH",
+  "ALIEN_BASE_VERTICAL_DECK_FOCUS_PRESENTATION_PATCH",
   "tacticalAlienBaseBattlefield",
+  "data-aegis-alien-base-deck-focus-css",
+  "data-aegis-alien-base-deck-stack",
+  "data-aegis-alien-base-level-transition",
   "aegis-linked-insertion-beacon",
   "alien-base-elevator-pad",
   "alien-field-beacon-command-core",
@@ -1040,6 +1045,12 @@ if (!manifest.gameplayParity?.requiredSystems?.includes("beacon-linked-procedura
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "beacon-linked-procedural-multilevel-alien-base-assault" && entry?.reason)) {
   missing.push("browser-only beacon-linked procedural multilevel alien-base assaults must be recorded as a temporary gameplay parity exception");
 }
+if (!manifest.gameplayParity?.requiredSystems?.includes("alien-base-vertical-deck-focus-presentation")) {
+  missing.push("browser/native parity must require alien-base vertical deck focus presentation");
+}
+if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "alien-base-vertical-deck-focus-presentation" && entry?.reason)) {
+  missing.push("browser-only alien-base vertical deck focus presentation must be recorded as a temporary gameplay parity exception");
+}
 for (const system of [
   "save-load-patch-notes-version-history",
   "tactical-shot-result-stack-and-toggle",
@@ -1056,6 +1067,7 @@ for (const system of [
   "threejs-explicit-living-unit-pose-state",
   "vip-death-flag-impossible-quota-terminal-resolution",
   "beacon-linked-procedural-multilevel-alien-base-assault",
+  "alien-base-vertical-deck-focus-presentation",
 ]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser-only current-patch system must be recorded as a temporary parity exception: ${system}`);
