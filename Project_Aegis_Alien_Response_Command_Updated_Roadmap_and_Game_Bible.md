@@ -73,11 +73,43 @@ Current patch status: **Browser 1349 gives the procedural three-level alien base
 - Build Health must prove: intact rather than destroyed beacon evidence; alternate route gating; stable/different seeded records; exactly three level identities; two elevator pairs with two pads apiece; no Skyranger model in beacon transit; Level 1 squad insertion; cross-level defender distribution; command-core victory blocking before shutdown and release afterward; alien-base floor presentation; and save format 4.
 
 ### Follow-on alien-base roadmap
-1. Expand beacon access into a full **capture, research, construction, and dial-out progression chain**. AEGIS must recover a physically intact alien beacon from a tactical mission and return it to base for study. Research can then decipher, capture, or deduce alien endpoint addresses and unlock a dedicated beacon-link facility in the Base View. The facility remains completely hidden from the construction interface until its prerequisite research is complete, and direct AEGIS-base launches into alien bases require both an operational facility and a known valid address. The present field-derived endpoint shortcut remains the playable bridge until this strategic layer replaces or absorbs it. Facility name, footprint, cost, power draw, construction time, capture logistics, containment risks, dialing security, return-link behavior, and mission-failure consequences are intentionally deferred for later design.
+1. Expand beacon access into the full **failed recovery, safeguard research, intact capture, facility construction, AEGIS networking, and dial-out progression chain** described below. The present field-derived endpoint shortcut remains the playable bridge until this strategic layer replaces or absorbs it.
 2. Extend Browser 1349's vertical command stack and per-level camera focus into a true physically stacked/cutaway deck scene after the authoritative level-transition abstraction and first presentation slice have accumulated playtest evidence.
 3. Add level-specific security systems, base alarms, locked elevator states, and optional sabotage/data-recovery rooms without creating unwinnable layouts.
 4. Add persistent consequences for bases left online, partial withdrawals, and later return assaults.
 5. Add native Godot beacon-transit, procedural-base, elevator, and command-core parity.
+
+### Future strategic progression - Beacon safeguard, intact recovery, and AEGIS network
+
+**Narrative discovery and first failed recovery**
+- AEGIS's first attempt to recover a functioning Alien Field Beacon succeeds tactically but fails technologically. After the device reaches an AEGIS base, investigators discover that an alien anti-capture safeguard has burned out its critical systems, leaving an inert research specimen that cannot send, receive, or open a link.
+- The failure must be presented through recovery/debrief and research events so the player understands that the beacon was deliberately rendered unusable rather than lost through an unexplained inventory error. This is a one-time campaign discovery, not a forced failure applied to every later beacon.
+- The burned-out unit still supplies useful research evidence and begins the safeguard investigation. The campaign must continue to offer later capture opportunities so this required discovery cannot create a strategic soft lock.
+
+**Research, reverse engineering, and intact capture**
+- Beacon research identifies the burnout trigger, alien network handshake, safe isolation sequence, and field-handling requirements. Completing the resulting **Intact Beacon Recovery Protocols** project (working title) enables later tactical recoveries to preserve a functional device.
+- Destroyed, disabled without the recovery protocol, or safeguard-burned beacons remain salvage/research specimens; they cannot serve as operational network cores.
+- AEGIS also attempts to construct a human beacon. That project establishes that the device depends on exotic elements unavailable on Earth and physical principles AEGIS cannot yet reproduce. A human-built shell or replica cannot become a purchasable or manufactured substitute: capturing an intact alien beacon is the only viable source of an operational core.
+
+**Per-base facility and network rules**
+- Research unlocks a dedicated beacon-link facility in the Base View. It remains completely hidden from the construction interface until its prerequisite research is complete.
+- Building the facility creates the containment, control, and connection infrastructure; it does **not** manufacture its beacon. The facility becomes operational only after one intact captured alien beacon is installed.
+- Each AEGIS base may install at most one functional beacon and stores its own facility, installed-core, operational, connected, damaged, and offline states. These states must survive save/load and base-to-base campaign transitions.
+- Bases with operational beacons can join the **AEGIS Beacon Network**. Personnel and equipment transfers between two connected member bases have a monetary transfer cost of **$0**. A base that is absent, disconnected, damaged, locked down, or otherwise offline uses the ordinary paid transfer rules.
+- This benefit applies only to personnel and equipment. Aircraft, interception, tactical deployment, special or hazardous cargo, transfer duration, capacity, cooldowns, simultaneity, power demand, security lockdowns, interruption handling, and the treatment of transfers already in progress remain explicit follow-on balance and design decisions.
+
+**Alien-base dial-out relationship**
+- The same installed alien core can eventually dial captured, deciphered, or deduced alien endpoint addresses, allowing direct alien-base missions to launch from a connected AEGIS base. Launch requires an operational local facility, an intact installed beacon, and a known valid address.
+- Facility name, footprint, cost, power draw, construction time, detailed capture logistics, containment risks, dialing security, return-link behavior, and mission-failure consequences remain intentionally deferred until this strategic layer is scheduled.
+
+**Required implementation gates**
+- Prove the first recovered functional-looking beacon always becomes a clearly explained burned-out research specimen and cannot operate as a network core.
+- Prove the safeguard research unlocks intact recovery, and a later qualifying capture can supply a functional core without repeating the scripted first-recovery failure.
+- Prove the reverse-engineering result prevents AEGIS from manufacturing a replacement beacon while retaining its research/story value.
+- Prove the facility remains hidden before research, does not operate without an intact core, and rejects a second installed beacon at the same base.
+- Prove transfer cost becomes zero only when both the origin and destination bases are operational members of the AEGIS Beacon Network, with ordinary fees restored when either endpoint is offline.
+- Prove the zero-cost rule does not silently extend to aircraft or unrelated logistics, and that all facility, core, connection, and transfer states remain stable across save/load.
+- Prove direct alien-base dial-out still requires both a valid endpoint address and an operational local beacon facility.
 
 
 Implementation update (2026-08-19): **Browser 2325 targets the live reproduction where the last VIP had just been rescued, no living aliens remained, and a confirmed Alien Field Beacon was the sole remaining objective, yet Simulation AI rapidly advanced rounds without useful movement or fire. Browser 1315 already had a dedicated beacon assaulter, but it did not guarantee round-level progress. The new must-progress watchdog treats beacon-only neutralization as a mandatory action phase: nearby non-assault troops clear the shield/approach, close-assault routing ignores temporary same-side traffic along the path, and after the normal AEGIS pass the resolver compares beacon HP plus assaulter distance/inside-shield state. If nothing improved, the assaulter receives a zero-reserve same-round retry and immediately attacks when a legal shot becomes available. A truly no-breach squad now halts streamed continuation instead of manufacturing endless empty rounds.**
