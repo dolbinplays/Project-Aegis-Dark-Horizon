@@ -2,9 +2,9 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-21
-Current handoff build: `v0.26.08.21.1245_STABLE_INCIDENT_BOUNDARIES_AND_ISO_NIGHT_VIBRANCE_PATCH`
+Current handoff build: `v0.26.08.21.1630_THREE_ISO_COLOR_CONTROL_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1245 continues architectural consolidation by extracting incident priority, incident details, and active aircraft route timelines into stable memoized module-scope boundaries. It also gives night/twilight 3D Iso a restrained presentation-only exposure and light-intensity lift so objects retain visible color without changing light distance, LOS, visibility, accuracy, fog, power circuits, or battle logic. The remaining live-vehicle footprint pathing report is recorded as a separate roadmap defect. Browser 1130 Mission Launch extraction, Browser 1000 Command Map recovery, and all earlier tactical work remain active. Save format remains 4.**
+Current patch status: **Browser 1630 adds a persistent player-adjustable 3D Iso Color control on the start screen, in Save / Load settings, and in the live 3D Iso toolbar. Its 50%–200% device preference is applied as an absolute, non-compounding canvas saturation filter, so 100% preserves Browser 1245 exactly and changing the value does not rebuild the persistent renderer, scene, terrain, or caches. Perspective cameras restore neutral color, and lighting distance, LOS, visibility, fog, accuracy, AI, movement, damage, and save format 4 remain unchanged. The live-vehicle footprint pathing report remains queued as the next bounded gameplay/pathing patch. Browser 1245 strategic extraction and night vibrance, Browser 1130 Mission Launch extraction, Browser 1000 Command Map recovery, and all earlier tactical work remain active.**
 
 
 Implementation update (2026-08-19): **Browser 2325 targets the live reproduction where the last VIP had just been rescued, no living aliens remained, and a confirmed Alien Field Beacon was the sole remaining objective, yet Simulation AI rapidly advanced rounds without useful movement or fire. Browser 1315 already had a dedicated beacon assaulter, but it did not guarantee round-level progress. The new must-progress watchdog treats beacon-only neutralization as a mandatory action phase: nearby non-assault troops clear the shield/approach, close-assault routing ignores temporary same-side traffic along the path, and after the normal AEGIS pass the resolver compares beacon HP plus assaulter distance/inside-shield state. If nothing improved, the assaulter receives a zero-reserve same-round retry and immediately attacks when a legal shot becomes available. A truly no-breach squad now halts streamed continuation instead of manufacturing endless empty rounds.**
@@ -39,6 +39,31 @@ Implementation update (2026-08-19): **Browser 2325 targets the live reproduction
 4. Compare the same night scene in Iso and perspective views; Iso should be more colorful/readable and perspective views should retain their prior darkness.
 5. Confirm PointLight distance and authoritative illumination radius remain unchanged under every view.
 6. Save format remains **4**.
+
+
+## Browser 1630 — Player-Adjustable 3D Iso Color
+
+**Status:** Implemented as a presentation-only device preference with no save-format change.
+
+### Player control
+- A clearly labeled **3D Iso Color** slider displays its percentage and provides a one-click **Reset to 100%** action.
+- The bounded **50%–200%** range uses 5% steps. **100%** reproduces the Browser 1245 authored color balance exactly, lower values provide a more subdued palette, and higher values increase color saturation/vibrance for displays that otherwise make night scenes look too dull.
+- The setting is available on the start screen, in Save / Load settings, and in the tactical toolbar while 3D Iso is active, so the player can tune it against the live battlefield.
+- Changes apply immediately and the preference persists locally across missions, campaign loads, and browser restarts. It is a device presentation preference rather than campaign state, so it does not require a save-format change.
+
+### Presentation and performance boundaries
+- The slider affects only 3D Iso color intensity. It must not alter 2D Hex, FPV, TPV, incoming-fire reaction cameras, screenshots used for tactical authority, or non-tactical strategic screens.
+- It must not change exposure, PointLight distance, authoritative light radius, fog knowledge, LOS, visibility, darkness accuracy, targeting, AI knowledge, cover, movement, damage, power circuits, or any other battle rule.
+- The preference travels through the persistent Three.js presentation path as one absolute canvas saturation filter. Moving/selecting units does not trigger a full scene rebuild, material traversal, or repeated whole-battlefield material cloning.
+- Changing views must restore the original authored perspective-view materials immediately, and returning to Iso must reapply the saved value without accumulating repeated saturation transforms.
+
+### Validation gates
+1. Verify 50%, 100%, 150%, and 200% in day, twilight, and night missions across urban, rural, forest, desert, snow, and alien-craft maps.
+2. Confirm 100% is visually identical to Browser 1245 and repeated slider movement does not compound or permanently modify source colors.
+3. Adjust the slider during a live 3D Iso mission and confirm the battlefield updates immediately without resetting camera position, selection, fog, animations, or the persistent renderer identity.
+4. Switch repeatedly among 2D, Iso, FPV, TPV, and incoming-fire reaction views and confirm only Iso consumes the preference.
+5. Reload the page and load a different campaign to confirm the device-level preference persists without changing save format 4.
+6. Confirm tactical light distances, illuminated hexes, LOS, hit chances, AI decisions, and fog-of-war state remain byte-for-byte behaviorally unchanged at every slider value.
 
 
 ## Roadmap Addition — Live Land-Vehicle Footprint Movement Integrity

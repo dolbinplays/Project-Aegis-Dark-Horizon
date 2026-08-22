@@ -326,6 +326,20 @@ const required = [
   "tacticalThreePersistentApplyNightPresentation",
   "tacticalThreeIsoNightVibranceContractTest",
   "aegisIsoNightVibrance",
+  "TACTICAL_THREE_ISO_COLOR_CONTROL_PATCH",
+  "TACTICAL_THREE_ISO_COLOR_STORAGE_KEY",
+  "normalizeTacticalThreeIsoColor",
+  "readTacticalThreeIsoColor",
+  "writeTacticalThreeIsoColor",
+  "TacticalThreeIsoColorControl.displayName",
+  "data-aegis-tactical-three-iso-color-control",
+  "tacticalThreePersistentApplyIsoColor",
+  "tacticalThreeIsoColorControlContractTest",
+  "aegisIsoColor",
+  "Player-adjustable 3D Iso Color persists across screens and changes only the persistent Iso canvas presentation",
+  "start-tactical-three-iso-color",
+  "menu-tactical-three-iso-color",
+  "tactical-three-iso-color-live",
   "TACTICAL_COMMAND_MAP_AUTONOMOUS_SEARCH_RESUME_HOTFIX",
   "tacticalReleaseCompletedCommandMapWaypoint",
   "tacticalCommandMapAutonomousSearchResumeContractTest",
@@ -711,6 +725,16 @@ for (const component of ["IncidentListModal", "IncidentDetailsModal", "ActiveAir
     missing.push(`${component} must have exactly one stable declaration`);
   }
 }
+for (const component of ["TacticalThreeIsoColorControl"]) {
+  const declaration = `const ${component}=React.memo(`;
+  const declarationIndex = html.indexOf(declaration);
+  if (declarationIndex < 0 || campaignComponentIndex < 0 || declarationIndex > campaignComponentIndex) {
+    missing.push(`${component} must remain a memoized module-scope boundary outside AlienResponseCommand`);
+  }
+  if (html.indexOf(declaration, declarationIndex + declaration.length) >= 0) {
+    missing.push(`${component} must have exactly one stable declaration`);
+  }
+}
 if (!html.includes('React.createElement(IncidentListModal,{entries:incidentPriorityEntries,onClose:closeIncidentPriorityBoard,onSelect:selectIncidentFromPriorityBoard})')) {
   missing.push("incident priority board must receive memoized entries and controller callbacks explicitly");
 }
@@ -725,6 +749,18 @@ if (!html.includes('night:{exposure:0.62,ambientScale:1.45,keyScale:1.28,rimInte
 }
 if (!html.includes('pointLight.userData.aegisTacticalPresentationBaseIntensity=visualIntensity') || !html.includes('Math.max(4,localLight.radius*1.18)')) {
   missing.push("3D Iso local-light vibrance must scale intensity while preserving the existing PointLight distance");
+}
+if (!html.includes('const TACTICAL_THREE_ISO_COLOR_MIN=50;') || !html.includes('const TACTICAL_THREE_ISO_COLOR_MAX=200;') || !html.includes('const TACTICAL_THREE_ISO_COLOR_STEP=5;') || !html.includes('const TACTICAL_THREE_ISO_COLOR_DEFAULT=100;')) {
+  missing.push("3D Iso Color must retain its 50%-200% range, 5% step, and neutral 100% default");
+}
+if (!html.includes('if(value===null||value===undefined||value==="")return TACTICAL_THREE_ISO_COLOR_DEFAULT') || !html.includes('canvas.style.filter=tacticalThreeIsoColorFilter(applied,isoView)')) {
+  missing.push("3D Iso Color must default missing storage to 100% and use one absolute canvas presentation filter");
+}
+if (!html.includes('React.createElement(TacticalThreeIsoColorControl,{controlId:"start-tactical-three-iso-color"})') || !html.includes('React.createElement(TacticalThreeIsoColorControl,{controlId:"menu-tactical-three-iso-color"})') || !html.includes('controlId:"tactical-three-iso-color-live"')) {
+  missing.push("3D Iso Color controls must remain available on the start screen, Save / Load screen, and live Iso toolbar");
+}
+if (!html.includes('tacticalThreePersistentApplyIsoColor(runtime,props)') || !html.includes('renderQuality,isoColor,fitMap')) {
+  missing.push("3D Iso Color must update through the persistent renderer dynamic presentation path");
 }
 if (!html.includes('const missionLaunchConfirmation=confirmMissionLaunch?') || !html.includes('React.createElement(MissionLaunchConfirmModal,{...missionLaunchConfirmation,onCancel:cancelMissionLaunch,onProceed:proceedMissionLaunch})')) {
   missing.push("mission launch confirmation must receive its controller-built view snapshot and action callbacks explicitly");
@@ -995,7 +1031,7 @@ if (!nativeContent.soldiers?.every((soldier) => Number.isFinite(soldier.reaction
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "complete-classic-battlescape-command-set" && entry?.reason)) {
   missing.push("remaining classic battlescape command depth must be recorded as a temporary gameplay parity exception");
 }
-for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity", "stable-settings-component-boundaries", "stable-campaign-list-boundaries", "stable-transient-overlay-boundaries", "stable-campaign-confirmation-boundaries", "stable-operational-approval-boundaries", "stable-mission-launch-confirmation-boundary", "stable-strategic-incident-route-boundaries", "threejs-iso-night-vibrance-presentation", "command-map-autonomous-search-resume"]) {
+for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity", "stable-settings-component-boundaries", "stable-campaign-list-boundaries", "stable-transient-overlay-boundaries", "stable-campaign-confirmation-boundaries", "stable-operational-approval-boundaries", "stable-mission-launch-confirmation-boundary", "stable-strategic-incident-route-boundaries", "threejs-iso-night-vibrance-presentation", "threejs-iso-color-device-preference", "command-map-autonomous-search-resume"]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser optimization parity exception missing: ${system}`);
   }

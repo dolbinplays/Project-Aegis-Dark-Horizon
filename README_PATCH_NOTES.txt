@@ -1,6 +1,49 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.21.1630_THREE_ISO_COLOR_CONTROL_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Adds a persistent player-adjustable 3D Iso Color control so players can tune battlefield vibrance for their display without changing tactical lighting or battle rules.
+
+PLAYER-ADJUSTABLE 3D ISO COLOR
+------------------------------
+- 3D Iso Color controls are available on the start screen, in Save / Load settings, and in the active 3D Iso battle toolbar.
+- The slider runs from 50% to 200% in 5% steps. 100% exactly preserves the Browser 1245 presentation, and Reset returns to that neutral default.
+- Changes apply immediately to the live persistent battlefield and persist locally across missions, campaign loads, and browser restarts.
+- This is a device presentation preference, not campaign state, so save format 4 remains unchanged.
+
+PERSISTENT PRESENTATION BOUNDARY
+--------------------------------
+- The existing Three.js canvas receives one absolute saturation filter; moving the slider never compounds earlier adjustments.
+- Changing color does not rebuild the renderer, scene, terrain, static battlefield objects, geometry/material caches, selection, fog, or camera position.
+- 2D Hex, FPV, TPV, and incoming-fire reaction cameras restore neutral color immediately.
+- Exposure, PointLight distance, illuminated hexes, LOS, visibility, darkness accuracy, targeting, AI, movement, damage, and power circuits are unchanged.
+
+VALIDATION
+----------
+- Build Health covers slider bounds and normalization, device persistence wiring, all three UI placements, live Iso application, perspective restoration, and unchanged save compatibility.
+- Static validation requires one shared control boundary, one persistent-renderer color helper, all three control seams, and the Browser 1630 contract.
+- Save format remains 4.
+
+MANUAL TEST GATES
+-----------------
+1. Set 50%, 100%, 150%, and 200% from the start screen and verify the displayed percentage and Reset action.
+2. Open Save / Load and confirm it shows the same device preference.
+3. Adjust the setting during a live 3D Iso mission and confirm the battlefield updates without resetting the camera, selection, fog, or renderer.
+4. Switch among 2D, Iso, FPV, and TPV and confirm only Iso consumes the color preference.
+5. Reload the page and verify the preference persists.
+6. Run deferred Build Health and verify the Browser 1630 contract passes.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.21.1245_STABLE_INCIDENT_BOUNDARIES_AND_ISO_NIGHT_VIBRANCE_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
