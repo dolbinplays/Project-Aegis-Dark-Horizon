@@ -324,6 +324,7 @@ const required = [
   "TACTICAL_THREE_ISO_NIGHT_VIBRANCE_PATCH",
   "tacticalThreeNightPresentationProfile",
   "tacticalThreePersistentApplyNightPresentation",
+  "tacticalThreePersistentApplyIsoNightMaterialLift",
   "tacticalThreeIsoNightVibranceContractTest",
   "aegisIsoNightVibrance",
   "TACTICAL_THREE_ISO_COLOR_CONTROL_PATCH",
@@ -340,6 +341,26 @@ const required = [
   "start-tactical-three-iso-color",
   "menu-tactical-three-iso-color",
   "tactical-three-iso-color-live",
+  "TACTICAL_THREE_ISO_NIGHT_BRIGHTNESS_CONTROL_PATCH",
+  "TACTICAL_THREE_ISO_NIGHT_BRIGHTNESS_STORAGE_KEY",
+  "normalizeTacticalThreeIsoNightBrightness",
+  "readTacticalThreeIsoNightBrightness",
+  "writeTacticalThreeIsoNightBrightness",
+  "TacticalThreeIsoNightBrightnessControl.displayName",
+  "data-aegis-tactical-three-iso-night-brightness-control",
+  "tacticalThreeIsoNightBrightnessPresentation",
+  "tacticalThreeIsoNightBrightnessControlContractTest",
+  "aegisIsoNightBrightness",
+  "aegisIsoNightBrightnessMode",
+  "aegisIsoNightExposure",
+  "aegisIsoNightAmbient",
+  "aegisIsoFillIntensity",
+  "aegisIsoMaterialLift",
+  "aegisIsoLocalLightScale",
+  "3D Iso Night Brightness lifts renderer exposure and ambient shadows without changing tactical illumination",
+  "start-tactical-three-iso-night-brightness",
+  "menu-tactical-three-iso-night-brightness",
+  "tactical-three-iso-night-brightness-live",
   "TACTICAL_COMMAND_MAP_AUTONOMOUS_SEARCH_RESUME_HOTFIX",
   "tacticalReleaseCompletedCommandMapWaypoint",
   "tacticalCommandMapAutonomousSearchResumeContractTest",
@@ -725,7 +746,7 @@ for (const component of ["IncidentListModal", "IncidentDetailsModal", "ActiveAir
     missing.push(`${component} must have exactly one stable declaration`);
   }
 }
-for (const component of ["TacticalThreeIsoColorControl"]) {
+for (const component of ["TacticalThreeIsoColorControl", "TacticalThreeIsoNightBrightnessControl"]) {
   const declaration = `const ${component}=React.memo(`;
   const declarationIndex = html.indexOf(declaration);
   if (declarationIndex < 0 || campaignComponentIndex < 0 || declarationIndex > campaignComponentIndex) {
@@ -759,8 +780,30 @@ if (!html.includes('if(value===null||value===undefined||value==="")return TACTIC
 if (!html.includes('React.createElement(TacticalThreeIsoColorControl,{controlId:"start-tactical-three-iso-color"})') || !html.includes('React.createElement(TacticalThreeIsoColorControl,{controlId:"menu-tactical-three-iso-color"})') || !html.includes('controlId:"tactical-three-iso-color-live"')) {
   missing.push("3D Iso Color controls must remain available on the start screen, Save / Load screen, and live Iso toolbar");
 }
-if (!html.includes('tacticalThreePersistentApplyIsoColor(runtime,props)') || !html.includes('renderQuality,isoColor,fitMap')) {
+if (!html.includes('tacticalThreePersistentApplyIsoColor(runtime,props)') || !html.includes('renderQuality,isoColor,isoNightBrightness,fitMap')) {
   missing.push("3D Iso Color must update through the persistent renderer dynamic presentation path");
+}
+if (!html.includes('const TACTICAL_THREE_ISO_NIGHT_BRIGHTNESS_MIN=50;') || !html.includes('const TACTICAL_THREE_ISO_NIGHT_BRIGHTNESS_MAX=200;') || !html.includes('const TACTICAL_THREE_ISO_NIGHT_BRIGHTNESS_STEP=5;') || !html.includes('const TACTICAL_THREE_ISO_NIGHT_BRIGHTNESS_DEFAULT=100;')) {
+  missing.push("3D Iso Night Brightness must retain its 50%-200% range, 5% step, and neutral 100% default");
+}
+if (!html.includes('if(value===null||value===undefined||value==="")return TACTICAL_THREE_ISO_NIGHT_BRIGHTNESS_DEFAULT') || !html.includes('localStorage.setItem(TACTICAL_THREE_ISO_NIGHT_BRIGHTNESS_STORAGE_KEY,String(normalized))')) {
+  missing.push("3D Iso Night Brightness must default missing storage to 100% and persist as a device preference");
+}
+if (!html.includes('React.createElement(TacticalThreeIsoNightBrightnessControl,{controlId:"start-tactical-three-iso-night-brightness"})') || !html.includes('React.createElement(TacticalThreeIsoNightBrightnessControl,{controlId:"menu-tactical-three-iso-night-brightness"})') || !html.includes('controlId:"tactical-three-iso-night-brightness-live"')) {
+  missing.push("3D Iso Night Brightness controls must remain available on the start screen, Save / Load screen, and live Iso toolbar");
+}
+if (!html.includes('tacticalThreeIsoNightBrightnessPresentation(baseProfile,props.isoNightBrightness,phase,isoView)') || !html.includes('toneMappingExposure=profile.exposure') || !html.includes('runtime.tacticalLighting.ambient*profile.ambientScale') || !html.includes('isoColor,isoNightBrightness,fitMap')) {
+  missing.push("3D Iso Night Brightness must update only the persistent renderer night presentation path");
+}
+if (!html.includes('const isoFillLight=new THREE.AmbientLight(0x9fb7d5,0)') || !html.includes('runtime.isoFillLight.intensity=Number(profile.isoFillIntensity)||0')) {
+  missing.push("3D Iso Night Brightness must use a persistent zero-at-neutral ambient fill light for readable dark objects");
+}
+if (!html.includes('tacticalThreePersistentApplyIsoNightMaterialLift(runtime,profile)') || !html.includes('runtime?.scene?.traverse?.(object=>') || !html.includes('material.userData.aegisIsoNightBaseEmissive=material.emissive.getHex()') || !html.includes('material.emissive.setHex(baseHex)') || !html.includes('aegisIsoLiftedMaterialCount')) {
+  missing.push("3D Iso Night Brightness must reversibly lift cached and directly created lit scene materials, then restore their authored emissive state");
+}
+const isoNightBrightnessSource = html.slice(html.indexOf('function tacticalThreeIsoNightBrightnessPresentation'), html.indexOf('function tacticalThreePersistentApplyNightPresentation'));
+if (!isoNightBrightnessSource.includes('localLightScale:profile.localLightScale') || !isoNightBrightnessSource.includes('isoFillIntensity=Math.max(0,ratio-1)') || isoNightBrightnessSource.includes('fogNear') || isoNightBrightnessSource.includes('fogFar') || isoNightBrightnessSource.includes('.distance')) {
+  missing.push("3D Iso Night Brightness must preserve local-light scale, fog, and light distance");
 }
 if (!html.includes('const missionLaunchConfirmation=confirmMissionLaunch?') || !html.includes('React.createElement(MissionLaunchConfirmModal,{...missionLaunchConfirmation,onCancel:cancelMissionLaunch,onProceed:proceedMissionLaunch})')) {
   missing.push("mission launch confirmation must receive its controller-built view snapshot and action callbacks explicitly");
@@ -1031,7 +1074,7 @@ if (!nativeContent.soldiers?.every((soldier) => Number.isFinite(soldier.reaction
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "complete-classic-battlescape-command-set" && entry?.reason)) {
   missing.push("remaining classic battlescape command depth must be recorded as a temporary gameplay parity exception");
 }
-for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity", "stable-settings-component-boundaries", "stable-campaign-list-boundaries", "stable-transient-overlay-boundaries", "stable-campaign-confirmation-boundaries", "stable-operational-approval-boundaries", "stable-mission-launch-confirmation-boundary", "stable-strategic-incident-route-boundaries", "threejs-iso-night-vibrance-presentation", "threejs-iso-color-device-preference", "command-map-autonomous-search-resume"]) {
+for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity", "stable-settings-component-boundaries", "stable-campaign-list-boundaries", "stable-transient-overlay-boundaries", "stable-campaign-confirmation-boundaries", "stable-operational-approval-boundaries", "stable-mission-launch-confirmation-boundary", "stable-strategic-incident-route-boundaries", "threejs-iso-night-vibrance-presentation", "threejs-iso-color-device-preference", "threejs-iso-night-brightness-device-preference", "command-map-autonomous-search-resume"]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser optimization parity exception missing: ${system}`);
   }

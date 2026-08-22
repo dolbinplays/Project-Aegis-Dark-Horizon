@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.21.1630_THREE_ISO_COLOR_CONTROL_PATCH",
+  "currentBuild": "v0.26.08.21.1730_THREE_ISO_NIGHT_BRIGHTNESS_CONTROL_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "three-iso-color-control-static-passed",
+  "status": "three-iso-night-brightness-control-static-passed",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.21.1630_THREE_ISO_COLOR_CONTROL_PATCH",
+  "lastInspectedBuild": "v0.26.08.21.1730_THREE_ISO_NIGHT_BRIGHTNESS_CONTROL_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.21.1630_THREE_ISO_COLOR_CONTROL_PATCH",
+    "browserBuild": "v0.26.08.21.1730_THREE_ISO_NIGHT_BRIGHTNESS_CONTROL_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -323,6 +323,10 @@
       {
         "system": "threejs-iso-color-device-preference",
         "reason": "The browser exposes a persistent 50%-200% 3D Iso canvas-saturation preference while keeping perspective cameras and tactical rules neutral. Native Godot requires an engine-native presentation setting."
+      },
+      {
+        "system": "threejs-iso-night-brightness-device-preference",
+        "reason": "The browser exposes a persistent 50%-200% 3D Iso night/twilight exposure and ambient-shadow presentation preference while preserving PointLight range, tactical illumination, fog, LOS, accuracy, and AI knowledge. Native Godot requires an engine-native presentation setting."
       },
       {
         "system": "threejs-armor-matched-soldier-helmets",

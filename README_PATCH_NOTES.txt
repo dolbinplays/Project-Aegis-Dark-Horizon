@@ -1,6 +1,51 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.21.1730_THREE_ISO_NIGHT_BRIGHTNESS_CONTROL_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Adds a persistent 3D Iso Night Brightness control that lifts dark vehicles, shrubs, buildings, terrain, and the Skyranger without changing tactical illumination or knowledge rules.
+
+PLAYER-ADJUSTABLE NIGHT BRIGHTNESS
+----------------------------------
+- 3D Iso Night Brightness controls are available on the start screen, in Save / Load settings, and in the active 3D Iso battle toolbar.
+- The slider runs from 50% to 200% in 5% steps. 100% exactly preserves Browser 1630 lighting, and Reset returns to that neutral default.
+- Changes apply immediately to the live persistent battlefield and persist locally across missions, campaign loads, and browser restarts.
+- The setting affects only 3D Iso during night and twilight. Daylight, 2D Hex, FPV, TPV, and incoming-fire reaction cameras retain their neutral presentation.
+
+PRESENTATION-ONLY LIGHTING BOUNDARY
+-----------------------------------
+- The slider scales renderer exposure plus hemisphere ambient, key, and rim presentation. Above 100%, it also introduces a cool, non-authoritative AmbientLight fill and a bounded shadow-color lift derived from each light-reactive material's authored color, so shadow-facing vehicle, foliage, building, and Skyranger surfaces retain readable hue instead of collapsing to black.
+- The material lift covers both cached and directly created scene materials and is reversible: 100%, daylight, and perspective cameras restore each material's exact original emissive color and intensity without cloning materials or rebuilding the battlefield.
+- At 200%, exposure rises by 45%, hemisphere ambient by 65%, key light by 40%, rim light by 25%, and the dedicated fill reaches a bounded 0.36 intensity relative to Browser 1630.
+- The preference does not change PointLight distance or PointLight intensity scaling. The authored local-light presentation remains fixed.
+- Illuminated hex calculations, fog, LOS, visibility, darkness accuracy, AI knowledge, targeting, movement, cover, damage, power circuits, and mission rules are unchanged.
+- Adjusting the slider does not rebuild the renderer, scene, terrain, static objects, materials, or battlefield caches.
+- This remains a device presentation preference, so save format 4 is unchanged.
+
+VALIDATION
+----------
+- Build Health compares 50%, 100%, and 200%, verifies neutral daylight and perspective restoration, and confirms local-light intensity and distance remain identical while dark-scene exposure and ambient fill rise.
+- Static validation requires one shared control, all three UI placements, persistent-renderer dependency wiring, fixed local-light scale, and no fog or distance mutation.
+
+MANUAL TEST GATES
+-----------------
+1. Compare 50%, 100%, 150%, and 200% in night and twilight 3D Iso scenes containing buildings, vehicles, vegetation, and a Skyranger.
+2. Confirm 100% matches Browser 1630 exactly and Reset returns to it.
+3. Adjust the live slider and confirm the renderer identity, camera, selection, fog, and battlefield state do not reset.
+4. Confirm daylight and FPV/TPV remain neutral regardless of the saved value.
+5. Confirm lamps, headlights, windows, flares, fire, and Skyranger lights do not illuminate additional hexes.
+6. Reload the page and verify the device preference persists.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.21.1630_THREE_ISO_COLOR_CONTROL_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

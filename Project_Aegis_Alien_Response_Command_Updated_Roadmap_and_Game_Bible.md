@@ -2,12 +2,42 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-21
-Current handoff build: `v0.26.08.21.1630_THREE_ISO_COLOR_CONTROL_PATCH`
+Current handoff build: `v0.26.08.21.1730_THREE_ISO_NIGHT_BRIGHTNESS_CONTROL_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1630 adds a persistent player-adjustable 3D Iso Color control on the start screen, in Save / Load settings, and in the live 3D Iso toolbar. Its 50%–200% device preference is applied as an absolute, non-compounding canvas saturation filter, so 100% preserves Browser 1245 exactly and changing the value does not rebuild the persistent renderer, scene, terrain, or caches. Perspective cameras restore neutral color, and lighting distance, LOS, visibility, fog, accuracy, AI, movement, damage, and save format 4 remain unchanged. The live-vehicle footprint pathing report remains queued as the next bounded gameplay/pathing patch. Browser 1245 strategic extraction and night vibrance, Browser 1130 Mission Launch extraction, Browser 1000 Command Map recovery, and all earlier tactical work remain active.**
+Current patch status: **Browser 1730 adds a persistent 3D Iso Night Brightness control beside the color control on the start screen, in Save / Load settings, and in the live 3D Iso toolbar. Its 50%–200% device preference changes only night/twilight renderer exposure, ambient/key/rim presentation, and a reversible shadow-color lift on light-reactive scene materials; 100% exactly preserves Browser 1630. PointLight distance and intensity scaling, illuminated hexes, fog, LOS, visibility, darkness accuracy, AI knowledge, targeting, movement, damage, and save format 4 remain unchanged. Daylight and perspective cameras restore the neutral profile, and live adjustment does not rebuild the persistent renderer or battlefield caches. The live-vehicle footprint pathing report remains queued as the next bounded gameplay/pathing patch.**
 
 
 Implementation update (2026-08-19): **Browser 2325 targets the live reproduction where the last VIP had just been rescued, no living aliens remained, and a confirmed Alien Field Beacon was the sole remaining objective, yet Simulation AI rapidly advanced rounds without useful movement or fire. Browser 1315 already had a dedicated beacon assaulter, but it did not guarantee round-level progress. The new must-progress watchdog treats beacon-only neutralization as a mandatory action phase: nearby non-assault troops clear the shield/approach, close-assault routing ignores temporary same-side traffic along the path, and after the normal AEGIS pass the resolver compares beacon HP plus assaulter distance/inside-shield state. If nothing improved, the assaulter receives a zero-reserve same-round retry and immediately attacks when a legal shot becomes available. A truly no-breach squad now halts streamed continuation instead of manufacturing endless empty rounds.**
+
+
+## Browser 1730 — Player-Adjustable 3D Iso Night Brightness
+
+**Status:** Implemented as a presentation-only device preference with no tactical-rule or save-format change.
+
+### Player control
+- A clearly labeled **3D Iso Night Brightness** slider displays its percentage and provides a one-click **Reset to 100%** action.
+- The bounded **50%–200%** range uses 5% steps. **100%** reproduces Browser 1630 exactly; lower values deepen the night presentation and higher values make dark vehicles, buildings, vegetation, terrain, and the Skyranger easier to read.
+- The setting is available on the start screen, in Save / Load settings, and in the active 3D Iso battle toolbar.
+- Changes apply immediately and persist locally across missions, campaign loads, and browser restarts as a device preference outside campaign save data.
+
+### Presentation boundary
+- The preference applies only while 3D Iso displays a night or twilight battlefield. Daylight, 2D Hex, FPV, TPV, and incoming-fire reaction cameras use their neutral presentation.
+- It scales tone-mapped renderer exposure plus hemisphere ambient, key, and rim presentation. Above 100%, a persistent cool `AmbientLight` and a bounded emissive shadow-color lift derived from each light-reactive material's authored base color provide non-authoritative fill so vehicle, foliage, building, and Skyranger surfaces retain readable hue.
+- Both cache-owned and directly created lit scene materials participate, so lightweight vegetation and other static props do not bypass the preference.
+- The material adjustment is presentation-only and reversible: 100%, daylight, and perspective cameras restore the exact original emissive color and intensity without material cloning or battlefield reconstruction.
+- At 200%, exposure, hemisphere ambient, key, and rim increases over Browser 1630 are bounded to 45%, 65%, 40%, and 25%; the dedicated fill is bounded to 0.36 intensity at night and 0.22 at twilight.
+- It intentionally leaves `localLightScale` unchanged. PointLight intensity scaling and distance therefore do not respond to this slider.
+- Tactical light sources, illuminated-hex sampling, fog bounds, LOS, visibility, darkness accuracy, AI knowledge, targeting, movement, cover, damage, power circuits, and mission logic remain authoritative and unchanged.
+- The value travels through the persistent Three.js dynamic presentation effect. It does not recreate the renderer, scene, terrain, covers, static objects, materials, or caches.
+
+### Validation gates
+1. Compare 50%, 100%, 150%, and 200% in night and twilight scenes containing a Skyranger, buildings, vehicles, shrubs, trees, and terrain props.
+2. Confirm 100% exactly matches Browser 1630 and Reset returns to it.
+3. Adjust the live slider and confirm the renderer identity, camera, selection, fog, and battlefield state remain stable.
+4. Confirm daylight and perspective cameras restore their neutral exposure and lights regardless of the saved value.
+5. Compare PointLight intensity and distance before and after adjustment and confirm both are identical.
+6. Confirm illuminated hexes, LOS, hit chances, AI decisions, and fog-of-war state remain behaviorally unchanged.
+7. Reload the page and load another campaign to confirm persistence without changing save format **4**.
 
 
 ## Browser 1245 — Stable Strategic Incident Boundaries + 3D Iso Night Vibrance
