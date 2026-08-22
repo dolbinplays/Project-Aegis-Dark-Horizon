@@ -484,6 +484,36 @@ Implementation update (2026-08-19): **Browser 2325 targets the live reproduction
 5. Build Health covers each new success, failure, partial-credit, impossible-objective, save/load, and AI-termination branch before the objective family ships broadly.
 
 
+## Roadmap Addition - Scientific Discovery Briefing Scenes
+
+**Status:** Approved presentation and narrative system; intended to reuse the planned high-value mission briefing framework without making research progression depend on a cinematic.
+
+### Research-completion presentation
+- Every completed research project should trigger a short, skippable, and replayable briefing in which the lead scientist addresses the player as the AEGIS commander and explains the latest discovery.
+- The scene should identify the completed project, summarize what the team learned, explain why it matters to the campaign, and state every concrete capability it unlocks: equipment, manufacturing projects, facilities, tactical actions, strategic operations, database entries, or newly available follow-on research.
+- Use a persistent Three.js first-person laboratory or command-room presentation with a 2D/reduced-motion fallback. Reuse camera, subtitle, character-staging, audio, and replay infrastructure from the planned high-value VIP briefings while giving research scenes their own scientific setting and visual language.
+- The lead scientist should remain a recognizable recurring campaign character. Research-specific displays, specimens, holograms, prototypes, diagrams, or sealed artifacts may support the explanation, but the scene must remain readable without inspecting background props.
+- Dialogue should retain the game's original military-science ensemble tone: concise, intelligent, occasionally dry, and appropriately cautious about discoveries whose risks AEGIS does not fully understand. It must not copy characters, dialogue, sets, music, or story material from another franchise.
+
+### Progression and usability rules
+- Research completion and all resulting unlocks become authoritative immediately. Skipping, closing, interrupting, or failing to render the briefing must never delay or revoke the completed technology.
+- Required information must also appear in the Research screen, Mainframe/report history, and unlock summary. No capability or prerequisite may be communicated exclusively through spoken dialogue or cinematic imagery.
+- If several projects complete before the player returns to the relevant screen, queue their briefings in completion order rather than overlapping or replacing them. Allow **Continue**, **Skip**, **Skip All**, and later **Replay Discovery Briefing** actions.
+- Persist pending, viewed, skipped, and replayable briefing state across save/load. Loading an older campaign should not replay every historical discovery; existing completed projects should normalize as already acknowledged unless explicitly selected from the archive.
+- Keep common project scenes brief and reserve longer presentations for major campaign discoveries such as live-alien breakthroughs, beacon behavior, intact beacon recovery, alien-base access, psionics, or decisive weapons and defenses.
+- Research-specific authored scenes are preferred, but a validated modular fallback must be able to present any completed project and enumerate its authoritative unlock data so a missing bespoke scene cannot block a new technology from shipping.
+- Subtitle display, dialogue volume, music/SFX balance, reduced motion, scene skipping, and replay controls must follow the player's existing accessibility and audio preferences.
+
+### Acceptance gates
+1. Complete each research category and confirm the briefing names the correct project and reports the same unlocks as the authoritative research data.
+2. Skip or interrupt a briefing and confirm the technology, follow-on projects, equipment, facilities, and actions are already available as intended.
+3. Complete multiple projects before viewing and confirm every briefing remains queued once, in order, with working individual and **Skip All** controls.
+4. Save with a briefing pending, viewed, and skipped; reload each state and confirm no scene is lost, duplicated, or forced unexpectedly.
+5. Confirm the Research screen and Mainframe/report archive retain a readable discovery summary plus a replay action after the cinematic closes.
+6. Remove or omit one bespoke scene in a test build and confirm the modular fallback presents the correct scientist, project summary, and unlock list without blocking progression.
+7. Confirm Three.js, 2D fallback, reduced-motion, subtitles, and audio settings communicate identical gameplay information.
+
+
 ## Browser 0845 — Stable Operational Approval Boundaries
 
 **Status:** Implemented the fifth bounded component-extraction slice from the architectural-consolidation roadmap.
