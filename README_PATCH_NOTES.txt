@@ -1,6 +1,53 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.21.2322_REINFORCEMENT_SOURCE_PRIORITY_AND_UFO_BAY_CLEARANCE_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Makes confirmed reinforcement sources durable tactical objectives and adds persistent clearance for simplified crashed-UFO deployment bays.
+
+REINFORCEMENT-SOURCE PRIORITY
+-----------------------------
+- Once AEGIS has confirmed the reinforcement function, an active field beacon or observed crashed-UFO bay outranks routine patrol, fog search, stale-contact search, and lower-priority Simulation-owned Command Map waypoints.
+- An active civilian/VIP escort or an authoritative known-living-alien contact remains higher priority.
+- Full Simulation can release a routine waypoint to investigate the source; Hybrid preserves player-directed leader orders, and manual control receives the same urgent objective without forced movement.
+
+CRASHED-UFO BAY CLEARANCE
+-------------------------
+- Simplified, non-navigable crash wrecks now persist through Unverified, Investigation Assigned, Clearing, and Bay Clear.
+- Simulation AI assigns an eligible fire team, routes its leader to an open wreck-ring cell, preserves established support formation behavior, and verifies the bay after nearby known contact is clear.
+- Manual control can use Inspect UFO Bay while adjacent for 8 TU when no living alien is within three hexes.
+- After reinforcement knowledge is confirmed, applicable crash-site victories wait for Bay Clear. Unknown doctrine does not expose or impose the new gate early.
+
+CONTINUITY AND SCOPE
+--------------------
+- Bay phase, inspector, assigned team, and verification round live in the existing tactical cover snapshot and survive active-mission save/load.
+- Mission history records UFO Bay Clear when verification succeeds.
+- Navigable landed UFO interiors, multi-deck sweeps, inaccessible-source recovery, richer debrief states, and native parity remain staged work.
+- Save format remains 4; fire-team formation, escort ownership, fog, LOS, illumination, targeting, and alien knowledge acquisition are unchanged.
+
+VALIDATION
+----------
+- Build Health covers knowledge gating, all objective priorities, Simulation-versus-Hybrid waypoint ownership, the 8-TU manual action, persistent Bay Clear state, and crash-site terminal gating.
+- Static validation requires the shared source helpers, status/action interface, patch metadata, parity exception, and save format 4.
+
+MANUAL TEST GATES
+-----------------
+1. Discover a simplified crash wreck before and after reinforcement knowledge is confirmed; confirm only the latter creates the urgent source objective.
+2. Under Simulation control, issue a quiet Command Map waypoint and confirm a known source can supersede it while support soldiers retain formation movement.
+3. Under Hybrid control, confirm the player-directed leader waypoint remains intact and the urgent objective stays visible.
+4. Inspect an adjacent clear bay manually, confirm 8 TU is spent, save/reload, and confirm Bay Clear persists.
+5. With no living aliens, confirm a known uncleared crash bay blocks victory and Bay Clear releases the mission gate.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.21.2113_DEFAULT_CIVILIAN_ESCORT_SUPPORT_DOCTRINE_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

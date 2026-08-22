@@ -379,6 +379,20 @@ const required = [
   "Engage Spotted Aliens",
   "tacticalDefaultCivilianEscortSupportDoctrineContractTest",
   "Mission escort doctrine supports Ask, Stay, and Engage defaults without changing manual or Hybrid command ownership",
+  "TACTICAL_REINFORCEMENT_SOURCE_PRIORITY_AND_UFO_BAY_CLEARANCE_PATCH",
+  "TACTICAL_UFO_BAY_CLEARANCE_PHASES",
+  "tacticalCrashedUfoBayRecord",
+  "tacticalUfoBayClearanceState",
+  "tacticalReinforcementSourceObjectiveState",
+  "tacticalAiUfoBayInspectionTeamId",
+  "tacticalUfoBayInspectionActionState",
+  "TacticalReinforcementSourceStatus",
+  "data-aegis-reinforcement-source-objective",
+  "Inspect UFO Bay",
+  "UFO Bay Clear",
+  "reinforcement-source-priority",
+  "tacticalReinforcementSourcePriorityAndUfoBayClearanceContractTest",
+  "Confirmed reinforcement sources outrank routine AI while crashed UFO bays persist through explicit clearance",
   "TACTICAL_COMMAND_MAP_AUTONOMOUS_SEARCH_RESUME_HOTFIX",
   "tacticalReleaseCompletedCommandMapWaypoint",
   "tacticalCommandMapAutonomousSearchResumeContractTest",
@@ -1006,6 +1020,12 @@ if (!manifest.gameplayParity?.requiredSystems?.includes("mission-default-civilia
 }
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "mission-default-civilian-escort-support-doctrine" && entry?.reason)) {
   missing.push("browser-only mission default civilian escort support doctrine must be recorded as a temporary gameplay parity exception");
+}
+if (!manifest.gameplayParity?.requiredSystems?.includes("reinforcement-source-priority-and-ufo-bay-clearance")) {
+  missing.push("browser/native parity must require reinforcement-source priority and UFO-bay clearance");
+}
+if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "reinforcement-source-priority-and-ufo-bay-clearance" && entry?.reason)) {
+  missing.push("browser-only reinforcement-source priority and UFO-bay clearance must be recorded as a temporary gameplay parity exception");
 }
 for (const system of [
   "save-load-patch-notes-version-history",

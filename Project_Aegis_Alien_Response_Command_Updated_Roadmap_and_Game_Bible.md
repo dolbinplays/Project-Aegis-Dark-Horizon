@@ -1,13 +1,41 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-08-21
-Current handoff build: `v0.26.08.21.2113_DEFAULT_CIVILIAN_ESCORT_SUPPORT_DOCTRINE_PATCH`
+Last updated: 2026-08-22
+Current handoff build: `v0.26.08.21.2322_REINFORCEMENT_SOURCE_PRIORITY_AND_UFO_BAY_CLEARANCE_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2113 implements a mission-scoped Civilian Escort Support doctrine with Ask, Stay, and Engage defaults on the battle screen and Command Map. Ask retains the once-per-contact assignment board; Stay keeps supports with the escort column; Engage releases supports to normal combat/flanking AI while the leader continues escort duty and automatically recalls them when contact ends. Per-team overrides remain available, active tactical snapshots preserve the selection, and manual, Hybrid, and Simulation control ownership remains unchanged. Save format remains 4.**
+Current patch status: **Browser 2322 makes confirmed reinforcement sources durable tactical objectives above routine AI work while preserving active escorts and known living-alien contacts as the only higher priorities. Simplified crashed-UFO deployment bays now persist through Unverified, Investigation Assigned, Clearing, and Bay Clear states; Simulation AI can assign and route a team, Hybrid preserves player-directed leaders, manual control receives an 8-TU inspection action, and applicable crash-site victory waits for verified clearance. Save format remains 4.**
 
 
 Implementation update (2026-08-19): **Browser 2325 targets the live reproduction where the last VIP had just been rescued, no living aliens remained, and a confirmed Alien Field Beacon was the sole remaining objective, yet Simulation AI rapidly advanced rounds without useful movement or fire. Browser 1315 already had a dedicated beacon assaulter, but it did not guarantee round-level progress. The new must-progress watchdog treats beacon-only neutralization as a mandatory action phase: nearby non-assault troops clear the shield/approach, close-assault routing ignores temporary same-side traffic along the path, and after the normal AEGIS pass the resolver compares beacon HP plus assaulter distance/inside-shield state. If nothing improved, the assaulter receives a zero-reserve same-round retry and immediately attacks when a legal shot becomes available. A truly no-breach squad now halts streamed continuation instead of manufacturing endless empty rounds.**
+
+
+## Browser 2322 - Reinforcement-Source Priority and Simplified UFO Bay Clearance
+
+**Status:** Implemented for confirmed field beacons and simplified, non-navigable crashed-UFO wrecks; broader landed and multi-deck craft clearance remains staged roadmap work.
+
+### Shared objective authority
+- `tacticalReinforcementSourceObjectiveState(...)` provides one knowledge-gated objective record for confirmed active beacons and applicable crashed-UFO bays.
+- An active civilian/VIP escort or a living alien known through authoritative current contact outranks the source. The source outranks routine patrol, fog search, stale-contact search, extraction guard duty without an escorted column, and lower-priority Simulation-owned Command Map work.
+- The source remains informational until AEGIS has confirmed the reinforcement relationship, preventing the UI or AI from revealing campaign knowledge early.
+
+### Crashed-UFO bay lifecycle
+- The simplified crash wreck's core now owns persistent **Unverified**, **Investigation Assigned**, **Clearing**, and **Bay Clear** state plus round, inspector, and assigned-team metadata.
+- Discovery promotes an unverified wreck to an assigned objective. Simulation AI selects an eligible team, approaches an open deployment-ring cell, preserves support formation behavior, and performs clearance once nearby known contact is absent.
+- Manual control receives **Inspect UFO Bay** when a living selected soldier is adjacent, has 8 TU, and no living alien is within three hexes of the bay.
+- Hybrid exposes the urgent objective but does not erase player-directed leader waypoints. Full Simulation may release a lower-priority waypoint with an explicit reinforcement-source-priority reason.
+
+### Resolution and continuity
+- After reinforcement doctrine is confirmed, an applicable crash-site alien-defeat victory waits for **Bay Clear** as well as the existing living-alien, rescue, and beacon gates.
+- Unknown doctrine retains the previous mission gate. Bay state lives in the existing tactical cover snapshot, so active-mission save/load requires no save-format change.
+- Mission history records **UFO Bay Clear** when verified. Inaccessible-source reporting, full debrief vocabulary, navigable landed craft, and multi-deck clearance remain queued.
+
+### Validation gates
+1. Confirm unknown doctrine neither creates nor gates on a UFO-bay objective.
+2. Confirm a discovered bay advances through the four phases and survives active tactical save/load.
+3. Confirm active escort and known-living-alien priorities outrank the source, while routine Simulation waypoints yield.
+4. Confirm Hybrid preserves player leader orders and manual inspection spends exactly 8 TU.
+5. Confirm applicable crash-site victory is blocked before Bay Clear and allowed afterward.
 
 
 ## Browser 2113 - Default Civilian Escort Support Doctrine
@@ -271,7 +299,14 @@ Implementation update (2026-08-19): **Browser 2325 targets the live reproduction
 
 ## Roadmap Addition — Reinforcement-Source Investigation and Clearance Doctrine
 
-**Status:** Approved design item; extends the existing confirmed-beacon knowledge doctrine to immediate field investigation, UFO-bay clearance, and explicit reinforcement-source verification.
+**Status:** Partially implemented in Browser 2322. Confirmed active-beacon priority and persistent simplified crashed-UFO bay clearance now ship in the browser build. Navigable landed/multi-deck craft sweeps, inaccessible-source recovery, richer debrief states, and native tactical parity remain queued.
+
+### Implemented Browser 2322 slice
+- Confirmed active beacons and observed simplified crashed-UFO bays now share a durable reinforcement-source objective above routine Simulation AI tasks.
+- Active escorts and authoritative known-living-alien contacts remain the only higher-priority tactical duties.
+- Simplified wrecks persist through **Unverified**, **Investigation Assigned**, **Clearing**, and **Bay Clear**, expose a manual inspection action, and gate applicable crash-site victory after the doctrine is known.
+- Full Simulation can release a lower-priority waypoint and route a team to the wreck ring; Hybrid preserves the player's leader waypoint and established support formation ownership.
+- This slice does not yet claim navigable interior, ramp, multi-deck, inaccessible-source, or complete debrief support.
 
 ### Knowledge-gated tactical priority
 - Before AEGIS understands the relationship between alien devices/craft and reinforcement arrival, an unfamiliar beacon or UFO bay may be treated as an unknown object or ordinary terrain feature under the existing discovery rules.
@@ -9209,7 +9244,7 @@ Once AEGIS has directly witnessed or otherwise firmly established the connection
 
 ### AI targeting doctrine after discovery
 
-**Planned priority refinement:** the later **Reinforcement-Source Investigation and Clearance Doctrine** raises a confirmed source above every routine AI task. Once that roadmap item ships, only an active escort already in progress or an authoritative known-living-alien contact may outrank it. The bullets below describe the currently implemented Browser 1850 distribution behavior until that refinement is implemented.
+**Browser 2322 priority refinement:** the **Reinforcement-Source Investigation and Clearance Doctrine** now raises a confirmed source above every routine Simulation AI task. Only an active escort already in progress or an authoritative known-living-alien contact may outrank it. The bullets below continue to describe the established beacon team-distribution behavior that this shared priority layer builds upon.
 
 Once confirmed:
 
