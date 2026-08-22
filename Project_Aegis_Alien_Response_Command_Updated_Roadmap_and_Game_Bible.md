@@ -2,12 +2,40 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-21
-Current handoff build: `v0.26.08.21.1845_LIVE_VEHICLE_FOOTPRINT_MOVEMENT_INTEGRITY_PATCH`
+Current handoff build: `v0.26.08.21.2113_DEFAULT_CIVILIAN_ESCORT_SUPPORT_DOCTRINE_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1845 makes every cell of a living land vehicle's multi-hex footprint authoritative at final movement commit time across manual/escort stepping, Simulation AI, fallback recovery, beacon-watchdog movement, and alien per-step travel. It also centers persistent Three.js vehicle bodies on the centroid of the same authoritative cells, correcting the visual overhang that could make a legal neighboring unit look as though it stood inside a vehicle. Existing route validation and battlefield integrity repair remain active; destroyed vehicles retain their prior passability, and formations, escorts, Skyranger rules, fog, LOS, battle knowledge, lighting, and save format 4 are unchanged.**
+Current patch status: **Browser 2113 implements a mission-scoped Civilian Escort Support doctrine with Ask, Stay, and Engage defaults on the battle screen and Command Map. Ask retains the once-per-contact assignment board; Stay keeps supports with the escort column; Engage releases supports to normal combat/flanking AI while the leader continues escort duty and automatically recalls them when contact ends. Per-team overrides remain available, active tactical snapshots preserve the selection, and manual, Hybrid, and Simulation control ownership remains unchanged. Save format remains 4.**
 
 
 Implementation update (2026-08-19): **Browser 2325 targets the live reproduction where the last VIP had just been rescued, no living aliens remained, and a confirmed Alien Field Beacon was the sole remaining objective, yet Simulation AI rapidly advanced rounds without useful movement or fire. Browser 1315 already had a dedicated beacon assaulter, but it did not guarantee round-level progress. The new must-progress watchdog treats beacon-only neutralization as a mandatory action phase: nearby non-assault troops clear the shield/approach, close-assault routing ignores temporary same-side traffic along the path, and after the normal AEGIS pass the resolver compares beacon HP plus assaulter distance/inside-shield state. If nothing improved, the assaulter receives a zero-reserve same-round retry and immediately attacks when a legal shot becomes available. A truly no-breach squad now halts streamed continuation instead of manufacturing endless empty rounds.**
+
+
+## Browser 2113 - Default Civilian Escort Support Doctrine
+
+**Status:** Implemented as a mission-scoped tactical doctrine with explicit control-mode preservation.
+
+### Mission default and interface
+- **Ask When Contact Is Spotted** remains the initial default and preserves the existing once-per-contact, per-fire-team assignment board.
+- **Stay With Escort** assigns every eligible support to the civilian/VIP column without the routine contact prompt.
+- **Engage Spotted Aliens** assigns eligible supports to normal visible-contact combat and enemy-relative flanking while the fire-team leader retains the escorted column.
+- The selector is displayed on the battle screen and in the Command Map. **Assign Teams** remains available as a temporary mixed-team override when an escort column and visible alien contact exist.
+
+### Lifecycle and ownership
+- The doctrine is stored in the active mission's tactical snapshot and restored through active-mission save/load; unknown or older values normalize to Ask.
+- Automatic Stay/Engage decisions occur at the existing new-contact boundary, emit one concise log acknowledgement for that episode, and reuse the established return-to-escort behavior when contact ends.
+- A manual per-team assignment updates the support orders in place and leaves the human turn active. Hybrid resumes only its bounded support round and returns leader control; Simulation resumes its normal stream.
+- Changing the default resets only the contact-decision latch for the next eligible decision. It does not reset TU, replay movement, erase a shown action, or convert the tactical ownership mode.
+
+### Preserved systems
+- Fire-team leaders always retain their civilian/VIP escort under all defaults. Supporting soldiers continue to use existing formation, TU reserve, flanking, target fallback, extraction traffic, and return behavior.
+- Fog, LOS, accuracy, illumination, alien knowledge, mission resolution, and save format **4** are unchanged.
+
+### Validation gates
+1. Save/reload Ask, Stay, and Engage selections in an active mission.
+2. Confirm Stay does not prompt or break supports away from a visible-contact escort column.
+3. Confirm Engage sends only supports into established combat/flanking AI and recalls them after contact.
+4. Use Assign Teams in manual, Hybrid, and Simulation modes and verify command ownership never changes.
+5. Confirm both battle and Command Map selectors display the same mission state.
 
 
 ## Browser 1845 — Live Land-Vehicle Footprint Movement Integrity
@@ -209,7 +237,7 @@ Implementation update (2026-08-19): **Browser 2325 targets the live reproduction
 
 ## Roadmap Addition — Default Civilian Escort Support Doctrine
 
-**Status:** Approved design item; retain the existing per-contact assignment board while allowing the player to preselect its normal response for the current mission.
+**Status:** Implemented in Browser 2113; retain this section as the authoritative doctrine and acceptance contract.
 
 ### Mission-level player choice
 - Add a **Civilian Escort Support** control to the tactical battle controls and Command Map.

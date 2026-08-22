@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.21.1845_LIVE_VEHICLE_FOOTPRINT_MOVEMENT_INTEGRITY_PATCH",
+  "currentBuild": "v0.26.08.21.2113_DEFAULT_CIVILIAN_ESCORT_SUPPORT_DOCTRINE_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "live-vehicle-footprint-movement-integrity-validated",
+  "status": "default-civilian-escort-support-doctrine-validated",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.21.1845_LIVE_VEHICLE_FOOTPRINT_MOVEMENT_INTEGRITY_PATCH",
+  "lastInspectedBuild": "v0.26.08.21.2113_DEFAULT_CIVILIAN_ESCORT_SUPPORT_DOCTRINE_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.21.1845_LIVE_VEHICLE_FOOTPRINT_MOVEMENT_INTEGRITY_PATCH",
+    "browserBuild": "v0.26.08.21.2113_DEFAULT_CIVILIAN_ESCORT_SUPPORT_DOCTRINE_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -142,7 +142,8 @@
       "indexed-2d-tactical-cell-render-lookups",
       "threejs-explicit-living-unit-pose-state",
       "vip-death-flag-impossible-quota-terminal-resolution",
-      "live-land-vehicle-footprint-movement-integrity"
+      "live-land-vehicle-footprint-movement-integrity",
+      "mission-default-civilian-escort-support-doctrine"
     ],
     "temporaryExceptions": [
       {
@@ -240,6 +241,10 @@
       {
         "system": "hybrid-opening-escort-support-independent-follow",
         "reason": "Browser Hybrid AI now holds a player-positioned escort leader without marking the support soldiers as completed rescue-duty units, allowing their own TU-driven formation catch-up on the opening and later handoffs. Native tactical parity remains queued."
+      },
+      {
+        "system": "mission-default-civilian-escort-support-doctrine",
+        "reason": "The browser tactical battle now provides mission-scoped Ask, Stay, and Engage escort-support defaults with save/load continuity and manual per-team overrides. Native tactical UI and AI doctrine parity remain queued."
       },
       {
         "system": "command-map-autonomous-search-resume",

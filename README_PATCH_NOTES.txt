@@ -1,6 +1,46 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.21.2113_DEFAULT_CIVILIAN_ESCORT_SUPPORT_DOCTRINE_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Adds a mission-level Civilian Escort Support doctrine so players can default escorting fire teams to Ask, Stay, or Engage while preserving manual, Hybrid, and Simulation AI ownership.
+
+ESCORT SUPPORT DOCTRINE
+-----------------------
+- Ask When Contact Is Spotted preserves the existing once-per-contact assignment board and remains the default for existing and new missions.
+- Stay With Escort keeps supporting soldiers with the civilian/VIP column without opening the routine contact prompt.
+- Engage Spotted Aliens automatically releases supporting soldiers to normal combat and flanking AI while the fire-team leader keeps the escort moving; supports return when contact ends.
+- The selected doctrine is mission-scoped and travels with the active tactical snapshot through save/load.
+
+CONTROL AND OVERRIDES
+---------------------
+- The doctrine selector is available on the battle screen and inside the Command Map.
+- Assign Teams opens the existing per-fire-team decision board as a temporary override whenever an escort column and visible alien contact are both present.
+- Manual overrides remain manual, Hybrid decisions resume only the bounded Hybrid support round, and Simulation AI resumes its existing stream.
+- Automatic decisions log one concise acknowledgement per new alien-contact episode and do not reset TU or erase movement already shown.
+
+VALIDATION
+----------
+- Build Health covers all three defaults, invalid/default normalization, support mode assignment, leader-owned escort behavior, manual ownership preservation, both interface locations, and tactical snapshot continuity.
+- Save format remains 4; fog, LOS, targeting, fire-team formation, escort routing, extraction traffic, and alien knowledge are unchanged.
+
+MANUAL TEST GATES
+-----------------
+1. Save and reload an active escort mission under Ask, Stay, and Engage and confirm the selected doctrine survives.
+2. Spot aliens under Stay and Engage, confirming the former guards the column and the latter sends only supports into normal combat/flanking behavior.
+3. End contact and confirm detached supports return to their original escort leader.
+4. Exercise Assign Teams under manual, Hybrid, and Simulation control and confirm no choice changes the owning control mode.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.21.1845_LIVE_VEHICLE_FOOTPRINT_MOVEMENT_INTEGRITY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

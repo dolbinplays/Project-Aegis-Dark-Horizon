@@ -367,6 +367,18 @@ const required = [
   "tacticalThreeCoverWorldAnchor",
   "tacticalLiveVehicleFootprintMovementIntegrityContractTest",
   "Live land-vehicle footprints block every movement commit and align the persistent 3D body with its authoritative cells",
+  "TACTICAL_DEFAULT_CIVILIAN_ESCORT_SUPPORT_DOCTRINE_PATCH",
+  "TACTICAL_ESCORT_SUPPORT_DOCTRINES",
+  "normalizeTacticalEscortSupportDoctrine",
+  "tacticalApplyEscortSupportDoctrine",
+  "TacticalEscortSupportDoctrineControl",
+  "battle-escort-support-doctrine",
+  "command-map-escort-support-doctrine",
+  "Ask When Contact Is Spotted",
+  "Stay With Escort",
+  "Engage Spotted Aliens",
+  "tacticalDefaultCivilianEscortSupportDoctrineContractTest",
+  "Mission escort doctrine supports Ask, Stay, and Engage defaults without changing manual or Hybrid command ownership",
   "TACTICAL_COMMAND_MAP_AUTONOMOUS_SEARCH_RESUME_HOTFIX",
   "tacticalReleaseCompletedCommandMapWaypoint",
   "tacticalCommandMapAutonomousSearchResumeContractTest",
@@ -988,6 +1000,12 @@ if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system
 }
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "hybrid-opening-escort-support-independent-follow" && entry?.reason)) {
   missing.push("browser-only hybrid opening escort support follow fix must be recorded as a temporary gameplay parity exception");
+}
+if (!manifest.gameplayParity?.requiredSystems?.includes("mission-default-civilian-escort-support-doctrine")) {
+  missing.push("browser/native parity must require the mission default civilian escort support doctrine");
+}
+if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "mission-default-civilian-escort-support-doctrine" && entry?.reason)) {
+  missing.push("browser-only mission default civilian escort support doctrine must be recorded as a temporary gameplay parity exception");
 }
 for (const system of [
   "save-load-patch-notes-version-history",
