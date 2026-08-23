@@ -2,9 +2,30 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-22
-Current handoff build: `v0.26.08.22.1552_CRASH_SITE_AI_TERMINAL_STALL_RECOVERY_PATCH`
+Current handoff build: `v0.26.08.22.2124_MEDIUM_LARGE_BUILDING_PERIMETER_RESTORATION_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1552 fixes the reproduced crash-site Round 8 no-progress loop and false Hybrid failure. A confirmed pending crashed-UFO bay now keeps bounded Simulation rounds active after the last visible alien dies. Hybrid and full Simulation share an explicit terminal-outcome predicate, so an unresolved frame without a continuation can no longer be recorded as failure; Hybrid reconstructs the authoritative frame and returns leader control instead. Save format 4 remains unchanged.**
+Current patch status: **Browser 2124 restores outer-district walls, windows, partitions, furnishings, and building lights that asynchronous startup could omit on 80x80 and 96x96 tactical maps. The reproduced East Asia Threat 3 Alien Terror Raid correctly planned all three structures and their floors, but streamed cover placement still clipped against the legacy 64-cell boundary. A mission-sized, duplicate-safe restoration pass now aligns rendered and authoritative building cover with the full floor plan while preserving fog, LOS, AI knowledge, objectives, and save format 4.**
+
+
+## Browser 2124 - Medium/Large Building Perimeter Restoration
+
+**Status:** Implemented from the East Asia Alien Terror Raid screenshot and archived mission result: Bear Squad, Threat 3, Signal Leech, Medium 80x80, with Corner Market, Vehicle Workshop, and Municipal Records Office.
+
+### Confirmed cause
+- Tactical building plans, floor styling, and VIP placement used the mission's true 80-cell boundary.
+- Ordinary synchronous generation already had a later compatibility pass for outer buildings, but asynchronous mission startup—the path used to prepare live missions—retained an older 64-cell cover cutoff.
+- A structure placed wholly or partly beyond hex 61 could therefore retain its interior floor identity while losing some or all wall, window, partition, furnishing, and interior-light cover records. The circled area was a generated building interior, not an intended plaza.
+
+### Correction
+- After streamed generation, medium and large Earth missions merge any missing authored building-cover records using the real mission grid size.
+- Existing cover footprints are pre-indexed before the merge. Already-generated walls and props remain untouched, and only absent cells are added with their original building IDs and gameplay properties.
+- Restored records begin unrevealed and obey ordinary fog/observer discovery. Their wall/window solidity, LOS, cover, breach, shot, shattering, lighting, and pathfinding behavior is unchanged.
+- Small maps do not need the restoration. Procedural alien bases retain their dedicated generator and are explicitly excluded.
+
+### Validation boundary
+- Build Health deterministically finds an East Asia Threat 3 terror-site plan extending beyond the legacy boundary, creates the old clipped cover state, and proves every outer perimeter segment returns.
+- The test also verifies the synchronous map contains the same authored perimeter and checks 80x80/96x96 two-cell map margins.
+- Save format remains **4**; this corrects generation of new battlefields and does not mutate campaign records.
 
 
 ## Browser 1552 - Crash-Site AI Terminal Stall Recovery

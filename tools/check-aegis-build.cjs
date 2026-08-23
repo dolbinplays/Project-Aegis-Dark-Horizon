@@ -89,9 +89,13 @@ const required = [
   "Sixteen procedural alien-base seeds keep every defender elevator and command-core approach reachable while layouts vary",
   "Alien-base 3D Iso deck controls focus the persistent camera and announce vertical transitions without changing tactical authority",
   "Crash-site Simulation continues pending UFO-bay clearance and Hybrid cannot finalize an unresolved snapshot as failure",
+  "Medium and large streamed battlefields retain outer-district building walls windows and authored floor alignment",
   "BEACON_LINKED_PROCEDURAL_MULTILEVEL_ALIEN_BASE_ASSAULT_PATCH",
   "ALIEN_BASE_VERTICAL_DECK_FOCUS_PRESENTATION_PATCH",
   "CRASH_SITE_AI_TERMINAL_STALL_RECOVERY_PATCH",
+  "TACTICAL_MEDIUM_LARGE_BUILDING_PERIMETER_RESTORATION_PATCH",
+  "tacticalRestoreMissionSizedBuildingCovers",
+  "Restoring outer-district building perimeters",
   "tacticalAiShouldContinueUfoBay",
   "tacticalMissionResultHasTerminalOutcome",
   "no mission result was committed",
@@ -1062,6 +1066,12 @@ if (!manifest.gameplayParity?.requiredSystems?.includes("crash-site-ai-terminal-
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "crash-site-ai-terminal-stall-recovery" && entry?.reason)) {
   missing.push("browser-only crash-site AI terminal stall recovery must be recorded as a temporary gameplay parity exception");
 }
+if (!manifest.gameplayParity?.requiredSystems?.includes("medium-large-streamed-building-perimeter-restoration")) {
+  missing.push("browser/native parity must require medium and large streamed building perimeter restoration");
+}
+if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "medium-large-streamed-building-perimeter-restoration" && entry?.reason)) {
+  missing.push("browser-only medium and large streamed building perimeter restoration must be recorded as a temporary gameplay parity exception");
+}
 for (const system of [
   "save-load-patch-notes-version-history",
   "tactical-shot-result-stack-and-toggle",
@@ -1080,6 +1090,7 @@ for (const system of [
   "beacon-linked-procedural-multilevel-alien-base-assault",
   "alien-base-vertical-deck-focus-presentation",
   "crash-site-ai-terminal-stall-recovery",
+  "medium-large-streamed-building-perimeter-restoration",
 ]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser-only current-patch system must be recorded as a temporary parity exception: ${system}`);

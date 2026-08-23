@@ -1,6 +1,54 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.22.2124_MEDIUM_LARGE_BUILDING_PERIMETER_RESTORATION_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Restores missing building walls, windows, partitions, and furnishings in the outer districts of streamed 80x80 and 96x96 tactical maps. This fixes the exposed interior floor seen around the circled VIPs in the East Asia Threat 3 Alien Terror Raid.
+
+CONFIRMED REPRODUCTION
+----------------------
+- The archived mission result identifies the affected operation as Alien Terror Raid, East Asia, Bear Squad, Threat 3, Signal Leech.
+- Its tactical timeline confirms a Medium 80x80 map with Corner Market, Vehicle Workshop, and Municipal Records Office structures.
+- Building plans and interior floor classification already used the full 80-cell map, but asynchronous mission startup discarded cover records beyond the older 64-cell boundary. That left patterned interior floors and valid VIP positions visible without the corresponding perimeter walls.
+
+MISSION-SIZED BUILDING RESTORATION
+----------------------------------
+- Streamed medium and large battlefield generation now runs an idempotent mission-sized building-cover restoration step after its ordinary generation pass.
+- Every authored outer-district wall, transparent window, partition, furnishing, power control, building ID, light source, and grid-size record can survive up to the real mission boundary.
+- Existing cover cells are indexed first, so the restoration cannot duplicate walls or overwrite already-generated cover.
+- Small 64x64 maps and procedural alien bases bypass the compatibility step and keep their established generation paths.
+- The synchronous generator's existing medium/large restoration behavior remains authoritative and is checked against the streamed path.
+
+TACTICAL AUTHORITY
+------------------
+- Restored walls resume their normal movement, LOS, cover, breach, window-shattering, lighting, fog, AI-pathing, and shot-collision behavior.
+- The patch does not reveal the structures through fog or disclose occupants. Every restored cover record begins unrevealed and follows normal observer visibility.
+- Mission objectives, civilian/VIP requirements, unit placement, AI knowledge, combat results, and save format remain unchanged.
+
+VALIDATION
+----------
+- Build Health searches deterministic East Asia terror-site seeds for a medium-map building crossing the legacy boundary, simulates the clipped startup state, and requires every outer wall/window to be restored.
+- It verifies public synchronous generation contains the same perimeter and checks the legal inner bounds for 80x80 and 96x96 maps.
+- Static validation requires the asynchronous generator to call the mission-sized restoration helper and report its outer-district generation stage.
+
+MANUAL TEST GATES
+-----------------
+1. Start a new Threat 3 Alien Terror Raid or another medium/large mission with a structure near the outer map district.
+2. In 2D and 3D Iso, confirm patterned building floors are surrounded by the expected walls/windows except at authored doors or destroyed breaches.
+3. Confirm windows remain visible and shootable, solid walls block sight and movement, and doors remain passable.
+4. Confirm VIPs/civilians inside outer buildings can be reached through valid entrances and are not exposed through missing facade sections.
+5. Confirm a small 64x64 mission and an alien-base assault generate without new duplicate cover.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.22.1552_CRASH_SITE_AI_TERMINAL_STALL_RECOVERY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

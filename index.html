@@ -777,7 +777,7 @@ function installAegisGlobalHoverHelp(){
 function AegisHoverHelpToggleButton({light=false,compact=false}){const[enabled,setEnabled]=useState(()=>readAegisHoverHelpEnabled());useEffect(()=>{const sync=event=>setEnabled(normalizeAegisHoverHelpEnabled(event?.detail?.enabled));window.addEventListener(AEGIS_HOVER_HELP_CHANGE_EVENT,sync);return()=>window.removeEventListener(AEGIS_HOVER_HELP_CHANGE_EVENT,sync);},[]);const toggle=()=>setEnabled(writeAegisHoverHelpEnabled(!enabled));return/*#__PURE__*/React.createElement("button",{type:"button",onClick:toggle,"aria-pressed":enabled,"data-aegis-hover-help-toggle":"true","data-aegis-help":enabled?"Turn contextual button explanations off. Controls continue working normally, and the preference is remembered on this device.":"Turn contextual button explanations on. Rest the pointer over supported controls for three seconds to read their purpose.",className:`${compact?"px-3 py-2 text-xs":"px-4 py-3 text-sm"} rounded-2xl border font-black shadow-sm transition ${enabled?light?"border-cyan-200/70 bg-cyan-900/60 text-cyan-50":"border-cyan-400/60 bg-cyan-950/55 text-cyan-100":light?"border-slate-400/60 bg-slate-950/70 text-slate-200":"border-slate-600 bg-slate-950 text-slate-300"}`},enabled?"Hover Help: On":"Hover Help: Off");}
 if(typeof document!=="undefined"){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",installAegisGlobalHoverHelp,{once:true});else setTimeout(installAegisGlobalHoverHelp,0);}
 
-const CURRENT_GAME_BUILD="v0.26.08.22.1552_CRASH_SITE_AI_TERMINAL_STALL_RECOVERY_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
+const CURRENT_GAME_BUILD="v0.26.08.22.2124_MEDIUM_LARGE_BUILDING_PERIMETER_RESTORATION_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
 function runCriticalBootSmokeTests(){
   const checks=[
     {name:"Game root is available",pass:typeof document!=="undefined"&&Boolean(document.getElementById("root"))},
@@ -11150,6 +11150,29 @@ function tacticalCrashSiteAiTerminalStallRecoveryContractTest(){
 }
 const AEGIS_RUN_SELF_TESTS_BEFORE_1552_CRASH_SITE_AI_TERMINAL_RECOVERY=runSelfTests;
 runSelfTests=function runSelfTestsWith1552CrashSiteAiTerminalRecovery(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_1552_CRASH_SITE_AI_TERMINAL_RECOVERY(),{name:"Crash-site Simulation continues pending UFO-bay clearance and Hybrid cannot finalize an unresolved snapshot as failure",pass:tacticalCrashSiteAiTerminalStallRecoveryContractTest()}];};
+const TACTICAL_MEDIUM_LARGE_BUILDING_PERIMETER_RESTORATION_PATCH=true;
+function tacticalRestoreMissionSizedBuildingCovers(covers=[],mission={}){
+  const gridSize=tacticalGridSizeForMission(mission);const next=(Array.isArray(covers)?covers:[]).map(cover=>({...cover,gridSize:cover.gridSize||gridSize}));
+  if(gridSize<=TACTICAL_GRID_SIZE||tacticalMissionIsAlienBaseAssault(mission))return next;
+  const occupied=new Set(next.flatMap(cover=>tacticalCoverFootprintCells(cover).map(cell=>tacticalKey(cell.x,cell.y))));const biome=tacticalBiomeForMission(mission);
+  tacticalBuildingCovers(mission).forEach(cover=>{const key=tacticalKey(cover.x,cover.y);if(!tacticalPlayableCell(cover,gridSize,2)||occupied.has(key))return;occupied.add(key);next.push({...cover,id:`cover-${next.length}`,revealed:false,biome,gridSize});});
+  return next;
+}
+const AEGIS_MAKE_BATTLEFIELD_ASYNC_BEFORE_MISSION_SIZED_BUILDING_RESTORATION=makeBattlefieldAsync;
+makeBattlefieldAsync=async function makeBattlefieldAsyncWithMissionSizedBuildingRestoration(mission={},onProgress=()=>{},shouldCancel=()=>false){const covers=await AEGIS_MAKE_BATTLEFIELD_ASYNC_BEFORE_MISSION_SIZED_BUILDING_RESTORATION(mission,onProgress,shouldCancel);if(tacticalMapProfileForMission(mission).size>TACTICAL_GRID_SIZE&&!tacticalMissionIsAlienBaseAssault(mission))onProgress("Restoring outer-district building perimeters",78);return tacticalRestoreMissionSizedBuildingCovers(covers,mission);};
+preserveLayeredPatchFunctionSource(makeBattlefieldAsync,AEGIS_MAKE_BATTLEFIELD_ASYNC_BEFORE_MISSION_SIZED_BUILDING_RESTORATION);
+function tacticalMediumLargeBuildingPerimeterRestorationContractTest(){
+  let mission=null,outerPerimeter=[];
+  for(let seed=0;seed<64&&!outerPerimeter.length;seed+=1){const candidate={id:`qa-east-asia-terror-${seed}`,kind:"Alien Terror Raid",region:"East Asia",alien:"Signal Leech",threat:3,reward:650,panicPenalty:28};const perimeter=tacticalBuildingCovers(candidate).filter(cover=>["wall","window"].includes(cover.buildingPart)&&(cover.x>TACTICAL_GRID_SIZE-3||cover.y>TACTICAL_GRID_SIZE-3));if(perimeter.length){mission=candidate;outerPerimeter=perimeter;}}
+  if(!mission||tacticalMapProfileForMission(mission).size!==80)return false;
+  const legacyClipped=tacticalBuildingCovers(mission).filter(cover=>cover.x<=TACTICAL_GRID_SIZE-3&&cover.y<=TACTICAL_GRID_SIZE-3).map((cover,index)=>({...cover,id:`legacy-cover-${index}`,gridSize:80}));
+  const restored=tacticalRestoreMissionSizedBuildingCovers(legacyClipped,mission),restoredKeys=new Set(restored.map(cover=>`${cover.buildingId||""}:${cover.x},${cover.y}:${cover.buildingPart||""}`)),publicKeys=new Set(makeBattlefield(mission).map(cover=>`${cover.buildingId||""}:${cover.x},${cover.y}:${cover.buildingPart||""}`));
+  const everyOuterRestored=outerPerimeter.every(cover=>restoredKeys.has(`${cover.buildingId}:${cover.x},${cover.y}:${cover.buildingPart}`)&&publicKeys.has(`${cover.buildingId}:${cover.x},${cover.y}:${cover.buildingPart}`));
+  const asyncSource=String(makeBattlefieldAsync);const large={...mission,id:"qa-large-building-bounds",threat:5,tacticalMapTier:"large"};
+  return Boolean(TACTICAL_MEDIUM_LARGE_BUILDING_PERIMETER_RESTORATION_PATCH&&everyOuterRestored&&restored.length>legacyClipped.length&&tacticalGridSizeForMission(large)===96&&tacticalPlayableCell({x:77,y:77},80,2)&&!tacticalPlayableCell({x:78,y:77},80,2)&&tacticalPlayableCell({x:93,y:93},96,2)&&!tacticalPlayableCell({x:94,y:93},96,2)&&asyncSource.includes("tacticalRestoreMissionSizedBuildingCovers")&&asyncSource.includes("Restoring outer-district building perimeters"));
+}
+const AEGIS_RUN_SELF_TESTS_BEFORE_2124_MISSION_SIZED_BUILDING_RESTORATION=runSelfTests;
+runSelfTests=function runSelfTestsWith2124MissionSizedBuildingRestoration(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_2124_MISSION_SIZED_BUILDING_RESTORATION(),{name:"Medium and large streamed battlefields retain outer-district building walls windows and authored floor alignment",pass:tacticalMediumLargeBuildingPerimeterRestorationContractTest()}];};
 AEGIS_POST_DEFERRED_BUILD_HEALTH_RUNNER=runSelfTests;
 runSelfTests=runDeferredSelfTests;
 ReactDOM.createRoot(document.getElementById("root")).render(/*#__PURE__*/React.createElement(AlienResponseCommand,null));

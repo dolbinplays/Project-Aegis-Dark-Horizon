@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.22.1552_CRASH_SITE_AI_TERMINAL_STALL_RECOVERY_PATCH",
+  "currentBuild": "v0.26.08.22.2124_MEDIUM_LARGE_BUILDING_PERIMETER_RESTORATION_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "crash-site-ai-terminal-stall-recovery-validation",
+  "status": "medium-large-building-perimeter-restoration-validation",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.22.1552_CRASH_SITE_AI_TERMINAL_STALL_RECOVERY_PATCH",
+  "lastInspectedBuild": "v0.26.08.22.2124_MEDIUM_LARGE_BUILDING_PERIMETER_RESTORATION_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.22.1552_CRASH_SITE_AI_TERMINAL_STALL_RECOVERY_PATCH",
+    "browserBuild": "v0.26.08.22.2124_MEDIUM_LARGE_BUILDING_PERIMETER_RESTORATION_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -147,7 +147,8 @@
       "reinforcement-source-priority-and-ufo-bay-clearance",
       "beacon-linked-procedural-multilevel-alien-base-assault",
       "alien-base-vertical-deck-focus-presentation",
-      "crash-site-ai-terminal-stall-recovery"
+      "crash-site-ai-terminal-stall-recovery",
+      "medium-large-streamed-building-perimeter-restoration"
     ],
     "temporaryExceptions": [
       {
@@ -265,6 +266,10 @@
       {
         "system": "crash-site-ai-terminal-stall-recovery",
         "reason": "The browser resolver now keeps Simulation active for confirmed pending crashed-UFO bay inspection and prevents Hybrid from finalizing an unresolved snapshot as failure. Native Godot needs the same engine-native continuation and explicit-terminal-outcome contract."
+      },
+      {
+        "system": "medium-large-streamed-building-perimeter-restoration",
+        "reason": "The browser asynchronous battlefield generator now restores authored outer-district building cover against each mission's 80x80 or 96x96 boundary. Native Godot requires equivalent engine-native map-size-aware structure generation."
       },
       {
         "system": "command-map-autonomous-search-resume",
