@@ -2,9 +2,31 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-23
-Current handoff build: `v0.26.08.23.0138_PATCH_NOTES_HISTORY_SCOPE_STARTUP_HOTFIX`
+Current handoff build: `v0.26.08.23.1009_PER_SHOOTER_VISIBILITY_AND_VIP_EXTRACTION_HANDOFF_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0138 restores startup after Browser 0125 placed its in-game patch-history mutation outside the `AlienResponseCommand` scope that owns `PATCH_NOTES_HISTORY`. Both the 0125 entry and current hotfix entry now live with the library declaration, and static validation rejects future out-of-scope history mutations. Browser 0125's single-owner victory-dialogue correction remains active and save format stays at 4.**
+Current patch status: **Browser 1009 closes the remaining split between a firing soldier's authoritative current visibility and the alien rendered in the exact shot frame. It also clears completed VIP rescue/extraction assignments and orphaned Skyranger guard positions across Manual, Hybrid, streamed Simulation, continuation, and save handoffs, preventing the former escort leader from becoming the only soldier who moves after the final VIP boards. Browser 0138's startup correction remains active and save format stays at 4.**
+
+
+## Browser 1009 - Per-Shooter Visibility + VIP Extraction Handoff
+
+**Status:** Implemented from two live tactical reports: AEGIS shots could be shown against aliens absent from the chosen battle view, and after the last VIP boarded the Skyranger only the former escort leader kept moving across later AI/Hybrid rounds.
+
+### Final shot authority
+- Manual fire, Simulation fire, emergency recovery fire, and reaction fire share one final shooter/target commit check for living state, target side, weapon range, tactical level, and current authoritative LOS.
+- The final gate runs before TU, ammunition, damage, or shot playback is committed. Losing personal sight cancels the shot and records a concise withheld-fire reason.
+- The synthetic **Long-range contact** tracer that paired arbitrary living units when a simulation produced no real weapon fire is removed.
+- A verified AEGIS shot marks only its exact target as required for that shot frame. The 2D and persistent Three.js render paths keep that target present through projectile/impact presentation without exposing unrelated aliens or changing fog knowledge.
+
+### VIP extraction handoff
+- A final extracted VIP clears stale `aiVipRescueTargetId`, civilian claim, route-stall, and extraction-guard metadata associated with the completed detail.
+- The escort leader retains the ramp-egress action already spent. Support soldiers that remained stationary on defensive ramp positions and still have TU are released to normal AI work in the same round; supports that actually moved retain their spent rescue duty and cannot act twice.
+- Stream continuation, every later full-AI round, Hybrid activation, Hybrid support execution, and return to leader control all normalize orphaned extraction guards. This makes affected live state self-heal instead of pinning supports to obsolete guard hexes.
+- Legacy/handoff living-unit snapshots that omitted an explicit `alive:true` now refresh TU using the same `alive !== false && hp > 0` authority used elsewhere. Confirmed dead units never refresh.
+
+### Validation boundary
+- Build Health covers clear/blocked/different-level shot commits, shot-frame target presentation, removal of the synthetic tracer, final-VIP extraction, same-round stationary-support release, stale-guard cleanup, legacy living-unit TU refresh, and Hybrid/Simulation normalization seams.
+- Manual testing should extract the final VIP under AI control, take control, enable Hybrid, move each lead, and run the Hybrid support phase. Every available support should leave obsolete Skyranger guard positions and follow the current leader-relative formation.
+- Fire-team formation, active escort priority, tactical fog, LOS, illumination, damage, mission resolution, and save format **4** remain authoritative.
 
 
 ## Browser 0138 - Patch Notes History Scope Startup Hotfix
@@ -954,6 +976,20 @@ Roadmap-only regression follow-up (2026-08-22): **Live testing still shows AEGIS
 - Preserve fog-of-war secrecy: fixing render parity must not expose unrelated aliens, unexplored cells, stale contacts, other levels, or targets visible only to a different soldier. Reuse the indexed per-observer visibility context so the invariant does not require a full-map or every-observer visibility recomputation for every render.
 
 **Planned validation gate:** for manual, Hybrid, Simulation, reaction, burst, preferred-target, and post-movement fire, place aliens behind solid walls, behind closed doors, behind and visible through windows, inside/outside smoke, beyond night vision, inside true illumination, on another alien-base level, and just beyond the shooter's facing/LOS boundary. Confirm the soldier fires only when that shooter personally sees the alien; valid targets render before the shot in 2D, 3D Iso, FPV, and TPV and remain visible through impact/death presentation; invalid shots spend no TU or ammunition; and no unrelated alien or fogged cell is revealed. Repeat through active-mission save/load and streamed AI playback.
+
+Roadmap-only planning update (2026-08-23): **When an AEGIS soldier establishes a new authoritative alien contact during an AI-controlled movement sequence, pause the queued round after the current atomic movement step/frame and recalculate every remaining unplayed AEGIS action from the newly visible threat state. Already completed movement, TU/ammunition spending, damage, reveals, escort progress, and formation changes remain committed and are never replayed or refunded. No code or build-number change is part of this roadmap-only addition.**
+
+### Future tactical AI - New-contact interrupt and remaining-round replan
+- A contact interrupt is triggered only by a living alien becoming personally visible to an AEGIS observer through the authoritative current visibility rules; persistent reveal flags, stale reports, hidden coordinates, or presentation-only playback state cannot trigger it.
+- Finish and display the current atomic movement step before pausing. Commit the acting unit's resulting hex, TU, stance, formation state, fog/exploration, and the new alien reveal so the recalculation starts from exactly what the player just saw.
+- Discard only plans and animations that have not begun. Completed actors remain completed, spent TU/ammunition stays spent, damage and deaths remain resolved, and no unit receives a duplicate turn.
+- Rebuild the remaining actor order and choices using normal current-contact combat rules: adaptive reserve, enemy-relative flanking, ranged standoff, useful cover/LOS, target selection, fallback targets, fire-team cohesion, active escort authority, player/Command Map orders, and reinforcement-source priorities.
+- Fire-team formations remain intact. A leader or support already moving under a formation action may complete the current step, but the remaining unplayed team actions must respond to contact rather than blindly finishing a quiet-search plan.
+- Active civilian/VIP escorts retain higher authority and consume the configured Ask / Stay / Engage support doctrine when the new contact qualifies. The interrupt itself must not switch Hybrid to full Simulation control or bypass a pending player decision.
+- Streamed Simulation and Hybrid playback should show a short **Contact - replanning remaining fire teams** hold, then resume from the authoritative frame. Bound calculation time, deduplicate the same contact identity within one round, and prevent repeated visibility toggles from producing an interrupt loop.
+- Active saves made at the hold point must retain the committed frame plus the remaining-actor set so reload cannot replay completed actions or forget the newly established contact.
+
+**Planned validation gate:** begin no-contact Simulation and Hybrid rounds with several fire teams queued, reveal an alien on an early leader/support movement step, and confirm the current step finishes, the alien appears, unplayed actors change from search/waypoint movement to legal contact behavior, and completed actors do not act twice. Repeat during active VIP escort under Ask, Stay, and Engage; with walls/windows/smoke/night lighting; during streamed continuation; and across save/reload. Confirm no hidden alien triggers replanning and no contact interrupt changes fog, LOS, TU, damage, formation, or control-mode authority.
 
 
 ## Browser 0845 — Tutorial Spoiler-Free Onboarding Hotfix

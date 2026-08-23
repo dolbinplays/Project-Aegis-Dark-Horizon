@@ -1,6 +1,43 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.23.1009_PER_SHOOTER_VISIBILITY_AND_VIP_EXTRACTION_HANDOFF_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Requires every AEGIS shot to pass the firing soldier's current authoritative visibility check, guarantees that verified target is rendered in the shot frame, and releases fire-team supports trapped in obsolete Skyranger guard duty after the final VIP extracts.
+
+PER-SHOOTER SHOT AUTHORITY
+--------------------------
+- Manual, Simulation, emergency-recovery, and reaction fire share one final living-state, target-team, weapon-range, tactical-level, and LOS check before TU, ammunition, damage, or playback is committed.
+- Lost personal contact cancels the shot and records a withheld-fire reason. Squad reports, stale reveals, last-known coordinates, and prior-frame visibility can still guide movement but cannot authorize fire.
+- The synthetic "Long-range contact" tracer is removed. Playback no longer pairs arbitrary units when no real shot occurred.
+- A verified shot marks only its exact alien as required for that frame, so 2D Hex and persistent Three.js display the target through projectile/impact presentation without revealing unrelated contacts.
+
+VIP EXTRACTION / CONTROL-MODE HANDOFF
+-------------------------------------
+- When the final escorted VIP boards, completed target/claim/route state and orphaned extraction-guard hexes are cleared.
+- The escort leader keeps the ramp-egress action already spent. Stationary supports with TU remaining are released to normal AI work in the same round; supports that moved cannot act twice.
+- Stream continuations, later Simulation rounds, Hybrid activation, Hybrid support execution, and return to leader control normalize the same stale state, fixing the round-after-round former-escort-only movement and the no-follow Hybrid symptom.
+- Living handoff snapshots without an explicit alive:true flag now refresh TU consistently; confirmed dead units do not.
+
+VALIDATION
+----------
+- Build Health covers clear, blocked, and different-level fire; exact shot-frame rendering; synthetic-shot removal; final-VIP extraction; stationary-support release; stale-guard cleanup; TU refresh; and Hybrid/Simulation normalization seams.
+- Fire-team formations, active escorts, fog, LOS, illumination, mission resolution, campaign state, and save format 4 remain authoritative.
+
+MANUAL TEST GATES
+-----------------
+1. Extract the final VIP under AI control and confirm available supports leave their former Skyranger guard positions instead of only the escort leader moving on later rounds.
+2. Take control, enable Hybrid, move each fire-team lead, and run the Hybrid support phase; supports should follow current leader-relative formation.
+3. Repeat across a Hybrid-to-Simulation handoff and an active tactical save/reload.
+4. Place aliens behind walls, on another level, and in legitimate LOS; only the personally visible target should receive fire and it must render before the shot.
+
+PREVIOUS PATCH NOTES
+====================
+
 Build: v0.26.08.23.0138_PATCH_NOTES_HISTORY_SCOPE_STARTUP_HOTFIX
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

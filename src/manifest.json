@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.23.0138_PATCH_NOTES_HISTORY_SCOPE_STARTUP_HOTFIX",
+  "currentBuild": "v0.26.08.23.1009_PER_SHOOTER_VISIBILITY_AND_VIP_EXTRACTION_HANDOFF_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "patch-notes-history-scope-startup-hotfix-validation",
+  "status": "per-shooter-visibility-and-vip-extraction-handoff-validation",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.23.0138_PATCH_NOTES_HISTORY_SCOPE_STARTUP_HOTFIX",
+  "lastInspectedBuild": "v0.26.08.23.1009_PER_SHOOTER_VISIBILITY_AND_VIP_EXTRACTION_HANDOFF_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.23.0138_PATCH_NOTES_HISTORY_SCOPE_STARTUP_HOTFIX",
+    "browserBuild": "v0.26.08.23.1009_PER_SHOOTER_VISIBILITY_AND_VIP_EXTRACTION_HANDOFF_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -150,7 +150,9 @@
       "crash-site-ai-terminal-stall-recovery",
       "medium-large-streamed-building-perimeter-restoration",
       "single-owner-mission-victory-dialogue",
-      "patch-notes-history-scope-startup-hotfix"
+      "patch-notes-history-scope-startup-hotfix",
+      "per-shooter-visibility-and-rendered-target-shot-invariant",
+      "post-extraction-rescue-duty-handoff"
     ],
     "temporaryExceptions": [
       {
@@ -280,6 +282,14 @@
       {
         "system": "patch-notes-history-scope-startup-hotfix",
         "reason": "The browser in-game history is local to its React campaign component, so Browser 0138 keeps history mutations within that lexical owner and adds a static startup-scope guard. Native Godot uses a separate engine-native patch-history screen."
+      },
+      {
+        "system": "per-shooter-visibility-and-rendered-target-shot-invariant",
+        "reason": "The browser now shares a final personal range, level, and LOS commit gate across manual, Simulation, emergency, and reaction fire and retains the verified target in its exact playback frame. Native Godot requires the same engine-native shot-commit and renderer-eligibility authority."
+      },
+      {
+        "system": "post-extraction-rescue-duty-handoff",
+        "reason": "The browser now releases completed VIP targets and orphaned Skyranger guards across live Manual, Hybrid, streamed Simulation, continuation, and save handoffs while preventing double actions. Native Godot requires equivalent engine-native escort-duty normalization."
       },
       {
         "system": "command-map-autonomous-search-resume",

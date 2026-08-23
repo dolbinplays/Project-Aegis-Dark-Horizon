@@ -777,7 +777,7 @@ function installAegisGlobalHoverHelp(){
 function AegisHoverHelpToggleButton({light=false,compact=false}){const[enabled,setEnabled]=useState(()=>readAegisHoverHelpEnabled());useEffect(()=>{const sync=event=>setEnabled(normalizeAegisHoverHelpEnabled(event?.detail?.enabled));window.addEventListener(AEGIS_HOVER_HELP_CHANGE_EVENT,sync);return()=>window.removeEventListener(AEGIS_HOVER_HELP_CHANGE_EVENT,sync);},[]);const toggle=()=>setEnabled(writeAegisHoverHelpEnabled(!enabled));return/*#__PURE__*/React.createElement("button",{type:"button",onClick:toggle,"aria-pressed":enabled,"data-aegis-hover-help-toggle":"true","data-aegis-help":enabled?"Turn contextual button explanations off. Controls continue working normally, and the preference is remembered on this device.":"Turn contextual button explanations on. Rest the pointer over supported controls for three seconds to read their purpose.",className:`${compact?"px-3 py-2 text-xs":"px-4 py-3 text-sm"} rounded-2xl border font-black shadow-sm transition ${enabled?light?"border-cyan-200/70 bg-cyan-900/60 text-cyan-50":"border-cyan-400/60 bg-cyan-950/55 text-cyan-100":light?"border-slate-400/60 bg-slate-950/70 text-slate-200":"border-slate-600 bg-slate-950 text-slate-300"}`},enabled?"Hover Help: On":"Hover Help: Off");}
 if(typeof document!=="undefined"){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",installAegisGlobalHoverHelp,{once:true});else setTimeout(installAegisGlobalHoverHelp,0);}
 
-const CURRENT_GAME_BUILD="v0.26.08.23.0138_PATCH_NOTES_HISTORY_SCOPE_STARTUP_HOTFIX";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
+const CURRENT_GAME_BUILD="v0.26.08.23.1009_PER_SHOOTER_VISIBILITY_AND_VIP_EXTRACTION_HANDOFF_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
 function runCriticalBootSmokeTests(){
   const checks=[
     {name:"Game root is available",pass:typeof document!=="undefined"&&Boolean(document.getElementById("root"))},
@@ -1455,6 +1455,8 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
     round += 1;
     humans = tacticalAiRefreshHumanTurnUnits(humans, round);
     humans = tacticalReconcileFireTeams(humans, mission, initialRound + round - 1);
+    const postExtractionHandoffUnits=tacticalReleaseCompletedVipEscortState([...humans,...aliens,...civilians]);
+    humans=postExtractionHandoffUnits.filter(unit=>unit.team==="human");aliens=postExtractionHandoffUnits.filter(unit=>unit.team==="alien");civilians=postExtractionHandoffUnits.filter(unit=>unit.team==="civilian");
     const beaconRevealedAtTurnStart=tacticalRevealAlienBeaconForHumans(covers,humans,mission);
     if(beaconRevealedAtTurnStart)logs.push("Confirmed Alien Field Beacon located. A free capable fire team will secure the device after higher-priority combat, orders, and rescue duties.");
     let civilianDutyIds = new Set();
@@ -1834,7 +1836,8 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
         }
         return;
       }
-      if(!tacticalAiTargetIsCurrentlyVisible(human,target,covers,mission)){human.aiTurnAction=movementLegs>0?"move-contact-lost":"contact-lost";return;}
+      const shotVisibility=tacticalShotCommitVisibilityState({shooter:human,target,covers,mission,range,requiredTargetTeam:"alien"});
+      if(!shotVisibility.ok){human.aiTurnAction=movementLegs>0?"move-contact-lost":"contact-lost";logs.push(`${human.name} withheld fire: personal contact was lost (${shotVisibility.reason}).`);return;}
       target.revealed=true;target.lastKnownX=target.x;target.lastKnownY=target.y;
       const beforeShotTu = human.tu;
       const beforeShotAmmo = human.ammo;
@@ -1854,7 +1857,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
       const shieldShot = hits > 0 ? tacticalAlienBeaconShieldShotState({ attacker: human, target, covers, weaponKind: human.weaponKind }) : { blocked: false };
       const damage = shieldShot.blocked ? 0 : hits * humanDamage(human);
       if (shieldShot.blocked) covers.splice(0, covers.length, ...tacticalAlienBeaconShieldImpactCovers(covers, human.weaponKind));
-      shots.push({ fromId: human.id, toId: target.id, fromX: human.x, fromY: human.y, toX: target.x, toY: target.y, color: shotColorForWeapon(human.weaponKind), side: "human", weaponKind: human.weaponKind, modeKey: shot.modeKey, windowShattered, shieldBlocked: Boolean(shieldShot.blocked), hit: hits > 0, hits, rounds:Math.max(1,shot.rounds), damage, hitChance, targetHpBefore:target.hp, targetMaxHp:target.maxHp||target.hp, targetAlienType:target.alienType||target.name, killed: damage > 0 && target.hp - damage <= 0, observable: true });
+      shots.push(tacticalVerifiedHumanShotRecord({ fromId: human.id, toId: target.id, fromX: human.x, fromY: human.y, toX: target.x, toY: target.y, color: shotColorForWeapon(human.weaponKind), side: "human", weaponKind: human.weaponKind, modeKey: shot.modeKey, windowShattered, shieldBlocked: Boolean(shieldShot.blocked), hit: hits > 0, hits, rounds:Math.max(1,shot.rounds), damage, hitChance, targetHpBefore:target.hp, targetMaxHp:target.maxHp||target.hp, targetAlienType:target.alienType||target.name, killed: damage > 0 && target.hp - damage <= 0, observable: true },shotVisibility));
       if (shieldShot.blocked) logs.push(tacticalAlienBeaconFieldImpactText(shieldShot.shield, human.name, target.name));
       if (damage > 0) {
         target.hp -= damage;
@@ -1882,12 +1885,14 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
         human.facing=facingToward(human,target.x,target.y);human.aiAlienHuntMode=null;human.aiAlienHuntTargetX=null;human.aiAlienHuntTargetY=null;
         const reserve=tacticalAiAdaptiveReserveDecision({unit:human,visibleAliens:contacts,covers,mission,upgrades:weaponUpgrades,round:initialRound+round-1});
         if(reserve.tu<=human.tu){human.reserveTu=reserve.tu;human.aiReserveMode=reserve.reserveMode;human.aiReserveLabel=reserve.label;human.aiShotModeKey=reserve.shotModeKey;human.aiReserveWantsKneel=Boolean(reserve.kneel);}
-        const shot=spendHumanShot(human);
+        const shotVisibility=tacticalShotCommitVisibilityState({shooter:human,target,covers,mission,range,requiredTargetTeam:"alien"});
+        const shot=shotVisibility.ok?spendHumanShot(human):null;
+        if(!shotVisibility.ok){human.aiTurnAction=plan.steps>0?"emergency-grid-contact-lost":"emergency-contact-lost";logs.push(`AI recovery: ${human.name} withheld fire after losing personal contact (${shotVisibility.reason}).`);}
         if(shot){
           roundActedIds.add(human.id);human.aiTurnAction=plan.steps>0?"emergency-grid-contact-fire":"emergency-contact-fire";let hits=0;const distance=tacticalDistance(target,human);const hitChance=clamp(humanHitChance(human)+(human.kneeling?10:0)-shot.mode.accPenalty-Math.floor(distance*1.4)-tacticalDarknessAccuracyPenalty(human,target,covers,mission),8,92);let windowShattered=false;
           for(let index=0;index<Math.max(1,shot.rounds);index+=1){const windowShot=tacticalShatterWindowInShotPath(human,target,covers);if(windowShot.window){covers.splice(0,covers.length,...windowShot.covers);windowShattered=true;}if(rand(1,100)<=clamp(hitChance-windowShot.penalty,8,92))hits+=1;}
           const shieldShot=hits>0?tacticalAlienBeaconShieldShotState({attacker:human,target,covers,weaponKind:human.weaponKind}):{blocked:false};const damage=shieldShot.blocked?0:hits*humanDamage(human);if(shieldShot.blocked)covers.splice(0,covers.length,...tacticalAlienBeaconShieldImpactCovers(covers,human.weaponKind));
-          shots.push({fromId:human.id,toId:target.id,fromX:human.x,fromY:human.y,toX:target.x,toY:target.y,color:shotColorForWeapon(human.weaponKind),side:"human",weaponKind:human.weaponKind,modeKey:shot.modeKey,windowShattered,shieldBlocked:Boolean(shieldShot.blocked),hit:hits>0,hits,rounds:Math.max(1,shot.rounds),damage,hitChance,targetHpBefore:target.hp,targetMaxHp:target.maxHp||target.hp,targetAlienType:target.alienType||target.name,killed:damage>0&&target.hp-damage<=0,observable:true});
+          shots.push(tacticalVerifiedHumanShotRecord({fromId:human.id,toId:target.id,fromX:human.x,fromY:human.y,toX:target.x,toY:target.y,color:shotColorForWeapon(human.weaponKind),side:"human",weaponKind:human.weaponKind,modeKey:shot.modeKey,windowShattered,shieldBlocked:Boolean(shieldShot.blocked),hit:hits>0,hits,rounds:Math.max(1,shot.rounds),damage,hitChance,targetHpBefore:target.hp,targetMaxHp:target.maxHp||target.hp,targetAlienType:target.alienType||target.name,killed:damage>0&&target.hp-damage<=0,observable:true},shotVisibility));
           if(damage>0){target.hp-=damage;if(target.hp<=0&&target.alive){target.alive=false;human.kills=Math.max(0,Number(human.kills)||0)+1;}}
           logs.push(`AI recovery: ${human.name} reacquired ${target.name||"a hostile"} during the grid sweep and immediately returned to combat.`);
         }else logs.push(`AI recovery: ${human.name} reacquired ${target.name||"a hostile"} during the grid sweep but held because the selected reserve could not be fired safely.`);
@@ -2074,7 +2079,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
             Object.assign(human, reaction.shooter);
             Object.assign(alien, reaction.target);
             if(Array.isArray(reaction.covers))covers.splice(0,covers.length,...reaction.covers);
-            shots.push({ fromId: human.id, toId: alien.id, fromX: human.x, fromY: human.y, toX: alien.x, toY: alien.y, color: shotColorForWeapon(human.weaponKind), side: "human", weaponKind: human.weaponKind, modeKey: reaction.reserve.modeKey, reaction: true, windowShattered:Boolean(reaction.windowShattered), shieldBlocked:Boolean(reaction.shieldBlocked), hit: reaction.hit, hits:reaction.hit?Math.max(1,reaction.reserve.rounds):0, rounds:Math.max(1,reaction.reserve.rounds), damage:reaction.damage||0, hitChance:reaction.hitChance||0, targetHpBefore:Math.max(0,Number(alien.hp)||0)+(reaction.damage||0), targetMaxHp:alien.maxHp||Math.max(1,Number(alien.hp)||1), targetAlienType:alien.alienType||alien.name, killed: !alien.alive, observable: true });
+            shots.push(tacticalVerifiedHumanShotRecord({ fromId: human.id, toId: alien.id, fromX: human.x, fromY: human.y, toX: alien.x, toY: alien.y, color: shotColorForWeapon(human.weaponKind), side: "human", weaponKind: human.weaponKind, modeKey: reaction.reserve.modeKey, reaction: true, windowShattered:Boolean(reaction.windowShattered), shieldBlocked:Boolean(reaction.shieldBlocked), hit: reaction.hit, hits:reaction.hit?Math.max(1,reaction.reserve.rounds):0, rounds:Math.max(1,reaction.reserve.rounds), damage:reaction.damage||0, hitChance:reaction.hitChance||0, targetHpBefore:Math.max(0,Number(alien.hp)||0)+(reaction.damage||0), targetMaxHp:alien.maxHp||Math.max(1,Number(alien.hp)||1), targetAlienType:alien.alienType||alien.name, killed: !alien.alive, observable: true },reaction.visibility));
             break;
           }
           if (!alien.alive) break;
@@ -2113,11 +2118,6 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
     const hazardStep=tacticalEnvironmentalHazardStep({units:allUnits(),covers,mission,round:initialRound+round-1});
     covers.splice(0,covers.length,...hazardStep.covers);humans=hazardStep.units.filter(unit=>unit.team==="human");aliens=hazardStep.units.filter(unit=>unit.team==="alien");civilians=hazardStep.units.filter(unit=>unit.team==="civilian");logs.push(...hazardStep.events);
     frames.push({ ...currentFrameBase(), round: initialRound + round - 1, label: `Exchange ${initialRound + round - 1}B`, shots, movementTrails: tacticalMovementTrailSnapshot(frameMovementTrails), soldiers: snapshotUnits(humans, previousHumanAlive), aliens: snapshotUnits(aliens, previousAlienAlive), civilians: snapshotUnits(civilians, previousCivilianAlive) });
-  }
-  if (!simulationChunkOnly && !hadPriorPlaybackShots && !frames.some((frame) => frame.shots?.some((shot) => Boolean(shot.weaponKind)))) {
-    const shooter = humans.find((unit) => unit.alive) || humans[0];
-    const target = aliens.find((unit) => unit.alive) || aliens[0];
-    if (shooter && target) frames.push({ ...currentFrameBase(), label: "Long-range contact", shots: [{ fromId: shooter.id, toId: target.id, fromX: shooter.x, fromY: shooter.y, toX: target.x, toY: target.y, color: shotColorForWeapon(shooter.weaponKind), side: "human", weaponKind: shooter.weaponKind }], soldiers: snapshotUnits(humans), aliens: snapshotUnits(aliens), civilians: snapshotUnits(civilians) });
   }
   const baseMissionResolution = tacticalAiMissionResolution(mission, humans, aliens, civilians, covers, beaconKnowledgeActive() ? ALIEN_FIELD_BEACON_KNOWLEDGE.confirmed : ALIEN_FIELD_BEACON_KNOWLEDGE.unknown, alienReinforcementState);
   const missionResolution = aiRescueDustOff?{...baseMissionResolution,rescueProgress:aiRescueDustOffProgress||baseMissionResolution.rescueProgress,success:false,objectiveFailed:true,resolved:true,operationIncomplete:false,aiRescueDustOff:true}:baseMissionResolution;
@@ -3483,7 +3483,7 @@ function tacticalHybridClearRoundOrders(units=[],round=1){
   return tacticalHybridFireTeamLeaders(units).reduce((next,leader)=>tacticalClearFireTeamCommand(next,leader.fireTeamId,"hybrid-cycle-complete",round),Array.isArray(units)?units:[]).map(unit=>unit.hybridPlayerControlledLead?{...unit,hybridPlayerControlledLead:false}:unit);
 }
 function tacticalHybridRefreshPlayerTurnUnits(units=[],round=1){
-  return tacticalHybridClearRoundOrders(units,round).map(unit=>unit.team==="human"&&unit.hp>0&&unit.alive!==false?{...unit,tu:Math.max(0,Number(unit.maxTu)||Number(unit.tu)||0)}:unit);
+  return tacticalHybridClearRoundOrders(tacticalReleaseCompletedVipEscortState(units),round).map(unit=>unit.team==="human"&&unit.hp>0&&unit.alive!==false?{...unit,alive:true,tu:Math.max(0,Number(unit.maxTu)||Number(unit.tu)||0)}:unit);
 }
 function tacticalHybridCombatTargetForFireTeam(order=null,leader=null,units=[],covers=[],mission=null){
   if(!leader)return null;
@@ -4120,23 +4120,46 @@ function tacticalAiReportedContactSearchPlan({unit,report,covers=[],units=[],res
   return{...patrol,localSearch:true,aiContactSearchIndex:baseIndex+1,searchRound:Math.max(1,Number(round)||1)};
 }
 
+const TACTICAL_PER_SHOOTER_VISIBILITY_AND_RENDERED_TARGET_SHOT_INVARIANT_PATCH=true;
+function tacticalShotCommitVisibilityState({shooter=null,target=null,covers=[],mission=null,range=null,requiredTargetTeam=null}={}){
+  if(!shooter||shooter.hp<=0||shooter.alive===false)return{ok:false,reason:"invalid-shooter"};
+  if(!target||target.hp<=0||target.alive===false)return{ok:false,reason:"invalid-target"};
+  if(requiredTargetTeam&&target.team!==requiredTargetTeam)return{ok:false,reason:"invalid-target-team"};
+  if(tacticalUnitLevel(shooter)!==tacticalUnitLevel(target))return{ok:false,reason:"different-level"};
+  const effectiveRange=Math.max(1,Math.floor(Number(range)||tacticalAiWeaponEffectiveRange(shooter)));
+  const distance=tacticalDistance(shooter,target);
+  if(distance>effectiveRange)return{ok:false,reason:"range",distance,range:effectiveRange};
+  const context=tacticalVisibilityContext(covers,mission);
+  if(!hasLineOfSight(shooter,target.x,target.y,covers,mission,context))return{ok:false,reason:"los",distance,range:effectiveRange};
+  return{ok:true,reason:"visible",distance,range:effectiveRange,shooterId:shooter.id||null,targetId:target.id||null,shooterLevel:tacticalUnitLevel(shooter),targetLevel:tacticalUnitLevel(target),targetX:Number(target.x),targetY:Number(target.y)};
+}
+function tacticalVerifiedHumanShotRecord(record={},visibility=null){
+  if(!visibility?.ok)return{...record};
+  return{...record,targetVisibilityVerified:true,targetRenderRequired:true,visibilityReason:visibility.reason,shooterLevel:visibility.shooterLevel,targetLevel:visibility.targetLevel};
+}
+function tacticalShotPresentationFrame(frame=null){
+  if(!frame||!Array.isArray(frame.shots)||!frame.shots.length)return frame;
+  const requiredIds=new Set(frame.shots.filter(shot=>shot?.side==="human"&&shot.targetVisibilityVerified===true&&shot.targetRenderRequired===true).map(shot=>shot.toId).filter(Boolean));
+  if(!requiredIds.size)return frame;
+  return{...frame,aliens:(frame.aliens||[]).map(unit=>requiredIds.has(unit.id)?{...unit,revealed:true,visible:true,shotPresentationVisible:true}:unit)};
+}
 function tacticalAiObservedAliens(units=[],covers=[],mission=null){
   const humans=units.filter(unit=>unit.team==="human"&&unit.hp>0&&unit.alive!==false);
-  return units.filter(unit=>unit.team==="alien"&&unit.hp>0&&unit.alive!==false&&humans.some(observer=>hasLineOfSight(observer,unit.x,unit.y,covers,mission)));
+  return units.filter(unit=>unit.team==="alien"&&unit.hp>0&&unit.alive!==false&&humans.some(observer=>tacticalShotCommitVisibilityState({shooter:observer,target:unit,covers,mission,range:40,requiredTargetTeam:"alien"}).ok));
 }
 function tacticalAiPersonallyObservedAliens(observer=null,units=[],covers=[],mission=null){
   if(!observer||observer.hp<=0||observer.alive===false)return[];
-  return units.filter(unit=>unit.team==="alien"&&unit.hp>0&&unit.alive!==false&&hasLineOfSight(observer,unit.x,unit.y,covers,mission));
+  return units.filter(unit=>unit.team==="alien"&&unit.hp>0&&unit.alive!==false&&tacticalShotCommitVisibilityState({shooter:observer,target:unit,covers,mission,range:40,requiredTargetTeam:"alien"}).ok);
 }
 function tacticalAiRevealPersonallyVisibleContacts(observer=null,units=[],covers=[],mission=null){
 if(!observer||observer.hp<=0||observer.alive===false)return[];
 const context=tacticalVisibilityContext(covers,mission);
-const visible=(Array.isArray(units)?units:[]).filter(unit=>unit.team==="alien"&&unit.hp>0&&unit.alive!==false&&hasLineOfSight(observer,unit.x,unit.y,covers,mission,context));
+const visible=(Array.isArray(units)?units:[]).filter(unit=>unit.team==="alien"&&unit.hp>0&&unit.alive!==false&&tacticalUnitLevel(observer)===tacticalUnitLevel(unit)&&hasLineOfSight(observer,unit.x,unit.y,covers,mission,context));
 visible.forEach(unit=>{unit.revealed=true;unit.lastKnownX=unit.x;unit.lastKnownY=unit.y;});
 return visible;
 }
 function tacticalAiTargetIsCurrentlyVisible(observer=null,target=null,covers=[],mission=null){
-return Boolean(observer&&target&&observer.hp>0&&target.hp>0&&target.alive!==false&&target.team==="alien"&&hasLineOfSight(observer,target.x,target.y,covers,mission,tacticalVisibilityContext(covers,mission)));
+return tacticalShotCommitVisibilityState({shooter:observer,target,covers,mission,requiredTargetTeam:"alien"}).ok;
 }
 function tacticalAiDirectContactPlan({unit,target,covers=[],units=[],reserveTu=14,mission=null,maxMoveSteps=TACTICAL_AI_MAX_MOVE_STEPS}={}){
   if(!unit||!target)return{cell:unit,path:unit?[{x:unit.x,y:unit.y}]:[],steps:0,reserveTu,directContact:true,acquiredContact:false,arrivedAtReport:false};
@@ -4334,7 +4357,8 @@ function tacticalAiSequentialPlaybackFrames(sourceFrames=[],{includeHiddenAction
     }
     return null;
   };
-  for(const targetFrame of sourceFrames.slice(1)){
+  for(const sourceTargetFrame of sourceFrames.slice(1)){
+    const targetFrame=tacticalShotPresentationFrame(sourceTargetFrame);
     const priorFrame=output[output.length-1];
     const phaseResolvedAlien=(priorFrame.aliens||[]).some(unit=>unit.alive!==false&&Number(unit.hp)!==0)&&!(targetFrame.aliens||[]).some(unit=>unit.alive!==false&&Number(unit.hp)!==0);
     const priorById=new Map(groups.flatMap(group=>priorFrame[group]||[]).map(unit=>[unit.id,unit]));
@@ -4593,10 +4617,11 @@ function tacticalReactionShotResult({shooter,target,covers=[],mission=null,reque
   if(!shooter||!target||shooter.hp<=0||target.hp<=0)return{triggered:false,reason:"invalid",shooter,target};
   const reserve=tacticalAiShotReserve(shooter,requestedMode,upgrades);
   const range=shooter.weaponKind==="ballistic"?18:20;
-  const distance=tacticalDistance(shooter,target);
+  const visibility=tacticalShotCommitVisibilityState({shooter,target,covers,mission,range,requiredTargetTeam:"alien"});
+  const distance=visibility.distance??tacticalDistance(shooter,target);
   if(shooter.tu<reserve.tu)return{triggered:false,reason:"tu",shooter,target,reserve};
   if(shooter.weaponKind==="ballistic"&&reserve.rounds<=0)return{triggered:false,reason:"ammo",shooter,target,reserve};
-  if(distance>range||!hasLineOfSight(shooter,target.x,target.y,covers,mission))return{triggered:false,reason:"los",shooter,target,reserve};
+  if(!visibility.ok)return{triggered:false,reason:visibility.reason,shooter,target,reserve,visibility};
   const base=shooter.baseSoldier||shooter.base||{};
   const reactions=Number(base?.stats?.reactions??shooter.reactions??50);
   const reactionChance=clamp(Math.round(reactions-distance*2),5,95);
@@ -4612,7 +4637,7 @@ function tacticalReactionShotResult({shooter,target,covers=[],mission=null,reque
   const nextShooter={...shooter,tu:Math.max(0,shooter.tu-reserve.tu),ammo:shooter.weaponKind==="ballistic"?Math.max(0,shooter.ammo-reserve.rounds):shooter.ammo};
   const nextTarget={...target,hp:Math.max(0,target.hp-damage),alive:target.hp-damage>0,revealed:true};
   const nextCovers=shieldShot.blocked?tacticalAlienBeaconShieldImpactCovers(windowShot.covers,shooter.weaponKind):windowShot.covers;
-  return{triggered:true,reason:shieldShot.blocked?"shield-blocked":hit?"hit":"miss",hit,damage,shieldBlocked:Boolean(shieldShot.blocked),shooter:nextShooter,target:nextTarget,covers:nextCovers,windowShattered:Boolean(windowShot.window),reserve,reactionChance,hitChance};
+  return{triggered:true,reason:shieldShot.blocked?"shield-blocked":hit?"hit":"miss",hit,damage,shieldBlocked:Boolean(shieldShot.blocked),shooter:nextShooter,target:nextTarget,covers:nextCovers,windowShattered:Boolean(windowShot.window),reserve,reactionChance,hitChance,visibility};
 }
 function tacticalReloadResult(unit,upgrades={}){if(!unit||unit.hp<=0||unit.weaponKind!=="ballistic")return{ok:false,reason:"invalid",unit};if(unit.tu<18)return{ok:false,reason:"tu",unit};return{ok:true,reason:"reloaded",unit:{...unit,tu:unit.tu-18,ammo:ballisticCapacity(upgrades)}};}function tacticalCoverStats(block=0,visual="rock"){const hardHp=block===1?95:block===0.75?70:block===0.5?48:0;if(hardHp)return{hp:hardHp,maxHp:hardHp,kind:"hard",block,visual};return{hp:visual==="tree"?30:24,maxHp:visual==="tree"?30:24,kind:"soft",block:0,visual};}const TACTICAL_BUILDING_ARCHETYPES={city:[{key:"records",label:"Municipal Records Office",width:12,height:9,wall:"brick",floorBase:"#715f50",floorAccent:"#8b7968",floorPattern:"tile",prop:"counter"},{key:"market",label:"Corner Market",width:10,height:8,wall:"plaster",floorBase:"#68645b",floorAccent:"#817c70",floorPattern:"linoleum",prop:"shelves"},{key:"workshop",label:"Vehicle Workshop",width:12,height:8,wall:"metal",floorBase:"#54595c",floorAccent:"#696f73",floorPattern:"concrete",prop:"rack"}],smalltown:[{key:"diner",label:"Roadside Diner",width:11,height:7,wall:"plaster",floorBase:"#74624f",floorAccent:"#927a60",floorPattern:"checker",prop:"counter"},{key:"residence",label:"Family Residence",width:9,height:8,wall:"brick",floorBase:"#6a5949",floorAccent:"#84705c",floorPattern:"wood",prop:"table"},{key:"firehall",label:"Volunteer Fire Station",width:12,height:8,wall:"metal",floorBase:"#555b5f",floorAccent:"#70777b",floorPattern:"concrete",prop:"rack"}],farm:[{key:"farmhouse",label:"Farmhouse",width:10,height:8,wall:"plaster",floorBase:"#6f5b47",floorAccent:"#8c7257",floorPattern:"wood",prop:"table"},{key:"barn",label:"Equipment Barn",width:12,height:9,wall:"timber",floorBase:"#5c4934",floorAccent:"#765d40",floorPattern:"plank",prop:"rack"}],nature:[{key:"outpost",label:"Ranger Outpost",width:9,height:7,wall:"timber",floorBase:"#574633",floorAccent:"#705b40",floorPattern:"plank",prop:"table"}]};const TACTICAL_BUILDING_PLAN_CACHE=new Map;const TACTICAL_BUILDING_CELL_CACHE=new Map;function tacticalBuildingPlanCacheKey(mission={}){const profile=tacticalMapProfileForMission(mission);return[String(mission.id||""),String(mission.kind||""),String(mission.region||""),profile.key,profile.size].join("|");}function tacticalBuildingCandidateSites(seed=0,gridSize=TACTICAL_GRID_SIZE){const sites=[];for(let y=4;y<gridSize-10;y+=14)for(let x=4;x<gridSize-11;x+=15)sites.push([x,y]);if(!sites.length)sites.push([4,4]);const offset=Math.abs(Number(seed)||0)%sites.length;return sites.map((site,index)=>sites[(index+offset)%sites.length]);}function tacticalBuildingDensityForMission(mission={}){const seed=tacticalSeed(mission);const biome=tacticalBiomeForMission(mission);const profile=tacticalMapProfileForMission(mission);const base={city:3,smalltown:3,farm:2,nature:1}[biome.key]||1;const bonusChance={city:90,smalltown:70,farm:42,nature:24}[biome.key]||20;let bonus=0;for(let slot=0;slot<profile.structureBonus;slot+=1){const roll=Math.abs(seed*97+(slot+1)*53+biome.key.length*31)%100;if(roll<bonusChance)bonus+=1;}return{biome:biome.key,mapTier:profile.key,gridSize:profile.size,base,bonusChance,opportunities:profile.structureBonus,bonus,wanted:base+bonus};}function tacticalBuildingPlans(mission={}){const cacheKey=tacticalBuildingPlanCacheKey(mission);if(TACTICAL_BUILDING_PLAN_CACHE.has(cacheKey))return TACTICAL_BUILDING_PLAN_CACHE.get(cacheKey);const seed=tacticalSeed(mission);const biome=tacticalBiomeForMission(mission);const density=tacticalBuildingDensityForMission(mission);const gridSize=density.gridSize;const archetypes=TACTICAL_BUILDING_ARCHETYPES[biome.key]||[];const plans=[];for(const site of tacticalBuildingCandidateSites(seed,gridSize)){if(plans.length>=density.wanted)break;const archetype=archetypes[(seed+plans.length)%Math.max(1,archetypes.length)];if(!archetype)break;const x=site[0],y=site[1],width=archetype.width,height=archetype.height;if(x+width>=gridSize-2||y+height>=gridSize-2)continue;const overlaps=plans.some(plan=>x<plan.x+plan.width+2&&x+width+2>plan.x&&y<plan.y+plan.height+2&&y+height+2>plan.y);if(overlaps)continue;let crossesRoute=false;for(let py=y;py<y+height&&!crossesRoute;py+=1)for(let px=x;px<x+width;px+=1){if(["road","lane","stream","irrigation"].includes(tacticalFieldFeature(px,py,mission))){crossesRoute=true;break;}}if(crossesRoute)continue;const southDoor={x:x+Math.floor(width/2),y:y+height-1};const eastDoor=width>=11?{x:x+width-1,y:y+Math.floor(height/2)}:null;plans.push({...archetype,id:`building-${plans.length}-${archetype.key}`,x,y,doors:[southDoor,...(eastDoor?[eastDoor]:[])]});}TACTICAL_BUILDING_PLAN_CACHE.set(cacheKey,plans);return plans;}function tacticalBuildingCellAt(x,y,mission={}){const cacheKey=tacticalBuildingPlanCacheKey(mission);let cells=TACTICAL_BUILDING_CELL_CACHE.get(cacheKey);if(!cells){cells=new Map;tacticalBuildingPlans(mission).forEach(building=>{const doors=new Set((building.doors||[]).map(cell=>tacticalKey(cell.x,cell.y)));for(let by=building.y;by<building.y+building.height;by+=1)for(let bx=building.x;bx<building.x+building.width;bx+=1){const perimeter=bx===building.x||bx===building.x+building.width-1||by===building.y||by===building.y+building.height-1;const door=doors.has(tacticalKey(bx,by));cells.set(tacticalKey(bx,by),{building,perimeter,door,interior:!perimeter||door});}});TACTICAL_BUILDING_CELL_CACHE.set(cacheKey,cells);while(TACTICAL_BUILDING_CELL_CACHE.size>8)TACTICAL_BUILDING_CELL_CACHE.delete(TACTICAL_BUILDING_CELL_CACHE.keys().next().value);}return cells.get(tacticalKey(x,y))||null;}function tacticalBuildingFurnishingPoints(building={}){const x=building.x,y=building.y,w=building.width,h=building.height;const byType={records:[[2,2,"interior-desk"],[w-3,2,"interior-storage"],[2,h-3,"interior-files"],[w-3,h-3,"interior-files"],[Math.floor(w/2)+1,2,"interior-counter"]],market:[[2,2,"interior-counter"],[4,2,"interior-shelves"],[w-3,2,"interior-shelves"],[3,h-3,"interior-shelves"],[w-3,h-3,"interior-storage"]],workshop:[[2,2,"interior-rack"],[w-3,2,"interior-tools"],[2,h-3,"interior-crates"],[w-3,h-3,"interior-rack"],[Math.floor(w/2)+1,h-3,"interior-workbench"]],diner:[[2,2,"interior-counter"],[w-3,2,"interior-kitchen"],[3,h-3,"interior-table"],[6,h-3,"interior-table"]],residence:[[2,2,"interior-table"],[w-3,2,"interior-storage"],[2,h-3,"interior-sofa"],[w-3,h-3,"interior-bed"]],firehall:[[2,2,"interior-rack"],[w-3,2,"interior-tools"],[2,h-3,"interior-locker"],[w-3,h-3,"interior-rack"]],farmhouse:[[2,2,"interior-table"],[w-3,2,"interior-kitchen"],[2,h-3,"interior-storage"],[w-3,h-3,"interior-bed"]],barn:[[2,2,"interior-hay"],[w-3,2,"interior-rack"],[2,h-3,"interior-tools"],[w-3,h-3,"interior-crates"],[Math.floor(w/2)+1,2,"interior-workbench"]],outpost:[[2,2,"interior-desk"],[w-3,2,"interior-radio"],[2,h-3,"interior-storage"],[w-3,h-3,"interior-bed"]]};const points=(byType[building.key]||[[2,2,"interior-table"],[w-3,h-3,"interior-storage"]]).map(([dx,dy,visual])=>({x:x+dx,y:y+dy,visual}));if(w>=4&&h>=4)points.push({x:x+1,y:y+1,visual:"interior-power-panel",powerControl:true});return points.filter(point=>point.x>x&&point.x<x+w-1&&point.y>y&&point.y<y+h-1);}function tacticalStreetRoadDirection(x,y,mission={}){const feature=tacticalFieldFeature(x,y,mission);const roadKinds=new Set(["road","lane","path"]);const neighbors=tacticalNeighbors(x,y).filter(point=>roadKinds.has(tacticalFieldFeature(point.x,point.y,mission)));if(!neighbors.length)return{dx:1,dy:0,rotation:0};const center=tacticalHexPixel(x,y);const target=neighbors.slice().sort((a,b)=>{const af=tacticalFieldFeature(a.x,a.y,mission)===feature?0:1,bf=tacticalFieldFeature(b.x,b.y,mission)===feature?0:1;return af-bf||tacticalKey(a.x,a.y).localeCompare(tacticalKey(b.x,b.y));})[0];const pixel=tacticalHexPixel(target.x,target.y);const dx=pixel.x-center.x,dy=pixel.y-center.y;return{dx:target.x-x,dy:target.y-y,rotation:-Math.atan2(dy,dx)};}
 function tacticalStreetVehicleFootprint(x,y,mission={},length=3,width=2){const direction=tacticalStreetRoadDirection(x,y,mission);const forward={dx:Math.sign(direction.dx),dy:Math.sign(direction.dy)};if(forward.dx===0&&forward.dy===0)forward.dx=1;const perpendicularCandidates=TACTICAL_DIRECTIONS.map(dir=>tacticalStepForDirection(x,y,dir.key)).filter(point=>!(point.x===x+forward.dx&&point.y===y+forward.dy)&&!(point.x===x-forward.dx&&point.y===y-forward.dy));const center=tacticalHexPixel(x,y);const fPixel=tacticalHexPixel(x+forward.dx,y+forward.dy);const fx=fPixel.x-center.x,fy=fPixel.y-center.y;perpendicularCandidates.sort((a,b)=>{const ap=tacticalHexPixel(a.x,a.y),bp=tacticalHexPixel(b.x,b.y);const adot=Math.abs((ap.x-center.x)*fx+(ap.y-center.y)*fy),bdot=Math.abs((bp.x-center.x)*fx+(bp.y-center.y)*fy);return adot-bdot||tacticalKey(a.x,a.y).localeCompare(tacticalKey(b.x,b.y));});const side=perpendicularCandidates[0]?{dx:perpendicularCandidates[0].x-x,dy:perpendicularCandidates[0].y-y}:{dx:0,dy:1};const cells=[];const half=Math.floor(length/2);for(let step=-half;step<=half;step+=1){const bx=x+forward.dx*step,by=y+forward.dy*step;cells.push({x:bx,y:by});if(width>1)cells.push({x:bx+side.dx,y:by+side.dy});}return{cells,rotation:direction.rotation,length,width};}
@@ -6036,6 +6061,7 @@ function tacticalEscortRouteSummary(units = [], escortId = null, placement = nul
 }
 function tacticalAiContinuationState({ units = [], covers = [], round = 1, explored = new Set(), skyranger = null, fireMode = "single", alienContactSeen = false, alienReinforcement = null, beaconReinforcementObserved = false, gridSize = tacticalGridSizeFrom(units, covers, skyranger) } = {}) {
   const guarded=tacticalRepairBattlefieldState({units,covers,skyranger});units=guarded.units;
+  units=tacticalReleaseCompletedVipEscortState(units);
   return {
     gridSize,
     units: units.map((unit) => ({ ...unit, gridSize: unit.gridSize || gridSize })),
@@ -6111,7 +6137,7 @@ function tacticalAutoStandForMovement(unit = null) {
 }
 function tacticalAiRefreshHumanTurnUnits(units = [], round = 1) {
   if (Math.max(1, Number(round) || 1) <= 1) return units;
-  return units.map((unit) => unit.alive ? { ...unit, tu: Math.max(0, Number(unit.maxTu) || 0) } : unit);
+  return units.map((unit) => unit&&unit.alive!==false&&Number(unit.hp)>0 ? { ...unit, alive:true, tu: Math.max(0, Number(unit.maxTu) || 0) } : unit);
 }
 function tacticalAiMarkDistress(victim = null, attacker = null, round = 1, hit = false) {
   if (!victim || victim.team !== "human" || !attacker) return victim;
@@ -6273,7 +6299,7 @@ function tacticalUnitVisibleOnMap(unit = null, seen = false, { aiMapPlayback = f
   if (unit.team === "civilian" && unit.hp > 0 && unit.escortId) return true;
   if (battleResolved) return true;
   if (unit.team === "civilian") return Boolean(unit.revealed && seen) || Boolean(aiMapPlayback && unit.revealed);
-  if (unit.team === "alien") return Boolean(unit.reinforcementLandingVisible) || (aiMapPlayback ? Boolean(unit.revealed && seen) : Boolean(unit.revealed && seen));
+  if (unit.team === "alien") return Boolean(unit.reinforcementLandingVisible) || Boolean(aiMapPlayback && unit.shotPresentationVisible) || Boolean(unit.revealed && seen);
   return false;
 }
 function tacticalIncidentCameraCenter({ aiMapPlayback = false, aiAnchor = null, squadCenter = null, selectedUnit = null, shotFx = null, fallback = null } = {}) {
@@ -7109,9 +7135,35 @@ function tacticalApplyVipRescueAssignments(units=[],plan=null,round=1,secureResc
     return patch;
   });
 }
+const TACTICAL_POST_EXTRACTION_RESCUE_DUTY_HANDOFF_PATCH=true;
+function tacticalReleaseCompletedVipEscortState(units=[]){
+  const safeUnits=Array.isArray(units)?units:[];
+  const activeCivilians=new Map(safeUnits.filter(unit=>unit?.team==="civilian"&&Number(unit.hp)>0&&unit.alive!==false&&!unit.rescued).map(unit=>[unit.id,unit]));
+  const activeFollowerLeaderIds=new Set(Array.from(activeCivilians.values()).map(unit=>unit.escortId).filter(Boolean));
+  const leaderById=new Map(safeUnits.filter(unit=>unit?.team==="human"&&Number(unit.hp)>0&&unit.alive!==false).map(unit=>[unit.id,unit]));
+  return safeUnits.map(unit=>{
+    if(unit?.team==="civilian"){
+      if(!activeCivilians.has(unit.id)&&(unit.priorityEscortId||unit.approachedById||unit.escortId))return{...unit,priorityEscortId:null,approachedById:null,escortId:null,escortJoined:false,escortBlocked:false};
+      return unit;
+    }
+    if(unit?.team!=="human")return unit;
+    const assignedVip=unit.aiVipRescueTargetId?activeCivilians.get(unit.aiVipRescueTargetId)||null:null;
+    const staleAssignment=Boolean(unit.aiVipRescueTargetId&&(!assignedVip||(assignedVip.escortId&&assignedVip.escortId!==unit.id)));
+    const priorityVip=unit.priorityCivilianId?activeCivilians.get(unit.priorityCivilianId)||null:null;
+    const stalePriority=Boolean(unit.priorityCivilianId&&(!priorityVip||(priorityVip.escortId&&priorityVip.escortId!==unit.id)));
+    const guardLeader=unit.fireTeamExtractionGuardLeaderId?leaderById.get(unit.fireTeamExtractionGuardLeaderId)||null:null;
+    const orphanedExtractionGuard=Boolean(unit.fireTeamExtractionGuardActive&&(!guardLeader||!activeFollowerLeaderIds.has(guardLeader.id)));
+    if(!staleAssignment&&!stalePriority&&!orphanedExtractionGuard)return unit;
+    return{...unit,
+      ...(staleAssignment?{aiVipRescueTargetId:null,aiVipRescueAssignedRound:null,aiRescueTargetId:null,aiRescueVisited:[],aiRescueStalls:0}:{}),
+      ...(stalePriority?{priorityCivilianId:null}:{}),
+      ...(orphanedExtractionGuard?{fireTeamExtractionGuardActive:false,fireTeamExtractionGuardLeaderId:null,fireTeamExtractionGuardX:null,fireTeamExtractionGuardY:null}:{}),
+    };
+  });
+}
 function tacticalAiCivilianPriorityTurn({ units = [], covers = [], placement = null, secureRescue = false, fireMode = "single", weaponUpgrades = {}, round = 1, mission = null, combatPriority = false, threats = [], explored = [], excludedLeaderIds = [] } = {}) {
   covers=(Array.isArray(covers)?covers:[]).map(cover=>({...cover}));
-  let nextUnits = units.map((unit) => ({ ...unit }));
+  let nextUnits = tacticalReleaseCompletedVipEscortState(units.map((unit) => ({ ...unit })));
   const dutyIds = [];
   const actedIds = [];
   const stalledIds = [];
@@ -7307,6 +7359,13 @@ function tacticalAiCivilianPriorityTurn({ units = [], covers = [], placement = n
       }
     }
     soldier = nextUnits.find((unit) => unit.id === originalSoldier.id);
+    const completedEscortThisTurn=Boolean(followers.length&&!tacticalEscortFollowers(nextUnits,soldier.id).length);
+    if(completedEscortThisTurn){
+      nextUnits=tacticalReleaseCompletedVipEscortState(nextUnits);
+      const stationarySupportIds=new Set(fireTeamDutyMembers.filter(member=>member.id!==soldier.id&&Number(member.tu)>0&&!movementTrails[member.id]?.length).map(member=>member.id));
+      for(let index=dutyIds.length-1;index>=0;index-=1)if(stationarySupportIds.has(dutyIds[index]))dutyIds.splice(index,1);
+      if(stationarySupportIds.size)events.push(`${tacticalFireTeamLabelForUnit(soldier)} completed its VIP handoff; ${stationarySupportIds.size} available support soldier${stationarySupportIds.size===1?" was":"s were"} released from the cleared extraction detail.`);
+    }
     const moved = tacticalKey(soldier.x, soldier.y) !== startingCell;
     const stalls = acted || moved ? 0 : Math.max(0, Number(soldier.aiRescueStalls) || 0) + 1;
     nextUnits = nextUnits.map((unit) => unit.id === soldier.id
@@ -8421,7 +8480,7 @@ function tacticalThreePersistentCreateUnitNode(runtime,unit,unitIndex=0){
 }
 function tacticalThreePersistentUpdateUnits(runtime,props){
   const visibleIds=new Set();let unitIndex=0;
-  props.units.filter(unit=>(runtime.visibleSet.has(tacticalKey(unit.x,unit.y))||unit.reinforcementLandingVisible)&&tacticalUnitVisibleOnMap(unit,props.visibleByHumans(unit.x,unit.y),{aiMapPlayback:props.aiMapPlayback,battleResolved:props.battleResolved})).forEach(unit=>{
+  props.units.filter(unit=>(runtime.visibleSet.has(tacticalKey(unit.x,unit.y))||unit.reinforcementLandingVisible||unit.shotPresentationVisible)&&tacticalUnitVisibleOnMap(unit,props.visibleByHumans(unit.x,unit.y),{aiMapPlayback:props.aiMapPlayback,battleResolved:props.battleResolved})).forEach(unit=>{
     visibleIds.add(unit.id);const signature=tacticalThreePersistentUnitSignature(unit);let node=runtime.unitNodes.get(unit.id);
     if(!node||node.userData.signature!==signature){if(node){tacticalThreePersistentDisposeSubtree(node,runtime);runtime.unitRoot.remove(node);}node=tacticalThreePersistentCreateUnitNode(runtime,unit,unitIndex);runtime.unitRoot.add(node);runtime.unitNodes.set(unit.id,node);}
     tacticalThreePersistentApplyFacing(runtime,node,unit);const kneeling=tacticalThreePersistentApplyStance(runtime,node,unit);const point=runtime.worldFor(unit.x,unit.y);const baseY=unit.hp>0?(kneeling?0.16:0.2):0.13;if(node.position.x!==point.x||node.position.z!==point.z||Math.abs(node.position.y-baseY)>0.001)TACTICAL_THREE_PERSISTENT_RUNTIME_METRICS.unitMutations+=1;node.position.set(point.x,baseY,point.z);node.userData.alive=unit.hp>0;node.userData.baseY=baseY;node.userData.victoryDance=Boolean(props.victoryDance&&unit.team==="human"&&unit.hp>0);node.visible=!runtime.gibbedUnitIds?.has(unit.id)&&!(props.firstPersonView&&props.firstPersonActor?.id===unit.id&&!props.reactionThirdPersonActor);unitIndex+=1;
@@ -9376,7 +9435,7 @@ function markSelectedDone(){
   setUnits(old=>old.map(unit=>unit.id===activeUnit.id?{...unit,tu:0}:unit));
   if(hybridBattleMode)selectHybridFireTeamLeader(1);else selectSoldier(1);
 }
-function fireAtTarget(target){const actionUnits=unitsRef.current;const action=tacticalActionState(actionUnits,selected,fireModeRef.current,weaponUpgrades);const activeUnit=action.unit;const mode=action.mode;if(!activeUnit||activeUnit.team!=="human"||activeUnit.hp<=0)return;if(activeUnit.weaponKind==="none")return setLog(l=>[`${activeUnit.name}'s right hand is empty.`,...l].slice(0,8));if(activeUnit.weaponKind==="ballistic"&&activeUnit.ammo<=0)return setLog(l=>[`${activeUnit.name} needs to reload.`,...l].slice(0,8));if(activeUnit.tu<mode.tu)return setLog(l=>[`${activeUnit.name} lacks Time Units for ${mode.label}.`,...l].slice(0,8));const range=activeUnit.weaponKind==="ballistic"?18:20;const dist=tacticalDistance(target,activeUnit);if(dist>range||!hasLineOfSight(activeUnit,target.x,target.y,covers,mission))return setLog(l=>[`${target.name} is not in line of sight or weapon range.`,...l].slice(0,8));let nextCovers=covers;let nextUnits=actionUnits.map(u=>u.id===activeUnit.id?{...u,facing:updateFacing(u,target.x,target.y),tu:Math.max(0,u.tu-mode.tu),ammo:u.weaponKind==="ballistic"?Math.max(0,u.ammo-Math.min(mode.rounds,u.ammo)):u.ammo}:u);let hits=0,totalDamage=0,windowShattered=false,shieldIntercepted=false;const rounds=activeUnit.weaponKind==="ballistic"?Math.min(mode.rounds,activeUnit.ammo):mode.rounds;for(let i=0;i<rounds;i+=1){const windowShot=tacticalShatterWindowInShotPath(activeUnit,target,nextCovers);nextCovers=windowShot.covers;if(windowShot.window)windowShattered=true;const hitChance=clamp(activeUnit.acc+(activeUnit.kneeling?10:0)+equipmentBonus(activeUnit.baseSoldier,tech)+specializationCombatModifier(activeUnit.baseSoldier,"hit")+soldierMoraleCombatModifier(activeUnit.baseSoldier,"hit")-mode.accPenalty-Math.floor(dist*2)-tacticalDarknessAccuracyPenalty(activeUnit,target,nextCovers,mission)-windowShot.penalty,8,92);if(rand(1,100)<=hitChance){hits+=1;const raw=upgradedWeaponDamage(activeUnit.weaponKind,activeUnit.baseSoldier,weaponUpgrades)+specializationCombatModifier(activeUnit.baseSoldier,"damage")+soldierMoraleCombatModifier(activeUnit.baseSoldier,"damage");const applied=applyShotDamage(activeUnit,target,raw,nextCovers);nextCovers=applied.covers;totalDamage+=applied.damage;if(applied.shieldBlocked)shieldIntercepted=true;}}const killed=target.hp>0&&target.hp-totalDamage<=0;showShotEvent({shooter:activeUnit,target,hit:hits>0,killed,armored:shieldIntercepted||hits>0&&isArmoredTarget(target),weaponKind:activeUnit.weaponKind,label:mode.label,damage:totalDamage,hitChance:clamp(activeUnit.acc+(activeUnit.kneeling?10:0)+equipmentBonus(activeUnit.baseSoldier,tech)+specializationCombatModifier(activeUnit.baseSoldier,"hit")+soldierMoraleCombatModifier(activeUnit.baseSoldier,"hit")-mode.accPenalty-Math.floor(dist*2)-tacticalDarknessAccuracyPenalty(activeUnit,target,covers,mission),8,92),hits,rounds,targetHpBefore:target.hp,targetMaxHp:target.maxHp||target.hp});nextUnits=nextUnits.map(u=>u.id===target.id?{...u,hp:Math.max(0,u.hp-totalDamage),revealed:true}:killed&&u.id===activeUnit.id?{...u,kills:Math.max(0,Number(u.kills)||0)+1}:u);if(killed)onBattleFall(0.12);if(windowShattered)onBattleImpact("glass",0.04);
+function fireAtTarget(target){const actionUnits=unitsRef.current;const action=tacticalActionState(actionUnits,selected,fireModeRef.current,weaponUpgrades);const activeUnit=action.unit;const mode=action.mode;if(!activeUnit||activeUnit.team!=="human"||activeUnit.hp<=0)return;if(activeUnit.weaponKind==="none")return setLog(l=>[`${activeUnit.name}'s right hand is empty.`,...l].slice(0,8));if(activeUnit.weaponKind==="ballistic"&&activeUnit.ammo<=0)return setLog(l=>[`${activeUnit.name} needs to reload.`,...l].slice(0,8));if(activeUnit.tu<mode.tu)return setLog(l=>[`${activeUnit.name} lacks Time Units for ${mode.label}.`,...l].slice(0,8));const range=activeUnit.weaponKind==="ballistic"?18:20;const visibility=tacticalShotCommitVisibilityState({shooter:activeUnit,target,covers,mission,range,requiredTargetTeam:"alien"});const dist=visibility.distance??tacticalDistance(target,activeUnit);if(!visibility.ok)return setLog(l=>[`${target.name} cannot be fired on: ${visibility.reason==="different-level"?"target is on another level":"personal line of sight or weapon range was lost"}.`,...l].slice(0,8));let nextCovers=covers;let nextUnits=actionUnits.map(u=>u.id===activeUnit.id?{...u,facing:updateFacing(u,target.x,target.y),tu:Math.max(0,u.tu-mode.tu),ammo:u.weaponKind==="ballistic"?Math.max(0,u.ammo-Math.min(mode.rounds,u.ammo)):u.ammo}:u);let hits=0,totalDamage=0,windowShattered=false,shieldIntercepted=false;const rounds=activeUnit.weaponKind==="ballistic"?Math.min(mode.rounds,activeUnit.ammo):mode.rounds;for(let i=0;i<rounds;i+=1){const windowShot=tacticalShatterWindowInShotPath(activeUnit,target,nextCovers);nextCovers=windowShot.covers;if(windowShot.window)windowShattered=true;const hitChance=clamp(activeUnit.acc+(activeUnit.kneeling?10:0)+equipmentBonus(activeUnit.baseSoldier,tech)+specializationCombatModifier(activeUnit.baseSoldier,"hit")+soldierMoraleCombatModifier(activeUnit.baseSoldier,"hit")-mode.accPenalty-Math.floor(dist*2)-tacticalDarknessAccuracyPenalty(activeUnit,target,nextCovers,mission)-windowShot.penalty,8,92);if(rand(1,100)<=hitChance){hits+=1;const raw=upgradedWeaponDamage(activeUnit.weaponKind,activeUnit.baseSoldier,weaponUpgrades)+specializationCombatModifier(activeUnit.baseSoldier,"damage")+soldierMoraleCombatModifier(activeUnit.baseSoldier,"damage");const applied=applyShotDamage(activeUnit,target,raw,nextCovers);nextCovers=applied.covers;totalDamage+=applied.damage;if(applied.shieldBlocked)shieldIntercepted=true;}}const killed=target.hp>0&&target.hp-totalDamage<=0;showShotEvent({shooter:activeUnit,target,hit:hits>0,killed,armored:shieldIntercepted||hits>0&&isArmoredTarget(target),weaponKind:activeUnit.weaponKind,label:mode.label,damage:totalDamage,hitChance:clamp(activeUnit.acc+(activeUnit.kneeling?10:0)+equipmentBonus(activeUnit.baseSoldier,tech)+specializationCombatModifier(activeUnit.baseSoldier,"hit")+soldierMoraleCombatModifier(activeUnit.baseSoldier,"hit")-mode.accPenalty-Math.floor(dist*2)-tacticalDarknessAccuracyPenalty(activeUnit,target,covers,mission),8,92),hits,rounds,targetHpBefore:target.hp,targetMaxHp:target.maxHp||target.hp});nextUnits=nextUnits.map(u=>u.id===target.id?{...u,hp:Math.max(0,u.hp-totalDamage),revealed:true}:killed&&u.id===activeUnit.id?{...u,kills:Math.max(0,Number(u.kills)||0)+1}:u);if(killed)onBattleFall(0.12);if(windowShattered)onBattleImpact("glass",0.04);
 if(hybridBattleMode&&activeUnit.fireTeamRole==="leader"&&target.team==="alien")nextUnits=tacticalHybridMarkPriorityTarget(nextUnits,activeUnit.id,target);
 setUnits(nextUnits);
 setCovers(nextCovers.filter(c=>c.hp>0));setLog(l=>[`${shieldIntercepted?"Beacon shield intercepted the hit. ":""}${activeUnit.name} ${mode.label.toLowerCase()} fires ${rounds} round${rounds===1?"":"s"} through ${windowShattered?"shattering glass; ":""}${hits} hit, ${totalDamage} damage.`,...l].slice(0,8));}function reloadSelected(){const activeUnit=tacticalActionState(unitsRef.current,selected,fireModeRef.current,weaponUpgrades).unit;const result=tacticalReloadResult(activeUnit,weaponUpgrades);if(!result.ok){if(result.reason==="tu")setLog(l=>[`${activeUnit.name} lacks Time Units to reload.`,...l].slice(0,8));return;}setUnits(old=>old.map(unit=>unit.id===activeUnit.id?result.unit:unit));onDialogue(Math.random()<0.5?"reloading":"changing_magazine",{soldier:activeUnit.baseSoldier,cooldownMs:900});setLog(old=>[`${activeUnit.name} reloads and has ${result.unit.ammo} rounds ready.`,...old].slice(0,8));}function useSelectedMedkit(){const activeUnit=unitsRef.current.find(unit=>unit.id===selected)||null;const result=tacticalMedkitUseResult(activeUnit,turn);if(!result.ok)return setLog(old=>[result.reason,...old].slice(0,8));setUnits(old=>old.map(unit=>unit.id===activeUnit.id?result.unit:unit));setLog(old=>[`${activeUnit.name} uses a Medkit and recovers ${result.healed} HP for ${TACTICAL_MEDKIT_TU} TU.`,...old].slice(0,8));}function cellClick(x, y) {
@@ -9454,7 +9513,9 @@ function toggleHybridBattleControl(){
   const enabled=!hybridBattleMode;
   setHybridBattleMode(enabled);
   if(enabled){
-    const leaders=tacticalHybridFireTeamLeaders(unitsRef.current);
+    const normalizedUnits=tacticalReleaseCompletedVipEscortState(unitsRef.current);
+    setUnits(normalizedUnits);
+    const leaders=tacticalHybridFireTeamLeaders(normalizedUnits);
     if(leaders.length)setSelected(leaders.find(leader=>leader.id===selected||leader.fireTeamId===selectedUnit?.fireTeamId)?.id||leaders[0].id);
   }
   setTargetingMode("move");
@@ -9476,7 +9537,7 @@ async function endHybridBattleTurn(){
   if(!leaders.length)return setLog(old=>["No living fire-team lead is available for Hybrid AI Command.",...old].slice(0,8));
   setTargetingMode("move");setCommandMapPaused(false);setCommandMapPauseRequested(false);invalidateAiStream();cancelAiPlaybackTimers();
   const streamToken=aiStreamEpochRef.current+1;aiStreamEpochRef.current=streamToken;
-  const playerTurnUnits=unitsRef.current.map(unit=>({...unit}));
+  const playerTurnUnits=tacticalReleaseCompletedVipEscortState(unitsRef.current.map(unit=>({...unit})));
   const preparedUnits=tacticalHybridPrepareAiRoundUnits(playerTurnUnits,tacticalRound,mission.id);
   setUnits(preparedUnits);setTurn("ai");setSelected(null);setAiHandoffLoading({stage:"Preparing hybrid support movement and engagement",progress:12});
   try{
@@ -10586,7 +10647,8 @@ PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.21.2113_DEFAULT_CIVILIAN_ESCORT_SUP
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.21.2322_REINFORCEMENT_SOURCE_PRIORITY_AND_UFO_BAY_CLEARANCE_PATCH",date:"August 22, 2026",title:"Reinforcement-Source Priority and UFO Bay Clearance",summary:"Makes confirmed reinforcement sources durable tactical objectives and adds explicit clearance for simplified crashed-UFO deployment bays.",items:["After AEGIS confirms the reinforcement function, an active field beacon or observed crashed-UFO bay outranks routine patrol, fog search, stale contact search, and Simulation-owned Command Map waypoints.","An active civilian/VIP escort or an authoritative known-living-alien contact remains higher priority, matching the established tactical doctrine.","Simplified crashed-UFO bays progress through Unverified, Investigation Assigned, Clearing, and Bay Clear. The state persists in the tactical cover snapshot and therefore survives active-mission save/load.","Simulation AI assigns a suitable fire team, releases its lower-priority waypoint, approaches the deployment ring, and verifies the bay when local contact is clear. Supporting soldiers retain leader-relative formation movement.","Hybrid AI displays the urgent source but preserves player-directed leader waypoints. Manual control can spend 8 TU while adjacent to use Inspect UFO Bay.","Once reinforcement-source knowledge is confirmed, applicable crash-site victories wait for Bay Clear; unknown doctrine does not reveal or impose the new requirement early.","Landed or navigable multi-deck UFO interiors, inaccessible-source recovery, and expanded debrief detail remain staged roadmap work. Save format remains 4."]});
 PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 22, 2026",title:"Beacon-Linked Procedural Multilevel Alien Base Assaults",summary:"Turns captured intact field beacons into playable links to threatening, seeded three-level alien bases whose command cores must be taken offline.",items:["A securely disabled intact field beacon plus Alien Beacon Interface Protocols provides an alternate alien-base discovery route alongside strategic triangulation.","Each base stores a stable seed, one of four archetypes, three named levels, and a durable beacon-link identity so separate sites vary while save/load reproduces the same site.","Base assaults transit through the beacon network without a Skyranger sortie; AEGIS materializes in a protected Level 1 room beside a linked cyan beacon.","Three sealed tactical sectors connect through two paired elevator galleries with seeded bulkheads, rooms, door gaps, fixtures, floor circuits, and defender placement.","Ordinary bases deploy 15 defenders and the final portal base deploys 18 across all levels, with a Pale Commander in the command-level defense.","Victory requires clearing the alien force and neutralizing the Level 3 command core; manual, Hybrid, and Simulation control reuse the hardened beacon-assault behavior.","Insertion beacon, elevator pads, base layout, unit state, fog, and command-core damage persist in the existing tactical snapshot. Save format remains 4."]});
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.23.0125_SINGLE_OWNER_MISSION_VICTORY_DIALOGUE_PATCH",date:"August 23, 2026",title:"Single-Owner Mission Victory Dialogue",summary:"Prevents the final-alien announcement from being played twice when AI playback and terminal victory commit converge.",items:["Manual, Hybrid, and Simulation tactical dialogue passes through one mission-scoped victory-announcement claim.","The final AI playback frame remains the preferred announcement owner; terminal victory remains a fallback whose duplicate request is ignored.","Kill confirmations, victory music, final battlefield state, mission resolution, and save format 4 are unchanged."]});
-PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 23, 2026",title:"Patch Notes History Scope Startup Hotfix",summary:"Restores startup after Browser 0125 placed its in-game history entry outside the campaign component that owns the patch-note library.",items:["The Browser 0125 victory-dialogue guard remains active and unchanged.","Its in-game history entry now mutates PATCH_NOTES_HISTORY inside the same lexical scope as the library declaration.","The current hotfix entry is also created inside that valid scope, preventing the pre-mount ReferenceError.","Campaign data, tactical rules, audio assets, and save format 4 are unchanged."]});
+PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.23.0138_PATCH_NOTES_HISTORY_SCOPE_STARTUP_HOTFIX",date:"August 23, 2026",title:"Patch Notes History Scope Startup Hotfix",summary:"Restores startup after Browser 0125 placed its in-game history entry outside the campaign component that owns the patch-note library.",items:["The Browser 0125 victory-dialogue guard remains active and unchanged.","Its in-game history entry now mutates PATCH_NOTES_HISTORY inside the same lexical scope as the library declaration.","The current hotfix entry is also created inside that valid scope, preventing the pre-mount ReferenceError.","Campaign data, tactical rules, audio assets, and save format 4 are unchanged."]});
+PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 23, 2026",title:"Per-Shooter Visibility + VIP Extraction Handoff",summary:"Makes every AEGIS shot require the firing soldier's current authoritative sightline and prevents a completed VIP extraction detail from leaving support soldiers permanently frozen at the Skyranger.",items:["Manual fire, Simulation AI fire, emergency recovery fire, and reaction fire now share one final per-shooter range, line-of-sight, and tactical-level commit check before TU, ammunition, damage, or a shot animation can be committed.","The old synthetic long-range-contact playback shot has been removed; AI presentation can no longer invent a tracer between arbitrary units when no real shot occurred.","Every verified AEGIS shot marks its exact alien target as required for that shot frame, keeping the target glyph/model rendered for the attack without revealing unrelated aliens or changing fog knowledge.","When the last escorted VIP enters extraction, stale VIP targets and extraction-guard orders are cleared. The escort leader retains the egress action already spent, while stationary support soldiers with TU remaining are released to normal AI duties in the same round.","Stream continuation and every later AI round also normalize orphaned extraction guards, so Hybrid-to-Simulation handoffs and active saves self-heal rather than moving only the former escort leader round after round.","Living units whose legacy or handoff snapshot omitted an explicit alive:true flag now still refresh TU correctly; confirmed dead units do not. Fire-team formation, escort priority, fog, LOS, and save format 4 remain intact."]});
 function PatchNotesLibraryScreen(){
   const selected=PATCH_NOTES_HISTORY.find(entry=>entry.build===selectedPatchBuild)||PATCH_NOTES_HISTORY[0];
   const items=selected.items||[selected.summary];
@@ -11205,6 +11267,37 @@ const PATCH_NOTES_HISTORY_SCOPE_STARTUP_HOTFIX=true;
 function patchNotesHistoryScopeStartupContractTest(){const appSource=String(AlienResponseCommand),testSource=String(tacticalSingleOwnerMissionVictoryDialogueContractTest),mutationNeedle="PATCH_NOTES_HISTORY"+".unshift";return Boolean(PATCH_NOTES_HISTORY_SCOPE_STARTUP_HOTFIX&&appSource.includes("const PATCH_NOTES_HISTORY=")&&appSource.includes("Patch Notes History Scope Startup Hotfix")&&appSource.includes("Single-Owner Mission Victory Dialogue")&&!testSource.includes(mutationNeedle));}
 const AEGIS_RUN_SELF_TESTS_BEFORE_0138_PATCH_NOTES_SCOPE_HOTFIX=runSelfTests;
 runSelfTests=function runSelfTestsWith0138PatchNotesScopeHotfix(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_0138_PATCH_NOTES_SCOPE_HOTFIX(),{name:"Patch-note history mutations remain inside the campaign component that owns the library",pass:patchNotesHistoryScopeStartupContractTest()}];};
+function tacticalPerShooterVisibilityAndRenderedTargetContractTest(){
+  const mission={id:"qa-shot-visibility",kind:"Alien Incident",region:"Europe",gridSize:32};
+  const shooter={id:"qa-visible-shooter",name:"Shooter",team:"human",hp:40,alive:true,x:5,y:5,facing:"E",level:0,weaponKind:"ballistic",weaponRange:18,ammo:12};
+  const target={id:"qa-visible-target",name:"Target",team:"alien",hp:30,alive:true,x:9,y:5,level:0,revealed:false};
+  const clear=tacticalShotCommitVisibilityState({shooter,target,covers:[],mission,range:18,requiredTargetTeam:"alien"});
+  const wall=tacticalShotCommitVisibilityState({shooter,target,covers:[{id:"qa-shot-wall",x:7,y:5,hp:50,kind:"hard",block:1}],mission,range:18,requiredTargetTeam:"alien"});
+  const otherLevel=tacticalShotCommitVisibilityState({shooter,target:{...target,level:1},covers:[],mission,range:18,requiredTargetTeam:"alien"});
+  const shot=tacticalVerifiedHumanShotRecord({fromId:shooter.id,toId:target.id,side:"human",weaponKind:"ballistic"},clear);
+  const frame=tacticalShotPresentationFrame({shots:[shot],aliens:[target],soldiers:[shooter],civilians:[]});
+  const presented=frame.aliens[0];const resolverSource=String(resolveMission),missionSource=String(TacticalMission),reactionSource=String(tacticalReactionShotResult),playbackSource=String(tacticalAiSequentialPlaybackFrames);
+  const syntheticShotLabel=["Long-range","contact"].join(" ");
+  return Boolean(TACTICAL_PER_SHOOTER_VISIBILITY_AND_RENDERED_TARGET_SHOT_INVARIANT_PATCH&&clear.ok&&!wall.ok&&wall.reason==="los"&&!otherLevel.ok&&otherLevel.reason==="different-level"&&shot.targetVisibilityVerified&&presented.shotPresentationVisible&&presented.visible&&tacticalUnitVisibleOnMap(presented,false,{aiMapPlayback:true})&&!resolverSource.includes(`label: "${syntheticShotLabel}"`)&&resolverSource.includes("tacticalShotCommitVisibilityState")&&missionSource.includes("tacticalShotCommitVisibilityState")&&reactionSource.includes("tacticalShotCommitVisibilityState")&&playbackSource.includes("tacticalShotPresentationFrame"));
+}
+function tacticalPostExtractionRescueDutyHandoffContractTest(){
+  const mission={id:"qa-post-extraction-handoff",kind:"Town Abduction",region:"Europe",gridSize:64};
+  const placement=tacticalSkyrangerPlacement({x:12,y:12});const teamId="qa-extraction-team";const leaderId="qa-extraction-leader";
+  const leader={id:leaderId,name:"Escort Lead",team:"human",hp:40,alive:true,tu:0,maxTu:60,x:placement.rampCells[2].x,y:placement.rampCells[2].y,facing:placement.bodySign<0?"N":"S",fireTeamId:teamId,fireTeamLeaderId:leaderId,fireTeamRole:"leader",weaponKind:"ballistic",weaponRange:18,ammo:12,aiVipRescueTargetId:"qa-final-vip"};
+  const guardCells=tacticalEscortExtractionOutsideCells({placement,leader,covers:[],units:[leader],mission,count:2,ignoreTeam:true});
+  const support=(id,role,index)=>{const cell=guardCells[index]||{x:leader.x+(index?1:-1),y:leader.y-placement.bodySign};return{id,name:id,team:"human",hp:40,alive:true,tu:56,maxTu:56,x:cell.x,y:cell.y,facing:"E",fireTeamId:teamId,fireTeamLeaderId:leaderId,fireTeamRole:role,weaponKind:"ballistic",weaponRange:18,ammo:12,aiVipRescueTargetId:"qa-final-vip",fireTeamExtractionGuardActive:true,fireTeamExtractionGuardLeaderId:leaderId,fireTeamExtractionGuardX:cell.x,fireTeamExtractionGuardY:cell.y};};
+  const left=support("qa-extraction-left","left",0),right=support("qa-extraction-right","right",1);
+  const vip={id:"qa-final-vip",name:"Final VIP",team:"civilian",hp:18,alive:true,x:placement.rampCells[0].x,y:placement.rampCells[0].y,revealed:true,rescued:false,escortId:leaderId,escortOrder:1,escortJoined:true,panic:false};
+  const turn=tacticalAiCivilianPriorityTurn({units:[leader,left,right,vip],covers:[],placement,secureRescue:true,mission,combatPriority:false,round:8});
+  const extracted=turn.units.find(unit=>unit.id===vip.id),releasedLeft=turn.units.find(unit=>unit.id===left.id),releasedRight=turn.units.find(unit=>unit.id===right.id);
+  const stale=[leader,{...left,alive:undefined,tu:0},{...right,tu:0},{...vip,rescued:true,extracted:true,escortId:null,alive:false}];
+  const normalized=tacticalReleaseCompletedVipEscortState(stale),normalizedLeft=normalized.find(unit=>unit.id===left.id);
+  const refreshed=tacticalAiRefreshHumanTurnUnits([normalizedLeft],9)[0];const hybrid=tacticalHybridRefreshPlayerTurnUnits(normalized,9),hybridLeft=hybrid.find(unit=>unit.id===left.id);
+  const resolverSource=String(resolveMission),missionSource=String(TacticalMission),continuationSource=String(tacticalAiContinuationState);
+  return Boolean(TACTICAL_POST_EXTRACTION_RESCUE_DUTY_HANDOFF_PATCH&&extracted?.rescued&&extracted?.extracted&&turn.dutyIds.includes(leader.id)&&!turn.dutyIds.includes(left.id)&&!turn.dutyIds.includes(right.id)&&!releasedLeft?.fireTeamExtractionGuardActive&&!releasedRight?.fireTeamExtractionGuardActive&&!releasedLeft?.aiVipRescueTargetId&&!normalizedLeft?.fireTeamExtractionGuardActive&&refreshed.tu===left.maxTu&&refreshed.alive===true&&!hybridLeft?.fireTeamExtractionGuardActive&&hybridLeft?.tu===left.maxTu&&resolverSource.includes("postExtractionHandoffUnits")&&missionSource.includes("tacticalReleaseCompletedVipEscortState(unitsRef.current)")&&continuationSource.includes("tacticalReleaseCompletedVipEscortState"));
+}
+const AEGIS_RUN_SELF_TESTS_BEFORE_1009_VISIBILITY_AND_EXTRACTION_HANDOFF=runSelfTests;
+runSelfTests=function runSelfTestsWith1009VisibilityAndExtractionHandoff(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_1009_VISIBILITY_AND_EXTRACTION_HANDOFF(),{name:"Every AEGIS shot uses the firing soldier's current sightline and renders its verified target",pass:tacticalPerShooterVisibilityAndRenderedTargetContractTest()},{name:"Final VIP extraction releases stale Skyranger guards across Manual Hybrid and streamed Simulation handoffs",pass:tacticalPostExtractionRescueDutyHandoffContractTest()}];};
 AEGIS_POST_DEFERRED_BUILD_HEALTH_RUNNER=runSelfTests;
 runSelfTests=runDeferredSelfTests;
 ReactDOM.createRoot(document.getElementById("root")).render(/*#__PURE__*/React.createElement(AlienResponseCommand,null));
