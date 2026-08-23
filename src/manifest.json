@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.22.2124_MEDIUM_LARGE_BUILDING_PERIMETER_RESTORATION_PATCH",
+  "currentBuild": "v0.26.08.23.0125_SINGLE_OWNER_MISSION_VICTORY_DIALOGUE_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "medium-large-building-perimeter-restoration-validation",
+  "status": "single-owner-mission-victory-dialogue-validation",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.22.2124_MEDIUM_LARGE_BUILDING_PERIMETER_RESTORATION_PATCH",
+  "lastInspectedBuild": "v0.26.08.23.0125_SINGLE_OWNER_MISSION_VICTORY_DIALOGUE_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.22.2124_MEDIUM_LARGE_BUILDING_PERIMETER_RESTORATION_PATCH",
+    "browserBuild": "v0.26.08.23.0125_SINGLE_OWNER_MISSION_VICTORY_DIALOGUE_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -148,7 +148,8 @@
       "beacon-linked-procedural-multilevel-alien-base-assault",
       "alien-base-vertical-deck-focus-presentation",
       "crash-site-ai-terminal-stall-recovery",
-      "medium-large-streamed-building-perimeter-restoration"
+      "medium-large-streamed-building-perimeter-restoration",
+      "single-owner-mission-victory-dialogue"
     ],
     "temporaryExceptions": [
       {
@@ -270,6 +271,10 @@
       {
         "system": "medium-large-streamed-building-perimeter-restoration",
         "reason": "The browser asynchronous battlefield generator now restores authored outer-district building cover against each mission's 80x80 or 96x96 boundary. Native Godot requires equivalent engine-native map-size-aware structure generation."
+      },
+      {
+        "system": "single-owner-mission-victory-dialogue",
+        "reason": "The browser now claims the final-alien voice announcement once per tactical mission across manual, Hybrid, Simulation playback, and terminal-commit fallback paths. Native Godot requires the same engine-native one-shot dialogue ownership rule."
       },
       {
         "system": "command-map-autonomous-search-resume",

@@ -90,6 +90,7 @@ const required = [
   "Alien-base 3D Iso deck controls focus the persistent camera and announce vertical transitions without changing tactical authority",
   "Crash-site Simulation continues pending UFO-bay clearance and Hybrid cannot finalize an unresolved snapshot as failure",
   "Medium and large streamed battlefields retain outer-district building walls windows and authored floor alignment",
+  "Mission victory dialogue has one mission-scoped owner across playback and terminal commit",
   "BEACON_LINKED_PROCEDURAL_MULTILEVEL_ALIEN_BASE_ASSAULT_PATCH",
   "ALIEN_BASE_VERTICAL_DECK_FOCUS_PRESENTATION_PATCH",
   "CRASH_SITE_AI_TERMINAL_STALL_RECOVERY_PATCH",
@@ -1072,6 +1073,12 @@ if (!manifest.gameplayParity?.requiredSystems?.includes("medium-large-streamed-b
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "medium-large-streamed-building-perimeter-restoration" && entry?.reason)) {
   missing.push("browser-only medium and large streamed building perimeter restoration must be recorded as a temporary gameplay parity exception");
 }
+if (!manifest.gameplayParity?.requiredSystems?.includes("single-owner-mission-victory-dialogue")) {
+  missing.push("browser/native parity must require single-owner mission victory dialogue");
+}
+if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "single-owner-mission-victory-dialogue" && entry?.reason)) {
+  missing.push("browser-only single-owner mission victory dialogue must be recorded as a temporary gameplay parity exception");
+}
 for (const system of [
   "save-load-patch-notes-version-history",
   "tactical-shot-result-stack-and-toggle",
@@ -1091,6 +1098,7 @@ for (const system of [
   "alien-base-vertical-deck-focus-presentation",
   "crash-site-ai-terminal-stall-recovery",
   "medium-large-streamed-building-perimeter-restoration",
+  "single-owner-mission-victory-dialogue",
 ]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser-only current-patch system must be recorded as a temporary parity exception: ${system}`);
@@ -1163,6 +1171,7 @@ for (const system of [
   "indexed-2d-tactical-cell-render-lookups",
   "threejs-explicit-living-unit-pose-state",
   "vip-death-flag-impossible-quota-terminal-resolution",
+  "single-owner-mission-victory-dialogue",
 ]) {
   if (!manifest.gameplayParity?.requiredSystems?.includes(system)) {
     missing.push(`gameplay parity system missing: ${system}`);
@@ -1176,7 +1185,7 @@ if (!nativeContent.soldiers?.every((soldier) => Number.isFinite(soldier.reaction
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "complete-classic-battlescape-command-set" && entry?.reason)) {
   missing.push("remaining classic battlescape command depth must be recorded as a temporary gameplay parity exception");
 }
-for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity", "stable-settings-component-boundaries", "stable-campaign-list-boundaries", "stable-transient-overlay-boundaries", "stable-campaign-confirmation-boundaries", "stable-operational-approval-boundaries", "stable-mission-launch-confirmation-boundary", "stable-strategic-incident-route-boundaries", "threejs-iso-night-vibrance-presentation", "threejs-iso-color-device-preference", "threejs-iso-night-brightness-device-preference", "command-map-autonomous-search-resume", "live-land-vehicle-footprint-movement-integrity"]) {
+for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity", "stable-settings-component-boundaries", "stable-campaign-list-boundaries", "stable-transient-overlay-boundaries", "stable-campaign-confirmation-boundaries", "stable-operational-approval-boundaries", "stable-mission-launch-confirmation-boundary", "stable-strategic-incident-route-boundaries", "threejs-iso-night-vibrance-presentation", "threejs-iso-color-device-preference", "threejs-iso-night-brightness-device-preference", "command-map-autonomous-search-resume", "live-land-vehicle-footprint-movement-integrity", "single-owner-mission-victory-dialogue"]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser optimization parity exception missing: ${system}`);
   }

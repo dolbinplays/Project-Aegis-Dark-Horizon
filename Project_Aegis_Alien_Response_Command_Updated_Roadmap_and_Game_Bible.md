@@ -1,10 +1,31 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-08-22
-Current handoff build: `v0.26.08.22.2124_MEDIUM_LARGE_BUILDING_PERIMETER_RESTORATION_PATCH`
+Last updated: 2026-08-23
+Current handoff build: `v0.26.08.23.0125_SINGLE_OWNER_MISSION_VICTORY_DIALOGUE_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2124 restores outer-district walls, windows, partitions, furnishings, and building lights that asynchronous startup could omit on 80x80 and 96x96 tactical maps. The reproduced East Asia Threat 3 Alien Terror Raid correctly planned all three structures and their floors, but streamed cover placement still clipped against the legacy 64-cell boundary. A mission-sized, duplicate-safe restoration pass now aligns rendered and authoritative building cover with the full floor plan while preserving fog, LOS, AI knowledge, objectives, and save format 4.**
+Current patch status: **Browser 0125 makes the mission-ending "That's the last of them" line a single-owner tactical event. AI frame playback remains the preferred timing owner, while terminal victory commit remains a fallback; a mission-scoped synchronous claim prevents both paths from routing the same recording. Manual, Hybrid, and Simulation victories retain the announcement, other tactical dialogue remains unchanged, and save format stays at 4.**
+
+
+## Browser 0125 - Single-Owner Mission Victory Dialogue
+
+**Status:** Implemented after live playtesting reported that the final-alien announcement sounded as though it played twice.
+
+### Confirmed cause and correction
+- AI playback already derives a context-aware `thats_the_last_of_them` cue from the terminal frame when living alien count reaches zero.
+- A later terminal-victory effect independently requested the same cue with no cooldown. That fallback was added to protect terminal victories that did not receive a normal frame cue, but it had no shared ownership with playback.
+- TacticalMission now wraps its dialogue callback with a mission-scoped one-shot claim. The first victory-announcement request records the claim before audio routing begins; any later request for that mission returns without starting or queueing another recording.
+
+### Ownership boundary
+- The final AI playback frame remains the preferred announcement owner and retains its established timing relative to the battlefield action.
+- Terminal victory commit remains a safety fallback and still applies the authoritative final frame. It only speaks when no earlier path claimed the announcement.
+- Manual victory uses the same guarded callback. A subsequent mission has a different claim key and can announce normally.
+- Target-down, alien-down, contact, movement, injury, objective-status, extraction, and other tactical cues do not use the victory-only claim and retain their current routing.
+
+### Validation boundary
+- Build Health verifies first-claim acceptance, same-mission duplicate rejection, and fresh acceptance for a different mission.
+- The gate is synchronous, preventing queued playback and cooldown-zero terminal calls from racing before ownership is recorded.
+- Mission resolution, victory music, final-frame commitment, tactical state, audio assets, and save format **4** are unchanged.
 
 
 ## Browser 2124 - Medium/Large Building Perimeter Restoration

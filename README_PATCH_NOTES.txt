@@ -1,6 +1,52 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.23.0125_SINGLE_OWNER_MISSION_VICTORY_DIALOGUE_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Stops the mission-ending soldier line "That's the last of them" from playing twice when the final Simulation or Hybrid playback frame and the terminal-victory commit both request it.
+
+CONFIRMED CAUSE
+---------------
+- The final AI playback frame correctly recognized that no living aliens remained and queued the announcement.
+- The terminal-victory commit then requested the same event again with its cooldown disabled so a victory could not end silently if playback skipped the cue.
+- Both paths were individually valid, but neither owned a shared one-shot claim. The two requests could therefore reach the recorded-dialogue router back to back.
+
+SINGLE-OWNER VICTORY ANNOUNCEMENT
+---------------------------------
+- Tactical dialogue now passes through a mission-scoped victory-announcement gate before it reaches the existing audio router.
+- The first "That's the last of them" request claims that mission synchronously. Later requests for the same mission are ignored.
+- The final playback frame remains the preferred owner, preserving its normal timing. The terminal commit remains a fallback for unusual playback states but cannot repeat a cue already played.
+- A different mission receives a fresh claim, and all non-victory dialogue continues through the existing queue and cooldown rules unchanged.
+
+TACTICAL AUTHORITY
+------------------
+- The patch covers manual, Hybrid, and Simulation tactical paths without changing mission victory conditions, terminal-frame commitment, final battlefield presentation, or victory music.
+- Kill confirmations such as "Target down" remain separate events and are not suppressed.
+- Save format remains 4 because the one-shot claim is transient presentation state scoped to the mounted mission.
+
+VALIDATION
+----------
+- Build Health verifies that the first claim for a mission plays, a second claim for the same mission is rejected, and a new mission can announce normally.
+- Static validation requires the shared gate to wrap the TacticalMission dialogue callback and requires browser/native parity metadata for the rule.
+
+MANUAL TEST GATES
+-----------------
+1. Complete a mission under Simulation AI and confirm "That's the last of them" plays once when the last alien is eliminated.
+2. Repeat under Hybrid AI and confirm the terminal battlefield remains visible without a duplicate announcement.
+3. Complete a manually controlled mission and confirm the line still plays once.
+4. Start and complete a second mission in the same session and confirm its announcement is not suppressed.
+5. Confirm ordinary movement, contact, hit, kill, and extraction dialogue still plays normally.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.22.2124_MEDIUM_LARGE_BUILDING_PERIMETER_RESTORATION_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

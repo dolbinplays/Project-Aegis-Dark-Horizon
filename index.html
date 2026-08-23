@@ -777,7 +777,7 @@ function installAegisGlobalHoverHelp(){
 function AegisHoverHelpToggleButton({light=false,compact=false}){const[enabled,setEnabled]=useState(()=>readAegisHoverHelpEnabled());useEffect(()=>{const sync=event=>setEnabled(normalizeAegisHoverHelpEnabled(event?.detail?.enabled));window.addEventListener(AEGIS_HOVER_HELP_CHANGE_EVENT,sync);return()=>window.removeEventListener(AEGIS_HOVER_HELP_CHANGE_EVENT,sync);},[]);const toggle=()=>setEnabled(writeAegisHoverHelpEnabled(!enabled));return/*#__PURE__*/React.createElement("button",{type:"button",onClick:toggle,"aria-pressed":enabled,"data-aegis-hover-help-toggle":"true","data-aegis-help":enabled?"Turn contextual button explanations off. Controls continue working normally, and the preference is remembered on this device.":"Turn contextual button explanations on. Rest the pointer over supported controls for three seconds to read their purpose.",className:`${compact?"px-3 py-2 text-xs":"px-4 py-3 text-sm"} rounded-2xl border font-black shadow-sm transition ${enabled?light?"border-cyan-200/70 bg-cyan-900/60 text-cyan-50":"border-cyan-400/60 bg-cyan-950/55 text-cyan-100":light?"border-slate-400/60 bg-slate-950/70 text-slate-200":"border-slate-600 bg-slate-950 text-slate-300"}`},enabled?"Hover Help: On":"Hover Help: Off");}
 if(typeof document!=="undefined"){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",installAegisGlobalHoverHelp,{once:true});else setTimeout(installAegisGlobalHoverHelp,0);}
 
-const CURRENT_GAME_BUILD="v0.26.08.22.2124_MEDIUM_LARGE_BUILDING_PERIMETER_RESTORATION_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
+const CURRENT_GAME_BUILD="v0.26.08.23.0125_SINGLE_OWNER_MISSION_VICTORY_DIALOGUE_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
 function runCriticalBootSmokeTests(){
   const checks=[
     {name:"Game root is available",pass:typeof document!=="undefined"&&Boolean(document.getElementById("root"))},
@@ -11173,6 +11173,33 @@ function tacticalMediumLargeBuildingPerimeterRestorationContractTest(){
 }
 const AEGIS_RUN_SELF_TESTS_BEFORE_2124_MISSION_SIZED_BUILDING_RESTORATION=runSelfTests;
 runSelfTests=function runSelfTestsWith2124MissionSizedBuildingRestoration(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_2124_MISSION_SIZED_BUILDING_RESTORATION(),{name:"Medium and large streamed battlefields retain outer-district building walls windows and authored floor alignment",pass:tacticalMediumLargeBuildingPerimeterRestorationContractTest()}];};
+const TACTICAL_SINGLE_OWNER_MISSION_VICTORY_DIALOGUE_PATCH=true;
+function tacticalMissionVictoryDialogueClaim(previousKey="",missionId=""){
+  const key=missionId?`${missionId}:thats-the-last-of-them`:"";
+  return{play:Boolean(key&&String(previousKey)!==key),key:key||String(previousKey||"")};
+}
+const AEGIS_TACTICAL_MISSION_BEFORE_SINGLE_OWNER_VICTORY_DIALOGUE=TacticalMission;
+TacticalMission=function TacticalMissionWithSingleOwnerVictoryDialogue(props={}){
+  const victoryDialogueClaimRef=useRef("");
+  const missionId=String(props.mission?.id||"");
+  const guardedDialogue=React.useCallback((eventKey,options={})=>{
+    if(eventKey==="thats_the_last_of_them"){
+      const claim=tacticalMissionVictoryDialogueClaim(victoryDialogueClaimRef.current,missionId);
+      if(!claim.play)return false;
+      victoryDialogueClaimRef.current=claim.key;
+    }
+    return props.onDialogue?.(eventKey,options);
+  },[props.onDialogue,missionId]);
+  return React.createElement(AEGIS_TACTICAL_MISSION_BEFORE_SINGLE_OWNER_VICTORY_DIALOGUE,{...props,onDialogue:guardedDialogue});
+};
+preserveLayeredPatchFunctionSource(TacticalMission,AEGIS_TACTICAL_MISSION_BEFORE_SINGLE_OWNER_VICTORY_DIALOGUE);
+PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 23, 2026",title:"Single-Owner Mission Victory Dialogue",summary:"Prevents the final-alien announcement from being played twice when AI playback and terminal victory commit converge.",items:["Manual, Hybrid, and Simulation tactical dialogue now passes through one mission-scoped victory-announcement claim.","The final AI playback frame remains the preferred announcement owner; the terminal victory effect remains available as a fallback but its duplicate request is ignored.","The claim is set synchronously before audio routing, so queued playback and cooldown-zero fallback calls cannot race each other.","Kill confirmations, mission victory music, final battlefield state, mission resolution, and save format 4 are unchanged."]});
+function tacticalSingleOwnerMissionVictoryDialogueContractTest(){
+  const first=tacticalMissionVictoryDialogueClaim("","qa-victory"),duplicate=tacticalMissionVictoryDialogueClaim(first.key,"qa-victory"),nextMission=tacticalMissionVictoryDialogueClaim(first.key,"qa-next-victory"),source=String(TacticalMission);
+  return Boolean(TACTICAL_SINGLE_OWNER_MISSION_VICTORY_DIALOGUE_PATCH&&first.play&&first.key==="qa-victory:thats-the-last-of-them"&&!duplicate.play&&duplicate.key===first.key&&nextMission.play&&nextMission.key!==first.key&&source.includes("victoryDialogueClaimRef")&&source.includes('eventKey==="thats_the_last_of_them"')&&source.includes("if(!claim.play)return false")&&source.includes("AEGIS_TACTICAL_MISSION_BEFORE_SINGLE_OWNER_VICTORY_DIALOGUE"));
+}
+const AEGIS_RUN_SELF_TESTS_BEFORE_0125_SINGLE_OWNER_VICTORY_DIALOGUE=runSelfTests;
+runSelfTests=function runSelfTestsWith0125SingleOwnerVictoryDialogue(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_0125_SINGLE_OWNER_VICTORY_DIALOGUE(),{name:"Mission victory dialogue has one mission-scoped owner across playback and terminal commit",pass:tacticalSingleOwnerMissionVictoryDialogueContractTest()}];};
 AEGIS_POST_DEFERRED_BUILD_HEALTH_RUNNER=runSelfTests;
 runSelfTests=runDeferredSelfTests;
 ReactDOM.createRoot(document.getElementById("root")).render(/*#__PURE__*/React.createElement(AlienResponseCommand,null));
