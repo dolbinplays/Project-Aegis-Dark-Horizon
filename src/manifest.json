@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.23.1009_PER_SHOOTER_VISIBILITY_AND_VIP_EXTRACTION_HANDOFF_PATCH",
+  "currentBuild": "v0.26.08.23.1200_MULTI_FIRETEAM_VIP_RESCUE_TRAFFIC_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "per-shooter-visibility-and-vip-extraction-handoff-validation",
+  "status": "multi-fireteam-vip-rescue-traffic-validation",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.23.1009_PER_SHOOTER_VISIBILITY_AND_VIP_EXTRACTION_HANDOFF_PATCH",
+  "lastInspectedBuild": "v0.26.08.23.1200_MULTI_FIRETEAM_VIP_RESCUE_TRAFFIC_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.23.1009_PER_SHOOTER_VISIBILITY_AND_VIP_EXTRACTION_HANDOFF_PATCH",
+    "browserBuild": "v0.26.08.23.1200_MULTI_FIRETEAM_VIP_RESCUE_TRAFFIC_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -152,7 +152,8 @@
       "single-owner-mission-victory-dialogue",
       "patch-notes-history-scope-startup-hotfix",
       "per-shooter-visibility-and-rendered-target-shot-invariant",
-      "post-extraction-rescue-duty-handoff"
+      "post-extraction-rescue-duty-handoff",
+      "multi-fireteam-vip-rescue-traffic"
     ],
     "temporaryExceptions": [
       {
@@ -290,6 +291,10 @@
       {
         "system": "post-extraction-rescue-duty-handoff",
         "reason": "The browser now releases completed VIP targets and orphaned Skyranger guards across live Manual, Hybrid, streamed Simulation, continuation, and save handoffs while preventing double actions. Native Godot requires equivalent engine-native escort-duty normalization."
+      },
+      {
+        "system": "multi-fireteam-vip-rescue-traffic",
+        "reason": "The browser now reserves widened Skyranger evacuation lanes, places completed teams outside them, preserves other teams' active escort metadata, and lets the actual escort owner coordinate formation movement. Native Godot requires equivalent engine-native rescue traffic and ownership scheduling."
       },
       {
         "system": "command-map-autonomous-search-resume",

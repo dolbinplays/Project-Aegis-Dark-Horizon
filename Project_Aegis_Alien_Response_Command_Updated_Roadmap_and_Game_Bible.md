@@ -2,9 +2,28 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-23
-Current handoff build: `v0.26.08.23.1009_PER_SHOOTER_VISIBILITY_AND_VIP_EXTRACTION_HANDOFF_PATCH`
+Current handoff build: `v0.26.08.23.1200_MULTI_FIRETEAM_VIP_RESCUE_TRAFFIC_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1009 closes the remaining split between a firing soldier's authoritative current visibility and the alien rendered in the exact shot frame. It also clears completed VIP rescue/extraction assignments and orphaned Skyranger guard positions across Manual, Hybrid, streamed Simulation, continuation, and save handoffs, preventing the former escort leader from becoming the only soldier who moves after the final VIP boards. Browser 0138's startup correction remains active and save format stays at 4.**
+Current patch status: **Browser 1200 keeps every active rescue fire team moving after the first VIP handoff. Skyranger ramp/egress/approach cells are reserved for evacuation traffic, completed teams defend from side positions, own-team members are mobile formation participants rather than extraction blockers, and the soldier who actually owns an escort coordinates that fire team even when they are not its formal leader. Browser 1009's visibility and completed-duty cleanup remain active and save format stays at 4.**
+
+
+## Browser 1200 - Multi-Fire-Team VIP Rescue Traffic
+
+**Status:** Implemented after live testing showed Browser 1009 released the first completed escort team correctly, but the first handoff could still leave every other fire team stationary.
+
+### Evacuation traffic authority
+- Every Skyranger reserves its ramp cells, egress, and a widened exterior approach lane exclusively for evacuation traffic.
+- Completed escorts and rescue-perimeter guards select legal side positions outside that lane. Existing live states with a completed leader in the approach lane are assigned away from the bottleneck on the next rescue pass.
+- An extraction route excludes the escort's own fire-team members from static occupancy because those soldiers move as part of the same formation step. Other fire teams, civilians, aliens, vehicles, hard cover, hazards, and craft footprints remain real blockers.
+
+### Actual escort ownership
+- The living soldier referenced by a VIP's `escortId` is the rescue actor for that fire team. If a support soldier made contact, the formal leader and other supports form around that soldier instead of leaving the escort owner outside the rescue scheduler.
+- Exactly one rescue actor coordinates a fire team during a round, preventing a leader and support escort from receiving duplicate formation actions.
+- Completing one VIP detail clears only that resolved target. Active target and priority metadata remains intact across every other member of a fire team whose VIP is still alive and escorted.
+
+### Validation boundary
+- Build Health covers side-position selection, reserved-lane exclusion, completed-team lane clearance, support-owned escort authority, preservation of another team's active assignment, full-team rescue duty, and measurable progress toward the Skyranger after an earlier handoff.
+- Manual, Hybrid, streamed Simulation, continuation/save handoffs, active-escort priority, fire-team formation, TU, fog, LOS, damage, and mission resolution remain authoritative.
 
 
 ## Browser 1009 - Per-Shooter Visibility + VIP Extraction Handoff
@@ -990,6 +1009,18 @@ Roadmap-only planning update (2026-08-23): **When an AEGIS soldier establishes a
 - Active saves made at the hold point must retain the committed frame plus the remaining-actor set so reload cannot replay completed actions or forget the newly established contact.
 
 **Planned validation gate:** begin no-contact Simulation and Hybrid rounds with several fire teams queued, reveal an alien on an early leader/support movement step, and confirm the current step finishes, the alien appears, unplayed actors change from search/waypoint movement to legal contact behavior, and completed actors do not act twice. Repeat during active VIP escort under Ask, Stay, and Engage; with walls/windows/smoke/night lighting; during streamed continuation; and across save/reload. Confirm no hidden alien triggers replanning and no contact interrupt changes fog, LOS, TU, damage, formation, or control-mode authority.
+
+Roadmap-only presentation update (2026-08-23): **When a VIP receives fatal damage, use the same readable cinematic camera family as a soldier hit/death reaction: focus the real attacker and VIP, briefly slow the fatal impact and collapse, then return to the exact prior tactical camera and playback speed. This is a presentation feature only and must not change damage, RNG, TU, visibility, fog, AI knowledge, escort state, mission resolution, or whether the VIP survives.**
+
+### Future tactical presentation - VIP fatal-impact cinematic
+- Trigger only from an authoritative fatal damage event against a mission VIP; ordinary civilians may retain the standard hit presentation unless separately expanded later.
+- In 3D Iso, FPV, TPV, Hybrid, and Simulation playback, frame the actual attacker/attack origin and the VIP, show the projectile or damaging event already resolved by combat logic, and use the existing bounded slow-motion hit/death timing.
+- Keep the VIP rendered through the fatal impact and collapse even when fog or camera transitions would otherwise remove the model early. Do not expose unrelated hidden aliens or unexplored terrain.
+- Queue simultaneous fatalities deterministically and play each at most once. Environmental deaths with no attacker should frame the hazard source and victim without inventing a shooter.
+- Restore the exact prior view, zoom, camera anchor, playback speed, and control mode after the cinematic. Manual input remains locked only for the same short atomic presentation window used by soldier hit reactions.
+- Add accessibility controls by honoring the existing shot-motion/cinematic-motion preference; reduced-motion mode should provide a short stable focus without slow motion.
+
+**Planned validation gate:** kill a VIP with ballistic, laser/plasma, grenade, reaction fire, environmental fire, and alien melee/ranged attacks in 2D, 3D Iso, FPV, TPV, Hybrid, and Simulation. Confirm one cinematic per fatality, the correct attacker/source and VIP remain visible, simultaneous deaths queue once each, reduced-motion is respected, the prior camera is restored, and every tactical result matches a run with presentation disabled.
 
 
 ## Browser 0845 — Tutorial Spoiler-Free Onboarding Hotfix

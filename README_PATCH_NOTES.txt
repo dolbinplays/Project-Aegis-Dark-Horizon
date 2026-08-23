@@ -1,6 +1,38 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.23.1200_MULTI_FIRETEAM_VIP_RESCUE_TRAFFIC_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Keeps every active rescue fire team moving after the first VIP reaches the Skyranger by separating defensive positions from evacuation traffic and following the soldier who actually owns each escort.
+
+MULTI-TEAM EXTRACTION TRAFFIC
+-----------------------------
+- Ramp, egress, and widened approach-lane cells are reserved for VIP traffic. Completed escorts and defensive perimeter teams choose side positions outside that lane.
+- Extraction pathfinding treats the escort's own fire-team members as mobile formation participants instead of permanent blockers.
+- Live missions created before this patch self-clear a completed leader standing in the approach lane by assigning that team a legal side-perimeter position.
+
+ESCORT OWNERSHIP
+----------------
+- When a support soldier owns a VIP escort, that soldier becomes the rescue actor for the fire team; the formal leader and remaining supports form around the actual escort owner.
+- Completing one team's VIP handoff no longer strips active rescue assignments from the other fire teams.
+- One rescue actor coordinates each fire team per round, preventing duplicate movement while preserving standard formation support.
+
+VALIDATION
+----------
+- Build Health covers completed-team lane clearance, non-blocking guard positions, preservation of another team's VIP assignment, support-owned escorts, formation duty, and continued progress toward the ramp.
+- Manual, Hybrid, streamed Simulation, save/load, active-escort priority, fog, LOS, damage, and mission resolution remain authoritative.
+
+ROADMAP DOCUMENTATION
+---------------------
+- Added a presentation-only VIP death cinematic: slow the existing hit/death camera on a VIP's fatal impact, show the actual attacker and victim, then return to the prior tactical camera without changing battle rules.
+
+PREVIOUS PATCH NOTES
+====================
+
 Build: v0.26.08.23.1009_PER_SHOOTER_VISIBILITY_AND_VIP_EXTRACTION_HANDOFF_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

@@ -94,14 +94,18 @@ const required = [
   "Patch-note history mutations remain inside the campaign component that owns the library",
   "Every AEGIS shot uses the firing soldier's current sightline and renders its verified target",
   "Final VIP extraction releases stale Skyranger guards across Manual Hybrid and streamed Simulation handoffs",
+  "Every active VIP fire team keeps moving after an earlier team clears the Skyranger",
   "BEACON_LINKED_PROCEDURAL_MULTILEVEL_ALIEN_BASE_ASSAULT_PATCH",
   "ALIEN_BASE_VERTICAL_DECK_FOCUS_PRESENTATION_PATCH",
   "CRASH_SITE_AI_TERMINAL_STALL_RECOVERY_PATCH",
   "TACTICAL_PER_SHOOTER_VISIBILITY_AND_RENDERED_TARGET_SHOT_INVARIANT_PATCH",
   "TACTICAL_POST_EXTRACTION_RESCUE_DUTY_HANDOFF_PATCH",
+  "TACTICAL_MULTI_FIRETEAM_VIP_RESCUE_TRAFFIC_PATCH",
   "tacticalShotCommitVisibilityState",
   "tacticalShotPresentationFrame",
   "tacticalReleaseCompletedVipEscortState",
+  "tacticalAiRescueActorOrder",
+  "tacticalExtractionTrafficReservedCellKeys",
   "postExtractionHandoffUnits",
   "TACTICAL_MEDIUM_LARGE_BUILDING_PERIMETER_RESTORATION_PATCH",
   "tacticalRestoreMissionSizedBuildingCovers",
@@ -718,6 +722,9 @@ if (!resolveMissionSource || resolveMissionSource.includes('label: "Long-range c
 if (!html.slice(patchHistoryDeclaration, patchHistoryOwnerEnd).includes('title:"Per-Shooter Visibility + VIP Extraction Handoff"')) {
   missing.push("the current visibility and VIP extraction handoff patch note must remain inside its campaign owner");
 }
+if (!html.slice(patchHistoryDeclaration, patchHistoryOwnerEnd).includes('title:"Multi-Fire-Team VIP Rescue Traffic"')) {
+  missing.push("the current multi-fire-team VIP rescue traffic patch note must remain inside its campaign owner");
+}
 
 for (const obsoleteNeedle of [
   "const[lastShotFeedback,setLastShotFeedback]",
@@ -1133,6 +1140,7 @@ for (const system of [
   "patch-notes-history-scope-startup-hotfix",
   "per-shooter-visibility-and-rendered-target-shot-invariant",
   "post-extraction-rescue-duty-handoff",
+  "multi-fireteam-vip-rescue-traffic",
 ]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser-only current-patch system must be recorded as a temporary parity exception: ${system}`);
@@ -1209,6 +1217,7 @@ for (const system of [
   "patch-notes-history-scope-startup-hotfix",
   "per-shooter-visibility-and-rendered-target-shot-invariant",
   "post-extraction-rescue-duty-handoff",
+  "multi-fireteam-vip-rescue-traffic",
 ]) {
   if (!manifest.gameplayParity?.requiredSystems?.includes(system)) {
     missing.push(`gameplay parity system missing: ${system}`);
@@ -1222,7 +1231,7 @@ if (!nativeContent.soldiers?.every((soldier) => Number.isFinite(soldier.reaction
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "complete-classic-battlescape-command-set" && entry?.reason)) {
   missing.push("remaining classic battlescape command depth must be recorded as a temporary gameplay parity exception");
 }
-for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity", "stable-settings-component-boundaries", "stable-campaign-list-boundaries", "stable-transient-overlay-boundaries", "stable-campaign-confirmation-boundaries", "stable-operational-approval-boundaries", "stable-mission-launch-confirmation-boundary", "stable-strategic-incident-route-boundaries", "threejs-iso-night-vibrance-presentation", "threejs-iso-color-device-preference", "threejs-iso-night-brightness-device-preference", "command-map-autonomous-search-resume", "live-land-vehicle-footprint-movement-integrity", "single-owner-mission-victory-dialogue", "patch-notes-history-scope-startup-hotfix", "per-shooter-visibility-and-rendered-target-shot-invariant", "post-extraction-rescue-duty-handoff"]) {
+for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity", "stable-settings-component-boundaries", "stable-campaign-list-boundaries", "stable-transient-overlay-boundaries", "stable-campaign-confirmation-boundaries", "stable-operational-approval-boundaries", "stable-mission-launch-confirmation-boundary", "stable-strategic-incident-route-boundaries", "threejs-iso-night-vibrance-presentation", "threejs-iso-color-device-preference", "threejs-iso-night-brightness-device-preference", "command-map-autonomous-search-resume", "live-land-vehicle-footprint-movement-integrity", "single-owner-mission-victory-dialogue", "patch-notes-history-scope-startup-hotfix", "per-shooter-visibility-and-rendered-target-shot-invariant", "post-extraction-rescue-duty-handoff", "multi-fireteam-vip-rescue-traffic"]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser optimization parity exception missing: ${system}`);
   }
