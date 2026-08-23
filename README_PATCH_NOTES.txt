@@ -1,6 +1,40 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.23.0138_PATCH_NOTES_HISTORY_SCOPE_STARTUP_HOTFIX
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Restores startup after Browser 0125 attempted to update the in-game patch-note library from outside the React campaign component that owns it.
+
+CONFIRMED CAUSE AND FIX
+-----------------------
+- `PATCH_NOTES_HISTORY` is intentionally local to `AlienResponseCommand`, alongside the patch-history screen state and rendering functions.
+- Browser 0125 appended its new history mutation near the global regression tests. That code executed before React mounted and could not resolve the component-local identifier, producing the reported ReferenceError.
+- The 0125 history entry and the 0138 hotfix entry now live inside the same lexical scope as the library declaration.
+- The single-owner victory-dialogue guard from Browser 0125 remains active and unchanged.
+
+VALIDATION
+----------
+- Main-script syntax and the victory-announcement claim regression pass.
+- Build Health requires the new entries to be present inside `AlienResponseCommand`.
+- Static validation rejects any `PATCH_NOTES_HISTORY.unshift` mutation placed after the campaign component's closing boundary, directly covering this startup failure.
+- Campaign data, tactical rules, audio assets, and save format 4 are unchanged.
+
+MANUAL TEST GATES
+-----------------
+1. Reload the hosted build and confirm the title screen renders without a runtime-error panel.
+2. Open Save / Load -> Patch Notes and confirm Browser 0138 is Latest and Browser 0125 appears immediately below it.
+3. Complete an AI-controlled tactical mission and confirm "That's the last of them" plays once.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.23.0125_SINGLE_OWNER_MISSION_VICTORY_DIALOGUE_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

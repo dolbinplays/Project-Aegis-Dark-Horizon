@@ -2,9 +2,25 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-23
-Current handoff build: `v0.26.08.23.0125_SINGLE_OWNER_MISSION_VICTORY_DIALOGUE_PATCH`
+Current handoff build: `v0.26.08.23.0138_PATCH_NOTES_HISTORY_SCOPE_STARTUP_HOTFIX`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0125 makes the mission-ending "That's the last of them" line a single-owner tactical event. AI frame playback remains the preferred timing owner, while terminal victory commit remains a fallback; a mission-scoped synchronous claim prevents both paths from routing the same recording. Manual, Hybrid, and Simulation victories retain the announcement, other tactical dialogue remains unchanged, and save format stays at 4.**
+Current patch status: **Browser 0138 restores startup after Browser 0125 placed its in-game patch-history mutation outside the `AlienResponseCommand` scope that owns `PATCH_NOTES_HISTORY`. Both the 0125 entry and current hotfix entry now live with the library declaration, and static validation rejects future out-of-scope history mutations. Browser 0125's single-owner victory-dialogue correction remains active and save format stays at 4.**
+
+
+## Browser 0138 - Patch Notes History Scope Startup Hotfix
+
+**Status:** Implemented from the hosted-build startup error `ReferenceError: PATCH_NOTES_HISTORY is not defined` at the Browser 0125 history mutation.
+
+### Cause and correction
+- The in-game patch-note collection is component-local because its viewer and selected-version state are owned by `AlienResponseCommand`.
+- Browser 0125 added its history entry beside global Build Health tests. Although the main script remained syntactically valid, that statement executed at startup without access to the component-local collection and stopped the application before React mounted.
+- The Browser 0125 history record and Browser 0138 hotfix record now mutate the collection immediately after the existing in-scope history entries and before `PatchNotesLibraryScreen` is declared.
+- The actual mission-victory dialogue gate is globally valid and remains unchanged.
+
+### Validation boundary
+- Build Health confirms the declaration plus both new history titles are part of `AlienResponseCommand` source.
+- The static build seam locates the campaign component's closing boundary and rejects any patch-history mutation after it, covering runtime lexical scope rather than syntax alone.
+- Startup, patch-history access, tactical dialogue, campaign data, and save format **4** are the manual regression gates.
 
 
 ## Browser 0125 - Single-Owner Mission Victory Dialogue

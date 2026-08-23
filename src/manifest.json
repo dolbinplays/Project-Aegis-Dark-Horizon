@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.23.0125_SINGLE_OWNER_MISSION_VICTORY_DIALOGUE_PATCH",
+  "currentBuild": "v0.26.08.23.0138_PATCH_NOTES_HISTORY_SCOPE_STARTUP_HOTFIX",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "single-owner-mission-victory-dialogue-validation",
+  "status": "patch-notes-history-scope-startup-hotfix-validation",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.23.0125_SINGLE_OWNER_MISSION_VICTORY_DIALOGUE_PATCH",
+  "lastInspectedBuild": "v0.26.08.23.0138_PATCH_NOTES_HISTORY_SCOPE_STARTUP_HOTFIX",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.23.0125_SINGLE_OWNER_MISSION_VICTORY_DIALOGUE_PATCH",
+    "browserBuild": "v0.26.08.23.0138_PATCH_NOTES_HISTORY_SCOPE_STARTUP_HOTFIX",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -149,7 +149,8 @@
       "alien-base-vertical-deck-focus-presentation",
       "crash-site-ai-terminal-stall-recovery",
       "medium-large-streamed-building-perimeter-restoration",
-      "single-owner-mission-victory-dialogue"
+      "single-owner-mission-victory-dialogue",
+      "patch-notes-history-scope-startup-hotfix"
     ],
     "temporaryExceptions": [
       {
@@ -275,6 +276,10 @@
       {
         "system": "single-owner-mission-victory-dialogue",
         "reason": "The browser now claims the final-alien voice announcement once per tactical mission across manual, Hybrid, Simulation playback, and terminal-commit fallback paths. Native Godot requires the same engine-native one-shot dialogue ownership rule."
+      },
+      {
+        "system": "patch-notes-history-scope-startup-hotfix",
+        "reason": "The browser in-game history is local to its React campaign component, so Browser 0138 keeps history mutations within that lexical owner and adds a static startup-scope guard. Native Godot uses a separate engine-native patch-history screen."
       },
       {
         "system": "command-map-autonomous-search-resume",
