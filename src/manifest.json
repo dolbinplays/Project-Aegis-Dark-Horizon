@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.24.1115_BRAVERY_FEAR_AND_TACTICAL_CINEMATIC_FRAMEWORK_PATCH",
+  "currentBuild": "v0.26.08.24.1502_LEADERSHIP_UNDER_FEAR_AND_UNIFIED_TACTICAL_STATUS_HUD_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "bravery-fear-and-tactical-cinematic-framework-complete",
+  "status": "leadership-under-fear-and-unified-tactical-status-hud-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.24.1115_BRAVERY_FEAR_AND_TACTICAL_CINEMATIC_FRAMEWORK_PATCH",
+  "lastInspectedBuild": "v0.26.08.24.1502_LEADERSHIP_UNDER_FEAR_AND_UNIFIED_TACTICAL_STATUS_HUD_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.24.1115_BRAVERY_FEAR_AND_TACTICAL_CINEMATIC_FRAMEWORK_PATCH",
+    "browserBuild": "v0.26.08.24.1502_LEADERSHIP_UNDER_FEAR_AND_UNIFIED_TACTICAL_STATUS_HUD_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -167,7 +167,11 @@
       "shared-tactical-cinematic-event-queue",
       "knowledge-limited-reinforcement-craft-cinematic",
       "persistent-threejs-unit-collapse-and-cover-destruction-transitions",
-      "minimized-command-header-session-default"
+      "minimized-command-header-session-default",
+      "fear-disrupted-fire-team-command-continuity",
+      "temporary-acting-fire-team-leadership",
+      "bounded-leader-rally-next-recovery-bonus",
+      "unified-three-view-tactical-status-hud"
     ],
     "temporaryExceptions": [
       {
@@ -449,6 +453,10 @@
       {
         "system": "bravery-fear-and-shared-tactical-cinematics",
         "reason": "The browser now resolves deterministic Bravery recovery and fear overrides for human and alien turns, animates ordinary persistent-renderer collapses and structural debris, and presents knowledge-limited reinforcement flyovers. Native Godot requires equivalent engine-native morale authority, legal forced movement, camera sequencing, and hidden-information safeguards."
+      },
+      {
+        "system": "leadership-under-fear-and-unified-tactical-status-hud",
+        "reason": "The browser now suspends a panicked formal leader, appoints a temporary deputy, preserves escort/contact priorities, supports a TU-paid next-check rally, restores command at a safe round boundary, and presents authoritative conditions through one 3D Iso/FPV/TPV panel. Native Godot requires equivalent command authority, persistence, and engine-native HUD parity."
       }
     ]
   }

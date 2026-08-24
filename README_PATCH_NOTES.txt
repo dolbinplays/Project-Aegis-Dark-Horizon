@@ -1,6 +1,39 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.24.1502_LEADERSHIP_UNDER_FEAR_AND_UNIFIED_TACTICAL_STATUS_HUD_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Fire teams now maintain a temporary chain of command when a leader is overcome by fear, and 3D Iso, First Person, and Third Person share one authoritative soldier-status panel.
+
+LEADERSHIP UNDER FEAR
+---------------------
+- A panicked fire-team leader retains permanent rank and roster identity but temporarily stops providing command/morale support. Existing player orders remain attached to the team.
+- The best living, non-overridden support becomes acting leader. Formation, escort, objective, and fire-team-leader helpers resolve through the deputy until safe round-boundary restoration.
+- Teammates who witness the panic or receive a nearby fire-team report record one deduplicated leadership shock. They can hold a known fight, preserve an active escort, cover withdrawal, or assume command instead of blindly following the frightened leader.
+- If neither a visible contact nor an active escort has priority, one adjacent eligible support can spend 8 TU to rally the leader. Its +14 modifier applies only to the next ordinary recovery check and cannot manufacture a second roll.
+- Command disruption, deputy assignment, response, rally, and restoration persist through Simulation frames, Hybrid/manual handoffs, observer playback, and saved tactical continuation.
+
+UNIFIED 3D TACTICAL STATUS HUD
+------------------------------
+- 3D Iso, First Person, and Third Person now use the same upper-right component and authoritative observed/selected soldier.
+- The panel shows name, rank, weapon, HP, TU, ammunition, fire-team role, effective/formal command, AI reserve/final action, and current objective/order.
+- Compact badges expose Panicked, Shaken, Pinned, Wounded, Bleeding when present, Kneeling, Fire, Smoke, Acting Leader, Command Disrupted, and Escort Duty.
+- Badge explanations use the existing optional global hover-help system and its three-second pointer delay.
+
+VALIDATION
+----------
+- The embedded-JavaScript syntax check and build-seam check pass.
+- The new deterministic browser contract passes for deputy selection, one leadership-shock event, rally TU/payment, next-check-only recovery bonus, command restoration, persistence, and shared HUD/status output.
+- The complete deferred Build Health suite was exercised in headless Chrome: 63/68 checks pass. The five existing red contracts are older AI/camera/tutorial contract drift and are not in this patch's leadership/HUD seam.
+- Save format remains 4.
+
+PREVIOUS PATCH NOTES
+====================
+
 Build: v0.26.08.24.1115_BRAVERY_FEAR_AND_TACTICAL_CINEMATIC_FRAMEWORK_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
