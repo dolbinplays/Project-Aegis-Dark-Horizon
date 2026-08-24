@@ -777,7 +777,7 @@ function installAegisGlobalHoverHelp(){
 function AegisHoverHelpToggleButton({light=false,compact=false}){const[enabled,setEnabled]=useState(()=>readAegisHoverHelpEnabled());useEffect(()=>{const sync=event=>setEnabled(normalizeAegisHoverHelpEnabled(event?.detail?.enabled));window.addEventListener(AEGIS_HOVER_HELP_CHANGE_EVENT,sync);return()=>window.removeEventListener(AEGIS_HOVER_HELP_CHANGE_EVENT,sync);},[]);const toggle=()=>setEnabled(writeAegisHoverHelpEnabled(!enabled));return/*#__PURE__*/React.createElement("button",{type:"button",onClick:toggle,"aria-pressed":enabled,"data-aegis-hover-help-toggle":"true","data-aegis-help":enabled?"Turn contextual button explanations off. Controls continue working normally, and the preference is remembered on this device.":"Turn contextual button explanations on. Rest the pointer over supported controls for three seconds to read their purpose.",className:`${compact?"px-3 py-2 text-xs":"px-4 py-3 text-sm"} rounded-2xl border font-black shadow-sm transition ${enabled?light?"border-cyan-200/70 bg-cyan-900/60 text-cyan-50":"border-cyan-400/60 bg-cyan-950/55 text-cyan-100":light?"border-slate-400/60 bg-slate-950/70 text-slate-200":"border-slate-600 bg-slate-950 text-slate-300"}`},enabled?"Hover Help: On":"Hover Help: Off");}
 if(typeof document!=="undefined"){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",installAegisGlobalHoverHelp,{once:true});else setTimeout(installAegisGlobalHoverHelp,0);}
 
-const CURRENT_GAME_BUILD="v0.26.08.23.1200_MULTI_FIRETEAM_VIP_RESCUE_TRAFFIC_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
+const CURRENT_GAME_BUILD="v0.26.08.23.1750_POST_RESCUE_BEACON_ASSAULT_HANDOFF_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
 function runCriticalBootSmokeTests(){
   const checks=[
     {name:"Game root is available",pass:typeof document!=="undefined"&&Boolean(document.getElementById("root"))},
@@ -1511,6 +1511,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
     const beaconKnowledgeForRound = beaconKnowledgeActive() ? ALIEN_FIELD_BEACON_KNOWLEDGE.confirmed : ALIEN_FIELD_BEACON_KNOWLEDGE.unknown;
     const beaconObjectiveAtTurnStart = tacticalAlienBeaconObjectiveState({ mission, covers, humans, knowledge: beaconKnowledgeForRound });
     const beaconNeutralizePhase = Boolean(!aliens.some((unit)=>unit.alive&&Number(unit.hp)>0) && !tacticalAiShouldContinueRescue(mission, humans, aliens, civilians) && beaconObjectiveAtTurnStart.pending && beaconObjectiveAtTurnStart.phase === "neutralize");
+    const beaconAutomatedEndgame = Boolean(beaconNeutralizePhase && aiControlMode !== "hybrid");
     const beaconStrikeTeamId = !combatPriority ? tacticalAiBeaconStrikeTeamId({ units: allUnits(), covers, mission, knowledge: beaconKnowledgeForRound, excludedUnitIds: civilianDutyIds, preservePlayerOrders:aiControlMode==="hybrid" }) : null;
     const reinforcementObjectiveAtTurnStart=tacticalReinforcementSourceObjectiveState({mission,covers,humans,aliens,civilians,knowledge:beaconKnowledgeForRound});
     const ufoBayInspectionTeamId=!combatPriority?tacticalAiUfoBayInspectionTeamId({units:allUnits(),covers,mission,knowledge:beaconKnowledgeForRound,excludedUnitIds:civilianDutyIds,preservePlayerOrders:aiControlMode==="hybrid"}):null;
@@ -1519,9 +1520,9 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
       covers=tacticalSetUfoBayClearancePhase(covers,TACTICAL_UFO_BAY_CLEARANCE_PHASES.assigned,{round:initialRound+round-1,teamId:ufoBayInspectionTeamId});
       if(previousPhase===TACTICAL_UFO_BAY_CLEARANCE_PHASES.unverified)logs.push(`Reinforcement-source priority: ${tacticalFireTeamLabelForUnit(humans.find(unit=>unit.fireTeamId===ufoBayInspectionTeamId))} assigned to inspect and clear the crashed UFO deployment bay.`);
     }
-    const beaconAssaulterId = beaconNeutralizePhase ? tacticalAiBeaconAssaulterId({ units: allUnits(), covers, mission, knowledge: beaconKnowledgeForRound, excludedUnitIds: civilianDutyIds }) : null;
-    const beaconEndgameProgressBefore=beaconNeutralizePhase?tacticalAiBeaconEndgameProgressState({units:allUnits(),covers,mission,knowledge:beaconKnowledgeForRound,assaulterId:beaconAssaulterId}):null;
-    if(beaconNeutralizePhase&&beaconAssaulterId){
+    const beaconAssaulterId = beaconAutomatedEndgame ? tacticalAiBeaconAssaulterId({ units: allUnits(), covers, mission, knowledge: beaconKnowledgeForRound, excludedUnitIds: civilianDutyIds }) : null;
+    const beaconEndgameProgressBefore=beaconAutomatedEndgame?tacticalAiBeaconEndgameProgressState({units:allUnits(),covers,mission,knowledge:beaconKnowledgeForRound,assaulterId:beaconAssaulterId}):null;
+    if(beaconAutomatedEndgame&&beaconAssaulterId){
       const assaulter=humans.find(unit=>unit.id===beaconAssaulterId);
       logs.push(`Beacon endgame assault: ${assaulter?.name||"nearest capable soldier"} is taking direct responsibility for neutralizing the last active Alien Field Beacon while the rest of the squad clears the shield approach.`);
     }
@@ -1544,7 +1545,8 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
     });
     if (round === 1 && commander) logs.push("AI doctrine: " + (commander.name || "Squad commander") + " coordinates autonomous fire teams under " + doctrine.label + "; each soldier selects an adaptive TU reserve before making one coherent move-and-fire turn.");
     const huntModesThisRound=new Set();
-    const humanTurnOrder=tacticalFireTeamTurnOrder(humans.filter((unit)=>unit.alive),initialRound+round-1);
+    const scheduledHumanTurnOrder=tacticalFireTeamTurnOrder(humans.filter((unit)=>unit.alive),initialRound+round-1);
+    const humanTurnOrder=beaconAutomatedEndgame&&beaconAssaulterId?[...scheduledHumanTurnOrder.filter(unit=>unit.id===beaconAssaulterId),...scheduledHumanTurnOrder.filter(unit=>unit.id!==beaconAssaulterId)]:scheduledHumanTurnOrder;
     const pendingHumanTrafficIds=new Set(humanTurnOrder.filter((unit)=>!civilianDutyIds.has(unit.id)&&!roundActedIds.has(unit.id)).map((unit)=>unit.id));
     const deferredFriendlyTrafficIds=[];
     const processHumanAiTurn=(human,allowFriendlyTrafficDefer=true)=>{
@@ -1578,7 +1580,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
         human.aiAlienHuntMode=null;human.aiAlienHuntTargetX=null;human.aiAlienHuntTargetY=null;human.aiContactSearchIndex=0;
       }
       const fireTeamLeader = tacticalFireTeamLeaderForUnit(human, humans) || commander;
-      let playerOrder=beaconNeutralizePhase?null:tacticalFireTeamCommandOrderForUnit(human,humans);
+      let playerOrder=beaconAutomatedEndgame?null:tacticalFireTeamCommandOrderForUnit(human,humans);
       let hybridCommandActive=Boolean(playerOrder);
       let playerCommandTarget=playerOrder&&fireTeamLeader?.id===human.id?{id:`player-command:${playerOrder.id}`,x:playerOrder.x,y:playerOrder.y,team:"command",hp:1,alive:true}:null;
       if(playerCommandTarget&&human.x===playerCommandTarget.x&&human.y===playerCommandTarget.y){
@@ -1604,8 +1606,9 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
       const ufoBayTargetCell=ufoBayInspectionMove?tacticalAiUfoBayInspectionTarget({unit:human,units:allUnits(),covers,mission}):null;
       const ufoBayTarget=ufoBayTargetCell?{...ufoBayTargetCell,id:`ufo-bay-inspection:${ufoBayInspectionTeamId}`,team:"command",hp:1,alive:true}:null;
       if(ufoBayInspectionAssigned){human.aiReinforcementSourceKind="ufo-bay";human.aiReinforcementSourcePhase=TACTICAL_UFO_BAY_CLEARANCE_PHASES.clearing;human.aiTurnAction="ufo-bay-clearing";covers=tacticalSetUfoBayClearancePhase(covers,TACTICAL_UFO_BAY_CLEARANCE_PHASES.clearing,{round:initialRound+round-1,inspectorId:fireTeamLeader?.id,teamId:ufoBayInspectionTeamId});}
-      const beaconSoloAssault = Boolean(beaconNeutralizePhase && activeBeacon && human.id === beaconAssaulterId);
-      const beaconStrikeAssigned = Boolean(activeBeacon && beaconKnowledgeActive() && !combatPriority && !playerCommandTarget && !civilianDutyIds.has(human.id) && (beaconSoloAssault || (!beaconNeutralizePhase && human.fireTeamId === beaconStrikeTeamId)));
+      const beaconSoloAssault = Boolean(beaconAutomatedEndgame && activeBeacon && human.id === beaconAssaulterId);
+      const hybridBeaconSupport = Boolean(aiControlMode === "hybrid" && beaconNeutralizePhase && activeBeacon && fireTeamLeader?.id !== human.id && !civilianDutyIds.has(human.id));
+      const beaconStrikeAssigned = Boolean(activeBeacon && beaconKnowledgeActive() && !combatPriority && !playerCommandTarget && !civilianDutyIds.has(human.id) && (beaconSoloAssault || hybridBeaconSupport || (!beaconNeutralizePhase && human.fireTeamId === beaconStrikeTeamId)));
       const beaconStrikeMove = Boolean(beaconStrikeAssigned && (beaconSoloAssault || fireTeamLeader?.id === human.id));
       const beaconStrikeAttack = Boolean(beaconStrikeAssigned && tacticalUnitCanBreachAlienBeaconShield(human, activeBeacon.alienBeaconShield));
       const beaconCloseAssaultMove = Boolean(beaconStrikeMove && (beaconSoloAssault ? tacticalAiBeaconCloseAssaultRequired(human,activeBeacon) : !tacticalFireTeamHasExternalAlienBeaconBreach(fireTeamLeader, humans, activeBeacon.alienBeaconShield)));
@@ -1615,13 +1618,13 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
         human.aiReserveLabel="Beacon Assault";
         human.aiReserveWantsKneel=false;
       }
-      const beaconPerimeterPlan = beaconNeutralizePhase&&!beaconStrikeAssigned&&activeBeacon?tacticalAiBeaconPerimeterClearPlan({unit:human,beacon:activeBeacon,covers,units:allUnits(),mission,maxMoveSteps:4}):null;
-      if(beaconNeutralizePhase&&!beaconStrikeAssigned&&(!beaconPerimeterPlan||beaconPerimeterPlan.steps<=0)){
+      const beaconPerimeterPlan = beaconAutomatedEndgame&&!beaconStrikeAssigned&&activeBeacon?tacticalAiBeaconPerimeterClearPlan({unit:human,beacon:activeBeacon,covers,units:allUnits(),mission,maxMoveSteps:4}):null;
+      if(beaconAutomatedEndgame&&!beaconStrikeAssigned&&(!beaconPerimeterPlan||beaconPerimeterPlan.steps<=0)){
         human.aiTurnAction="beacon-perimeter";
         return;
       }
       const beaconStrikeTarget = beaconStrikeMove ? { ...activeBeacon, id: activeBeacon.id || "alien-field-beacon", team: "beacon", hp: Math.max(1, Number(activeBeacon.hp) || 1), alive: true } : null;
-      const formationTarget = beaconNeutralizePhase ? null : fireTeamLeader?.id !== human.id && (hybridCommandActive || !combatPriority) ? tacticalFireTeamFormationTargetForUnit(human, allUnits(), covers, mission) : null;
+      const formationTarget = beaconAutomatedEndgame ? null : fireTeamLeader?.id !== human.id && (hybridCommandActive || !combatPriority) ? tacticalFireTeamFormationTargetForUnit(human, allUnits(), covers, mission) : null;
       const hybridEscortSupportStays=Boolean(hybridCommandActive&&fireTeamLeader?.id!==human.id&&tacticalEscortFollowers(allUnits(),fireTeamLeader?.id).length&&tacticalEscortSupportModeForTeam(allUnits(),human.fireTeamId)!=="breakoff");
       const hybridCombatTarget=hybridCommandActive&&fireTeamLeader?.id!==human.id&&!hybridEscortSupportStays?tacticalHybridCombatTargetForFireTeam(playerOrder,fireTeamLeader,allUnits(),covers,mission):null;
       const hybridFlankMove=Boolean(hybridCombatTarget&&formationTarget);
@@ -1909,7 +1912,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
       const human=humans.find((unit)=>unit.id===unitId&&unit.alive);
       if(human)processHumanAiTurnSafely(human,false);
     });
-    if(beaconNeutralizePhase&&beaconEndgameProgressBefore?.active){
+    if(beaconAutomatedEndgame&&beaconEndgameProgressBefore?.active){
       let progressAfter=tacticalAiBeaconEndgameProgressState({units:allUnits(),covers,mission,knowledge:beaconKnowledgeForRound,assaulterId:beaconAssaulterId});
       if(!tacticalAiBeaconEndgameProgressed(beaconEndgameProgressBefore,progressAfter)){
         const liveBeacon=tacticalActiveAlienBeacon(covers);
@@ -5242,9 +5245,10 @@ function tacticalAiBeaconAssaulterId({ units = [], covers = [], mission = null, 
   const gridSize = beacon.gridSize || tacticalGridSizeFrom(beacon, mission, units, covers);
   const score = (unit) => {
     const inside = tacticalAlienBeaconShieldContainsCell(beacon, unit, gridSize) ? 0 : 1;
+    const actionable = Math.max(0, Number(unit.tu) || 0) >= 4 ? 0 : 1;
     const loaded = tacticalUnitHasLoadedRangedWeapon(unit) ? 0 : 1;
     const external = tacticalUnitHasLoadedRangedWeapon(unit) && tacticalWeaponCanBreachAlienBeaconShield(unit.weaponKind, beacon.alienBeaconShield) ? 0 : 1;
-    return [inside, loaded, external, tacticalDistance(unit, beacon), -tacticalAiCommanderScore(unit), String(unit.id)];
+    return [actionable, inside, loaded, external, tacticalDistance(unit, beacon), -tacticalAiCommanderScore(unit), String(unit.id)];
   };
   const compare = (left, right) => {
     const a = score(left), b = score(right);
@@ -5279,28 +5283,43 @@ function tacticalAlienBeaconCloseAssaultMovePlan({ unit = null, beacon = null, c
   const routeBlockers = tacticalPathBlockerIndex(covers, routeUnits, unit.id);
   const routes = targets.map((target) => ({ target, path: tacticalAiHazardAwarePath(unit, target, covers, routeUnits, TACTICAL_AI_MAX_CANDIDATES, routeBlockers, mission) })).filter((route) => route.path?.length > 1);
   const route = routes.sort((left, right) => left.path.length - right.path.length || tacticalKey(left.target.x, left.target.y).localeCompare(tacticalKey(right.target.x, right.target.y)))[0];
-  if (!route) return { cell: unit, path: [{ x: unit.x, y: unit.y }], steps: 0, reserveTu, closeAssault: true, target: targets[0] || null };
   const movementLimit = clamp(Math.floor(Number(maxMoveSteps) || 0), 0, TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS);
   const availableSteps = clamp(Math.floor((Math.max(0, Number(unit.tu) || 0) - Math.max(0, Number(reserveTu) || 0)) / 4), 0, movementLimit);
-  const path = route.path.slice(0, availableSteps + 1);
-  const cell = path[path.length - 1] || unit;
-  return { cell: { x: cell.x, y: cell.y }, path, steps: Math.max(0, path.length - 1), reserveTu, closeAssault: true, target: route.target };
+  if (!route) {
+    const startingDistance=tacticalDistance(unit,beacon);
+    const fallback=(tacticalAiReachablePlan(unit,covers,units,availableSteps,mission).cells||[]).filter(candidate=>candidate.steps>0&&tacticalDistance(candidate,beacon)<startingDistance).sort((left,right)=>tacticalDistance(left,beacon)-tacticalDistance(right,beacon)||left.fireSteps-right.fireSteps||left.hazardCost-right.hazardCost||left.steps-right.steps||tacticalKey(left.x,left.y).localeCompare(tacticalKey(right.x,right.y)))[0]||null;
+    if(!fallback)return { cell: unit, path: [{ x: unit.x, y: unit.y }], steps: 0, reserveTu, closeAssault: true, target: targets[0] || null, beaconDistanceBefore:startingDistance, beaconDistanceAfter:startingDistance };
+    const fallbackPath=fallback.path||[{x:unit.x,y:unit.y},{x:fallback.x,y:fallback.y}],fallbackCell=fallbackPath[fallbackPath.length-1]||fallback;
+    return{cell:{x:fallbackCell.x,y:fallbackCell.y},path:fallbackPath,steps:Math.max(0,fallbackPath.length-1),reserveTu,closeAssault:true,target:targets[0]||null,beaconLocalFallback:true,beaconDistanceBefore:startingDistance,beaconDistanceAfter:tacticalDistance(fallbackCell,beacon)};
+  }
+  let path = route.path.slice(0, availableSteps + 1);
+  let cell = path[path.length - 1] || unit;
+  const startingDistance=tacticalDistance(unit,beacon);
+  if(availableSteps>0&&!tacticalAlienBeaconShieldContainsCell(beacon,cell,gridSize)&&tacticalDistance(cell,beacon)>=startingDistance){
+    const reachable=tacticalAiReachablePlan(unit,covers,units,availableSteps,mission).cells||[];
+    const progressCell=reachable.filter(candidate=>candidate.steps>0&&tacticalDistance(candidate,beacon)<startingDistance).sort((left,right)=>{
+      const leftInside=tacticalAlienBeaconShieldContainsCell(beacon,left,gridSize)?0:1,rightInside=tacticalAlienBeaconShieldContainsCell(beacon,right,gridSize)?0:1;
+      return leftInside-rightInside||tacticalDistance(left,beacon)-tacticalDistance(right,beacon)||left.fireSteps-right.fireSteps||left.hazardCost-right.hazardCost||left.steps-right.steps||tacticalKey(left.x,left.y).localeCompare(tacticalKey(right.x,right.y));
+    })[0]||null;
+    if(progressCell){path=progressCell.path||[{x:unit.x,y:unit.y},{x:progressCell.x,y:progressCell.y}];cell=path[path.length-1]||progressCell;}
+  }
+  return { cell: { x: cell.x, y: cell.y }, path, steps: Math.max(0, path.length - 1), reserveTu, closeAssault: true, target: route.target, beaconDistanceBefore:startingDistance, beaconDistanceAfter:tacticalDistance(cell,beacon) };
 }
 function tacticalAiBeaconPerimeterClearPlan({ unit = null, beacon = null, covers = [], units = [], mission = null, maxMoveSteps = 4 } = {}) {
   if (!unit || !beacon) return { cell: unit, path: unit ? [{ x: unit.x, y: unit.y }] : [], steps: 0, beaconPerimeterClear: true, target: null };
   const gridSize = beacon.gridSize || tacticalGridSizeFrom(unit, beacon, units, covers, mission);
   const inside = tacticalAlienBeaconShieldContainsCell(beacon, unit, gridSize);
   const currentDistance = tacticalDistance(unit, beacon);
-  if (!inside && currentDistance >= 3) return { cell: { x: unit.x, y: unit.y }, path: [{ x: unit.x, y: unit.y }], steps: 0, beaconPerimeterClear: true, target: { x: unit.x, y: unit.y } };
+  if (!inside && currentDistance >= 3 && currentDistance <= 5) return { cell: { x: unit.x, y: unit.y }, path: [{ x: unit.x, y: unit.y }], steps: 0, beaconPerimeterClear: true, target: { x: unit.x, y: unit.y } };
   const maxSteps = clamp(Math.floor(Number(maxMoveSteps) || 0), 0, 6);
   const reachable = tacticalAiReachablePlan(unit, covers, units, maxSteps, mission).cells || [];
-  const candidates = reachable.filter((cell) => cell.steps > 0 && !tacticalAlienBeaconShieldContainsCell(beacon, cell, gridSize) && tacticalDistance(cell, beacon) >= 3);
+  const candidates = reachable.filter((cell) => cell.steps > 0 && !tacticalAlienBeaconShieldContainsCell(beacon, cell, gridSize) && tacticalDistance(cell, beacon) >= 3 && (currentDistance <= 5 || tacticalDistance(cell, beacon) < currentDistance));
   const chosen = candidates.sort((left, right) => {
     const leftBand = Math.abs(tacticalDistance(left, beacon) - 4), rightBand = Math.abs(tacticalDistance(right, beacon) - 4);
     return left.fireSteps - right.fireSteps || leftBand - rightBand || left.hazardCost - right.hazardCost || left.steps - right.steps || tacticalKey(left.x, left.y).localeCompare(tacticalKey(right.x, right.y));
   })[0] || null;
   if (!chosen) return { cell: { x: unit.x, y: unit.y }, path: [{ x: unit.x, y: unit.y }], steps: 0, beaconPerimeterClear: true, target: null };
-  return { cell: { x: chosen.x, y: chosen.y }, path: chosen.path || [{ x: unit.x, y: unit.y }, { x: chosen.x, y: chosen.y }], steps: Math.max(0, Number(chosen.steps) || 0), reserveTu: 0, beaconPerimeterClear: true, target: { x: chosen.x, y: chosen.y } };
+  return { cell: { x: chosen.x, y: chosen.y }, path: chosen.path || [{ x: unit.x, y: unit.y }, { x: chosen.x, y: chosen.y }], steps: Math.max(0, Number(chosen.steps) || 0), reserveTu: 0, beaconPerimeterClear: true, beaconPerimeterApproach: currentDistance > 5, target: { x: chosen.x, y: chosen.y } };
 }
 function tacticalAiBeaconEndgameProgressState({ units = [], covers = [], mission = null, knowledge = "unknown", assaulterId = null } = {}) {
   const beacon = tacticalActiveAlienBeacon(covers);
@@ -7155,6 +7174,7 @@ function tacticalApplyVipRescueAssignments(units=[],plan=null,round=1,secureResc
 }
 const TACTICAL_POST_EXTRACTION_RESCUE_DUTY_HANDOFF_PATCH=true;
 const TACTICAL_MULTI_FIRETEAM_VIP_RESCUE_TRAFFIC_PATCH=true;
+const TACTICAL_POST_RESCUE_BEACON_ASSAULT_HANDOFF_PATCH=true;
 function tacticalReleaseCompletedVipEscortState(units=[]){
   const safeUnits=Array.isArray(units)?units:[];
   const activeCivilians=new Map(safeUnits.filter(unit=>unit?.team==="civilian"&&Number(unit.hp)>0&&unit.alive!==false&&!unit.rescued).map(unit=>[unit.id,unit]));
@@ -10668,7 +10688,8 @@ const PATCH_NOTES_HISTORY=[{build:CURRENT_GAME_BUILD,date:"August 21, 2026",titl
   {build:"v0.26.08.07.1145_INTERCEPTOR_SWARM_TARGET_SNAPSHOT_NULL_FIX_INDEX_ONLY_PATCH",date:"August 7, 2026",title:"Interceptor Swarm Snapshot Fix",summary:"Prevented missing target snapshots from breaking interceptor swarm resolution."},
   {build:"v0.26.08.07.1015_GLOBAL_INTERCEPTOR_SWARM_AND_TACTICAL_COHESION_FIX_INDEX_ONLY_PATCH",date:"August 7, 2026",title:"Global Interceptor Swarm and Tactical Cohesion",summary:"Added global interceptor coordination and tightened tactical squad cohesion."}
 ];
-for(const entry of PATCH_NOTES_HISTORY){if(entry.title==="Build Health + Runtime Hotpath Hardening")entry.build="v0.26.08.20.1130_BUILD_HEALTH_AND_RUNTIME_HOTPATH_HARDENING_PATCH";else if(entry.title==="Compositor Terminator Scope Startup Hotfix")entry.build="v0.26.08.18.2345_COMPOSITOR_TERMINATOR_SCOPE_STARTUP_HOTFIX_PATCH";else if(entry.title==="Compositor Solar Decouple and Fixed-Step Globe")entry.build="v0.26.08.18.2315_COMPOSITOR_SOLAR_DECOUPLE_AND_FIXED_STEP_GLOBE_PATCH";}
+const PATCH_NOTE_BUILD_BY_TITLE=Object.freeze({"Player-Adjustable 3D Iso Night Brightness":"v0.26.08.21.1730_THREE_ISO_NIGHT_BRIGHTNESS_CONTROL_PATCH","Build Health + Runtime Hotpath Hardening":"v0.26.08.20.1130_BUILD_HEALTH_AND_RUNTIME_HOTPATH_HARDENING_PATCH","Compositor Terminator Scope Startup Hotfix":"v0.26.08.18.2345_COMPOSITOR_TERMINATOR_SCOPE_STARTUP_HOTFIX_PATCH","Compositor Solar Decouple and Fixed-Step Globe":"v0.26.08.18.2315_COMPOSITOR_SOLAR_DECOUPLE_AND_FIXED_STEP_GLOBE_PATCH","Hover Help + Persistent Renderer Refinement":"v0.26.08.20.1310_HOVER_HELP_AND_PERSISTENT_RENDERER_REFINEMENT_PATCH","Precompiled Tailwind + Style Integrity":"v0.26.08.20.1705_PRECOMPILED_TAILWIND_AND_STYLE_INTEGRITY_PATCH","Stable Settings Component Boundaries":"v0.26.08.20.1745_STABLE_SETTINGS_COMPONENT_BOUNDARIES_PATCH","Stable Campaign List Boundaries":"v0.26.08.20.2110_STABLE_CAMPAIGN_LIST_BOUNDARIES_PATCH","Stable Transient Overlay Boundaries":"v0.26.08.20.2230_STABLE_TRANSIENT_OVERLAY_BOUNDARIES_PATCH","Stable Campaign Confirmation Boundaries":"v0.26.08.20.2300_STABLE_CAMPAIGN_CONFIRMATION_BOUNDARIES_PATCH","Stable Operational Approval Boundaries":"v0.26.08.21.0845_STABLE_OPERATIONAL_APPROVAL_BOUNDARIES_PATCH","Command Map Search Resume Hotfix":"v0.26.08.21.1000_COMMAND_MAP_SEARCH_RESUME_HOTFIX","Beacon-Linked Procedural Multilevel Alien Base Assaults":"v0.26.08.22.0017_BEACON_LINKED_PROCEDURAL_MULTILEVEL_ALIEN_BASE_ASSAULT_PATCH","Multi-Fire-Team VIP Rescue Traffic":"v0.26.08.23.1200_MULTI_FIRETEAM_VIP_RESCUE_TRAFFIC_PATCH"});
+for(const entry of PATCH_NOTES_HISTORY){const historicalBuild=PATCH_NOTE_BUILD_BY_TITLE[entry.title];if(historicalBuild)entry.build=historicalBuild;}
 PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 20, 2026",title:"Hover Help + Persistent Renderer Refinement",summary:"Makes hover explanations deliberate, optional, and genuinely informative while reducing repeated tactical Three.js work and correcting alien-craft interior occlusion.",items:["Pointer hover help now waits three seconds; keyboard focus retains a short accessibility-oriented delay.","Generic Activates X / Click to activate fallbacks are removed. Recognized controls receive purpose, consequence, and state guidance; unknown controls display no tooltip until a useful description exists.","Hover Help: On / Off buttons are available from the start screen, Command Settings, and Save / Load. The preference persists locally and immediately dismisses an open tooltip when disabled.","The persistent tactical renderer memoizes unit, cover, reachable-cell, movement, camera-focus, and Skyranger invalidation keys across unrelated React renders.","Iso/perspective unit-material traversal now runs only when units or the lighting-presentation mode actually change.","Alien reinforcement craft now use a bounded rear hull aperture, normal depth-tested interior materials, and an opaque roof shroud so the troop bay is visible through its ramp opening but not through the saucer hull. Tactical rules and save format 4 are unchanged."]});
 PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 20, 2026",title:"Precompiled Tailwind + Style Integrity",summary:"Removes the embedded runtime Tailwind compiler from the startup path, retains a complete precompiled utility stylesheet, and repairs malformed opacity utilities that previously produced no CSS.",items:["The standalone browser build now carries a retained Tailwind 3.4.17 stylesheet instead of executing the browser compiler and its mutation observer at runtime.","The precompiled inventory covers static, responsive, state, arbitrary-value, and conditional utility tokens used throughout strategic, tactical, menu, report, and Memorial screens.","Invalid /350, /300, /800, and doubled /45/90 utility suffixes are normalized to valid opacity values, restoring intended incident-marker, backup, AI-control, modal, and soldier-status presentation.","The runtime compiler signature and Tailwind development warning are removed from normal play, reducing the standalone index by roughly 330 KB while retaining offline single-file styling.","Gameplay rules and save format 4 are unchanged."]});
 PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 20, 2026",title:"Stable Settings Component Boundaries",summary:"Begins architectural consolidation by moving reusable settings UI out of the monolithic campaign component and preserving its identity across unrelated campaign renders.",items:["RangeSliderStyles, ReinforcementDifficultyPanel, and IncidentMapLimitPanel now live at stable module scope instead of being redeclared inside AlienResponseCommand.","All three boundaries use React.memo; stable primitive values and React state setters can now bypass unrelated parent renders, while changed settings still update normally.","Range and select DOM nodes retain their identity and focus during parent updates instead of remounting because their component function identity changed.","The same controls remain available on the title/setup, Command Settings, and Save / Load paths with unchanged labels, persistence, defaults, and gameplay ownership.","The new boundary is intentionally limited to presentation structure. Reinforcement cadence, incident generation, audio, campaign state, and save format 4 are unchanged."]});
@@ -10685,6 +10706,8 @@ PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.23.0125_SINGLE_OWNER_MISSION_VICTOR
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.23.0138_PATCH_NOTES_HISTORY_SCOPE_STARTUP_HOTFIX",date:"August 23, 2026",title:"Patch Notes History Scope Startup Hotfix",summary:"Restores startup after Browser 0125 placed its in-game history entry outside the campaign component that owns the patch-note library.",items:["The Browser 0125 victory-dialogue guard remains active and unchanged.","Its in-game history entry now mutates PATCH_NOTES_HISTORY inside the same lexical scope as the library declaration.","The current hotfix entry is also created inside that valid scope, preventing the pre-mount ReferenceError.","Campaign data, tactical rules, audio assets, and save format 4 are unchanged."]});
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.23.1009_PER_SHOOTER_VISIBILITY_AND_VIP_EXTRACTION_HANDOFF_PATCH",date:"August 23, 2026",title:"Per-Shooter Visibility + VIP Extraction Handoff",summary:"Makes every AEGIS shot require the firing soldier's current authoritative sightline and prevents a completed VIP extraction detail from leaving support soldiers permanently frozen at the Skyranger.",items:["Manual fire, Simulation AI fire, emergency recovery fire, and reaction fire now share one final per-shooter range, line-of-sight, and tactical-level commit check before TU, ammunition, damage, or a shot animation can be committed.","The old synthetic long-range-contact playback shot has been removed; AI presentation can no longer invent a tracer between arbitrary units when no real shot occurred.","Every verified AEGIS shot marks its exact alien target as required for that shot frame, keeping the target glyph/model rendered for the attack without revealing unrelated aliens or changing fog knowledge.","When the last escorted VIP enters extraction, stale VIP targets and extraction-guard orders are cleared. The escort leader retains the egress action already spent, while stationary support soldiers with TU remaining are released to normal AI duties in the same round.","Stream continuation and every later AI round also normalize orphaned extraction guards, so Hybrid-to-Simulation handoffs and active saves self-heal rather than moving only the former escort leader round after round.","Living units whose legacy or handoff snapshot omitted an explicit alive:true flag now still refresh TU correctly; confirmed dead units do not. Fire-team formation, escort priority, fog, LOS, and save format 4 remain intact."]});
 PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 23, 2026",title:"Multi-Fire-Team VIP Rescue Traffic",summary:"Keeps every active rescue fire team moving after the first VIP handoff by reserving a clear Skyranger traffic lane and assigning rescue authority to the soldier who actually owns each escort.",items:["Skyranger ramp, egress, and approach-lane cells are now reserved for evacuation traffic. Completed escorts and perimeter guards choose side positions outside that lane instead of blocking later VIP columns.","Extraction routes treat members of the escort's own fire team as mobile formation participants rather than permanent path blockers.","If a support soldier rather than the formal fire-team leader owns the VIP escort, that soldier becomes the team's rescue actor and the rest of the fire team forms around the actual escort owner.","Active rescue assignment metadata is preserved across the whole assigned fire team when another team completes its VIP handoff; only the completed detail is released.","The existing Manual, Hybrid, streamed Simulation, save/load, formation, active-escort, fog, LOS, and mission-resolution rules remain authoritative. Save format stays at 4."]});
+PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 23, 2026",title:"Post-Rescue Beacon Assault Handoff",summary:"Prevents a completed VIP operation from burning empty rounds at the Skyranger by giving full Simulation a goal-directed beacon assault and restoring Hybrid support formation authority.",items:["Once all VIP work and known alien combat are resolved, full Simulation selects a breach-capable soldier who still has TU instead of choosing a zero-TU Hybrid-held leader as the beacon assaulter.","The close-assault route now prefers a reachable step that reduces beacon distance when the hazard-aware route initially points away, and uses a bounded local approach when a complete shield-entry route cannot be built in one planning pass.","Non-assaulting soldiers advance toward legal three-to-five-hex beacon perimeter positions instead of holding indefinitely whenever they are already more than three hexes away.","Hybrid AI no longer applies the full-Simulation solo-assault/perimeter override. Supporting soldiers retain leader-relative formation movement and can attack the beacon after following a player-directed leader into a legal firing position.","Completed escort and extraction-guard normalization, TU, occupancy, vehicles, hazards, shield rules, fog, LOS, AI knowledge, and save format 4 remain authoritative."]});
+for(const entry of PATCH_NOTES_HISTORY){const historicalBuild=PATCH_NOTE_BUILD_BY_TITLE[entry.title];if(historicalBuild)entry.build=historicalBuild;}
 function PatchNotesLibraryScreen(){
   const selected=PATCH_NOTES_HISTORY.find(entry=>entry.build===selectedPatchBuild)||PATCH_NOTES_HISTORY[0];
   const items=selected.items||[selected.summary];
@@ -11360,6 +11383,21 @@ function tacticalMultiFireTeamVipRescueTrafficContractTest(){
 }
 const AEGIS_RUN_SELF_TESTS_BEFORE_1200_MULTI_FIRETEAM_VIP_RESCUE_TRAFFIC=runSelfTests;
 runSelfTests=function runSelfTestsWith1200MultiFireTeamVipRescueTraffic(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_1200_MULTI_FIRETEAM_VIP_RESCUE_TRAFFIC(),{name:"Every active VIP fire team keeps moving after an earlier team clears the Skyranger",pass:tacticalMultiFireTeamVipRescueTrafficContractTest()}];};
+function tacticalPostRescueBeaconAssaultHandoffContractTest(){
+  const mission={id:"qa-post-rescue-beacon",kind:"Alien Terror Raid",primaryObjective:"alien hunt",region:"Europe",gridSize:64,requiresAlienDefeat:true};
+  const beacon={id:"qa-post-rescue-beacon-source",alienBeacon:true,alienBeaconState:"active",alienBeaconShield:ALIEN_FIELD_BEACON_SHIELDS.combined,revealed:true,x:12,y:30,hp:72,maxHp:72,kind:"hard",block:1,gridSize:64};
+  const zeroTuLead={id:"qa-zero-tu-lead",name:"Player Lead",team:"human",hp:40,alive:true,tu:0,maxTu:60,x:13,y:30,weaponKind:"plasma",ammo:999,fireTeamId:"qa-alpha",fireTeamLeaderId:"qa-zero-tu-lead",fireTeamRole:"leader",gridSize:64};
+  const actionableSupport={id:"qa-actionable-support",name:"Support",team:"human",hp:40,alive:true,tu:60,maxTu:60,x:48,y:10,weaponKind:"plasma",ammo:999,fireTeamId:"qa-alpha",fireTeamLeaderId:"qa-zero-tu-lead",fireTeamRole:"left",gridSize:64};
+  const farGuard={id:"qa-far-guard",name:"Guard",team:"human",hp:40,alive:true,tu:60,maxTu:60,x:50,y:50,weaponKind:"ballistic",ammo:12,fireTeamId:"qa-bravo",fireTeamLeaderId:"qa-far-guard",fireTeamRole:"leader",gridSize:64};
+  const units=[zeroTuLead,actionableSupport,farGuard];
+  const assaulter=tacticalAiBeaconAssaulterId({units,covers:[beacon],mission,knowledge:ALIEN_FIELD_BEACON_KNOWLEDGE.confirmed});
+  const approach=tacticalAlienBeaconCloseAssaultMovePlan({unit:actionableSupport,beacon,covers:[beacon],units,mission,reserveTu:0,maxMoveSteps:TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS});
+  const perimeter=tacticalAiBeaconPerimeterClearPlan({unit:farGuard,beacon,covers:[beacon],units,mission,maxMoveSteps:4});
+  const resolverSource=String(resolveMission);
+  return Boolean(TACTICAL_POST_RESCUE_BEACON_ASSAULT_HANDOFF_PATCH&&assaulter===actionableSupport.id&&approach.steps>0&&tacticalDistance(approach.cell,beacon)<tacticalDistance(actionableSupport,beacon)&&perimeter.steps>0&&perimeter.beaconPerimeterApproach&&tacticalDistance(perimeter.cell,beacon)<tacticalDistance(farGuard,beacon)&&resolverSource.includes("beaconAutomatedEndgame")&&resolverSource.includes("hybridBeaconSupport")&&resolverSource.includes("formationTarget = beaconAutomatedEndgame")&&resolverSource.includes("if(beaconAutomatedEndgame&&beaconEndgameProgressBefore?.active)"));
+}
+const AEGIS_RUN_SELF_TESTS_BEFORE_1750_POST_RESCUE_BEACON_ASSAULT_HANDOFF=runSelfTests;
+runSelfTests=function runSelfTestsWith1750PostRescueBeaconAssaultHandoff(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_1750_POST_RESCUE_BEACON_ASSAULT_HANDOFF(),{name:"Completed VIP rescue hands full AI to a progressing beacon assault while Hybrid supports retain formation",pass:tacticalPostRescueBeaconAssaultHandoffContractTest()}];};
 AEGIS_POST_DEFERRED_BUILD_HEALTH_RUNNER=runSelfTests;
 runSelfTests=runDeferredSelfTests;
 ReactDOM.createRoot(document.getElementById("root")).render(/*#__PURE__*/React.createElement(AlienResponseCommand,null));

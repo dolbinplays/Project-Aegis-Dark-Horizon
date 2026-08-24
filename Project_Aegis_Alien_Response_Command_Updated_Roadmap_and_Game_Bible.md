@@ -2,9 +2,31 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-23
-Current handoff build: `v0.26.08.23.1200_MULTI_FIRETEAM_VIP_RESCUE_TRAFFIC_PATCH`
+Current handoff build: `v0.26.08.23.1750_POST_RESCUE_BEACON_ASSAULT_HANDOFF_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1200 keeps every active rescue fire team moving after the first VIP handoff. Skyranger ramp/egress/approach cells are reserved for evacuation traffic, completed teams defend from side positions, own-team members are mobile formation participants rather than extraction blockers, and the soldier who actually owns an escort coordinates that fire team even when they are not its formal leader. Browser 1009's visibility and completed-duty cleanup remain active and save format stays at 4.**
+Current patch status: **Browser 1750 hands a completed VIP operation cleanly to its remaining confirmed beacon objective. Full Simulation selects an actionable assaulter, forces goal-directed shield approach, and advances the rest of the squad to a legal outer perimeter. Hybrid retains player-led formation movement and lets supports attack from legal positions instead of inheriting the Simulation-only solo-assault hold. Browser 1200's multi-team rescue traffic and Browser 1009's completed-duty cleanup remain active; save format stays at 4.**
+
+
+## Browser 1750 - Post-Rescue Beacon Assault Handoff
+
+**Status:** Implemented from live testing of a 64 x 64 VIP operation that had extracted all 3/3 VIPs and eliminated all alien units, but continued through roughly 149 rounds with the confirmed field beacon undamaged at 72/72 HP.
+
+### Confirmed authority split
+- Full Simulation owns the autonomous beacon endgame. It clears obsolete completed-escort state, ignores lower-priority completed waypoints, and chooses a breach-capable soldier who has enough current TU to move rather than preferring a zero-TU lead held for Hybrid player control.
+- Hybrid remains a player-led mode. Its fire-team leads stay at the positions selected by the player, while supporting soldiers retain normal leader-relative formation targets instead of being suppressed by the full-Simulation solo-assault/perimeter override.
+- Once a Hybrid-led team reaches a legal beacon firing position, capable supports may attack the beacon under the same shield, LOS, range, TU, ammunition, and grenade rules as Simulation. The handoff cannot silently switch Hybrid into full Simulation.
+
+### Goal-directed assault and perimeter movement
+- A close-assault route normally uses the existing hazard-aware path to one of the six shield cells surrounding the beacon. If the bounded first movement would point away from the objective despite a legal closer cell, the assaulter instead chooses the reachable cell that most directly reduces beacon distance while respecting fire, smoke, hard cover, vehicles, and living occupancy.
+- If the full shield-entry route exceeds the bounded planning pass, a legal local progress step keeps the assaulter advancing rather than converting route-search exhaustion into an empty round.
+- Non-assaulting soldiers now approach legal positions three to five hexes from the beacon. The earlier perimeter helper correctly moved soldiers out of the shield, but incorrectly treated every soldier already at least three hexes away—even one across the map—as finished; distant soldiers therefore held indefinitely.
+- Once staged in the outer band, non-assaulting soldiers hold clear of the seven-hex shield and its immediate approach while the selected assaulter enters and fires.
+- The existing must-progress watchdog remains authoritative: beacon HP reduction, first shield entry, or reduced assaulter distance is required before the endgame round counts as progress.
+
+### Validation boundary
+- Build Health covers actionable assaulter selection over a zero-TU lead, decreasing-distance close assault, distant perimeter approach, and the explicit Simulation-versus-Hybrid formation split.
+- Manual validation should resume the reported battle, hand it to full AI, and confirm the assaulter closes on the beacon every round while other teams advance to its outer perimeter. Then take control, move multiple leads in Hybrid, and confirm all available supports follow before attacking from legal positions.
+- Completed escort cleanup, rescue outcomes, ordinary combat priority, TU, fire-team membership, hard cover, vehicle footprints, hazards, beacon shield rules, fog, LOS, illumination, AI knowledge, damage, mission resolution, and save format **4** remain authoritative.
 
 
 ## Browser 1200 - Multi-Fire-Team VIP Rescue Traffic

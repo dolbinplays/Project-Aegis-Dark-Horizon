@@ -1,6 +1,49 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.23.1750_POST_RESCUE_BEACON_ASSAULT_HANDOFF_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Stops the post-rescue beacon phase from burning empty rounds at the Skyranger or sending one soldier along an unproductive edge route, while restoring normal supporting-soldier following during Hybrid turns.
+
+CONFIRMED LIVE CAUSE
+--------------------
+- The live operation had completed all three VIP extractions, had no remaining alien units, and retained a confirmed 72/72 HP field beacon.
+- Full Simulation's beacon endgame assigned one soldier while every non-assaulting soldier more than three hexes away was incorrectly treated as already clear of the beacon perimeter and ordered to hold.
+- The assaulter selector could prefer a zero-TU fire-team lead held by Hybrid authority over an available support soldier.
+- Hybrid inherited the full-Simulation solo-assault override, which suppressed leader-relative formation targets and made supporting soldiers stand still even after the player moved their leads.
+
+BEACON ASSAULT HANDOFF
+----------------------
+- Full Simulation now favors a breach-capable soldier with usable TU as the endgame assaulter.
+- Close-assault pathing prefers a reachable bounded move that reduces beacon distance when a hazard-aware route initially heads away. If a complete shield-entry route cannot be built in one planning pass, a legal local approach step keeps the assault advancing.
+- Other soldiers advance toward legal positions three to five hexes from the beacon instead of holding at any distance. Once staged, they leave the shield and its immediate approach clear for the assaulter.
+- The normal watchdog still requires beacon HP reduction, shield entry, or reduced assaulter distance before a round counts as objective progress.
+
+HYBRID FORMATION AUTHORITY
+--------------------------
+- Hybrid no longer applies the full-Simulation solo-assault and distant-perimeter hold override.
+- Player-directed fire-team leads remain under player control, and supporting soldiers again calculate and move toward their established leader-relative formation cells.
+- Capable supports can attack the beacon after following their leader into a legal firing position, including entering the seven-hex shield when required.
+
+VALIDATION
+----------
+- Build Health covers zero-TU leader selection, goal-directed shield approach, distant perimeter advance, and the Simulation-versus-Hybrid authority split.
+- Existing completed-escort cleanup, TU spending, occupancy, vehicle footprints, hazards, shield compatibility, fog, LOS, AI knowledge, and mission resolution remain authoritative.
+
+MANUAL TEST GATES
+-----------------
+1. Continue the affected operation from a live tactical save or hand control back to Simulation. Confirm at least one capable assaulter reduces beacon distance every round and the rest of the squad advances to the outer perimeter.
+2. Take control, enable Hybrid, move each fire-team lead, and run the Hybrid support turn. Confirm supports follow their own lead rather than remaining at the Skyranger.
+3. Move a Hybrid-led team into the beacon shield and confirm a support with legal LOS/TU can attack the beacon without switching control modes.
+4. Repeat around walls, vehicles, fire/smoke, and occupied approach cells; no unit may teleport, cross hard cover, or gain a duplicate action.
+
+PREVIOUS PATCH NOTES
+====================
+
 Build: v0.26.08.23.1200_MULTI_FIRETEAM_VIP_RESCUE_TRAFFIC_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
