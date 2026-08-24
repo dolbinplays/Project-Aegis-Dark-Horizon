@@ -1022,6 +1022,19 @@ Roadmap-only presentation update (2026-08-23): **When a VIP receives fatal damag
 
 **Planned validation gate:** kill a VIP with ballistic, laser/plasma, grenade, reaction fire, environmental fire, and alien melee/ranged attacks in 2D, 3D Iso, FPV, TPV, Hybrid, and Simulation. Confirm one cinematic per fatality, the correct attacker/source and VIP remain visible, simultaneous deaths queue once each, reduced-motion is respected, the prior camera is restored, and every tactical result matches a run with presentation disabled.
 
+Roadmap-only presentation update (2026-08-23): **When an observable wall or destructible scenery object is destroyed, briefly use the existing soldier-hit cinematic camera language to frame the real impact and destruction in slow motion. The destruction is resolved first by authoritative battle logic; the cinematic only presents that committed result and must not change damage, cover, LOS, hazards, visibility, AI knowledge, or mission state.**
+
+### Future tactical presentation - Structural and scenery destruction cinematics
+- Trigger from an authoritative intact/damaged-to-destroyed, breached, collapsed, or exploded transition for walls, windows, doors, vehicles, large trees, machinery, fuel or power equipment, alien structures, and other meaningful destructible scenery.
+- Frame the actual attacker, projectile/explosion or environmental source, and destroyed object where applicable. Never invent a shooter for fire, secondary explosions, collapse, or other environmental destruction.
+- Use a short bounded slow-motion impact, debris, smoke, sparks, and collapse presentation based on the object's material and destruction result, then restore the exact prior tactical view, zoom, camera anchor, playback speed, and control mode.
+- Only play a cinematic when the destruction is currently observable under authoritative player visibility. Hidden enemy actions may still alter the battlefield normally but cannot reveal themselves, their source, or unexplored terrain through the camera.
+- Group simultaneous fragments and linked chain reactions into one deterministic destruction sequence rather than interrupting repeatedly for every wall segment or prop. Major wall breaches, vehicle explosions, and large structural collapses take priority over minor scenery.
+- Keep the destroyed object and its replacement state synchronized through the cinematic: breached walls must finish as legal openings, shattered windows must retain their firing/LOS consequences, destroyed vehicles must retain their footprint and hazards, and fires/smoke must begin only when battle logic created them.
+- Honor the existing shot-motion/cinematic-motion preference. Reduced-motion mode should use a short stable focus without slow motion, camera whip, or excessive screen shake.
+
+**Planned validation gate:** destroy walls, windows, doors, civilian and alien vehicles, trees, machinery, explosive scenery, and alien structures with ballistic, laser/plasma, grenade, fire, and secondary explosions in 2D, 3D Iso, FPV, TPV, Hybrid, and Simulation. Confirm the correct source and object are framed once, linked destruction is grouped, hidden destruction reveals nothing, reduced-motion is respected, the prior camera is restored, and the resulting cover, pathing, LOS, fire/smoke, damage, and AI decisions exactly match a run with cinematics disabled.
+
 
 ## Browser 0845 — Tutorial Spoiler-Free Onboarding Hotfix
 
