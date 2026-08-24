@@ -2,9 +2,34 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-24
-Current handoff build: `v0.26.08.24.0955_VIP_ESCORT_INGRESS_AND_COVERED_REPEAT_FIRE_PATCH`
+Current handoff build: `v0.26.08.24.1115_BRAVERY_FEAR_AND_TACTICAL_CINEMATIC_FRAMEWORK_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0955 releases VIPs from dead or missing escorts at every tactical handoff and loaded-state repair boundary, clears stale wiped-team duty state, and lets another living fire team claim the VIP in the same AI planning round. Crowded Skyranger ramp mouths make eligible friendly blockers yield through legal TU-spending movement before VIP ingress. AEGIS combat AI now recognizes useful current cover as a complete movement solution and may spend remaining TU on bounded, repeatedly revalidated shots. Save format remains 4.**
+Current patch status: **Browser 1115 gives Bravery a live tactical purpose through deterministic, knowledge-limited morale pressure, one recovery check per eligible unit-turn, graduated fear states, and legal fear overrides shared by Manual, Hybrid, and Simulation authority. A shared cinematic presentation owner now queues ordinary human/alien fatality beats, observable structural destruction, and knowledge-limited reinforcement-craft arrivals; the persistent 3D renderer animates unit collapse and bounded cover debris/smoke without rebuilding the battlefield. Fresh browser sessions begin with the command header minimized. Save format remains 4.**
+
+
+## Browser 1115 - Bravery / Fear + Shared Tactical Cinematic Framework
+
+**Status:** Implemented by rolling the next two roadmap patches together and including the approved minimized-header default.
+
+### Bravery, morale pressure, and fear authority
+- Every living combatant resolves a normalized Bravery value: AEGIS uses its existing soldier statistic, while aliens use bounded species/rank profiles. Exact hidden alien values remain concealed from player-facing tactical readouts.
+- Morale pressure uses only events and battlefield conditions the unit can legitimately perceive, including injury, observable nearby losses, incoming fire, visible enemies, isolation, hazards, nearby allies, leadership, and useful cover.
+- **Steady**, **Shaken**, **Pinned**, and **Fear Override** states apply bounded combat consequences. A unit already under acute fear receives exactly one deterministic recovery check at the start of its eligible unit-turn; view changes, control handoffs, playback, and save/load cannot create another roll for that unit-turn.
+- Failed acute recovery may freeze the unit, move it toward legal safer cover, or fall back from a perceived threat. Forced movement spends real TU and reuses authoritative occupancy, hard-cover/vehicle footprints, hazards, walls, map bounds, and movement commit validation.
+- Fear is integrated into Manual alien turns, full Simulation turns, Hybrid/Manual AEGIS turn entry, firing accuracy, snapshots, streamed playback, the tactical log, and Tactical Readability. It cannot act a dead unit, manufacture TU, reveal an unseen threat, or replace higher terminal/casualty authority.
+
+### Shared cinematic presentation owner
+- One deduplicated tactical owner queues cinematic events so simultaneous eligible beats play in order instead of overlapping or replacing one another. Timers and pending presentation work are cleared safely when the tactical screen closes.
+- Ordinary AEGIS, civilian/VIP, and alien deaths receive a short readable fatality card; rare Critical Kill presentation keeps its existing specialized path. The persistent Three.js unit node now survives the living-to-dead state change and eases through impact/collapse into a stable corpse pose rather than being destroyed and recreated prone.
+- Observable wall/cover destruction creates a bounded debris-and-smoke transition from the already-committed cover result. Hidden destruction remains hidden and cannot move the camera or disclose unexplored terrain.
+- Reinforcement craft use the same queue. An arrival observed through authoritative AEGIS LOS may identify the landing and focus its legal position; an unobserved arrival shows only a non-positional overhead/descent cutaway and deliberately omits landing coordinates and camera focus. Beacon-only materialization remains a separate reinforcement type.
+- Cinematics are presentation-only: HP, damage, RNG, cover destruction, LOS, fog, reinforcement placement/count, AI knowledge, TU, objective state, and mission resolution commit through their existing authority before the visual beat.
+
+### Session presentation and validation boundary
+- A fresh browser session initializes the command header in its compact state before the first campaign render. Expanding or minimizing it remains a current-session UI choice and does not alter campaign/save state.
+- Build Health covers Bravery ordering, deterministic once-per-turn recovery ownership, legal forced-turn consumption, persistent node identity across death, hidden-versus-observed arrival metadata, shared cinematic integration seams, and the minimized-header default.
+- Manual validation should compare low- and high-Bravery units under the same visible pressure in Manual, Hybrid, and Simulation; kill ordinary humans/aliens and destroy visible/hidden cover in 2D and 3D Iso; then trigger observed and unobserved reinforcement-craft waves while verifying camera restoration, ordered non-overlapping presentation, unchanged fog, and no landing-location leak.
+- Save format remains **4**. Native parity remains queued.
 
 
 ## Browser 0955 - VIP Escort / Skyranger Ingress Recovery + Covered Repeat Fire
@@ -782,6 +807,49 @@ Implemented alien-pathing regression follow-up (Browser 0845, 2026-08-24): **Ali
 5. Build Health covers each new success, failure, partial-credit, impossible-objective, save/load, and AI-termination branch before the objective family ships broadly.
 
 
+## Roadmap Addition - Terrain-Dependent Tactical Movement Costs
+
+**Status:** Approved tactical-depth and pathfinding item. Exact TU values remain a balance decision, but the relative terrain hierarchy and shared movement authority are required.
+
+### Terrain movement hierarchy
+- Give each traversable tactical hex an authoritative base movement cost derived from its actual terrain type rather than charging one universal cost for every step.
+- Smooth, firm surfaces such as pavement, roads, concrete floors, maintained walkways, and landing pads should generally be the fastest terrain to cross.
+- Compacted dirt roads, trails, short grass, maintained lawns, and ordinary interior floors should be slightly slower than pavement but remain efficient routes.
+- Loose soil, mud, sand, tilled fields, dense brush, rubble, cluttered forest floor, snow, steep slopes, and similar difficult ground should require progressively more TU.
+- Shallow streams, riverbeds, irrigation channels, marshy ground, and other wading terrain should normally cost more TU than a nearby dirt path. Deep water, dangerous currents, sheer elevation changes, or unsupported drops may remain impassable until appropriate movement equipment or rules exist.
+- Exact costs should be tuned in whole-TU values after representative maps are profiled. Preserve a clear advantage for roads and paths without making soldiers take implausibly long detours merely to avoid one rough cell.
+
+### Shared movement and pathfinding authority
+- Manual movement previews, click-to-move execution, full Simulation AI, Hybrid supports, fire-team formation following, civilian/VIP escorts, alien movement, fear movement, reinforcement deployment, Command Map routes, and streamed playback must consume the same per-cell cost function.
+- Replace any remaining shortest-by-hex-count assumption with a weighted route calculation that minimizes legal TU cost while still respecting objectives, danger, cover, visibility, formation, congestion, vehicle footprints, walls, doors, windows, elevation links, hazards, and map bounds.
+- Charge the cost of the terrain cell being entered exactly once. A route cannot preview a cheap total and then charge a different amount when committed, and playback cannot show steps that the authoritative unit lacked TU to take.
+- Retain distinct movement modifiers where they already belong: kneeling/standing, future prone movement, wounds or body-part damage, armor/encumbrance, dragging casualties, fire/smoke danger, stairs/elevators, and species traits should modify or layer over the terrain base through one documented calculation rather than duplicating hidden penalties.
+- Fire-team followers should spend their own TU against the same weighted route. Formation pacing may choose a road, doorway, or trail that helps the team stay together, but it cannot grant support soldiers free movement or strand the leader because the planner estimated distance only in hexes.
+- Civilians and VIPs must use terrain-aware extraction paths and stall recovery. Aliens may eventually receive species-specific mobility profiles, but hidden alien bonuses must remain bounded and cannot allow them to cross terrain marked physically impassable for their movement type.
+
+### Player readability and presentation
+- A selected unit's reachable-area overlay must reflect the real remaining TU across mixed terrain. Path previews should show total TU and, when useful, the cost of each step or identify the expensive terrain responsible for shortening the route.
+- Terrain tooltips/readability panels should use clear labels such as **Pavement**, **Dirt Path**, **Forest Floor**, **Rubble**, **Shallow Water**, or **Deep Water - Impassable**, with the selected unit's current entry cost where that information is known.
+- Keep 2D Hex and persistent 3D Iso synchronized to the same terrain identity. Visual color, mesh height, foliage, water, and clutter are presentation; they cannot silently alter cost unless the underlying authoritative terrain record changes.
+- Movement animation may visually slow on mud, water, rubble, or dense vegetation, but Battle Speed and animation timing remain presentation-only and cannot change TU consumption, reaction-fire opportunities, AI knowledge, or action order.
+- Destruction and environmental change may replace a surface—for example, an intact floor becoming rubble or a dry cell becoming flooded—but that replacement must update route caches, reachable previews, AI planning, playback metadata, and save state through one explicit terrain mutation.
+
+### Performance and compatibility
+- Store terrain cost/category in the existing deterministic battlefield terrain data and pre-index it alongside occupancy, cover, hazards, and visibility context. Weighted pathfinding should read O(1) cell costs and must not scan scenery or rendered Three.js objects during every candidate expansion.
+- Invalidate weighted route/reachable caches only when relevant terrain, occupancy, cover, stance, equipment, TU, or objective authority changes. Ordinary camera movement, selection highlighting, audio, cinematic playback, and unrelated combat state must not rebuild the terrain-cost map.
+- Existing missions and older saves must normalize every traversable cell to a valid terrain category and safe default cost. This feature must not turn a previously legal loaded position into an invalid cell or require a save-format increase unless mutable terrain state cannot otherwise be represented safely.
+- The rule changes movement economy only. Terrain movement cost does not independently change LOS, fog, accuracy, cover, lighting, AI knowledge, weapon range, damage, or mission objectives unless another explicitly documented terrain rule applies.
+
+### Acceptance gates
+1. Build a mixed route containing pavement, dirt path, grass, cluttered forest, rubble, mud, and shallow water; confirm the reachable overlay, preview total, committed TU, and playback total all match the same per-cell calculation.
+2. Give a unit a choice between a short rough route and a slightly longer road/path route; confirm Manual preview and AI choose the lower-cost route when appropriate without producing unreasonable road-seeking detours.
+3. Repeat with AEGIS soldiers, fire-team supports, aliens, civilians/VIPs, a fear override, Hybrid execution, and full Simulation streaming; confirm each uses legal weighted paths and never spends more TU than available.
+4. Route an escorted VIP and its fire team through a building exit, road, forest edge, stream crossing, and Skyranger ramp; confirm terrain costs do not break single-file escort traffic, formation following, ramp ingress, or extraction completion.
+5. Destroy a wall/floor or vehicle so rubble replaces ordinary ground, then create or remove a water/mud surface; confirm affected route caches invalidate once and every later preview/AI plan uses the new cost.
+6. Save and reload units standing on each supported terrain type and during a streamed mixed-terrain route; confirm positions, remaining TU, terrain identity, route ownership, and next legal action do not change or reroll.
+7. Profile large maps and Major Operations with several fire teams and civilians; enforce bounded planning time and confirm weighted terrain costs do not restore per-frame path scans or persistent-renderer rebuilds.
+
+
 ## Roadmap Addition - Major Operations and Dual-Skyranger Assaults
 
 **Status:** Approved late-game mission tier; intended for forces approaching two fully upgraded Skyrangers and two veteran response squads.
@@ -811,6 +879,134 @@ Implemented alien-pathing regression follow-up (Browser 0845, 2026-08-24): **Ali
 4. Extract through both craft, lose or disable one extraction route, and confirm surviving units receive explicit legal rerouting, holdout, rescue, or withdrawal choices without overlap or duplication.
 5. Attempt the operation with one Skyranger and confirm the warning is accurate, the mission remains technically completable, and failure reports the actual tactical/objective cause rather than the player's aircraft count.
 6. Stress-test the largest supported map in 2D and persistent 3D Iso with two full squads, civilians, aliens, reinforcements, destructible scenery, fog, and simultaneous movement playback; enforce defined frame-time and bounded-round-planning budgets before release.
+
+
+## Roadmap Addition - Complete Current-Build Instructions Reference
+
+**Status:** Approved documentation and interface audit; the in-game **Instructions** screen should accurately cover every player-facing system available in the current build.
+
+### Reference structure and coverage
+- Replace the incomplete/static Instructions copy with a searchable, table-of-contents-driven reference organized around the actual play loop: starting a campaign, Command sections, Geoscape operations, bases, squads and personnel, research, manufacturing, logistics, tactical missions, mission results, audio/settings, saves/backups, patch history, and diagnostics.
+- Explain every current strategic control and state, including time progression, incidents, panic and funding, UFO detection/tracking, Globe and Terminator Map presentation, interception, Skyranger launch/range/ferry behavior, active aircraft lists, multiple bases, transfers, facilities, hangars, stores, research, Workshop queues, Mainframe records, Barracks, Sickbay, Memorial, and Council/month resolution.
+- Explain every current tactical control and rule available in 2D Hex, persistent 3D Iso, first-person, and third-person views: selection, movement, Time Units, reserve modes, kneeling, hands/inventory, reloads, weapon modes, grenades, medkits, cover, windows, doors/breaches, vehicles, elevation/levels, fog, LOS, lighting, smoke/fire, destructible scenery, shot results, camera controls, and extraction.
+- Document Manual, Hybrid AI, Command Map, and full Simulation AI separately, including fire-team leader ownership, formation-follow behavior, preferred targets, contact replanning, escort-support doctrine, when control returns to the player, and what to do if an objective or route reports that it is blocked.
+- Cover every active objective family and resolution rule: alien-force elimination, civilian/VIP rescue and escort loss, high-value principals when implemented, beacon shielding/neutralization/capture, UFO-bay inspection, crash sites, reinforcements, live capture/hacking when implemented, multilevel alien-base elevators and command-core shutdown, partial credit, withdrawal, victory, failure, and impossible-objective termination.
+- Include the current music/soundtrack selector, Enhanced SFX Library and per-sound boosts, voice/SFX/music levels, hover-help delay/toggle, 3D quality/color/night-brightness settings, Battle Speed, shot presentation controls, dark mode, reduced-motion or equivalent accessibility options, save slots, autosaves, file backup/restore, Patch Notes, and Build Health.
+
+### Accuracy, progression, and maintenance rules
+- The Instructions header must display the same current version/build metadata as the start screen and Patch Notes. Each section should use the exact live button/setting names and identify the screen where the control appears.
+- Preserve campaign discovery: the manual must not reveal alien bases, beacon-network conclusions, hidden technologies, unrevealed alien capabilities, or other narrative surprises before AEGIS has learned them. Locked topics should be absent or shown as an undisclosed entry, then become readable when the corresponding authoritative research/knowledge flag is earned.
+- Separate **Quick Start**, **How It Works**, **Controls**, **Objectives**, and **Troubleshooting** so new players can learn the essentials without reading the complete technical reference. Add contextual links from major screens and tactical help where practical without replacing the existing optional tutorials or three-second hover help.
+- Build the reference from a centralized instructions registry or similarly auditable data boundary instead of scattering duplicate prose across components. Entries should declare their category, player-facing title, availability/unlock condition, relevant control labels, and last-reviewed build.
+- Instructions must load lazily when opened and must not add meaningful boot work, per-frame tactical work, or a second gameplay state. Search/index normalization may be cached after the screen opens.
+- Every patch that adds, renames, removes, or materially changes a player-facing system must update its Instructions entry, game-bible authority, patch notes, and automated coverage in the same patch.
+
+### Acceptance gates
+1. Produce an inventory of every visible Command, Geoscape, base, personnel, research, Workshop, tactical, audio, settings, save, and diagnostic control and map each one to an Instructions entry or an intentional self-explanatory exemption.
+2. Start a fresh campaign and confirm the complete early-game reference is accurate while undiscovered alien-base, beacon-network, and research-gated information remains unspoiled.
+3. Load an advanced campaign with all current discoveries and confirm the unlocked reference covers every playable late-game system, objective, and control using the same terminology as the live UI.
+4. Search for representative controls and concepts—Hybrid AI, reserve TU, windows, VIP escort, beacon shield, UFO bay, alien-base elevator, backup restore, Enhanced SFX, and 3D Iso brightness—and confirm each result opens the correct section.
+5. Compare Manual, Hybrid, and Simulation descriptions against live tactical behavior in 2D and 3D Iso; confirm no instruction promises unsupported movement, targeting, visibility, formation, or mission-resolution behavior.
+6. Change a representative button label and system availability fixture and confirm Build Health detects stale/missing instruction mappings without running the full documentation audit synchronously at boot.
+7. Open, search, scroll, close, and reopen Instructions in the standalone file build at multiple viewport sizes; confirm no runtime errors, trapped focus, lost scroll/search state, or measurable tactical/Geoscape performance regression.
+
+
+## Roadmap Addition - Minimized Command Header at Session Start
+
+**Status:** Implemented in Browser 1115; the acceptance gates below remain the manual regression authority.
+
+- When the game first opens a campaign interface during a new browser session—whether starting a new campaign or loading an existing one—the main command header should begin minimized.
+- The compact header must remain immediately usable and retain its existing Command Section, base selection, **Menu / Save**, tutorial/help, alert/status, and **Show Header** access where those controls currently apply. Minimizing by default must not hide the only route to a required action.
+- After startup, respect the player's current-session choice: expanding or minimizing the header should persist while navigating between ordinary campaign screens and should not reset on every render, time tick, modal, or section change.
+- Active tactical, Hybrid, Simulation AI, save/load, notification, audio, and campaign state must remain unchanged. This is a presentation default only and should not require a save-format change.
+- Initialize the compact state before the first visible campaign render so the full header does not briefly flash and collapse during startup.
+- Confirm keyboard focus, screen-reader labeling, hover help, and responsive layouts make **Show Header** easy to find at supported viewport sizes.
+
+### Acceptance gates
+1. Start a new campaign and load an existing campaign in a fresh session; confirm the first campaign screen displays the minimized header without an expanded-header flash.
+2. Expand the header, navigate among Command sections, open and close overlays, and advance Geoscape time; confirm it remains expanded until the player minimizes it or starts a new session.
+3. Leave the header minimized and confirm all compact-header controls remain functional, including base/section selection, **Menu / Save**, guidance, and expansion.
+4. Enter and leave Manual, Hybrid, and Simulation-controlled missions and confirm the default changes no tactical ownership, AI playback, mission state, or active-save continuity.
+
+
+## Roadmap Addition - Alien-Derived Regenerative Medicine and Wound Progression
+
+**Status:** Approved medical-progression design; integrates with the existing Medpac, Field Medkit, Sickbay, incapacitation, bleeding, casualty extraction, and localized-injury roadmap rather than creating a separate health system.
+
+### Early-game injury stakes
+- Make early-campaign combat injuries less reliably survivable and lengthen ordinary recovery times while AEGIS is limited to conventional trauma care. Serious wounds, delayed stabilization, exposed/downed time, failed extraction, damaged body regions, and inadequate Sickbay capacity should carry meaningful consequences.
+- A nonfatal hit must not be rerolled repeatedly at mission end. Record one authoritative injury/trauma state and resolve survivability from wound severity, body region, bleeding, armor mitigation, stabilization quality/timing, extraction, medical equipment, Sickbay capability, and relevant soldier traits.
+- Early difficulty must remain harsh but legible rather than arbitrary: tactical feedback and the mission report should state whether a casualty is stable, critical, deteriorating, unlikely to survive without extraction, or beyond field treatment, and identify which factors changed the final outcome.
+- Longer baseline recovery should create roster and rotation pressure without producing an unrecoverable campaign death spiral. Difficulty settings, early staffing/bed capacity, recruitment access, and minimum viable conventional treatment require balance passes before final values are locked.
+
+### Alien biomedical research branch
+- Add an original alien-biotechnology research branch in which AEGIS discovers that recovered alien tissue, medical devices, or self-repair compounds use a regenerative carrier Earth medicine cannot initially reproduce or safely administer.
+- Use a working technical identity such as **Xeno-Reparative Medium (XRM)** until its final in-universe name is selected. It should fill the gameplay role of a powerful immersion/infusion treatment while remaining original to Project Aegis rather than copying another franchise's name, presentation, chemistry, or lore.
+- Stage the branch through discoveries such as **Alien Tissue Regeneration**, **Xeno-Reparative Carrier Isolation**, **Human Compatibility Trials**, **Sickbay Regenerative Protocols**, and **Stabilized Field Formulation**. Autopsies, live specimens, recovered medical technology, alien materials, containment, laboratory capability, and prior conventional medical research may serve as prerequisites.
+- Research scenes should explain both the breakthrough and its risks: rejection, uncontrolled growth, neural incompatibility, contamination, limited precursor supply, or species-specific dosing. Unlocks become authoritative before the skippable scientific briefing plays.
+- Early samples should depend on recovered alien precursors. Later research and Workshop projects may improve purification, storage, yield, shelf life, or partial synthesis, but supply and manufacturing costs should keep advanced treatment strategically meaningful.
+
+### Sickbay application
+- **Sickbay Regenerative Protocols** allow a compatible facility to consume XRM doses for selected critical patients, increasing post-mission survival probability and shortening recovery compared with conventional treatment.
+- Treatment effectiveness should scale with wound severity, stabilization state, treatment delay, Sickbay bed/staff availability, facility damage/power, and relevant research. XRM must not resurrect confirmed KIA personnel, erase every permanent injury, automatically regrow a destroyed limb, or guarantee survival from unsurvivable trauma.
+- Give the player a clear treatment policy: automatic priority for the most critical viable cases, manual patient priority, reserve-supply threshold, and an option to conserve scarce doses for future casualties. Show estimated recovery range and survival improvement before committing a dose where uncertainty rules permit it.
+- Retain conventional Sickbay care after the breakthrough so minor wounds do not waste rare material. Recovery cards and reports should distinguish **Conventional Care**, **XRM Treatment**, **Critical/Unstable**, **Stabilized**, expected return-to-duty time, consumed doses, and lasting penalties.
+
+### Field Medpacs and Field Medkits
+- Conventional early Medpacs and Field Medkits provide bleeding control, stabilization, and limited emergency treatment but confer only the lower early-game survivability profile.
+- **Stabilized Field Formulation** unlocks upgraded XRM Medpac doses and compatible Field Medkit charges. Used promptly on a viable casualty, they improve stabilization reliability, slow or stop deterioration, and increase wound survivability before extraction; they may restore limited combat HP only where the shared medical rules permit it.
+- Preserve the two-tier inventory doctrine: ordinary soldiers can carry compact Medpacs with a few emergency uses, while a Medic may carry a heavier Field Medkit with roughly ten or more Medpac-equivalent treatments plus efficiency benefits. Advanced doses still consume real charges, TU, inventory capacity, base stock, and replacement cost.
+- A field dose cannot revive a confirmed dead unit, reverse catastrophic anatomy loss, cure all combat penalties, substitute for physical extraction, or provide knowledge the acting soldier does not have. Severe survivors may remain unconscious, impaired, and in need of long Sickbay recovery.
+- Manual, Hybrid, and Simulation AI should share one treatment authority. AI may prioritize an immediately survivable critical casualty over routine movement, but live visible threats, rescuer safety, active VIP/civilian escorts, casualty accessibility, available TU, equipment, and extraction feasibility remain part of the decision.
+
+### Progression and balance targets
+- The intended arc is tangible: early missions make every severe wound frightening and remove soldiers from duty for longer periods; mid-game research makes critical casualties more salvageable; late-game Sickbay and field formulations let a well-prepared AEGIS force preserve veterans without making combat attrition irrelevant.
+- Display the change honestly in Research, Sickbay, Base Stores, loadout cards, Medpac/Field Medkit tooltips, tactical treatment previews, casualty status, mission reports, and the progression-aware Instructions screen.
+- Exact survival percentages, recovery-day formulas, treatment windows, dose costs, research prerequisites, Medic bonuses, and permanent-injury interactions remain prototype and difficulty-balance values. The design authority is the progression direction, single-resolution ownership, and shared medical state.
+- Save/load must persist injury severity, bleeding/downed/stabilized state, treatment history, XRM compatibility/doses, recovery estimate, permanent effects, and the already-consumed survivability resolution so loading cannot duplicate treatment or reroll mortality.
+
+### Acceptance gates
+1. Compare matched severe injuries in an early conventional-care campaign and a researched XRM campaign; confirm early survival is lower and recovery longer while the advanced treatment produces an attributable, bounded improvement.
+2. Stabilize immediately, stabilize late, leave untreated, and fail to extract equivalent casualties; confirm timing and extraction change outcomes once, survive save/load, and are explained in the report.
+3. Treat minor, severe, catastrophic, and confirmed-KIA cases in Sickbay and the field; confirm XRM helps only eligible living casualties and cannot resurrect or erase every lasting consequence.
+4. Exhaust XRM stock, lose Sickbay power/capacity, and omit advanced field doses; confirm conventional care remains available and the UI does not silently grant researched benefits without usable supply/facilities.
+5. Run Manual, Hybrid, and Simulation AI with Medpacs and Field Medkits; confirm all modes consume the same TU and charges, select legal adjacent/self targets, preserve casualty extraction, and never duplicate or reroll treatment.
+6. Save before treatment, after stabilization, during critical Sickbay care, and shortly before return to duty; reload each state and confirm identical survival ownership, stock consumption, recovery time, and permanent effects.
+7. Balance-test multiple early casualties so the harsher baseline creates roster pressure without routinely making a reasonably played campaign impossible to continue.
+
+
+## Roadmap Addition - Knowledge-Limited Reinforcement Craft Arrival Cinematic
+
+**Status:** First bounded implementation completed in Browser 1115. Observed arrivals may focus their authoritative landing position; unobserved arrivals use a non-positional craft cutaway with no landing coordinates. Full reusable 3D craft flight choreography, player skip/reduced-motion controls, and native parity remain follow-up presentation work.
+
+### Cinematic sequence
+- When an alien ship brings tactical reinforcements, play a short cinematic showing the craft flying overhead, banking or aligning with its approach, and beginning its descent. Use the recognizable alien-craft presentation already shared by tactical and strategic views.
+- The universal portion of the sequence should frame the craft against sky, cloud, smoke, distant skyline, or another non-locating backdrop. It may communicate that reinforcements are arriving, the approximate craft class, and the threatening sound/scale of the flyover, but it must not expose the touchdown hex.
+- If no living AEGIS observer has authoritative LOS to the landing craft or landing footprint, the craft should descend into cloud, darkness, terrain occlusion, smoke, or an off-camera direction and the cinematic must cut back before any ground landmark, map coordinate, path, shadow, landing light, ramp, alien unit, or camera pan identifies where it landed.
+- If at least one living AEGIS observer legitimately has LOS at the arrival moment, the cinematic may continue through the visible descent, touchdown, ramp opening, and disembarkation using the existing temporary observed-arrival presentation. Only aliens and craft details permitted by that observed frame may be shown.
+- Beacon materialization remains a separate reinforcement presentation and should not invent a flying craft unless the authoritative reinforcement type actually uses one.
+
+### Knowledge and camera authority
+- Determine landing visibility from the same per-observer range, level, lighting, smoke, facing, wall/window, terrain, and LOS rules used by tactical targeting and rendering. Squad-wide fog reveal, remembered coordinates, an off-screen selected unit, or the cinematic camera itself cannot qualify as observation.
+- An unobserved cinematic may not center, zoom, rotate, or sweep the tactical camera toward the hidden arrival coordinates. It must restore the player's previous 2D/3D Iso/FPV/TPV view, camera center, zoom, selected unit, and control mode without leaving a positional clue.
+- An observed arrival may focus the legal landing area for the bounded presentation beat, then return smoothly to the prior camera/view unless the arriving aliens immediately become the active visible action.
+- The cinematic changes no reinforcement timing, landing-site selection, spawn legality, alien count, fog/exploration state, contact memory, AI decisions, TU, initiative, objective state, or mission outcome. Presentation waits must never give either side extra actions.
+- Skipping the cinematic, using reduced motion, changing Battle Speed, switching audio off, or loading during an arrival must not reveal additional information, duplicate the reinforcement wave, reroll its landing site, or omit already-committed units.
+
+### Presentation variants
+- In 3D Iso, use the persistent tactical renderer and a bounded reusable craft/camera sequence rather than rebuilding the battlefield. In 2D Hex, use a sky-framed/inset cinematic or equivalent non-positional presentation; do not force a map-revealing camera transition merely to show a 3D craft.
+- First-person and third-person observers may look toward the flyover when appropriate, but an unobserved landing still cuts away before the ground location becomes identifiable. The sequence should not wrench the camera from a player who has disabled cinematics or selected reduced motion.
+- Use positional audio only to the precision the tactical sound/knowledge model authorizes. A loud overhead pass may imply a broad direction, but stereo panning, engine fade, touchdown impact, radio dialogue, subtitles, and objective text must not triangulate a hidden exact hex.
+- Keep the sequence short, skippable, and single-owner when several playback systems converge. Multiple reinforcement waves each receive at most one arrival cinematic, and simultaneous arrivals queue rather than overlap.
+
+### Acceptance gates
+1. Land an alien reinforcement craft completely outside every AEGIS sightline and confirm the flyover/descent plays without showing or implying the landing hex, nearby terrain, ramp, aliens, camera direction, or exact positional audio.
+2. Repeat with one soldier holding valid LOS and confirm the cinematic legally continues to the visible landing/disembarkation while normal fog resumes afterward.
+3. Block the same sightline with a solid wall, smoke, darkness, elevation, and facing limits; confirm each authoritative obstruction selects the unobserved cutaway rather than using squad-wide knowledge.
+4. Test 2D Hex, 3D Iso, FPV, TPV, Manual, Hybrid, and Simulation AI; confirm the previous camera, selection, control ownership, and action queue resume correctly after play and skip.
+5. Save immediately before and during an arrival, reload, and confirm the landing site, wave identity, troop count, committed units, and already-played cinematic ownership cannot duplicate or reroll.
+6. Trigger several sequential and simultaneous waves and confirm every wave receives no more than one ordered cinematic without overlapping audio, leaking hidden locations, or stalling tactical playback.
+7. Verify beacon-only reinforcement materialization retains its own presentation and never displays a craft that did not authoritatively arrive.
 
 
 ## Roadmap Addition - Scientific Discovery Briefing Scenes
@@ -1443,7 +1639,7 @@ Roadmap-only tactical-AI update (2026-08-23): **An AEGIS soldier who already has
 **Planned validation gate:** place ballistic and energy soldiers behind valid threat-facing cover with one or several visible aliens at different ranges. Confirm they can hold and spend TU on the maximum legal chosen shot sequence, stop immediately when TU/ammunition/LOS/target life no longer permits another shot, and do not move merely because movement is available. Compare against exposed, flanked, hazardous, out-of-range, obstructed, escort, Hybrid-order, and new-contact states where movement or replanning should still take priority. Verify identical combat authority in Simulation, Hybrid support playback, 2D, 3D Iso, FPV/TPV, save/load continuation, and the shot-result timeline.
 
 
-Roadmap-only planning update (2026-08-22): **Give Bravery a direct tactical function through a shared fear and morale system for AEGIS soldiers and aliens. Bravery already contributes to fire-team leader selection; this expansion makes it the primary resistance stat when frightening events threaten to override normal behavior. Fear checks should occur at bounded, authoritative event points, produce clear temporary states and explanations, and use only events the affected unit can legitimately perceive. Both player-controlled and AI-controlled units consume the same result. Exact thresholds, probabilities, penalties, durations, alien Bravery profiles, and research/training modifiers remain prototype and balance questions. No gameplay or build-number change is part of this roadmap item.**
+Implementation update (2026-08-24): **Browser 1115 gives Bravery its first direct tactical function through a shared fear and morale system for AEGIS soldiers and aliens. Bravery is the primary resistance/recovery statistic; pressure is derived from legitimately perceived combat conditions; one deterministic recovery check is owned per eligible unit-turn; and failed acute fear may consume the turn through a legal freeze, seek-cover, or fall-back action. Manual, Hybrid, Simulation, snapshots, playback, targeting penalties, logs, and tactical readouts share the same fields. The detailed design below remains authority for balancing, richer triggers, species doctrine, research/training modifiers, and native parity.**
 
 ### Future tactical combat - Bravery, morale pressure, and fear overrides
 - Give every combat-capable human and alien a normalized Bravery value or species/rank-derived equivalent. High Bravery improves resistance and recovery but must not grant blanket immunity unless a specific unit trait explicitly says so.
@@ -1463,6 +1659,8 @@ Roadmap-only planning update (2026-08-22): **Give Bravery a direct tactical func
 - The system must remain deterministic enough for Build Health and replay validation: feed an explicit random roll/seed into the fear resolver, separate calculation from presentation, and prevent animation speed or camera choice from changing the outcome.
 
 **Planned validation gate:** subject low-, average-, and high-Bravery AEGIS soldiers plus several alien species/ranks to identical perceived events with controlled rolls. Confirm higher Bravery resists or recovers more reliably, every afraid soldier receives exactly one recovery opportunity at the start of each eligible turn, a success restores normal activity before a forced action, a failure preserves fear for that turn, and even maximum pressure retains the approved nonzero recovery floor. Confirm fear can visibly override normal manual/Hybrid/Simulation behavior, every forced movement remains legal and hazard-aware, commanders/allies provide the documented support, hidden events cause no pressure, one event cannot roll twice, and save/load or view switching preserves rather than rerolls the state. Repeat during escort, formation, reaction-fire, alien-base elevator, casualty-rescue, and mission-terminal situations.
+
+Implementation update (2026-08-24): **Browser 1115 establishes the shared presentation owner and first persistent-renderer transition layer. Ordinary human/alien fatalities queue readable presentation, retained Three.js unit nodes ease into stable fallen poses, and observable cover removal produces bounded debris/smoke. VIP fatality cards use the same owner, and Critical Kills retain their specialized presentation. Dedicated cause-specific collapses, full attacker/target camera choreography in every view, final-beacon retention/destruction, richer vehicle/building destruction, accessibility controls, and native parity remain follow-up work.**
 
 ### Future tactical presentation — Unit death / destruction transition animations
 - **No living-to-corpse snap:** a unit that receives a lethal resolved hit must not be standing in one rendered frame and instantly prone/dead in the next. The renderer should enter a short presentation-only death state first.

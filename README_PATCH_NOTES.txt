@@ -1,6 +1,46 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.24.1115_BRAVERY_FEAR_AND_TACTICAL_CINEMATIC_FRAMEWORK_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Bravery now governs deterministic tactical fear and recovery for AEGIS soldiers and aliens, ordinary lethal hits and scenery destruction receive readable transitions, and reinforcement craft cinematics preserve fog-of-war knowledge.
+
+BRAVERY, MORALE PRESSURE, AND FEAR
+----------------------------------
+- AEGIS personnel use their existing Bravery stat; alien Bravery is derived from species and command rank without exposing hidden numeric alien statistics to the player.
+- Only perceived events contribute: personal wounds, recent incoming fire, nearby visible ally or leader losses, visible hostiles, numerical pressure, isolation, fire/smoke, nearby allies, active leadership, and useful cover.
+- Steady, Shaken, Pinned, and Fear Override states persist in the authoritative unit snapshot. Shaken and Pinned states apply bounded accuracy penalties.
+- A unit already under Fear Override receives exactly one deterministic recovery check at the start of each eligible unit-turn. The roll ID persists through playback, take-back control, Hybrid/Simulation handoff, save/load, and view changes so it cannot be rerolled.
+- Failed recovery may force a freeze, cover-seeking move, or fallback. Forced movement uses the normal path, occupancy, vehicle-footprint, structure, hazard, level, and map-boundary authority, consumes the rest of the turn, and preserves fire-team and escort identity.
+- Tactical Readability displays exact AEGIS Bravery and current morale state. Alien behavior can be observed without disclosing its hidden Bravery score.
+
+SHARED TACTICAL CINEMATICS
+--------------------------
+- VIP/civilian fatalities, ordinary AEGIS/alien deaths, objective/scenery destruction, and reinforcement arrivals now feed one bounded tactical cinematic presentation queue.
+- The persistent Three.js renderer retains the existing unit node through an ordinary lethal result and animates an impact/collapse before settling into the corpse pose. Existing rare Critical Kill dismemberment remains the specialized priority case.
+- Destroyed or breached scenery creates a bounded debris-and-smoke transition from the persistent effect layer instead of only disappearing during the next cover rebuild.
+- Gameplay remains immediate and authoritative: HP, death, target invalidation, objective state, reinforcement cancellation, mission resolution, and recovery bookkeeping do not wait for presentation.
+
+KNOWLEDGE-LIMITED REINFORCEMENT ARRIVALS
+----------------------------------------
+- An observed craft landing or beacon materialization may focus the verified location and identify the detected arrival count.
+- An unobserved craft produces only a screen-space overhead-pass beat. Its playback record omits landing coordinates and cannot reveal terrain, ramp orientation, aliens, camera direction, or exact positional audio at the hidden site.
+- Existing fog, LOS, alien visibility, reinforcement timing, and AI knowledge remain unchanged.
+
+SESSION AND VALIDATION
+----------------------
+- Fresh sessions start with the command header minimized; Show Header remains immediately available.
+- Build Health covers deterministic Bravery ordering, once-per-turn recovery, forced-turn consumption, hidden reinforcement focus suppression, persistent death signatures, and the minimized-header default.
+- tools/check-embedded-js.cjs now provides a reusable syntax-only check for every non-empty embedded JavaScript block.
+- Save format remains 4.
+
+PREVIOUS PATCH NOTES
+====================
+
 Build: v0.26.08.24.0955_VIP_ESCORT_INGRESS_AND_COVERED_REPEAT_FIRE_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

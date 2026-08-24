@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.24.0955_VIP_ESCORT_INGRESS_AND_COVERED_REPEAT_FIRE_PATCH",
+  "currentBuild": "v0.26.08.24.1115_BRAVERY_FEAR_AND_TACTICAL_CINEMATIC_FRAMEWORK_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "vip-escort-ingress-and-covered-repeat-fire-complete",
+  "status": "bravery-fear-and-tactical-cinematic-framework-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.24.0955_VIP_ESCORT_INGRESS_AND_COVERED_REPEAT_FIRE_PATCH",
+  "lastInspectedBuild": "v0.26.08.24.1115_BRAVERY_FEAR_AND_TACTICAL_CINEMATIC_FRAMEWORK_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.24.0955_VIP_ESCORT_INGRESS_AND_COVERED_REPEAT_FIRE_PATCH",
+    "browserBuild": "v0.26.08.24.1115_BRAVERY_FEAR_AND_TACTICAL_CINEMATIC_FRAMEWORK_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -162,7 +162,12 @@
       "geoscape-ufo-upright-orientation",
       "alien-land-vehicle-pathing-integrity",
       "orphaned-escort-and-skyranger-ingress-recovery",
-      "covered-position-repeat-fire"
+      "covered-position-repeat-fire",
+      "bravery-morale-fear-overrides",
+      "shared-tactical-cinematic-event-queue",
+      "knowledge-limited-reinforcement-craft-cinematic",
+      "persistent-threejs-unit-collapse-and-cover-destruction-transitions",
+      "minimized-command-header-session-default"
     ],
     "temporaryExceptions": [
       {
@@ -440,6 +445,10 @@
       {
         "system": "barracks-transfer-button-and-confirmation",
         "reason": "Browser Barracks cards now collapse transfer destinations behind a Transfer button and require a route, time, fee, and availability confirmation screen. Native front-end parity remains queued."
+      },
+      {
+        "system": "bravery-fear-and-shared-tactical-cinematics",
+        "reason": "The browser now resolves deterministic Bravery recovery and fear overrides for human and alien turns, animates ordinary persistent-renderer collapses and structural debris, and presents knowledge-limited reinforcement flyovers. Native Godot requires equivalent engine-native morale authority, legal forced movement, camera sequencing, and hidden-information safeguards."
       }
     ]
   }
