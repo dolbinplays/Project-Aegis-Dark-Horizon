@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.23.2145_ESCORT_CORNER_MOBILE_TRAFFIC_YIELD_PATCH",
+  "currentBuild": "v0.26.08.23.2345_GLOBE_TERMINATOR_UFO_VISUAL_PARITY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "escort-corner-mobile-traffic-yield-validation",
+  "status": "globe-terminator-ufo-visual-parity-validation",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.23.2145_ESCORT_CORNER_MOBILE_TRAFFIC_YIELD_PATCH",
+  "lastInspectedBuild": "v0.26.08.23.2345_GLOBE_TERMINATOR_UFO_VISUAL_PARITY_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.23.2145_ESCORT_CORNER_MOBILE_TRAFFIC_YIELD_PATCH",
+    "browserBuild": "v0.26.08.23.2345_GLOBE_TERMINATOR_UFO_VISUAL_PARITY_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -157,7 +157,8 @@
       "post-rescue-beacon-assault-handoff",
       "support-first-escort-building-egress",
       "new-contact-interrupt-remaining-round-replan",
-      "escort-corner-mobile-traffic-yield"
+      "escort-corner-mobile-traffic-yield",
+      "globe-terminator-ufo-visual-parity"
     ],
     "temporaryExceptions": [
       {
@@ -315,6 +316,10 @@
       {
         "system": "escort-corner-mobile-traffic-yield",
         "reason": "The browser now lets an eligible same-column support or escorted follower yield one legal occupied corner cell before the escort leader commits its planned step, while preserving TU, formation, occupancy, Hybrid ownership, and truthful stall accounting. Native Godot requires equivalent atomic escort-traffic handling."
+      },
+      {
+        "system": "globe-terminator-ufo-visual-parity",
+        "reason": "The browser Globe and Terminator Map now share one size-, heading-, and damage-aware persistent-canvas UFO marker. Native Godot should consume the same authoritative contact record through an engine-native recognizable craft presentation."
       },
       {
         "system": "command-map-autonomous-search-resume",

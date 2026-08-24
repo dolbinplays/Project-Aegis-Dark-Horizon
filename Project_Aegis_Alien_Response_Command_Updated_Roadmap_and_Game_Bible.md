@@ -2,9 +2,30 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-23
-Current handoff build: `v0.26.08.23.2145_ESCORT_CORNER_MOBILE_TRAFFIC_YIELD_PATCH`
+Current handoff build: `v0.26.08.23.2345_GLOBE_TERMINATOR_UFO_VISUAL_PARITY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2145 prevents active civilian/VIP escort columns from burning rounds at exterior building corners when an eligible support or follower occupies the leader's next planned hex. Mobile formation traffic yields one legal adjacent step before the leader commits; supports pay normal TU and cannot move twice. Rejected steps now count as real stalls instead of false progress. Hybrid leader ownership, formation, occupancy, vehicles, buildings, fog, LOS, and save format 4 remain authoritative.**
+Current patch status: **Browser 2345 gives the persistent Three.js Globe and Terminator Map one shared, recognizable UFO marker language. Detected flying contacts retain size-class scaling, travel heading, damage accents, violet saucer/dome geometry, and bounded globe-limb readability while continuing to consume the existing authoritative contact/interpolation stream. Radar, detection, interception, strategic movement, hidden information, and save format 4 remain unchanged.**
+
+
+## Browser 2345 - Globe / Terminator UFO Visual Parity
+
+**Status:** Implemented from the roadmap request that alien UFOs on the Globe should look like the UFOs on the Terminator Map rather than generic markers.
+
+### Shared craft presentation
+- The player-facing Terminator Map and Globe imperative-canvas overlays now call one `geoscapeDrawAlienCraftMarker(...)` renderer. The two views no longer maintain separate generic UFO ellipse implementations.
+- The marker presents a violet/magenta saucer hull, raised bright dome, side vanes, luminous underside nodes, bounded glow, and a readable damaged-hull accent.
+- Small, Medium, Large, and Very Large contacts use ordered but bounded silhouette scales. The craft remains legible at ordinary Globe zoom without becoming a strategic-map-sized object.
+- Travel orientation is derived from the already-authoritative previous/current visual location and uses shortest-longitude handling across the date line. Globe-limb scaling is presentation-only and keeps the craft attached to the surface near the horizon.
+
+### Preserved strategic authority
+- Only contacts already permitted by the existing `detected && status === "flying"` gate are rendered. This patch cannot reveal unresolved or hidden craft.
+- Contact identity, size, location, shared Globe/Map interpolation, movement route, damage memory, radar knowledge, click/list controls, pursuit, interception, time compression, and campaign resolution remain unchanged.
+- Both views retain their persistent canvas overlays. The shared marker adds no React-per-craft component tree, second position stream, timer, or gameplay state.
+- Save format remains **4**. Native parity should reproduce the recognizable craft silhouette from the same native contact record rather than sharing browser-canvas implementation details.
+
+### Validation boundary
+- Build Health verifies strictly increasing size-class scales, damage styling, shortest-path date-line heading, the detected-flying gate, and both player-facing canvas overlays consuming the same marker renderer.
+- Manual validation should compare all four UFO sizes and a damaged contact on the Globe and Terminator Map, switch views while time is running, rotate a contact toward the globe limb, and follow a craft across the date line. Identity and position must remain continuous and hidden contacts must remain absent.
 
 
 ## Browser 2145 - Escort Corner Mobile-Traffic Yield
@@ -1319,6 +1340,21 @@ Roadmap-only planning update (2026-08-22): **Add Fallout-inspired localized body
 - Save data, mission reports, casualty extraction, Sickbay ownership, memorial outcomes, post-mission recovery, and alien-capture handling must share one normalized injury record rather than reconstructing wounds from flavor text.
 
 **Planned validation gate:** hit every human zone with ballistic, energy, explosive, and alien attacks; confirm the result reports the correct location and applies only its documented penalties. Repeat across several alien anatomy profiles, armor types, stances, manual/Hybrid/Simulation control, first aid, incapacitation, extraction, mission completion, and save/reload. Confirm misses, fog, LOS, base accuracy, and AI knowledge remain authoritative and unaffected by information the attacking side does not possess.
+
+Roadmap-only tactical-AI update (2026-08-23): **An AEGIS soldier who already has a legal, in-range line of sight to a visible alien from useful threat-facing cover should be allowed to hold that position and fire without being driven to move first. If Time Units, ammunition, weapon mode, reserve doctrine, and the changing battlefield permit, the soldier may take multiple consecutive shots from that advantageous position. Movement remains an option when it produces a materially better result, not a compulsory precondition for firing. No gameplay or build-number change is part of this roadmap-only addition.**
+
+### Future tactical AI - Covered firing-position hold and repeat fire
+- Before generating movement, evaluate the soldier's current hex with the same authoritative engagement-position score used for prospective destinations: personal LOS, weapon range, threat-facing cover, local hazards, alien proximity, stance, accuracy, fire-team cohesion, objective authority, and remaining TU.
+- If the current position is already tactically useful, prefer **hold and fire** over moving merely to satisfy a generic movement phase or reduce geometric distance. Remaining stationary must not be treated as stalled AI when a legal combat action is available.
+- Movement may still win when it gains substantially better cover or accuracy, restores LOS/range, escapes a hazard or flank, supports an escort/objective, obeys an explicit player order, prevents friendly obstruction, or responds to a higher-priority survival/formation requirement.
+- After every committed shot, recalculate from the resulting live state. If the target remains alive, personally visible, in range, and legally shootable and the soldier still has the required TU/ammunition after the chosen reserve, the soldier may fire again without an artificial movement step.
+- Repeat fire is bounded by the weapon's real TU/ammunition/charge rules and the unit's selected fire mode. It cannot manufacture free attacks, bypass a reserve, reuse a dead/hidden target, or continue after recoil, damage, destruction, a new contact, or another committed result changes the legal solution.
+- A newly visible higher-priority alien or a killed/hidden target triggers the established remaining-action replan. The soldier may choose another personally visible target, hold an appropriate reserve, or move only if the new tactical evaluation justifies it.
+- Fire-team leaders and supports consume the same hold-position test. Supports should not abandon good flanking cover merely to reform by one hex when cohesion is already acceptable; active escorts, explicit Hybrid leader commands, casualty rescue, beacon/UFO objectives, and immediate survival remain higher-authority exceptions.
+- Playback and the turn-plan HUD should label the outcome clearly, for example **Hold Cover + Aimed Shot** or **Hold Cover + 2 Snap Shots**, so stationary effective fire cannot be mistaken for a pathing stall.
+
+**Planned validation gate:** place ballistic and energy soldiers behind valid threat-facing cover with one or several visible aliens at different ranges. Confirm they can hold and spend TU on the maximum legal chosen shot sequence, stop immediately when TU/ammunition/LOS/target life no longer permits another shot, and do not move merely because movement is available. Compare against exposed, flanked, hazardous, out-of-range, obstructed, escort, Hybrid-order, and new-contact states where movement or replanning should still take priority. Verify identical combat authority in Simulation, Hybrid support playback, 2D, 3D Iso, FPV/TPV, save/load continuation, and the shot-result timeline.
+
 
 Roadmap-only planning update (2026-08-22): **Give Bravery a direct tactical function through a shared fear and morale system for AEGIS soldiers and aliens. Bravery already contributes to fire-team leader selection; this expansion makes it the primary resistance stat when frightening events threaten to override normal behavior. Fear checks should occur at bounded, authoritative event points, produce clear temporary states and explanations, and use only events the affected unit can legitimately perceive. Both player-controlled and AI-controlled units consume the same result. Exact thresholds, probabilities, penalties, durations, alien Bravery profiles, and research/training modifiers remain prototype and balance questions. No gameplay or build-number change is part of this roadmap item.**
 

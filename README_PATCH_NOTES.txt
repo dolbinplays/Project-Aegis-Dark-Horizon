@@ -1,6 +1,50 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.23.2345_GLOBE_TERMINATOR_UFO_VISUAL_PARITY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Detected UFO contacts on the persistent Three.js Globe now use the same recognizable alien-craft visual language as the Terminator Map instead of reading as generic oval markers.
+
+SHARED ALIEN-CRAFT MARKER
+-------------------------
+- The Globe and player-facing Terminator Map now call one imperative-canvas UFO renderer.
+- The shared silhouette includes a violet/magenta saucer hull, bright raised dome, side vanes, luminous underside nodes, bounded glow, and damage-readable hull accents.
+- Small, Medium, Large, and Very Large contacts use increasing but bounded silhouette scales.
+- Existing previous/current visual locations supply travel orientation, including shortest-path date-line handling.
+- Globe contacts receive a restrained limb scale so they stay legible without floating away from or becoming oversized against Earth.
+
+PRESERVED AUTHORITY
+-------------------
+- The existing detected-and-flying gate remains unchanged; unresolved and hidden contacts receive no marker.
+- Contact identity, authoritative position, shared Globe/Map interpolation, route progress, damage, radar knowledge, selection/list controls, pursuit, interception, and time compression remain unchanged.
+- The existing persistent canvas overlays own the visuals. No React-per-contact tree, second craft-position stream, or gameplay timer was added.
+- Save format remains 4.
+
+VALIDATION
+----------
+- Build Health checks ordered size scaling, damage styling, shortest-path date-line heading, the detected-flying gate, and shared renderer use in both player-facing overlays.
+- Static validation checks the patch marker, shared renderer, visual-state and heading helpers, current build labels, and save compatibility.
+
+ROADMAP ADDITION
+----------------
+- Added covered firing-position hold doctrine: an AI soldier who already has legal LOS, weapon range, and useful threat-facing cover should be allowed to remain in place and fire without compulsory movement.
+- If TU, ammunition, fire mode, reserve doctrine, target life, and current visibility continue to permit it, the soldier may take multiple shots from that advantageous position, reassessing after every committed shot.
+- Movement remains appropriate when it materially improves the solution or is required by hazards, objectives, escort/casualty duties, explicit player orders, or formation/survival authority.
+
+MANUAL TEST GATES
+-----------------
+1. Compare detected Small, Medium, Large, and Very Large contacts side by side on the Globe and Terminator Map.
+2. Switch views while time is running and confirm the same contact keeps its identity, interpolated position, heading, and damage appearance.
+3. Rotate a contact toward the Globe limb and follow one across the date line; confirm stable attachment, scale, and continuity.
+4. Confirm unresolved/undetected contacts remain hidden and interception behavior is unchanged.
+
+PREVIOUS PATCH NOTES
+====================
+
 Build: v0.26.08.23.2145_ESCORT_CORNER_MOBILE_TRAFFIC_YIELD_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
