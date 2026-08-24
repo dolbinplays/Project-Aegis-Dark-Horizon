@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.23.2345_GLOBE_TERMINATOR_UFO_VISUAL_PARITY_PATCH",
+  "currentBuild": "v0.26.08.24.0845_UFO_UPRIGHT_AND_ALIEN_VEHICLE_PATHING_INTEGRITY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "globe-terminator-ufo-visual-parity-validation",
+  "status": "ufo-upright-and-alien-vehicle-pathing-integrity-validation",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.23.2345_GLOBE_TERMINATOR_UFO_VISUAL_PARITY_PATCH",
+  "lastInspectedBuild": "v0.26.08.24.0845_UFO_UPRIGHT_AND_ALIEN_VEHICLE_PATHING_INTEGRITY_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.23.2345_GLOBE_TERMINATOR_UFO_VISUAL_PARITY_PATCH",
+    "browserBuild": "v0.26.08.24.0845_UFO_UPRIGHT_AND_ALIEN_VEHICLE_PATHING_INTEGRITY_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -158,7 +158,9 @@
       "support-first-escort-building-egress",
       "new-contact-interrupt-remaining-round-replan",
       "escort-corner-mobile-traffic-yield",
-      "globe-terminator-ufo-visual-parity"
+      "globe-terminator-ufo-visual-parity",
+      "geoscape-ufo-upright-orientation",
+      "alien-land-vehicle-pathing-integrity"
     ],
     "temporaryExceptions": [
       {
@@ -320,6 +322,14 @@
       {
         "system": "globe-terminator-ufo-visual-parity",
         "reason": "The browser Globe and Terminator Map now share one size-, heading-, and damage-aware persistent-canvas UFO marker. Native Godot should consume the same authoritative contact record through an engine-native recognizable craft presentation."
+      },
+      {
+        "system": "geoscape-ufo-upright-orientation",
+        "reason": "The browser Globe and Terminator Map now keep the shared UFO body upright while a separate heading cue follows travel direction. Native Godot requires an equivalent engine-native billboard-orientation convention."
+      },
+      {
+        "system": "alien-land-vehicle-pathing-integrity",
+        "reason": "The browser now verifies alien routes, final commits, playback, save repair, dropship landing, and reinforcement spawn placement against every intact land-vehicle footprint while retaining destroyed-vehicle passability. Native Godot requires equivalent navigation and spawn-footprint authority."
       },
       {
         "system": "command-map-autonomous-search-resume",

@@ -1,6 +1,37 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.24.0845_UFO_UPRIGHT_AND_ALIEN_VEHICLE_PATHING_INTEGRITY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Detected UFOs remain visually upright on both Geoscape views while alien movement, reinforcements, playback, and loaded-state repair consistently respect every intact land-vehicle footprint cell.
+
+UPRIGHT UFO PRESENTATION
+------------------------
+- The shared Globe and Terminator Map UFO body is now an upright billboard. Its bright dome always remains above the saucer and its underside lights always remain below it.
+- Travel heading now rotates a small independent direction chevron instead of rotating the complete craft body. North, south, east, west, route reversal, Globe rotation, limb movement, and date-line travel cannot flip the canopy underneath the hull.
+- Contact location, interpolation, size, damage, detection, radar knowledge, pursuit, interception, and strategic movement remain authoritative and unchanged.
+
+ALIEN VEHICLE-PATHING INTEGRITY
+-------------------------------
+- Ordinary alien routing, pursuit, flanking, search, exfiltration, emergency movement, authoritative per-step commits, streamed playback reconstruction, and save/load repair use the same complete hard-cover footprint index as AEGIS movement.
+- Alien dropship placement now rejects any landing footprint that overlaps an intact land vehicle.
+- Dropship reinforcement spawn cells now validate against retained battlefield cover as well as the arriving craft, closing the gap that could place an alien inside a car, van, utility vehicle, truck, or bus.
+- Beacon reinforcement cells already used the complete hard-cover footprint and remain under that same authority.
+- Destroyed vehicles retain their established passable wreck/rubble state. This patch does not change vehicle HP, durability, damage, explosions, fire, smoke, cover, LOS, TU costs, or alien knowledge.
+
+VALIDATION
+----------
+- Build Health covers upright body orientation at four cardinal headings, heading wraparound, and shared renderer ownership.
+- Alien regressions cover path planning, final step rejection, playback reconstruction, loaded-state relocation, dropship landing and spawn placement, and restored passability after vehicle destruction.
+- Save format remains 4.
+
+PREVIOUS PATCH NOTES
+====================
+
 Build: v0.26.08.23.2345_GLOBE_TERMINATOR_UFO_VISUAL_PARITY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

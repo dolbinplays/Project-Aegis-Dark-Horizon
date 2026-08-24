@@ -116,8 +116,17 @@ const required = [
   "GEOSCAPE_GLOBE_TERMINATOR_UFO_VISUAL_PARITY_PATCH",
   "geoscapeUfoMarkerVisualState",
   "geoscapeUfoTravelHeadingDegrees",
+  "geoscapeUfoMarkerOrientationState",
   "geoscapeDrawAlienCraftMarker",
   "Globe and Terminator Map share recognizable size- and damage-aware detected UFO markers",
+  "GEOSCAPE_UFO_UPRIGHT_ORIENTATION_PATCH",
+  "TACTICAL_ALIEN_LAND_VEHICLE_PATHING_INTEGRITY_PATCH",
+  "geoscapeUfoUprightOrientationContractTest",
+  "tacticalAlienLandVehiclePathingIntegrityContractTest",
+  "Detected UFO bodies stay upright while an independent cue preserves travel heading",
+  "Aliens route spawn repair and playback around every intact land-vehicle footprint while destroyed vehicles remain passable",
+  "const clearVehicles = inside && footprint.every",
+  "isHardCoverAt(arrivalCovers",
   "contactReplanHold",
   "actionOrderIds:Array.from(roundActedIds)",
   "postExtractionHandoffUnits",
@@ -1155,6 +1164,8 @@ for (const system of [
   "per-shooter-visibility-and-rendered-target-shot-invariant",
   "post-extraction-rescue-duty-handoff",
   "multi-fireteam-vip-rescue-traffic",
+  "geoscape-ufo-upright-orientation",
+  "alien-land-vehicle-pathing-integrity",
 ]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser-only current-patch system must be recorded as a temporary parity exception: ${system}`);

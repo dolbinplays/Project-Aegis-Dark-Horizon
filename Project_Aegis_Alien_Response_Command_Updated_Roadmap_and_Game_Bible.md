@@ -1,10 +1,32 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-08-23
-Current handoff build: `v0.26.08.23.2345_GLOBE_TERMINATOR_UFO_VISUAL_PARITY_PATCH`
+Last updated: 2026-08-24
+Current handoff build: `v0.26.08.24.0845_UFO_UPRIGHT_AND_ALIEN_VEHICLE_PATHING_INTEGRITY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2345 gives the persistent Three.js Globe and Terminator Map one shared, recognizable UFO marker language. Detected flying contacts retain size-class scaling, travel heading, damage accents, violet saucer/dome geometry, and bounded globe-limb readability while continuing to consume the existing authoritative contact/interpolation stream. Radar, detection, interception, strategic movement, hidden information, and save format 4 remain unchanged.**
+Current patch status: **Browser 0845 keeps the shared Globe / Terminator UFO body visually upright while a separate heading cue preserves route direction, and hardens every audited alien movement lifecycle against intact multi-hex land vehicles. Alien dropship landing and reinforcement placement now include retained vehicle footprints; ordinary routing, final commits, playback, and save repair retain shared hard-cover authority. Destroyed vehicles keep their established passable wreck/rubble state. Save format remains 4.**
+
+
+## Browser 0845 - Upright Geoscape UFOs + Alien Vehicle Pathing Integrity
+
+**Status:** Implemented by rolling the next two roadmap patches together.
+
+### Upright craft frame
+- The shared Globe and Terminator Map marker now separates craft-body orientation from travel heading. The saucer body is a stable screen-upright billboard with its dome above the hull and underside lights below it.
+- A small independent direction chevron rotates through the authoritative travel heading. North, south, east, west, reverse-course, Globe-limb, and date-line movement retain direction without rotating the complete craft upside down.
+- Existing contact position, interpolation, size, damage, detection, radar knowledge, pursuit, interception, and campaign state remain authoritative. This is presentation-only and adds no strategic simulation state.
+
+### Alien vehicle-footprint authority
+- Alien route planning and every audited objective mode inherit `tacticalPathBlockerIndex(...)`, which expands live hard cover through `tacticalCoverFootprintCells(...)`. Direct pursuit, flanking, patrol/search, exfiltration, emergency/stall recovery, and future fear movement therefore cannot route through any cell of an intact multi-hex vehicle.
+- The alien per-step commit still calls `tacticalMovementCommitCellState(...)`, so a stale or malformed route cannot finish inside a vehicle even if cover changed after planning.
+- Streamed playback reconstructs an invalid recorded trail through the same blocker index rather than showing an alien cross a vehicle and snap back. Loaded-state integrity repair relocates any living alien found inside a live hard-cover footprint.
+- Alien dropship landing selection now rejects craft footprints that overlap an intact land vehicle. Spawn cells validate against retained battlefield cover plus the arriving dropship, closing the remaining reinforcement seam. Beacon materialization already uses the complete hard-cover footprint set.
+- Destroyed vehicles are deliberately absent from the live-vehicle blocker set and retain the existing passable wreck/rubble behavior. Vehicle HP, durability, damage, explosions, fire/smoke, cover, LOS, TU costs, alien knowledge, and all human formation/escort behavior are unchanged.
+
+### Validation boundary
+- Build Health checks four cardinal UFO headings plus negative-angle wraparound while asserting a fixed upright body frame and independently rotating heading cue.
+- The alien regression fixture checks route avoidance, authoritative final-step rejection, playback reconstruction, loaded-state repair, dropship landing and spawn clearance, and passability after vehicle destruction.
+- Manual validation should follow a detected UFO in both Geoscape views through route reversal and the date line, then run alien-heavy urban missions around intact and destroyed cars, vans, trucks, utility vehicles, and buses in 2D, 3D Iso, Hybrid, and Simulation AI.
 
 
 ## Browser 2345 - Globe / Terminator UFO Visual Parity
@@ -26,6 +48,15 @@ Current patch status: **Browser 2345 gives the persistent Three.js Globe and Ter
 ### Validation boundary
 - Build Health verifies strictly increasing size-class scales, damage styling, shortest-path date-line heading, the detected-flying gate, and both player-facing canvas overlays consuming the same marker renderer.
 - Manual validation should compare all four UFO sizes and a damaged contact on the Globe and Terminator Map, switch views while time is running, rotate a contact toward the globe limb, and follow a craft across the date line. Identity and position must remain continuous and hidden contacts must remain absent.
+
+### Implemented follow-up - Geoscape UFO upright orientation (Browser 0845)
+- Live Geoscape testing reports that the alien UFO silhouettes appear upside down. Correct the presentation so the dome/canopy remains on the visually upper side of the saucer and the underside lights remain below it in both Globe and Terminator Map views.
+- Define one shared craft-local **forward** and **up** frame before applying route heading. Travel rotation may turn the craft around the screen-normal axis, but it must not invert the canopy, mirror the hull vertically, or exchange top and underside details.
+- Globe projection must preserve the same readable upright/billboard orientation while Earth rotates and while a contact approaches or leaves the limb. The marker should remain surface-anchored without rolling upside down from latitude, camera-center, or projected-heading changes.
+- Switching between Globe and Terminator Map, pausing/resuming, changing time speed, crossing the date line, or reversing course must not introduce a 180-degree flip. Existing interpolated identity and location remain authoritative.
+- This is a presentation correction only. UFO route direction, strategic coordinates, speed, radar/detection state, damage, selection, hit target, interception, campaign behavior, and save format **4** must not change.
+
+**Validation gate:** compare a detected UFO travelling north, south, east, and west in both Geoscape views; rotate the Globe through the contact, carry it across the visible limb and date line, reverse its route, and switch views repeatedly. Confirm the dome always reads above the saucer, underside lights remain below it, the independent direction cue follows the correct travel heading without a 180-degree body flip, and the authoritative contact position and gameplay state remain identical.
 
 
 ## Browser 2145 - Escort Corner Mobile-Traffic Yield
@@ -550,7 +581,7 @@ Implementation update (2026-08-19): **Browser 2325 targets the live reproduction
 5. Destroy the vehicle and confirm its intended rubble/passability rules still apply.
 6. Verify 2D and Three.js playback show the same authoritative route without snapping through the vehicle.
 
-Roadmap-only alien-pathing regression follow-up (2026-08-23): **Explicitly verify that aliens cannot path through or end movement inside any cell of an intact land vehicle's authoritative footprint. Audit ordinary alien movement, direct pursuit, flanking, retreat/fear behavior, patrol/search, emergency stall recovery, reinforcement placement, streamed AI continuation, save/load integrity repair, and every alien type or footprint size against cars, vans, utility vehicles, trucks, and buses in all orientations. Both route planning and the final movement-commit boundary must reject occupied vehicle cells; playback must never show an alien crossing a vehicle and snapping back or resolving inside it. Destroyed vehicles remain governed by their established rubble/passability state. This is a verification and regression-hardening item and must not grant alien AI knowledge, alter TU costs, change vehicle durability, or affect LOS/cover rules. No code or build-number change is part of this roadmap-only addition.**
+Implemented alien-pathing regression follow-up (Browser 0845, 2026-08-24): **Aliens cannot path through or end movement inside any cell of an intact land vehicle's authoritative footprint. Ordinary alien movement, direct pursuit, flanking, exfiltration, patrol/search, emergency stall recovery, streamed playback, and save/load integrity repair share the complete hard-cover footprint index and final commit boundary. Alien dropship landing and spawn validation now also include retained battlefield vehicle footprints; beacon spawns retain their existing complete-footprint check. Destroyed vehicles remain governed by their established passable wreck/rubble state. The change grants no alien knowledge and does not alter TU costs, vehicle durability, damage, LOS, cover, or human formation behavior. Future fear behavior must consume this same path and commit authority when implemented.**
 
 
 ## Browser 1130 — Stable Mission Launch Confirmation Boundary
@@ -2974,6 +3005,23 @@ Remove the visible once-per-second/tick flash from the Three.js globe and flat T
 - Build Health now includes a targeted stalled-column scenario: the escort is already two cells inside the ramp with no movement TU, while two escorted VIPs wait beside opposite sides of the hull. The test requires the VIPs to path around the solid craft and extract while the escort remains stationary.
 - Existing VIP building-egress, outdoor no-reentry, lost-contact/escort recall, ramp-traffic, and rescue-terminal contracts remain authoritative.
 
+### Roadmap follow-up - crowded Skyranger entrance recovery (2026-08-24)
+
+- Live testing found an escorted VIP stalled immediately outside the Skyranger while the escort fire team and other AEGIS soldiers clustered around the ramp. The existing side-of-hull regression covers a stationary escort and two VIPs, but it does not exercise a crowded ramp or approach lane.
+- Current inspection identifies a credible deadlock seam: `tacticalVipExtractionRampRoute(...)` removes every ramp cell occupied by a living unit before choosing a goal. If soldiers occupy all usable ramp cells, the VIP receives no target and remains beside the hull even though those soldiers are mobile friendly traffic that should yield for evacuation.
+- Follow-up observation reports that this VIP appeared as the sole survivor of Bravo Fire Team after Bravo's soldiers were lost. Civilians are not valid members of `tacticalFireTeamMembers(...)`; the apparent membership is stale escort ownership. Inspection confirms that `tacticalResolveEscortContactRound(...)` currently returns an active civilian unchanged when its `escortId` references a missing, dead, or otherwise invalid human escort, and `tacticalReleaseCompletedVipEscortState(...)` does not normalize that active orphan. The VIP can therefore remain permanently claimed by a wiped-out team and unavailable to a living replacement escort.
+- Add one shared **orphaned escort normalization** boundary at round start, Simulation/Hybrid continuation, manual/AI handoff, and save-load repair. If an active civilian/VIP's `escortId` does not resolve to a living valid AEGIS soldier, immediately clear `escortId`, `priorityEscortId`, `priorityCivilianId`, `approachedById`, escort order/join/block/contact state, and any dead-team extraction association while retaining `lastEscortId` / `lastEscortFireTeamId` for the log.
+- Escort death or removal should release the VIP immediately; the one-full-round grace period remains only for a living escort who has lost sight/contact. In the same planning round, the unescorted VIP becomes claimable by another eligible fire-team leader, with the nearest capable free team preferred and the original team recalled only if it still has living members.
+- Release stale rescue assignments, extraction guards, and duty latches belonging to a fire team with no living human members. The HUD must label the civilian/VIP **Unescorted** rather than presenting it as the last member or survivor of that fire team.
+- Introduce an explicit **VIP extraction ingress plan** for each player Skyranger: outside staging cell -> ramp mouth -> interior ramp cell. A VIP approaching from the side or nose must first route around the solid hull to that craft's real rear entrance rather than selecting whichever ramp cell is geometrically nearest.
+- While an escorted VIP is within the bounded extraction approach, reserve at least one continuous ingress lane for that VIP. Same-fire-team supports, completed escort leaders, extraction guards, and otherwise idle friendly soldiers occupying the lane should move to legal defensive cells outside it before the VIP advances. Other VIPs should queue behind the active follower in escort order instead of competing for the same target.
+- Friendly traffic may yield only through normal adjacent movement with normal TU and playback trails; it may not teleport, overlap another unit, enter hard cover or a vehicle footprint, cross the Skyranger hull, leave the map, or displace an unrelated active escort. Visible alien contact and immediate survival hazards remain higher priority than quiet traffic clearing.
+- Track final-approach progress per VIP rather than relying only on escort-leader activity. If the VIP does not reduce its legal entrance-route distance for one complete round, rebuild the route and clear stale ramp reservations; after a second no-progress round, invoke a bounded traffic-yield recovery pass instead of repeatedly accepting a zero-step route.
+- Once the VIP physically enters any valid extraction cell it should retain the established immediate `rescued` / `extracted` resolution. The escort leader should then leave the corridor, guards should release, and the next queued evacuee should inherit the ingress reservation.
+- Apply the same authority to Simulation AI, Hybrid support playback, resumed/streamed AI, and loaded tactical state. Preserve multi-Skyranger ownership, escort contact/recall, Stay / Ask / Engage doctrine, formation rules outside the evacuation lane, fog, LOS, alien knowledge, mission quotas, and save format **4**.
+
+**Planned regression gate:** place an escorted VIP beside the Skyranger hull with the escort leader on the ramp, same-team supports and an unrelated soldier occupying every usable ramp/approach cell, plus a second queued VIP. Across repeated Simulation and Hybrid turns, require eligible friendly blockers to yield with legal TU-spending paths, the first VIP to route around the hull through the actual ramp mouth and extract, the leader/guards to clear, and the second VIP to follow. In a second fixture, kill or remove every human in Bravo while Bravo's VIP remains active beside the ramp; before any movement, require orphan normalization to label the VIP Unescorted, clear dead-team latches, let a living Charlie/Delta leader claim it during the same round, and complete extraction. Repeat both fixtures with vehicles, hard cover, fire/smoke, two Skyrangers, save/reload, manual/AI handoff, streamed Simulation, Hybrid, 2D Hex, and 3D Iso; no unit may overlap, teleport, cross the hull, remain owned by a wiped-out team, or burn rounds without invoking bounded recovery.
+
 ## Save / native parity
 
 - Save format remains **4**.
@@ -3271,6 +3319,17 @@ Browser 0725 roadmap completion note: **Both Browser 0630 documentation-only ref
 - Urban and small-town maps may contain bounded low-poly contextual props: better-proportioned cars, buses, bus stops, traffic lights, stop signs, benches, newspaper/vending machines, statues, fountains, and playground equipment. Farm maps use a reduced subset.
 - Props belong near plausible streets, curbs, building fronts, civic/open areas, or residences and are count-capped by settlement type. They reuse simple geometry and the existing cover renderer instead of creating many independent animated systems.
 - This presentation layer supplements Browser 0205 sidewalks/access walks and Browser 0245 vegetation; it must not create a large draw-call or simulation burden.
+
+### Roadmap follow-up - intersection traffic-control placement (2026-08-24)
+
+- Procedural urban and small-town generation should derive road intersections from the authoritative road-cell network and place stop signs or traffic lights at appropriate approaches instead of scattering those props along arbitrary street cells.
+- Stop signs should face approaching lanes and sit beside the roadway near the curb without occupying a drivable/pathable road hex. Traffic-light heads should face the traffic streams they control and use a consistent corner, mast-arm, or roadside mounting scheme appropriate to the intersection size.
+- Small or low-traffic intersections may use stop signs; larger multi-road junctions may use traffic lights. Dead ends, bends, private access paths, alleys, and straight road segments should not receive intersection controls unless a mission-location archetype explicitly calls for them.
+- Placement must reject buildings, doors, windows, sidewalks needed for building access, Skyranger or alien-craft footprints, vehicle footprints, extraction routes, objectives, and occupied deployment cells. Multiple signs or signal heads at one junction should be grouped and deduplicated deterministically.
+- The props should appear consistently in 2D Hex, 3D Iso, FPV, and TPV from the same cover/scenery records. Their presence is initially environmental presentation only and must not alter vehicle simulation, pedestrian AI, LOS, cover, pathfinding, tactical knowledge, or mission balance unless destructible-prop behavior is deliberately specified in a later patch.
+- Keep intersection detection and prop selection deterministic from the mission seed, cacheable with static terrain, and count-bounded so the feature does not add a meaningful render or generation cost.
+
+**Planned validation gate:** generate urban and small-town missions containing T-junctions, four-way intersections, straight streets, curves, alleys, and dead ends. Confirm controls appear only at valid junction approaches, face the corresponding road lanes, never block movement or entrances, remain consistent across tactical views and save/reload, and do not change pathing, LOS, AI knowledge, or combat resolution.
 
 ## Browser/native parity note
 
