@@ -777,7 +777,7 @@ function installAegisGlobalHoverHelp(){
 function AegisHoverHelpToggleButton({light=false,compact=false}){const[enabled,setEnabled]=useState(()=>readAegisHoverHelpEnabled());useEffect(()=>{const sync=event=>setEnabled(normalizeAegisHoverHelpEnabled(event?.detail?.enabled));window.addEventListener(AEGIS_HOVER_HELP_CHANGE_EVENT,sync);return()=>window.removeEventListener(AEGIS_HOVER_HELP_CHANGE_EVENT,sync);},[]);const toggle=()=>setEnabled(writeAegisHoverHelpEnabled(!enabled));return/*#__PURE__*/React.createElement("button",{type:"button",onClick:toggle,"aria-pressed":enabled,"data-aegis-hover-help-toggle":"true","data-aegis-help":enabled?"Turn contextual button explanations off. Controls continue working normally, and the preference is remembered on this device.":"Turn contextual button explanations on. Rest the pointer over supported controls for three seconds to read their purpose.",className:`${compact?"px-3 py-2 text-xs":"px-4 py-3 text-sm"} rounded-2xl border font-black shadow-sm transition ${enabled?light?"border-cyan-200/70 bg-cyan-900/60 text-cyan-50":"border-cyan-400/60 bg-cyan-950/55 text-cyan-100":light?"border-slate-400/60 bg-slate-950/70 text-slate-200":"border-slate-600 bg-slate-950 text-slate-300"}`},enabled?"Hover Help: On":"Hover Help: Off");}
 if(typeof document!=="undefined"){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",installAegisGlobalHoverHelp,{once:true});else setTimeout(installAegisGlobalHoverHelp,0);}
 
-const CURRENT_GAME_BUILD="v0.26.08.23.1930_SUPPORT_FIRST_ESCORT_BUILDING_EGRESS_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
+const CURRENT_GAME_BUILD="v0.26.08.23.2045_NEW_CONTACT_INTERRUPT_REMAINING_ROUND_REPLAN_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
 function runCriticalBootSmokeTests(){
   const checks=[
     {name:"Game root is available",pass:typeof document!=="undefined"&&Boolean(document.getElementById("root"))},
@@ -1473,6 +1473,8 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
     aliens = preContactClaims.units.filter((unit) => unit.team === "alien");
     civilians = preContactClaims.units.filter((unit) => unit.team === "civilian");
     const observedBeforeRescue = tacticalAiObservedAliens(allUnits(), covers, mission);
+    const roundContactInterrupts=[];
+    const roundObservedContactIds=new Set(observedBeforeRescue.map(alien=>alien.id));
     const rememberedCombatContact = alienContactSeen && aliens.some((alien) => alien.alive && alien.revealed && Number.isFinite(Number(alien.lastKnownX)) && Number.isFinite(Number(alien.lastKnownY)));
     const hiddenContactRescue=tacticalAiHiddenContactRescueConcurrencyState({units:allUnits(),covers,mission,observedAliens:observedBeforeRescue});
     const rescueAuthorityPhase=Boolean(secureRescuePhase||hiddenContactRescue.active);
@@ -1547,6 +1549,16 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
     const huntModesThisRound=new Set();
     const scheduledHumanTurnOrder=tacticalFireTeamTurnOrder(humans.filter((unit)=>unit.alive),initialRound+round-1);
     const humanTurnOrder=beaconAutomatedEndgame&&beaconAssaulterId?[...scheduledHumanTurnOrder.filter(unit=>unit.id===beaconAssaulterId),...scheduledHumanTurnOrder.filter(unit=>unit.id!==beaconAssaulterId)]:scheduledHumanTurnOrder;
+    const recordNewContactInterrupt=(observer,source="movement")=>{
+      const remainingActorIds=humanTurnOrder.filter(candidate=>candidate.alive&&candidate.id!==observer?.id&&!civilianDutyIds.has(candidate.id)&&!roundActedIds.has(candidate.id)).map(candidate=>candidate.id);
+      const interrupt=tacticalAiNewContactInterruptRecord({observer,units:allUnits(),covers,mission,knownContactIds:roundObservedContactIds,remainingActorIds,round:initialRound+round-1,sequence:roundContactInterrupts.length,source});
+      if(!interrupt)return null;
+      interrupt.alienIds.forEach(alienId=>{roundObservedContactIds.add(alienId);const alien=aliens.find(candidate=>candidate.id===alienId);if(alien){alien.revealed=true;alien.lastKnownX=alien.x;alien.lastKnownY=alien.y;}});
+      roundContactInterrupts.push(interrupt);
+      logs.push(`Contact interrupt: ${interrupt.observerName} spotted ${interrupt.alienNames.join(", ")}. ${interrupt.remainingActorIds.length?`${interrupt.remainingActorIds.length} remaining AEGIS action${interrupt.remainingActorIds.length===1?" was":"s were"} recalculated from the new contact.`:"The contact was committed after the final AEGIS action."}`);
+      return interrupt;
+    };
+    humans.filter(unit=>unit.alive&&civilianDutyIds.has(unit.id)).forEach(observer=>recordNewContactInterrupt(observer,"escort-movement"));
     const pendingHumanTrafficIds=new Set(humanTurnOrder.filter((unit)=>!civilianDutyIds.has(unit.id)&&!roundActedIds.has(unit.id)).map((unit)=>unit.id));
     const deferredFriendlyTrafficIds=[];
     const processHumanAiTurn=(human,allowFriendlyTrafficDefer=true)=>{
@@ -1563,7 +1575,11 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
       human.aiReserveWantsKneel=Boolean(openingReserve.kneel);
       let movementLegs=0;
       let movementSteps=0;
+      recordNewContactInterrupt(human,"turn-checkpoint");
       const squadContacts = tacticalAiObservedAliens(allUnits(), covers, mission);
+      const liveCombatPriority=squadContacts.length>0;
+      const activeContactInterrupt=[...roundContactInterrupts].reverse().find(interrupt=>interrupt.remainingActorIds.includes(human.id))||null;
+      if(activeContactInterrupt){human.aiContactReplanRound=initialRound+round-1;human.aiContactReplanId=activeContactInterrupt.id;human.aiContactReplanSource=activeContactInterrupt.observerId;}
       const distressSearch = tacticalAiDistressTarget(human, humans, aliens, initialRound + round - 1);
       const beaconSearch = !squadContacts.length && !distressSearch ? tacticalAiBeaconSearchTarget({ unit: human, units: allUnits(), covers, mission, explored: exploredCells, round: initialRound + round - 1, knowledge: beaconKnowledgeActive() ? ALIEN_FIELD_BEACON_KNOWLEDGE.confirmed : ALIEN_FIELD_BEACON_KNOWLEDGE.unknown }) : null;
       const search = distressSearch || (squadContacts.length
@@ -1592,12 +1608,12 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
         }else if(tacticalMarkFireTeamCommandHoldingInPlace(humans,human.fireTeamId,commandRound))logs.push(`${tacticalFireTeamLabelForUnit(human)} reached hybrid command point ${playerCommandTarget.x},${playerCommandTarget.y} and is holding formation while the AI selects shots.`);
       }
       const activeBeacon = tacticalActiveAlienBeacon(covers);
-      const beaconPriorityTeamMember=Boolean(activeBeacon&&!combatPriority&&!civilianDutyIds.has(human.id)&&beaconStrikeTeamId&&human.fireTeamId===beaconStrikeTeamId);
+      const beaconPriorityTeamMember=Boolean(activeBeacon&&!liveCombatPriority&&!civilianDutyIds.has(human.id)&&beaconStrikeTeamId&&human.fireTeamId===beaconStrikeTeamId);
       if(beaconPriorityTeamMember&&aiControlMode!=="hybrid"&&playerOrder){
         const cleared=tacticalClearFireTeamCommand(humans,human.fireTeamId,"reinforcement-source-priority",initialRound+round-1);humans.splice(0,humans.length,...cleared);human=humans.find(unit=>unit.id===human.id)||human;playerOrder=null;playerCommandTarget=null;hybridCommandActive=false;
         if(fireTeamLeader?.id===human.id)logs.push(`${tacticalFireTeamLabelForUnit(human)} released its lower-priority Command Map waypoint to neutralize the confirmed Alien Field Beacon.`);
       }
-      const ufoBayInspectionAssigned=Boolean(!combatPriority&&!civilianDutyIds.has(human.id)&&ufoBayInspectionTeamId&&human.fireTeamId===ufoBayInspectionTeamId);
+      const ufoBayInspectionAssigned=Boolean(!liveCombatPriority&&!civilianDutyIds.has(human.id)&&ufoBayInspectionTeamId&&human.fireTeamId===ufoBayInspectionTeamId);
       if(ufoBayInspectionAssigned&&aiControlMode!=="hybrid"&&playerOrder){
         const cleared=tacticalClearFireTeamCommand(humans,human.fireTeamId,"reinforcement-source-priority",initialRound+round-1);humans.splice(0,humans.length,...cleared);human=humans.find(unit=>unit.id===human.id)||human;playerOrder=null;playerCommandTarget=null;hybridCommandActive=false;
         if(fireTeamLeader?.id===human.id)logs.push(`${tacticalFireTeamLabelForUnit(human)} released its lower-priority Command Map waypoint to investigate the confirmed UFO reinforcement bay.`);
@@ -1608,7 +1624,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
       if(ufoBayInspectionAssigned){human.aiReinforcementSourceKind="ufo-bay";human.aiReinforcementSourcePhase=TACTICAL_UFO_BAY_CLEARANCE_PHASES.clearing;human.aiTurnAction="ufo-bay-clearing";covers=tacticalSetUfoBayClearancePhase(covers,TACTICAL_UFO_BAY_CLEARANCE_PHASES.clearing,{round:initialRound+round-1,inspectorId:fireTeamLeader?.id,teamId:ufoBayInspectionTeamId});}
       const beaconSoloAssault = Boolean(beaconAutomatedEndgame && activeBeacon && human.id === beaconAssaulterId);
       const hybridBeaconSupport = Boolean(aiControlMode === "hybrid" && beaconNeutralizePhase && activeBeacon && fireTeamLeader?.id !== human.id && !civilianDutyIds.has(human.id));
-      const beaconStrikeAssigned = Boolean(activeBeacon && beaconKnowledgeActive() && !combatPriority && !playerCommandTarget && !civilianDutyIds.has(human.id) && (beaconSoloAssault || hybridBeaconSupport || (!beaconNeutralizePhase && human.fireTeamId === beaconStrikeTeamId)));
+      const beaconStrikeAssigned = Boolean(activeBeacon && beaconKnowledgeActive() && !liveCombatPriority && !playerCommandTarget && !civilianDutyIds.has(human.id) && (beaconSoloAssault || hybridBeaconSupport || (!beaconNeutralizePhase && human.fireTeamId === beaconStrikeTeamId)));
       const beaconStrikeMove = Boolean(beaconStrikeAssigned && (beaconSoloAssault || fireTeamLeader?.id === human.id));
       const beaconStrikeAttack = Boolean(beaconStrikeAssigned && tacticalUnitCanBreachAlienBeaconShield(human, activeBeacon.alienBeaconShield));
       const beaconCloseAssaultMove = Boolean(beaconStrikeMove && (beaconSoloAssault ? tacticalAiBeaconCloseAssaultRequired(human,activeBeacon) : !tacticalFireTeamHasExternalAlienBeaconBreach(fireTeamLeader, humans, activeBeacon.alienBeaconShield)));
@@ -1624,7 +1640,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
         return;
       }
       const beaconStrikeTarget = beaconStrikeMove ? { ...activeBeacon, id: activeBeacon.id || "alien-field-beacon", team: "beacon", hp: Math.max(1, Number(activeBeacon.hp) || 1), alive: true } : null;
-      const formationTarget = beaconAutomatedEndgame ? null : fireTeamLeader?.id !== human.id && (hybridCommandActive || !combatPriority) ? tacticalFireTeamFormationTargetForUnit(human, allUnits(), covers, mission) : null;
+      const formationTarget = beaconAutomatedEndgame ? null : fireTeamLeader?.id !== human.id && (hybridCommandActive || !liveCombatPriority) ? tacticalFireTeamFormationTargetForUnit(human, allUnits(), covers, mission) : null;
       const hybridEscortSupportStays=Boolean(hybridCommandActive&&fireTeamLeader?.id!==human.id&&tacticalEscortFollowers(allUnits(),fireTeamLeader?.id).length&&tacticalEscortSupportModeForTeam(allUnits(),human.fireTeamId)!=="breakoff");
       const hybridCombatTarget=hybridCommandActive&&fireTeamLeader?.id!==human.id&&!hybridEscortSupportStays?tacticalHybridCombatTargetForFireTeam(playerOrder,fireTeamLeader,allUnits(),covers,mission):null;
       const hybridFlankMove=Boolean(hybridCombatTarget&&formationTarget);
@@ -1697,6 +1713,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
         human.aiTurnAction=plan.rangedStandoffActive?(plan.rangedCoverScore>0?"ranged-cover-position":"ranged-standoff"):"move";
         roundMovementCommittedIds.add(human.id);
         roundActedIds.add(human.id);
+        recordNewContactInterrupt(human,phase==="extension"?"movement-reassessment":"movement");
         return true;
       };
       const directResponse = !formationMove && !playerCommandMove && personalContacts.length === 0 && (squadContacts.length > 0 || Boolean(search.remembered) || Boolean(distressSearch));
@@ -1879,6 +1896,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
         tacticalMovementTrailAppend(frameMovementTrails,human.id,path);
         const cell=path[path.length-1];human.x=cell.x;human.y=cell.y;human.tu=Math.max(0,Number(human.tu)-Math.max(0,Number(plan.steps)||0)*4);Object.assign(human,tacticalAutoStandForMovement(human));
         human.aiMoveVisited=[...(human.aiMoveVisited||[]),...path.map(point=>tacticalKey(point.x,point.y))].slice(-24);human.aiTurnAction="emergency-grid-search";human.aiEmergencyGridRecovery=true;human.aiTurnReassessed=true;roundMovementCommittedIds.add(human.id);roundActedIds.add(human.id);
+        recordNewContactInterrupt(human,"emergency-grid-movement");
       }else{human.aiTurnAction="emergency-grid-hold";human.aiEmergencyGridRecovery=true;}
       tacticalVisibleCellSet(allUnits(),covers,mission).forEach(key=>exploredCells.add(key));
       const range=human.weaponKind==="ballistic"?18:20;
@@ -1978,7 +1996,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
     aiTurnAudits.push({ round: initialRound + round - 1, viableIds: viableAtStart, actedIds: Array.from(roundActedIds), escortIds: Array.from(civilianDutyIds), combatPriority, contactIds: observedBeforeRescue.map((alien) => alien.id), friendlyTrafficDeferredIds:[...deferredFriendlyTrafficIds], idleIds: viableAtStart.filter((id) => !roundActedIds.has(id)) });
     const rescueProgressAfterHuman = tacticalAiRescueProgress(mission, civilians);
     const humanFrameLabel=!aliens.some((unit)=>unit.alive)&&beaconObjectiveAfterHuman.pending?beaconObjectiveAfterHuman.phase==="locate"?"Secure the Beacon - coordinated search":beaconObjectiveAfterHuman.phase==="no-breach"?"Secure the Beacon - breach capability unavailable":"Secure the Beacon - neutralization":ufoBayObjectiveAfterHuman.pending?`UFO Bay - ${String(ufoBayObjectiveAfterHuman.phase).replace(/-/g," ")}`:secureRescuePhase ? `Secure rescue ${rescueProgressAfterHuman.rescued}/${rescueProgressAfterHuman.required}` : rescueEvents.length ? `Exchange ${initialRound + round - 1}A - AI rescue priority` : round === 1 && !continuing ? "Opening volley" : `Exchange ${initialRound + round - 1}A`;
-    frames.push({ ...currentFrameBase(), round: initialRound + round - 1, label: humanFrameLabel, shots, movementTrails: tacticalMovementTrailSnapshot(frameMovementTrails), soldiers: snapshotUnits(humans, previousHumanAlive), aliens: snapshotUnits(aliens, previousAlienAlive), civilians: snapshotUnits(civilians, previousCivilianAlive), beaconObjective:{phase:beaconObjectiveAfterHuman.phase,pending:beaconObjectiveAfterHuman.pending,message:beaconObjectiveAfterHuman.message},ufoBayObjective:{phase:ufoBayObjectiveAfterHuman.phase,pending:ufoBayObjectiveAfterHuman.pending,message:ufoBayObjectiveAfterHuman.message} });
+    frames.push({ ...currentFrameBase(), round: initialRound + round - 1, label: humanFrameLabel, shots, movementTrails: tacticalMovementTrailSnapshot(frameMovementTrails), actionOrderIds:Array.from(roundActedIds), contactInterrupts:roundContactInterrupts.map(interrupt=>({...interrupt,alienIds:[...interrupt.alienIds],alienNames:[...interrupt.alienNames],remainingActorIds:[...interrupt.remainingActorIds]})), soldiers: snapshotUnits(humans, previousHumanAlive), aliens: snapshotUnits(aliens, previousAlienAlive), civilians: snapshotUnits(civilians, previousCivilianAlive), beaconObjective:{phase:beaconObjectiveAfterHuman.phase,pending:beaconObjectiveAfterHuman.pending,message:beaconObjectiveAfterHuman.message},ufoBayObjective:{phase:ufoBayObjectiveAfterHuman.phase,pending:ufoBayObjectiveAfterHuman.pending,message:ufoBayObjectiveAfterHuman.message} });
     const reinforcementTurn = tacticalAlienReinforcementTurn({ state: alienReinforcementState, units: allUnits(), covers, mission, round: initialRound + round - 1 });
     alienReinforcementState = reinforcementTurn.state;
     if(reinforcementTurn.event?.kind==="beacon-replacement-countdown"||reinforcementTurn.event?.kind==="beacon-offline")logs.push(`Alien beacon destroyed. Long-range sensors predict a replacement deployment attempt on round ${reinforcementTurn.event?.replacementDueRound||alienReinforcementState.beaconReplacementDueRound}.`);
@@ -4154,6 +4172,14 @@ function tacticalAiPersonallyObservedAliens(observer=null,units=[],covers=[],mis
   if(!observer||observer.hp<=0||observer.alive===false)return[];
   return units.filter(unit=>unit.team==="alien"&&unit.hp>0&&unit.alive!==false&&tacticalShotCommitVisibilityState({shooter:observer,target:unit,covers,mission,range:40,requiredTargetTeam:"alien"}).ok);
 }
+function tacticalAiNewContactInterruptRecord({observer=null,units=[],covers=[],mission=null,knownContactIds=[],remainingActorIds=[],round=1,sequence=0,source="movement"}={}){
+  if(!observer||observer.team!=="human"||observer.hp<=0||observer.alive===false)return null;
+  const known=knownContactIds instanceof Set?knownContactIds:new Set(knownContactIds||[]);
+  const contacts=tacticalAiPersonallyObservedAliens(observer,units,covers,mission).filter(alien=>!known.has(alien.id)).sort((left,right)=>tacticalDistance(observer,left)-tacticalDistance(observer,right)||String(left.id).localeCompare(String(right.id)));
+  if(!contacts.length)return null;
+  const alienIds=contacts.map(alien=>alien.id);
+  return{id:`contact-replan:${Math.max(1,Number(round)||1)}:${Math.max(0,Number(sequence)||0)}:${observer.id}:${alienIds.join("|")}`,round:Math.max(1,Number(round)||1),observerId:observer.id,observerName:observer.name||"AEGIS soldier",alienIds,alienNames:contacts.map(alien=>alien.name||alien.alienType||"alien contact"),remainingActorIds:Array.from(new Set((remainingActorIds||[]).filter(Boolean))),source:String(source||"movement"),label:"Contact - replanning remaining fire teams"};
+}
 function tacticalAiRevealPersonallyVisibleContacts(observer=null,units=[],covers=[],mission=null){
 if(!observer||observer.hp<=0||observer.alive===false)return[];
 const context=tacticalVisibilityContext(covers,mission);
@@ -4383,6 +4409,16 @@ function tacticalAiSequentialPlaybackFrames(sourceFrames=[],{includeHiddenAction
       const currentUnit=groups.flatMap(group=>working[group]||[]).find(unit=>unit.id===unitId)||priorById.get(unitId);
       return currentUnit?{...finalUnit,x:currentUnit.x,y:currentUnit.y,facing:currentUnit.facing||finalUnit.facing,movementTrail:currentUnit.movementTrail||finalUnit.movementTrail}:{...finalUnit};
     };
+    const contactInterrupts=(targetFrame.contactInterrupts||[]).filter(interrupt=>Array.isArray(interrupt?.alienIds)&&interrupt.alienIds.length);
+    const emittedContactInterruptIds=new Set();
+    const emitContactInterruptsFor=observerId=>{
+      contactInterrupts.filter(interrupt=>!emittedContactInterruptIds.has(interrupt.id)&&(observerId==null||interrupt.observerId===observerId)).forEach(interrupt=>{
+        emittedContactInterruptIds.add(interrupt.id);
+        const contactIds=new Set(interrupt.alienIds||[]);
+        working.aliens=(working.aliens||[]).map(unit=>contactIds.has(unit.id)?(stagedCombatUnit(unit.id)||unit):{...unit,fellThisFrame:false});
+        output.push({...working,label:interrupt.label||"Contact - replanning remaining fire teams",shots:[],contactInterrupts:[],contactInterrupt:{...interrupt},contactReplanHold:true,contactRevealIds:[...contactIds],sequentialAction:true,phaseComplete:false,actionActorId:interrupt.observerId||null,actionMovementIds:[]});
+      });
+    };
     const shotActors=[];
     (targetFrame.shots||[]).forEach(shot=>{
       const actor=findActor(targetFrame,shot);
@@ -4391,6 +4427,12 @@ function tacticalAiSequentialPlaybackFrames(sourceFrames=[],{includeHiddenAction
     const shotActorIds=new Set(shotActors.map(actor=>actor.id));
     const ordered=groups.flatMap(group=>targetFrame[group]||[]).filter(unit=>moved(priorById.get(unit.id),unit)&&!shotActorIds.has(unit.id));
     ordered.push(...shotActors);
+    const actionOrderIds=Array.isArray(targetFrame.actionOrderIds)?targetFrame.actionOrderIds:[];
+    if(actionOrderIds.length){
+      const actionRank=new Map(actionOrderIds.map((unitId,index)=>[unitId,index]));
+      const fallbackRank=new Map(ordered.map((unit,index)=>[unit.id,index]));
+      ordered.sort((left,right)=>(actionRank.get(left.id)??Number.MAX_SAFE_INTEGER)-(actionRank.get(right.id)??Number.MAX_SAFE_INTEGER)||(fallbackRank.get(left.id)??0)-(fallbackRank.get(right.id)??0));
+    }
     const shown=new Set();
     const handledShots=new Set();
     for(const actor of ordered){
@@ -4424,8 +4466,10 @@ function tacticalAiSequentialPlaybackFrames(sourceFrames=[],{includeHiddenAction
         groups.forEach(group=>{working[group]=(working[group]||[]).map(unit=>killedTargetIds.has(unit.id)?stagedCombatUnit(unit.id):{...unit,fellThisFrame:false});});
         if(observable)output.push({...working,label:`${targetFrame.label} - impact`,shots:[],sequentialAction:true,phaseComplete:false,impactResult:true,actionActorId:actor.id,actionMovementIds:[]});
       }
+      emitContactInterruptsFor(actor.id);
       groups.forEach(group=>{working[group]=(working[group]||[]).map(unit=>({...unit,fellThisFrame:false}));});
     }
+    emitContactInterruptsFor(null);
     const remainingShots=(targetFrame.shots||[]).filter((shot,index)=>!handledShots.has(index)&&(includeHiddenActions||shot.observable!==false));
     output.push({...targetFrame,shots:remainingShots,sequentialAction:true,phaseComplete:true,resolutionCompleted:phaseResolvedAlien,actionActorId:null,actionMovementIds:[]});
   }
@@ -9394,6 +9438,7 @@ const current=(frame?.aliens||[]).find(unit=>unit.id===shot.toId);if(!current||!
 const previous=(previousFrame?.aliens||[]).find(unit=>unit.id===shot.toId);return !previous||(!previous.visible&&!previous.revealed);
 }
 function playAiPlaybackFrame(frame, view = aiPlayback?.view, previousFrame = null) {
+  if(frame?.contactReplanHold){const contact=frame.contactInterrupt||{};const names=(contact.alienNames||[]).join(", ")||"alien contact";setLog(old=>[`Contact - ${contact.observerName||"AEGIS"} spotted ${names}. Remaining fire-team actions recalculated.`,...old].slice(0,8));}
   const dialogueCue = tacticalAiFrameDialogueCue(frame, previousFrame);
   if (dialogueCue) onDialogue(dialogueCue.eventKey, { soldier: dialogueCue.soldier, category: "soldier", cooldownMs: 650, queue: true });
   if(dialogueCue?.statusLine)setLog(old=>[`${dialogueCue.soldier?.name?.split?.(" ")?.[0]||"Fire-team lead"}: “${dialogueCue.statusLine}.”`,...old].slice(0,8));
@@ -10809,7 +10854,8 @@ PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.23.0138_PATCH_NOTES_HISTORY_SCOPE_S
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.23.1009_PER_SHOOTER_VISIBILITY_AND_VIP_EXTRACTION_HANDOFF_PATCH",date:"August 23, 2026",title:"Per-Shooter Visibility + VIP Extraction Handoff",summary:"Makes every AEGIS shot require the firing soldier's current authoritative sightline and prevents a completed VIP extraction detail from leaving support soldiers permanently frozen at the Skyranger.",items:["Manual fire, Simulation AI fire, emergency recovery fire, and reaction fire now share one final per-shooter range, line-of-sight, and tactical-level commit check before TU, ammunition, damage, or a shot animation can be committed.","The old synthetic long-range-contact playback shot has been removed; AI presentation can no longer invent a tracer between arbitrary units when no real shot occurred.","Every verified AEGIS shot marks its exact alien target as required for that shot frame, keeping the target glyph/model rendered for the attack without revealing unrelated aliens or changing fog knowledge.","When the last escorted VIP enters extraction, stale VIP targets and extraction-guard orders are cleared. The escort leader retains the egress action already spent, while stationary support soldiers with TU remaining are released to normal AI duties in the same round.","Stream continuation and every later AI round also normalize orphaned extraction guards, so Hybrid-to-Simulation handoffs and active saves self-heal rather than moving only the former escort leader round after round.","Living units whose legacy or handoff snapshot omitted an explicit alive:true flag now still refresh TU correctly; confirmed dead units do not. Fire-team formation, escort priority, fog, LOS, and save format 4 remain intact."]});
 PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 23, 2026",title:"Multi-Fire-Team VIP Rescue Traffic",summary:"Keeps every active rescue fire team moving after the first VIP handoff by reserving a clear Skyranger traffic lane and assigning rescue authority to the soldier who actually owns each escort.",items:["Skyranger ramp, egress, and approach-lane cells are now reserved for evacuation traffic. Completed escorts and perimeter guards choose side positions outside that lane instead of blocking later VIP columns.","Extraction routes treat members of the escort's own fire team as mobile formation participants rather than permanent path blockers.","If a support soldier rather than the formal fire-team leader owns the VIP escort, that soldier becomes the team's rescue actor and the rest of the fire team forms around the actual escort owner.","Active rescue assignment metadata is preserved across the whole assigned fire team when another team completes its VIP handoff; only the completed detail is released.","The existing Manual, Hybrid, streamed Simulation, save/load, formation, active-escort, fog, LOS, and mission-resolution rules remain authoritative. Save format stays at 4."]});
 PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 23, 2026",title:"Post-Rescue Beacon Assault Handoff",summary:"Prevents a completed VIP operation from burning empty rounds at the Skyranger by giving full Simulation a goal-directed beacon assault and restoring Hybrid support formation authority.",items:["Once all VIP work and known alien combat are resolved, full Simulation selects a breach-capable soldier who still has TU instead of choosing a zero-TU Hybrid-held leader as the beacon assaulter.","The close-assault route now prefers a reachable step that reduces beacon distance when the hazard-aware route initially points away, and uses a bounded local approach when a complete shield-entry route cannot be built in one planning pass.","Non-assaulting soldiers advance toward legal three-to-five-hex beacon perimeter positions instead of holding indefinitely whenever they are already more than three hexes away.","Hybrid AI no longer applies the full-Simulation solo-assault/perimeter override. Supporting soldiers retain leader-relative formation movement and can attack the beacon after following a player-directed leader into a legal firing position.","Completed escort and extraction-guard normalization, TU, occupancy, vehicles, hazards, shield rules, fog, LOS, AI knowledge, and save format 4 remain authoritative."]});
-PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 23, 2026",title:"Support-First Escort Building Egress",summary:"Prevents friendly supports from trapping an active VIP or civilian escort inside a procedural building by clearing the chosen door or breach before the escort column advances.",items:["When the actual escort owner and follower are inside the same building with no authoritatively known living alien inside, supporting soldiers occupying the structure, opening, or exterior lane move first.","The clearance pass selects an existing door or destroyed-wall breach, reserves the leader and follower route plus a short outside lane, and stages supports on legal exterior side cells.","Every support move spends the soldier's current TU while preserving the selected shot reserve, hard cover, live vehicle footprints, hazards, extraction traffic, unrelated occupancy, and the eight-step AI movement bound.","Supports moved by the clearance pass are recorded as already acted and excluded from the escort's later formation adjustment, preventing a second movement phase in both Simulation and Hybrid support playback.","A known alien inside suppresses quiet egress and leaves contact plus Ask / Stay / Engage doctrine authoritative. Hidden aliens are excluded from planning knowledge and can only block a real attempted commit. Save format remains 4."]});
+PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.23.1930_SUPPORT_FIRST_ESCORT_BUILDING_EGRESS_PATCH",date:"August 23, 2026",title:"Support-First Escort Building Egress",summary:"Prevents friendly supports from trapping an active VIP or civilian escort inside a procedural building by clearing the chosen door or breach before the escort column advances.",items:["When the actual escort owner and follower are inside the same building with no authoritatively known living alien inside, supporting soldiers occupying the structure, opening, or exterior lane move first.","The clearance pass selects an existing door or destroyed-wall breach, reserves the leader and follower route plus a short outside lane, and stages supports on legal exterior side cells.","Every support move spends the soldier's current TU while preserving the selected shot reserve, hard cover, live vehicle footprints, hazards, extraction traffic, unrelated occupancy, and the eight-step AI movement bound.","Supports moved by the clearance pass are recorded as already acted and excluded from the escort's later formation adjustment, preventing a second movement phase in both Simulation and Hybrid support playback.","A known alien inside suppresses quiet egress and leaves contact plus Ask / Stay / Engage doctrine authoritative. Hidden aliens are excluded from planning knowledge and can only block a real attempted commit. Save format remains 4."]});
+PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 23, 2026",title:"New-Contact Interrupt + Remaining-Round Replan",summary:"Pauses streamed AI playback when an AEGIS soldier newly spots an alien and recalculates every remaining unplayed fire-team action from the committed contact state.",items:["A contact interrupt requires a living alien to become personally visible through the current authoritative range, level, lighting, smoke, facing, wall, door, and window LOS rules. Hidden or remembered coordinates cannot trigger it.","The discovering soldier's completed movement, TU spending, reveal, shot, damage, escort progress, and formation state stay committed. Only AEGIS actions that have not begun are recalculated.","Remaining Simulation actors immediately treat the live alien contact as higher priority than quiet formation, beacon, UFO-bay, or patrol work. Hybrid retains player-directed leader orders while supports reuse existing contact flanking and escort doctrine.","Playback inserts a visible Contact - replanning remaining fire teams hold after the discovering actor's atomic action, reveals only the verified contacts, and then resumes with the recalculated actors.","Each alien can trigger at most one interrupt per round, preventing repeated visibility toggles from creating a replan loop. Save format remains 4."]});
 for(const entry of PATCH_NOTES_HISTORY){const historicalBuild=PATCH_NOTE_BUILD_BY_TITLE[entry.title];if(historicalBuild)entry.build=historicalBuild;}
 function PatchNotesLibraryScreen(){
   const selected=PATCH_NOTES_HISTORY.find(entry=>entry.build===selectedPatchBuild)||PATCH_NOTES_HISTORY[0];
@@ -11535,6 +11581,27 @@ function tacticalSupportFirstEscortBuildingEgressContractTest(){
 }
 const AEGIS_RUN_SELF_TESTS_BEFORE_1930_SUPPORT_FIRST_ESCORT_BUILDING_EGRESS=runSelfTests;
 runSelfTests=function runSelfTestsWith1930SupportFirstEscortBuildingEgress(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_1930_SUPPORT_FIRST_ESCORT_BUILDING_EGRESS(),{name:"Quiet building escorts move supports through the selected exit before advancing the VIP column",pass:tacticalSupportFirstEscortBuildingEgressContractTest()}];};
+const TACTICAL_NEW_CONTACT_INTERRUPT_REMAINING_ROUND_REPLAN_PATCH=true;
+function tacticalNewContactInterruptRemainingRoundReplanContractTest(){
+  const mission={id:"qa-contact-replan",kind:"Alien Terror Raid",region:"Europe",threat:2,clockHour:12,gridSize:16};
+  const observer={id:"qa-contact-observer",name:"Observer",team:"human",hp:40,alive:true,x:2,y:2,facing:"E",tu:52,maxTu:52,weaponKind:"ballistic",weaponRange:18,ammo:12,gridSize:16};
+  const support={...observer,id:"qa-contact-support",name:"Support",x:2,y:4};
+  const alien={id:"qa-new-contact",name:"Signal Leech",alienType:"Signal Leech",team:"alien",hp:30,alive:true,x:7,y:2,facing:"W",revealed:false,visible:false,gridSize:16};
+  const record=tacticalAiNewContactInterruptRecord({observer,units:[observer,support,alien],covers:[],mission,knownContactIds:new Set(),remainingActorIds:[support.id],round:3,sequence:0,source:"movement"});
+  const duplicate=tacticalAiNewContactInterruptRecord({observer,units:[observer,support,alien],covers:[],mission,knownContactIds:new Set([alien.id]),remainingActorIds:[support.id],round:3,sequence:1,source:"movement"});
+  const blocked=tacticalAiNewContactInterruptRecord({observer,units:[observer,support,alien],covers:[{id:"qa-contact-wall",x:4,y:2,hp:80,kind:"hard",block:3,visual:"wall"}],mission,knownContactIds:new Set(),remainingActorIds:[support.id],round:3,sequence:0,source:"movement"});
+  if(!record||duplicate||blocked)return false;
+  const prior={round:3,label:"Exchange 3A",shots:[],soldiers:[{...observer,x:1,y:2},{...support}],aliens:[{...alien,revealed:false,visible:false}],civilians:[]};
+  const final={round:3,label:"Exchange 3A",shots:[{fromId:observer.id,toId:alien.id,fromX:observer.x,fromY:observer.y,toX:alien.x,toY:alien.y,side:"human",observable:true,hit:true,killed:false}],actionOrderIds:[observer.id,support.id],contactInterrupts:[record],soldiers:[{...observer,x:2,y:2,aiTurnAction:"move-fire"},{...support,x:4,y:4,aiContactReplanId:record.id,aiTurnAction:"ranged-cover-position"}],aliens:[{...alien,revealed:true,visible:true,lastKnownX:alien.x,lastKnownY:alien.y}],civilians:[]};
+  const playback=tacticalAiSequentialPlaybackFrames([prior,final]);
+  const holdIndex=playback.findIndex(frame=>frame.contactReplanHold&&frame.contactInterrupt?.id===record.id);
+  const supportIndex=playback.findIndex(frame=>frame.actionActorId===support.id);
+  const hold=playback[holdIndex];
+  const resolverSource=String(resolveMission),sequenceSource=String(tacticalAiSequentialPlaybackFrames),playbackSource=String(playAiPlaybackFrame);
+  return Boolean(TACTICAL_NEW_CONTACT_INTERRUPT_REMAINING_ROUND_REPLAN_PATCH&&record.alienIds.length===1&&record.alienIds[0]===alien.id&&record.remainingActorIds.length===1&&record.remainingActorIds[0]===support.id&&observer.tu===52&&holdIndex>0&&supportIndex>holdIndex&&hold?.shots?.length===0&&hold?.aliens?.find(unit=>unit.id===alien.id)?.revealed&&Array.isArray(hold?.actionMovementIds)&&hold.actionMovementIds.length===0&&resolverSource.includes("const liveCombatPriority=squadContacts.length>0")&&resolverSource.includes("recordNewContactInterrupt(human,phase===\"extension\"")&&resolverSource.includes("actionOrderIds:Array.from(roundActedIds)")&&resolverSource.includes("contactInterrupts:roundContactInterrupts.map")&&sequenceSource.includes("const actionOrderIds=Array.isArray(targetFrame.actionOrderIds)")&&sequenceSource.includes("contactReplanHold:true")&&playbackSource.includes("Remaining fire-team actions recalculated"));
+}
+const AEGIS_RUN_SELF_TESTS_BEFORE_2045_NEW_CONTACT_REPLAN=runSelfTests;
+runSelfTests=function runSelfTestsWith2045NewContactReplan(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_2045_NEW_CONTACT_REPLAN(),{name:"Newly spotted aliens interrupt playback and replan every remaining unplayed AEGIS action",pass:tacticalNewContactInterruptRemainingRoundReplanContractTest()}];};
 AEGIS_POST_DEFERRED_BUILD_HEALTH_RUNNER=runSelfTests;
 runSelfTests=runDeferredSelfTests;
 ReactDOM.createRoot(document.getElementById("root")).render(/*#__PURE__*/React.createElement(AlienResponseCommand,null));

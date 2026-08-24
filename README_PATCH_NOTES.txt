@@ -1,6 +1,55 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.23.2045_NEW_CONTACT_INTERRUPT_REMAINING_ROUND_REPLAN_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+AI-controlled tactical rounds now visibly pause when an AEGIS soldier newly spots an alien, then recalculate every remaining unplayed fire-team action from that verified contact. Completed movement and combat remain committed.
+
+AUTHORITATIVE CONTACT INTERRUPT
+-------------------------------
+- A contact interrupt occurs only when a living alien becomes personally visible to a living AEGIS observer through the current range, tactical-level, facing, lighting, smoke, wall, door, and window LOS rules.
+- Persistent reveal flags, remembered coordinates, another side's knowledge, and hidden aliens cannot create the interrupt.
+- Each alien identity can trigger at most once in a round, preventing repeated visibility changes from producing an interrupt loop.
+- Escort movement and the emergency grid-search fallback use the same contact checkpoint as ordinary Simulation and Hybrid support movement.
+
+REMAINING-ACTION REPLAN
+-----------------------
+- The discovering actor's atomic action finishes first. Its position, spent TU/ammunition, reveal, shot, damage, kills, escort progress, and formation state are never refunded or replayed.
+- Only living AEGIS actors whose actions have not begun are marked for the contact replan.
+- Those remaining actors recompute against the live battlefield. Full Simulation drops quiet formation, beacon, UFO-bay, and patrol priorities while a visible alien is present and returns to normal contact movement, cover, flanking, and fire decisions.
+- Hybrid keeps player-directed fire-team leader orders. Supporting soldiers retain established enemy-relative flanking and the mission's Ask / Stay / Engage escort-support doctrine instead of changing control mode.
+
+PLAYBACK
+--------
+- Streamed Tactical Map playback inserts a dedicated **Contact - replanning remaining fire teams** hold after the discovering actor's committed action.
+- The hold reveals only the verified contact identities and carries no movement or weapon action of its own.
+- Recalculated actors then resume in the existing sequential playback stream; completed actors do not receive another action or animation.
+
+VALIDATION
+----------
+- Build Health covers valid contact acquisition, solid-wall rejection, same-round deduplication, exact remaining-actor ownership, no mutation by the contact-record helper, verified target reveal during the hold, and playback ordering before the next actor.
+- The static build seam requires the new contact helper, interrupt/replan patch marker, playback hold, and Build Health contract.
+- Save format remains 4. Fog, LOS, TU, ammunition, damage, fire-team formation, escort doctrine, mission resolution, and AI knowledge remain authoritative.
+
+MANUAL TEST GATES
+-----------------
+1. Start a no-contact Simulation round with several fire teams. Let an early soldier reveal an alien while moving; confirm playback pauses after that soldier and later units switch from search/quiet formation to legal contact behavior.
+2. Repeat with the alien behind a solid wall, closed door, smoke, and nighttime vision boundary. Confirm no interrupt occurs until personal LOS is genuinely established.
+3. Repeat in Hybrid with a player-directed leader waypoint and supporting soldiers. Confirm the leader order remains player-owned, supports replan/flank, and control returns to Hybrid rather than full Simulation.
+4. Confirm the discovering soldier does not regain TU, replay movement, or act twice, and the same alien cannot repeatedly interrupt one round.
+5. Repeat during an active VIP escort under Ask, Stay, and Engage, and across streamed continuation plus active-mission save/load.
+
+ROADMAP DOCUMENTATION
+---------------------
+- Added future Globe / Terminator Map UFO visual parity: recognizable alien-craft silhouette, color, glow, class, selection, and damage presentation without changing strategic detection or interception rules.
+
+PREVIOUS PATCH NOTES
+====================
+
 Build: v0.26.08.23.1930_SUPPORT_FIRST_ESCORT_BUILDING_EGRESS_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

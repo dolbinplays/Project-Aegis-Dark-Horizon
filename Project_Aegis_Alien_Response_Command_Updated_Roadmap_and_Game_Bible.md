@@ -2,9 +2,36 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-23
-Current handoff build: `v0.26.08.23.1930_SUPPORT_FIRST_ESCORT_BUILDING_EGRESS_PATCH`
+Current handoff build: `v0.26.08.23.2045_NEW_CONTACT_INTERRUPT_REMAINING_ROUND_REPLAN_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1930 makes quiet building evacuation support-first. When the real escort owner and follower share a building, same-team supports clear the selected door/breach and exterior lane with their real TU before the civilian column advances. Known alien contact suppresses quiet clearance, hidden aliens do not inform planning, and moved supports cannot receive a duplicate formation action. Full Simulation and Hybrid share the rule without changing control ownership; save format stays at 4.**
+Current patch status: **Browser 2045 turns newly acquired alien sight into an explicit AI action-queue interrupt. The discovering actor completes its atomic action, streamed playback pauses and reveals only the verified contact, and every remaining unplayed AEGIS actor recalculates from the live threat state. Full Simulation yields quiet objectives to contact behavior; Hybrid preserves player leader orders and escort doctrine. Completed TU, movement, shots, damage, rescues, and formation changes are not replayed or refunded; save format stays at 4.**
+
+
+## Browser 2045 - New-Contact Interrupt and Remaining-Round Replan
+
+**Status:** Implemented from the queued tactical-AI requirement that a newly spotted alien must interrupt a preplanned quiet round instead of allowing the remaining soldiers to continue stale search, formation, beacon, or UFO-bay actions.
+
+### Authoritative contact boundary
+- A contact interrupt requires a living alien to become personally visible to a living AEGIS observer through the shared current range, tactical-level, facing, lighting, smoke, wall, door, and window LOS authority.
+- A persistent `revealed` flag, remembered coordinates, another unit's stale report, playback-only visibility, or hidden AI knowledge cannot create the interrupt.
+- The resolver records the observer, exact alien identities, round, acquisition source, and the living AEGIS actors whose actions have not begun. Each alien identity is deduplicated for the rest of that round so visibility toggles cannot create a replan loop.
+- Ordinary movement, escort-priority movement, turn-start reassessment, and emergency grid-search movement all reach the same contact checkpoint.
+
+### Committed action and replan ownership
+- The discovering actor finishes its current atomic action. Its destination, TU/ammunition spending, stance, reveal, shot, damage, kill, escort progress, and formation changes remain committed.
+- Only remaining unplayed AEGIS actors are marked with the contact-replan identity. An actor already moved by escort scheduling, already processed normally, or otherwise owned by a completed action cannot act again.
+- Each remaining actor computes contacts from the current battlefield at the start of its turn. In full Simulation, a live visible alien suppresses quiet formation, beacon, crashed-UFO bay, and patrol priorities and restores established threat-aware cover, flanking, movement, reserve, target, and fire decisions.
+- Hybrid retains the player's fire-team leader positions and waypoints. Supports continue using enemy-relative flanking and Ask / Stay / Engage escort-support doctrine; the interrupt cannot convert the mission to full Simulation.
+
+### Streamed playback
+- The sequential Tactical Map stream inserts a dedicated **Contact - replanning remaining fire teams** hold after the discovering actor's committed presentation and before the next recalculated actor.
+- The hold carries no movement or weapon action. It reveals only the verified alien identities, keeps unrelated fog and hidden aliens protected, and records a concise observer/contact message in the tactical log.
+- The existing action stream then resumes. Completed actors are neither replayed nor refunded, and the persistent 2D/Three.js battlefield consumes the same committed frame state.
+
+### Validation boundary
+- Build Health covers a valid contact, rejection through a solid wall, same-round contact deduplication, exact remaining-actor ownership, no TU mutation by the contact-record helper, a zero-action playback hold with the verified alien rendered, and hold ordering before the next actor.
+- The static build seam requires the helper, patch marker, playback hold, and deferred Build Health record. Manual gates remain multi-team Simulation and Hybrid rounds, Ask/Stay/Engage escorts, walls/windows/smoke/night lighting, streamed continuation, and active-mission save/load.
+- Fog, LOS, lighting, TU, ammunition, damage, fire-team formation, escort duty, mission resolution, AI knowledge, and save format **4** remain authoritative.
 
 
 ## Browser 1930 - Support-First Escort Building Egress
@@ -471,6 +498,8 @@ Implementation update (2026-08-19): **Browser 2325 targets the live reproduction
 4. Load or construct an invalid unit-inside-vehicle state and confirm integrity repair moves the unit to a legal cell.
 5. Destroy the vehicle and confirm its intended rubble/passability rules still apply.
 6. Verify 2D and Three.js playback show the same authoritative route without snapping through the vehicle.
+
+Roadmap-only alien-pathing regression follow-up (2026-08-23): **Explicitly verify that aliens cannot path through or end movement inside any cell of an intact land vehicle's authoritative footprint. Audit ordinary alien movement, direct pursuit, flanking, retreat/fear behavior, patrol/search, emergency stall recovery, reinforcement placement, streamed AI continuation, save/load integrity repair, and every alien type or footprint size against cars, vans, utility vehicles, trucks, and buses in all orientations. Both route planning and the final movement-commit boundary must reject occupied vehicle cells; playback must never show an alien crossing a vehicle and snapping back or resolving inside it. Destroyed vehicles remain governed by their established rubble/passability state. This is a verification and regression-hardening item and must not grant alien AI knowledge, alter TU costs, change vehicle durability, or affect LOS/cover rules. No code or build-number change is part of this roadmap-only addition.**
 
 
 ## Browser 1130 — Stable Mission Launch Confirmation Boundary
@@ -1040,9 +1069,9 @@ Roadmap-only regression follow-up (2026-08-22): **Live testing still shows AEGIS
 
 **Planned validation gate:** for manual, Hybrid, Simulation, reaction, burst, preferred-target, and post-movement fire, place aliens behind solid walls, behind closed doors, behind and visible through windows, inside/outside smoke, beyond night vision, inside true illumination, on another alien-base level, and just beyond the shooter's facing/LOS boundary. Confirm the soldier fires only when that shooter personally sees the alien; valid targets render before the shot in 2D, 3D Iso, FPV, and TPV and remain visible through impact/death presentation; invalid shots spend no TU or ammunition; and no unrelated alien or fogged cell is revealed. Repeat through active-mission save/load and streamed AI playback.
 
-Roadmap-only planning update (2026-08-23): **When an AEGIS soldier establishes a new authoritative alien contact during an AI-controlled movement sequence, pause the queued round after the current atomic movement step/frame and recalculate every remaining unplayed AEGIS action from the newly visible threat state. Already completed movement, TU/ammunition spending, damage, reveals, escort progress, and formation changes remain committed and are never replayed or refunded. No code or build-number change is part of this roadmap-only addition.**
+Implemented tactical AI update (Browser 2045, 2026-08-23): **When an AEGIS soldier establishes a new authoritative alien contact during an AI-controlled movement sequence, the queued round now pauses after the current atomic action and every remaining unplayed AEGIS action recalculates from the newly visible threat state. Already completed movement, TU/ammunition spending, damage, reveals, escort progress, and formation changes remain committed and are never replayed or refunded.**
 
-### Future tactical AI - New-contact interrupt and remaining-round replan
+### Implemented tactical AI - New-contact interrupt and remaining-round replan
 - A contact interrupt is triggered only by a living alien becoming personally visible to an AEGIS observer through the authoritative current visibility rules; persistent reveal flags, stale reports, hidden coordinates, or presentation-only playback state cannot trigger it.
 - Finish and display the current atomic movement step before pausing. Commit the acting unit's resulting hex, TU, stance, formation state, fog/exploration, and the new alien reveal so the recalculation starts from exactly what the player just saw.
 - Discard only plans and animations that have not begun. Completed actors remain completed, spent TU/ammunition stays spent, damage and deaths remain resolved, and no unit receives a duplicate turn.
@@ -1052,7 +1081,7 @@ Roadmap-only planning update (2026-08-23): **When an AEGIS soldier establishes a
 - Streamed Simulation and Hybrid playback should show a short **Contact - replanning remaining fire teams** hold, then resume from the authoritative frame. Bound calculation time, deduplicate the same contact identity within one round, and prevent repeated visibility toggles from producing an interrupt loop.
 - Active saves made at the hold point must retain the committed frame plus the remaining-actor set so reload cannot replay completed actions or forget the newly established contact.
 
-**Planned validation gate:** begin no-contact Simulation and Hybrid rounds with several fire teams queued, reveal an alien on an early leader/support movement step, and confirm the current step finishes, the alien appears, unplayed actors change from search/waypoint movement to legal contact behavior, and completed actors do not act twice. Repeat during active VIP escort under Ask, Stay, and Engage; with walls/windows/smoke/night lighting; during streamed continuation; and across save/reload. Confirm no hidden alien triggers replanning and no contact interrupt changes fog, LOS, TU, damage, formation, or control-mode authority.
+**Validation gate:** Build Health covers verified/blocked acquisition, same-round deduplication, remaining-actor ownership, non-mutating contact records, and the ordered zero-action playback hold. Continue manual testing with no-contact Simulation and Hybrid rounds containing several fire teams, an early leader/support reveal, active VIP escort under Ask, Stay, and Engage, walls/windows/smoke/night lighting, streamed continuation, and save/reload. Confirm the current action finishes, the alien appears, unplayed actors change from quiet search/formation/objective movement to legal contact behavior, completed actors do not act twice, hidden aliens trigger nothing, and no contact interrupt changes fog, LOS, TU, damage, formation, or control-mode authority.
 
 Implemented tactical AI update (Browser 1930, 2026-08-23): **When an active civilian/VIP escort is leaving a building and no living alien is currently known inside that building, supporting soldiers clear the chosen exit and path outside before the escort owner advances the civilian/VIP column. This makes the fire team yield narrow doors and breaches to its own escort instead of trapping the leader behind a friendly formation.**
 
@@ -1093,6 +1122,19 @@ Roadmap-only presentation update (2026-08-23): **When an observable wall or dest
 - Honor the existing shot-motion/cinematic-motion preference. Reduced-motion mode should use a short stable focus without slow motion, camera whip, or excessive screen shake.
 
 **Planned validation gate:** destroy walls, windows, doors, civilian and alien vehicles, trees, machinery, explosive scenery, and alien structures with ballistic, laser/plasma, grenade, fire, and secondary explosions in 2D, 3D Iso, FPV, TPV, Hybrid, and Simulation. Confirm the correct source and object are framed once, linked destruction is grouped, hidden destruction reveals nothing, reduced-motion is respected, the prior camera is restored, and the resulting cover, pathing, LOS, fire/smoke, damage, and AI decisions exactly match a run with cinematics disabled.
+
+
+Roadmap-only Geoscape presentation update (2026-08-23): **Make alien UFOs on the Three.js Globe use the same recognizable alien-craft visual language as their counterparts on the Terminator Map. Globe contacts should read as UFOs at a glance instead of generic markers while retaining the current shared craft state, position, selection, detection, movement, interception, and campaign rules. No code or build-number change is part of this roadmap-only addition.**
+
+### Future Geoscape presentation - Globe / Terminator Map UFO visual parity
+- Translate the Terminator Map's UFO silhouette, violet/magenta palette, glow, and class readability into a small globe-appropriate 3D or billboarded craft marker. The two views do not need identical rendering technology, but the same contact must clearly look like the same alien craft in both views.
+- Preserve readable distinctions between UFO size/classes and selected, tracked, damaged, landed, and destroyed states. Unresolved radar contacts should retain their appropriate unknown-contact presentation until campaign detection rules identify them.
+- Anchor each craft cleanly above the globe surface, orient it consistently with its current travel heading where practical, and keep it legible at normal zoom without sinking into Earth, clipping at the horizon, z-fighting, or becoming implausibly large.
+- Reuse the existing authoritative UFO identity, interpolated latitude/longitude, route, detection state, damage, selection, and engagement data. Switching between Globe and Terminator Map must not duplicate a craft, jump its position, reset interpolation, reveal an undetected UFO, or create a new source of gameplay state.
+- Preserve the existing click/hover target, selection focus, interception controls, pause/time-speed behavior, and day/night/terminator behavior. Presentation lighting or glow may improve readability but must not alter radar range, visibility, detection, pursuit, interception, or AI knowledge.
+- Use shared cached geometry/materials or an equivalent persistent marker pool so the Globe does not rebuild UFO assets every frame. Visual parity must not regress Globe rotation, solar lighting, cloudless presentation, path interpolation, or view-switch performance.
+
+**Planned validation gate:** compare every available UFO class and relevant contact state side by side on the Globe and Terminator Map at several zoom levels, time speeds, daylight/night sides, the globe limb, and the map date-line seam. Confirm recognizable visual parity, exact identity/position/selection continuity, stable interpolation and hit targets, no duplicate or stale craft, no hidden-contact information leak, and no change to strategic detection, interception, movement, damage, or save/load results.
 
 
 ## Browser 0845 — Tutorial Spoiler-Free Onboarding Hotfix
