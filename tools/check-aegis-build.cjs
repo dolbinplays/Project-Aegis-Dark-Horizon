@@ -125,6 +125,14 @@ const required = [
   "tacticalAlienLandVehiclePathingIntegrityContractTest",
   "Detected UFO bodies stay upright while an independent cue preserves travel heading",
   "Aliens route spawn repair and playback around every intact land-vehicle footprint while destroyed vehicles remain passable",
+  "TACTICAL_ORPHANED_ESCORT_AND_SKYRANGER_INGRESS_RECOVERY_PATCH",
+  "TACTICAL_COVERED_POSITION_REPEAT_FIRE_PATCH",
+  "tacticalNormalizeOrphanedEscortState",
+  "tacticalVipExtractionIngressYield",
+  "tacticalAiCoveredFiringHoldState",
+  "tacticalAiCoveredFireActionBudget",
+  "Orphaned VIP escorts release immediately and crowded Skyranger ingress yields without overlap",
+  "AEGIS soldiers hold useful cover and spend legal TU on bounded repeat fire",
   "const clearVehicles = inside && footprint.every",
   "isHardCoverAt(arrivalCovers",
   "contactReplanHold",
@@ -1256,7 +1264,7 @@ if (!nativeContent.soldiers?.every((soldier) => Number.isFinite(soldier.reaction
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "complete-classic-battlescape-command-set" && entry?.reason)) {
   missing.push("remaining classic battlescape command depth must be recorded as a temporary gameplay parity exception");
 }
-for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity", "stable-settings-component-boundaries", "stable-campaign-list-boundaries", "stable-transient-overlay-boundaries", "stable-campaign-confirmation-boundaries", "stable-operational-approval-boundaries", "stable-mission-launch-confirmation-boundary", "stable-strategic-incident-route-boundaries", "threejs-iso-night-vibrance-presentation", "threejs-iso-color-device-preference", "threejs-iso-night-brightness-device-preference", "command-map-autonomous-search-resume", "live-land-vehicle-footprint-movement-integrity", "single-owner-mission-victory-dialogue", "patch-notes-history-scope-startup-hotfix", "per-shooter-visibility-and-rendered-target-shot-invariant", "post-extraction-rescue-duty-handoff", "multi-fireteam-vip-rescue-traffic"]) {
+for (const system of ["deferred-full-build-health-with-critical-boot-smoke", "single-owner-geoscape-clock-interval", "persistent-threejs-tactical-renderer-and-layer-invalidation", "threejs-full-ai-fog-of-war-shading", "observer-level-tactical-visibility-and-static-terrain-cache", "indexed-2d-tactical-cell-render-lookups", "threejs-explicit-living-unit-pose-state", "vip-death-flag-impossible-quota-terminal-resolution", "build-health-runtime-hotpath-hardening", "hover-help-persistent-renderer-and-alien-craft-occlusion-refinement", "precompiled-tailwind-and-style-integrity", "stable-settings-component-boundaries", "stable-campaign-list-boundaries", "stable-transient-overlay-boundaries", "stable-campaign-confirmation-boundaries", "stable-operational-approval-boundaries", "stable-mission-launch-confirmation-boundary", "stable-strategic-incident-route-boundaries", "threejs-iso-night-vibrance-presentation", "threejs-iso-color-device-preference", "threejs-iso-night-brightness-device-preference", "command-map-autonomous-search-resume", "live-land-vehicle-footprint-movement-integrity", "single-owner-mission-victory-dialogue", "patch-notes-history-scope-startup-hotfix", "per-shooter-visibility-and-rendered-target-shot-invariant", "post-extraction-rescue-duty-handoff", "multi-fireteam-vip-rescue-traffic", "orphaned-escort-and-skyranger-ingress-recovery", "covered-position-repeat-fire"]) {
   if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === system && entry?.reason)) {
     missing.push(`browser optimization parity exception missing: ${system}`);
   }

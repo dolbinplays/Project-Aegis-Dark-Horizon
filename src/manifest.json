@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.24.0845_UFO_UPRIGHT_AND_ALIEN_VEHICLE_PATHING_INTEGRITY_PATCH",
+  "currentBuild": "v0.26.08.24.0955_VIP_ESCORT_INGRESS_AND_COVERED_REPEAT_FIRE_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "ufo-upright-and-alien-vehicle-pathing-integrity-validation",
+  "status": "vip-escort-ingress-and-covered-repeat-fire-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.24.0845_UFO_UPRIGHT_AND_ALIEN_VEHICLE_PATHING_INTEGRITY_PATCH",
+  "lastInspectedBuild": "v0.26.08.24.0955_VIP_ESCORT_INGRESS_AND_COVERED_REPEAT_FIRE_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.24.0845_UFO_UPRIGHT_AND_ALIEN_VEHICLE_PATHING_INTEGRITY_PATCH",
+    "browserBuild": "v0.26.08.24.0955_VIP_ESCORT_INGRESS_AND_COVERED_REPEAT_FIRE_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -160,7 +160,9 @@
       "escort-corner-mobile-traffic-yield",
       "globe-terminator-ufo-visual-parity",
       "geoscape-ufo-upright-orientation",
-      "alien-land-vehicle-pathing-integrity"
+      "alien-land-vehicle-pathing-integrity",
+      "orphaned-escort-and-skyranger-ingress-recovery",
+      "covered-position-repeat-fire"
     ],
     "temporaryExceptions": [
       {
@@ -330,6 +332,14 @@
       {
         "system": "alien-land-vehicle-pathing-integrity",
         "reason": "The browser now verifies alien routes, final commits, playback, save repair, dropship landing, and reinforcement spawn placement against every intact land-vehicle footprint while retaining destroyed-vehicle passability. Native Godot requires equivalent navigation and spawn-footprint authority."
+      },
+      {
+        "system": "orphaned-escort-and-skyranger-ingress-recovery",
+        "reason": "The browser now releases VIPs from dead or missing escorts at shared tactical handoff and repair boundaries, clears wiped-team duty state, and makes friendly ramp-mouth traffic yield legally before extraction. Native Godot requires equivalent escort ownership and evacuation-lane authority."
+      },
+      {
+        "system": "covered-position-repeat-fire",
+        "reason": "The browser tactical AI now treats a useful current covered firing solution as a valid no-move plan and repeatedly revalidates TU, ammunition, LOS, target life, cover, and formation before each bounded follow-up shot. Native Godot requires equivalent engine-native combat planning."
       },
       {
         "system": "command-map-autonomous-search-resume",

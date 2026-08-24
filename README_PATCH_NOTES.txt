@@ -1,6 +1,42 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.24.0955_VIP_ESCORT_INGRESS_AND_COVERED_REPEAT_FIRE_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+VIPs immediately shed dead or missing escort ownership, crowded Skyranger entrances make friendly traffic yield, and AEGIS soldiers can hold useful cover for multiple legal shots instead of moving by default.
+
+ORPHANED ESCORT RECOVERY
+------------------------
+- A living VIP or civilian whose escort ID no longer resolves to a living AEGIS soldier becomes Unescorted immediately. The one-full-round grace period remains only for a living escort who temporarily loses sight.
+- Dead-team VIP assignments, recall orders, extraction guards, priority claims, and rescue-route latches are cleared at round start, manual/AI handoff, streamed continuation, and loaded-state battlefield repair.
+- The released VIP remains revealed, retains its last escort and fire-team identity for reporting, and becomes eligible for same-round assignment to another living fire-team leader.
+
+CROWDED SKYRANGER INGRESS
+-------------------------
+- The rear ramp mouth is treated as a reserved evacuation lane rather than an ordinary idle/guard position while an escorted VIP is waiting to enter.
+- A living friendly soldier blocking the ramp mouth yields one legal adjacent cell, spends the normal 4 TU, clears stale extraction-guard state, and receives an explicit playback trail before the VIP advances.
+- Other VIPs queue instead of overlapping. Hard cover, Skyranger hull cells, vehicles, hazards, unrelated occupancy, insufficient TU, and immediate visible threats remain authoritative blockers.
+- Per-VIP no-progress state now records failed final approaches and forces route rebuilding instead of repeatedly accepting a zero-step extraction plan.
+
+COVERED HOLD + REPEAT FIRE
+--------------------------
+- Before moving, every non-escort AEGIS actor checks whether the current hex already provides legal range, personal LOS, acceptable fire-team cohesion, no immediate hazard, and useful threat-facing cover.
+- A valid position produces Hold Cover + Fire instead of compulsory movement. Hybrid supports may retain useful flanking cover when already acceptably formed around their leader.
+- After each committed shot, the AI checks the live target, personal visibility, cover relationship, TU, ammunition, and chosen reserve again. It can spend up to four legal shot actions from the same position and immediately stops when any requirement fails.
+- Explicit Hybrid leader destinations, rescue/escort duties, hazards, reinforcement-source objectives, and badly broken formation remain higher-authority reasons to move.
+
+VALIDATION
+----------
+- Build Health covers a VIP orphaned by a wiped-out fire team, same-round reassignment, loaded-state repair, a friendly soldier yielding from a crowded ramp mouth, unique occupancy, useful covered holds, formation rejection, and TU/ammunition-bounded repeat-fire budgets.
+- Save format remains 4.
+
+PREVIOUS PATCH NOTES
+====================
+
 Build: v0.26.08.24.0845_UFO_UPRIGHT_AND_ALIEN_VEHICLE_PATHING_INTEGRITY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

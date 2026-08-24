@@ -2,9 +2,32 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-24
-Current handoff build: `v0.26.08.24.0845_UFO_UPRIGHT_AND_ALIEN_VEHICLE_PATHING_INTEGRITY_PATCH`
+Current handoff build: `v0.26.08.24.0955_VIP_ESCORT_INGRESS_AND_COVERED_REPEAT_FIRE_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0845 keeps the shared Globe / Terminator UFO body visually upright while a separate heading cue preserves route direction, and hardens every audited alien movement lifecycle against intact multi-hex land vehicles. Alien dropship landing and reinforcement placement now include retained vehicle footprints; ordinary routing, final commits, playback, and save repair retain shared hard-cover authority. Destroyed vehicles keep their established passable wreck/rubble state. Save format remains 4.**
+Current patch status: **Browser 0955 releases VIPs from dead or missing escorts at every tactical handoff and loaded-state repair boundary, clears stale wiped-team duty state, and lets another living fire team claim the VIP in the same AI planning round. Crowded Skyranger ramp mouths make eligible friendly blockers yield through legal TU-spending movement before VIP ingress. AEGIS combat AI now recognizes useful current cover as a complete movement solution and may spend remaining TU on bounded, repeatedly revalidated shots. Save format remains 4.**
+
+
+## Browser 0955 - VIP Escort / Skyranger Ingress Recovery + Covered Repeat Fire
+
+**Status:** Implemented by rolling the next two roadmap patches together.
+
+### Escort ownership and extraction ingress
+- `tacticalNormalizeOrphanedEscortState(...)` is the shared boundary for round start, Simulation/Hybrid continuation, manual/AI handoff, and battlefield repair. An active VIP whose escort no longer resolves to a living AEGIS soldier immediately becomes unescorted; only a living separated escort retains the established one-full-round contact grace period.
+- Dead-team rescue assignments, recall orders, priority claims, and extraction-guard latches are cleared without losing the last escort/team reporting fields. The ordinary VIP assignment planner can therefore allocate the released VIP to another living fire-team leader in the same planning round.
+- Final approach uses the real rear ramp mouth as a reserved evacuation lane. An eligible friendly blocker yields one adjacent legal cell for the normal 4 TU, clears its guard claim, and records a movement trail before the VIP route commits.
+- A civilian blocker remains a queued evacuee rather than being displaced. Hard cover, craft hulls, intact vehicles, hazards, occupancy, insufficient TU, and an immediate visible threat remain authoritative.
+- Per-VIP final-approach progress records route failure and rebuilds blocked ingress rather than accepting repeated zero-step plans.
+
+### Covered-position hold and repeat fire
+- A combat actor with personal LOS, legal range, no immediate cell hazard, acceptable formation cohesion, and useful threat-facing cover can choose **Hold Cover + Fire** without manufacturing a movement phase.
+- Hybrid supports may retain a useful enemy-relative covered position when already close enough to their leader/formation; explicit player-directed leader movement and broken formation remain movement authority.
+- After each committed attack action, target life, visibility, range, cover relationship, TU, ammunition, and the selected reserve mode are checked again. Up to four legal actions may be committed, with the real TU and ammunition cost paid for every action.
+- The sequence stops immediately when the target dies or disappears, LOS/range/cover becomes invalid, ammunition or TU is insufficient, or another higher-authority state replaces the firing solution.
+
+### Validation boundary
+- Build Health covers immediate orphan release, dead-team latch cleanup, same-round living-team reassignment, loaded-state repair, legal ramp-mouth yield, unique occupancy, covered-position recognition, formation rejection, and TU/ammunition-bounded shot counts.
+- Manual validation should repeat the reported wiped-Bravo VIP case and a crowded rear-ramp queue in Simulation and Hybrid, then compare a covered rifleman with exposed, hazardous, separated, and explicitly commanded soldiers.
+- Save format remains **4**. Native parity remains queued.
 
 
 ## Browser 0845 - Upright Geoscape UFOs + Alien Vehicle Pathing Integrity
@@ -759,6 +782,37 @@ Implemented alien-pathing regression follow-up (Browser 0845, 2026-08-24): **Ali
 5. Build Health covers each new success, failure, partial-credit, impossible-objective, save/load, and AI-termination branch before the objective family ships broadly.
 
 
+## Roadmap Addition - Major Operations and Dual-Skyranger Assaults
+
+**Status:** Approved late-game mission tier; intended for forces approaching two fully upgraded Skyrangers and two veteran response squads.
+
+### Mission scale and availability
+- Add rare **Major Operation** missions whose battlefield size, enemy strength, reinforcement pressure, simultaneous objectives, civilian/VIP load, and endurance demands make two fully upgraded Skyrangers worth of soldiers the expected force for reliable success.
+- Major Operations should unlock only after the player has reached the appropriate campaign stage and has a credible opportunity to construct, upgrade, staff, and equip a second Skyranger. They must not appear as ordinary early-game incidents that the player could not reasonably prepare for.
+- One-Skyranger deployment may remain possible for expert, emergency, or self-imposed challenge play, but launch confirmation must explicitly warn that the operation is planned for two assault groups and show the missing seats, equipment, coverage, and extraction capacity.
+- Mission rewards, panic reduction, strategic intelligence, alien-base disruption, captured technology, and campaign consequences should match the exceptional risk and resource commitment.
+
+### Two-craft tactical structure
+- Deploy both Skyrangers as distinct persistent craft with independent passenger manifests, home bases, approach routes, insertion zones, ramp/extraction footprints, damage state, and return records. A soldier may never duplicate, transfer invisibly between craft, or extract through a craft that is unavailable without an explicit tactical handoff rule.
+- Prefer complementary insertion points and objectives rather than placing twelve soldiers in one crowded starting cluster. Example structures include two-sided assaults, simultaneous beacon shutdown and VIP evacuation, exterior containment plus interior breach, separated rescue groups, multi-level facility seizure, and reinforcing one squad with the other after linked objectives are secured.
+- Maps should be large enough to justify two squads but remain readable and performant through streamed/static terrain layers, indexed pathing and visibility, persistent Three.js battlefield objects, bounded AI planning, and objective-focused camera controls.
+- Objectives must clearly state whether both teams must survive, whether either Skyranger can evacuate either squad, how a disabled extraction craft changes the plan, and whether partial objective completion earns a fighting withdrawal rather than an unexplained total failure.
+
+### AI, command, and balance authority
+- Full Simulation AI must coordinate both assault groups without collapsing them into one fire-team scheduler: divide objectives, maintain local fire-team formations, share only legitimately observed contact intelligence, reinforce a stalled group when appropriate, and stop empty-round streaming when an objective becomes blocked or impossible.
+- Hybrid control must let the player cycle through every fire-team leader across both Skyrangers, issue independent Command Map destinations and preferred targets, then run one bounded support/engagement phase using the soldiers' original squad and formation ownership.
+- Difficulty should come from mission geometry, layered objectives, enemy quality, reinforcement timing, resource attrition, and meaningful time pressure—not inflated enemy HP, omniscient AI, hidden failure rules, unavoidable casualties, or pathing congestion.
+- A single fully upgraded Skyranger with exceptional veterans should have a slim but legitimate route to victory through stealth, speed, explosives, alternate objectives, or accepting optional losses. Two properly equipped veteran squads should feel strongly favored but never guaranteed.
+
+### Acceptance gates
+1. Launch two Skyrangers from the same or different bases and confirm both manifests, aircraft identities, routes, deployment zones, units, equipment, and return ownership survive save/load.
+2. Run Manual, Hybrid, and full Simulation control and confirm every fire team in both groups receives actions while local formation, escort, contact, and objective priorities remain authoritative.
+3. Complete linked objectives in both possible orders and confirm mission resolution waits for every mandatory objective without burning empty rounds after one group finishes its assignment.
+4. Extract through both craft, lose or disable one extraction route, and confirm surviving units receive explicit legal rerouting, holdout, rescue, or withdrawal choices without overlap or duplication.
+5. Attempt the operation with one Skyranger and confirm the warning is accurate, the mission remains technically completable, and failure reports the actual tactical/objective cause rather than the player's aircraft count.
+6. Stress-test the largest supported map in 2D and persistent 3D Iso with two full squads, civilians, aliens, reinforcements, destructible scenery, fog, and simultaneous movement playback; enforce defined frame-time and bounded-round-planning budgets before release.
+
+
 ## Roadmap Addition - Scientific Discovery Briefing Scenes
 
 **Status:** Approved presentation and narrative system; intended to reuse the planned high-value mission briefing framework without making research progression depend on a cinematic.
@@ -1374,7 +1428,9 @@ Roadmap-only planning update (2026-08-22): **Add Fallout-inspired localized body
 
 Roadmap-only tactical-AI update (2026-08-23): **An AEGIS soldier who already has a legal, in-range line of sight to a visible alien from useful threat-facing cover should be allowed to hold that position and fire without being driven to move first. If Time Units, ammunition, weapon mode, reserve doctrine, and the changing battlefield permit, the soldier may take multiple consecutive shots from that advantageous position. Movement remains an option when it produces a materially better result, not a compulsory precondition for firing. No gameplay or build-number change is part of this roadmap-only addition.**
 
-### Future tactical AI - Covered firing-position hold and repeat fire
+### Implemented tactical AI - Covered firing-position hold and repeat fire (Browser 0955)
+
+**Status:** Implemented in the Browser 0955 shared Simulation/Hybrid combat planner; the design bullets below remain the authority for follow-up balancing and native parity.
 - Before generating movement, evaluate the soldier's current hex with the same authoritative engagement-position score used for prospective destinations: personal LOS, weapon range, threat-facing cover, local hazards, alien proximity, stance, accuracy, fire-team cohesion, objective authority, and remaining TU.
 - If the current position is already tactically useful, prefer **hold and fire** over moving merely to satisfy a generic movement phase or reduce geometric distance. Remaining stationary must not be treated as stalled AI when a legal combat action is available.
 - Movement may still win when it gains substantially better cover or accuracy, restores LOS/range, escapes a hazard or flank, supports an escort/objective, obeys an explicit player order, prevents friendly obstruction, or responds to a higher-priority survival/formation requirement.
@@ -3005,7 +3061,9 @@ Remove the visible once-per-second/tick flash from the Three.js globe and flat T
 - Build Health now includes a targeted stalled-column scenario: the escort is already two cells inside the ramp with no movement TU, while two escorted VIPs wait beside opposite sides of the hull. The test requires the VIPs to path around the solid craft and extract while the escort remains stationary.
 - Existing VIP building-egress, outdoor no-reentry, lost-contact/escort recall, ramp-traffic, and rescue-terminal contracts remain authoritative.
 
-### Roadmap follow-up - crowded Skyranger entrance recovery (2026-08-24)
+### Implemented follow-up - crowded Skyranger entrance recovery (Browser 0955)
+
+**Status:** Implemented in Browser 0955 across round start, AI/Hybrid continuation, tactical handoff, loaded-state repair, and the escorted-VIP final approach.
 
 - Live testing found an escorted VIP stalled immediately outside the Skyranger while the escort fire team and other AEGIS soldiers clustered around the ramp. The existing side-of-hull regression covers a stationary escort and two VIPs, but it does not exercise a crowded ramp or approach lane.
 - Current inspection identifies a credible deadlock seam: `tacticalVipExtractionRampRoute(...)` removes every ramp cell occupied by a living unit before choosing a goal. If soldiers occupy all usable ramp cells, the VIP receives no target and remains beside the hull even though those soldiers are mobile friendly traffic that should yield for evacuation.
