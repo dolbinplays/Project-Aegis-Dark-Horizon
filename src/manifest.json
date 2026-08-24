@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.23.1750_POST_RESCUE_BEACON_ASSAULT_HANDOFF_PATCH",
+  "currentBuild": "v0.26.08.23.1930_SUPPORT_FIRST_ESCORT_BUILDING_EGRESS_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "post-rescue-beacon-assault-handoff-validation",
+  "status": "support-first-escort-building-egress-validation",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.23.1750_POST_RESCUE_BEACON_ASSAULT_HANDOFF_PATCH",
+  "lastInspectedBuild": "v0.26.08.23.1930_SUPPORT_FIRST_ESCORT_BUILDING_EGRESS_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.23.1750_POST_RESCUE_BEACON_ASSAULT_HANDOFF_PATCH",
+    "browserBuild": "v0.26.08.23.1930_SUPPORT_FIRST_ESCORT_BUILDING_EGRESS_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -154,7 +154,8 @@
       "per-shooter-visibility-and-rendered-target-shot-invariant",
       "post-extraction-rescue-duty-handoff",
       "multi-fireteam-vip-rescue-traffic",
-      "post-rescue-beacon-assault-handoff"
+      "post-rescue-beacon-assault-handoff",
+      "support-first-escort-building-egress"
     ],
     "temporaryExceptions": [
       {
@@ -300,6 +301,10 @@
       {
         "system": "post-rescue-beacon-assault-handoff",
         "reason": "The browser now hands completed rescue operations to a goal-directed full-Simulation beacon assault while preserving player-led Hybrid formations and legal support fire. Native Godot requires equivalent engine-native objective handoff, assault progress, and Hybrid ownership rules."
+      },
+      {
+        "system": "support-first-escort-building-egress",
+        "reason": "The browser now clears same-team supports through a legal door or breach before a quiet civilian escort column advances, with real TU, observed-contact authority, and Simulation/Hybrid action ownership. Native Godot requires equivalent engine-native escort traffic ordering."
       },
       {
         "system": "command-map-autonomous-search-resume",

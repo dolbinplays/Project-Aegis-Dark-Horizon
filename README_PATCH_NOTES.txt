@@ -1,6 +1,45 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.23.1930_SUPPORT_FIRST_ESCORT_BUILDING_EGRESS_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Prevents supporting soldiers from trapping an active civilian or VIP escort inside a procedural building. In quiet structures, supports now clear the selected door or breach and exterior lane before the escort owner advances the column.
+
+SUPPORT-FIRST BUILDING EGRESS
+-----------------------------
+- The rule follows the soldier who actually owns the escort, including a support-owned escort, rather than assuming the formal fire-team leader owns every civilian column.
+- It activates only while the escort owner and a living follower share a building and a same-team support occupies that building, the selected opening, or the reserved exterior lane.
+- A legal door or already-destroyed wall breach is selected with the existing bounded, hazard-aware exit planner. The leader/follower route, opening, first exterior cell, and onward lane are reserved for the column.
+- Contending supports move first toward legal exterior side/perimeter positions. Supports already outside do not re-enter the building to restore formation.
+- If a support cannot finish clearing in one bounded move, the escort owner holds instead of colliding, teleporting, or walking through the soldier. Clearance resumes from the authoritative positions next round.
+
+ACTION AND KNOWLEDGE INTEGRITY
+------------------------------
+- Each support spends 4 TU per committed hex and retains the AI-selected shot reserve. Movement remains capped at eight steps and obeys hard cover, live vehicle footprints, fire/smoke costs, extraction traffic, and living occupancy.
+- A support moved during clearance is marked as already acted and is excluded from the column's later formation adjustment, preventing a duplicate action or second movement animation.
+- A living alien authoritatively known inside the structure suppresses quiet egress; contact behavior and the mission's Ask / Stay / Engage escort-support doctrine remain authoritative.
+- Unobserved aliens are excluded from route planning. They can block a real attempted cell commit, but their hidden position cannot silently change the chosen exit.
+- The same rescue scheduler feeds full Simulation, Hybrid support rounds, streamed continuation, and active tactical saves. Hybrid leader control is not converted into full AI command.
+
+VALIDATION
+----------
+- Build Health covers support-first ordering, exact TU spending, exterior clearance, leader hold, known-contact suppression, hidden-contact planning isolation, rescue-duty ownership, and duplicate-formation exclusion.
+- Existing VIP rescue quotas, fire-team formation, extraction flow, LOS/fog, hazards, vehicle solidity, save/load, and save format 4 remain authoritative.
+
+MANUAL TEST GATES
+-----------------
+1. Escort a VIP from a procedural building with one or more supports between the escort owner and door. Under Simulation, confirm supports clear outside first and the column then exits through the selected opening.
+2. Repeat in Hybrid after moving the fire-team lead and ending the turn. Confirm supports clear/follow without a second movement phase and control returns to the player.
+3. Place a visible living alien inside the same building. Confirm normal contact and escort-support doctrine replace quiet clearance.
+4. Repeat with a hidden alien, smoke/fire, an existing breach, a vehicle near the door, and another fire team outside. Confirm no hidden-information route change, illegal overlap, teleport, or extra TU.
+
+PREVIOUS PATCH NOTES
+====================
+
 Build: v0.26.08.23.1750_POST_RESCUE_BEACON_ASSAULT_HANDOFF_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

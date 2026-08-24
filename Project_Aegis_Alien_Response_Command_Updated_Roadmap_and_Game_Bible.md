@@ -2,9 +2,31 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-23
-Current handoff build: `v0.26.08.23.1750_POST_RESCUE_BEACON_ASSAULT_HANDOFF_PATCH`
+Current handoff build: `v0.26.08.23.1930_SUPPORT_FIRST_ESCORT_BUILDING_EGRESS_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1750 hands a completed VIP operation cleanly to its remaining confirmed beacon objective. Full Simulation selects an actionable assaulter, forces goal-directed shield approach, and advances the rest of the squad to a legal outer perimeter. Hybrid retains player-led formation movement and lets supports attack from legal positions instead of inheriting the Simulation-only solo-assault hold. Browser 1200's multi-team rescue traffic and Browser 1009's completed-duty cleanup remain active; save format stays at 4.**
+Current patch status: **Browser 1930 makes quiet building evacuation support-first. When the real escort owner and follower share a building, same-team supports clear the selected door/breach and exterior lane with their real TU before the civilian column advances. Known alien contact suppresses quiet clearance, hidden aliens do not inform planning, and moved supports cannot receive a duplicate formation action. Full Simulation and Hybrid share the rule without changing control ownership; save format stays at 4.**
+
+
+## Browser 1930 - Support-First Escort Building Egress
+
+**Status:** Implemented from live testing in which a fire-team leader escorting a VIP could not leave a cleared building because supporting soldiers occupied the usable interior/door traffic cells.
+
+### Ordered escort clearance
+- The rescue scheduler identifies the living human referenced by each follower's `escortId` as the escort owner, so a support-owned escort receives the same protection as a formal leader-owned column.
+- When that owner and a living follower share a procedural building and no living alien is authoritatively known inside, the existing door/breach exit planner selects the column's legal egress. The owner/follower path, opening, first outside cell, and short onward lane become friendly traffic reservations.
+- Same-team supports occupying the structure or reserved traffic cells move before the owner. They spend ordinary TU, retain their AI-selected shot reserve, and stage on legal exterior side/perimeter cells without re-entering the building merely to restore formation.
+- If a support can make only partial legal progress, the owner holds the civilian column until the selected exit is clear. The next round resumes from committed positions; no unit teleports, overlaps, crosses intact cover or a live vehicle footprint, or receives free movement.
+
+### Combat, Hybrid, and action authority
+- A known living alien inside the structure suppresses quiet clearance. Current contact behavior and the configured Ask / Stay / Engage escort-support doctrine remain authoritative.
+- Route planning receives only observed alien occupancy. A hidden alien cannot influence exit selection, although the final authoritative cell commit can still stop a move that would physically overlap it.
+- Supports moved by the clearance pass are added to rescue duty/acted ownership and excluded from the escort owner's later formation adjustment. Their complete path is presented once as **Clearing escort egress**, preventing a second action or snap-back animation.
+- Full Simulation and Hybrid support playback call the same scheduler. A Hybrid-held leader remains player controlled and the support clearance cannot switch the battle into full Simulation.
+
+### Validation boundary
+- Build Health constructs a procedural building with an active escort column and door-side support, verifies exterior support movement and exact four-TU-per-hex spending, confirms the owner is not moved by the clearance helper, and checks rescue-duty/playback ownership.
+- The same contract confirms a supplied observed alien disables quiet clearance while an alien omitted from authoritative observations does not alter the support route.
+- Manual validation should cover intact doors, existing breaches, one to four supports, smoke/fire, vehicles near the exit, unrelated outside units, support-owned escorts, streamed Simulation, Hybrid, save/reload, and both 2D and 3D Iso presentation.
 
 
 ## Browser 1750 - Post-Rescue Beacon Assault Handoff
@@ -1032,9 +1054,9 @@ Roadmap-only planning update (2026-08-23): **When an AEGIS soldier establishes a
 
 **Planned validation gate:** begin no-contact Simulation and Hybrid rounds with several fire teams queued, reveal an alien on an early leader/support movement step, and confirm the current step finishes, the alien appears, unplayed actors change from search/waypoint movement to legal contact behavior, and completed actors do not act twice. Repeat during active VIP escort under Ask, Stay, and Engage; with walls/windows/smoke/night lighting; during streamed continuation; and across save/reload. Confirm no hidden alien triggers replanning and no contact interrupt changes fog, LOS, TU, damage, formation, or control-mode authority.
 
-Roadmap-only tactical AI update (2026-08-23): **When an active civilian/VIP escort is leaving a building and no living alien is currently known inside that building, supporting soldiers must clear the chosen exit and path outside before the escort owner advances the civilian/VIP column. This makes the fire team yield narrow doors and breaches to its own escort instead of trapping the leader behind a friendly formation. No code or build-number change is part of this roadmap-only addition.**
+Implemented tactical AI update (Browser 1930, 2026-08-23): **When an active civilian/VIP escort is leaving a building and no living alien is currently known inside that building, supporting soldiers clear the chosen exit and path outside before the escort owner advances the civilian/VIP column. This makes the fire team yield narrow doors and breaches to its own escort instead of trapping the leader behind a friendly formation.**
 
-### Future tactical AI - Support-first building egress for escort columns
+### Implemented tactical AI - Support-first building egress for escort columns
 - Trigger when the actual escort owner and at least one active follower are inside the same building, no living alien is currently known or visible inside that structure, and one or more supporting soldiers occupy or contend for the leader-to-exit corridor.
 - Select a legal egress through a door or existing breach, then reserve the single-file route cells from the escort owner and follower chain to that opening plus a short exterior staging lane. These reservations coordinate friendly movement only; they do not remove real walls, hazards, vehicles, civilians, aliens, or unrelated fire teams from occupancy.
 - Supporting soldiers still inside move first during their normal AI action, spending ordinary TU to path through the exit and into legal exterior side/perimeter positions. They avoid the reserved escort-column cells and do not stop in the doorway, immediately outside the opening, or on the follower trail.
@@ -1045,7 +1067,7 @@ Roadmap-only tactical AI update (2026-08-23): **When an active civilian/VIP esco
 - The rule applies in full Simulation AI and the Hybrid support phase, including Manual-to-AI handoff, streamed continuation, and active-mission save/load. It must preserve Hybrid leader control and cannot silently switch the battle to full Simulation.
 - Each support egress move is that soldier's ordinary movement for the round: no TU refund, duplicate action, second movement phase, or replayed animation. Presentation should briefly identify the team action as **Clearing escort egress** so the support-first ordering is understandable.
 
-**Planned validation gate:** generate intact and damaged procedural buildings with one or several doors/breaches, then place one to four supports in the doorway, behind the escort owner, beside the follower trail, and already outside. Exercise zero known aliens, a visible alien inside, a hidden alien, smoke/fire, vehicles near the exit, multiple simultaneous escort teams, a support-owned escort, 2D Hex, 3D Iso, Hybrid, Simulation, streamed continuation, and save/reload. Confirm supports clear first only in the no-known-contact case, the leader/VIP exits without friendly deadlock, no unit gains extra TU/actions or crosses illegal occupancy, hidden information does not leak, and formation resumes outside.
+**Validation gate:** Build Health now covers the core no-contact support-first order, exact TU spending, known-versus-hidden alien authority, rescue-duty ownership, and duplicate-formation exclusion. Continue manual validation with intact and damaged procedural buildings, one or several doors/breaches, one to four supports, smoke/fire, vehicles near the exit, multiple simultaneous escort teams, a support-owned escort, 2D Hex, 3D Iso, Hybrid, Simulation, streamed continuation, and save/reload. Confirm supports clear first only in the no-known-contact case, the leader/VIP exits without friendly deadlock, no unit gains extra TU/actions or crosses illegal occupancy, hidden information does not leak, and formation resumes outside.
 
 Roadmap-only presentation update (2026-08-23): **When a VIP receives fatal damage, use the same readable cinematic camera family as a soldier hit/death reaction: focus the real attacker and VIP, briefly slow the fatal impact and collapse, then return to the exact prior tactical camera and playback speed. This is a presentation feature only and must not change damage, RNG, TU, visibility, fog, AI knowledge, escort state, mission resolution, or whether the VIP survives.**
 
