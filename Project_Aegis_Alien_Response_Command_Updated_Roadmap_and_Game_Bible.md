@@ -2,9 +2,39 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-23
-Current handoff build: `v0.26.08.23.2045_NEW_CONTACT_INTERRUPT_REMAINING_ROUND_REPLAN_PATCH`
+Current handoff build: `v0.26.08.23.2145_ESCORT_CORNER_MOBILE_TRAFFIC_YIELD_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2045 turns newly acquired alien sight into an explicit AI action-queue interrupt. The discovering actor completes its atomic action, streamed playback pauses and reveals only the verified contact, and every remaining unplayed AEGIS actor recalculates from the live threat state. Full Simulation yields quiet objectives to contact behavior; Hybrid preserves player leader orders and escort doctrine. Completed TU, movement, shots, damage, rescues, and formation changes are not replayed or refunded; save format stays at 4.**
+Current patch status: **Browser 2145 prevents active civilian/VIP escort columns from burning rounds at exterior building corners when an eligible support or follower occupies the leader's next planned hex. Mobile formation traffic yields one legal adjacent step before the leader commits; supports pay normal TU and cannot move twice. Rejected steps now count as real stalls instead of false progress. Hybrid leader ownership, formation, occupancy, vehicles, buildings, fog, LOS, and save format 4 remain authoritative.**
+
+
+## Browser 2145 - Escort Corner Mobile-Traffic Yield
+
+**Status:** Implemented from live Simulation-AI testing in which a Stay With Escort column remained clustered at the exterior corner of a building for several rounds.
+
+### Confirmed deadlock
+- Extraction routing intentionally ignores the escort's own followers and fire-team supports while planning because they are mobile parts of one formation rather than permanent terrain.
+- The final leader-cell commit still evaluated every support as fixed occupancy. If a support stood on the first route hex around a corner, the leader could not move even though the formation was expected to shift with it.
+- The rescue loop then marked the rejected route step as an action and continued attempting later path cells from the unchanged origin. Those cells were non-adjacent, also failed, and the false action reset the rescue stall counter every round.
+
+### Atomic formation-traffic yield
+- Before an AI-controlled escort leader commits an occupied route step, the final movement boundary may ask the exact blocking mobile unit to yield one adjacent legal cell.
+- Eligibility is narrow: the blocker must be an escorted follower belonging to that leader or a living support in the same fire team that does not own another escort and is not a player-held Hybrid leader.
+- The yield ranks fire, general hazard cost, projected formation position, leader proximity, and cover. It rejects the leader destination, unrelated occupancy, hard cover, live vehicle footprints, extraction cells, and outdoor-to-building re-entry.
+- Human supports spend the ordinary movement cost once, auto-stand when necessary, and receive an explicit `escort-corner-yield` action. A yielded support/follower is excluded from the later formation adjustment for that leader step, preventing a second move or playback snap-back.
+- Supports already moved by the support-first building-egress pass remain excluded. Insufficient-TU supports, unrelated units, another escort owner, and player-held Hybrid leads remain authoritative blockers rather than being displaced.
+
+### Truthful progress and recovery
+- Search, approach, and extraction route loops now compare the escort leader's position before and after every requested step.
+- A rejected first step ends the remaining route immediately; later path cells are not attempted non-adjacently.
+- Only a committed leader position change records the visited cell and marks movement progress. A genuine no-move round increments the existing rescue stall state and reaches bounded route-search recovery normally.
+- Stay / Ask / Engage doctrine, support-first indoor egress, threat-aware routing, extraction traffic, fire-team formation, Hybrid control, streamed playback, and active tactical state continue from the committed positions.
+
+### Validation boundary
+- Build Health places a same-team support on the leader's next corner cell and confirms a one-hex, one-cost yield, successful leader advance, retained VIP ownership, and unique living occupancy.
+- The same contract confirms unrelated blockers, already-acted/excluded supports, and zero-TU supports cannot be moved by the helper.
+- Live deferred-suite validation found and repaired a diagnostics-only Browser 2045 scope error: the contact-replan contract now inspects its owning `TacticalMission` source instead of trying to access the nested playback helper as a global. Gameplay playback authority is unchanged.
+- Manual gates are the reported exterior-corner state, multiple supports, nearby unrelated escort columns, walls, intact vehicles, fire/smoke, narrow lanes, Simulation, Hybrid, streamed continuation, and save/load.
+- Fog, LOS, illumination, AI knowledge, damage, objective state, mission resolution, and save format **4** are unchanged.
 
 
 ## Browser 2045 - New-Contact Interrupt and Remaining-Round Replan

@@ -96,6 +96,7 @@ const required = [
   "Final VIP extraction releases stale Skyranger guards across Manual Hybrid and streamed Simulation handoffs",
   "Every active VIP fire team keeps moving after an earlier team clears the Skyranger",
   "Newly spotted aliens interrupt playback and replan every remaining unplayed AEGIS action",
+  "Escort columns make support traffic yield around exterior building corners and count only committed progress",
   "BEACON_LINKED_PROCEDURAL_MULTILEVEL_ALIEN_BASE_ASSAULT_PATCH",
   "ALIEN_BASE_VERTICAL_DECK_FOCUS_PRESENTATION_PATCH",
   "CRASH_SITE_AI_TERMINAL_STALL_RECOVERY_PATCH",
@@ -103,12 +104,15 @@ const required = [
   "TACTICAL_POST_EXTRACTION_RESCUE_DUTY_HANDOFF_PATCH",
   "TACTICAL_MULTI_FIRETEAM_VIP_RESCUE_TRAFFIC_PATCH",
   "TACTICAL_NEW_CONTACT_INTERRUPT_REMAINING_ROUND_REPLAN_PATCH",
+  "TACTICAL_ESCORT_CORNER_MOBILE_TRAFFIC_YIELD_PATCH",
   "tacticalShotCommitVisibilityState",
   "tacticalShotPresentationFrame",
   "tacticalReleaseCompletedVipEscortState",
   "tacticalAiRescueActorOrder",
   "tacticalExtractionTrafficReservedCellKeys",
   "tacticalAiNewContactInterruptRecord",
+  "tacticalEscortMobileTrafficYield",
+  "tacticalMissionSource=String(TacticalMission)",
   "contactReplanHold",
   "actionOrderIds:Array.from(roundActedIds)",
   "postExtractionHandoffUnits",
@@ -892,7 +896,7 @@ if (!html.includes('const isoFillLight=new THREE.AmbientLight(0x9fb7d5,0)') || !
 if (!html.includes('cover?.hp>0&&cover.kind==="hard"&&cover.solidVehicleFootprint') || !html.includes('tacticalCoverFootprintCells(cover).forEach(cell=>blocked.add(tacticalKey(cell.x,cell.y)))')) {
   missing.push("live land-vehicle authority must expand every intact hard-cover footprint cell");
 }
-if (!html.includes('const commitState=tacticalMovementCommitCellState(leader,nextCell,covers,units,{requireAdjacent:true})') || !html.includes('const commitState=tacticalMovementCommitCellState(human,plan.cell,covers,allUnits(),{requireAdjacent:false})') || !html.includes('const commitState=tacticalMovementCommitCellState(alien,step,covers,allUnits(),{requireAdjacent:true})')) {
+if (!html.includes('let commitState=tacticalMovementCommitCellState(leader,nextCell,covers,workingUnits,{requireAdjacent:true})') || !html.includes('const commitState=tacticalMovementCommitCellState(human,plan.cell,covers,allUnits(),{requireAdjacent:false})') || !html.includes('const commitState=tacticalMovementCommitCellState(alien,step,covers,allUnits(),{requireAdjacent:true})')) {
   missing.push("manual/escort, human AI, and alien movement must recheck blockers at final commit time");
 }
 if (!html.includes('const base=tacticalThreeCoverWorldAnchor(runtime.worldFor,c)') || !html.includes('tacticalCoverFootprintCells(c).some(cell=>runtime.visibleSet.has(tacticalKey(cell.x,cell.y)))')) {

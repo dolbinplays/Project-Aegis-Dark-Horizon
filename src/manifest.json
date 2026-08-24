@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.23.2045_NEW_CONTACT_INTERRUPT_REMAINING_ROUND_REPLAN_PATCH",
+  "currentBuild": "v0.26.08.23.2145_ESCORT_CORNER_MOBILE_TRAFFIC_YIELD_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "new-contact-interrupt-remaining-round-replan-validation",
+  "status": "escort-corner-mobile-traffic-yield-validation",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.23.2045_NEW_CONTACT_INTERRUPT_REMAINING_ROUND_REPLAN_PATCH",
+  "lastInspectedBuild": "v0.26.08.23.2145_ESCORT_CORNER_MOBILE_TRAFFIC_YIELD_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.23.2045_NEW_CONTACT_INTERRUPT_REMAINING_ROUND_REPLAN_PATCH",
+    "browserBuild": "v0.26.08.23.2145_ESCORT_CORNER_MOBILE_TRAFFIC_YIELD_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -156,7 +156,8 @@
       "multi-fireteam-vip-rescue-traffic",
       "post-rescue-beacon-assault-handoff",
       "support-first-escort-building-egress",
-      "new-contact-interrupt-remaining-round-replan"
+      "new-contact-interrupt-remaining-round-replan",
+      "escort-corner-mobile-traffic-yield"
     ],
     "temporaryExceptions": [
       {
@@ -310,6 +311,10 @@
       {
         "system": "new-contact-interrupt-remaining-round-replan",
         "reason": "The browser now commits a newly observed alien contact after the discovering actor's atomic action, visibly pauses streamed playback, and replans every remaining unplayed AEGIS action without replaying completed work. Native Godot requires equivalent engine-native action-queue interruption and replan ownership."
+      },
+      {
+        "system": "escort-corner-mobile-traffic-yield",
+        "reason": "The browser now lets an eligible same-column support or escorted follower yield one legal occupied corner cell before the escort leader commits its planned step, while preserving TU, formation, occupancy, Hybrid ownership, and truthful stall accounting. Native Godot requires equivalent atomic escort-traffic handling."
       },
       {
         "system": "command-map-autonomous-search-resume",

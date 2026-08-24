@@ -1,6 +1,51 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.23.2145_ESCORT_CORNER_MOBILE_TRAFFIC_YIELD_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Active civilian and VIP escort columns no longer burn rounds at exterior building corners merely because a supporting soldier occupies the leader's next legal route hex.
+
+ATOMIC MOBILE-TRAFFIC YIELD
+---------------------------
+- Escort route planning already treated the leader, followers, and same fire team as mobile formation traffic. The final movement boundary now honors that same ownership without weakening normal occupancy.
+- When an eligible support or escorted follower occupies the next planned escort step, that unit first yields to one legal adjacent side/rear cell and the leader then commits the original step.
+- Human supports spend the normal 4 TU for the yield and are excluded from the later formation adjustment for that leader step, preventing a second move or snap-back animation.
+- Escorted civilians/VIPs retain the established follower movement authority and escort identity.
+
+PROTECTED BOUNDARIES
+--------------------
+- Player-held Hybrid leaders, unrelated units, another active escort owner, supports already moved by building-egress clearance, and supports without enough TU remain fixed blockers.
+- Yield cells reject hard cover, intact land-vehicle footprints, occupied cells, extraction cells, hazards by the existing ranking, and building re-entry after the column has committed outdoors.
+- Stay / Ask / Engage doctrine and normal leader-relative formation resume from the committed positions.
+
+TRUTHFUL STALL RECOVERY
+-----------------------
+- Rescue movement records a route step only when the escort leader actually changes cells.
+- A rejected step immediately stops the remaining route instead of attempting later non-adjacent cells.
+- Failed movement now increments the existing rescue stall counter, allowing bounded route recovery instead of resetting the counter with false progress every round.
+
+VALIDATION
+----------
+- Build Health covers a same-team support yielding exactly one hex for exactly 4 TU, unique final occupancy, retained VIP escort ownership, and successful leader progress.
+- It also confirms unrelated units, already-acted supports, and zero-TU supports are not displaced.
+- Live Build Health also repaired the previous contact-replan contract so it inspects the owning TacticalMission source instead of trying to reference its nested playback helper from global scope.
+- Static validation requires the yield helper, committed-progress break, patch marker, and deferred Build Health row.
+- Save format remains 4. Fog, LOS, AI knowledge, damage, mission resolution, building solidity, vehicle footprints, and Hybrid command ownership remain authoritative.
+
+MANUAL TEST GATES
+-----------------
+1. Resume a Stay With Escort column beside an exterior building corner and confirm a blocking support yields once, the leader and VIP continue, and the team reforms outside.
+2. Repeat with two supports, another escort column nearby, an intact vehicle, fire/smoke, and a narrow wall lane; confirm no overlap, wall crossing, vehicle crossing, free TU, or double movement.
+3. Repeat in full Simulation and Hybrid support playback and confirm player-held leaders remain player controlled.
+4. Block every legal yield cell and confirm the round reports a real stall/retry instead of silently counting progress.
+
+PREVIOUS PATCH NOTES
+====================
+
 Build: v0.26.08.23.2045_NEW_CONTACT_INTERRUPT_REMAINING_ROUND_REPLAN_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
