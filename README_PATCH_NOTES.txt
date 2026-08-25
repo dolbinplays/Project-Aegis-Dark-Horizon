@@ -1,6 +1,65 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.24.2251_TACTICAL_BUILDING_ROOFS_AND_PLAYER_AWARE_CUTAWAY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Discovered procedural buildings now appear as complete roofed structures in the persistent Three.js tactical renderer. Roofs automatically and smoothly cut away only when needed to keep known AEGIS soldiers readable, including camera occlusion in 3D Iso, FPV, TPV, and incoming-fire views.
+
+PERSISTENT BUILDING ROOFS
+-------------------------
+- Every discovered procedural building receives a presentation-only roof group aligned to the authored building footprint rather than remaining permanently open at the top.
+- Roof color and pitch follow the mission's regional architecture profile. Flat/parapet environments remain flatter, while pitched, tiled, deep-eave, and steep-eave environments receive progressively stronger roof rise and pitch.
+- Roof panels reuse the existing persistent hex geometry. Soldier movement and selection change only roof presentation state and do not rebuild terrain, walls, cover, or the complete battlefield scene.
+- Structural damage darkens the roof treatment and destroyed/breached perimeter structure can produce bounded presentation gaps near the committed damaged edge.
+
+PLAYER-AWARE AUTOMATIC CUTAWAY
+------------------------------
+- A building containing any living AEGIS soldier fades automatically so its interior remains readable.
+- The building containing the currently selected AEGIS soldier receives the clearest isometric cutaway. Other simultaneously occupied buildings retain a lighter translucent roof so multiple fire teams can still be tracked.
+- FPV, TPV, and incoming-fire reaction observers receive the strongest cutaway for the known AEGIS actor being followed.
+- The active camera also ray-tests only toward the known selected/observed AEGIS actor. If another roof blocks that sightline, that roof temporarily fades as an occluder and restores afterward.
+- Alien, civilian, VIP, item, reinforcement, and objective positions are not consulted when choosing cutaway state. Hidden occupants therefore cannot cause a roof to fade or leak tactical knowledge.
+
+SMOOTH PERSISTENT PRESENTATION
+------------------------------
+- Roof opacity eases over a bounded 360 ms transition inside the existing persistent renderer animation loop rather than popping between visible and hidden states.
+- Each building owns an independent roof material set, so one cutaway never makes every roof transparent.
+- Roof details fade with the parent roof instead of remaining as floating opaque objects over an exposed interior.
+- Roof groups remain inside the existing persistent cover scene and are cleaned up through the existing renderer disposal path.
+
+PRESERVED TACTICAL AUTHORITY
+----------------------------
+- Roofs are presentation only. They do not add movement levels, collision, hard cover, shot blocking, LOS blocking, light blocking, accuracy modifiers, path costs, or AI knowledge.
+- Fog, explored state, windows, doors, structural destruction, fire-team movement, VIP/civilian escort routing, targeting, damage, mission resolution, and save/load remain authoritative and unchanged.
+- Save format remains 4.
+
+VALIDATION
+----------
+- Embedded JavaScript passes `node --check`.
+- Critical boot smoke passes and the rendered start screen reports the synchronized Browser 2251 build ID without a runtime-error panel.
+- Added a deterministic Build Health contract proving that living AEGIS occupancy/selection/perspective causes the expected cutaway while alien/civilian-only occupancy does not.
+- The comparable full deferred headless suite passes 68/73 checks versus 67/72 in Browser 2115. The new roof/cutaway contract passes and the same five pre-existing unrelated AI/camera/tutorial contracts remain red.
+- The prior Browser 2115 VIP/civilian Skyranger boarding regression still passes.
+
+MANUAL TEST GATES
+-----------------
+1. Enter a discovered building with one AEGIS soldier in 3D Iso. Confirm its roof fades smoothly and restores after the soldier leaves.
+2. Put AEGIS soldiers in two buildings, select each in turn, and confirm the selected building gets the clearest cutaway while the other occupied building remains lightly translucent.
+3. Rotate/pan the Iso camera so another roof lies between the camera and the selected soldier; confirm only the occluding roof fades and restores when the sightline clears.
+4. Repeat inside buildings in FPV, TPV, and an incoming-fire reaction camera. Interior units, doors, windows, cover, and hazards should remain readable without permanent roof disappearance.
+5. Place hidden aliens, civilians, VIPs, items, and objectives inside unrevealed buildings without AEGIS occupants. Confirm their presence cannot trigger a roof cutaway or bypass fog/LOS.
+6. Damage/breach perimeter walls and confirm bounded roof damage presentation follows the committed structure while combat/pathing results remain unchanged.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.24.2115_VIP_SKYRANGER_BOARDING_PLAYBACK_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

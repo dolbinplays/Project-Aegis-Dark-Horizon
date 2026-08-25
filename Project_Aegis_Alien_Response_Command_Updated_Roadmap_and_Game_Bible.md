@@ -2,9 +2,56 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-24
-Current handoff build: `v0.26.08.24.2115_VIP_SKYRANGER_BOARDING_PLAYBACK_PATCH`
+Current handoff build: `v0.26.08.24.2251_TACTICAL_BUILDING_ROOFS_AND_PLAYER_AWARE_CUTAWAY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2115 fixes premature VIP/civilian disappearance during Skyranger extraction. Evacuees now remain rendered through the recorded final movement trail, traverse the real ramp into the interior boarding aisle, and only then commit the extracted presentation state. The rule follows each seeded Skyranger heading; mission authority and save format 4 remain unchanged.**
+Current patch status: **Browser 2251 implements the first tactical building-roof/cutaway slice. Discovered procedural buildings now render complete persistent roofs; known AEGIS occupancy, selection, perspective cameras, and camera-to-AEGIS occlusion smoothly fade only the necessary building without consulting hidden units. Roofs remain presentation-only, Browser 2115 boarding behavior remains intact, and save format 4 is unchanged.**
+
+
+## Browser 2251 - Tactical Building Roofs + Player-Aware Cutaway
+
+**Status:** Implemented as the first approved tactical building-roof/cutaway slice. The persistent renderer now supplies complete roofs and per-building automatic cutaway without changing tactical authority. Optional player roof-mode settings and finer room/roof-section controls remain eligible refinements.
+
+### Complete persistent roof presentation
+- Discovered procedural buildings now receive a dedicated persistent Three.js roof group aligned to every authored building footprint cell.
+- Roof presentation consumes the existing regional architecture profile so parapet environments remain flatter while pitched, tile-eave, deep-eave, and steep-eave environments receive progressively stronger roof rise and pitch.
+- Roofs reuse retained battlefield geometry/material infrastructure. Soldier movement, selection, camera changes, AI playback, and Hybrid handoff update opacity only; they do not rebuild terrain, structural cover, or the renderer.
+- Authoritative structural damage can darken the roof and produce bounded roof-panel gaps near destroyed/breached perimeter structure. These gaps are visual echoes of committed scenery damage rather than additional destructible objects.
+
+### Player-aware occupancy cutaway
+- A living AEGIS soldier inside a building is sufficient to request a cutaway for that building. Unoccupied structures remain fully roofed.
+- The currently selected AEGIS soldier's building receives the clearest normal Iso cutaway. Buildings occupied by other living AEGIS soldiers retain a lighter translucent treatment so multiple teams remain readable at once.
+- FPV, TPV, and incoming-fire reaction actors receive the strongest cutaway for their current building.
+- Civilian, VIP, alien, reinforcement, item, and objective occupancy never participates in the cutaway model. Hidden tactical content therefore cannot change the roof and leak information.
+
+### Camera occlusion cutaway
+- The persistent active camera uses a bounded Three.js ray only toward the selected/observed living AEGIS actor.
+- If a roof group lies between that camera and the known actor, the occluding building temporarily receives a strong cutaway and restores when the sightline clears.
+- The ray query does not use hidden entities, objective coordinates, unseen rooms, or AI knowledge. It is presentation-only camera occlusion handling.
+
+### Smooth independent transitions
+- Every building owns an independent roof material set. One building fading cannot make unrelated roofs transparent.
+- Roof opacity transitions over **360 ms** with bounded easing in the existing persistent animation loop.
+- Roof details such as flat-roof vents share the parent fade state, preventing floating opaque details over a cut-away interior.
+- The animation loop remains active only while a roof transition or another existing cinematic/observer animation needs frames.
+
+### Tactical authority and compatibility
+- Roof meshes are not tactical cover or a new vertical floor. They do not block movement, LOS, shots, light, explosions, pathing, AI planning, or camera-independent visibility.
+- Existing walls, windows, doors, furnishings, fog, explored state, lighting, fire/smoke, destruction, civilian/VIP rescue, formations, Manual/Hybrid/Simulation ownership, objectives, and mission resolution remain unchanged.
+- Save format remains **4**. Roof opacity is transient presentation state and does not enter campaign/tactical saves.
+
+### Validation boundary
+- Embedded JavaScript syntax passes.
+- Critical boot smoke passes, and a headless rendered start screen shows the Browser 2251 build ID with no runtime error.
+- The new deterministic contract verifies selected, occupied, and perspective AEGIS cutaway strengths; alien/civilian-only occupancy cannot request a cutaway; the persistent renderer owns roof generation, camera ray occlusion, and transition animation.
+- Comparable deferred Build Health is **68/73**, versus **67/72** for Browser 2115 in the same full-CSS headless harness. The new contract passes; the exact same five older unrelated AI/camera/tutorial contracts remain red.
+- Browser 2115's VIP/civilian interior boarding regression continues to pass.
+
+### Remaining roof/cutaway refinements
+1. Playtest whether very large/multi-room buildings benefit from independent roof-section fading instead of whole-building opacity.
+2. Add an optional device-level presentation preference if players want **Automatic Roof Cutaway**, **Always Show Roofs**, or **Hide Roofs During Tactical Play**. Do not store it in campaign saves.
+3. Consider richer authored roof silhouettes, chimneys, HVAC, damaged/collapsed roof variants, and biome/building-archetype details after performance/readability testing.
+4. If later true vertical tactical combat introduces occupiable rooftops or upper floors, explicitly promote those surfaces into tactical authority rather than reusing these presentation-only roof meshes implicitly.
+
 
 
 ## Browser 2115 - VIP / Civilian Skyranger Boarding Playback
@@ -171,7 +218,7 @@ Current patch status: **Browser 2115 fixes premature VIP/civilian disappearance 
 
 ## Roadmap Addition - Tactical Building Roofs and Player-Aware Cutaway
 
-**Status:** Approved 3D tactical presentation item. Buildings should read as complete roofed structures from the exterior while remaining playable and legible whenever an AEGIS soldier enters them.
+**Status:** First implementation slice completed in Browser 2251. Complete persistent roofs, whole-building AEGIS occupancy/selection cutaway, perspective-camera cutaway, camera-to-known-AEGIS occlusion fading, bounded transition animation, damage-linked presentation gaps, and knowledge-safe presentation boundaries are implemented. Finer per-room/roof-section fading and an optional player roof-mode setting remain staged refinements.
 
 ### Roof presentation
 - Add roofs appropriate to each procedural building archetype, footprint, material, biome, and damage state rather than leaving every structure permanently open at the top.
