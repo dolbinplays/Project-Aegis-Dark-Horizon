@@ -2,9 +2,44 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-24
-Current handoff build: `v0.26.08.24.2251_TACTICAL_BUILDING_ROOFS_AND_PLAYER_AWARE_CUTAWAY_PATCH`
+Current handoff build: `v0.26.08.24.2345_TACTICAL_PROP_INGRESS_CLEARANCE_AND_STRUCTURAL_PRECEDENCE_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2251 implements the first tactical building-roof/cutaway slice. Discovered procedural buildings now render complete persistent roofs; known AEGIS occupancy, selection, perspective cameras, and camera-to-AEGIS occlusion smoothly fade only the necessary building without consulting hidden units. Roofs remain presentation-only, Browser 2115 boarding behavior remains intact, and save format 4 is unchanged.**
+Current patch status: **Browser 2345 protects procedural Earth-building ingress from random scenery and gives authored building structure precedence over conflicting prop records during medium/large restoration. Doorways plus immediate interior/exterior approach cells are reserved, completed maps receive a final clearance/connectivity audit, 648 deterministic Earth missions pass the new stress audit, and save format 4 remains unchanged. Browser 2251 roofs/cutaway and Browser 2115 boarding remain intact.**
+
+
+## Browser 2345 - Tactical Prop Ingress Clearance + Structural Precedence
+
+**Status:** Implemented from live tactical-map review and the follow-up generation-order audit. This completes the immediate building-door/prop-collision item while preserving the dedicated alien-base generator. Broader reserved masks for future randomly generated scenery around special craft/objective geometry remain eligible refinements when those systems begin sharing the same prop-placement layer.
+
+### Shared protected building-ingress mask
+- Every authored Earth-building door now contributes the door cell plus every legal immediate interior and exterior approach cell to `tacticalBuildingIngressProtectedCellKeys(...)`.
+- The public street-scene prop output is filtered through that shared mask. Single-cell props that conflict may relocate to a nearby deterministic legal side cell; multi-cell props cannot survive when any footprint cell intrudes into the protected lane.
+- The protection applies to the full `footprintCells` record rather than only the prop anchor, establishing the correct authority for future rotated/multi-cell scenery.
+- The existing vending/newspaper routine can therefore keep street furniture near a shop or office entrance without occupying the primary approach that units need to enter or exit.
+
+### Final map repair and connectivity authority
+- Synchronous and asynchronous Earth-map generation now run the same final ingress-clearance step after ordinary street props and generic hard/soft scenery have been generated. Any non-building cover that somehow reaches a reserved doorway/approach cell is removed before the battlefield is accepted.
+- `tacticalBuildingIngressConnectivityState(...)` audits the committed cover map and requires every generated building to retain at least one passable outside -> door -> interior route.
+- The final repair catches later rocks, trees, crates, vehicles, or future decorative cover even if a placement subsystem forgets to consult the initial mask.
+- This is generation integrity, not a runtime phasing rule: legal solid props remain solid everywhere outside the reserved ingress cells.
+
+### Authored structural precedence
+- `tacticalEnforceBuildingStructuralPrecedence(...)` rechecks required authored wall, window, and partition cells after the existing medium/large mission-sized restoration.
+- If a decorative/malformed cover record occupies a cell where an authored structural segment is missing, the conflicting record is removed and the required building structure is restored instead of being skipped because the cell was merely "occupied."
+- Existing correctly generated structural records are retained. The rule does not duplicate walls/windows or reset an already authoritative structural record.
+- Procedural alien-base assaults are explicitly excluded from this Earth-building layer; their dedicated bulkhead/elevator/command-core generator remains the sole structure authority.
+
+### Validation boundary
+- Embedded JavaScript syntax passes for every inline script.
+- Full-CSS deferred Build Health is **69/74**, versus **68/73** in Browser 2251. The new contract is the added pass and the same five pre-existing unrelated AI/camera/tutorial contracts remain red.
+- The regression fixture deliberately puts a vending-machine cover on a required outer-district wall/window cell before mission-sized restoration and requires the prop to be removed and the authored structure to win.
+- A deterministic stress audit covers **648 Earth missions** across all six supported regions and Small/Medium/Large map sizes; every sample keeps props out of protected ingress cells and every generated building retains a valid outside-to-door-to-interior connection.
+- Alien-base reachability, Browser 2115 boarding, and Browser 2251 roof/cutaway contracts remain green. Save format remains **4**.
+
+### Remaining ingress/placement refinements
+1. When additional random-prop systems are allowed near Skyranger ramps, navigable alien-craft entrances, elevator/gallery transitions, authored breaches, or mandatory interaction cells, feed those authoritative geometries into the same reserved-mask concept rather than inventing one-off exclusions.
+2. Expand deterministic stress coverage whenever new multi-cell/rotatable prop families are added.
+3. Consider a generation diagnostic overlay that can display reserved ingress cells in developer/Build Health mode without exposing them during normal play.
 
 
 ## Browser 2251 - Tactical Building Roofs + Player-Aware Cutaway
@@ -145,6 +180,34 @@ Current patch status: **Browser 2251 implements the first tactical building-roof
 - Regression coverage distinguishes an empty uninspected bay, a hidden living alien, and an already committed reinforcement arrival.
 - The earlier reinforcement-source priority and crash-site stall contracts now assert the simplified outcome instead of the superseded post-combat inspection requirement.
 - Embedded JavaScript syntax and the build-seam checker pass. Save format remains **4**; native parity remains queued.
+
+
+## Roadmap Addition - Tactical Prop Placement / Doorway and Ingress Clearance
+
+**Status:** Implemented for procedural Earth-building doors in Browser 2345. The shared building mask, footprint-aware prop rejection/relocation, final generation clearance, connectivity audit, and structural-precedence repair are complete. Future random-prop systems near special craft/objective/elevator geometry should reuse the same concept when scheduled.
+
+### Placement authority
+- Audit procedural placement of vending machines and every other street/interior terrain prop so generated scenery cannot accidentally seal an authored building entrance or required traversal lane.
+- The rule applies broadly to vending machines, newspaper machines, benches, trash cans, planters, fountains, statues, bus-stop furniture, utility boxes, shrubs, decorative fixtures, interior furnishings, and future randomly placed props that occupy or block tactical cells.
+- Before a prop is accepted, placement must reject the actual door/opening cell plus the immediately required approach cells on both sides of that opening. A legal door should remain reachable from the surrounding navigable area and should not open into a prop-occupied dead end.
+- Apply the same clearance concept to other required ingress/egress geometry where random scenery is allowed nearby: Skyranger ramps and evacuation lanes, alien-craft entrances, authored breaches, elevator/gallery transition cells, deployment/spawn exits, and mandatory objective interaction approaches.
+- Props that are intentionally authored as scenario obstacles may still create chokepoints when the map design explicitly calls for them, but ordinary random/decorative placement must never silently convert a legal entrance into an unusable one.
+
+### Shared generation and pathing boundary
+- Use one authoritative reserved-cell / clearance-mask helper during map generation rather than maintaining prop-specific exceptions such as a vending-machine-only check.
+- The reserved mask should be derived from final building doors/openings, craft ramps, special transitions, extraction geometry, and other mandatory access points after their authoritative locations are known.
+- Multi-hex props must validate their complete footprint, not only their anchor cell. Rotation/orientation cannot allow part of a large prop to intrude into a protected doorway or lane.
+- Placement should also preserve a minimal usable circulation pocket immediately inside and outside doors so a unit can enter, exit, and yield to friendly traffic without becoming permanently wedged by scenery.
+- Existing cover, LOS, destruction, prop HP, movement cost, fog, lighting, AI knowledge, and tactical rules remain authoritative. This item is about legal generation placement, not making solid props non-blocking after they are placed.
+
+### Validation gate
+1. Generate a broad deterministic sample of urban, suburban, industrial, commercial, residential, wilderness-structure, and alien-base maps containing every current prop family.
+2. For every authored door/opening, confirm the door cell and required interior/exterior approach cells are free of randomly placed blocking props and remain connected to legal navigable space.
+3. Specifically stress vending machines beside shop, office, warehouse, and public-building doors, including rotated and multi-cell variants; none may overlap or seal the entrance.
+4. Repeat around Skyranger ramps/extraction lanes, alien-craft entrances, elevator/gallery transitions, breaches, and mandatory interaction cells; random scenery must not block required mission traversal.
+5. Test multi-hex/rotated props and dense prop-generation seeds. The complete footprint must respect the reserved clearance mask even when the anchor cell itself is legal.
+6. Run Manual, Hybrid, and full Simulation pathing through the resulting entrances. No mode should need to walk through solid scenery, teleport, repeatedly stall, or invoke emergency recovery because generation placed a prop in a required lane.
+7. Save/reload active tactical missions and confirm the legal prop layout is preserved exactly; no load-time repair should be needed to reopen a doorway that generation should have kept clear.
 
 
 ## Roadmap Addition - Seeded Skyranger Landing Placement and Orientation Variety

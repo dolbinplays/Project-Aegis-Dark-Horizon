@@ -777,7 +777,7 @@ function installAegisGlobalHoverHelp(){
 function AegisHoverHelpToggleButton({light=false,compact=false}){const[enabled,setEnabled]=useState(()=>readAegisHoverHelpEnabled());useEffect(()=>{const sync=event=>setEnabled(normalizeAegisHoverHelpEnabled(event?.detail?.enabled));window.addEventListener(AEGIS_HOVER_HELP_CHANGE_EVENT,sync);return()=>window.removeEventListener(AEGIS_HOVER_HELP_CHANGE_EVENT,sync);},[]);const toggle=()=>setEnabled(writeAegisHoverHelpEnabled(!enabled));return/*#__PURE__*/React.createElement("button",{type:"button",onClick:toggle,"aria-pressed":enabled,"data-aegis-hover-help-toggle":"true","data-aegis-help":enabled?"Turn contextual button explanations off. Controls continue working normally, and the preference is remembered on this device.":"Turn contextual button explanations on. Rest the pointer over supported controls for three seconds to read their purpose.",className:`${compact?"px-3 py-2 text-xs":"px-4 py-3 text-sm"} rounded-2xl border font-black shadow-sm transition ${enabled?light?"border-cyan-200/70 bg-cyan-900/60 text-cyan-50":"border-cyan-400/60 bg-cyan-950/55 text-cyan-100":light?"border-slate-400/60 bg-slate-950/70 text-slate-200":"border-slate-600 bg-slate-950 text-slate-300"}`},enabled?"Hover Help: On":"Hover Help: Off");}
 if(typeof document!=="undefined"){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",installAegisGlobalHoverHelp,{once:true});else setTimeout(installAegisGlobalHoverHelp,0);}
 
-const CURRENT_GAME_BUILD="v0.26.08.24.2251_TACTICAL_BUILDING_ROOFS_AND_PLAYER_AWARE_CUTAWAY_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
+const CURRENT_GAME_BUILD="v0.26.08.24.2345_TACTICAL_PROP_INGRESS_CLEARANCE_AND_STRUCTURAL_PRECEDENCE_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
 function runCriticalBootSmokeTests(){
   const checks=[
     {name:"Game root is available",pass:typeof document!=="undefined"&&Boolean(document.getElementById("root"))},
@@ -11180,6 +11180,7 @@ PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 24, 2026",tit
 PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 24, 2026",title:"Seeded Skyranger Landing + Orientation Variety",summary:"Varies Skyranger perimeter approaches and six-direction headings reproducibly while keeping deployment, pathing, extraction, and the visible craft on one shared geometry record.",items:["Mission-seeded anchors now distribute single and multiple Skyrangers across north, east, south, and west perimeter bands instead of repeating fixed north or northwest/southeast slots.","All six hex-grid headings are eligible through a bounded placement search; ramps can face diagonally or broadly along an edge rather than always toward map center.","The full hull, ramp, rear deployment lane, staging neighborhood, buildings, intact vehicles, indestructible objectives, map bounds, and other Skyrangers are checked before placement commits.","Soldier deployment, AI extraction egress, evacuation traffic reservations, escort guards, and Three.js yaw all consume the craft's saved forward/rear/body/nose geometry.","Selection uses mission seed and generated scenery only and cannot inspect hidden alien positions. Legacy north/south tactical states keep their recorded body-sign behavior.","Capacity, TU, LOS, fog, alien knowledge, objectives, resolution, and save format 4 remain unchanged."]});
 PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 24, 2026",title:"Globally Seeded Opening Incident Pair",summary:"Moves the first two alien crises beyond a fixed North America start while guaranteeing a legal one-base Skyranger response site and preserving deterministic campaign setup.",items:["New-campaign opening pairs are selected reproducibly from curated land sites across North America, South America, Europe, North Africa, East Asia, and Oceania.","Each seed produces two distinct incident identities and coordinates in one supported region, with varied crisis archetypes, rewards, aliens, and panic values.","Generation validates both incidents against the authoritative starting Skyranger sortie radius and retains at least one practical candidate base site that can reach the pair.","The first-base preview and committed campaign share one session seed; the seed and generated missions remain in campaign data for stable setup, save/load, and diagnostics.","A known-safe legacy pair remains the bounded fallback if a generated pair ever fails its reachability proof.","Existing saves, later procedural incidents, aircraft range, fuel, travel, fog, difficulty, and save format 4 are unchanged."]});
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.24.2115_VIP_SKYRANGER_BOARDING_PLAYBACK_PATCH",date:"August 24, 2026",title:"VIP / Civilian Skyranger Boarding Playback",summary:"Keeps escorted civilians and VIPs visible through their final approach, ramp traversal, and interior Skyranger boarding animation before the extracted state removes them from the battlefield.",items:["Civilian/VIP extraction no longer completes on the first ramp hex. The authoritative handoff occurs at the innermost passable Skyranger aisle cell, so evacuees visibly move onto the ramp and into the troop bay.","The rule follows each craft's saved ramp-cell sequence, so north, south, east, west, and diagonal seeded Skyranger orientations use the same real geometry instead of a fixed direction assumption.","AI playback now recognizes a rescued civilian with a recorded final movement trail as a pending presentation transition. The pre-animation frame preserves the unit as visible and unextracted until that trail finishes.","Only after the last boarding step does playback apply rescued/extracted state and cull the model. Mission scoring and continuation already use the authoritative post-boarding state.","Ramp traffic, escort guards, fire-team formation, fog, LOS, TU, mission resolution, and save format 4 remain unchanged."]});
+PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.24.2345_TACTICAL_PROP_INGRESS_CLEARANCE_AND_STRUCTURAL_PRECEDENCE_PATCH",date:"August 24, 2026",title:"Tactical Prop Ingress Clearance + Structural Precedence",summary:"Protects every procedural building entrance from decorative/generated cover and makes required building walls/windows outrank conflicting props during medium/large restoration.",items:["Every authored building door now owns a protected traversal mask containing the doorway plus its legal immediate interior and exterior approach cells. Street furniture, machines, vehicles, rocks, trees, and other non-building cover cannot remain on those reserved cells.","The doorway-adjacent vending/newspaper placement path is filtered through the same protected mask. A rejected single-cell prop may relocate to a nearby legal side cell; it can no longer occupy the primary ingress lane.","A final generation repair removes any non-building cover that conflicts with protected ingress cells, covering later generic hard/soft scenery as well as street props. A connectivity audit proves each building retains at least one passable outside-to-door-to-interior route.","Medium/large building restoration now reapplies required wall/window/partition structure with structural precedence. If a decorative or malformed cover record occupies a required structural cell, the conflicting prop is removed and the authored structure is restored instead of silently skipped.","Manual, Hybrid, Simulation, VIP/civilian escort, fog, LOS, damage, building geometry, Skyranger placement, and save format 4 remain unchanged outside the generation-integrity correction."]});
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.24.2251_TACTICAL_BUILDING_ROOFS_AND_PLAYER_AWARE_CUTAWAY_PATCH",date:"August 24, 2026",title:"Tactical Building Roofs + Player-Aware Cutaway",summary:"Adds complete presentation-only roofs to discovered procedural buildings and smoothly fades only the occupied or camera-occluding structures needed to keep known AEGIS soldiers readable.",items:["Discovered procedural buildings now receive persistent Three.js roof panels aligned to their full authored building footprint, with regional roof color/pitch language and bounded damage-linked gaps near destroyed structural edges.","A building containing a living AEGIS soldier fades automatically. The selected soldier receives the clearest cutaway, while other occupied buildings retain a lighter translucent roof so multiple teams remain trackable.","FPV, TPV, incoming-fire reaction, and Iso camera sightlines may fade a roof that physically occludes the known AEGIS actor being observed. The ray test is presentation-only and follows no hidden alien, civilian, VIP, item, or objective position.","Roof opacity eases over a short bounded transition inside the existing persistent animation loop. Roof groups and materials are reused until the authoritative cover scene rebuilds; soldier movement or selection does not rebuild terrain/buildings.","Roofs do not alter collision, movement, pathfinding, cover, LOS, fog, illumination, weapon impacts, AI knowledge, mission resolution, or save format 4."]});
 for(const entry of PATCH_NOTES_HISTORY){const historicalBuild=PATCH_NOTE_BUILD_BY_TITLE[entry.title];if(historicalBuild)entry.build=historicalBuild;}
 function PatchNotesLibraryScreen(){
@@ -12239,6 +12240,91 @@ const AEGIS_RUN_SELF_TESTS_BEFORE_2115_VIP_SKYRANGER_BOARDING_PLAYBACK=runSelfTe
 runSelfTests=function runSelfTestsWith2115VipSkyrangerBoardingPlayback(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_2115_VIP_SKYRANGER_BOARDING_PLAYBACK(),tactical0955BuildHealthContractResult("VIPs and civilians stay rendered through the ramp and interior boarding trail before extraction culls them",tacticalVipSkyrangerBoardingPlaybackContractTest)];};
 const AEGIS_RUN_SELF_TESTS_BEFORE_2251_TACTICAL_BUILDING_ROOFS=runSelfTests;
 runSelfTests=function runSelfTestsWith2251TacticalBuildingRoofs(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_2251_TACTICAL_BUILDING_ROOFS(),tactical0955BuildHealthContractResult("Discovered buildings receive presentation-only roofs that cut away only for known AEGIS occupancy or camera occlusion",tacticalBuildingRoofsPlayerAwareCutawayContractTest)];};
+
+const TACTICAL_PROP_INGRESS_CLEARANCE_AND_STRUCTURAL_PRECEDENCE_PATCH=true;
+function tacticalBuildingIngressProtectedCells(mission={},buildingFilter=null){
+  if(tacticalMissionIsAlienBaseAssault(mission))return[];
+  const gridSize=tacticalGridSizeForMission(mission),cells=new Map(),buildings=buildingFilter?[buildingFilter]:tacticalBuildingPlans(mission);
+  const add=(cell,role,building)=>{if(!cell||cell.x<0||cell.y<0||cell.x>=gridSize||cell.y>=gridSize)return;const key=tacticalKey(cell.x,cell.y),prior=cells.get(key);if(!prior||prior.role==="door"||role==="door")cells.set(key,{x:cell.x,y:cell.y,role,buildingId:building.id});};
+  buildings.forEach(building=>(building.doors||[]).forEach(door=>{
+    add(door,"door",building);
+    tacticalNeighbors(door.x,door.y,gridSize).forEach(cell=>{const buildingCell=tacticalBuildingCellAt(cell.x,cell.y,mission);if(buildingCell?.building?.id===building.id&&buildingCell.interior)add(cell,"interior-approach",building);else if(!buildingCell)add(cell,"exterior-approach",building);});
+  }));
+  return Array.from(cells.values());
+}
+function tacticalBuildingIngressProtectedCellKeys(mission={}){return new Set(tacticalBuildingIngressProtectedCells(mission).map(cell=>tacticalKey(cell.x,cell.y)));}
+function tacticalGeneratedPropFootprintCells(prop=null){return Array.isArray(prop?.footprintCells)&&prop.footprintCells.length?prop.footprintCells.map(cell=>({x:Number(cell.x),y:Number(cell.y)})):[{x:Number(prop?.x),y:Number(prop?.y)}];}
+function tacticalIngressSafeRelocationCell(origin=null,mission={},protectedKeys=new Set(),used=new Set()){
+  if(!origin)return null;const gridSize=tacticalGridSizeForMission(mission),seen=new Set([tacticalKey(origin.x,origin.y)]),queue=[{x:origin.x,y:origin.y,depth:0}],candidates=[];
+  while(queue.length){const current=queue.shift();if(current.depth>=2)continue;tacticalNeighbors(current.x,current.y,gridSize).forEach(cell=>{const key=tacticalKey(cell.x,cell.y);if(seen.has(key))return;seen.add(key);queue.push({...cell,depth:current.depth+1});if(cell.x<2||cell.y<2||cell.x>gridSize-3||cell.y>gridSize-3||protectedKeys.has(key)||used.has(key)||tacticalBuildingCellAt(cell.x,cell.y,mission)||tacticalFieldFeature(cell.x,cell.y,mission))return;candidates.push({...cell,depth:current.depth+1});});}
+  return candidates.sort((a,b)=>a.depth-b.depth||tacticalDistance(origin,a)-tacticalDistance(origin,b)||tacticalKey(a.x,a.y).localeCompare(tacticalKey(b.x,b.y)))[0]||null;
+}
+const AEGIS_TACTICAL_STREET_SCENE_PROPS_BEFORE_2345_INGRESS_CLEARANCE=tacticalStreetSceneProps;
+tacticalStreetSceneProps=function tacticalStreetScenePropsWithIngressClearance(mission={}){
+  const protectedKeys=tacticalBuildingIngressProtectedCellKeys(mission),used=new Set(),accepted=[];
+  for(const prop of AEGIS_TACTICAL_STREET_SCENE_PROPS_BEFORE_2345_INGRESS_CLEARANCE(mission)){
+    const footprint=tacticalGeneratedPropFootprintCells(prop),blocked=footprint.some(cell=>protectedKeys.has(tacticalKey(cell.x,cell.y))||used.has(tacticalKey(cell.x,cell.y)));
+    if(!blocked){accepted.push(prop);footprint.forEach(cell=>used.add(tacticalKey(cell.x,cell.y)));continue;}
+    if(footprint.length!==1)continue;
+    const relocated=tacticalIngressSafeRelocationCell({x:prop.x,y:prop.y},mission,protectedKeys,used);if(!relocated)continue;
+    const moved={...prop,x:relocated.x,y:relocated.y};accepted.push(moved);used.add(tacticalKey(relocated.x,relocated.y));
+  }
+  return accepted;
+};
+preserveLayeredPatchFunctionSource(tacticalStreetSceneProps,AEGIS_TACTICAL_STREET_SCENE_PROPS_BEFORE_2345_INGRESS_CLEARANCE);
+function tacticalRequiredBuildingStructuralCovers(mission={}){if(tacticalMissionIsAlienBaseAssault(mission))return[];return tacticalBuildingCovers(mission).filter(cover=>["wall","window","partition"].includes(String(cover.buildingPart||"")));}
+function tacticalEnforceBuildingStructuralPrecedence(covers=[],mission={}){
+  const gridSize=tacticalGridSizeForMission(mission);let next=(Array.isArray(covers)?covers:[]).map(cover=>({...cover,gridSize:cover.gridSize||gridSize}));
+  for(const required of tacticalRequiredBuildingStructuralCovers(mission)){
+    if(!tacticalPlayableCell(required,gridSize,2))continue;
+    const same=next.find(cover=>cover.buildingId===required.buildingId&&cover.x===required.x&&cover.y===required.y&&cover.buildingPart===required.buildingPart);if(same)continue;
+    const key=tacticalKey(required.x,required.y);
+    next=next.filter(cover=>!tacticalCoverFootprintCells(cover).some(cell=>tacticalKey(cell.x,cell.y)===key));
+    next.push({...required,id:`cover-structure-${required.buildingId}-${required.x}-${required.y}-${required.buildingPart}`,revealed:false,biome:tacticalBiomeForMission(mission),gridSize});
+  }
+  return next;
+}
+function tacticalEnforceBuildingIngressClearance(covers=[],mission={}){
+  const protectedKeys=tacticalBuildingIngressProtectedCellKeys(mission);if(!protectedKeys.size)return Array.isArray(covers)?covers:[];
+  return (Array.isArray(covers)?covers:[]).filter(cover=>{
+    if(cover?.buildingId)return true;
+    return !tacticalCoverFootprintCells(cover).some(cell=>protectedKeys.has(tacticalKey(cell.x,cell.y)));
+  });
+}
+function tacticalBuildingIngressConnectivityState(covers=[],mission={}){
+  const gridSize=tacticalGridSizeForMission(mission),hard=new Set();
+  (Array.isArray(covers)?covers:[]).filter(cover=>Number(cover?.hp)>0&&cover.kind==="hard").forEach(cover=>tacticalCoverFootprintCells(cover).forEach(cell=>hard.add(tacticalKey(cell.x,cell.y))));
+  const buildings=tacticalBuildingPlans(mission).map(building=>{
+    const doors=(building.doors||[]).map(door=>{const neighbors=tacticalNeighbors(door.x,door.y,gridSize),inside=neighbors.filter(cell=>{const info=tacticalBuildingCellAt(cell.x,cell.y,mission);return info?.building?.id===building.id&&info.interior&&!hard.has(tacticalKey(cell.x,cell.y));}),outside=neighbors.filter(cell=>!tacticalBuildingCellAt(cell.x,cell.y,mission)&&!hard.has(tacticalKey(cell.x,cell.y))),doorClear=!hard.has(tacticalKey(door.x,door.y));return{door,doorClear,insideClear:inside.length,outsideClear:outside.length,passable:Boolean(doorClear&&inside.length&&outside.length)};});return{buildingId:building.id,doors,passable:doors.some(door=>door.passable)};});
+  return{buildings,passable:buildings.every(building=>building.passable)};
+}
+const AEGIS_RESTORE_MISSION_SIZED_BUILDING_COVERS_BEFORE_2345_STRUCTURAL_PRECEDENCE=tacticalRestoreMissionSizedBuildingCovers;
+tacticalRestoreMissionSizedBuildingCovers=function tacticalRestoreMissionSizedBuildingCoversWithStructuralPrecedence(covers=[],mission={}){
+  const restored=AEGIS_RESTORE_MISSION_SIZED_BUILDING_COVERS_BEFORE_2345_STRUCTURAL_PRECEDENCE(covers,mission);
+  return tacticalEnforceBuildingIngressClearance(tacticalEnforceBuildingStructuralPrecedence(restored,mission),mission);
+};
+preserveLayeredPatchFunctionSource(tacticalRestoreMissionSizedBuildingCovers,AEGIS_RESTORE_MISSION_SIZED_BUILDING_COVERS_BEFORE_2345_STRUCTURAL_PRECEDENCE);
+const AEGIS_MAKE_BATTLEFIELD_BEFORE_2345_PROP_INGRESS_CLEARANCE=makeBattlefield;
+makeBattlefield=function makeBattlefieldWithPropIngressClearance(mission={}){
+  const generated=AEGIS_MAKE_BATTLEFIELD_BEFORE_2345_PROP_INGRESS_CLEARANCE(mission);
+  return tacticalEnforceBuildingIngressClearance(tacticalEnforceBuildingStructuralPrecedence(generated,mission),mission);
+};
+preserveLayeredPatchFunctionSource(makeBattlefield,AEGIS_MAKE_BATTLEFIELD_BEFORE_2345_PROP_INGRESS_CLEARANCE);
+const AEGIS_MAKE_BATTLEFIELD_ASYNC_BEFORE_2345_PROP_INGRESS_CLEARANCE=makeBattlefieldAsync;
+makeBattlefieldAsync=async function makeBattlefieldAsyncWithPropIngressClearance(mission={},onProgress=()=>{},shouldCancel=()=>false){
+  const generated=await AEGIS_MAKE_BATTLEFIELD_ASYNC_BEFORE_2345_PROP_INGRESS_CLEARANCE(mission,onProgress,shouldCancel);if(shouldCancel())throw new Error("cancelled");onProgress("Verifying building ingress clearance",79);
+  return tacticalEnforceBuildingIngressClearance(tacticalEnforceBuildingStructuralPrecedence(generated,mission),mission);
+};
+preserveLayeredPatchFunctionSource(makeBattlefieldAsync,AEGIS_MAKE_BATTLEFIELD_ASYNC_BEFORE_2345_PROP_INGRESS_CLEARANCE);
+function tacticalPropIngressClearanceAndStructuralPrecedenceContractTest(){
+  const mission={id:"qa-prop-ingress",kind:"Town Abduction",region:"Europe",threat:2,tacticalMapTier:"small"},protectedKeys=tacticalBuildingIngressProtectedCellKeys(mission),props=tacticalStreetSceneProps(mission),propsClear=props.every(prop=>tacticalGeneratedPropFootprintCells(prop).every(cell=>!protectedKeys.has(tacticalKey(cell.x,cell.y)))),generated=makeBattlefield(mission),connectivity=tacticalBuildingIngressConnectivityState(generated,mission);
+  let medium=null,requiredWall=null;for(let seed=0;seed<80&&!requiredWall;seed+=1){const candidate={id:`qa-ingress-medium-${seed}`,kind:"Alien Terror Raid",region:"East Asia",threat:3,tacticalMapTier:"medium"},wall=tacticalRequiredBuildingStructuralCovers(candidate).find(cover=>["wall","window"].includes(cover.buildingPart)&&(cover.x>TACTICAL_GRID_SIZE-3||cover.y>TACTICAL_GRID_SIZE-3));if(wall){medium=candidate;requiredWall=wall;}}
+  if(!medium||!requiredWall)return false;
+  const legacy=tacticalBuildingCovers(medium).filter(cover=>cover.x<=TACTICAL_GRID_SIZE-3&&cover.y<=TACTICAL_GRID_SIZE-3).map((cover,index)=>({...cover,id:`legacy-ingress-${index}`,gridSize:80})),conflict={id:"qa-conflicting-vending",x:requiredWall.x,y:requiredWall.y,...tacticalCoverStats(0.5,"vending-machine"),visual:"vending-machine",sceneType:"machine",structural:true,gridSize:80},restored=tacticalRestoreMissionSizedBuildingCovers([...legacy,conflict],medium),wallRestored=restored.some(cover=>cover.buildingId===requiredWall.buildingId&&cover.x===requiredWall.x&&cover.y===requiredWall.y&&cover.buildingPart===requiredWall.buildingPart),propRemoved=!restored.some(cover=>cover.id===conflict.id),streetSource=String(tacticalStreetSceneProps),restoreSource=String(tacticalRestoreMissionSizedBuildingCovers),syncSource=String(makeBattlefield),asyncSource=String(makeBattlefieldAsync);
+  return Boolean(TACTICAL_PROP_INGRESS_CLEARANCE_AND_STRUCTURAL_PRECEDENCE_PATCH&&protectedKeys.size>0&&propsClear&&connectivity.passable&&connectivity.buildings.length>0&&wallRestored&&propRemoved&&streetSource.includes("tacticalBuildingIngressProtectedCellKeys")&&restoreSource.includes("tacticalEnforceBuildingStructuralPrecedence")&&syncSource.includes("tacticalEnforceBuildingIngressClearance")&&asyncSource.includes("Verifying building ingress clearance")&&CURRENT_SAVE_FORMAT_VERSION===4);
+}
+const AEGIS_RUN_SELF_TESTS_BEFORE_2345_PROP_INGRESS_CLEARANCE=runSelfTests;
+runSelfTests=function runSelfTestsWith2345PropIngressClearance(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_2345_PROP_INGRESS_CLEARANCE(),tactical0955BuildHealthContractResult("Generated props preserve door approach lanes and required building structure outranks conflicting scenery",tacticalPropIngressClearanceAndStructuralPrecedenceContractTest)];};
 AEGIS_POST_DEFERRED_BUILD_HEALTH_RUNNER=runSelfTests;
 runSelfTests=runDeferredSelfTests;
 ReactDOM.createRoot(document.getElementById("root")).render(/*#__PURE__*/React.createElement(AlienResponseCommand,null));

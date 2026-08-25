@@ -1,6 +1,65 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.24.2345_TACTICAL_PROP_INGRESS_CLEARANCE_AND_STRUCTURAL_PRECEDENCE_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Procedural Earth buildings now reserve their doorways and immediate inside/outside approach cells before scenery is accepted. Decorative/generated cover can no longer seal those lanes, and required building walls/windows/partitions now outrank conflicting prop records during medium/large perimeter restoration.
+
+PROTECTED BUILDING INGRESS
+--------------------------
+- Every authored procedural building door produces one shared protected traversal mask containing the doorway itself plus every legal immediate interior and exterior approach cell.
+- Street props consume the same mask after their ordinary deterministic generation. Vending machines, newspaper machines, benches, lamps, vehicles, and other scenery cannot retain a footprint that intrudes into a protected entrance lane.
+- A blocked single-cell street prop may relocate to a nearby legal side cell rather than simply occupying the doorway approach. Multi-cell props are rejected when any footprint cell conflicts.
+- The protection is footprint-aware rather than anchor-only, so future rotated or multi-cell props cannot hide part of their body inside a reserved lane.
+
+FINAL GENERATION CLEARANCE + CONNECTIVITY
+-----------------------------------------
+- The completed Earth battlefield receives a final ingress-clearance pass after generic hard/soft cover placement. Rocks, trees, crates, vehicles, and other later-generated non-building cover are removed if they somehow occupy a protected doorway/approach cell.
+- `tacticalBuildingIngressConnectivityState(...)` verifies that each procedural building retains at least one passable outside -> door -> interior route after generation.
+- The rule is shared by synchronous generation and streamed/asynchronous tactical startup, preventing the two paths from producing different doorway legality.
+- Procedural alien-base generation is explicitly excluded from the Earth-building repair layer so its dedicated bulkheads, elevators, and command-core reachability remain unchanged.
+
+BUILDING STRUCTURAL PRECEDENCE
+------------------------------
+- Required authored wall, window, and partition cells are revalidated after the medium/large building-restoration pass.
+- If a decorative, malformed, or future prop record occupies a required structural cell, the conflicting non-authoritative cover is removed and the authored building structure is restored.
+- Existing correctly generated structural records are preserved rather than recreated, so the rule does not duplicate walls or windows.
+- This closes the future collision seam where the older restoration code treated any occupied cell as sufficient reason to skip a missing building segment.
+
+PRESERVED AUTHORITY
+-------------------
+- Door geometry, building footprints, cover HP, destruction, windows, LOS, fog, lighting, movement costs, AI knowledge, civilian/VIP escort rules, Skyranger placement, and mission resolution are otherwise unchanged.
+- The patch changes new battlefield generation integrity only; it does not make solid props passable after placement.
+- Save format remains 4.
+
+VALIDATION
+----------
+- Embedded JavaScript syntax passes `node --check` for every inline script.
+- The new deterministic Build Health contract passes a deliberate medium-map fixture where a vending-machine cover occupies a required outer wall cell; the vending machine is removed and the authored wall/window is restored.
+- Full-CSS deferred Build Health passes 69/74 checks versus 68/73 in Browser 2251. The new ingress/structural-precedence contract is the added pass; the same five pre-existing unrelated AI/camera/tutorial checks remain red.
+- A deterministic stress audit generated 648 Earth missions across all six supported regions and Small/Medium/Large tactical sizes. All 648 retained clear protected prop footprints and at least one valid outside-to-door-to-interior route for every generated building.
+- The procedural alien-base reachability contract remains green after explicitly excluding alien-base layouts from the Earth-building repair layer.
+- Browser 2115 VIP boarding and Browser 2251 roof/cutaway regressions continue to pass in the shared suite.
+
+MANUAL TEST GATES
+-----------------
+1. Generate city/town maps with markets, offices, residences, workshops, diners, barns, and outposts. Confirm vending/newspaper machines and other props can appear near doors but never on the doorway or immediate approach cells.
+2. Stress dense scenery near entrances, including multi-hex vehicles and hard cover. Confirm every building retains a usable outside -> door -> interior route in 2D and 3D Iso.
+3. Run Manual, Hybrid, and Simulation movement/escort traffic through those entrances. No mode should need to walk through scenery, teleport, or repeatedly recover from a generation-created blockage.
+4. Exercise Medium 80x80 and Large 96x96 maps with outer-district buildings. Confirm restored walls/windows appear even if a conflicting decorative cover record is deliberately introduced in the same cell.
+5. Repeat roof/cutaway playtesting on repaired entrances and confirm the presentation layer follows the same intact/damaged building structure without affecting pathing.
+6. Run an alien-base assault and confirm its dedicated bulkheads, elevators, defenders, command core, and reachability remain unchanged.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.24.2251_TACTICAL_BUILDING_ROOFS_AND_PLAYER_AWARE_CUTAWAY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
