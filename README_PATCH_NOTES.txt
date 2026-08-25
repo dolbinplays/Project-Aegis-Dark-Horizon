@@ -1,6 +1,46 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.25.1335_REINFORCEMENT_DEPLOYMENT_CONTINUITY_HARDENING_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Hardens the Medium/Hard reinforcement expansion across live Manual battles, Simulation battles, loaded tactical states, procedural alien bases, and beacon waves too large to fit the protected six-cell ring at once.
+
+DEPLOYMENT + LOAD CONTINUITY
+----------------------------
+- Manual and Simulation battles retain their distinct normal roster formulas, then apply the same difficulty multiplier. Easy and Medium remain 1x; Hard is exactly 2x in both paths.
+- The final multi-Skyranger deployment layer now reserves enough unique legal alien cells for the live Hard roster. Low-threat Hard missions no longer create only three positions and collapse additional aliens onto a shared fallback center.
+- Live procedural alien-base units preserve authored deck assignment and singular Pale Commander metadata.
+- Loaded Medium tactical states from the prior one-wave implementation reopen only after a deterministic cooldown. A saved `arrived` latch cannot immediately duplicate the completed wave.
+- The existing active-tactical save payload serializes reinforcement difficulty, wave number, caller, cooldown, pending arrival, and staged remainder without changing save format 4.
+
+OVERSIZED BEACON WAVES
+----------------------
+- A Hard beacon wave larger than the six protected neighboring cells materializes as bounded subgroups under one committed wave identity.
+- The first six arrive inside the shield. Any remainder retries on later rounds until protected cells clear; it never spawns outside the seven-hex shield or overlaps another unit.
+- One wave retains exactly one commander, one wave number, and one arrival cinematic across all staged subgroups.
+- Mission terminal authority continues to treat the unfinished remainder as a pending committed arrival.
+
+VALIDATION
+----------
+- Embedded JavaScript syntax and whitespace checks pass.
+- Focused browser diagnostics pass every Easy/Medium/Hard count, legacy migration, manual placement, alien-base roster, six-unit beacon, and staged eight-unit beacon contract.
+- The eight-unit regression verifies six-plus-two materialization, eight persistent arrival IDs, one commander, protected arrival records, unique current cells, and no repeated arrival cinematic.
+- Save format remains 4.
+
+ROADMAP ADDITION
+----------------
+- Unescorted civilians and VIPs should instinctively seek nearby shelter/cover. Frightened civilians and VIPs should flee aliens they know about and prefer safer covered destinations when one is legally reachable.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.25.0902_MEDIUM_UNLIMITED_REINFORCEMENTS_AND_HARD_DOUBLE_DEPLOYMENT_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

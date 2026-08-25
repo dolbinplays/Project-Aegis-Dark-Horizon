@@ -2,9 +2,44 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-25
-Current handoff build: `v0.26.08.25.0902_MEDIUM_UNLIMITED_REINFORCEMENTS_AND_HARD_DOUBLE_DEPLOYMENT_PATCH`
+Current handoff build: `v0.26.08.25.1335_REINFORCEMENT_DEPLOYMENT_CONTINUITY_HARDENING_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0902 expands Alien Reinforcement Difficulty into Easy, Medium, and Hard: Medium supports sequential reinforcement cycles without a lifetime wave cap, while Hard doubles initial and arriving alien rosters without duplicating unique commanders. One pending arrival, cooldown, population, source, terminal, and save/load safeguards remain authoritative. Save format 4 is unchanged. Browser 2345 ingress/structure, Browser 2251 roofs/cutaway, and Browser 2115 boarding remain intact.**
+Current patch status: **Browser 1335 hardens Browser 0902 reinforcement scaling across Manual/Simulation roster creation, final deployment-position ownership, legacy loaded-wave migration, authored alien-base commander/deck metadata, and oversized Hard beacon waves. Beacon remainders now stage through protected cells under one wave/commander/cinematic. Save format 4 is unchanged. Browser 0902 difficulty doctrine, Browser 2345 ingress/structure, Browser 2251 roofs/cutaway, and Browser 2115 boarding remain intact.**
+
+
+## Browser 1335 - Reinforcement Deployment Continuity Hardening
+
+**Status:** Implemented as the completion/hardening pass for Browser 0902.
+
+### Manual, Simulation, and loaded-state parity
+- Manual and Simulation battles keep their established normal roster formulas, then pass them through shared Easy/Medium/Hard scaling helpers. Hard is exactly 2x in both paths; Easy and Medium remain 1x.
+- The final active multi-Skyranger deployment layer now requests the maximum legal position capacity needed by either live Manual or Simulation creation. A low-threat Hard mission therefore supplies eight unique deployment cells instead of generating only three positions and forcing later units onto a shared fallback center.
+- Procedural alien-base positions retain their authored deck and singular commander flags when live tactical aliens are constructed.
+- A loaded pre-0902 Medium state marked as having completed its single arrival is migrated into a closed cycle followed by the normal deterministic cooldown. It cannot preserve an immediately ready arrival latch or duplicate the completed wave.
+- Reinforcement state remains part of the existing active tactical save payload, including difficulty, wave ownership, caller, cooldown, pending arrival, and any staged remainder. Save format remains **4**.
+
+### Protected staging for oversized beacon waves
+- A beacon reinforcement wave that exceeds the six neighboring shield cells is divided into bounded subgroups without changing its committed wave identity.
+- The first subgroup fills legal unoccupied neighboring cells. Remaining aliens retry on later rounds until protected cells clear; no alien is placed outside the seven-hex shield, inside solid cover, on another unit, or off-map.
+- Staged subgroups share one wave number and one commander. Only the first subgroup owns the arrival cinematic; later materialization is logged without replaying the flyover/materialization sequence.
+- Until the remainder commits, the same one-pending-arrival and mission-terminal safeguards continue to hold the operation open.
+
+### Validation boundary
+- Focused browser diagnostics pass exact Easy/Medium/Hard initial and wave counts, wave-two reopening, old-save migration, a six-unit Hard beacon wave, eight unique low-threat Manual positions, a 30-defender Hard alien base with one commander, and live Manual source wiring.
+- A dedicated threat-six fixture passes a staged six-plus-two Hard beacon arrival with eight persistent IDs, one commander, shield protection recorded for every arrival, eight unique current cells after the ring clears, and one cinematic owner.
+- Embedded JavaScript syntax, whitespace, manifest, version, patch-note, and game-bible seams remain required before release.
+
+
+## Roadmap Addition - Unescorted Civilian/VIP Shelter and Fear Flight
+
+**Status:** Approved behavior item; implementation pending.
+
+- A living civilian or VIP without a valid escort should not remain motionless in exposed terrain when reachable shelter exists. Prefer nearby building interiors, hard-cover adjacency, or other tactically safer legal cells without revealing aliens the civilian does not know about.
+- Calm unescorted civilians/VIPs should seek shelter conservatively and avoid crossing known alien fire lanes merely to gain a marginal cover improvement.
+- Frightened civilians/VIPs should flee aliens they can currently see or legitimately remember, score destinations by increased threat distance and cover, and spend a legal bounded movement allowance on the safest reachable improvement.
+- Panic movement must still respect walls, doors, windows, fire/smoke hazards, land vehicles, Skyrangers, occupied cells, map bounds, and normal fog/knowledge authority.
+- A valid escort contact, extraction opportunity, or explicit rescue interaction overrides passive shelter behavior. Losing an escort for a full round returns the civilian/VIP to this autonomous unescorted doctrine until another team establishes contact.
+- Add deterministic tests for exposed calm shelter-seeking, frightened threat flight, cover preference, no hidden-alien omniscience, blocked-building fallback, and clean reacquisition by an escort.
 
 
 ## Browser 0902 - Medium Unlimited Reinforcements + Hard Double Deployment

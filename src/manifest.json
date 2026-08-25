@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.25.0902_MEDIUM_UNLIMITED_REINFORCEMENTS_AND_HARD_DOUBLE_DEPLOYMENT_PATCH",
+  "currentBuild": "v0.26.08.25.1335_REINFORCEMENT_DEPLOYMENT_CONTINUITY_HARDENING_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "medium-unlimited-reinforcements-and-hard-double-deployment-complete",
+  "status": "reinforcement-deployment-continuity-hardening-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.25.0902_MEDIUM_UNLIMITED_REINFORCEMENTS_AND_HARD_DOUBLE_DEPLOYMENT_PATCH",
+  "lastInspectedBuild": "v0.26.08.25.1335_REINFORCEMENT_DEPLOYMENT_CONTINUITY_HARDENING_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.25.0902_MEDIUM_UNLIMITED_REINFORCEMENTS_AND_HARD_DOUBLE_DEPLOYMENT_PATCH",
+    "browserBuild": "v0.26.08.25.1335_REINFORCEMENT_DEPLOYMENT_CONTINUITY_HARDENING_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
