@@ -1,6 +1,43 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.24.2115_VIP_SKYRANGER_BOARDING_PLAYBACK_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Escorted civilians and VIPs now remain visible for their complete final boarding movement. They walk onto the real Skyranger ramp, continue into the passable troop-bay aisle, and are removed from tactical rendering only after the last boarding animation step finishes.
+
+FULL SKYRANGER BOARDING PATH
+----------------------------
+- Civilian/VIP extraction no longer completes on the first ramp hex.
+- Each player Skyranger uses the innermost cell of its saved passable ramp/aisle sequence as the civilian handoff point, so evacuees visibly traverse the ramp and enter the craft before extraction completes.
+- The boarding target follows the craft's real saved heading and ramp sequence. North, south, east, west, and diagonal seeded Skyranger orientations therefore use the same authoritative geometry.
+- The existing ramp corridor remains passable and available for escort traffic; only the final interior boarding cell commits `rescued` / `extracted` for civilians and VIPs.
+
+PLAYBACK / RENDER COMMIT ORDER
+------------------------------
+- The Simulation/Hybrid resolver may know that a VIP will finish boarding during the round, but the playback frame no longer culls that unit immediately from the final snapshot.
+- A rescued civilian with a recorded final movement trail is treated as a pending presentation transition. Playback begins from the previous visible, unextracted state and animates every recorded step.
+- Only after the movement trail reaches the interior boarding cell does playback apply the authoritative rescued/extracted state and remove the model from the battlefield.
+- This specifically fixes the case where a VIP vanished before even touching the ramp because the planner had already determined that extraction would occur later in the same round.
+
+PRESERVED AUTHORITY
+-------------------
+- Mission scoring, rescue quotas, post-extraction escort release, Skyranger traffic reservations, fire-team formation, TU, fog, LOS, AI knowledge, and terminal mission rules are unchanged.
+- Save format remains 4.
+
+VALIDATION
+----------
+- Embedded JavaScript passes `node --check` after the patch.
+- Added a deterministic Build Health contract covering orientation-aware interior boarding, first-ramp non-extraction, final boarding-cell extraction, and preservation of a visible pre-extraction playback state while the final movement trail is pending.
+- Deferred headless Build Health passes 67/72 checks versus 66/71 in the uploaded Browser 1745 baseline. The new boarding contract passes, and the same five pre-existing unrelated AI/camera/tutorial checks remain red.
+- Manual test gate: observe an escorted VIP/civilian from outside the ramp through boarding under Simulation and Hybrid. The unit must remain visible outside, step onto the ramp, continue into the troop bay, and disappear only after the final interior step.
+
+PREVIOUS PATCH NOTES
+====================
+
 Build: v0.26.08.24.1745_GLOBALLY_SEEDED_OPENING_INCIDENT_PAIR_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

@@ -777,7 +777,7 @@ function installAegisGlobalHoverHelp(){
 function AegisHoverHelpToggleButton({light=false,compact=false}){const[enabled,setEnabled]=useState(()=>readAegisHoverHelpEnabled());useEffect(()=>{const sync=event=>setEnabled(normalizeAegisHoverHelpEnabled(event?.detail?.enabled));window.addEventListener(AEGIS_HOVER_HELP_CHANGE_EVENT,sync);return()=>window.removeEventListener(AEGIS_HOVER_HELP_CHANGE_EVENT,sync);},[]);const toggle=()=>setEnabled(writeAegisHoverHelpEnabled(!enabled));return/*#__PURE__*/React.createElement("button",{type:"button",onClick:toggle,"aria-pressed":enabled,"data-aegis-hover-help-toggle":"true","data-aegis-help":enabled?"Turn contextual button explanations off. Controls continue working normally, and the preference is remembered on this device.":"Turn contextual button explanations on. Rest the pointer over supported controls for three seconds to read their purpose.",className:`${compact?"px-3 py-2 text-xs":"px-4 py-3 text-sm"} rounded-2xl border font-black shadow-sm transition ${enabled?light?"border-cyan-200/70 bg-cyan-900/60 text-cyan-50":"border-cyan-400/60 bg-cyan-950/55 text-cyan-100":light?"border-slate-400/60 bg-slate-950/70 text-slate-200":"border-slate-600 bg-slate-950 text-slate-300"}`},enabled?"Hover Help: On":"Hover Help: Off");}
 if(typeof document!=="undefined"){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",installAegisGlobalHoverHelp,{once:true});else setTimeout(installAegisGlobalHoverHelp,0);}
 
-const CURRENT_GAME_BUILD="v0.26.08.24.1745_GLOBALLY_SEEDED_OPENING_INCIDENT_PAIR_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
+const CURRENT_GAME_BUILD="v0.26.08.24.2115_VIP_SKYRANGER_BOARDING_PLAYBACK_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
 function runCriticalBootSmokeTests(){
   const checks=[
     {name:"Game root is available",pass:typeof document!=="undefined"&&Boolean(document.getElementById("root"))},
@@ -3662,6 +3662,28 @@ function tacticalPlayerExtractionRampCells(placement=null){
     seen.add(key);
     return true;
   });
+}
+const TACTICAL_VIP_SKYRANGER_BOARDING_PLAYBACK_PATCH=true;
+function tacticalCivilianBoardingCellForCraft(craft=null){
+  const rampCells=Array.isArray(craft?.rampCells)?craft.rampCells:[];
+  return rampCells.length?{...rampCells[rampCells.length-1]}:null;
+}
+function tacticalCivilianBoardingCells(placement=null){
+  const seen=new Set();
+  return tacticalPlayerSkyrangerCrafts(placement).map(tacticalCivilianBoardingCellForCraft).filter(Boolean).filter(cell=>{
+    const key=tacticalKey(cell.x,cell.y);
+    if(seen.has(key))return false;
+    seen.add(key);
+    return true;
+  });
+}
+function tacticalIsCivilianBoardingCell(placement=null,x=null,y=null){
+  return tacticalCivilianBoardingCells(placement).some(cell=>cell.x===x&&cell.y===y);
+}
+function tacticalAiFrameCivilianExtractionPlaybackState(frame=null,target=null,previous=null){
+  const trail=target?.id&&Array.isArray(frame?.movementTrails?.[target.id])?frame.movementTrails[target.id]:[];
+  const pending=Boolean(target?.team==="civilian"&&target?.rescued&&previous&&!previous.rescued&&trail.length>1);
+  return{pending,animate:pending,trail};
 }
 function tacticalFireTeamSquadGroups(units=[],mission={}){
   const humans=units.filter(unit=>unit.team==="human");
@@ -7744,7 +7766,7 @@ function tacticalAiCivilianPriorityTurn({ units = [], covers = [], placement = n
         Object.entries(vipCatchup.paths).forEach(([unitId, path]) => tacticalMovementTrailAppend(movementTrails, unitId, path));
         acted = true;
         if (vipCatchup.yieldedIds.length) events.push(`${vipCatchup.yieldedIds.length} friendly soldier${vipCatchup.yieldedIds.length===1?" cleared":"s cleared"} the reserved Skyranger ingress lane before the VIP advanced.`);
-        if (vipCatchup.rescuedIds.length) events.push(`${vipCatchup.rescuedIds.length} escorted VIP${vipCatchup.rescuedIds.length === 1 ? "" : "s"} entered the Skyranger extraction zone while the escort held the ramp.`);
+        if (vipCatchup.rescuedIds.length) events.push(`${vipCatchup.rescuedIds.length} escorted VIP${vipCatchup.rescuedIds.length === 1 ? "" : "s"} boarded the Skyranger through the ramp while the escort held the ingress lane.`);
       }
       if(vipCatchup.stalledIds.length)events.push(`${vipCatchup.stalledIds.length} escorted VIP${vipCatchup.stalledIds.length===1?" is":"s are"} rebuilding a blocked Skyranger ingress route instead of accepting a zero-step extraction plan.`);
     }
@@ -7840,7 +7862,7 @@ function tacticalAdvanceEscortedCivilians(units = [], escortId = null, nextCell 
       .sort((left, right) => tacticalFireIntensityAt(covers,left.x,left.y)-tacticalFireIntensityAt(covers,right.x,right.y)||tacticalMovementHazardCost(civilian,left,covers)-tacticalMovementHazardCost(civilian,right,covers)||tacticalDistance(left, desired) - tacticalDistance(right, desired) || tacticalDistance(left, leaderPatch) - tacticalDistance(right, leaderPatch) || tacticalKey(left.x, left.y).localeCompare(tacticalKey(right.x, right.y)));
     const move = candidates[0] || origin;
     const moved = move.x !== civilian.x || move.y !== civilian.y;
-    const extracted = tacticalIsExtractionCell(placement, move.x, move.y);
+    const extracted = tacticalIsCivilianBoardingCell(placement, move.x, move.y);
     const patch = extracted
       ? { ...civilian, x: move.x, y: move.y, rescued: true, extracted: true, escortId: null, escortJoined: false, escortBlocked: false, panic: false, tu: 0 }
       : { ...civilian, x: move.x, y: move.y, facing: moved ? facingToward(origin, move.x, move.y) : civilian.facing, escortJoined: tacticalDistance(move, desired) <= 1, escortBlocked: !moved && tacticalDistance(move, desired) > 0 };
@@ -7907,7 +7929,7 @@ function tacticalVipExtractionIngressYield({unit=null,escortId=null,placement=nu
   return{units:safeUnits.map(candidate=>candidate.id===blocker.id?patch:candidate),yieldedIds:[blocker.id],paths:{[blocker.id]:[{x:blocker.x,y:blocker.y},{x:destination.x,y:destination.y}]},reason:blocker.id===escortId?"escort-leader-yield":"friendly-yield"};
 }
 function tacticalVipExtractionRampRoute({ unit = null, placement = null, covers = [], units = [], mission = null, maxSearchSteps = 32 } = {}) {
-  if(!unit)return{path:[],reached:false,target:null};const craft=tacticalEscortExtractionCraft(placement,unit);const rampCells=Array.isArray(craft?.rampCells)?craft.rampCells:[];if(!rampCells.length)return{path:[{x:unit.x,y:unit.y}],reached:false,target:null};const gridSize=tacticalGridSizeFrom(unit,placement,covers,units,mission);const blockers=tacticalPathBlockerIndex(covers,units,unit.id);const availableTargets=rampCells.filter(cell=>!blockers.hardCover.has(tacticalKey(cell.x,cell.y))&&!blockers.occupied.has(tacticalKey(cell.x,cell.y)));if(!availableTargets.length)return{path:[{x:unit.x,y:unit.y}],reached:false,target:null};const targetKeys=new Set(availableTargets.map(cell=>tacticalKey(cell.x,cell.y)));const startBuilding=tacticalBuildingCellAt(unit.x,unit.y,mission||{})?.building||null;const startKey=tacticalKey(unit.x,unit.y);const start={x:unit.x,y:unit.y,key:startKey,steps:0,g:0,parent:null};const bestByKey=new Map([[startKey,start]]),open=[start];const searchLimit=Math.max(8,Math.min(Number(maxSearchSteps)||32,gridSize*2));let reached=null,expanded=0;while(open.length&&expanded<TACTICAL_AI_MAX_CANDIDATES){let index=0,priority=Infinity;for(let i=0;i<open.length;i+=1){const node=open[i],distance=Math.min(...availableTargets.map(target=>tacticalDistance(node,target))),value=node.g+distance;if(value<priority){priority=value;index=i;}}const current=open.splice(index,1)[0];if(bestByKey.get(current.key)!==current)continue;expanded+=1;if(targetKeys.has(current.key)){reached=current;break;}if(current.steps>=searchLimit)continue;for(const next of tacticalNeighbors(current.x,current.y,gridSize)){const key=tacticalKey(next.x,next.y);if(blockers.hardCover.has(key)||blockers.occupied.has(key))continue;const building=tacticalBuildingCellAt(next.x,next.y,mission||{})?.building||null;if(!startBuilding&&building)continue;if(startBuilding&&building&&building.id!==startBuilding.id)continue;const steps=current.steps+1,g=current.g+1+tacticalMovementHazardCost(unit,next,covers);const previous=bestByKey.get(key);if(previous&&(previous.g<g||previous.g===g&&previous.steps<=steps))continue;const node={...next,key,steps,g,parent:current};bestByKey.set(key,node);open.push(node);}}
+  if(!unit)return{path:[],reached:false,target:null};const craft=tacticalEscortExtractionCraft(placement,unit);const rampCells=Array.isArray(craft?.rampCells)?craft.rampCells:[];if(!rampCells.length)return{path:[{x:unit.x,y:unit.y}],reached:false,target:null};const boardingCell=tacticalCivilianBoardingCellForCraft(craft);const gridSize=tacticalGridSizeFrom(unit,placement,covers,units,mission);const blockers=tacticalPathBlockerIndex(covers,units,unit.id);const availableTargets=boardingCell&&!blockers.hardCover.has(tacticalKey(boardingCell.x,boardingCell.y))&&!blockers.occupied.has(tacticalKey(boardingCell.x,boardingCell.y))?[boardingCell]:[];if(!availableTargets.length)return{path:[{x:unit.x,y:unit.y}],reached:false,target:null};const targetKeys=new Set(availableTargets.map(cell=>tacticalKey(cell.x,cell.y)));const startBuilding=tacticalBuildingCellAt(unit.x,unit.y,mission||{})?.building||null;const startKey=tacticalKey(unit.x,unit.y);const start={x:unit.x,y:unit.y,key:startKey,steps:0,g:0,parent:null};const bestByKey=new Map([[startKey,start]]),open=[start];const searchLimit=Math.max(8,Math.min(Number(maxSearchSteps)||32,gridSize*2));let reached=null,expanded=0;while(open.length&&expanded<TACTICAL_AI_MAX_CANDIDATES){let index=0,priority=Infinity;for(let i=0;i<open.length;i+=1){const node=open[i],distance=Math.min(...availableTargets.map(target=>tacticalDistance(node,target))),value=node.g+distance;if(value<priority){priority=value;index=i;}}const current=open.splice(index,1)[0];if(bestByKey.get(current.key)!==current)continue;expanded+=1;if(targetKeys.has(current.key)){reached=current;break;}if(current.steps>=searchLimit)continue;for(const next of tacticalNeighbors(current.x,current.y,gridSize)){const key=tacticalKey(next.x,next.y);if(blockers.hardCover.has(key)||blockers.occupied.has(key))continue;const building=tacticalBuildingCellAt(next.x,next.y,mission||{})?.building||null;if(!startBuilding&&building)continue;if(startBuilding&&building&&building.id!==startBuilding.id)continue;const steps=current.steps+1,g=current.g+1+tacticalMovementHazardCost(unit,next,covers);const previous=bestByKey.get(key);if(previous&&(previous.g<g||previous.g===g&&previous.steps<=steps))continue;const node={...next,key,steps,g,parent:current};bestByKey.set(key,node);open.push(node);}}
   if(!reached)return{path:[{x:unit.x,y:unit.y}],reached:false,target:null};const path=[];let cursor=reached;while(cursor){path.unshift({x:cursor.x,y:cursor.y});cursor=cursor.parent;}const target=path[path.length-1]||null;return{path,reached:Boolean(target&&targetKeys.has(tacticalKey(target.x,target.y))),target,...tacticalPathHazardStats(path,unit,covers)};
 }
 function tacticalAdvanceEscortedVipsToExtraction({ units = [], escortId = null, placement = null, covers = [], mission = null, threats = [], maxSteps = 3 } = {}) {
@@ -7927,12 +7949,13 @@ function tacticalAdvanceEscortedVipsToExtraction({ units = [], escortId = null, 
   for (const followerSnapshot of followers) {
     let follower = nextUnits.find((unit) => unit.id === followerSnapshot.id);
     if (!follower || follower.hp <= 0 || follower.rescued) continue;
-    if (tacticalIsExtractionCell(placement, follower.x, follower.y)) {
+    if (tacticalIsCivilianBoardingCell(placement, follower.x, follower.y)) {
       nextUnits = nextUnits.map((unit) => unit.id === follower.id ? { ...unit, rescued: true, extracted: true, escortId: null, escortJoined: false, escortBlocked: false, panic: false, tu: 0, vipExtractionNoProgressRounds:0, vipExtractionLastDistance:0, vipExtractionRecoveryRound:null } : unit);
       rescuedIds.push(follower.id);
       continue;
     }
-    const distanceBefore=Math.min(...tacticalPlayerExtractionRampCells(placement).map(cell=>tacticalDistance(follower,cell)));
+    const boardingCells=tacticalCivilianBoardingCells(placement);
+    const distanceBefore=boardingCells.length?Math.min(...boardingCells.map(cell=>tacticalDistance(follower,cell))):0;
     const ingressYield=tacticalVipExtractionIngressYield({unit:follower,escortId:leader.id,placement,covers,units:nextUnits,mission,threats,stepCost:4});
     nextUnits=ingressYield.units;
     ingressYield.yieldedIds.forEach(id=>{yieldedIds.push(id);movedIds.push(id);});
@@ -7948,10 +7971,11 @@ function tacticalAdvanceEscortedVipsToExtraction({ units = [], escortId = null, 
     const travelPath = route.path.slice(0, Math.min(route.path.length, boundedSteps + 1));
     const destination = travelPath[travelPath.length - 1];
     if (!destination || (destination.x === follower.x && destination.y === follower.y)) continue;
-    const extracted = tacticalIsExtractionCell(placement, destination.x, destination.y);
+    const extracted = tacticalIsCivilianBoardingCell(placement, destination.x, destination.y);
+    const remainingBoardingDistance=boardingCells.length?Math.min(...boardingCells.map(cell=>tacticalDistance(destination,cell))):0;
     const patch = extracted
       ? { ...follower, x: destination.x, y: destination.y, facing: facingToward(follower, destination.x, destination.y), rescued: true, extracted: true, escortId: null, escortJoined: false, escortBlocked: false, panic: false, tu: 0, vipExtractionNoProgressRounds:0, vipExtractionLastDistance:0, vipExtractionRecoveryRound:null }
-      : { ...follower, x: destination.x, y: destination.y, facing: facingToward(follower, destination.x, destination.y), escortJoined: true, escortBlocked: false, vipExtractionNoProgressRounds:0, vipExtractionLastDistance:Math.min(...tacticalPlayerExtractionRampCells(placement).map(cell=>tacticalDistance(destination,cell))),vipExtractionRecoveryRound:null };
+      : { ...follower, x: destination.x, y: destination.y, facing: facingToward(follower, destination.x, destination.y), escortJoined: true, escortBlocked: false, vipExtractionNoProgressRounds:0, vipExtractionLastDistance:remainingBoardingDistance,vipExtractionRecoveryRound:null };
     nextUnits = nextUnits.map((unit) => unit.id === follower.id ? patch : unit);
     movedIds.push(follower.id);
     paths[follower.id] = travelPath;
@@ -9463,7 +9487,8 @@ return { ...oldUnit, id: unit.id, name: unit.name || oldUnit.name || "Alien", al
     const targetUnits = [...soldiersFromFrame, ...aliensFromFrame, ...civiliansFromFrame];
     const movementPlans = targetUnits.map((target) => {
       const previous = oldById[target.id];
-      if (!previous || previous.x === target.x && previous.y === target.y || target.rescued) return null;
+      const extractionPlayback=tacticalAiFrameCivilianExtractionPlaybackState(frame,target,previous);
+      if (!previous || previous.x === target.x && previous.y === target.y || target.rescued&&!extractionPlayback.animate) return null;
       if (!tacticalPlaybackUnitMayAnimate(frame,target.id)) return null;
       const previousVisible = target.team !== "alien" || frameVisibleByHumans(previous.x, previous.y);
       const targetVisible = target.team !== "alien" || target.revealed || frameVisibleByHumans(target.x, target.y);
@@ -9510,7 +9535,10 @@ return { ...oldUnit, id: unit.id, name: unit.name || oldUnit.name || "Alien", al
     const animatedMovementIds=new Set(movementPlans.map(plan=>plan.target.id));
     return targetUnits.map((target) => {
       const previous = oldById[target.id];
-      if (previous && animatedMovementIds.has(target.id) && !target.rescued) return { ...target, x: previous.x, y: previous.y, facing: previous.facing || target.facing, hp: Math.max(0, previous.hp ?? target.hp), revealed: target.team === "alien" ? Boolean(target.revealed) : Boolean(target.revealed || previous.revealed) };
+      if (previous && animatedMovementIds.has(target.id)) {
+        const pendingExtraction=Boolean(target.team==="civilian"&&target.rescued&&!previous.rescued);
+        return { ...target, x: previous.x, y: previous.y, facing: previous.facing || target.facing, hp: Math.max(0, previous.hp ?? target.hp), rescued:pendingExtraction?false:target.rescued, extracted:pendingExtraction?false:target.extracted, revealed: target.team === "alien" ? Boolean(target.revealed) : Boolean(target.revealed || previous.revealed) };
+      }
       return target;
     });
   });
@@ -9522,7 +9550,8 @@ return { ...oldUnit, id: unit.id, name: unit.name || oldUnit.name || "Alien", al
   let maxSteps = 0;
   targetUnits.forEach((target) => {
     const previous = currentById[target.id];
-    if (!previous || target.rescued || previous.x===target.x&&previous.y===target.y) return;
+    const extractionPlayback=tacticalAiFrameCivilianExtractionPlaybackState(frame,target,previous);
+    if (!previous || target.rescued&&!extractionPlayback.animate || previous.x===target.x&&previous.y===target.y) return;
     if (!tacticalPlaybackUnitMayAnimate(frame,target.id)) return;
     const path=tacticalPlaybackMovementPath(frame,target.id,previous,target,frame.covers||coversRef.current,unitsRef.current);
     if(path.length)maxSteps=Math.max(maxSteps,path.length);
@@ -11145,6 +11174,7 @@ PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 24, 2026",tit
 PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 24, 2026",title:"Empty Crashed-UFO Bay Victory",summary:"Ends secured crash-site missions immediately once every alien is gone instead of forcing an 8 TU inspection of an empty deployment bay.",items:["A confirmed crashed-UFO bay remains an investigation objective while any authoritative living alien remains on the battlefield.","When the complete living-alien count reaches zero, the bay becomes Secured by Elimination and no longer blocks victory or assigns an AI inspection team.","The decision uses the authoritative alien roster, not player visibility, so an unseen living alien still prevents mission completion.","A reinforcement arrival already called and committed remains a terminal blocker until the existing arrival or cancellation rule resolves it.","Mandatory rescue quotas, beacon objectives, alien-base objectives, and other mission-specific victory requirements remain unchanged.","Manual, Hybrid, and Simulation resolution share the same terminal state; save format remains 4 and loaded pending bay state is evaluated under the new rule."]});
 PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 24, 2026",title:"Seeded Skyranger Landing + Orientation Variety",summary:"Varies Skyranger perimeter approaches and six-direction headings reproducibly while keeping deployment, pathing, extraction, and the visible craft on one shared geometry record.",items:["Mission-seeded anchors now distribute single and multiple Skyrangers across north, east, south, and west perimeter bands instead of repeating fixed north or northwest/southeast slots.","All six hex-grid headings are eligible through a bounded placement search; ramps can face diagonally or broadly along an edge rather than always toward map center.","The full hull, ramp, rear deployment lane, staging neighborhood, buildings, intact vehicles, indestructible objectives, map bounds, and other Skyrangers are checked before placement commits.","Soldier deployment, AI extraction egress, evacuation traffic reservations, escort guards, and Three.js yaw all consume the craft's saved forward/rear/body/nose geometry.","Selection uses mission seed and generated scenery only and cannot inspect hidden alien positions. Legacy north/south tactical states keep their recorded body-sign behavior.","Capacity, TU, LOS, fog, alien knowledge, objectives, resolution, and save format 4 remain unchanged."]});
 PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 24, 2026",title:"Globally Seeded Opening Incident Pair",summary:"Moves the first two alien crises beyond a fixed North America start while guaranteeing a legal one-base Skyranger response site and preserving deterministic campaign setup.",items:["New-campaign opening pairs are selected reproducibly from curated land sites across North America, South America, Europe, North Africa, East Asia, and Oceania.","Each seed produces two distinct incident identities and coordinates in one supported region, with varied crisis archetypes, rewards, aliens, and panic values.","Generation validates both incidents against the authoritative starting Skyranger sortie radius and retains at least one practical candidate base site that can reach the pair.","The first-base preview and committed campaign share one session seed; the seed and generated missions remain in campaign data for stable setup, save/load, and diagnostics.","A known-safe legacy pair remains the bounded fallback if a generated pair ever fails its reachability proof.","Existing saves, later procedural incidents, aircraft range, fuel, travel, fog, difficulty, and save format 4 are unchanged."]});
+PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.24.2115_VIP_SKYRANGER_BOARDING_PLAYBACK_PATCH",date:"August 24, 2026",title:"VIP / Civilian Skyranger Boarding Playback",summary:"Keeps escorted civilians and VIPs visible through their final approach, ramp traversal, and interior Skyranger boarding animation before the extracted state removes them from the battlefield.",items:["Civilian/VIP extraction no longer completes on the first ramp hex. The authoritative handoff occurs at the innermost passable Skyranger aisle cell, so evacuees visibly move onto the ramp and into the troop bay.","The rule follows each craft's saved ramp-cell sequence, so north, south, east, west, and diagonal seeded Skyranger orientations use the same real geometry instead of a fixed direction assumption.","AI playback now recognizes a rescued civilian with a recorded final movement trail as a pending presentation transition. The pre-animation frame preserves the unit as visible and unextracted until that trail finishes.","Only after the last boarding step does playback apply rescued/extracted state and cull the model. Mission scoring and continuation already use the authoritative post-boarding state.","Ramp traffic, escort guards, fire-team formation, fog, LOS, TU, mission resolution, and save format 4 remain unchanged."]});
 for(const entry of PATCH_NOTES_HISTORY){const historicalBuild=PATCH_NOTE_BUILD_BY_TITLE[entry.title];if(historicalBuild)entry.build=historicalBuild;}
 function PatchNotesLibraryScreen(){
   const selected=PATCH_NOTES_HISTORY.find(entry=>entry.build===selectedPatchBuild)||PATCH_NOTES_HISTORY[0];
@@ -11779,12 +11809,12 @@ function tacticalPerShooterVisibilityAndRenderedTargetContractTest(){
 }
 function tacticalPostExtractionRescueDutyHandoffContractTest(){
   const mission={id:"qa-post-extraction-handoff",kind:"Town Abduction",region:"Europe",gridSize:64};
-  const placement=tacticalSkyrangerPlacement({x:12,y:12});const teamId="qa-extraction-team";const leaderId="qa-extraction-leader";
-  const leader={id:leaderId,name:"Escort Lead",team:"human",hp:40,alive:true,tu:0,maxTu:60,x:placement.rampCells[2].x,y:placement.rampCells[2].y,facing:placement.bodySign<0?"N":"S",fireTeamId:teamId,fireTeamLeaderId:leaderId,fireTeamRole:"leader",weaponKind:"ballistic",weaponRange:18,ammo:12,aiVipRescueTargetId:"qa-final-vip"};
+  const placement=tacticalSkyrangerPlacement({x:12,y:12});const teamId="qa-extraction-team";const leaderId="qa-extraction-leader";const leaderEgress=tacticalAiExtractionEgress(placement);
+  const leader={id:leaderId,name:"Escort Lead",team:"human",hp:40,alive:true,tu:0,maxTu:60,x:leaderEgress.x,y:leaderEgress.y,facing:placement.bodySign<0?"N":"S",fireTeamId:teamId,fireTeamLeaderId:leaderId,fireTeamRole:"leader",weaponKind:"ballistic",weaponRange:18,ammo:12,aiVipRescueTargetId:"qa-final-vip"};
   const guardCells=tacticalEscortExtractionOutsideCells({placement,leader,covers:[],units:[leader],mission,count:2,ignoreTeam:true});
   const support=(id,role,index)=>{const cell=guardCells[index]||{x:leader.x+(index?1:-1),y:leader.y-placement.bodySign};return{id,name:id,team:"human",hp:40,alive:true,tu:56,maxTu:56,x:cell.x,y:cell.y,facing:"E",fireTeamId:teamId,fireTeamLeaderId:leaderId,fireTeamRole:role,weaponKind:"ballistic",weaponRange:18,ammo:12,aiVipRescueTargetId:"qa-final-vip",fireTeamExtractionGuardActive:true,fireTeamExtractionGuardLeaderId:leaderId,fireTeamExtractionGuardX:cell.x,fireTeamExtractionGuardY:cell.y};};
   const left=support("qa-extraction-left","left",0),right=support("qa-extraction-right","right",1);
-  const vip={id:"qa-final-vip",name:"Final VIP",team:"civilian",hp:18,alive:true,x:placement.rampCells[0].x,y:placement.rampCells[0].y,revealed:true,rescued:false,escortId:leaderId,escortOrder:1,escortJoined:true,panic:false};
+  const vip={id:"qa-final-vip",name:"Final VIP",team:"civilian",hp:18,alive:true,x:placement.rampCells[1].x,y:placement.rampCells[1].y,revealed:true,rescued:false,escortId:leaderId,escortOrder:1,escortJoined:true,panic:false};
   const turn=tacticalAiCivilianPriorityTurn({units:[leader,left,right,vip],covers:[],placement,secureRescue:true,mission,combatPriority:false,round:8});
   const extracted=turn.units.find(unit=>unit.id===vip.id),releasedLeft=turn.units.find(unit=>unit.id===left.id),releasedRight=turn.units.find(unit=>unit.id===right.id);
   const stale=[leader,{...left,alive:undefined,tu:0},{...right,tu:0},{...vip,rescued:true,extracted:true,escortId:null,alive:false}];
@@ -11969,11 +11999,12 @@ function tacticalOrphanedEscortAndSkyrangerIngressRecoveryContractTest(){
   const assignment=tacticalVipRescueAssignmentPlan({units:normalized.units,mission,secureRescue:true});
   const reassigned=tacticalApplyVipRescueAssignments(normalized.units,assignment,4,true).find(unit=>unit.id===livingLeader.id);
   const repairedVip=tacticalRepairBattlefieldState({units:[deadLeader,livingLeader,orphanVip],covers:[],mission,skyranger:placement}).units.find(unit=>unit.id===orphanVip.id);
-  const escort={...livingLeader,id:"qa-ramp-escort",name:"Ramp Escort",x:ramp[2].x,y:ramp[2].y,fireTeamId:"qa-ramp-team",fireTeamLeaderId:"qa-ramp-escort"};
+  const escortEgress=tacticalAiExtractionEgress(placement);
+  const escort={...livingLeader,id:"qa-ramp-escort",name:"Ramp Escort",x:escortEgress.x,y:escortEgress.y,fireTeamId:"qa-ramp-team",fireTeamLeaderId:"qa-ramp-escort"};
   const blocker={...livingLeader,id:"qa-ramp-blocker",name:"Ramp Blocker",x:mouth.x,y:mouth.y,fireTeamId:"qa-ramp-team",fireTeamLeaderId:escort.id,fireTeamRole:"left",fireTeamExtractionGuardActive:true,fireTeamExtractionGuardLeaderId:escort.id};
   const footprint=new Set(tacticalSkyrangerFootprintCells(placement).map(cell=>tacticalKey(cell.x,cell.y)));
   const vipStart=tacticalNeighbors(mouth.x,mouth.y,64).find(cell=>!footprint.has(tacticalKey(cell.x,cell.y)))||{x:mouth.x-1,y:mouth.y};
-  const rampVip={id:"qa-ramp-vip",name:"Ramp VIP",team:"civilian",hp:18,alive:true,x:vipStart.x,y:vipStart.y,revealed:true,rescued:false,vipTracker:true,escortId:escort.id,escortOrder:1,escortJoined:true};
+  const rampVip={id:"qa-ramp-vip",name:"Ramp VIP",team:"civilian",hp:18,alive:true,x:ramp[1].x,y:ramp[1].y,revealed:true,rescued:false,vipTracker:true,escortId:escort.id,escortOrder:1,escortJoined:true};
   const advanced=tacticalAdvanceEscortedVipsToExtraction({units:[escort,blocker,rampVip],escortId:escort.id,placement,covers:[],mission,maxSteps:3});
   const extracted=advanced.units.find(unit=>unit.id===rampVip.id),yielded=advanced.units.find(unit=>unit.id===blocker.id),livingKeys=advanced.units.filter(unit=>Number(unit.hp)>0&&!unit.rescued).map(unit=>tacticalKey(unit.x,unit.y));
   const resolverSource=String(resolveMission),contactSource=String(tacticalResolveEscortContactRound),repairSource=String(tacticalRepairBattlefieldState);
@@ -12135,6 +12166,22 @@ const AEGIS_RUN_SELF_TESTS_BEFORE_1745_GLOBALLY_SEEDED_OPENING_INCIDENTS=runSelf
 runSelfTests=function runSelfTestsWith1745GloballySeededOpeningIncidents(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_1745_GLOBALLY_SEEDED_OPENING_INCIDENTS(),tactical0955BuildHealthContractResult("Opening incidents span every world region deterministically and always retain a viable one-base Skyranger response site",globallySeededOpeningIncidentPairContractTest)];};
 const AEGIS_RUN_SELF_TESTS_BEFORE_GLOBAL_OPENING_LEGACY_FIXTURE_SCOPE=runSelfTests;
 runSelfTests=function runSelfTestsWithGlobalOpeningLegacyFixtureScope(){AEGIS_RUNNING_FULL_BUILD_HEALTH_WITH_LEGACY_OPENING_FIXTURES=true;try{return AEGIS_RUN_SELF_TESTS_BEFORE_GLOBAL_OPENING_LEGACY_FIXTURE_SCOPE();}finally{AEGIS_RUNNING_FULL_BUILD_HEALTH_WITH_LEGACY_OPENING_FIXTURES=false;}};
+function tacticalVipSkyrangerBoardingPlaybackContractTest(){
+  const placement=tacticalSkyrangerPlacementForHeading({x:24,y:24},64,"NE"),craft=tacticalPlayerSkyrangerCrafts(placement)[0]||placement,ramp=craft.rampCells||[],mouth=ramp[0],boarding=tacticalCivilianBoardingCellForCraft(craft),rear=tacticalSkyrangerDirectionalStep(craft,mouth,1,false);
+  if(!mouth||!boarding||!rear)return false;
+  const escort={id:"qa-boarding-escort",name:"Escort",team:"human",hp:40,alive:true,x:mouth.x,y:mouth.y,tu:40,maxTu:40,fireTeamId:"qa-boarding-team"};
+  const vip={id:"qa-boarding-vip",name:"VIP",team:"civilian",hp:18,alive:true,x:mouth.x,y:mouth.y,revealed:true,rescued:false,escortId:escort.id,escortJoined:true,vipTracker:true};
+  const route=tacticalVipExtractionRampRoute({unit:vip,placement,covers:[],units:[escort,vip],mission:{id:"qa-boarding",tacticalMapTier:"small"},maxSearchSteps:16});
+  const previous={...vip,x:rear.x,y:rear.y,rescued:false,extracted:false};
+  const target={...vip,x:boarding.x,y:boarding.y,rescued:true,extracted:true};
+  const trail=[{x:rear.x,y:rear.y},...ramp.map(cell=>({x:cell.x,y:cell.y}))];
+  const playback=tacticalAiFrameCivilianExtractionPlaybackState({movementTrails:{[vip.id]:trail}},target,previous);
+  const visibleBefore=tacticalUnitVisibleOnMap({...target,x:previous.x,y:previous.y,rescued:false,extracted:false,escortId:escort.id},true,{aiMapPlayback:true,battleResolved:false});
+  const tacticalSource=String(TacticalMission);
+  return Boolean(TACTICAL_VIP_SKYRANGER_BOARDING_PLAYBACK_PATCH&&route.reached&&route.target?.x===boarding.x&&route.target?.y===boarding.y&&!tacticalIsCivilianBoardingCell(placement,mouth.x,mouth.y)&&tacticalIsCivilianBoardingCell(placement,boarding.x,boarding.y)&&playback.animate&&playback.trail.some(point=>point.x===mouth.x&&point.y===mouth.y)&&visibleBefore&&tacticalSource.includes("target.rescued&&!extractionPlayback.animate")&&tacticalSource.includes("pendingExtraction?false:target.rescued")&&CURRENT_SAVE_FORMAT_VERSION===4);
+}
+const AEGIS_RUN_SELF_TESTS_BEFORE_2115_VIP_SKYRANGER_BOARDING_PLAYBACK=runSelfTests;
+runSelfTests=function runSelfTestsWith2115VipSkyrangerBoardingPlayback(){return[...AEGIS_RUN_SELF_TESTS_BEFORE_2115_VIP_SKYRANGER_BOARDING_PLAYBACK(),tactical0955BuildHealthContractResult("VIPs and civilians stay rendered through the ramp and interior boarding trail before extraction culls them",tacticalVipSkyrangerBoardingPlaybackContractTest)];};
 AEGIS_POST_DEFERRED_BUILD_HEALTH_RUNNER=runSelfTests;
 runSelfTests=runDeferredSelfTests;
 ReactDOM.createRoot(document.getElementById("root")).render(/*#__PURE__*/React.createElement(AlienResponseCommand,null));

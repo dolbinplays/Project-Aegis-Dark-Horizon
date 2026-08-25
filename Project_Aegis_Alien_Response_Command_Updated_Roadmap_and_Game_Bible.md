@@ -2,9 +2,39 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-24
-Current handoff build: `v0.26.08.24.1745_GLOBALLY_SEEDED_OPENING_INCIDENT_PAIR_PATCH`
+Current handoff build: `v0.26.08.24.2115_VIP_SKYRANGER_BOARDING_PLAYBACK_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1745 replaces the fixed North America opening pair with deterministic incidents spanning all six supported world regions. Every pair retains at least one legal first-base site under the real starting Skyranger sortie radius; setup and campaign data share the same saved seed. Existing saves and save format 4 remain compatible.**
+Current patch status: **Browser 2115 fixes premature VIP/civilian disappearance during Skyranger extraction. Evacuees now remain rendered through the recorded final movement trail, traverse the real ramp into the interior boarding aisle, and only then commit the extracted presentation state. The rule follows each seeded Skyranger heading; mission authority and save format 4 remain unchanged.**
+
+
+## Browser 2115 - VIP / Civilian Skyranger Boarding Playback
+
+**Status:** Implemented from live tactical feedback that evacuees were disappearing before visually touching the Skyranger ramp because the AI round snapshot had already committed their extracted state.
+
+### Interior boarding authority
+- Civilian/VIP handoff no longer occurs on the first cell classified as part of the Skyranger ramp.
+- The boarding destination is the innermost passable cell of the selected player Skyranger's saved `rampCells` sequence. This carries the evacuee from the exterior ramp mouth into the open troop-bay aisle before extraction completes.
+- The destination is selected from the actual craft record, so all six seeded Skyranger headings and multi-craft missions use their own real ramp geometry rather than a north/south or center-facing assumption.
+- Ordinary extraction-corridor logic remains intact for escort leaders and friendly traffic. Only civilian/VIP completion uses the deeper boarding point.
+
+### Playback-before-cull sequencing
+- The authoritative Simulation/Hybrid resolver still commits mission state immediately, including `rescued:true` / `extracted:true` when the boarding route finishes in that resolved round.
+- Tactical playback now detects the combination of a newly rescued civilian plus a recorded final movement trail and treats it as a pending presentation transition.
+- The displayed unit begins that frame from its previous coordinates with rescued/extracted temporarily false for presentation only. Every recorded path step remains visible, including exterior approach, ramp contact, and movement into the interior aisle.
+- At the end of the movement delay, the frame's authoritative final snapshot is applied. The evacuee is then removed normally by `tacticalUnitVisibleOnMap(...)`.
+- This avoids a cosmetic timer hack: presentation state is explicitly separated from the already-committed post-action state, preventing the planner's future knowledge from culling the actor before its own animation.
+
+### Preserved tactical behavior
+- Rescue quotas and mission scoring still consume the authoritative extracted result.
+- Post-extraction fire-team release, crowded-ramp yield, evacuation traffic reservations, escort guards, TU, occupancy, vehicles, hazards, fog, LOS, lighting, alien knowledge, mission resolution, save/load, and save format **4** remain unchanged.
+
+### Validation gate
+1. Under Simulation AI, watch a VIP/civilian begin outside the Skyranger while the planner can complete extraction that round. Confirm the model does not disappear when the round begins.
+2. Confirm the evacuee visibly steps onto the exterior ramp mouth, crosses the passable ramp cells, and reaches the interior boarding cell before disappearing.
+3. Repeat for north, south, east, west, and diagonal Skyranger headings, plus a two-Skyranger mission; the correct craft's saved ramp sequence must be used.
+4. Repeat in Hybrid support playback and through a streamed continuation; the extracted state must remain authoritative after animation and cannot be replayed or counted twice.
+5. Block the interior boarding point or ramp lane with legal traffic and confirm the VIP queues/yields through existing ingress rules rather than teleporting, overlapping, or being marked rescued early.
+6. Embedded JavaScript syntax must pass, and Build Health must retain the deterministic boarding/playback contract. Deferred headless validation for Browser 2115 is **67/72** versus **66/71** in the uploaded Browser 1745 baseline; the new test passes and the same five pre-existing unrelated red checks remain.
 
 
 ## Browser 1745 - Globally Seeded Opening Incident Pair
