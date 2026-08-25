@@ -70,6 +70,11 @@ const required = [
   manifest.currentBuild,
   `const CURRENT_GAME_VERSION=currentGameVersionFromBuild()`,
   "ARCHITECTURE_MODULE_PLAN",
+  "CONTINUOUS_ISO_GROUND_RENDERING_AND_PERFORMANCE_PATCH",
+  "tacticalThreePersistentBuildIsoGround",
+  "tacticalThreeCellForWorldPosition",
+  "tacticalContinuousIsoGroundBuildHealthResults",
+  "Continuous Iso ground uses authoritative Small Medium and Large battlefield dimensions",
   "Modular source layout and engine-port prep contract is present",
   "Workshop production preserves destination base and equipment logistics summaries",
   "Base transfer logistics charge fees and cancel back to origin",
@@ -910,7 +915,7 @@ if (!html.includes('if(value===null||value===undefined||value==="")return TACTIC
 if (!html.includes('React.createElement(TacticalThreeIsoColorControl,{controlId:"start-tactical-three-iso-color"})') || !html.includes('React.createElement(TacticalThreeIsoColorControl,{controlId:"menu-tactical-three-iso-color"})') || !html.includes('controlId:"tactical-three-iso-color-live"')) {
   missing.push("3D Iso Color controls must remain available on the start screen, Save / Load screen, and live Iso toolbar");
 }
-if (!html.includes('tacticalThreePersistentApplyIsoColor(runtime,props)') || !html.includes('renderQuality,isoColor,isoNightBrightness,fitMap')) {
+if (!html.includes('tacticalThreePersistentApplyIsoColor(runtime,props)') || !html.includes('renderQuality,isoColor,isoNightBrightness,isoGroundMode,fitMap')) {
   missing.push("3D Iso Color must update through the persistent renderer dynamic presentation path");
 }
 if (!html.includes('const TACTICAL_THREE_ISO_NIGHT_BRIGHTNESS_MIN=50;') || !html.includes('const TACTICAL_THREE_ISO_NIGHT_BRIGHTNESS_MAX=200;') || !html.includes('const TACTICAL_THREE_ISO_NIGHT_BRIGHTNESS_STEP=5;') || !html.includes('const TACTICAL_THREE_ISO_NIGHT_BRIGHTNESS_DEFAULT=100;')) {
@@ -922,7 +927,7 @@ if (!html.includes('if(value===null||value===undefined||value==="")return TACTIC
 if (!html.includes('React.createElement(TacticalThreeIsoNightBrightnessControl,{controlId:"start-tactical-three-iso-night-brightness"})') || !html.includes('React.createElement(TacticalThreeIsoNightBrightnessControl,{controlId:"menu-tactical-three-iso-night-brightness"})') || !html.includes('controlId:"tactical-three-iso-night-brightness-live"')) {
   missing.push("3D Iso Night Brightness controls must remain available on the start screen, Save / Load screen, and live Iso toolbar");
 }
-if (!html.includes('tacticalThreeIsoNightBrightnessPresentation(baseProfile,props.isoNightBrightness,phase,isoView)') || !html.includes('toneMappingExposure=profile.exposure') || !html.includes('runtime.tacticalLighting.ambient*profile.ambientScale') || !html.includes('isoColor,isoNightBrightness,fitMap')) {
+if (!html.includes('tacticalThreeIsoNightBrightnessPresentation(baseProfile,props.isoNightBrightness,phase,isoView)') || !html.includes('toneMappingExposure=profile.exposure') || !html.includes('runtime.tacticalLighting.ambient*profile.ambientScale') || !html.includes('isoColor,isoNightBrightness,isoGroundMode,fitMap')) {
   missing.push("3D Iso Night Brightness must update only the persistent renderer night presentation path");
 }
 if (!html.includes('const isoFillLight=new THREE.AmbientLight(0x9fb7d5,0)') || !html.includes('runtime.isoFillLight.intensity=Number(profile.isoFillIntensity)||0')) {

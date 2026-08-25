@@ -1,6 +1,49 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.25.1443_CONTINUOUS_ISO_GROUND_RENDERING_AND_PERFORMANCE_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+3D Iso now defaults to one persistent cached continuous battlefield surface instead of thousands of visible ordinary ground-hex instances. The tactical simulation remains completely hex-authoritative, and the legacy ground presentation remains available through the renderer diagnostic for direct comparison.
+
+CONTINUOUS ISO GROUND
+---------------------
+- A shared authoritative hex-to-world projection drives an Iso-specific cached CanvasTexture and world-aligned plane. It preserves biome color, roads, sidewalks, dirt, grass, concrete, authored variation, building floors, restrained cell borders, and bounded scorched-ground presentation without making the overhead map soft or uniform.
+- The cached surface replaces only ordinary base terrain. Fog, cover, roofs, units, corpses, vehicles, Skyrangers, UFOs, props, objectives, extraction zones, movement/target overlays, shields, elevators, smoke, fire, debris, destruction, and cinematics remain independent dynamic layers.
+- Camera motion, rotation, zoom, selection, fog changes, soldier movement, AI playback, and targeting do not rebuild the ground texture. Authoritative terrain damage can redraw only the affected cell region.
+- FPV and TPV retain their established continuous-ground path and visual settings.
+
+EXACT PICKING + DIAGNOSTICS
+---------------------------
+- Continuous mode raycasts the battlefield plane and converts the world hit through the authoritative odd-row hex projection. It does not retain invisible per-cell meshes merely for selection.
+- The renderer diagnostic can switch between Continuous Ground and Legacy Hex Ground on the same battlefield. The switch changes presentation only and persists locally for comparison testing.
+- Lightweight live metrics report average frame submission time, approximate renderer FPS, draw calls, triangles, visible ground instances, texture rebuilds, and static-scene rebuilds.
+
+DETERMINISTIC PERFORMANCE COMPARISON
+------------------------------------
+Map      Legacy Hex Ground                         Continuous Ground                         Submission change
+64x64    0.464 ms, 23 calls, 27,312 triangles     0.114 ms, 2 calls, 2,738 triangles      75.4% faster
+80x80    0.439 ms, 27 calls, 42,672 triangles     0.089 ms, 2 calls, 4,274 triangles      79.7% faster
+96x96    0.494 ms, 28 calls, 59,616 triangles     0.092 ms, 2 calls, 4,322 triangles      81.4% faster
+
+The benchmark uses identical seeded terrain per size, a common static-prop load, and repeated zoom/pan/rotation submissions in actual WebGL. It isolates renderer submission cost rather than claiming equivalent whole-game FPS. Continuous Ground becomes the default because it materially reduced renderer cost at every size while preserving exact interaction and presentation boundaries.
+
+VALIDATION
+----------
+- Thirteen deterministic Build Health contracts cover battlefield dimensions, exact known-center projection, world-to-hex round trips, interior-floor alignment, unchanged movement/pathfinding/TU authority, independent fog and overlays, bounded invalidation, presentation-only mode switching, FPV/TPV continuity, full Medium/Large coverage, and save format 4.
+- Existing Embedded JavaScript, manifest/version, static Build Health, whitespace, and release-document checks remain required.
+- The 3D Iso Color and Night Brightness controls continue applying after terrain replacement. No gameplay schema or save data changed.
+
+FOLLOW-UP OPTIONS
+-----------------
+- Adaptive higher-resolution textures, chunked texture uploads, distance-dependent grid treatment, GPU texture atlasing, and additional static-scene batching remain worthwhile measured follow-ups rather than silent scope expansion.
+- No files under assets/ changed in this patch.
+
+--------------------------------------------------------------------------------
+
 Build: v0.26.08.25.1335_REINFORCEMENT_DEPLOYMENT_CONTINUITY_HARDENING_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

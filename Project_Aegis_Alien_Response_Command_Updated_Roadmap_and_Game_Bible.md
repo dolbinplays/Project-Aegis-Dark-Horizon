@@ -2,9 +2,41 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-25
-Current handoff build: `v0.26.08.25.1335_REINFORCEMENT_DEPLOYMENT_CONTINUITY_HARDENING_PATCH`
+Current handoff build: `v0.26.08.25.1443_CONTINUOUS_ISO_GROUND_RENDERING_AND_PERFORMANCE_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1335 hardens Browser 0902 reinforcement scaling across Manual/Simulation roster creation, final deployment-position ownership, legacy loaded-wave migration, authored alien-base commander/deck metadata, and oversized Hard beacon waves. Beacon remainders now stage through protected cells under one wave/commander/cinematic. Save format 4 is unchanged. Browser 0902 difficulty doctrine, Browser 2345 ingress/structure, Browser 2251 roofs/cutaway, and Browser 2115 boarding remain intact.**
+Current patch status: **Browser 1443 makes cached Continuous Ground the default 3D Iso base-terrain renderer. Exact plane-to-authoritative-hex picking, persistent texture caching, bounded destruction redraws, a presentation-only Legacy comparison toggle, live diagnostics, and thirteen Build Health contracts preserve tactical authority while deterministic 64/80/96 tests reduce ground-path submission cost by 75-81%. Save format 4 is unchanged. Browser 1335 reinforcement continuity and all existing tactical behavior remain intact.**
+
+
+## Browser 1443 - Continuous 3D Iso Ground Rendering + Performance
+
+**Status:** Implemented; Continuous Ground is the player-facing default and Legacy Hex Ground remains a temporary diagnostic presentation path.
+
+### Rendering boundary
+- The persistent Three.js Iso renderer now presents ordinary base terrain through one world-aligned plane and one cached Iso-specific CanvasTexture instead of keeping 4,096, 6,400, or 9,216 visible ground cells on Small, Medium, or Large maps.
+- The texture reuses the authoritative odd-row hex-to-world projection. Biome identity, roads, sidewalks, dirt, grass, concrete, authored variation, building floors, restrained hex readability, and destroyed/scorched cells remain aligned with the same centers used by units, cover, buildings, vehicles, Skyrangers, targeting, and movement.
+- Fog, selection, movement/target paths, extraction, objectives, beacon shields, elevators, smoke, fire, debris, roofs/cutaway, units, corpses, vehicles, structures, props, UFOs, and Skyrangers remain separately rendered. No tactical knowledge or dynamic state is baked into the static ground texture.
+- FPV and TPV keep their established terrain path and visuals. The existing 3D Iso Color and Night Brightness preferences continue to operate as presentation-only controls.
+
+### Interaction, caching, and diagnostics
+- Continuous picking raycasts the plane and converts the hit position back to an authoritative hex. Legacy instance picking remains only for the diagnostic presentation path; there is no second approximate gameplay grid.
+- Terrain textures persist across camera movement, selection, targeting, fog changes, soldier movement, Hybrid/Simulation playback, and ordinary scene updates. Authoritative terrain damage can redraw only the bounded affected cells.
+- A compact renderer diagnostic switches Continuous/Legacy presentation on the same live battlefield and reports average frame submission time, approximate renderer FPS, draw calls, triangles, visible ground instances, texture rebuilds, and static-scene rebuilds.
+
+### Measured result
+
+| Map | Legacy Hex Ground | Continuous Ground | Submission improvement |
+| --- | --- | --- | ---: |
+| 64x64 | 0.464 ms; 23 calls; 27,312 triangles; 4,096 ground instances | 0.114 ms; 2 calls; 2,738 triangles; 0 instances | 75.4% |
+| 80x80 | 0.439 ms; 27 calls; 42,672 triangles; 6,400 ground instances | 0.089 ms; 2 calls; 4,274 triangles; 0 instances | 79.7% |
+| 96x96 | 0.494 ms; 28 calls; 59,616 triangles; 9,216 ground instances | 0.092 ms; 2 calls; 4,322 triangles; 0 instances | 81.4% |
+
+- The deterministic WebGL comparison uses the same seeded terrain, common static-prop load, and repeated zoom/pan/rotation submissions for both paths. These are isolated render-submission measurements, not claims about total tactical-game FPS.
+- Thirteen Build Health contracts cover dimensions, projection and inverse picking, interior floors, simulation authority, fog/overlay separation, invalidation, presentation-only switching, FPV/TPV continuity, Medium/Large coverage, and unchanged save format 4.
+
+### Follow-up renderer roadmap
+- Consider adaptive higher-resolution terrain textures only if live zoom testing demonstrates a readability need.
+- Profile chunked texture uploads for large destruction events, distance-dependent hex-grid treatment, GPU texture atlasing, and further static-scene batching independently before adoption.
+- Remove the Legacy presentation path after sufficient field regression coverage confirms no interaction or visual dependency remains.
 
 
 ## Browser 1335 - Reinforcement Deployment Continuity Hardening
@@ -40,6 +72,35 @@ Current patch status: **Browser 1335 hardens Browser 0902 reinforcement scaling 
 - Panic movement must still respect walls, doors, windows, fire/smoke hazards, land vehicles, Skyrangers, occupied cells, map bounds, and normal fog/knowledge authority.
 - A valid escort contact, extraction opportunity, or explicit rescue interaction overrides passive shelter behavior. Losing an escort for a full round returns the civilian/VIP to this autonomous unescorted doctrine until another team establishes contact.
 - Add deterministic tests for exposed calm shelter-seeking, frightened threat flight, cover preference, no hidden-alien omniscience, blocked-building fallback, and clean reacquisition by an escort.
+
+
+## Roadmap Addition - Tactical Mission Defeat Presentation
+
+**Status:** Approved presentation-parity item; implementation pending.
+
+### Defeat sequence ownership
+- A terminal failed mission should receive a full battlefield ending sequence comparable in weight and duration to the successful victory presentation. Do not jump directly from the last action to a celebratory green `Continue to Mission Result` button.
+- The shared terminal mission authority must decide failure first; presentation begins only after the final lethal shot, objective-loss event, failed extraction, or other authoritative terminal action finishes visibly.
+- Cancel unstarted ordinary movement/action playback once failure is terminal, using the same queue/timer cleanup boundary planned for immediate final-alien victory.
+
+### Somber audiovisual presentation
+- Replace victory music with a dedicated somber defeat cue, with a clean crossfade from active combat music. The cue should play once per mission and stop/release correctly when leaving the tactical result.
+- Replace the victory dance with a restrained defeat animation appropriate to the outcome: survivors lower weapons, kneel beside casualties, look toward fallen squadmates or the lost objective, brace wounded soldiers, or retreat into the Skyranger.
+- If no AEGIS soldiers survive, use a quiet battlefield/casualty tableau or extraction craft departure rather than animating nonexistent survivors.
+- Preserve fog and hidden-information rules; a defeat cinematic must not reveal concealed surviving aliens, an unseen reinforcement source, or unexplored terrain merely to create a dramatic camera shot.
+
+### Outcome-sensitive variants
+- Differentiate squad wipe, forced withdrawal/dust-off, failed VIP quota, death of a critical VIP, beacon/command objective failure, and timeout/overrun where practical.
+- A partial rescue failure may show rescued civilians boarding while soldiers react to those left behind; a total squad loss should feel materially different from an orderly withdrawal.
+- Reuse the shared 2D Hex, 3D Iso, FPV, and TPV tactical presentation boundary so every view receives equivalent defeat information and camera ownership.
+- After the sequence, expose a clearly styled defeat control such as `Continue to Mission Result - Failure`; use amber/red/somber styling rather than the current success-associated green treatment.
+- Accessibility settings should allow the cinematic to be skipped or shortened without skipping the authoritative mission result, casualty processing, rewards/penalties, reports, or save state.
+
+### Validation gate
+1. Trigger every supported failure class in Manual, Hybrid, and Simulation control and confirm exactly one defeat sequence, one music owner, and one result transition.
+2. Repeat in 2D Hex, 3D Iso, FPV, and TPV; no victory dance/music, green success styling, duplicate cue, stale movement, or hidden-information reveal may occur.
+3. Save/load or hand off control at the terminal boundary and confirm the defeat sequence cannot replay indefinitely or reopen the mission incorrectly.
+4. Verify survivor, casualty, VIP, objective, equipment-loss, panic, and report outcomes remain identical to the pre-presentation authoritative result.
 
 
 ## Browser 0902 - Medium Unlimited Reinforcements + Hard Double Deployment
