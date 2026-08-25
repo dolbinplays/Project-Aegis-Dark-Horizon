@@ -1,10 +1,42 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-08-24
-Current handoff build: `v0.26.08.24.2345_TACTICAL_PROP_INGRESS_CLEARANCE_AND_STRUCTURAL_PRECEDENCE_PATCH`
+Last updated: 2026-08-25
+Current handoff build: `v0.26.08.25.0902_MEDIUM_UNLIMITED_REINFORCEMENTS_AND_HARD_DOUBLE_DEPLOYMENT_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2345 protects procedural Earth-building ingress from random scenery and gives authored building structure precedence over conflicting prop records during medium/large restoration. Doorways plus immediate interior/exterior approach cells are reserved, completed maps receive a final clearance/connectivity audit, 648 deterministic Earth missions pass the new stress audit, and save format 4 remains unchanged. Browser 2251 roofs/cutaway and Browser 2115 boarding remain intact.**
+Current patch status: **Browser 0902 expands Alien Reinforcement Difficulty into Easy, Medium, and Hard: Medium supports sequential reinforcement cycles without a lifetime wave cap, while Hard doubles initial and arriving alien rosters without duplicating unique commanders. One pending arrival, cooldown, population, source, terminal, and save/load safeguards remain authoritative. Save format 4 is unchanged. Browser 2345 ingress/structure, Browser 2251 roofs/cutaway, and Browser 2115 boarding remain intact.**
+
+
+## Browser 0902 - Medium Unlimited Reinforcements + Hard Double Deployment
+
+**Status:** Implemented as the approved reinforcement-difficulty expansion. Easy remains the compatibility tier, Medium now sustains repeated legal call cycles, and Hard adds exact 2x tactical alien deployment scaling.
+
+### Easy, Medium, and Hard doctrine
+- The player-facing Alien Reinforcement Difficulty selector now exposes all three profiles in new-game setup and the Save / Load settings screen.
+- Easy retains the original bounded one-wave lifecycle, visual-contact pressure, and deterministic 5-15 round post-wipe missed check-in.
+- Medium retains casualty pressure and the five-round commander-loss investigation, and removes the fixed lifetime wave cap while the current mission still has a living legal caller or active reinforcement source.
+- Hard inherits Medium's pressure, check-in, cooldown, source, population, and sequential-wave rules.
+- Difficulty remains attached to the mission at launch. Existing deployed units are not recalculated or multiplied when a save is loaded or the campaign setting later changes.
+
+### Sequential wave lifecycle
+- A completed Medium/Hard arrival clears the consumed call, records the new wave number, installs that wave's singular commander as the next potential caller, and begins a deterministic bounded cooldown.
+- The existing one-pending-arrival rule remains intact. A later call cannot overlap an arrival already committed to the mission.
+- The existing concurrent-reinforcement safeguard now covers every repeated Medium/Hard cycle, pausing call pressure until enough of the reinforcement force is removed to fit another legal wave.
+- Repeated dropship arrivals retire the previous reinforcement craft cover before the new craft is committed. Field-beacon source destruction continues to cancel future calls through that source.
+- Easy continues to retain its arrived state after the first wave and cannot silently enter the new repeated cycle.
+
+### Exact Hard deployment multiplier
+- The normal mission/threat roster is calculated first, then multiplied by two for a new Hard deployment.
+- The multiplier is shared by authoritative unit creation and battlefield placement, so rendered/spawned position counts and actual alien-unit counts agree.
+- Normal Earth deployments, beacon/dropship reinforcement arrivals, and procedural alien-base defenders use the same difficulty helper. Ordinary 15/18-defender alien bases therefore become 30/36 on Hard.
+- A reinforcement wave's normal two-to-four count is calculated before the Hard multiplier. Unique commander assignment remains singular; the doubled remainder uses normal mission-legal alien types.
+- Civilians, VIPs, AEGIS personnel, scenery, command cores, field beacons, and already-existing saved aliens are never multiplied.
+
+### Validation boundary
+- Embedded JavaScript syntax passes for all five non-empty inline scripts.
+- The actual standalone page boots without console errors, and the player-facing Hard option selects correctly with its complete doctrine description.
+- Deferred Build Health recognizes the new contract as green. It verifies Easy 1x, Medium 1x, Hard 2x, a second Medium call, exact doubled Hard wave size, a real six-alien Hard beacon arrival, and exactly one commander.
+- Static build-seam validation passes with synchronized build/version records. Save format remains **4**.
 
 
 ## Browser 2345 - Tactical Prop Ingress Clearance + Structural Precedence
@@ -40,6 +72,123 @@ Current patch status: **Browser 2345 protects procedural Earth-building ingress 
 1. When additional random-prop systems are allowed near Skyranger ramps, navigable alien-craft entrances, elevator/gallery transitions, authored breaches, or mandatory interaction cells, feed those authoritative geometries into the same reserved-mask concept rather than inventing one-off exclusions.
 2. Expand deterministic stress coverage whenever new multi-cell/rotatable prop families are added.
 3. Consider a generation diagnostic overlay that can display reserved ingress cells in developer/Build Health mode without exposing them during normal play.
+
+
+## Roadmap Addition - Medium Unlimited Reinforcement Waves + Hard Double Alien Deployment
+
+**Status:** First implementation completed in Browser 0902. Easy/Medium/Hard selection, unlimited sequential Medium/Hard cycles, exact Hard initial/reinforcement doubling, one pending arrival, singular commander ownership, cooldown, population safeguards, save/load mission ownership, and procedural alien-base counts are active. Broader five-wave manual stress coverage across every mission family remains an ongoing validation gate; if a later unified Game Difficulty setting replaces this selector, these rules must map to the equivalent campaign tier.
+
+### Medium - unlimited sequential reinforcement waves
+- Remove the mission-wide lifetime cap on reinforcement waves at Medium difficulty. Any mission whose current alien force and reinforcement source/call doctrine can legally request reinforcements may begin another call cycle after the previous arrival resolves.
+- “Unlimited” means no fixed total-wave count. It does not permit overlapping arrivals, infinite work in one round, or reinforcements after the mission has reached a legitimate terminal state.
+- Preserve one pending arrival at a time, the existing call chance/casualty pressure, warnings, arrival countdown, commander or missed-check-in rules, safe landing search, fog-safe presentation, and any live-alien population pause.
+- A landed wave may establish the next eligible commander/caller and begin another bounded call cycle. Wave number, caller, countdown, and source state must persist through save/load, Manual, Hybrid, and Simulation handoffs.
+- Destroying or permanently disabling the applicable beacon, UFO deployment source, command system, or other authoritative reinforcement source prevents later calls from that source. A mission may still end when all mandatory objectives are complete, no living alien remains, and no already-committed arrival is pending.
+- Easy retains its current bounded reinforcement-wave rules unless separately rebalanced.
+
+### Hard - double every alien deployment
+- Hard inherits Medium’s unlimited sequential-wave lifecycle and doubles the number of aliens whenever a deployment adds aliens to a tactical mission.
+- Initial deployment is exactly twice the normal roster count calculated for that mission, threat, objective, and alien faction. A normal reinforcement roll of two-to-four aliens therefore becomes four-to-eight on Hard.
+- Apply the multiplier to starting forces, commander-called waves, missed-check-in investigations, beacon arrivals, dropship/saucer arrivals, scripted later deployments, and other genuine reinforcement additions. Do not double civilians, VIPs, AEGIS personnel, scenery, objectives, or already-existing aliens when difficulty changes.
+- Keep unique command/objective roles singular unless the mission explicitly supports more than one. Fill the doubled remainder with the mission’s normal legal alien composition so Hard does not accidentally create duplicate unique commanders, command cores, or story actors.
+- Determine and store the mission difficulty at launch. Loading a mission or changing the campaign setting later must not multiply an existing roster again.
+
+### Placement, performance, and terminal safeguards
+- Every added alien still requires a unique legal cell outside solid walls, buildings without an entrance route, land vehicles, Skyrangers, blocked UFO hull cells, hazards forbidden by the existing spawn rule, occupied cells, and map boundaries.
+- If a doubled wave cannot fit at one landing site, stage the remainder through bounded legal subgroups or retry on later rounds under the same committed wave identity. Never overlap units, place them off-map, silently invent visibility, or loop an unbounded placement search.
+- Cap work per call check, placement attempt, AI actor turn, playback frame, and renderer update. Total waves may be unlimited while each round and each arrival remains strictly bounded.
+- Mission victory/failure authority, required VIP outcomes, beacon destruction, empty crashed-UFO resolution, alien-base command-center shutdown, rewards, alien health/damage/accuracy, fog, LOS, TU, and AI knowledge remain unchanged unless a later difficulty roadmap item explicitly modifies them.
+
+### Validation gate
+1. Run ordinary, VIP, beacon, crashed-UFO, terror, and alien-base missions on Medium through at least five sequential reinforcement arrivals; confirm no lifetime wave cap remains and only one arrival can be pending at once.
+2. Neutralize the relevant reinforcement source before and after a call commits. Confirm future calls stop, while an already-committed arrival resolves according to the existing terminal rule.
+3. Across every mission family and threat tier, compare Medium and Hard with fixed seeds: Hard must begin with exactly twice the normal alien count and every later wave must contain exactly twice its normal rolled count.
+4. Save/reload before a call, during its countdown, after arrival, and between later cycles. Wave number, roster size, commander/caller ownership, difficulty, and pending state must not reset or double twice.
+5. Stress Small/Medium/Large maps, dense buildings, vehicles, Skyrangers, crashed craft, active beacons, and restricted landing space. Every alien must receive a legal unique position and placement work must remain bounded.
+6. Confirm Manual, Hybrid, Simulation playback, fog, mission reports, Build Health, and native parity identify the same initial count, wave count, and terminal state. Save format should remain **4** if optional migration-safe fields suffice.
+
+
+## Roadmap Addition - Immediate Last-Alien Victory Playback Interrupt
+
+**Status:** Approved tactical pacing and terminal-playback item. When eliminating the final living alien satisfies the last unresolved mission objective, the lethal action should end ordinary squad playback immediately instead of showing unrelated queued soldier movement before victory.
+
+### Atomic terminal check
+- Re-evaluate the shared authoritative mission terminal state immediately after every committed alien death, including normal fire, reaction fire, explosives, fire/hazard damage, bleeding or other delayed damage, and scripted objective attacks that can kill an alien.
+- Trigger this interrupt only when the authoritative living-alien count reaches zero **and** every other mandatory objective is already complete: required civilians/VIPs are resolved successfully, required beacons or command cores are destroyed, no mandatory interaction remains, and no reinforcement arrival is already committed and pending.
+- If rescue, beacon, crashed-craft, alien-base, reinforcement, extraction, or another required objective remains unresolved, continue the established objective-specific AI and playback instead of starting victory early.
+
+### Final-action presentation ownership
+- Let the lethal action finish visibly: projectile/tracer travel, impact, damage result, target hit/collapse/death animation, scenery effects caused by that attack, final-shot feedback, and the single-owner last-contact voice cue must complete in their established order.
+- Once that final lethal presentation finishes, cancel every not-yet-started AEGIS movement, formation adjustment, shot, kneel, escort-support reposition, patrol step, and other ordinary action remaining in the current planned round.
+- Do not play a movement preview line, walking animation, snap-back correction, or delayed formation catch-up for an actor whose turn was cancelled by terminal victory.
+- Immediately transfer presentation ownership to mission victory: freeze ordinary command playback, begin victory music and the appropriate 2D/3D Iso/FPV/TPV victory presentation, then expose the normal mission-complete controls.
+
+### Resolver and state integrity
+- The Simulation/Hybrid resolver must perform the terminal check at the same atomic action boundary used by playback. It should stop generating later soldier actions as soon as the terminal kill commits rather than resolving a complete round and visually hiding already-applied movement afterward.
+- Already completed movement, TU/ammunition spending, damage, destruction, rescue progress, reveals, and the lethal shot remain committed. Cancelled actors do not spend TU/ammunition, receive movement history, gain an action, or require a refund because their actions never begin.
+- Clear or invalidate queued movement timers, action-frame ownership, camera targets, path overlays, and future buffered frames beyond the terminal action while retaining the final battlefield snapshot used by reports and mission aftermath.
+- A save or control handoff at the terminal boundary must reopen directly into the same completed battlefield/victory state, never replay cancelled actions or require an extra End Turn.
+
+### Validation gate
+1. In Manual, Hybrid, and full Simulation control, kill the final alien with several soldiers still queued to move. Confirm the lethal shot/death reads fully, no later movement begins, and victory starts immediately.
+2. Repeat with a normal shot, reaction shot, grenade, fire/hazard tick, bleeding/delayed damage, and a lethal attack that also destroys nearby scenery. Preserve each required impact/collapse/cinematic beat before victory takes ownership.
+3. Repeat in 2D Hex, 3D Iso, FPV, TPV, and streamed AI playback at every battle-speed setting. Confirm no stray path line, snap-back actor, duplicated last-contact voice, stale camera target, or delayed victory dance.
+4. Kill the last visible/deployed alien while a hidden alien, pending reinforcement, mandatory rescue, active beacon, crashed-UFO requirement, or alien-base command core remains. Confirm the interrupt does **not** produce false victory.
+5. Save/load and Take Back Control at the final-shot boundary. Confirm completed state is stable, cancelled actors never move or spend resources, mission reports use the terminal snapshot, and victory does not require another round.
+6. Build Health must compare the resolver’s terminal action index with the final presented action index and prove that no later queued AEGIS action survives once the last-alien victory condition becomes authoritative. Save format should remain **4**.
+
+
+## Roadmap Addition - Quartermaster Transfer Controls Behind Transfer Button
+
+**Status:** Approved Quartermaster usability and information-density item. Match the Barracks soldier-card transfer pattern so inventory destinations are shown only while the player is actively arranging a transfer.
+
+### Collapsed default state
+- Replace the always-visible destination controls on each transferable Quartermaster item/card with a clear **Transfer** button.
+- Keep the item identity, owning base, available quantity, issued/reserved quantity, and other normal Quartermaster information visible while transfer controls are collapsed.
+- Do not show destination bases, transfer quantities, travel estimates, or confirm/cancel controls until the player opens Transfer for that item.
+- Opening one item must not change ownership, reserve stock, spend funds, or begin transit by itself.
+
+### Expanded transfer workflow
+- Pressing **Transfer** expands that item's valid destination-base selector, quantity control, cost/time summary when applicable, and explicit Confirm and Cancel actions.
+- Reuse the soldier-screen transfer interaction language and visual hierarchy where practical, while retaining equipment-specific quantity and availability rules.
+- Confirm must identify the item, quantity, source base, destination base, cost if any, and expected arrival time before committing the transfer. Cancel restores the collapsed card without changing campaign state.
+- Invalid destinations, the current owning base, unavailable quantities, reserved/issued stock, insufficient funds, and unavailable storage/capacity remain blocked by the authoritative inventory rules.
+
+### State and validation boundary
+- Expanded/collapsed interface state is presentation-only and does not require campaign-save persistence. Pending or committed transfers continue under their existing campaign authority.
+- Verify keyboard focus, screen-reader labeling, compact layouts, long item names, multiple bases, and opening/cancelling several different item cards.
+- Confirm the change does not alter transfer duration, cost, base ownership, inventory totals, issue/return rules, workshop output, aircraft stores, or save format.
+
+
+## Roadmap Addition - VIP Barricaded Refuge + Alien Building Breach Doctrine
+
+**Status:** Approved VIP-behavior, building-interaction, and alien-pathing item. VIPs who begin inside a building should use that structure as an intentional refuge instead of behaving as though its doors are freely open to every force.
+
+### Barricaded VIP refuge state
+- A VIP who begins a mission inside a valid building may lock or barricade the building's designated refuge entrance while hiding from the alien threat.
+- Store the refuge building, controlled entrance or entrances, barricade/lock state, VIP occupants, and whether AEGIS or aliens have discovered the refuge without exposing hidden VIP information through fog, AI knowledge, roofs, or UI.
+- The refuge must retain at least one legal rescue route. Generation must not choose a building whose doors, windows, damage state, scenery, vehicles, or map boundary make both peaceful access and bounded breaching impossible.
+- Ordinary civilian buildings and buildings without a barricaded VIP retain their existing door, window, LOS, cover, and pathing rules.
+
+### AEGIS unlock or breach interaction
+- When an AEGIS soldier reaches the correct exterior side of a barricaded refuge door, provide a clear interaction to identify AEGIS and ask the VIP to unlock/open the entrance.
+- The peaceful unlock path costs a bounded amount of TU, updates the authoritative door/barricade state, and lets rescue/escort logic continue through the newly opened route.
+- AEGIS may instead use an existing legal breach method when urgency or obstruction makes that preferable. Breaching uses normal damage, noise, cover destruction, cinematics, and friendly/civilian safety consequences rather than teleporting through the wall.
+- Manual, Hybrid, and Simulation AI must understand both options. AI normally prefers a safe VIP unlock when the correct door is reachable and uses a breach only when the entrance cannot be reached/opened in time or tactical danger justifies it.
+
+### Alien breaching capability
+- Confirm and, where missing, implement alien ability to attack doors, windows, walls, or other legal breach points when a known target or mission objective is inside and no passable entrance route exists.
+- Alien breach selection is knowledge-limited: aliens cannot target a hidden VIP refuge merely because the game state knows it exists. They need a legitimate mission objective, sensory contact, witnessed movement, communicated contact, or another authoritative alien-knowledge source.
+- Choose reachable breach points with bounded path and structural-cost scoring. Aliens approach, spend TU, attack the structure, react to the opening, and replan through it rather than walking through intact walls or looping at a sealed corner.
+- Preserve destructibility rules and indestructible mission geometry. If no legal breach exists, aliens select another valid action instead of burning rounds indefinitely.
+
+### Mission, pathing, and presentation validation
+1. Generate barricaded VIP starts across every building family and map size. Confirm each refuge has a valid AEGIS door approach, peaceful unlock path, and at least one legal breach fallback.
+2. Exercise Manual, Hybrid, and Simulation rescue. AEGIS should reach the correct door, unlock it, enter, establish escort, and exit without supports blocking the doorway or the VIP re-entering the building.
+3. Let aliens legitimately discover a refuge with no open route. Confirm they approach and breach legal structure, never path through intact walls/vehicles, and resume pursuit after the opening appears.
+4. Keep the refuge undiscovered. Confirm alien movement, camera, roofs, fog, LOS, targeting, and UI do not leak the VIP or locked-building state.
+5. Save/load before discovery, while AEGIS waits at the door, during a breach, after unlock, and after structural destruction. Door state, refuge occupants, knowledge, pathing, and escort ownership restore exactly once.
+6. Confirm VIP quota resolution, optional/high-value VIP distinctions, damage/cinematic queues, reinforcement logic, building roofs/cutaway, and save format remain authoritative.
 
 
 ## Browser 2251 - Tactical Building Roofs + Player-Aware Cutaway

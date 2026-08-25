@@ -1,6 +1,57 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.25.0902_MEDIUM_UNLIMITED_REINFORCEMENTS_AND_HARD_DOUBLE_DEPLOYMENT_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Alien Reinforcement Difficulty now has complete Easy, Medium, and Hard tactical rules. Medium can begin another bounded reinforcement cycle after an arrival instead of reaching a lifetime wave cap. Hard inherits that doctrine and doubles both initial alien rosters and every arriving wave.
+
+DIFFICULTY CONTRACT
+-------------------
+- Easy retains its original bounded one-wave behavior, visual-contact pressure, and deterministic 5-15 round post-wipe missed check-in.
+- Medium retains casualty pressure and the five-round commander-loss investigation, and now has no fixed total-wave limit while a living legal caller or active source remains.
+- Hard uses the Medium call/casualty/check-in lifecycle and applies an exact 2x alien deployment multiplier.
+- The selected difficulty is copied into a mission at launch. Loading a deployed force or changing the campaign setting later cannot multiply existing aliens again.
+
+SEQUENTIAL REINFORCEMENT SAFETY
+-------------------------------
+- A completed Medium/Hard arrival installs that wave's singular commander as the next potential caller, clears the prior call, and begins a deterministic cooldown before another call is eligible.
+- Only one arrival can be pending. Population pressure pauses later calls when the existing reinforcement force plus the next legal wave would exceed the established concurrent-reinforcement safeguard.
+- A destroyed field beacon cancels later calls through that source. Existing VIP terminal-resolution and reinforcement-source rules remain authoritative.
+- Later dropship waves retire the previous reinforcement craft presentation before placing the next one, preventing an unlimited sequence from accumulating obsolete hull cover.
+
+HARD DOUBLE DEPLOYMENT
+----------------------
+- Normal Earth missions calculate their legal starting roster first and then double it on Hard.
+- Procedural alien-base assaults likewise double their ordinary 15/18-defender roster while retaining one Pale Commander and one command core.
+- Commander-called, missed-check-in, beacon, and dropship arrivals calculate the normal two-to-four-unit wave first and then double that result on Hard.
+- Civilians, VIPs, AEGIS soldiers, scenery, objectives, unique commanders, and already-existing saved units are never doubled.
+
+VALIDATION
+----------
+- Embedded JavaScript syntax passes for all five non-empty inline scripts.
+- The standalone game boots without console errors and exposes Easy, Medium, and Hard in both new-game setup and Save / Load settings.
+- The new deferred Build Health contract is green. It verifies preserved Easy counts, unchanged Medium initial counts, exact doubled Hard initial/wave counts, a second Medium call cycle, a real six-alien Hard beacon arrival, and exactly one commander in that arrival.
+- Static build-seam validation passes against the synchronized index, manifest, patch notes, and game bible.
+- Save format remains 4.
+
+MANUAL TEST GATES
+-----------------
+1. Run fixed-seed Earth and alien-base missions on Medium and Hard. Hard must deploy exactly twice the corresponding Medium alien roster with no duplicate unique commander.
+2. Let at least five Medium reinforcement waves arrive while callers and the source remain legal. Confirm wave number, cooldown, one-pending-arrival ownership, and save/load continuity.
+3. Repeat beacon and dropship arrivals on Hard. Each committed wave must contain exactly twice its normal roster in unique legal cells.
+4. Destroy the beacon before and after a call commits, and complete every other mandatory objective. Confirm later calls stop and terminal mission authority remains unchanged.
+5. Exercise Manual, Hybrid, and Simulation handoffs during cooldown, countdown, arrival, and the next call cycle.
+
+PREVIOUS PATCH NOTES
+====================
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.24.2345_TACTICAL_PROP_INGRESS_CLEARANCE_AND_STRUCTURAL_PRECEDENCE_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

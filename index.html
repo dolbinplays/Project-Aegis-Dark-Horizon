@@ -519,6 +519,7 @@ const TACTICAL_AI_ACTIVE_SELECTION_RING_RESTORE_PATCH=true;
 const TACTICAL_FAILED_CLEAR_FIELD_ALIEN_RECOVERY_PATCH=true;
 const TACTICAL_FIVE_TURN_BEACON_REDEPLOYMENT_PATCH=true;
 const TACTICAL_LIGHTWEIGHT_STREET_LIFE_PROP_PASS=true;
+const TACTICAL_MEDIUM_UNLIMITED_AND_HARD_DOUBLE_ALIEN_DEPLOYMENT_PATCH=true;
 const TACTICAL_CRITICAL_KILL_CINEMATIC_PATCH=true;
 const TACTICAL_LARGE_ROAD_VEHICLE_SCALE_PATCH=true;
 const TACTICAL_FPV_SKY_DOME_CLIP_FIX_PATCH=true;
@@ -777,7 +778,7 @@ function installAegisGlobalHoverHelp(){
 function AegisHoverHelpToggleButton({light=false,compact=false}){const[enabled,setEnabled]=useState(()=>readAegisHoverHelpEnabled());useEffect(()=>{const sync=event=>setEnabled(normalizeAegisHoverHelpEnabled(event?.detail?.enabled));window.addEventListener(AEGIS_HOVER_HELP_CHANGE_EVENT,sync);return()=>window.removeEventListener(AEGIS_HOVER_HELP_CHANGE_EVENT,sync);},[]);const toggle=()=>setEnabled(writeAegisHoverHelpEnabled(!enabled));return/*#__PURE__*/React.createElement("button",{type:"button",onClick:toggle,"aria-pressed":enabled,"data-aegis-hover-help-toggle":"true","data-aegis-help":enabled?"Turn contextual button explanations off. Controls continue working normally, and the preference is remembered on this device.":"Turn contextual button explanations on. Rest the pointer over supported controls for three seconds to read their purpose.",className:`${compact?"px-3 py-2 text-xs":"px-4 py-3 text-sm"} rounded-2xl border font-black shadow-sm transition ${enabled?light?"border-cyan-200/70 bg-cyan-900/60 text-cyan-50":"border-cyan-400/60 bg-cyan-950/55 text-cyan-100":light?"border-slate-400/60 bg-slate-950/70 text-slate-200":"border-slate-600 bg-slate-950 text-slate-300"}`},enabled?"Hover Help: On":"Hover Help: Off");}
 if(typeof document!=="undefined"){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",installAegisGlobalHoverHelp,{once:true});else setTimeout(installAegisGlobalHoverHelp,0);}
 
-const CURRENT_GAME_BUILD="v0.26.08.24.2345_TACTICAL_PROP_INGRESS_CLEARANCE_AND_STRUCTURAL_PRECEDENCE_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
+const CURRENT_GAME_BUILD="v0.26.08.25.0902_MEDIUM_UNLIMITED_REINFORCEMENTS_AND_HARD_DOUBLE_DEPLOYMENT_PATCH";function currentGameVersionFromBuild(build=CURRENT_GAME_BUILD){const match=String(build||"").match(/^v\d+\.\d+\.\d+\.\d+\.\d+/);return match?match[0]:"v0";}const CURRENT_GAME_VERSION=currentGameVersionFromBuild();
 function runCriticalBootSmokeTests(){
   const checks=[
     {name:"Game root is available",pass:typeof document!=="undefined"&&Boolean(document.getElementById("root"))},
@@ -1365,7 +1366,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
       const weaponKind = battleWeaponKindForSoldier(soldier);
       return { id: soldier.id, name: soldier.name, base: soldier, baseSoldier: soldier, side: "human", team: "human", weaponKind, maxHp, hp: maxHp, alive: true, x: position.x, y: position.y, alienBaseDeck:position.alienBaseDeck, facing: facingToward(position, deployment.alienCenter.x, deployment.alienCenter.y), kills: 0, maxTu, tu: maxTu, ammo: weaponKind === "ballistic" ? ballisticCapacity(weaponUpgrades) : 999, medkitCharges: soldier.medkit ? 1 : 0, grenadeCharges:1, grenadePrimed:false, activeHand:"right", flashlightOn:false, flareCharges:1, revealed: true, gridSize: battlefieldGridSize };
     });
-  const alienCount = Math.max(3, Math.min(mission?.alienBaseAssault ? 20 : 10, Number(mission?.alienCount) || Math.ceil((mission.threat || 1) * 2)));
+  const alienCount = tacticalAlienInitialDeploymentCount(Math.max(3, Math.min(mission?.alienBaseAssault ? 20 : 10, Number(mission?.alienCount) || Math.ceil((mission.threat || 1) * 2))), mission);
   let aliens = continuing
     ? seededUnits.filter((unit) => unit.team === "alien").map((unit) => {
       const maxHp = Math.max(1, Number(unit.maxHp) || 22 + mission.threat * 8);
@@ -2791,6 +2792,7 @@ const tacticalFirstPersonIdentityCompassMiniMapTest=(()=>{const model=tacticalFi
 {name:"New tactical missions deploy an unshielded one-hex Alien Field Beacon that materializes complete visible reinforcement groups and can be destroyed with gunfire",pass:tacticalAlienFieldBeaconFoundationContractTest()&&TACTICAL_ALIEN_FIELD_BEACON_FOUNDATION_PATCH},{name:"Current two-Skyranger incidents create exactly one Alien Field Beacon and route reinforcements through it instead of the legacy purple saucer",pass:tacticalMultiTransportBeaconDeploymentContractTest()&&TACTICAL_DYNAMIC_FRIENDLY_REPATH_AND_BEACON_DEPLOYMENT_FIX_PATCH},{name:"AI soldiers defer routes blocked by teammates who have not moved yet and re-path after friendly traffic clears",pass:tacticalDynamicFriendlyRepathContractTest()&&TACTICAL_DYNAMIC_FRIENDLY_REPATH_AND_BEACON_DEPLOYMENT_FIX_PATCH},{name:"AI movement presents one coherent adaptive route per soldier and penalizes nonproductive detours",pass:tacticalAiPathCoherenceAndSingleMoveCommitContractTest()&&TACTICAL_AI_PATH_COHERENCE_AND_SINGLE_MOVE_COMMIT_FIX_PATCH},{name:"Simulation AI selects per-soldier snap aimed burst auto or kneel reserves while formation pacing governs movement extensions",pass:tacticalAdaptiveAiReserveAndFormationContractTest()&&TACTICAL_ADAPTIVE_COHERENT_AI_TURN_PATCH},{name:"Building windows transmit sight shatter on projectile passage and preserve solid-wall occlusion",pass:tacticalBuildingWindowBallisticsContractTest()&&TACTICAL_BUILDING_WINDOW_BALLISTICS_PATCH},{name:"Fire-team leaders stay at half pace until supports actually occupy formation cells at deployment and after regrouping",pass:tacticalStrictFireTeamAssemblyPacingContractTest()&&TACTICAL_STRICT_FIRE_TEAM_ASSEMBLY_AND_HEX_OCCUPANCY_FIX_PATCH},{name:"Living soldiers cannot finish a tactical round sharing the same hex",pass:tacticalUniqueLivingHexOccupancyContractTest()&&TACTICAL_STRICT_FIRE_TEAM_ASSEMBLY_AND_HEX_OCCUPANCY_FIX_PATCH},{name:"Escort fire-team supports can stay with the leader or break off for visible alien contact, then automatically return",pass:tacticalEscortSupportResponseContractTest()&&TACTICAL_ESCORT_SUPPORT_RESPONSE_PATCH},{name:"Escort contact popup assigns individual fire teams between escort duty and break-off combat without re-prompting the same contact episode",pass:tacticalEscortSupportAssignmentBoardAndContactLoopContractTest()&&TACTICAL_ESCORT_SUPPORT_ASSIGNMENT_BOARD_AND_CONTACT_LOOP_FIX_PATCH},{name:"Alien Field Beacon boot diagnostics reject missing coordinates without crashing the start screen",pass:tacticalAlienFieldBeaconBootNullGuardContractTest()&&TACTICAL_ALIEN_FIELD_BEACON_BOOT_NULL_GUARD_PATCH},{name:"AI tactical playback preserves movement trails beyond the old eight-hex frame cap",pass:tacticalAiMovementTrailPlaybackFixContract&&TACTICAL_AI_MOVEMENT_TRAIL_PLAYBACK_FIX_PATCH},{name:"Observed reinforcement arrivals visibly stage complete troops before AI movement resumes",pass:tacticalReinforcementDisembarkationVisibilityContractTest&&TACTICAL_REINFORCEMENT_DISEMBARKATION_VISIBILITY_FIX_PATCH},
 {name:"Easy reinforcement mode retains the original 5 to 15 round post-wipe missed check-in cadence",pass:tacticalAlienMissedCheckinContractTest()},
 {name:"Medium reinforcement mode adds casualty pressure and launches a fixed five-round commander-loss investigation",pass:tacticalReinforcementDifficultyAndCasualtyPressureContractTest()&&TACTICAL_REINFORCEMENT_DIFFICULTY_AND_CASUALTY_PRESSURE_PATCH},
+{name:"Medium supports unlimited sequential reinforcement cycles and Hard doubles alien deployments",pass:tacticalMediumUnlimitedAndHardDoubleDeploymentContractTest()&&TACTICAL_MEDIUM_UNLIMITED_AND_HARD_DOUBLE_ALIEN_DEPLOYMENT_PATCH},
 {name:"Mandatory VIP missions support sequential bounded reinforcement waves and terminal VIP resolution",pass:tacticalVipSequentialReinforcementWavesContractTest()&&TACTICAL_VIP_UNBOUNDED_REINFORCEMENT_WAVES_AND_TERMINAL_RESCUE_STATE_PATCH},
 {name:"Legacy reinforcement craft still renders as a purple flying saucer with a rear deployment ramp",pass:tacticalAlienSaucerRenderContractTest()},
 {name:"Alien VIP hunts, civilian panic, fogged saucers, and reinforcement rally searches preserve hidden information",pass:tacticalAlienVipHuntPanicAndReinforcementSearchContractTest()},
@@ -5190,7 +5192,8 @@ function tacticalFindSkyrangerPlacement(anchor = { x: 32, y: 32 }, covers = []) 
 }
 const ALIEN_REINFORCEMENT_DIFFICULTIES = Object.freeze({
   easy: { key: "easy", label: "Easy", description: "Original cadence: call pressure rises only through visual contact; commander loss triggers a deterministic 5-15 round missed check-in after the alien squad is eliminated." },
-  medium: { key: "medium", label: "Medium", description: "Casualties add one call-pressure step each; commander death triggers an investigation wave exactly 5 rounds later even when other aliens survive." },
+  medium: { key: "medium", label: "Medium", description: "Casualties increase call pressure, commander loss triggers a 5-round investigation, and sequential reinforcement waves have no lifetime mission cap while a legal caller or source remains." },
+  hard: { key: "hard", label: "Hard", description: "Uses Medium reinforcement doctrine and unlimited sequential waves, while doubling both the initial alien deployment and every reinforcement wave." },
 });
 function normalizeAlienReinforcementDifficulty(value = "easy") {
   const key = String(value || "").trim().toLowerCase();
@@ -5198,6 +5201,23 @@ function normalizeAlienReinforcementDifficulty(value = "easy") {
 }
 function tacticalAlienReinforcementDifficultyForMission(mission = null, state = null) {
   return normalizeAlienReinforcementDifficulty(mission?.alienReinforcementDifficulty ?? state?.difficulty ?? "easy");
+}
+function tacticalAlienReinforcementUsesPressureDoctrine(difficulty = "easy") {
+  return normalizeAlienReinforcementDifficulty(difficulty) !== "easy";
+}
+function tacticalAlienReinforcementUnlimitedWaves(difficulty = "easy") {
+  const mode = normalizeAlienReinforcementDifficulty(difficulty);
+  return mode === "medium" || mode === "hard";
+}
+function tacticalAlienDeploymentMultiplier(difficulty = "easy") {
+  return normalizeAlienReinforcementDifficulty(difficulty) === "hard" ? 2 : 1;
+}
+function tacticalAlienInitialDeploymentCount(baseCount = 0, mission = null, state = null) {
+  return Math.max(0, Math.floor(Number(baseCount) || 0)) * tacticalAlienDeploymentMultiplier(tacticalAlienReinforcementDifficultyForMission(mission, state));
+}
+function tacticalAlienReinforcementWaveSize(mission = null, state = null) {
+  const baseCount = clamp(TACTICAL_ALIEN_REINFORCEMENT.minUnits + Math.floor((Number(mission?.threat) || 1) / 3), TACTICAL_ALIEN_REINFORCEMENT.minUnits, TACTICAL_ALIEN_REINFORCEMENT.maxUnits);
+  return baseCount * tacticalAlienDeploymentMultiplier(tacticalAlienReinforcementDifficultyForMission(mission, state));
 }
 const TACTICAL_ALIEN_REINFORCEMENT = Object.freeze({ baseChance: 4, chancePerContactRound: 7, maxChance: 46, arrivalDelayRounds: 2, missedCheckinMinRounds: 5, missedCheckinMaxRounds: 15, mediumMissedCheckinRounds: 5, vipWaveCooldownMinRounds: 3, vipWaveCooldownMaxRounds: 6, maxConcurrentReinforcementUnits: 10, maxLandingCandidates: 32, minUnits: 2, maxUnits: 4 });
 const TACTICAL_REINFORCEMENT_STATE_CACHE = new Map();
@@ -5855,13 +5875,13 @@ function tacticalAlienCommander(units = [], options = {}) {
 }
 function tacticalAlienReinforcementChance(contactRounds = 1, alienCasualties = 0, difficulty = "easy") {
   const mode = normalizeAlienReinforcementDifficulty(difficulty);
-  const casualtySteps = mode === "medium" ? Math.max(0, Number(alienCasualties) || 0) : 0;
+  const casualtySteps = tacticalAlienReinforcementUsesPressureDoctrine(mode) ? Math.max(0, Number(alienCasualties) || 0) : 0;
   const pressureSteps = Math.max(0, Number(contactRounds) - 1) + casualtySteps;
   return clamp(TACTICAL_ALIEN_REINFORCEMENT.baseChance + pressureSteps * TACTICAL_ALIEN_REINFORCEMENT.chancePerContactRound, TACTICAL_ALIEN_REINFORCEMENT.baseChance, TACTICAL_ALIEN_REINFORCEMENT.maxChance);
 }
 function tacticalAlienMissedCheckinDelay(mission = null, waveNumber = 1, difficulty = null) {
   const mode = normalizeAlienReinforcementDifficulty(difficulty || mission?.alienReinforcementDifficulty || "easy");
-  if (mode === "medium") return TACTICAL_ALIEN_REINFORCEMENT.mediumMissedCheckinRounds;
+  if (tacticalAlienReinforcementUsesPressureDoctrine(mode)) return TACTICAL_ALIEN_REINFORCEMENT.mediumMissedCheckinRounds;
   const span = TACTICAL_ALIEN_REINFORCEMENT.missedCheckinMaxRounds - TACTICAL_ALIEN_REINFORCEMENT.missedCheckinMinRounds + 1;
   return TACTICAL_ALIEN_REINFORCEMENT.missedCheckinMinRounds + Math.abs(tacticalSeed(mission || {}) * 41 + Math.max(1, Number(waveNumber) || 1) * 67 + 17) % span;
 }
@@ -5877,14 +5897,15 @@ function tacticalOptionalRound(value = null) {
 function tacticalAlienReinforcementState(mission = null, units = [], previous = null) {
   const vipMission = tacticalVipReinforcementMission(mission, units);
   const difficulty = tacticalAlienReinforcementDifficultyForMission(mission, previous);
+  const repeatWaves = vipMission || tacticalAlienReinforcementUnlimitedWaves(difficulty);
   const priorCommander = previous?.commanderId ? (units || []).find((unit) => unit?.id === previous.commanderId) || null : null;
-  const commander = priorCommander || tacticalAlienCommander(units, { includeReinforcements: vipMission });
+  const commander = priorCommander || tacticalAlienCommander(units, { includeReinforcements: repeatWaves });
   const gridSize = tacticalGridSizeFrom(mission, units, previous?.dropship);
   const priorRally = tacticalValidCoordinatePair(previous?.rallyX, previous?.rallyY, gridSize);
   const commanderRally = tacticalValidCoordinatePair(commander?.x, commander?.y, gridSize);
   const rally = priorRally || commanderRally;
   const priorWaveCount = Number.isFinite(Number(previous?.waveCount)) ? Math.max(0, Math.floor(Number(previous.waveCount))) : previous?.arrived ? 1 : 0;
-  const legacyOneWaveState = Boolean(vipMission && previous?.arrived && !Number.isFinite(Number(previous?.waveCount)));
+  const legacyOneWaveState = Boolean(repeatWaves && previous?.arrived && !Number.isFinite(Number(previous?.waveCount)));
   const livingAlienIds = (units || []).filter((unit) => unit?.team === "alien" && Number(unit.hp) > 0 && unit.alive !== false).map((unit) => unit.id).filter(Boolean);
   const cycleAlienIds = Array.isArray(previous?.cycleAlienIds) && previous.cycleAlienIds.length ? [...new Set(previous.cycleAlienIds.filter(Boolean))] : [...new Set(livingAlienIds)];
   const unitById = new Map((units || []).map((unit) => [unit?.id, unit]));
@@ -5916,6 +5937,7 @@ function tacticalAlienReinforcementTurn({ state = null, units = [], covers = [],
   let next = tacticalAlienReinforcementState(mission, units, state);
   const difficulty = tacticalAlienReinforcementDifficultyForMission(mission, next);
   const vipMission = tacticalVipReinforcementMission(mission, units);
+  const repeatWaves = vipMission || tacticalAlienReinforcementUnlimitedWaves(difficulty);
   const vipCycleOpen = tacticalVipReinforcementCycleOpen(mission, units);
   const currentRound = Math.max(1, Number(round) || 1);
   const missionUsesBeacon = tacticalMissionUsesAlienBeacon(covers);
@@ -5935,7 +5957,7 @@ function tacticalAlienReinforcementTurn({ state = null, units = [], covers = [],
     next = { ...next, called: false, arrived: false, arrivalRound: null, callRound: null, callReason: null, contactRounds: 0, alienCasualties: 0, cycleAlienIds: [], commanderDeathRound: null, missedCheckinDelay: null, missedCheckinRound: null, callEligibleRound: null, legacyOneWaveState: false };
     return { state: next, event: cancelled ? { kind: "cycle-cancelled", waveNumber: next.waveCount + 1 } : null, arrivalReady: false };
   }
-  if (!vipMission && next.arrived) return { state: next, event: null, arrivalReady: false };
+  if (!repeatWaves && next.arrived) return { state: next, event: null, arrivalReady: false };
   const emergencyCaller = (units || []).filter((unit) => unit?.team === "alien" && Number(unit.hp) > 0 && unit.alive !== false && unit.alienEmergencyCallRequested).sort((left, right) => String(left.id).localeCompare(String(right.id)))[0] || null;
   if (emergencyCaller && !next.called) {
     const home = tacticalAlienHomeTarget(emergencyCaller, next, mission, covers, units) || emergencyCaller;
@@ -5943,19 +5965,19 @@ function tacticalAlienReinforcementTurn({ state = null, units = [], covers = [],
     next = { ...next, commanderId: emergencyCaller.id, called: true, arrived: false, callRound: currentRound, arrivalRound: currentRound + TACTICAL_ALIEN_EXFIL.emergencyArrivalDelayRounds, callReason: "craft-distress", rallyX: Number(home.x), rallyY: Number(home.y), rallySource: home.homeKind === "dropship" ? "alien-dropship" : "alien-insertion-beacon" };
     return { state: next, event: { kind: "craft-call", waveNumber, arrivalRound: next.arrivalRound, callerId: emergencyCaller.id, homeKind: home.homeKind || "insertion", rallyX: next.rallyX, rallyY: next.rallyY }, arrivalReady: false };
   }
-  if (vipMission && next.legacyOneWaveState) {
+  if (repeatWaves && next.legacyOneWaveState) {
     const replacementCommander = tacticalAlienCommander(units, { includeReinforcements: true });
     const cooldown = tacticalAlienVipWaveCooldown(mission, next.waveCount);
     const cycleAlienIds = units.filter((unit) => unit.team === "alien" && unit.hp > 0 && unit.alive !== false).map((unit) => unit.id);
     next = { ...next, commanderId: replacementCommander?.id || next.commanderId, called: false, arrived: false, arrivalRound: null, callRound: null, callReason: null, contactRounds: 0, alienCasualties: 0, cycleAlienIds, commanderDeathRound: null, missedCheckinDelay: null, missedCheckinRound: null, callEligibleRound: currentRound + cooldown, legacyOneWaveState: false };
-    return { state: next, event: { kind: "vip-cycle-reopened", waveNumber: next.waveCount + 1, eligibleRound: next.callEligibleRound }, arrivalReady: false };
+    return { state: next, event: { kind: vipMission ? "vip-cycle-reopened" : "cycle-reopened", waveNumber: next.waveCount + 1, eligibleRound: next.callEligibleRound }, arrivalReady: false };
   }
   if (next.called) return { state: next, event: null, arrivalReady: currentRound >= Number(next.arrivalRound) };
-  if (vipMission && next.callEligibleRound !== null && currentRound < Number(next.callEligibleRound)) return { state: next, event: null, arrivalReady: false };
-  const expectedWaveSize = clamp(TACTICAL_ALIEN_REINFORCEMENT.minUnits + Math.floor((Number(mission?.threat) || 1) / 3), TACTICAL_ALIEN_REINFORCEMENT.minUnits, TACTICAL_ALIEN_REINFORCEMENT.maxUnits);
+  if (repeatWaves && next.callEligibleRound !== null && currentRound < Number(next.callEligibleRound)) return { state: next, event: null, arrivalReady: false };
+  const expectedWaveSize = tacticalAlienReinforcementWaveSize(mission, next);
   const livingReinforcementCount = units.filter((unit) => unit.team === "alien" && unit.isReinforcement && unit.hp > 0 && unit.alive !== false).length;
-  if (vipMission && livingReinforcementCount + expectedWaveSize > TACTICAL_ALIEN_REINFORCEMENT.maxConcurrentReinforcementUnits) return { state: next, event: { kind: "pressure-saturated", waveNumber: next.waveCount + 1, livingReinforcementCount }, arrivalReady: false };
-  const commander = units.find((unit) => unit.id === next.commanderId) || tacticalAlienCommander(units, { includeReinforcements: vipMission }) || null;
+  if (repeatWaves && livingReinforcementCount + expectedWaveSize > TACTICAL_ALIEN_REINFORCEMENT.maxConcurrentReinforcementUnits) return { state: next, event: { kind: "pressure-saturated", waveNumber: next.waveCount + 1, livingReinforcementCount }, arrivalReady: false };
+  const commander = units.find((unit) => unit.id === next.commanderId) || tacticalAlienCommander(units, { includeReinforcements: repeatWaves }) || null;
   if (commander && commander.id !== next.commanderId) next = { ...next, commanderId: commander.id };
   const commanderDead = Boolean(commander && (commander.hp <= 0 || commander.alive === false));
   let deathRecorded = false;
@@ -5967,17 +5989,17 @@ function tacticalAlienReinforcementTurn({ state = null, units = [], covers = [],
   }
   const noLivingAliens = !units.some((unit) => unit.team === "alien" && unit.hp > 0 && unit.alive !== false);
   const missedCheckinDue = commanderDead && next.missedCheckinRound !== null && currentRound >= Number(next.missedCheckinRound);
-  const missedCheckinMayArrive = difficulty === "medium" ? missedCheckinDue : missedCheckinDue && noLivingAliens;
+  const missedCheckinMayArrive = tacticalAlienReinforcementUsesPressureDoctrine(difficulty) ? missedCheckinDue : missedCheckinDue && noLivingAliens;
   if (missedCheckinMayArrive) {
     const waveNumber = next.waveCount + 1;
     next = { ...next, called: true, callRound: currentRound, arrivalRound: currentRound, callReason: "missed-checkin", rallyX: Number(commander.x), rallyY: Number(commander.y), rallySource: "missed-checkin" };
     return { state: next, event: { kind: "missed-checkin", waveNumber, arrivalRound: next.arrivalRound, commanderId: next.commanderId, commanderDeathRound: next.commanderDeathRound, difficulty, rallyX: next.rallyX, rallyY: next.rallyY }, arrivalReady: true };
   }
-  if (!commander || commanderDead || !tacticalAliensObserveSoldiers(units, covers, mission)) return { state: next, event: deathRecorded ? { kind: "check-in-started", waveNumber: next.waveCount + 1, checkinRound: next.missedCheckinRound, delay: next.missedCheckinDelay, commanderId: next.commanderId, difficulty, rallyX: next.rallyX, rallyY: next.rallyY } : casualtyPressureIncreased && difficulty === "medium" ? { kind: "pressure-increased", waveNumber: next.waveCount + 1, alienCasualties: next.alienCasualties, chance: tacticalAlienReinforcementChance(next.contactRounds || 1, next.alienCasualties, difficulty), difficulty } : null, arrivalReady: false };
+  if (!commander || commanderDead || !tacticalAliensObserveSoldiers(units, covers, mission)) return { state: next, event: deathRecorded ? { kind: "check-in-started", waveNumber: next.waveCount + 1, checkinRound: next.missedCheckinRound, delay: next.missedCheckinDelay, commanderId: next.commanderId, difficulty, rallyX: next.rallyX, rallyY: next.rallyY } : casualtyPressureIncreased && tacticalAlienReinforcementUsesPressureDoctrine(difficulty) ? { kind: "pressure-increased", waveNumber: next.waveCount + 1, alienCasualties: next.alienCasualties, chance: tacticalAlienReinforcementChance(next.contactRounds || 1, next.alienCasualties, difficulty), difficulty } : null, arrivalReady: false };
   next = { ...next, contactRounds: next.contactRounds + 1 };
   const chance = tacticalAlienReinforcementChance(next.contactRounds, next.alienCasualties, difficulty);
   const roll = Number.isFinite(Number(rollOverride)) ? Number(rollOverride) : tacticalAlienReinforcementRoll(mission, currentRound, next.contactRounds + next.waveCount * 11 + next.alienCasualties * 17);
-  if (roll > chance) return { state: next, event: casualtyPressureIncreased && difficulty === "medium" ? { kind: "pressure-increased", waveNumber: next.waveCount + 1, chance, roll, alienCasualties: next.alienCasualties, difficulty } : { kind: "no-call", waveNumber: next.waveCount + 1, chance, roll, alienCasualties: next.alienCasualties, difficulty }, arrivalReady: false };
+  if (roll > chance) return { state: next, event: casualtyPressureIncreased && tacticalAlienReinforcementUsesPressureDoctrine(difficulty) ? { kind: "pressure-increased", waveNumber: next.waveCount + 1, chance, roll, alienCasualties: next.alienCasualties, difficulty } : { kind: "no-call", waveNumber: next.waveCount + 1, chance, roll, alienCasualties: next.alienCasualties, difficulty }, arrivalReady: false };
   const waveNumber = next.waveCount + 1;
   next = { ...next, called: true, callRound: currentRound, arrivalRound: currentRound + TACTICAL_ALIEN_REINFORCEMENT.arrivalDelayRounds, callReason: "commander-call", rallyX: Number(commander.x), rallyY: Number(commander.y), rallySource: "commander-call" };
   return { state: next, event: { kind: "called", waveNumber, chance, roll, alienCasualties: next.alienCasualties, difficulty, arrivalRound: next.arrivalRound, commanderId: next.commanderId, rallyX: next.rallyX, rallyY: next.rallyY }, arrivalReady: false };
@@ -6037,8 +6059,9 @@ function tacticalAlienReinforcementArrival({ state = null, units = [], covers = 
   const vipMission = tacticalVipReinforcementMission(mission, units);
   const waveCount = Math.max(0, Number(state?.waveCount) || 0);
   const waveNumber = waveCount + 1;
-  const count = clamp(TACTICAL_ALIEN_REINFORCEMENT.minUnits + Math.floor((Number(mission?.threat) || 1) / 3), TACTICAL_ALIEN_REINFORCEMENT.minUnits, TACTICAL_ALIEN_REINFORCEMENT.maxUnits);
   const difficulty = tacticalAlienReinforcementDifficultyForMission(mission, state);
+  const repeatWaves = vipMission || tacticalAlienReinforcementUnlimitedWaves(difficulty);
+  const count = tacticalAlienReinforcementWaveSize(mission, state);
   const occupied = new Set(units.filter((unit) => unit.hp > 0 && !unit.rescued).map((unit) => tacticalKey(unit.x, unit.y)));
   const beaconRecord = tacticalAlienBeaconRecord(covers);
   const beacon = tacticalActiveAlienBeacon(covers);
@@ -6056,12 +6079,12 @@ function tacticalAlienReinforcementArrival({ state = null, units = [], covers = 
     const revealed = tacticalRevealReinforcementArrival(units, reinforcements, covers, mission);
     reinforcements = revealed.reinforcements;
     const arrivedState = { ...state, difficulty, waveCount: waveNumber, lastArrivalRound: Number(round), lastArrivalReason: state?.callReason || null, rallyX, rallyY, dropship: null, beacon: { id: beacon.id, x: beacon.x, y: beacon.y, reinforcementWave: waveNumber }, arrivalUnitIds: reinforcements.map((unit) => unit.id), arrivalCommitPending: true };
-    const nextState = vipMission ? { ...arrivedState, commanderId: reinforcements[0]?.id || null, contactRounds: 0, alienCasualties: 0, cycleAlienIds: reinforcements.map((unit) => unit.id), called: false, arrived: false, arrivalRound: null, callRound: null, callReason: null, commanderDeathRound: null, missedCheckinDelay: null, missedCheckinRound: null, callEligibleRound: Number(round) + tacticalAlienVipWaveCooldown(mission, waveNumber), legacyOneWaveState: false } : { ...arrivedState, alienCasualties: 0, cycleAlienIds: reinforcements.map((unit) => unit.id), called: true, arrived: true, legacyOneWaveState: false };
+    const nextState = repeatWaves ? { ...arrivedState, commanderId: reinforcements[0]?.id || null, contactRounds: 0, alienCasualties: 0, cycleAlienIds: reinforcements.map((unit) => unit.id), called: false, arrived: false, arrivalRound: null, callRound: null, callReason: null, commanderDeathRound: null, missedCheckinDelay: null, missedCheckinRound: null, callEligibleRound: Number(round) + tacticalAlienVipWaveCooldown(mission, waveNumber), legacyOneWaveState: false } : { ...arrivedState, alienCasualties: 0, cycleAlienIds: reinforcements.map((unit) => unit.id), called: true, arrived: true, legacyOneWaveState: false };
     const retainedUnits = units.filter((unit) => !(unit.team === "alien" && unit.isReinforcement && unit.hp <= 0 && Number(unit.reinforcementWave || 0) < waveNumber - 1));
     return { landed: true, deploymentKind: "beacon", waveNumber, state: nextState, units: [...retainedUnits, ...reinforcements], covers: tacticalPreserveReinforcementLandmarks(covers, revealed.covers), placement: null, beacon: { ...beacon, revealed: revealed.visible.has(tacticalKey(beacon.x, beacon.y)) || beacon.revealed }, reinforcements, arrivalObserved: revealed.visible.has(tacticalKey(beacon.x, beacon.y)) };
   }
 
-  const landingCovers = vipMission && waveCount > 0 ? tacticalRetireAlienDropshipCovers(covers) : [...(covers || [])];
+  const landingCovers = repeatWaves && waveCount > 0 ? tacticalRetireAlienDropshipCovers(covers) : [...(covers || [])];
   const placement = tacticalAlienDropshipPlacement({ mission, covers: landingCovers, skyranger, units, round });
   if (!placement) return { landed: false, deploymentKind: "dropship", waveNumber, state: { ...state, arrivalRound: Number(round) + 1 }, units, covers, placement: null, reinforcements: [] };
   const craftCovers = tacticalAlienDropshipCovers(placement);
@@ -6078,7 +6101,7 @@ function tacticalAlienReinforcementArrival({ state = null, units = [], covers = 
   reinforcements = revealed.reinforcements;
   const arrivalObserved = tacticalAlienArrivalObserved(units, placement, revealed.visible);
   const arrivedState = { ...state, difficulty, waveCount: waveNumber, lastArrivalRound: Number(round), lastArrivalReason: state?.callReason || null, rallyX, rallyY, dropship: { ...placement, revealed: arrivalObserved || revealed.visible.has(tacticalKey(placement.rampCenter.x, placement.rampCenter.y)), reinforcementWave: waveNumber }, arrivalUnitIds: reinforcements.map((unit) => unit.id), arrivalCommitPending: true };
-  const nextState = vipMission ? { ...arrivedState, commanderId: reinforcements[0]?.id || null, contactRounds: 0, alienCasualties: 0, cycleAlienIds: reinforcements.map((unit) => unit.id), called: false, arrived: false, arrivalRound: null, callRound: null, callReason: null, commanderDeathRound: null, missedCheckinDelay: null, missedCheckinRound: null, callEligibleRound: Number(round) + tacticalAlienVipWaveCooldown(mission, waveNumber), legacyOneWaveState: false } : { ...arrivedState, alienCasualties: 0, cycleAlienIds: reinforcements.map((unit) => unit.id), called: true, arrived: true, legacyOneWaveState: false };
+  const nextState = repeatWaves ? { ...arrivedState, commanderId: reinforcements[0]?.id || null, contactRounds: 0, alienCasualties: 0, cycleAlienIds: reinforcements.map((unit) => unit.id), called: false, arrived: false, arrivalRound: null, callRound: null, callReason: null, commanderDeathRound: null, missedCheckinDelay: null, missedCheckinRound: null, callEligibleRound: Number(round) + tacticalAlienVipWaveCooldown(mission, waveNumber), legacyOneWaveState: false } : { ...arrivedState, alienCasualties: 0, cycleAlienIds: reinforcements.map((unit) => unit.id), called: true, arrived: true, legacyOneWaveState: false };
   const retainedUnits = units.filter((unit) => !(unit.team === "alien" && unit.isReinforcement && unit.hp <= 0 && Number(unit.reinforcementWave || 0) < waveNumber - 1));
   return { landed: true, deploymentKind: "dropship", waveNumber, state: nextState, units: [...retainedUnits, ...reinforcements], covers: tacticalPreserveReinforcementLandmarks(covers, revealed.covers), placement: nextState.dropship, reinforcements, arrivalObserved };
 }
@@ -6862,6 +6885,31 @@ function tacticalReinforcementDifficultyAndCasualtyPressureContractTest() {
     && mediumDeath.state.missedCheckinDelay === 5 && mediumDeath.state.missedCheckinRound === 9
     && mediumDue.event?.kind === "missed-checkin" && mediumDue.arrivalReady
     && !easyAtFive.arrivalReady;
+}
+function tacticalMediumUnlimitedAndHardDoubleDeploymentContractTest() {
+  const baseMission = { id: "medium-unlimited-hard-double-contract", kind: "Alien Terror Raid", region: "Europe", threat: 3, seed: 7221, tacticalMapTier: "small" };
+  const easyMission = { ...baseMission, alienReinforcementDifficulty: "easy" };
+  const mediumMission = { ...baseMission, alienReinforcementDifficulty: "medium" };
+  const hardMission = { ...baseMission, alienReinforcementDifficulty: "hard" };
+  const commander = { id: "repeat-wave-commander", name: "Pale Commander", alienType: "Pale Commander", team: "alien", hp: 36, alive: true, x: 10, y: 10, facing: "E", isAlienCommander: true, isReinforcement: true, reinforcementWave: 1, gridSize: 64 };
+  const soldier = { id: "repeat-wave-soldier", team: "human", hp: 40, alive: true, x: 12, y: 10, facing: "W", gridSize: 64 };
+  const completedWaveState = { difficulty: "medium", commanderId: commander.id, waveCount: 1, cycleAlienIds: [commander.id], called: false, arrived: false, callEligibleRound: 5, contactRounds: 0, alienCasualties: 0 };
+  const secondMediumCall = tacticalAlienReinforcementTurn({ state: completedWaveState, units: [commander, soldier], covers: [], mission: mediumMission, round: 5, rollOverride: 1 });
+  const easyStopsAfterArrival = tacticalAlienReinforcementTurn({ state: { ...completedWaveState, difficulty: "easy", called: true, arrived: true }, units: [commander, soldier], covers: [], mission: easyMission, round: 5, rollOverride: 1 });
+  const hardBeacon = tacticalAlienFieldBeaconCover({ x: 32, y: 32 }, hardMission, 64);
+  const hardArrival = tacticalAlienReinforcementArrival({ state: { difficulty: "hard", commanderId: commander.id, waveCount: 0, called: true, arrived: false, callReason: "commander-call", rallyX: 32, rallyY: 32 }, units: [soldier], covers: [hardBeacon], mission: hardMission, round: 3 });
+  return normalizeAlienReinforcementDifficulty("hard") === "hard"
+    && tacticalAlienInitialDeploymentCount(6, easyMission) === 6
+    && tacticalAlienInitialDeploymentCount(6, mediumMission) === 6
+    && tacticalAlienInitialDeploymentCount(6, hardMission) === 12
+    && tacticalAlienReinforcementWaveSize(easyMission) === 3
+    && tacticalAlienReinforcementWaveSize(mediumMission) === 3
+    && tacticalAlienReinforcementWaveSize(hardMission) === 6
+    && secondMediumCall.event?.kind === "called" && secondMediumCall.event.waveNumber === 2
+    && easyStopsAfterArrival.state.arrived && !easyStopsAfterArrival.arrivalReady
+    && hardArrival.landed && hardArrival.reinforcements.length === 6
+    && hardArrival.reinforcements.filter((unit) => unit.isAlienCommander).length === 1
+    && hardArrival.state.waveCount === 1 && !hardArrival.state.called && !hardArrival.state.arrived;
 }
 function tacticalVipSequentialReinforcementWavesContractTest() {
   const mission = { id: "vip-sequential-wave-contract", kind: "Alien Terror Raid", sourceUfoIntent: "terror", region: "Europe", threat: 3, seed: 9182, tacticalMapTier: "small" };
@@ -8279,7 +8327,7 @@ function tacticalDeployment({ squad = [], mission = {}, covers = makeBattlefield
   const beaconClearedCovers = alienBeacon ? tacticalCovers.filter(cover => !beaconRingKeys.has(tacticalKey(cover.x, cover.y))) : tacticalCovers;
   const beaconCovers = alienBeacon ? [...beaconClearedCovers, alienBeacon] : tacticalCovers;
   if (alienBeacon) occupied.add(tacticalKey(alienBeacon.x, alienBeacon.y));
-  const alienCount = Math.max(3, Math.min(10, Math.ceil((mission.threat || 1) * 2)));
+  const alienCount = tacticalAlienInitialDeploymentCount(Math.max(3, Math.min(10, Math.ceil((mission.threat || 1) * 2))), mission);
   const alienPositions = alienBeacon
     ? tacticalAlienBeaconSpawnCells(alienBeacon, alienCount, beaconCovers, occupied, gridSize, true)
     : tacticalClusterPositions(alienCenter, alienCount, beaconCovers, occupied);
@@ -11181,6 +11229,7 @@ PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 24, 2026",tit
 PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 24, 2026",title:"Globally Seeded Opening Incident Pair",summary:"Moves the first two alien crises beyond a fixed North America start while guaranteeing a legal one-base Skyranger response site and preserving deterministic campaign setup.",items:["New-campaign opening pairs are selected reproducibly from curated land sites across North America, South America, Europe, North Africa, East Asia, and Oceania.","Each seed produces two distinct incident identities and coordinates in one supported region, with varied crisis archetypes, rewards, aliens, and panic values.","Generation validates both incidents against the authoritative starting Skyranger sortie radius and retains at least one practical candidate base site that can reach the pair.","The first-base preview and committed campaign share one session seed; the seed and generated missions remain in campaign data for stable setup, save/load, and diagnostics.","A known-safe legacy pair remains the bounded fallback if a generated pair ever fails its reachability proof.","Existing saves, later procedural incidents, aircraft range, fuel, travel, fog, difficulty, and save format 4 are unchanged."]});
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.24.2115_VIP_SKYRANGER_BOARDING_PLAYBACK_PATCH",date:"August 24, 2026",title:"VIP / Civilian Skyranger Boarding Playback",summary:"Keeps escorted civilians and VIPs visible through their final approach, ramp traversal, and interior Skyranger boarding animation before the extracted state removes them from the battlefield.",items:["Civilian/VIP extraction no longer completes on the first ramp hex. The authoritative handoff occurs at the innermost passable Skyranger aisle cell, so evacuees visibly move onto the ramp and into the troop bay.","The rule follows each craft's saved ramp-cell sequence, so north, south, east, west, and diagonal seeded Skyranger orientations use the same real geometry instead of a fixed direction assumption.","AI playback now recognizes a rescued civilian with a recorded final movement trail as a pending presentation transition. The pre-animation frame preserves the unit as visible and unextracted until that trail finishes.","Only after the last boarding step does playback apply rescued/extracted state and cull the model. Mission scoring and continuation already use the authoritative post-boarding state.","Ramp traffic, escort guards, fire-team formation, fog, LOS, TU, mission resolution, and save format 4 remain unchanged."]});
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.24.2345_TACTICAL_PROP_INGRESS_CLEARANCE_AND_STRUCTURAL_PRECEDENCE_PATCH",date:"August 24, 2026",title:"Tactical Prop Ingress Clearance + Structural Precedence",summary:"Protects every procedural building entrance from decorative/generated cover and makes required building walls/windows outrank conflicting props during medium/large restoration.",items:["Every authored building door now owns a protected traversal mask containing the doorway plus its legal immediate interior and exterior approach cells. Street furniture, machines, vehicles, rocks, trees, and other non-building cover cannot remain on those reserved cells.","The doorway-adjacent vending/newspaper placement path is filtered through the same protected mask. A rejected single-cell prop may relocate to a nearby legal side cell; it can no longer occupy the primary ingress lane.","A final generation repair removes any non-building cover that conflicts with protected ingress cells, covering later generic hard/soft scenery as well as street props. A connectivity audit proves each building retains at least one passable outside-to-door-to-interior route.","Medium/large building restoration now reapplies required wall/window/partition structure with structural precedence. If a decorative or malformed cover record occupies a required structural cell, the conflicting prop is removed and the authored structure is restored instead of silently skipped.","Manual, Hybrid, Simulation, VIP/civilian escort, fog, LOS, damage, building geometry, Skyranger placement, and save format 4 remain unchanged outside the generation-integrity correction."]});
+PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 25, 2026",title:"Medium Unlimited Reinforcements + Hard Double Deployment",summary:"Expands Alien Reinforcement Difficulty into a complete Easy/Medium/Hard tactical scaling choice: Medium can sustain sequential reinforcement cycles, while Hard doubles initial and arriving alien forces.",items:["Easy preserves its original bounded one-wave behavior and 5-15 round post-wipe missed-check-in cadence.","Medium now removes the lifetime reinforcement-wave cap while a living legal caller or active source remains. Each arrival installs a new commander/cycle, respects a deterministic cooldown, and still permits only one committed arrival at a time.","Hard inherits Medium casualty pressure, five-round commander-loss investigation, sequential-wave lifecycle, population safeguard, and cooldown rules.","Hard doubles the authoritative initial alien roster and every later reinforcement group, including beacon and dropship arrivals and procedural alien-base defenders, without duplicating civilians, AEGIS units, scenery, objectives, or unique commanders.","The selected setting is attached to each mission at launch, so existing deployments are never multiplied again after save/load or a later campaign-setting change.","Build Health covers Easy preservation, a second Medium call cycle, exact 1x/1x/2x starting counts, exact Hard reinforcement doubling, one-commander ownership, and a real six-alien Hard beacon materialization. Save format remains 4."]});
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.24.2251_TACTICAL_BUILDING_ROOFS_AND_PLAYER_AWARE_CUTAWAY_PATCH",date:"August 24, 2026",title:"Tactical Building Roofs + Player-Aware Cutaway",summary:"Adds complete presentation-only roofs to discovered procedural buildings and smoothly fades only the occupied or camera-occluding structures needed to keep known AEGIS soldiers readable.",items:["Discovered procedural buildings now receive persistent Three.js roof panels aligned to their full authored building footprint, with regional roof color/pitch language and bounded damage-linked gaps near destroyed structural edges.","A building containing a living AEGIS soldier fades automatically. The selected soldier receives the clearest cutaway, while other occupied buildings retain a lighter translucent roof so multiple teams remain trackable.","FPV, TPV, incoming-fire reaction, and Iso camera sightlines may fade a roof that physically occludes the known AEGIS actor being observed. The ray test is presentation-only and follows no hidden alien, civilian, VIP, item, or objective position.","Roof opacity eases over a short bounded transition inside the existing persistent animation loop. Roof groups and materials are reused until the authoritative cover scene rebuilds; soldier movement or selection does not rebuild terrain/buildings.","Roofs do not alter collision, movement, pathfinding, cover, LOS, fog, illumination, weapon impacts, AI knowledge, mission resolution, or save format 4."]});
 for(const entry of PATCH_NOTES_HISTORY){const historicalBuild=PATCH_NOTE_BUILD_BY_TITLE[entry.title];if(historicalBuild)entry.build=historicalBuild;}
 function PatchNotesLibraryScreen(){
@@ -11637,7 +11686,7 @@ const AEGIS_MAKE_BATTLEFIELD_ASYNC_BEFORE_ALIEN_BASE_ASSAULT=makeBattlefieldAsyn
 makeBattlefieldAsync=async function makeBattlefieldAsyncWithAlienBaseAssault(mission={},onProgress=()=>{},shouldCancel=()=>false){if(!tacticalMissionIsAlienBaseAssault(mission))return AEGIS_MAKE_BATTLEFIELD_ASYNC_BEFORE_ALIEN_BASE_ASSAULT(mission,onProgress,shouldCancel);onProgress("Locking captured beacon endpoint",12);await tacticalStartupYield();if(shouldCancel())throw new Error("cancelled");onProgress("Generating three alien base levels",36);const covers=tacticalAlienBaseBattlefield(mission);await tacticalStartupYield();if(shouldCancel())throw new Error("cancelled");onProgress("Pairing alien elevator links",68);await tacticalStartupYield();if(shouldCancel())throw new Error("cancelled");onProgress("Command center located",76);return covers;};
 function tacticalAlienBaseOpenPosition(center,covers=[],occupied=new Set(),gridSize=80){const cells=tacticalClusterPositionsForGrid(center,1,covers,occupied,gridSize);return cells[0]||center;}
 const AEGIS_TACTICAL_DEPLOYMENT_BEFORE_ALIEN_BASE_ASSAULT=tacticalDeployment;
-tacticalDeployment=function tacticalDeploymentWithBeaconLinkedAlienBase(options={}){const mission=options?.mission||{};if(!tacticalMissionIsAlienBaseAssault(mission))return AEGIS_TACTICAL_DEPLOYMENT_BEFORE_ALIEN_BASE_ASSAULT(options);const gridSize=Math.max(80,tacticalGridSizeFrom(mission)),covers=(options.covers||[]).some(cover=>cover?.alienBasePart)?options.covers:tacticalAlienBaseBattlefield(mission),squad=options.squad||[],insertionBeacon=covers.find(cover=>cover.aegisInsertionBeacon),commandCore=covers.find(cover=>cover.alienCommandCore),humanCenter={x:11,y:30,alienBaseDeck:0,gridSize},occupied=new Set([tacticalKey(insertionBeacon.x,insertionBeacon.y),tacticalKey(commandCore.x,commandCore.y)]),humanPositions=tacticalClusterPositionsForGrid(humanCenter,Math.max(1,squad.length),covers,occupied,gridSize).map(cell=>({...cell,alienBaseDeck:0,gridSize}));humanPositions.forEach(cell=>occupied.add(tacticalKey(cell.x,cell.y)));const archetype=tacticalAlienBaseArchetype(mission),alienCount=Math.max(9,Math.min(20,Number(mission.alienCount)||15)),centers=[{x:19,y:15,alienBaseDeck:0},{x:19,y:45,alienBaseDeck:0},{x:39,y:14,alienBaseDeck:1},{x:43,y:31,alienBaseDeck:1},{x:39,y:47,alienBaseDeck:1},{x:64,y:15,alienBaseDeck:2},{x:65,y:45,alienBaseDeck:2},{x:73,y:34,alienBaseDeck:2}],alienPositions=[];for(let index=0;index<alienCount;index+=1){const source=centers[(index+mission.alienBaseSeed)%centers.length],cell=tacticalAlienBaseOpenPosition(source,covers,occupied,gridSize),alienBaseDeck=source.alienBaseDeck,alienType=index===alienCount-1?"Pale Commander":archetype.roster[index%Math.max(1,archetype.roster.length-1)];occupied.add(tacticalKey(cell.x,cell.y));alienPositions.push({...cell,alienBaseDeck,alienType,isAlienCommander:index===alienCount-1,gridSize});}const skyranger={rampCenter:{...humanCenter},deploymentCenter:{...humanCenter},rampCells:[],hullCells:[],crafts:[],beaconInsertion:true,hidden:true,beaconLinkId:mission.beaconLinkId,gridSize};return{covers,humanPositions,alienPositions,civilianPositions:[],humanCenter,alienCenter:{x:commandCore.x,y:commandCore.y,alienBaseDeck:2,gridSize},alienBeacon:commandCore,insertionBeacon,skyranger,gridSize,alienBaseLevels:ALIEN_BASE_LEVEL_COUNT,alienBaseElevators:covers.filter(cover=>cover.alienBaseElevator)};};
+tacticalDeployment=function tacticalDeploymentWithBeaconLinkedAlienBase(options={}){const mission=options?.mission||{};if(!tacticalMissionIsAlienBaseAssault(mission))return AEGIS_TACTICAL_DEPLOYMENT_BEFORE_ALIEN_BASE_ASSAULT(options);const gridSize=Math.max(80,tacticalGridSizeFrom(mission)),covers=(options.covers||[]).some(cover=>cover?.alienBasePart)?options.covers:tacticalAlienBaseBattlefield(mission),squad=options.squad||[],insertionBeacon=covers.find(cover=>cover.aegisInsertionBeacon),commandCore=covers.find(cover=>cover.alienCommandCore),humanCenter={x:11,y:30,alienBaseDeck:0,gridSize},occupied=new Set([tacticalKey(insertionBeacon.x,insertionBeacon.y),tacticalKey(commandCore.x,commandCore.y)]),humanPositions=tacticalClusterPositionsForGrid(humanCenter,Math.max(1,squad.length),covers,occupied,gridSize).map(cell=>({...cell,alienBaseDeck:0,gridSize}));humanPositions.forEach(cell=>occupied.add(tacticalKey(cell.x,cell.y)));const archetype=tacticalAlienBaseArchetype(mission),alienCount=tacticalAlienInitialDeploymentCount(Math.max(9,Math.min(20,Number(mission.alienCount)||15)),mission),centers=[{x:19,y:15,alienBaseDeck:0},{x:19,y:45,alienBaseDeck:0},{x:39,y:14,alienBaseDeck:1},{x:43,y:31,alienBaseDeck:1},{x:39,y:47,alienBaseDeck:1},{x:64,y:15,alienBaseDeck:2},{x:65,y:45,alienBaseDeck:2},{x:73,y:34,alienBaseDeck:2}],alienPositions=[];for(let index=0;index<alienCount;index+=1){const source=centers[(index+mission.alienBaseSeed)%centers.length],cell=tacticalAlienBaseOpenPosition(source,covers,occupied,gridSize),alienBaseDeck=source.alienBaseDeck,alienType=index===alienCount-1?"Pale Commander":archetype.roster[index%Math.max(1,archetype.roster.length-1)];occupied.add(tacticalKey(cell.x,cell.y));alienPositions.push({...cell,alienBaseDeck,alienType,isAlienCommander:index===alienCount-1,gridSize});}const skyranger={rampCenter:{...humanCenter},deploymentCenter:{...humanCenter},rampCells:[],hullCells:[],crafts:[],beaconInsertion:true,hidden:true,beaconLinkId:mission.beaconLinkId,gridSize};return{covers,humanPositions,alienPositions,civilianPositions:[],humanCenter,alienCenter:{x:commandCore.x,y:commandCore.y,alienBaseDeck:2,gridSize},alienBeacon:commandCore,insertionBeacon,skyranger,gridSize,alienBaseLevels:ALIEN_BASE_LEVEL_COUNT,alienBaseElevators:covers.filter(cover=>cover.alienBaseElevator)};};
 const AEGIS_TACTICAL_TERRAIN_BEFORE_ALIEN_BASE_ASSAULT=tacticalTerrainForCell;
 tacticalTerrainForCell=function tacticalTerrainForAlienBaseCell(x,y,mission={}){if(!tacticalMissionIsAlienBaseAssault(mission))return AEGIS_TACTICAL_TERRAIN_BEFORE_ALIEN_BASE_ASSAULT(x,y,mission);const archetype=tacticalAlienBaseArchetype(mission),deck=Math.max(0,tacticalAlienBaseDeckForCell(mission,{x,y})??0),palette=archetype.floorColors[deck]||archetype.floorColors[0],circuit=(Math.abs(x*13+y*17+(Number(mission.alienBaseSeed)||0))%7)<2;return{base:palette[0],accent:palette[1],detail:palette[2],label:`Alien Base Level ${deck+1} - ${archetype.deckNames[deck]}`,feature:circuit?"alien-circuit":"alien-deck",biome:"alienbase",floorPattern:circuit?"circuit":"hex",alienBaseDeck:deck};};
 const AEGIS_ALIEN_BEACON_OBJECTIVE_BEFORE_COMMAND_CORE=tacticalAlienBeaconObjectiveState;

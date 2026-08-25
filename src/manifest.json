@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.24.1745_GLOBALLY_SEEDED_OPENING_INCIDENT_PAIR_PATCH",
+  "currentBuild": "v0.26.08.25.0902_MEDIUM_UNLIMITED_REINFORCEMENTS_AND_HARD_DOUBLE_DEPLOYMENT_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "globally-seeded-opening-incident-pair-complete",
+  "status": "medium-unlimited-reinforcements-and-hard-double-deployment-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.24.1745_GLOBALLY_SEEDED_OPENING_INCIDENT_PAIR_PATCH",
+  "lastInspectedBuild": "v0.26.08.25.0902_MEDIUM_UNLIMITED_REINFORCEMENTS_AND_HARD_DOUBLE_DEPLOYMENT_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.24.1745_GLOBALLY_SEEDED_OPENING_INCIDENT_PAIR_PATCH",
+    "browserBuild": "v0.26.08.25.0902_MEDIUM_UNLIMITED_REINFORCEMENTS_AND_HARD_DOUBLE_DEPLOYMENT_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -174,7 +174,13 @@
       "fear-disrupted-fire-team-command-continuity",
       "temporary-acting-fire-team-leadership",
       "bounded-leader-rally-next-recovery-bonus",
-      "unified-three-view-tactical-status-hud"
+      "unified-three-view-tactical-status-hud",
+      "large-road-vehicle-scale-and-multi-cell-destruction",
+      "first-person-sky-dome-camera-clip-stability",
+      "vip-skyranger-boarding-playback",
+      "player-aware-persistent-building-roofs-and-cutaway",
+      "tactical-prop-ingress-clearance-and-structural-precedence",
+      "medium-unlimited-reinforcements-and-hard-double-alien-deployment"
     ],
     "temporaryExceptions": [
       {
@@ -472,6 +478,10 @@
       {
         "system": "globally-seeded-opening-incident-pair",
         "reason": "The browser now generates deterministic opening crises across all six supported world regions and proves a legal one-base starting Skyranger response site. Native Godot requires equivalent seeded campaign-opening generation and first-base reach validation."
+      },
+      {
+        "system": "medium-unlimited-reinforcements-and-hard-double-alien-deployment",
+        "reason": "The browser now supports unlimited sequential Medium reinforcement cycles and exact 2x Hard initial/reinforcement alien deployments while retaining one pending arrival and singular commander roles. Native Godot requires the equivalent engine-native difficulty, deployment, and reinforcement lifecycle."
       }
     ]
   }
