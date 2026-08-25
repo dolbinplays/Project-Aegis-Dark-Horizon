@@ -1,6 +1,44 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.24.1730_SEEDED_SKYRANGER_LANDING_AND_ORIENTATION_VARIETY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Skyrangers now approach suitable battlefield perimeter regions and face varied hex-grid headings selected reproducibly from the mission seed, while their real ramp geometry remains authoritative for deployment and extraction.
+
+SEEDED LANDING VARIETY
+----------------------
+- Single- and multi-Skyranger missions distribute their initial approach anchors across north, east, south, and west perimeter bands instead of repeating fixed north or northwest/southeast layouts.
+- All six hex-grid headings are eligible. A craft can point diagonally or broadly along an edge rather than always aiming its ramp toward the map center.
+- Selection is deterministic from the mission seed and transport index, so save/load, Hybrid handoff, Simulation playback, and continued battles retain the same landing geometry.
+- The bounded placement search validates every hull, ramp, rear deployment lane, and staging cell against the playable map boundary, buildings, intact land vehicles, indestructible objectives, and previously placed Skyrangers.
+- If generated terrain offers no new legal candidate, the existing bounded placement authority remains available as a safe compatibility fallback.
+
+ORIENTATION-AWARE EXTRACTION
+----------------------------
+- Each craft now records its forward/rear direction, body and nose cells, rear deployment lane, chosen perimeter band, and placement seed.
+- Soldier deployment, ramp extraction, evacuation traffic reservations, escort guards, and post-extraction egress follow the craft's actual saved heading instead of assuming north/south movement.
+- The persistent Three.js model derives its rotation from the same body-to-nose geometry used by tactical pathing, keeping the visible ramp aligned with the real extraction cells.
+- Legacy tactical saves without the new heading fields continue using their recorded north/south body sign.
+
+PRESERVED AUTHORITY
+-------------------
+- Skyranger capacity, squad ownership, TU costs, LOS, fog of war, alien knowledge, objective priority, and mission resolution are unchanged.
+- Candidate scoring uses only generated battlefield scenery and mission seed data; it never inspects hidden alien positions.
+- Save format remains 4.
+
+VALIDATION
+----------
+- Added deterministic coverage across 24 seeds for all four perimeter regions and at least five of six headings.
+- The contract verifies continuous ramp direction, complete in-bounds footprints, extraction egress alignment, two-craft clearance, intact-vehicle avoidance, outside-ramp escort positions, and shared renderer heading use.
+- Embedded JavaScript syntax and the build-seam checker pass for the current build.
+
+PREVIOUS PATCH NOTES
+====================
+
 Build: v0.26.08.24.1650_EMPTY_CRASHED_UFO_BAY_VICTORY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

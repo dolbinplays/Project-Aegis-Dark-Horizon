@@ -92,6 +92,11 @@ const required = [
   "TACTICAL_EMPTY_CRASHED_UFO_BAY_VICTORY_PATCH",
   "tacticalEmptyCrashedUfoBayVictoryContractTest",
   "Empty crashed-UFO bays no longer block victory after authoritative alien elimination",
+  "TACTICAL_SEEDED_SKYRANGER_LANDING_ORIENTATION_VARIETY_PATCH",
+  "tacticalSkyrangerPlacementForHeading",
+  "tacticalSkyrangerDirectionalStep",
+  "tacticalSeededSkyrangerLandingAndOrientationVarietyContractTest",
+  "Seeded Skyranger deployments vary edge and heading while preserving legal ramps extraction and multi-craft clearance",
   "Medium and large streamed battlefields retain outer-district building walls windows and authored floor alignment",
   "Mission victory dialogue has one mission-scoped owner across playback and terminal commit",
   "Patch-note history mutations remain inside the campaign component that owns the library",
@@ -1121,6 +1126,12 @@ if (!manifest.gameplayParity?.requiredSystems?.includes("empty-crashed-ufo-bay-e
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "empty-crashed-ufo-bay-elimination-victory" && entry?.reason)) {
   missing.push("browser-only empty crashed-UFO bay elimination victory must be recorded as a temporary gameplay parity exception");
 }
+if (!manifest.gameplayParity?.requiredSystems?.includes("seeded-skyranger-landing-and-orientation-variety")) {
+  missing.push("browser/native parity must require seeded Skyranger landing and orientation variety");
+}
+if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "seeded-skyranger-landing-and-orientation-variety" && entry?.reason)) {
+  missing.push("browser-only seeded Skyranger landing and orientation variety must be recorded as a temporary gameplay parity exception");
+}
 if (!manifest.gameplayParity?.requiredSystems?.includes("beacon-linked-procedural-multilevel-alien-base-assault")) {
   missing.push("browser/native parity must require beacon-linked procedural multilevel alien-base assaults");
 }
@@ -1260,6 +1271,7 @@ for (const system of [
   "per-shooter-visibility-and-rendered-target-shot-invariant",
   "post-extraction-rescue-duty-handoff",
   "multi-fireteam-vip-rescue-traffic",
+  "seeded-skyranger-landing-and-orientation-variety",
 ]) {
   if (!manifest.gameplayParity?.requiredSystems?.includes(system)) {
     missing.push(`gameplay parity system missing: ${system}`);

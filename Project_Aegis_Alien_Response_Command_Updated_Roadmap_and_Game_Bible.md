@@ -2,9 +2,31 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-24
-Current handoff build: `v0.26.08.24.1650_EMPTY_CRASHED_UFO_BAY_VICTORY_PATCH`
+Current handoff build: `v0.26.08.24.1730_SEEDED_SKYRANGER_LANDING_AND_ORIENTATION_VARIETY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1650 removes mandatory post-combat traversal of an empty crashed-UFO deployment bay. Once the authoritative living-alien count reaches zero, an uninspected bay becomes Secured by Elimination and stops assigning AI inspection work or blocking victory. Hidden living aliens, committed reinforcement arrivals, rescue quotas, beacons, alien-base command centers, and every other mandatory objective remain authoritative. Save format remains 4.**
+Current patch status: **Browser 1730 replaces fixed Skyranger landing patterns with deterministic mission-seeded perimeter bands and legal six-direction headings. Hull, ramp, staging, multi-craft separation, extraction traffic, escort guards, and Three.js orientation now consume one saved placement record. Legacy tactical states remain compatible and save format remains 4.**
+
+
+## Browser 1730 - Seeded Skyranger Landing and Orientation Variety
+
+**Status:** Implemented from the approved tactical deployment-variety roadmap item.
+
+### Deterministic landing-zone variety
+- `tacticalTransportAnchor(...)` now distributes craft across seeded north, east, south, and west perimeter bands. A second transport receives its own deterministic band/edge rather than an unconditional southeast slot.
+- `tacticalFindSkyrangerPlacement(...)` evaluates all six hex-grid headings through a bounded search. The chosen craft records forward/rear direction, body/nose cells, rear deployment lane, perimeter preference, and placement seed.
+- Every candidate validates the complete hull, ramp, deployment lane, and staging neighborhood against playable bounds, building clearance, intact land-vehicle/indestructible footprints, and every previously placed Skyranger.
+- Candidate selection uses mission seed and static battlefield geometry only. It does not inspect hidden aliens or reveal unearned tactical knowledge.
+
+### Shared geometry authority
+- Initial soldier deployment continues to originate at each craft's recorded rear deployment center.
+- AI extraction egress, widened evacuation traffic reservations, and escort support positions now step along the craft's actual forward/rear heading. Legacy north/south saves fall back to their existing `bodySign` geometry.
+- The persistent Three.js Skyranger derives yaw from the saved body and nose cells, so visual orientation, ramp cells, extraction zones, and pathing cannot rotate independently.
+- Skyranger capacity, TU, LOS, fog, objectives, and mission-resolution rules are unchanged; save format remains **4**.
+
+### Validation boundary
+- Deterministic regression coverage samples 24 mission seeds, all four perimeter regions, varied headings, continuous ramps, in-bounds footprints, and correct forward egress.
+- Two-craft placement must retain more than one hex of clearance across hull/ramp/deployment lanes. Intact vehicle footprints force an alternate legal placement.
+- Escort outside positions must remain outside the craft footprint, and renderer source must consume saved nose geometry.
 
 
 ## Browser 1650 - Empty Crashed-UFO Bay Victory
@@ -30,7 +52,7 @@ Current patch status: **Browser 1650 removes mandatory post-combat traversal of 
 
 ## Roadmap Addition - Seeded Skyranger Landing Placement and Orientation Variety
 
-**Status:** Approved tactical deployment-variety item. This changes mission layout and presentation without weakening legal deployment, extraction, fog, or pathfinding authority.
+**Status:** Implemented in Browser 1730. Further biome-weighted authored landing clearings and broader stress coverage remain eligible refinements; the fixed-pattern replacement and shared heading authority are complete.
 
 ### Landing-zone variety
 - Replace the visibly fixed single-Skyranger north-edge pattern and the repeated two-Skyranger northwest/southeast pattern with deterministic, mission-seeded candidate selection.
