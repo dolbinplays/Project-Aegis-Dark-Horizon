@@ -1,6 +1,38 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.24.1650_EMPTY_CRASHED_UFO_BAY_VICTORY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Crashed-UFO missions now end when the alien force is truly eliminated instead of requiring an 8 TU inspection of an empty deployment bay.
+
+EMPTY UFO-BAY VICTORY
+---------------------
+- A confirmed crashed-UFO bay remains a priority while at least one authoritative living alien remains on the battlefield.
+- Once the complete living-alien count reaches zero, an uninspected bay becomes Secured by Elimination and no longer blocks mission victory.
+- The rule uses the authoritative roster rather than visible contacts, so a concealed or undiscovered living alien still prevents completion.
+- Full Simulation and Hybrid support logic stop assigning an inspection team after elimination and proceed through the shared terminal mission state.
+- Manual inspection is no longer required after elimination; the existing inspection interaction remains available while living aliens make bay verification relevant.
+
+PRESERVED TERMINAL RULES
+------------------------
+- A reinforcement arrival already called and committed still blocks victory until its existing arrival or cancellation state resolves.
+- Mandatory rescue quotas, field beacons, alien-base command centers, and other required objectives remain independent completion gates.
+- Manual, Hybrid, streamed Simulation, control handoff, and loaded tactical state consume the same empty-bay resolution rule.
+- Save format remains 4.
+
+VALIDATION
+----------
+- Added deterministic coverage for an empty uninspected bay, a hidden living alien, a committed reinforcement arrival, AI continuation, manual inspection state, and terminal victory.
+- Updated the earlier reinforcement-source and crash-site stall contracts to enforce the simplified result instead of the superseded mandatory post-combat inspection.
+- Embedded JavaScript syntax and the build-seam checker pass for the current build.
+
+PREVIOUS PATCH NOTES
+====================
+
 Build: v0.26.08.24.1502_LEADERSHIP_UNDER_FEAR_AND_UNIFIED_TACTICAL_STATUS_HUD_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

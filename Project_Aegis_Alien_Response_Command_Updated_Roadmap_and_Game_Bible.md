@@ -2,9 +2,159 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-24
-Current handoff build: `v0.26.08.24.1502_LEADERSHIP_UNDER_FEAR_AND_UNIFIED_TACTICAL_STATUS_HUD_PATCH`
+Current handoff build: `v0.26.08.24.1650_EMPTY_CRASHED_UFO_BAY_VICTORY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1502 adds temporary fire-team command continuity when a formal leader enters Fear Override. An eligible deputy becomes the effective formation/command anchor, supports preserve visible-contact and escort priorities, nearby team reports create one bounded leadership shock, an eligible adjacent support may spend 8 TU for a next-check-only rally bonus, and command returns at a safe round boundary. 3D Iso, FPV, and TPV now share one authoritative upper-right soldier-status component with identity, weapon/ammo, HP/TU, command/role, reserve/final action, objective/order, and condition badges. Save format remains 4.**
+Current patch status: **Browser 1650 removes mandatory post-combat traversal of an empty crashed-UFO deployment bay. Once the authoritative living-alien count reaches zero, an uninspected bay becomes Secured by Elimination and stops assigning AI inspection work or blocking victory. Hidden living aliens, committed reinforcement arrivals, rescue quotas, beacons, alien-base command centers, and every other mandatory objective remain authoritative. Save format remains 4.**
+
+
+## Browser 1650 - Empty Crashed-UFO Bay Victory
+
+**Status:** Implemented from the approved mission-resolution simplification.
+
+### Terminal-state correction
+- `tacticalUfoBayClearanceState(...)` now evaluates the authoritative alien roster supplied by the shared tactical terminal state. A confirmed crash-site bay remains pending while any living alien exists.
+- When no living alien remains, an uninspected bay resolves as **Secured by Elimination**. It no longer requires an adjacent soldier, an 8 TU inspection, or additional AI movement before victory.
+- An unseen living alien still blocks completion because terminal authority uses living state rather than player visibility or the current contact list.
+- An already committed reinforcement arrival remains a separate terminal blocker. Mandatory rescue, beacon, and alien-base objectives are unchanged.
+
+### AI and mode parity
+- `tacticalAiShouldContinueUfoBay(...)` becomes false after authoritative alien elimination, so full Simulation stops assigning an inspection team and cannot burn extra rounds approaching an empty wreck.
+- Hybrid and Manual resolution consume the same terminal state. The existing Hybrid unresolved-snapshot guard remains active and cannot reinterpret a nonterminal result as failure.
+- Existing explicit bay-clear state remains valid, while loaded unverified/assigned/clearing bay state is evaluated under the revised rule without a save-format migration.
+
+### Validation boundary
+- Regression coverage distinguishes an empty uninspected bay, a hidden living alien, and an already committed reinforcement arrival.
+- The earlier reinforcement-source priority and crash-site stall contracts now assert the simplified outcome instead of the superseded post-combat inspection requirement.
+- Embedded JavaScript syntax and the build-seam checker pass. Save format remains **4**; native parity remains queued.
+
+
+## Roadmap Addition - Seeded Skyranger Landing Placement and Orientation Variety
+
+**Status:** Approved tactical deployment-variety item. This changes mission layout and presentation without weakening legal deployment, extraction, fog, or pathfinding authority.
+
+### Landing-zone variety
+- Replace the visibly fixed single-Skyranger north-edge pattern and the repeated two-Skyranger northwest/southeast pattern with deterministic, mission-seeded candidate selection.
+- A single Skyranger may use suitable north, south, east, or west perimeter approaches and safe corner or authored landing clearings when the map archetype permits them.
+- Two-Skyranger deployments may use safely separated positions on the same edge, adjacent edges, opposing edges, or offset corners. Candidate weighting should discourage recent/repeated layouts without forcing a different but equally predictable sequence.
+- Biome and location rules remain meaningful: urban craft should favor usable roads, plazas, parking areas, and clear lots; wilderness and farmland craft should favor viable clearings. Special UFO, beacon, alien-base, and authored-story maps may restrict the allowed landing bands.
+- Landing selection must reject buildings, intact land vehicles, alien craft, beacons, mandatory objective cells, impassable terrain, deep water, map-edge overflow, hazards that would make deployment invalid, another Skyranger, and every required safety/clearance footprint.
+- The mission seed, saved tactical state, and replay/continuation state must reproduce the same craft positions, headings, ramp cells, extraction zones, and assigned-unit deployment.
+
+### Independent but legal craft orientation
+- A Skyranger ramp no longer needs to point directly toward the map center. Select among the six hex-grid headings by scoring the complete hull footprint, ramp-mouth clearance, deployment capacity, legal egress lanes, and useful routes into the playable battlefield.
+- Valid headings may face diagonally or run broadly along a map edge. A heading that points the ramp off-map, into solid scenery, into another craft, or into an unusable one-route pocket is invalid even if the hull itself fits.
+- With two Skyrangers, position and orientation are solved together. Their hulls, ramps, extraction lanes, initial soldiers, and evacuation queues may not overlap or block one another.
+- Each squad deploys at its assigned craft with unique legal starting cells. No soldier, civilian, VIP, or alien may begin trapped in a hull, wall, vehicle, cover footprint, or another unit.
+- Candidate scoring may use static generated terrain and mission-layout constraints, but it must not inspect hidden alien positions or otherwise give AEGIS information it has not earned through LOS and fog rules.
+
+### Systems that must follow the generated placement
+- Manual control, Simulation AI, Hybrid AI, the Command Map, fire-team formation movement, civilian/VIP escort routing, extraction guards, building egress, camera framing, and mission resolution must consume the actual generated craft/ramp records rather than assuming north, northwest/southeast, or center-facing deployment.
+- The rear ramp and extraction area must remain visually unmistakable in 2D Hex, 3D Iso, FPV, and TPV at every valid orientation.
+- Arrival, deployment, and extraction cameras should frame the selected landing arrangement without revealing unexplored terrain or hidden enemies.
+- This roadmap item does not change Skyranger capacity, travel, squad ownership, TU costs, LOS, fog, alien knowledge, objective priority, or save format **4**.
+
+### Validation gate
+1. Generate a broad deterministic seed sample for every map size, biome, mission family, and one-/two-Skyranger response; confirm meaningful distribution across perimeter regions and all usable headings without a dominant fixed pattern.
+2. Confirm complete hull and ramp footprints remain inside the battlefield, have the required scenery clearance, and never overlap objectives, structures, vehicles, hazards, water, alien craft, beacons, or one another.
+3. Confirm every deployed soldier has a unique legal cell and a valid route through the real ramp mouth into the playable map.
+4. Run civilian/VIP extraction, fire-team formation, Simulation AI, Hybrid AI, Command Map orders, and two-craft evacuation from every supported orientation; no logic may retain a north-edge or center-facing assumption.
+5. Save/reload during deployment and mid-mission, then compare streamed playback and tactical continuation. Craft position, orientation, ramp/extraction ownership, unit assignment, and pathing must remain identical.
+6. Stress dense urban blocks, narrow roads, rivers/streams, large buildings, intact vehicles, crashed UFOs, active beacons, night missions, and minimum-clearance maps; bounded fallback must always produce a legal authored/default placement rather than a broken or inaccessible one.
+
+
+## Roadmap Addition - Globally Seeded Opening Incident Pair
+
+**Status:** Approved campaign-opening variety item. The first two incidents should no longer always appear in North America, while the player must still be able to establish one starting base whose starting Skyranger can respond legally to both.
+
+### Global opening-crisis generation
+- Generate the opening incident pair from the new-campaign seed and distribute eligible pairs across the world's supported land regions rather than using fixed North America coordinates.
+- Opening campaigns may begin in North America, South America, Europe, Africa, East Asia, Oceania, or suitable cross-region border areas. Weighting should provide broad long-term distribution and avoid making one region the overwhelmingly common result.
+- Both incidents must occupy valid land/site coordinates supported by the Geoscape and their mission archetypes. They may not appear in open ocean, polar/non-playable space, invalid projection seams, or inaccessible map locations.
+- The pair may be in one region or neighboring/reasonably separated regions, but should not repeatedly use the same relative spacing, bearing, incident names, or map arrangement.
+- Generation remains deterministic for a given new-campaign seed. Reopening first-base setup, confirming the base, saving/loading, or changing Geoscape view must preserve the same two incidents and coordinates.
+
+### One-base response guarantee
+- Before accepting a pair, compute whether there is at least one valid land location for the first AEGIS base from which the starting Skyranger can legally service **both** incidents under the authoritative starting range, fuel, sortie, and return requirements.
+- Use the real Geoscape distance/routing and starting-aircraft eligibility helpers rather than a separate approximate radius or a North-America-specific exception.
+- Require a practical placement area rather than one mathematically exact pixel. The player should have a readable choice of viable sites inside the two-incident reach overlap without needing hidden precision.
+- The first-base preview continues showing both incidents, the proposed base marker, the starting Skyranger reach ring, and an explicit `0/2`, `1/2`, or `2/2` coverage summary before confirmation.
+- Base confirmation should warn or remain blocked when the chosen site cannot reach both opening incidents, according to the existing onboarding rule. It must explain which incident is outside starting response range.
+- If bounded generation cannot find a valid diverse pair, fall back to another legal seeded pair and ultimately to a known-safe pair. Campaign creation must never strand the player with mutually unreachable opening missions.
+
+### Fairness and preserved authority
+- Incident placement must not inspect the player's later choices, reveal hidden UFOs or alien bases, alter mission difficulty after base placement, or silently increase the starting Skyranger's range.
+- Both opening timers must allow the player a fair opportunity to respond using the campaign's intended starting resources and aircraft turnaround rules. Random placement must not create an unavoidable loss before normal play begins.
+- Regional panic, rewards, threat, tactical biome/site generation, aircraft travel time, fuel use, base construction, radar, fog, and all later incident generation remain governed by their existing systems.
+- The Globe and Terminator Map must show the same generated pair and allow the player to rotate/pan to inspect them before placing the first base.
+- Existing saves retain their recorded incidents. This affects new-campaign opening generation only and requires no save-format change.
+
+### Validation gate
+1. Generate a large fixed-seed sample and confirm opening pairs appear across every supported world region without a dominant North America bias.
+2. For every generated pair, prove that a nontrivial set of valid land base sites can reach both incidents using the real starting Skyranger sortie calculation.
+3. Test base previews at `0/2`, `1/2`, and `2/2`; confirm the reach ring, coverage text, confirmation behavior, and out-of-range explanation agree with actual post-confirmation launch eligibility.
+4. Confirm incident identities and coordinates remain stable through first-base screen rerenders, Globe/Terminator switching, base confirmation, immediate save/load, and campaign restart from the same seed.
+5. Exercise date-line pairs, cross-region pairs, high-latitude land, small islands, projection edges, and maximum legal separation. Reject ocean, unreachable, degenerate, and single-pixel-overlap pairs.
+6. Confirm legacy saves and later procedural incidents are unchanged, and that no placement step grants extra range, hidden knowledge, free travel, or altered mission timers.
+
+
+## Roadmap Addition - Tactical Building Roofs and Player-Aware Cutaway
+
+**Status:** Approved 3D tactical presentation item. Buildings should read as complete roofed structures from the exterior while remaining playable and legible whenever an AEGIS soldier enters them.
+
+### Roof presentation
+- Add roofs appropriate to each procedural building archetype, footprint, material, biome, and damage state rather than leaving every structure permanently open at the top.
+- Roof geometry should align with the authoritative wall footprint, doors, windows, interior partitions, and building identity without sealing legal entrances or creating misleading exterior dimensions.
+- Intact exterior buildings display their roofs normally. Damaged and destroyed structures may use cracked, breached, collapsed, burning, or missing roof sections that agree with the authoritative scenery state.
+- Roofs are initially a presentation layer, not a new movement level or invisible combat surface. They must not independently block shots, vision, light, explosions, movement, or pathfinding unless a later explicitly designed vertical-combat system makes them authoritative.
+
+### Player-aware transparency and cutaway
+- When one or more living player-controllable AEGIS soldiers occupy a building, fade or cut away that building's roof sufficiently for the player to see the relevant interior, units, doors, cover, movement previews, target lines, status markers, and hazards.
+- Prefer per-building or per-roof-section fading so entering one structure does not make every roof on the battlefield transparent. Multi-room and large buildings should expose only the sections needed to read occupied/relevant interiors when practical.
+- The selected soldier's building receives the clearest cutaway. Buildings containing other controllable AEGIS soldiers may use a lighter translucent treatment so the player can still track the whole squad without turning the map into an unroofed scene.
+- Transition opacity smoothly over a short bounded duration to avoid popping. Selection changes, unit movement, death/incapacitation, extraction, camera rotation, view changes, and save/load must settle on the correct state without flicker or stale transparent roofs.
+- If the 3D Iso, FPV, or TPV camera is physically occluded by a roof or upper wall, the same shared cutaway owner may temporarily fade the obstructing sections. The effect must restore them when the camera or controlled unit leaves.
+- Provide a conservative accessibility/presentation setting if needed—such as **Automatic Roof Cutaway**, **Always Show Roofs**, or **Hide Roofs During Tactical Play**—without storing it in campaign saves.
+
+### Knowledge and gameplay boundaries
+- Roof fading may be triggered by the player's own controllable-unit occupancy and legitimate current viewing context only. It must not fade merely because an unseen alien, civilian, VIP, item, reinforcement, or objective occupies the building.
+- A transparent roof must not reveal units, rooms, items, hazards, or scenery that authoritative fog/LOS has not revealed. Interior fog and visibility masking remain active beneath the faded geometry.
+- Simulation AI, Hybrid AI, Manual control, Command Map orders, movement range, formation following, civilian/VIP escort routing, windows, doors, cover, destruction, lighting, fog, LOS, accuracy, and AI knowledge remain authoritative and unchanged.
+- Roof opacity is not cover. Fading or hiding a roof cannot make a previously illegal shot legal, change weapon impact, remove collision, alter light range, or affect any tactical calculation.
+- Reuse persistent roof meshes/material states in the Three.js scene. Soldier movement and selection should update opacity/cutaway state rather than rebuilding buildings, geometry, materials, or the complete battlefield.
+
+### Validation gate
+1. Inspect every building archetype in daylight, twilight, and night conditions; confirm roofs fit the walls and make exterior structures visually complete.
+2. Move one and then several AEGIS soldiers into different buildings and rooms; confirm only relevant roof sections fade and every controllable unit, route, door, window, cover object, and hazard remains readable.
+3. Rotate and zoom 3D Iso, then enter FPV and TPV near interior and exterior walls. Confirm occluding sections fade and restore without camera clipping, flicker, or permanently hidden roofs.
+4. Place unseen aliens, civilians, VIPs, items, and objectives inside unrevealed buildings. Confirm their presence cannot trigger a cutaway or bypass fog and LOS.
+5. Destroy walls and roof-associated scenery before and after occupancy; confirm roof damage matches the committed structure state and opacity transitions never change combat results.
+6. Stress repeated selection, fast AI playback, Hybrid handoff, save/load, unit death, evacuation, and map closure. Confirm persistent renderer identity, bounded material updates, correct cleanup, and no gameplay-state or save-format change.
+
+
+## Roadmap Adjustment - Empty Crashed-UFO Bay No Longer Blocks Victory
+
+**Status:** Implemented in Browser 1650. This supersedes the mandatory post-combat UFO-bay inspection rule for an otherwise secured crash site.
+
+### Revised victory authority
+- A crashed-UFO mission may declare victory as soon as the authoritative living-alien count reaches zero, all required civilian/VIP or other mandatory objectives are resolved successfully, and no alien reinforcement arrival is already committed and pending resolution.
+- The game must use the complete authoritative alien roster for this decision—not merely the aliens currently visible to AEGIS. An undiscovered, concealed, unconscious-but-still-active, off-screen, or otherwise living alien continues to block alien-force defeat according to its existing state rules.
+- If no living alien remains to operate the crashed craft's deployment bay, AEGIS does **not** need to move a soldier adjacent to the wreck, spend 8 TU, or perform **Inspect UFO Bay** before victory can be recorded.
+- A reinforcement call that was validly committed before the final alien died retains its existing arrival/commit authority. The mission cannot finish during that unresolved transition unless the reinforcement system explicitly cancels the call under its own rules.
+- Beacon destruction, rescue quotas, high-value VIP survival, alien-base command-center shutdown, and every other genuinely mandatory objective remain independent victory requirements.
+
+### Optional investigation behavior
+- UFO-bay inspection may remain available while aliens are alive, when AEGIS is verifying a suspected reinforcement source, or later as an optional recovery/intelligence interaction, but it cannot convert total alien elimination into an artificial extra traversal chore.
+- If optional inspection eventually grants salvage, intelligence, research progress, or a confirmation bonus, the UI must label that benefit as optional and allow the player to choose it before killing the final alien or triggering mission completion.
+- Full Simulation AI and Hybrid support AI should stop assigning a bay-clearance team once terminal alien elimination is authoritative. They should proceed directly to mission resolution instead of burning additional rounds or pathing toward an empty wreck.
+- Manual, Hybrid, and Simulation resolution must produce the same outcome from the same committed battlefield state.
+
+### Validation gate
+1. Kill the final alien at a confirmed crashed-UFO reinforcement source without inspecting the bay; confirm immediate success when no reinforcement arrival or other mandatory objective is pending.
+2. Repeat with the final alien hidden but alive inside, beside, and far from the wreck; confirm victory remains blocked until that alien is actually resolved.
+3. Kill the caller after a reinforcement arrival has already committed; confirm the pending arrival follows its existing cancellation/arrival rule and mission resolution cannot race ahead of it.
+4. Repeat with mandatory civilian/VIP quotas, a mandatory beacon, and other mission-specific objectives; confirm alien elimination does not bypass them.
+5. Exercise Manual, full Simulation AI, Hybrid AI, control handoff, streamed playback, and save/load. Confirm no empty-bay movement order, false failure, repeated zero-movement round, or duplicate mission completion occurs.
+6. Keep existing saves and save format **4** compatible; normalize any loaded pending bay-clearance state against this revised terminal rule without mutating unrelated objective state.
 
 
 ## Browser 1502 - Leadership Under Fear + Unified Tactical Status HUD

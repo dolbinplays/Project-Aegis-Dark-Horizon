@@ -88,7 +88,10 @@ const required = [
   "Captured beacon endpoints generate persistent three-level alien bases with paired elevators and an offline command-core victory gate",
   "Sixteen procedural alien-base seeds keep every defender elevator and command-core approach reachable while layouts vary",
   "Alien-base 3D Iso deck controls focus the persistent camera and announce vertical transitions without changing tactical authority",
-  "Crash-site Simulation continues pending UFO-bay clearance and Hybrid cannot finalize an unresolved snapshot as failure",
+  "Crash-site Simulation resolves an empty UFO bay while Hybrid still rejects unresolved snapshots",
+  "TACTICAL_EMPTY_CRASHED_UFO_BAY_VICTORY_PATCH",
+  "tacticalEmptyCrashedUfoBayVictoryContractTest",
+  "Empty crashed-UFO bays no longer block victory after authoritative alien elimination",
   "Medium and large streamed battlefields retain outer-district building walls windows and authored floor alignment",
   "Mission victory dialogue has one mission-scoped owner across playback and terminal commit",
   "Patch-note history mutations remain inside the campaign component that owns the library",
@@ -458,7 +461,7 @@ const required = [
   "UFO Bay Clear",
   "reinforcement-source-priority",
   "tacticalReinforcementSourcePriorityAndUfoBayClearanceContractTest",
-  "Confirmed reinforcement sources outrank routine AI while crashed UFO bays persist through explicit clearance",
+  "Confirmed UFO bays remain objectives while aliens live but total alien elimination clears an empty wreck",
   "TACTICAL_COMMAND_MAP_AUTONOMOUS_SEARCH_RESUME_HOTFIX",
   "tacticalReleaseCompletedCommandMapWaypoint",
   "tacticalCommandMapAutonomousSearchResumeContractTest",
@@ -1111,6 +1114,12 @@ if (!manifest.gameplayParity?.requiredSystems?.includes("reinforcement-source-pr
 }
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "reinforcement-source-priority-and-ufo-bay-clearance" && entry?.reason)) {
   missing.push("browser-only reinforcement-source priority and UFO-bay clearance must be recorded as a temporary gameplay parity exception");
+}
+if (!manifest.gameplayParity?.requiredSystems?.includes("empty-crashed-ufo-bay-elimination-victory")) {
+  missing.push("browser/native parity must require empty crashed-UFO bay elimination victory");
+}
+if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "empty-crashed-ufo-bay-elimination-victory" && entry?.reason)) {
+  missing.push("browser-only empty crashed-UFO bay elimination victory must be recorded as a temporary gameplay parity exception");
 }
 if (!manifest.gameplayParity?.requiredSystems?.includes("beacon-linked-procedural-multilevel-alien-base-assault")) {
   missing.push("browser/native parity must require beacon-linked procedural multilevel alien-base assaults");
