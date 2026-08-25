@@ -2,9 +2,29 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-24
-Current handoff build: `v0.26.08.24.1730_SEEDED_SKYRANGER_LANDING_AND_ORIENTATION_VARIETY_PATCH`
+Current handoff build: `v0.26.08.24.1745_GLOBALLY_SEEDED_OPENING_INCIDENT_PAIR_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1730 replaces fixed Skyranger landing patterns with deterministic mission-seeded perimeter bands and legal six-direction headings. Hull, ramp, staging, multi-craft separation, extraction traffic, escort guards, and Three.js orientation now consume one saved placement record. Legacy tactical states remain compatible and save format remains 4.**
+Current patch status: **Browser 1745 replaces the fixed North America opening pair with deterministic incidents spanning all six supported world regions. Every pair retains at least one legal first-base site under the real starting Skyranger sortie radius; setup and campaign data share the same saved seed. Existing saves and save format 4 remain compatible.**
+
+
+## Browser 1745 - Globally Seeded Opening Incident Pair
+
+**Status:** Implemented from the approved campaign-opening variety roadmap item.
+
+### Deterministic worldwide openings
+- New-campaign opening incidents now draw from curated playable land sites across North America, South America, Europe, North Africa, East Asia, and Oceania instead of fixed North America coordinates.
+- A session-stable seed selects one supported region, two distinct sites, and bounded crisis archetypes. Repeated generation with an explicit seed reproduces the same identities, coordinates, rewards, panic values, and alien types.
+- First-base setup preview and new-game creation consume the same session seed. The committed campaign records `openingIncidentSeed` alongside the generated mission records.
+
+### One-base response guarantee
+- Generation validates the pair against the authoritative starting Skyranger sortie radius derived from the current aircraft profile.
+- At least one practical candidate command site in the selected region must reach both incidents through the same Geoscape distance and first-base coverage helpers used by setup. An impossible pair falls back to the known-safe legacy opening rather than stranding a new campaign.
+- The existing first-base range rings and `0/2`, `1/2`, or `2/2` coverage summary remain authoritative; no aircraft range, fuel, or free-travel exception is added.
+
+### Compatibility and validation
+- Existing saves retain their recorded missions. Later incident generation, tactical difficulty, fog, radar, travel, and regional panic rules are unchanged; save format remains **4**.
+- The deterministic contract samples 120 seeds, requires all six regions to appear, proves pair stability and unique identities, and verifies at least one all-reachable first-base site for every sample.
+- Full browser Build Health improves from the prior 473/517 baseline to **474/518**, with the older North America fixture checks isolated to diagnostics and still passing.
 
 
 ## Browser 1730 - Seeded Skyranger Landing and Orientation Variety
@@ -86,7 +106,7 @@ Current patch status: **Browser 1730 replaces fixed Skyranger landing patterns w
 
 ## Roadmap Addition - Globally Seeded Opening Incident Pair
 
-**Status:** Approved campaign-opening variety item. The first two incidents should no longer always appear in North America, while the player must still be able to establish one starting base whose starting Skyranger can respond legally to both.
+**Status:** Implemented in Browser 1745. The deterministic worldwide pair, one-base response proof, session-stable preview/campaign seed, bounded safe fallback, and save-format compatibility are complete. Cross-region pairs and broader authored-site weighting remain eligible refinements.
 
 ### Global opening-crisis generation
 - Generate the opening incident pair from the new-campaign seed and distribute eligible pairs across the world's supported land regions rather than using fixed North America coordinates.

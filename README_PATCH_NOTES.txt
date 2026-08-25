@@ -1,6 +1,37 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.24.1745_GLOBALLY_SEEDED_OPENING_INCIDENT_PAIR_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+New campaigns now begin with a deterministic pair of alien crises selected across all six supported world regions instead of always starting in North America, while retaining a legal one-base starting Skyranger response.
+
+GLOBALLY SEEDED OPENING PAIR
+----------------------------
+- Opening sites are selected from curated playable land coordinates in North America, South America, Europe, North Africa, East Asia, and Oceania.
+- A stable seed chooses a region, two distinct sites, and bounded incident archetypes; an explicit seed always reproduces the same identities and coordinates.
+- The first-base preview and committed new campaign share the same session seed. Campaign data records `openingIncidentSeed` and the resulting mission records.
+- Incident names, alien types, rewards, and panic values vary without inspecting the player's later choices or revealing hidden strategic information.
+
+ONE-BASE RESPONSE GUARANTEE
+---------------------------
+- Every generated pair is validated against the authoritative starting Skyranger sortie radius and normal Geoscape distance helpers.
+- The generator proves at least one practical candidate command site can reach both incidents. If that proof ever fails, the known-safe legacy pair remains a bounded fallback.
+- Existing first-base range rings and the explicit 0/2, 1/2, or 2/2 reach summary remain authoritative. The patch grants no extra range, fuel, free travel, or mission time.
+
+COMPATIBILITY AND VALIDATION
+----------------------------
+- Existing saves retain their recorded incidents. Later procedural incidents, aircraft rules, radar, fog, tactical difficulty, and regional panic are unchanged; save format remains 4.
+- Deterministic coverage samples 120 seeds, requires all six regions, stable pairs, distinct incidents, and a viable all-reachable first-base site for every sample.
+- Full browser Build Health passes 474/518 checks versus the prior 473/517 baseline, including the new contract and the preserved legacy first-base diagnostic fixtures.
+- Embedded JavaScript syntax and the build-seam checker pass for the current build.
+
+PREVIOUS PATCH NOTES
+====================
+
 Build: v0.26.08.24.1730_SEEDED_SKYRANGER_LANDING_AND_ORIENTATION_VARIETY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

@@ -97,6 +97,11 @@ const required = [
   "tacticalSkyrangerDirectionalStep",
   "tacticalSeededSkyrangerLandingAndOrientationVarietyContractTest",
   "Seeded Skyranger deployments vary edge and heading while preserving legal ramps extraction and multi-craft clearance",
+  "GLOBALLY_SEEDED_OPENING_INCIDENT_PAIR_PATCH",
+  "OPENING_INCIDENT_REGION_SITES",
+  "generateGloballySeededOpeningIncidents",
+  "globallySeededOpeningIncidentPairContractTest",
+  "Opening incidents span every world region deterministically and always retain a viable one-base Skyranger response site",
   "Medium and large streamed battlefields retain outer-district building walls windows and authored floor alignment",
   "Mission victory dialogue has one mission-scoped owner across playback and terminal commit",
   "Patch-note history mutations remain inside the campaign component that owns the library",
@@ -1131,6 +1136,12 @@ if (!manifest.gameplayParity?.requiredSystems?.includes("seeded-skyranger-landin
 }
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "seeded-skyranger-landing-and-orientation-variety" && entry?.reason)) {
   missing.push("browser-only seeded Skyranger landing and orientation variety must be recorded as a temporary gameplay parity exception");
+}
+if (!manifest.gameplayParity?.requiredSystems?.includes("globally-seeded-opening-incident-pair")) {
+  missing.push("browser/native parity must require the globally seeded opening incident pair");
+}
+if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "globally-seeded-opening-incident-pair" && entry?.reason)) {
+  missing.push("browser-only globally seeded opening incident pair must be recorded as a temporary gameplay parity exception");
 }
 if (!manifest.gameplayParity?.requiredSystems?.includes("beacon-linked-procedural-multilevel-alien-base-assault")) {
   missing.push("browser/native parity must require beacon-linked procedural multilevel alien-base assaults");
