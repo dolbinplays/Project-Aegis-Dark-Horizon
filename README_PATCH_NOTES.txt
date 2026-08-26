@@ -1,3 +1,25 @@
+BUILD: v0.26.08.25.2311_ARTICULATED_AEGIS_HAND_ANCHORED_RIFLES_AND_AIM_POSE_FIX_PATCH
+TITLE: Articulated AEGIS Hand-Anchored Rifles + Aim Pose Fix
+DATE: August 25, 2026
+
+Summary
+- Fixes the articulated AEGIS rifle presentation so weapons are anchored from the right hand / wrist instead of reading as chest- or groin-mounted across Iso, FPV, and TPV.
+
+Key changes
+- The articulated rifle mount now attaches to the right wrist joint rather than the torso.
+- Standing carry posture now presents the rifle diagonally across the chest, with the right hand as the grip hand and the left arm posed into a fore-end support role.
+- Added dedicated firing presentation poses for standing, kneeling, and prone when the active shot presentation identifies the soldier as the current human shooter.
+- Kneeling and prone aiming were refined again to read more like deliberate shouldered firing positions.
+- Existing prone-dead, attention, and at-ease posture support remain intact.
+- Classic fallback, current skin tones, armor colors, and save format 4 are unchanged.
+
+Regression notes
+- No save-format change. Save format remains 4.
+- No assets added or changed.
+- Classic soldier presentation remains available through the AEGIS Soldier Model toggle.
+
+--------------------------------------------------------------------------------
+
 BUILD: v0.26.08.25.2249_ARTICULATED_AEGIS_WEAPON_HANDLING_AND_POSE_POLISH_PATCH
 TITLE: Articulated AEGIS Weapon Handling + Pose Polish
 DATE: August 25, 2026

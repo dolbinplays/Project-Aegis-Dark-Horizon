@@ -1,3 +1,14 @@
+# Build Update Addendum — v0.26.08.25.2311_ARTICULATED_AEGIS_HAND_ANCHORED_RIFLES_AND_AIM_POSE_FIX_PATCH
+
+## Current Build Delta
+- Articulated AEGIS rifles are now hand-anchored from the right wrist instead of torso-anchored.
+- Standing movement/idle now uses a clearer cross-chest ready-carry posture.
+- Added distinct standing, kneeling, and prone aiming presentation poses during live human shot playback.
+- This fix applies at the shared articulated-pose layer used by Iso, FPV, and TPV soldier rendering.
+- Current armor colors, current skin tones, Classic fallback, and the current scale envelope remain intact.
+
+---
+
 # Build Update Addendum — v0.26.08.25.2249_ARTICULATED_AEGIS_WEAPON_HANDLING_AND_POSE_POLISH_PATCH
 
 ## Current Build Delta
