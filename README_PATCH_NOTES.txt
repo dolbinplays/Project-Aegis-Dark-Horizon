@@ -1,3 +1,30 @@
+BUILD: v0.26.08.26.0816_ARTICULATED_SOLDIER_FACING_PIVOT_AND_STANCE_AIM_AUTHORITY_PATCH
+TITLE: Articulated Soldier Facing Pivot + Stance Aim Authority
+DATE: August 26, 2026
+
+Summary
+- Separates authoritative tactical facing from local articulated poses so walking, aiming, stance changes, and pose resets cannot turn a soldier away from their current hex direction.
+- Makes the firing pose follow the soldier's authoritative stance: standing soldiers use Standing Aim and kneeling soldiers use Kneeling Aim.
+
+Key changes
+- Adds a dedicated parent facing pivot to every articulated AEGIS soldier.
+- Keeps approved Standing Carry, Standing Aim, Kneeling Aim, Prone Aim, downed, ceremonial, victory, and procedural walking transforms on a child pose root.
+- All six hex directions now rotate the facing pivot while authored local body and neck counter-rotation remains intact beneath it.
+- Walking and end-of-movement resets update only the pose root, preserving the soldier's last tactical facing.
+- Firing pose selection now gives authoritative `unit.kneeling` and `unit.prone` state priority over stale presentation-pose metadata.
+- Standing fire selects Standing Aim; kneeling fire selects Kneeling Aim; prone fire retains its separate Prone Aim presentation path.
+- Adds deterministic Build Health coverage for the hierarchy boundary, all six facing angles, walk/pose isolation, stance-correct firing, and save format 4.
+- Synchronizes the articulated patch history and release checker with the current renderer dependency list.
+
+Compatibility
+- Presentation-only: no changes to coordinates, movement, TU costs, pathfinding, LOS, accuracy, targeting, AI, or combat outcomes.
+- Approved player-authored pose values remain unchanged.
+- Classic soldier fallback remains available.
+- Save format remains 4.
+- No game assets changed.
+
+--------------------------------------------------------------------------------
+
 BUILD: v0.26.08.26.0046_ARTICULATED_STANDING_CARRY_WALK_CYCLE_PATCH
 TITLE: Articulated Standing Carry Walk Cycle
 DATE: August 26, 2026

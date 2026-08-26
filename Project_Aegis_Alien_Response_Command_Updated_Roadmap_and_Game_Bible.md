@@ -1,3 +1,15 @@
+# Build Update Addendum - v0.26.08.26.0816_ARTICULATED_SOLDIER_FACING_PIVOT_AND_STANCE_AIM_AUTHORITY_PATCH
+
+## Current Build Delta
+- Articulated AEGIS soldiers now compose two independent presentation transforms: a parent tactical-facing pivot owns the current six-direction hex orientation, while a child pose root owns the approved stance, aiming, downed, ceremonial, victory, and procedural walk transforms.
+- Walking, stance changes, firing, end-of-movement restoration, and other approved pose applications cannot overwrite or forget the soldier's tactical facing.
+- Authored local yaw remains intact beneath the facing pivot, including Standing Aim body/neck counter-rotation.
+- Firing presentation now follows authoritative stance. Standing soldiers use **Standing Aim**, kneeling soldiers use **Kneeling Aim**, and prone soldiers retain the separate **Prone Aim** path even when older presentation metadata is stale.
+- Deterministic Build Health coverage checks all six facing angles, hierarchy ownership, pose/walk isolation, stance-correct firing, and save format 4.
+- This is presentation-only. Coordinates, movement, pathfinding, TU, LOS, accuracy, targeting, AI, combat outcomes, and save data are unchanged.
+
+---
+
 # Build Update Addendum — v0.26.08.26.0046_ARTICULATED_STANDING_CARRY_WALK_CYCLE_PATCH
 
 ## Current Build Delta
@@ -9,6 +21,44 @@
 - The persistent Three.js animation loop now recognizes ordinary tactical movement as an active presentation state, including Iso and TPV observation.
 - Build Health includes deterministic checks for opposite gait phases, knee recovery, limb animation wiring, subtle weight shift/bob, and renderer lifecycle integration.
 - Save format remains 4 and no gameplay movement/pathing/LOS/AI authority changed.
+
+
+## Priority Roadmap - Post-0046 Articulated Model and Release Cleanup
+
+**Status:** Active corrective sequence following the Browser 0046 code and live-runtime review. Item 1 is implemented in Browser 0816; the remaining items retain their priority order.
+
+### 1. Articulated soldier orientation and facing-pivot separation - implemented in Browser 0816
+- Separate authoritative tactical facing from player-authored pose rotation. A dedicated parent **facing pivot** must apply the unit's current hex direction, while a child **pose root** owns Standing Carry, aiming, kneeling, prone, downed, ceremonial, victory, and procedural walk-cycle rotations.
+- Walking, aiming, changing stance, finishing movement, taking damage, dying, celebrating, and returning to Standing Carry must never overwrite or forget the soldier's current tactical facing.
+- Preserve authored local pose yaw, including the approved Standing Aim body/neck counter-rotation, by composing it beneath the facing pivot rather than replacing the map-facing transform.
+- Verify all six hex directions, turns during multi-cell movement, consecutive movement actions, standing-to-kneeling transitions, prone/downed transitions, firing at differently positioned targets, and movement completion in 3D Iso and TPV. FPV observer ownership must remain unchanged.
+- Add deterministic contracts proving pose application and walk animation cannot write to the facing pivot, that a soldier retains their last facing after the gait stops, and that model orientation remains presentation-only with no change to coordinates, paths, TU, LOS, accuracy, AI, or save format 4.
+
+### 2. Articulated weapon and equipment attachment parity
+- Move the articulated soldier's weapon-light housing, beam origin, and any future carried equipment onto the articulated weapon/right-wrist hierarchy instead of leaving them at the legacy directional offsets.
+- Confirm the rifle, muzzle, hands, flashlight, firing tracer origin, and aim pose remain aligned through every facing and stance without creating duplicate weapon geometry.
+- Retain the current single-rifle presentation, equipment colors, armor colors, skin tones, and Classic fallback.
+
+### 3. Browser build metadata and patch-history synchronization
+- Synchronize the actual current browser build across `CURRENT_GAME_BUILD`, `src/manifest.json` current/inspected/parity fields, start screen, detailed patch notes, in-game version history, Game Bible header/status, release checker, and handoff/package naming.
+- Give historical articulated entries explicit immutable build IDs. Do not reuse `CURRENT_GAME_BUILD` for an older history entry, because that currently labels the Approved Pose Set as Browser 0046 and omits the Standing Carry Walk Cycle from the in-game history.
+- Restore one clearly authoritative Game Bible header after the recent addenda and retain the chronological articulated patch record without duplicate or stale current-build declarations.
+
+### 4. Release checker and Build Health contract repair
+- Update the persistent-renderer release checks so the new `soldierModelStyle` dependency may sit between the existing Iso Color, Night Brightness, ground-mode, and Fit Map dependencies without weakening those presentation-only invariants.
+- Correct the Browser 2049 beacon-intelligence test fixture: use a breach-capable observer for the known kinetic-guidance assertion while retaining a deliberately incapable observer for the separate known-field no-breach assertion.
+- Re-run embedded JavaScript syntax, build seams, whitespace checks, critical startup smoke, and full live Build Health. Record the current unrelated failure baseline separately from new articulated contracts.
+
+### 5. Articulated renderer performance comparison and bounded optimization
+- Measure Classic versus Articulated on the same deterministic battlefield with 6, 12, and 24 visible AEGIS soldiers at Fit Map, ordinary tactical zoom, and close Iso/TPV views across Performance, Auto, and Quality modes.
+- Record renderer draw calls, triangles, average frame time, approximate FPS, unit-node rebuilds, and animation-frame cost while idle and while several soldiers walk. Shared geometry/materials reduce allocation but do not by themselves batch the roughly two dozen independently drawn articulated body/weapon meshes per soldier.
+- If the articulated default materially reduces performance, reduce material/draw fragmentation, introduce a bounded distant-Iso simplified presentation or LOD, or keep Classic as the automatic Performance-mode fallback. Do not sacrifice the approved close-view poses merely to lower distant-map cost.
+- Keep the Classic toggle until the articulated path meets an explicit representative-map performance gate and completes wider night, roof-cutaway, multi-Skyranger, death, victory, and tactical-cinematic field testing.
+
+### 6. Pose-editor and documentation consolidation
+- Keep the current approved pose editor as the working authoring tool and move or clearly label superseded editor versions so testers do not accidentally edit an obsolete preset library.
+- Document the facing-parent/pose-child transform contract inside the editor handoff so future exported root rotations cannot overwrite tactical facing when copied into the game.
+- Normalize the recent Game Bible addendum formatting/encoding and ensure every articulated patch is represented consistently in detailed and in-game patch history.
 
 ---
 
@@ -62,10 +112,10 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
-Last updated: 2026-08-25
-Current handoff build: `v0.26.08.25.2216_ARTICULATED_AEGIS_SOLDIER_MODELS_AND_CLASSIC_TOGGLE_PATCH`
+Last updated: 2026-08-26
+Current handoff build: `v0.26.08.26.0816_ARTICULATED_SOLDIER_FACING_PIVOT_AND_STANCE_AIM_AUTHORITY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2216 adds a player-selectable articulated low-poly AEGIS soldier presentation while preserving the complete previous Three.js figure as Classic. The new hierarchy supports standing, kneeling, prone alive/dead, attention, and at-ease poses; reuses all current skin, armor, fatigues, helmet, weapon, and body-width presentation authority; and remains scaled to existing tactical scenery. The model choice is device-local, can change live, and does not alter save format 4 or tactical rules.**
+Current patch status: **Browser 0816 separates articulated tactical facing onto a dedicated parent pivot while approved poses and walking remain local to a child root. All six hex directions survive movement and pose resets, and firing now selects Standing Aim or Kneeling Aim from the soldier's authoritative stance. The change is presentation-only; Classic fallback and save format 4 remain unchanged.**
 
 
 ## Browser 2216 - Articulated AEGIS Soldier Models + Classic Toggle

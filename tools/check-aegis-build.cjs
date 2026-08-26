@@ -87,6 +87,11 @@ const required = [
   "INTELLIGENCE_GATED_FIELD_BEACON_SHIELD_OBJECTIVE_TEXT_PATCH",
   "tacticalBeaconShieldObjectiveTextIntelligenceGateContractTest",
   "Field Beacon objective text reveals shield doctrine only after observation",
+  "TACTICAL_ARTICULATED_SOLDIER_FACING_PIVOT_AND_ORIENTATION_AUTHORITY_PATCH",
+  "tacticalArticulatedSoldierFacingAngle",
+  "tacticalArticulatedSoldierFacingPivotContractTest",
+  "AEGIS articulated tactical facing pivot",
+  "Articulated soldier facing remains authoritative across walking and stance-correct aiming poses",
   "Modular source layout and engine-port prep contract is present",
   "Workshop production preserves destination base and equipment logistics summaries",
   "Base transfer logistics charge fees and cancel back to origin",
@@ -927,7 +932,7 @@ if (!html.includes('if(value===null||value===undefined||value==="")return TACTIC
 if (!html.includes('React.createElement(TacticalThreeIsoColorControl,{controlId:"start-tactical-three-iso-color"})') || !html.includes('React.createElement(TacticalThreeIsoColorControl,{controlId:"menu-tactical-three-iso-color"})') || !html.includes('controlId:"tactical-three-iso-color-live"')) {
   missing.push("3D Iso Color controls must remain available on the start screen, Save / Load screen, and live Iso toolbar");
 }
-if (!html.includes('tacticalThreePersistentApplyIsoColor(runtime,props)') || !html.includes('renderQuality,isoColor,isoNightBrightness,isoGroundMode,fitMap')) {
+if (!html.includes('tacticalThreePersistentApplyIsoColor(runtime,props)') || !html.includes('renderQuality,isoColor,isoNightBrightness,soldierModelStyle,isoGroundMode,fitMap')) {
   missing.push("3D Iso Color must update through the persistent renderer dynamic presentation path");
 }
 if (!html.includes('const TACTICAL_THREE_ISO_NIGHT_BRIGHTNESS_MIN=50;') || !html.includes('const TACTICAL_THREE_ISO_NIGHT_BRIGHTNESS_MAX=200;') || !html.includes('const TACTICAL_THREE_ISO_NIGHT_BRIGHTNESS_STEP=5;') || !html.includes('const TACTICAL_THREE_ISO_NIGHT_BRIGHTNESS_DEFAULT=100;')) {
@@ -939,7 +944,7 @@ if (!html.includes('if(value===null||value===undefined||value==="")return TACTIC
 if (!html.includes('React.createElement(TacticalThreeIsoNightBrightnessControl,{controlId:"start-tactical-three-iso-night-brightness"})') || !html.includes('React.createElement(TacticalThreeIsoNightBrightnessControl,{controlId:"menu-tactical-three-iso-night-brightness"})') || !html.includes('controlId:"tactical-three-iso-night-brightness-live"')) {
   missing.push("3D Iso Night Brightness controls must remain available on the start screen, Save / Load screen, and live Iso toolbar");
 }
-if (!html.includes('tacticalThreeIsoNightBrightnessPresentation(baseProfile,props.isoNightBrightness,phase,isoView)') || !html.includes('toneMappingExposure=profile.exposure') || !html.includes('runtime.tacticalLighting.ambient*profile.ambientScale') || !html.includes('isoColor,isoNightBrightness,isoGroundMode,fitMap')) {
+if (!html.includes('tacticalThreeIsoNightBrightnessPresentation(baseProfile,props.isoNightBrightness,phase,isoView)') || !html.includes('toneMappingExposure=profile.exposure') || !html.includes('runtime.tacticalLighting.ambient*profile.ambientScale') || !html.includes('isoColor,isoNightBrightness,soldierModelStyle,isoGroundMode,fitMap')) {
   missing.push("3D Iso Night Brightness must update only the persistent renderer night presentation path");
 }
 if (!html.includes('const isoFillLight=new THREE.AmbientLight(0x9fb7d5,0)') || !html.includes('runtime.isoFillLight.intensity=Number(profile.isoFillIntensity)||0')) {
@@ -1195,6 +1200,12 @@ if (!manifest.gameplayParity?.requiredSystems?.includes("patch-notes-history-sco
 }
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "patch-notes-history-scope-startup-hotfix" && entry?.reason)) {
   missing.push("browser-only patch-notes history scope startup hotfix must be recorded as a temporary gameplay parity exception");
+}
+if (!manifest.gameplayParity?.requiredSystems?.includes("articulated-soldier-facing-pivot-and-stance-aim-authority")) {
+  missing.push("browser/native parity must require articulated soldier facing-pivot and stance-aim authority");
+}
+if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "articulated-aegis-soldier-presentation" && entry?.reason)) {
+  missing.push("browser-only articulated AEGIS soldier presentation must be recorded as a temporary gameplay parity exception");
 }
 for (const system of [
   "save-load-patch-notes-version-history",

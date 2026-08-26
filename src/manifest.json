@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.25.2049_INTELLIGENCE_GATED_FIELD_BEACON_SHIELD_OBJECTIVE_TEXT_PATCH",
+  "currentBuild": "v0.26.08.26.0816_ARTICULATED_SOLDIER_FACING_PIVOT_AND_STANCE_AIM_AUTHORITY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "intelligence-gated-field-beacon-shield-objective-text-complete",
+  "status": "articulated-soldier-facing-pivot-and-stance-aim-authority-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.25.2049_INTELLIGENCE_GATED_FIELD_BEACON_SHIELD_OBJECTIVE_TEXT_PATCH",
+  "lastInspectedBuild": "v0.26.08.26.0816_ARTICULATED_SOLDIER_FACING_PIVOT_AND_STANCE_AIM_AUTHORITY_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.25.2049_INTELLIGENCE_GATED_FIELD_BEACON_SHIELD_OBJECTIVE_TEXT_PATCH",
+    "browserBuild": "v0.26.08.26.0816_ARTICULATED_SOLDIER_FACING_PIVOT_AND_STANCE_AIM_AUTHORITY_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -184,7 +184,11 @@
       "continuous-iso-ground-rendering-and-performance",
       "procedural-building-wall-connector-integrity",
       "tactical-world-continuation-terrain-skirt-and-horizon-scenery",
-      "intelligence-gated-field-beacon-shield-objective-text"
+      "intelligence-gated-field-beacon-shield-objective-text",
+      "articulated-aegis-soldier-models-and-classic-toggle",
+      "articulated-aegis-hand-anchored-rifle-and-approved-pose-set",
+      "articulated-standing-carry-walk-cycle",
+      "articulated-soldier-facing-pivot-and-stance-aim-authority"
     ],
     "temporaryExceptions": [
       {
@@ -502,6 +506,10 @@
       {
         "system": "intelligence-gated-field-beacon-shield-objective-text",
         "reason": "The browser now withholds beacon-field geometry and countermeasure guidance until AEGIS witnesses an interception or enters the field, then remembers the observed tier in the active tactical record. Native Godot requires equivalent intelligence-gated objective presentation."
+      },
+      {
+        "system": "articulated-aegis-soldier-presentation",
+        "reason": "The browser now provides player-authored articulated AEGIS poses, a right-wrist rifle chain, a Standing Carry gait, a Classic fallback, and separate tactical-facing versus pose-local pivots with stance-correct aiming. Native Godot requires an engine-native articulated presentation implementation."
       }
     ]
   }
