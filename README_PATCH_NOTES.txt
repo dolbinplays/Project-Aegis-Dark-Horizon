@@ -1,6 +1,65 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.25.2216_ARTICULATED_AEGIS_SOLDIER_MODELS_AND_CLASSIC_TOGGLE_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Adds a new lightweight articulated Three.js AEGIS soldier body with distinct feet, shins, thighs, torso, neck, head, upper arms, forearms, and hands, while preserving the complete previous soldier renderer as a player-selectable Classic option.
+
+ARTICULATED LOW-POLY BODY
+--------------------------
+- The Articulated presentation uses shared cached BoxGeometry, six-sided tapered CylinderGeometry, and low-segment SphereGeometry pieces connected by lightweight THREE.Group joint pivots rather than a skinned mesh or external model asset.
+- Visible body construction includes two feet, two shins, two thighs, torso, neck, head, two upper arms, two forearms, and two hands. The existing chest-plate, tactical helmet, and equipment-colored weapon presentation are integrated into the same hierarchy.
+- Geometry and materials are shared through the persistent renderer caches. Changing a pose rotates/repositions joints instead of rebuilding geometry. No new files under assets/ are required.
+
+POSE AUTHORITY
+--------------
+- Six reusable pose definitions are included: Standing Combat, Kneeling, Prone Alive, Prone Dead, Attention, and At Ease.
+- Existing tactical kneeling now bends the articulated legs and lowers the body rather than vertically squashing the entire soldier.
+- Ordinary lethal presentation retains the existing impact/collapse timing, then settles an articulated casualty into a distinct asymmetric prone-dead pose instead of rotating the complete standing model onto its side.
+- Prone Alive, Attention, and At Ease are available presentation poses for the planned prone/ceremonial/downtime systems without creating a second body model.
+
+CURRENT COLOR + APPEARANCE PARITY
+---------------------------------
+- Articulated soldiers consume the existing soldierVisualData authority rather than introducing a parallel appearance palette.
+- All six current skin tones are supported: #f2c7a5, #d79a6b, #b8754a, #8d5534, #5f3a2c, and #3b241f.
+- Current armor presentation remains equipment-driven: Field Suit blue (#2563eb / #1e40af), Ceramic Armor light gray/white (#d1d5db / #f8fafc), and Psi Weave violet (#7c3aed / #a78bfa).
+- Soldiers without equipped armor continue using their selected fatigues/undersuit color through the existing appearance system. Weapon colors remain ballistic slate, Laser cyan, or Plasma green through the existing equipment palette.
+- Lean, standard, and stocky appearance data continue affecting silhouette width. The articulated hierarchy is vertically calibrated to the established Classic soldier scale so soldiers remain proportionate beside doors, windows, cover, vehicles, Skyrangers, and other mission scenery.
+
+ARTICULATED / CLASSIC PLAYER TOGGLE
+-----------------------------------
+- The original Three.js AEGIS soldier construction remains intact as Classic. It is not deleted or silently migrated.
+- A new AEGIS Soldier Model control offers Articulated and Classic on the start screen, in Save / Load settings, and in the live 3D tactical toolbar.
+- Articulated is the default for new device preferences. The choice is stored locally on the device and never enters campaign or tactical save data.
+- Switching during an active tactical mission changes only AEGIS presentation nodes. Unit identity, location, facing, HP, TU, equipment, fog, AI, cover, objectives, and the persistent terrain/cover scene remain unchanged.
+
+VALIDATION
+----------
+- Embedded JavaScript syntax passes for every inline script.
+- Critical browser boot smoke passes with no page errors in the headless harness.
+- The Articulated/Classic control was exercised live in the browser harness: the default resolves to Articulated, switches to Classic, and switches back to Articulated without errors.
+- The new deterministic Build Health contract verifies all six pose definitions, all six skin-tone values, Field Suit/Ceramic/Psi colors, required body-part construction, scale authority, live model switching, Classic fallback, and unchanged save format 4.
+- Under the same headless full-suite harness, the uploaded 2049 baseline reports 509/561 while this build reports 511/562. The new articulated-model contract is the added deterministic pass; one existing randomized failed-mission fixture also happened to pass in this run, while no new failing test was introduced.
+- Save format remains 4. No assets changed.
+
+MANUAL TEST GATES
+-----------------
+1. Start a mission with soldiers using Field Suit, Ceramic Armor, Psi Weave, and no equipped armor; compare every skin tone and confirm colors match the Barracks/loadout identity.
+2. Toggle Articulated / Classic from the live tactical toolbar and confirm the same soldiers remain on the same cells with identical HP, TU, equipment, selection, facing, and mission state.
+3. Kneel and stand multiple soldiers in 3D Iso; confirm articulated joints pose correctly and the model remains centered and proportionate to doors, cars, cover, building interiors, and the Skyranger.
+4. Observe ordinary deaths and confirm the impact/collapse finishes into Prone Dead without the articulated model snapping back to a standing hierarchy.
+5. Exercise explicit Prone Alive, Attention, and At Ease presentation poses in diagnostics/future presentation hooks and confirm all limbs remain attached and weapons/helmets follow the body hierarchy.
+6. Switch through 3D Iso, FPV, TPV, roof cutaway, night brightness/color settings, and victory/death cinematics; confirm no model-style choice changes tactical authority or causes a terrain/cover rebuild.
+
+--------------------------------------------------------------------------------
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 Build: v0.26.08.25.2049_INTELLIGENCE_GATED_FIELD_BEACON_SHIELD_OBJECTIVE_TEXT_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE

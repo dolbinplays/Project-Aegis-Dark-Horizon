@@ -2,9 +2,50 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-25
-Current handoff build: `v0.26.08.25.2049_INTELLIGENCE_GATED_FIELD_BEACON_SHIELD_OBJECTIVE_TEXT_PATCH`
+Current handoff build: `v0.26.08.25.2216_ARTICULATED_AEGIS_SOLDIER_MODELS_AND_CLASSIC_TOGGLE_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 2049 intelligence-gates Field Beacon shield objective text. A confirmed beacon remains an immediate priority, but shield geometry, entry bypass, compatible weapons, and grenade guidance remain undisclosed until AEGIS witnesses an interception or enters that field. Observed tiers are remembered in the active tactical record; combat authority and save format 4 remain unchanged.**
+Current patch status: **Browser 2216 adds a player-selectable articulated low-poly AEGIS soldier presentation while preserving the complete previous Three.js figure as Classic. The new hierarchy supports standing, kneeling, prone alive/dead, attention, and at-ease poses; reuses all current skin, armor, fatigues, helmet, weapon, and body-width presentation authority; and remains scaled to existing tactical scenery. The model choice is device-local, can change live, and does not alter save format 4 or tactical rules.**
+
+
+## Browser 2216 - Articulated AEGIS Soldier Models + Classic Toggle
+
+**Status:** Implemented as an optional presentation upgrade over the existing Three.js AEGIS soldier. Classic remains fully available for direct visual/performance comparison and fallback.
+
+### Lightweight articulated body
+- AEGIS soldiers can now use a reusable low-poly hierarchy containing separate feet, shins, thighs, torso, neck, head, upper arms, forearms, and hands. Chest armor, tactical helmet, and the equipment-colored weapon remain attached to that same hierarchy.
+- The implementation uses cached boxes, six-sided tapered prisms/cylinders, and low-segment spheres plus ordinary `THREE.Group` pivots. It deliberately avoids skinning, bones, weight maps, morph targets, imported GLTF assets, per-frame geometry creation, or any new asset dependency.
+- Left/right hip, knee, ankle, shoulder, elbow, wrist, torso, neck/head, and weapon pivots make stance changes joint rotations rather than whole-model squash tricks. Geometry/material caches are shared between soldiers inside the persistent tactical renderer.
+
+### Six-pose presentation authority
+- **Standing Combat** is the ordinary tactical ready stance.
+- **Kneeling** is now a real one-knee articulated pose in the new model instead of scaling the entire unit vertically. Existing kneeling gameplay authority remains unchanged.
+- **Prone Alive** keeps the head/upper body and weapon raised for a future living-prone tactical state. It does not by itself implement prone gameplay rules.
+- **Prone Dead** is an asymmetric collapsed pose. Existing death timing keeps the persistent unit node through impact/collapse, then settles the articulated hierarchy instead of simply rotating a rigid standing figure onto its side.
+- **Attention** and **At Ease** are reusable non-combat/ceremonial presentation poses for future base, memorial, promotion, briefing, or formation scenes. Their existence does not add new campaign state.
+
+### Existing appearance, equipment, and scale authority
+- The model consumes `soldierVisualData(...)` directly. It therefore supports all six current skin tones and does not create a second skin-color database.
+- Field Suit retains blue armor/vest presentation, Ceramic Armor retains light gray/white, Psi Weave retains violet, and unarmored soldiers retain their selected fatigues/undersuit colors. Helmet color remains tied to the armor presentation and the weapon remains Ballistic/Laser/Plasma color-coded through the existing equipment rule.
+- Existing lean/standard/stocky appearance data continue influencing body width. A dedicated vertical calibration keeps the new helmeted figure within the established Classic tactical silhouette rather than making soldiers oversized beside doors, cover, land vehicles, interior floors, Skyranger geometry, or other mission scenery.
+
+### Player-selectable Classic fallback
+- The previous persistent Three.js soldier renderer remains intact as **Classic**. Articulated is a separate branch, not a destructive replacement.
+- **AEGIS Soldier Model** controls are available on the start screen, Save / Load settings, and the live tactical toolbar. **Articulated** is the default; **Classic** restores the prior figure immediately.
+- This is a device-local presentation preference. It does not enter campaign or active-tactical save data and therefore requires no save migration.
+- Live switching is part of the AEGIS unit presentation signature, so only affected soldier nodes are reconstructed. Terrain, continuous ground, buildings, roofs, cover, fog, camera state, objectives, and gameplay authority remain persistent.
+
+### Validation boundary
+- Embedded JavaScript syntax and critical browser boot smoke pass. The live menu control switches Articulated -> Classic -> Articulated without page errors.
+- A new deterministic Build Health contract requires all six pose definitions, six skin-tone authority, current Field/Ceramic/Psi palette values, bilateral articulated limbs, neck/head, body-scale consumption, model-option UI, live tactical wiring, Classic fallback, and save format 4.
+- In the same headless full-suite harness, the uploaded 2049 baseline reports **509/561** and Browser 2216 reports **511/562**. The articulated-model contract is the one new deterministic pass; an older randomized failed-mission fixture happened to change from red to green in that run, and there is no new regression attributable to this patch.
+- No files under `assets/` change. Manual field testing remains required for final aesthetic judgment, especially kneeling proportions, corpse pose readability, weapon alignment, night lighting, and comparison against scenery from close Iso/TPV angles.
+
+### Follow-on model roadmap
+1. After field testing, decide whether Articulated should permanently replace Classic or whether both remain supported as presentation preferences.
+2. Connect the already-authored Prone Alive pose only when prone receives explicit gameplay/TU/LOS/cover rules; do not infer those rules from presentation alone.
+3. Add inexpensive walk/run/fire/reload/melee/panic/wounded-limp joint animation on top of the same hierarchy rather than adding new body models.
+4. Use the same limb groups as presentation targets if/when localized injury effects are implemented, while keeping actual injury authority data-driven and separate from mesh state.
+5. Consider deterministic corpse-pose variants after the first field test so multiple casualties do not settle identically.
 
 
 ## Browser 1938 - Tactical World Continuation Terrain Skirt + Horizon Scenery
