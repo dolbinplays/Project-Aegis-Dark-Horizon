@@ -1,3 +1,16 @@
+# Build Update Addendum - v0.26.08.26.1238_RIGHT_HANDED_ARTICULATED_SOLDIERS_AND_VISIBLE_AIM_POSE_PATCH
+
+## Current Build Delta
+- The articulated AEGIS soldier is mirrored once across its local X axis so its named right shoulder, arm, wrist, and rifle chain now appear on the soldier's anatomical right side when facing forward.
+- The rifle remains attached to the right wrist and the left arm remains the supporting fore-end arm; no duplicate weapon or second pose library is introduced.
+- The mirror sits beneath the dedicated tactical-facing pivot, preserving all six authoritative map orientations from Browser 0816.
+- Standing Carry, Standing Aim, Kneeling Aim, Prone Aim, downed, ceremonial, victory, and walking presentations all receive the same correction while retaining their approved joint values.
+- The persistent 3D renderer now includes shot and shooter identity in unit-layer invalidation. A human shot therefore applies the correct articulated aiming pose instead of updating only the tracer/effect layer.
+- Aiming remains visible for at least 900 ms before shot cleanup restores the soldier's authoritative stance/carry pose, giving ordinary and accelerated AI playback enough time to paint readable aiming frames.
+- This is presentation-only. Firing authority, stance, accuracy, targeting, damage, movement, TU, pathfinding, LOS, AI, combat outcomes, and save format 4 remain unchanged.
+
+---
+
 # Build Update Addendum - v0.26.08.26.0816_ARTICULATED_SOLDIER_FACING_PIVOT_AND_STANCE_AIM_AUTHORITY_PATCH
 
 ## Current Build Delta
@@ -113,9 +126,9 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-26
-Current handoff build: `v0.26.08.26.0816_ARTICULATED_SOLDIER_FACING_PIVOT_AND_STANCE_AIM_AUTHORITY_PATCH`
+Current handoff build: `v0.26.08.26.1238_RIGHT_HANDED_ARTICULATED_SOLDIERS_AND_VISIBLE_AIM_POSE_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 0816 separates articulated tactical facing onto a dedicated parent pivot while approved poses and walking remain local to a child root. All six hex directions survive movement and pose resets, and firing now selects Standing Aim or Kneeling Aim from the soldier's authoritative stance. The change is presentation-only; Classic fallback and save format 4 remain unchanged.**
+Current patch status: **Browser 1238 mirrors the articulated soldier's local left/right presentation so the right-wrist rifle chain appears on the anatomical right side, and repairs persistent unit invalidation so live shots visibly apply Standing Aim, Kneeling Aim, or Prone Aim for at least 900 ms. The independent tactical-facing pivot, approved pose values, Classic fallback, tactical authority, and save format 4 remain unchanged.**
 
 
 ## Browser 2216 - Articulated AEGIS Soldier Models + Classic Toggle

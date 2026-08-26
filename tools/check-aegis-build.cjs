@@ -92,6 +92,15 @@ const required = [
   "tacticalArticulatedSoldierFacingPivotContractTest",
   "AEGIS articulated tactical facing pivot",
   "Articulated soldier facing remains authoritative across walking and stance-correct aiming poses",
+  "TACTICAL_ARTICULATED_SOLDIER_RIGHT_HANDED_PRESENTATION_PATCH",
+  "TACTICAL_ARTICULATED_SOLDIER_LOCAL_MIRROR_X",
+  "tacticalArticulatedSoldierRightHandedPresentationContractTest",
+  "Articulated AEGIS soldiers present the right-wrist weapon chain on their anatomical right side",
+  "TACTICAL_ARTICULATED_AIM_POSE_RENDER_LIFECYCLE_PATCH",
+  "TACTICAL_ARTICULATED_AIM_POSE_MIN_HOLD_MS",
+  "tacticalArticulatedAimPoseHoldMs",
+  "tacticalArticulatedAimPoseRenderLifecycleContractTest",
+  "Persistent 3D shot invalidation visibly applies and holds stance-correct articulated aiming poses",
   "Modular source layout and engine-port prep contract is present",
   "Workshop production preserves destination base and equipment logistics summaries",
   "Base transfer logistics charge fees and cancel back to origin",
@@ -1203,6 +1212,12 @@ if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system
 }
 if (!manifest.gameplayParity?.requiredSystems?.includes("articulated-soldier-facing-pivot-and-stance-aim-authority")) {
   missing.push("browser/native parity must require articulated soldier facing-pivot and stance-aim authority");
+}
+if (!manifest.gameplayParity?.requiredSystems?.includes("right-handed-articulated-soldier-presentation")) {
+  missing.push("browser/native parity must require right-handed articulated soldier presentation");
+}
+if (!manifest.gameplayParity?.requiredSystems?.includes("visible-articulated-aim-pose-render-lifecycle")) {
+  missing.push("browser/native parity must require the visible articulated aim-pose render lifecycle");
 }
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "articulated-aegis-soldier-presentation" && entry?.reason)) {
   missing.push("browser-only articulated AEGIS soldier presentation must be recorded as a temporary gameplay parity exception");

@@ -1,3 +1,30 @@
+BUILD: v0.26.08.26.1238_RIGHT_HANDED_ARTICULATED_SOLDIERS_AND_VISIBLE_AIM_POSE_PATCH
+TITLE: Right-Handed Articulated Soldiers + Visible Aim Pose
+DATE: August 26, 2026
+
+Summary
+- Mirrors the articulated soldier's local left/right presentation so the rifle and grip hand read on the anatomical right side, and repairs the persistent renderer lifecycle that prevented shot events from visibly applying the approved aiming poses.
+
+Key changes
+- Corrects the model-coordinate convention with one local X mirror beneath the independent tactical-facing pivot.
+- Keeps the rifle attached to the named right-wrist chain; the left arm continues to support the fore-end.
+- Applies consistently to Standing Carry, Standing Aim, Kneeling Aim, Prone Aim, downed, Attention, At Ease, Victory, and the Standing Carry walk cycle.
+- Preserves all approved player-authored joint and weapon transform values instead of maintaining a second mirrored pose library.
+- Keeps the six-direction tactical-facing pivot independent, so the handedness correction cannot alter map orientation.
+- Adds shot identity and shooter identity to the persistent unit-layer invalidation key. A shot now updates the soldier pose as well as the tracer/effect layer, then clearing the shot restores the authoritative carry or stance pose.
+- Holds the active aiming presentation for at least 900 ms so the browser has time to paint and the player can read the posture, including at accelerated AI playback speeds.
+- Standing shooters use Standing Aim, kneeling shooters use Kneeling Aim, and prone shooters retain Prone Aim.
+- Adds deterministic Build Health coverage for the mirrored anatomical side, right-wrist weapon ownership, shot-driven unit invalidation, minimum pose duration, stance-correct aiming, and save format 4.
+
+Compatibility
+- Presentation-only: no changes to firing authority, accuracy, targeting, damage, TU, movement, pathfinding, LOS, AI, or combat outcomes.
+- Standing shooters still use Standing Aim and kneeling shooters still use Kneeling Aim.
+- Classic soldiers and FPV weapon ownership are unchanged.
+- Save format remains 4.
+- No game assets changed.
+
+--------------------------------------------------------------------------------
+
 BUILD: v0.26.08.26.0816_ARTICULATED_SOLDIER_FACING_PIVOT_AND_STANCE_AIM_AUTHORITY_PATCH
 TITLE: Articulated Soldier Facing Pivot + Stance Aim Authority
 DATE: August 26, 2026
