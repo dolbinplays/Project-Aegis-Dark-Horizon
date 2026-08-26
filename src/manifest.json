@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.26.1238_RIGHT_HANDED_ARTICULATED_SOLDIERS_AND_VISIBLE_AIM_POSE_PATCH",
+  "currentBuild": "v0.26.08.26.1312_STANDING_AIM_ALIGNMENT_AND_SOLDIER_CYCLE_CAMERA_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "right-handed-articulated-soldiers-and-visible-aim-pose-complete",
+  "status": "standing-aim-alignment-and-soldier-cycle-camera-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.26.1238_RIGHT_HANDED_ARTICULATED_SOLDIERS_AND_VISIBLE_AIM_POSE_PATCH",
+  "lastInspectedBuild": "v0.26.08.26.1312_STANDING_AIM_ALIGNMENT_AND_SOLDIER_CYCLE_CAMERA_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.26.1238_RIGHT_HANDED_ARTICULATED_SOLDIERS_AND_VISIBLE_AIM_POSE_PATCH",
+    "browserBuild": "v0.26.08.26.1312_STANDING_AIM_ALIGNMENT_AND_SOLDIER_CYCLE_CAMERA_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -190,7 +190,9 @@
       "articulated-standing-carry-walk-cycle",
       "articulated-soldier-facing-pivot-and-stance-aim-authority",
       "right-handed-articulated-soldier-presentation",
-      "visible-articulated-aim-pose-render-lifecycle"
+      "visible-articulated-aim-pose-render-lifecycle",
+      "standing-aim-rightward-barrel-alignment",
+      "previous-next-soldier-camera-recenter"
     ],
     "temporaryExceptions": [
       {
@@ -511,7 +513,7 @@
       },
       {
         "system": "articulated-aegis-soldier-presentation",
-        "reason": "The browser now provides player-authored articulated AEGIS poses, an anatomically right-sided right-wrist rifle chain, a Standing Carry gait, a Classic fallback, separate tactical-facing versus pose-local pivots, and shot-driven persistent-renderer invalidation with a readable stance-correct aim hold. Native Godot requires an engine-native articulated presentation implementation."
+        "reason": "The browser now provides player-authored articulated AEGIS poses, an anatomically right-sided right-wrist rifle chain, a Standing Carry gait, a Classic fallback, separate tactical-facing versus pose-local pivots, shot-driven persistent-renderer invalidation with a readable stance-correct aim hold, and a runtime-only Standing Aim barrel-alignment correction. Native Godot requires an engine-native articulated presentation implementation."
       }
     ]
   }

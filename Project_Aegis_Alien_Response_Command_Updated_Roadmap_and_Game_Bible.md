@@ -1,3 +1,16 @@
+# Build Update Addendum - v0.26.08.26.1312_STANDING_AIM_ALIGNMENT_AND_SOLDIER_CYCLE_CAMERA_PATCH
+
+## Current Build Delta
+- Standing Aim now receives a runtime-local 90-degree rightward yaw so its rifle barrel aligns with the authoritative shot direction.
+- The correction is composed beneath the existing tactical-facing pivot. It cannot change the soldier's authoritative six-direction map facing, firing vector, selected target, LOS, accuracy, or damage.
+- The approved player-authored Standing Aim values remain intact in the pose library; Standing Carry, Kneeling Aim, Prone Aim, walking, downed, ceremonial, and victory presentation are unchanged.
+- Previous/Next Soldier and Hybrid Previous/Next Fire Team retain their existing selection rules. In 3D Iso, changing selection now clears stale manual pan and recenters the persistent camera on the selected unit; 2D Hex continues using its established selected-unit viewport center.
+- Fit Map remains a full-map presentation and cycling units does not unexpectedly change the player's zoom level.
+- Deterministic Build Health contracts cover the exact local yaw offset, facing/stance isolation, cycle-button selection, camera pan reset, selected-unit centering, and save format 4.
+- This patch changes presentation only. Tactical simulation, pathfinding, TU, fog, AI, mission state, and save data are unchanged.
+
+---
+
 # Build Update Addendum - v0.26.08.26.1238_RIGHT_HANDED_ARTICULATED_SOLDIERS_AND_VISIBLE_AIM_POSE_PATCH
 
 ## Current Build Delta
@@ -126,7 +139,7 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-26
-Current handoff build: `v0.26.08.26.1238_RIGHT_HANDED_ARTICULATED_SOLDIERS_AND_VISIBLE_AIM_POSE_PATCH`
+Current handoff build: `v0.26.08.26.1312_STANDING_AIM_ALIGNMENT_AND_SOLDIER_CYCLE_CAMERA_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
 Current patch status: **Browser 1238 mirrors the articulated soldier's local left/right presentation so the right-wrist rifle chain appears on the anatomical right side, and repairs persistent unit invalidation so live shots visibly apply Standing Aim, Kneeling Aim, or Prone Aim for at least 900 ms. The independent tactical-facing pivot, approved pose values, Classic fallback, tactical authority, and save format 4 remain unchanged.**
 

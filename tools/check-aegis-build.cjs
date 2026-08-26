@@ -101,6 +101,14 @@ const required = [
   "tacticalArticulatedAimPoseHoldMs",
   "tacticalArticulatedAimPoseRenderLifecycleContractTest",
   "Persistent 3D shot invalidation visibly applies and holds stance-correct articulated aiming poses",
+  "TACTICAL_ARTICULATED_STANDING_AIM_RIGHTWARD_BARREL_ALIGNMENT_PATCH",
+  "TACTICAL_ARTICULATED_STANDING_AIM_RIGHT_YAW_OFFSET",
+  "tacticalArticulatedSoldierRuntimeRootRotation",
+  "tacticalArticulatedStandingAimRightwardAlignmentContractTest",
+  "Standing Aim adds a local 90-degree rightward barrel-alignment yaw without changing tactical facing",
+  "TACTICAL_PREVIOUS_NEXT_SOLDIER_CAMERA_RECENTER_PATCH",
+  "tacticalPreviousNextSoldierCameraRecenterContractTest",
+  "Previous and Next Soldier selection clears Iso pan offset and recenters on the selected unit",
   "Modular source layout and engine-port prep contract is present",
   "Workshop production preserves destination base and equipment logistics summaries",
   "Base transfer logistics charge fees and cancel back to origin",
@@ -1218,6 +1226,12 @@ if (!manifest.gameplayParity?.requiredSystems?.includes("right-handed-articulate
 }
 if (!manifest.gameplayParity?.requiredSystems?.includes("visible-articulated-aim-pose-render-lifecycle")) {
   missing.push("browser/native parity must require the visible articulated aim-pose render lifecycle");
+}
+if (!manifest.gameplayParity?.requiredSystems?.includes("standing-aim-rightward-barrel-alignment")) {
+  missing.push("browser/native parity must require the standing-aim rightward barrel alignment");
+}
+if (!manifest.gameplayParity?.requiredSystems?.includes("previous-next-soldier-camera-recenter")) {
+  missing.push("browser/native parity must require previous/next soldier camera recentering");
 }
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "articulated-aegis-soldier-presentation" && entry?.reason)) {
   missing.push("browser-only articulated AEGIS soldier presentation must be recorded as a temporary gameplay parity exception");

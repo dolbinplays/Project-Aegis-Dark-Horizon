@@ -1,3 +1,28 @@
+BUILD: v0.26.08.26.1312_STANDING_AIM_ALIGNMENT_AND_SOLDIER_CYCLE_CAMERA_PATCH
+TITLE: Standing Aim Alignment + Soldier-Cycle Camera
+DATE: August 26, 2026
+
+Summary
+- Rotates only the runtime Standing Aim presentation 90 degrees to the right so the rifle barrel lines up with the shot direction, and recenters the tactical camera when the player cycles to the previous or next soldier/fire-team lead.
+
+Key changes
+- Adds a local +90-degree yaw to Standing Aim beneath the independent six-direction tactical-facing pivot.
+- Keeps the approved player-authored Standing Aim transform unchanged in the pose library; the barrel-alignment correction is a small runtime presentation layer.
+- Leaves Standing Carry, Kneeling Aim, Prone Aim, walking, downed, ceremonial, and victory transforms unchanged.
+- Previous/Next Soldier and Hybrid Previous/Next Fire Team retain their existing selection rules.
+- 3D Iso now clears stale manual camera pan when selection changes and centers on the newly selected unit.
+- 2D Hex continues to derive its viewport center directly from the selected soldier, so cycling selection recenters it through the established camera path.
+- Fit Map stays a full-map view and does not force a zoom change when the selected unit is already visible.
+- Adds deterministic Build Health coverage for the exact 90-degree local yaw, facing-pivot isolation, stance isolation, soldier/fire-team cycling, selected-unit centering, and 3D pan reset.
+
+Compatibility
+- Presentation-only: firing vectors, shot destination, LOS, accuracy, targeting, damage, movement, TU, pathfinding, fog, AI, and tactical outcomes are unchanged.
+- Approved authored pose data remains unchanged.
+- Save format remains 4.
+- No game assets changed.
+
+--------------------------------------------------------------------------------
+
 BUILD: v0.26.08.26.1238_RIGHT_HANDED_ARTICULATED_SOLDIERS_AND_VISIBLE_AIM_POSE_PATCH
 TITLE: Right-Handed Articulated Soldiers + Visible Aim Pose
 DATE: August 26, 2026
