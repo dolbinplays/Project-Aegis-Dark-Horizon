@@ -2,9 +2,33 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-25
-Current handoff build: `v0.26.08.25.1855_PROCEDURAL_BUILDING_WALL_CONNECTOR_INTEGRITY_PATCH`
+Current handoff build: `v0.26.08.25.1938_TACTICAL_WORLD_CONTINUATION_TERRAIN_SKIRT_AND_HORIZON_SCENERY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1855 restores continuous procedural building walls across current and loaded tactical states by separating structural connector indexing from general cover/effect lookup, recovering missing ownership from authoritative building plans, and assigning mixed wall/partition joins to a renderer that can draw them. Doors, breaches, unrelated buildings, fog authority, Continuous Ground, tactical rules, and save format 4 remain intact. Browser 1443 Continuous Ground remains the permanent 3D Iso direction.**
+Current patch status: **Browser 1938 extends the permanent Continuous Ground presentation beyond the playable battlefield with a persistent biome-matched terrain skirt, deterministic boundary-feature continuations, world-fixed low-detail scenery, and a map-sized instanced far backdrop. The extension has no tactical authority, picking, collision, LOS, fog knowledge, AI, or save data. Playable edge rings, dynamic tactical layers, FPV/TPV ground, and save format 4 remain intact.**
+
+
+## Browser 1938 - Tactical World Continuation Terrain Skirt + Horizon Scenery
+
+**Status:** Implemented as a non-interactive presentation extension, not playable-map expansion.
+
+### Implemented presentation
+- One persistent world-fixed, biome-matched terrain skirt now surrounds the authoritative battlefield. It has no hex authority, collision, picking, pathfinding, LOS, fog knowledge, AI, cover, hazards, objectives, or save authority.
+- The cached skirt samples real boundary cells and paints narrowing outward continuations for roads, sidewalks, rivers/streams, dirt paths, farmland rows, concrete, and utility corridors. Features simplify and dissolve into a baked atmospheric falloff instead of ending at the tactical edge.
+- Nearby seeded extension scenery remains world-fixed for correct parallax. Far skyline, mountain, settlement, and forest masses remain camera-centered inside the atmosphere shell so they read as genuinely distant scenery.
+- The old collection of separately allocated distant boxes/cones is consolidated into at most two instanced geometry batches plus one haze cylinder. Its radius derives from the actual 64x64, 80x80, or 96x96 world bounds rather than fixed Small-map distances.
+- Regional city, town, farm, forest, arid, tundra, and mountain profiles drive skirt color, feature continuation, scenery density, silhouettes, and haze without adding tactical content.
+- The restrained tactical perimeter rings remain visible above the environmental continuation so legal cells are still unmistakable.
+
+### Performance and lifecycle boundary
+- Iso adds one skirt draw plus one instanced near-scenery draw. FPV/TPV can additionally enable the two far-scene batches and haze, keeping the complete extension within the planned 3-5 draw-call range depending on view and regional profile.
+- The ground texture is cached with the persistent terrain scene. Camera movement, zoom, rotation, selection, fog changes, soldier movement, targeting, and AI playback do not rebuild it; terrain-scene invalidation owns disposal and regeneration.
+- No dynamic shadows, local lights, collision meshes, per-frame geometry builds, or additional animation timers were added. Distant traffic, birds, smoke, tower lights, and other ambient motion remain deferred until the static extension has wider field testing.
+- FPV/TPV retain their established continuous battlefield floor. The new skirt and distant scenery sit outside that ground authority and do not change camera transitions or tactical outcomes.
+
+### Validation
+- Twelve deterministic Build Health contracts cover map-size-aware bounds, authoritative-edge sampling, presentation-only state, no tactical mutation, no picking registration, cached lifecycle, feature continuation, instancing, map-sized backdrop radii, persistent edge readability, Iso/FPV/TPV compatibility, and save format 4.
+- Repeated fresh-campaign browser runs report **513-514/560** passing. All twelve new contracts pass consistently; one pre-existing randomized failed-mission fixture accounts for the 46/47-failure variation, while the remaining debt is unrelated geoscape, AI, visibility, mission-result, and presentation coverage.
+- Embedded JavaScript syntax and whitespace validation pass. Save format remains **4**, and no files under `assets/` changed.
 
 
 ## Browser 1855 - Procedural Building Wall Connector Integrity

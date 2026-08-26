@@ -1,6 +1,36 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.25.1938_TACTICAL_WORLD_CONTINUATION_TERRAIN_SKIRT_AND_HORIZON_SCENERY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Makes tactical battlefields appear to continue into a larger surrounding world by adding a persistent biome-matched terrain skirt, deterministic road/water/path continuations, sparse world-fixed scenery, and a map-sized instanced horizon backdrop without expanding the playable hex map.
+
+WORLD CONTINUATION PRESENTATION
+-------------------------------
+- A cached continuous plane now extends beyond the authoritative battlefield and blends regional terrain toward the atmospheric horizon. It is visual only: no cells, collision, pathfinding, TU, LOS, fog knowledge, cover, hazards, targeting, AI, objectives, or save state are added.
+- Real boundary cells are sampled once when terrain is built. Roads, sidewalks, streams, dirt paths, field rows, concrete, and utility corridors continue outward, taper, simplify, and dissolve instead of ending abruptly at the last playable hex.
+- Seeded low-detail scenery near the map remains world-fixed for useful parallax. Distant settlement, forest, mountain, farm, arid, and tundra silhouettes remain camera-centered inside the existing sky shell.
+- The playable perimeter rings remain independently visible so the legal tactical boundary is still clear.
+
+PERSISTENT BATCHING + LIFECYCLE
+-------------------------------
+- Iso adds one cached skirt draw and one instanced near-scenery draw. FPV/TPV may add two far-scene instance batches and one haze draw, keeping the complete extension within 3-5 added draw calls depending on view/profile.
+- The former many-object perspective backdrop is consolidated into instanced box/cone batches and now scales from real 64x64, 80x80, and 96x96 world bounds rather than fixed Small-map distances.
+- Camera movement, rotation, zoom, selection, fog updates, soldier movement, targeting, and AI playback do not rebuild the skirt texture or static scenery.
+- No shadows, tactical lights, collision meshes, extra animation timers, or dynamic ambient traffic were added.
+
+VALIDATION
+----------
+- Twelve deterministic Build Health contracts cover all three map sizes, boundary sampling, presentation-only authority, no picking, cached invalidation, feature continuation, controlled instancing/draw counts, horizon sizing, edge readability, Iso/FPV/TPV compatibility, and unchanged save format 4.
+- Repeated fresh-campaign browser runs report 513-514/560 passing. Every new continuation contract passes consistently; one pre-existing randomized failed-mission fixture accounts for the 46/47 unrelated historical-failure variation.
+- Embedded JavaScript and whitespace checks pass. No files under assets/ changed.
+
+--------------------------------------------------------------------------------
+
 Build: v0.26.08.25.1855_PROCEDURAL_BUILDING_WALL_CONNECTOR_INTEGRITY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
