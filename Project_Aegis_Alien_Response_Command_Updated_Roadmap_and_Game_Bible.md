@@ -2,14 +2,40 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-25
-Current handoff build: `v0.26.08.25.1443_CONTINUOUS_ISO_GROUND_RENDERING_AND_PERFORMANCE_PATCH`
+Current handoff build: `v0.26.08.25.1855_PROCEDURAL_BUILDING_WALL_CONNECTOR_INTEGRITY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1443 makes cached Continuous Ground the default 3D Iso base-terrain renderer. Exact plane-to-authoritative-hex picking, persistent texture caching, bounded destruction redraws, a presentation-only Legacy comparison toggle, live diagnostics, and thirteen Build Health contracts preserve tactical authority while deterministic 64/80/96 tests reduce ground-path submission cost by 75-81%. Save format 4 is unchanged. Browser 1335 reinforcement continuity and all existing tactical behavior remain intact.**
+Current patch status: **Browser 1855 restores continuous procedural building walls across current and loaded tactical states by separating structural connector indexing from general cover/effect lookup, recovering missing ownership from authoritative building plans, and assigning mixed wall/partition joins to a renderer that can draw them. Doors, breaches, unrelated buildings, fog authority, Continuous Ground, tactical rules, and save format 4 remain intact. Browser 1443 Continuous Ground remains the permanent 3D Iso direction.**
+
+
+## Browser 1855 - Procedural Building Wall Connector Integrity
+
+**Status:** Implemented from the confirmed player-reported disconnected-wall regression.
+
+### Corrected causes
+- Both tactical 3D presentation paths now build a dedicated index containing only living hard wall, window, and partition records. A later smoke, fire, hazard, or other record sharing the cell can no longer replace the structural neighbor used to create the visual bridge.
+- Modern records use their stable `buildingId`. Loaded/older structural records missing that metadata recover presentation ownership from the authoritative procedural building footprint before falling back to their saved building label.
+- A wall/window renderer owns a mixed wall-to-partition connector regardless of lexical cell order. This prevents the only bridge from being assigned to a partition branch that does not render structural connectors.
+- Connector generation requires both cells to be revealed but no longer depends on general-cover map ordering. Persistent cover invalidation rebuilds the corrected index with the structural scene.
+
+### Preserved boundaries
+- Door cells remain deliberate openings, breached/destroyed walls remain open rubble, and neighboring structures with different ownership remain separate.
+- Continuous Ground remains the production-standard 3D Iso ground presentation. Buildings are still an independent layer, and the connector repair is shared with the temporary Legacy comparison mode.
+- Collision, pathfinding, TU, LOS, cover, damage, fog knowledge, roof cutaway authority, AI, objectives, and save data are unchanged.
+
+### Validation
+- The original continuous-wall/breach contract and the new generated/loaded connector-integrity contract both pass in the live browser.
+- The new fixture covers current generated records, plan-based legacy recovery, same-cell effect overlays, unrelated adjacent structures, wall-to-partition ownership, door gaps, and breached gaps.
+- Full Build Health advances from 500/547 to **501/548**: one new passing contract and the same 47 unrelated historical failures. Save format remains **4**.
 
 
 ## Browser 1443 - Continuous 3D Iso Ground Rendering + Performance
 
-**Status:** Implemented; Continuous Ground is the player-facing default and Legacy Hex Ground remains a temporary diagnostic presentation path.
+**Status:** Implemented and adopted as the permanent 3D Iso ground-rendering direction. Legacy Hex Ground remains only as a temporary diagnostic presentation path.
+
+### Permanent renderer decision
+- Continuous Ground is the production standard for 3D Iso going forward. New terrain presentation, biome detail, destruction, lighting compatibility, and performance work should extend the cached continuous-surface architecture rather than add features to the legacy ground-instance path.
+- The tactical simulation remains hex-authoritative. This permanent presentation decision does not relax the existing movement, picking, LOS, fog, cover, hazard, targeting, AI, or save-data contracts.
+- Legacy Hex Ground receives regression fixes only while the comparison toggle remains available. Remove that path and its retained ground instances after a final field-regression period confirms Continuous Ground across representative biomes, map sizes, lighting conditions, building interiors, alien bases, and tactical control modes.
 
 ### Rendering boundary
 - The persistent Three.js Iso renderer now presents ordinary base terrain through one world-aligned plane and one cached Iso-specific CanvasTexture instead of keeping 4,096, 6,400, or 9,216 visible ground cells on Small, Medium, or Large maps.
@@ -36,7 +62,7 @@ Current patch status: **Browser 1443 makes cached Continuous Ground the default 
 ### Follow-up renderer roadmap
 - Consider adaptive higher-resolution terrain textures only if live zoom testing demonstrates a readability need.
 - Profile chunked texture uploads for large destruction events, distance-dependent hex-grid treatment, GPU texture atlasing, and further static-scene batching independently before adoption.
-- Remove the Legacy presentation path after sufficient field regression coverage confirms no interaction or visual dependency remains.
+- Retire the Legacy presentation path after the final field-regression gate; it is no longer an alternative production direction.
 
 
 ## Browser 1335 - Reinforcement Deployment Continuity Hardening

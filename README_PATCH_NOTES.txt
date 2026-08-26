@@ -1,6 +1,37 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.25.1855_PROCEDURAL_BUILDING_WALL_CONNECTOR_INTEGRITY_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Restores continuous 3D building walls in generated and loaded tactical states where missing ownership metadata, same-cell effects, or mixed wall/partition records could leave intact perimeter sections looking like disconnected slabs.
+
+STRUCTURAL CONNECTOR AUTHORITY
+------------------------------
+- Both 3D render paths now build a dedicated index containing only intact hard wall, window, and partition records. Smoke, fire, hazards, or another later cover record sharing the cell can no longer hide the structural neighbor used to build a wall bridge.
+- Current records retain their stable building ID. Older/loaded records without it recover presentation ownership from the authoritative procedural building footprint, then use the saved building label only as a final compatibility fallback.
+- Connection ownership prefers a wall/window renderer when paired with a partition. Lexical cell order can no longer assign the only bridge to a partition presentation branch that does not draw connectors.
+- Continuous Ground remains the permanent Iso ground direction. The same structural fix also applies to diagnostic Legacy Hex Ground because buildings remain an independent presentation layer.
+
+INTENTIONAL OPENINGS
+--------------------
+- Door cells remain open because they have no structural cover record.
+- Destroyed walls and breached rubble remain disconnected and traversable.
+- Adjacent walls belonging to different buildings are never joined.
+- A connector appears only after both of its intact structural cells are revealed, preserving fog authority.
+
+VALIDATION
+----------
+- Live browser Build Health reports the original continuous-wall contract and the new generated/loaded connector-integrity contract as OK.
+- The new deterministic contract covers authoritative-plan recovery, same-cell overlay collisions, unrelated neighboring buildings, wall-to-partition ownership, door gaps, and breached gaps.
+- Build Health moved from 500/547 to 501/548: one new passing contract with the same 47 unrelated historical failures.
+- Embedded JavaScript, release seams, and whitespace checks pass. Save format remains 4 and assets are unchanged.
+
+--------------------------------------------------------------------------------
+
 Build: v0.26.08.25.1443_CONTINUOUS_ISO_GROUND_RENDERING_AND_PERFORMANCE_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
