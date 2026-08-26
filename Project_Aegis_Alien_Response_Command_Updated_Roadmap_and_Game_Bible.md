@@ -1,3 +1,17 @@
+# Build Update Addendum — v0.26.08.26.0046_ARTICULATED_STANDING_CARRY_WALK_CYCLE_PATCH
+
+## Current Build Delta
+- Articulated AEGIS soldiers now have a lightweight procedural walking cycle derived from the approved Standing Carry pose.
+- Walking alternates hip, knee, and ankle motion while applying restrained root bob, side-to-side weight transfer, torso counter-sway, and neck compensation.
+- The approved Standing Carry arm and rifle transforms remain authoritative during movement; the gait layers underneath them rather than replacing the player-authored pose.
+- The cycle is presentation-only and activates only while a living articulated human soldier is moving while standing. Kneeling, prone, firing, victory, downed, Attention, and At Ease presentations retain their authored pose authority.
+- Ending movement restores the exact Standing Carry pose, preventing procedural offsets from accumulating or leaking into later actions.
+- The persistent Three.js animation loop now recognizes ordinary tactical movement as an active presentation state, including Iso and TPV observation.
+- Build Health includes deterministic checks for opposite gait phases, knee recovery, limb animation wiring, subtle weight shift/bob, and renderer lifecycle integration.
+- Save format remains 4 and no gameplay movement/pathing/LOS/AI authority changed.
+
+---
+
 # Build Update Addendum — v0.26.08.26.0033_APPROVED_ARTICULATED_POSE_SET_PATCH
 
 ## Current Build Delta

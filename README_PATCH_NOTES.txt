@@ -1,3 +1,31 @@
+BUILD: v0.26.08.26.0046_ARTICULATED_STANDING_CARRY_WALK_CYCLE_PATCH
+TITLE: Articulated Standing Carry Walk Cycle
+DATE: August 26, 2026
+
+Summary
+- Adds a basic procedural walking animation to articulated AEGIS soldiers, using the approved player-authored Standing Carry pose as the immutable base posture.
+
+Key changes
+- Alternating left/right hip swing while walking.
+- Knee flexion rises on the recovering leg so the gait does not read as rigid sliding.
+- Ankles counter the leg swing for a more planted step.
+- Adds a small vertical bob and lateral weight shift through the articulated root.
+- Adds subtle torso and neck counter-motion while keeping the approved Standing Carry arm/rifle relationship intact.
+- Walk animation runs only for living articulated human soldiers moving in the normal standing posture.
+- Firing, kneeling, prone, victory, death/unconscious, Attention, and At Ease continue to use their approved authored poses rather than the walk cycle.
+- When movement ends, the model is restored exactly to the approved Standing Carry values.
+- Renderer animation lifecycle now remains active during tactical movement so Iso/TPV observers can see the gait instead of a static model sliding between cells.
+- Added deterministic Build Health coverage for gait phase, alternating knee lift, movement-state wiring, weight shift/bob, and animation lifecycle.
+
+Compatibility
+- Presentation-only: no changes to movement speed, TU costs, pathfinding, collision, LOS, combat timing, or AI.
+- Approved pose values remain unchanged.
+- Single FPV-style articulated rifle and Classic fallback remain unchanged.
+- Save format remains 4.
+- No game assets changed.
+
+--------------------------------------------------------------------------------
+
 BUILD: v0.26.08.26.0033_APPROVED_ARTICULATED_POSE_SET_PATCH
 TITLE: Approved Articulated AEGIS Pose Set
 DATE: August 26, 2026
