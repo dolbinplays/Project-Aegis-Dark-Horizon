@@ -1,3 +1,25 @@
+BUILD: v0.26.08.25.2249_ARTICULATED_AEGIS_WEAPON_HANDLING_AND_POSE_POLISH_PATCH
+TITLE: Articulated AEGIS Weapon Handling + Pose Polish
+DATE: August 25, 2026
+
+Summary
+- Refines the articulated AEGIS soldier so rifles are held more naturally from the shoulders, hands, and forearms instead of appearing to emerge from the center of the chest.
+
+Key changes
+- Standing articulated pose now carries the rifle diagonally across the chest in a more believable ready-carry posture.
+- Kneeling articulated pose now shoulders the rifle more like a deliberate kneeling firing stance.
+- Prone alive articulated pose now aligns the rifle and arms more like a low supported prone firing posture.
+- Prone dead articulated pose now sprawls asymmetrically in a more believable unconscious/death presentation, with the weapon dropped away from the torso centerline.
+- Attention and At Ease ceremonial poses were also refined so the rifle reads better in non-combat presentation states.
+- Added wrist-aware articulated pose application while preserving the current skin-tone, armor-color, and Classic fallback authority.
+
+Regression notes
+- No save-format change. Save format remains 4.
+- No assets added or changed.
+- Classic soldier presentation remains available through the AEGIS Soldier Model toggle.
+
+--------------------------------------------------------------------------------
+
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 

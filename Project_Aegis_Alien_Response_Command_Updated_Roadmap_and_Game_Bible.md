@@ -1,3 +1,15 @@
+# Build Update Addendum — v0.26.08.25.2249_ARTICULATED_AEGIS_WEAPON_HANDLING_AND_POSE_POLISH_PATCH
+
+## Current Build Delta
+- Refined the new articulated AEGIS soldier presentation so rifles no longer read as chest-mounted.
+- Standing now uses a more natural cross-body carry posture.
+- Kneeling and prone alive now use more deliberate shouldered aiming posture language.
+- Prone dead now settles into a more believable sprawled unconscious/death silhouette.
+- Attention / At Ease ceremonial poses now better support future victory/base presentation.
+- The Classic / Articulated toggle, all current armor colors, all current skin tones, and current scale envelope remain intact.
+
+---
+
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
