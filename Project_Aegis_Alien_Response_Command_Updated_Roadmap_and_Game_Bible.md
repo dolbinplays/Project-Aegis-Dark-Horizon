@@ -2,9 +2,9 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-25
-Current handoff build: `v0.26.08.25.1938_TACTICAL_WORLD_CONTINUATION_TERRAIN_SKIRT_AND_HORIZON_SCENERY_PATCH`
+Current handoff build: `v0.26.08.25.2049_INTELLIGENCE_GATED_FIELD_BEACON_SHIELD_OBJECTIVE_TEXT_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1938 extends the permanent Continuous Ground presentation beyond the playable battlefield with a persistent biome-matched terrain skirt, deterministic boundary-feature continuations, world-fixed low-detail scenery, and a map-sized instanced far backdrop. The extension has no tactical authority, picking, collision, LOS, fog knowledge, AI, or save data. Playable edge rings, dynamic tactical layers, FPV/TPV ground, and save format 4 remain intact.**
+Current patch status: **Browser 2049 intelligence-gates Field Beacon shield objective text. A confirmed beacon remains an immediate priority, but shield geometry, entry bypass, compatible weapons, and grenade guidance remain undisclosed until AEGIS witnesses an interception or enters that field. Observed tiers are remembered in the active tactical record; combat authority and save format 4 remain unchanged.**
 
 
 ## Browser 1938 - Tactical World Continuation Terrain Skirt + Horizon Scenery
@@ -29,6 +29,28 @@ Current patch status: **Browser 1938 extends the permanent Continuous Ground pre
 - Twelve deterministic Build Health contracts cover map-size-aware bounds, authoritative-edge sampling, presentation-only state, no tactical mutation, no picking registration, cached lifecycle, feature continuation, instancing, map-sized backdrop radii, persistent edge readability, Iso/FPV/TPV compatibility, and save format 4.
 - Repeated fresh-campaign browser runs report **513-514/560** passing. All twelve new contracts pass consistently; one pre-existing randomized failed-mission fixture accounts for the 46/47-failure variation, while the remaining debt is unrelated geoscape, AI, visibility, mission-result, and presentation coverage.
 - Embedded JavaScript syntax and whitespace validation pass. Save format remains **4**, and no files under `assets/` changed.
+
+
+## Browser 2049 - Intelligence-Gated Field Beacon Shield Objective Text
+
+**Status:** Implemented correction preventing the tactical objective panel from revealing an undiscovered alien defense.
+
+- The first confirmed **Reinforcement Source - Field Beacon** objective must identify the device as an immediate investigation and neutralization priority without mentioning a shield, its seven-hex footprint, field-entry bypass, compatible external weapons, or Frag Grenades before AEGIS has observed or researched those facts.
+- Before shield knowledge exists, use knowledge-limited language such as: **Secure the Beacon: investigate and neutralize the confirmed Alien Field Beacon (72/72 HP). Defensive properties unknown.** The device remains an immediate priority because its reinforcement role is known; the interface must not explain an unobserved countermeasure.
+- Merely seeing a beacon does not reveal shield doctrine. Shield knowledge becomes available only after an AEGIS observer witnesses the field activate or intercept an attack, personnel encounter the field boundary, or research/intelligence explicitly establishes its behavior.
+- Once the relevant shield behavior has been observed, the objective panel may expand to the current detailed guidance: enter the seven-hex field to bypass it, or use a demonstrated externally compatible weapon or Frag Grenade. Guidance must expose only the shield tier and countermeasures AEGIS has actually learned.
+- A kinetic-field observation must not prematurely disclose a later combined kinetic/energy shield. Each defensive tier and its countermeasures remain independently intelligence-gated.
+- The revealed doctrine should persist through the existing campaign intelligence/Mainframe authority and survive save/load. A fresh campaign must not inherit shield knowledge from local presentation preferences or another campaign.
+- Simulation and Hybrid AI may continue using only knowledge legitimately available to AEGIS. Objective wording cannot grant artificial AI awareness, reveal a hidden beacon, or silently unlock a shield-breach tactic before its discovery event.
+
+### Implemented validation
+1. Start a campaign with no shield intelligence and reveal a shielded beacon; confirm the objective text contains no shield size, bypass, weapon, or grenade spoiler before the first valid observation.
+2. Witness a shield interception or field encounter and confirm the objective updates after the observation presentation completes.
+3. Confirm kinetic knowledge does not reveal combined-shield behavior, then observe/research the combined field and verify only then that its guidance appears.
+4. Save and reload before and after discovery; confirm campaign knowledge persists only in the post-discovery save and remains isolated from other campaigns.
+5. Confirm fog, AI knowledge, targeting, shield authority, TU, damage, mission priority, and save compatibility remain otherwise unchanged.
+
+The deterministic contract covers spoiler-free pre-observation language, attack interception, field entry, remembered active-battle discovery, independent kinetic/combined knowledge, known-field no-breach guidance, report-intelligence normalization, and unchanged save format 4. Campaign-wide Mainframe presentation of previously observed tiers remains a separate future intelligence-library enhancement; this patch preserves discovery across movement and active-battle save/load without adding a save schema.
 
 
 ## Browser 1855 - Procedural Building Wall Connector Integrity

@@ -1,6 +1,29 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+Build: v0.26.08.25.2049_INTELLIGENCE_GATED_FIELD_BEACON_SHIELD_OBJECTIVE_TEXT_PATCH
+Save format: 4 (unchanged)
+Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
+
+SUMMARY
+-------
+Prevents the Field Beacon objective panel from revealing shield geometry and countermeasures before AEGIS personnel actually encounter that alien defense.
+
+INTELLIGENCE-GATED GUIDANCE
+---------------------------
+- A newly confirmed shielded beacon now reports: "Secure the Beacon: investigate and neutralize the confirmed Alien Field Beacon. Defensive properties unknown."
+- The initial text no longer reveals the seven-hex footprint, field-entry bypass, compatible weapons, or Frag Grenades.
+- An intercepted attack or a living AEGIS soldier entering the field records the observed shield tier on the active beacon. The detailed kinetic or combined-field doctrine then appears and remains available after soldiers move away or the active battle is saved and loaded.
+- Kinetic-field knowledge does not reveal later combined kinetic-energy behavior. No-breach withdrawal advice is also withheld until AEGIS understands the field.
+
+PRESERVED AUTHORITY + VALIDATION
+--------------------------------
+- Shield blocking, damage, targeting, AI behavior, fog, TU, mission priority, completion logic, and save format 4 are unchanged.
+- One deterministic Build Health contract covers spoiler-free text, interception and entry observations, remembered discovery, tier isolation, known-field no-breach guidance, and report-intelligence normalization.
+- Embedded JavaScript, release seams, manifest parity, and whitespace checks pass. No files under assets/ changed.
+
+--------------------------------------------------------------------------------
+
 Build: v0.26.08.25.1938_TACTICAL_WORLD_CONTINUATION_TERRAIN_SKIRT_AND_HORIZON_SCENERY_PATCH
 Save format: 4 (unchanged)
 Native Godot parity: still v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE
