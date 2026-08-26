@@ -109,6 +109,11 @@ const required = [
   "TACTICAL_PREVIOUS_NEXT_SOLDIER_CAMERA_RECENTER_PATCH",
   "tacticalPreviousNextSoldierCameraRecenterContractTest",
   "Previous and Next Soldier selection clears Iso pan offset and recenters on the selected unit",
+  "TACTICAL_ARTICULATED_WEAPON_EQUIPMENT_ATTACHMENT_PARITY_PATCH",
+  "TACTICAL_ARTICULATED_WEAPON_MUZZLE_LOCAL_Z",
+  "tacticalThreePersistentArticulatedMuzzleWorldPosition",
+  "tacticalArticulatedWeaponEquipmentAttachmentParityContractTest",
+  "Articulated rifle muzzle and weapon light inherit the right-wrist pose without legacy duplicate equipment",
   "Modular source layout and engine-port prep contract is present",
   "Workshop production preserves destination base and equipment logistics summaries",
   "Base transfer logistics charge fees and cancel back to origin",
@@ -1232,6 +1237,9 @@ if (!manifest.gameplayParity?.requiredSystems?.includes("standing-aim-rightward-
 }
 if (!manifest.gameplayParity?.requiredSystems?.includes("previous-next-soldier-camera-recenter")) {
   missing.push("browser/native parity must require previous/next soldier camera recentering");
+}
+if (!manifest.gameplayParity?.requiredSystems?.includes("articulated-weapon-light-and-muzzle-attachment-parity")) {
+  missing.push("browser/native parity must require articulated weapon-light and muzzle attachment parity");
 }
 if (!manifest.gameplayParity?.temporaryExceptions?.some((entry) => entry?.system === "articulated-aegis-soldier-presentation" && entry?.reason)) {
   missing.push("browser-only articulated AEGIS soldier presentation must be recorded as a temporary gameplay parity exception");

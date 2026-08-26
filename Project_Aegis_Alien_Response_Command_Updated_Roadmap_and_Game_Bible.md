@@ -1,3 +1,18 @@
+# Build Update Addendum - v0.26.08.26.1628_ARTICULATED_WEAPON_LIGHT_AND_MUZZLE_ATTACHMENT_PARITY_PATCH
+
+## Current Build Delta
+- The articulated rifle's flashlight housing, spotlight, spotlight target, and muzzle socket now live beneath the right-wrist weapon rig rather than using root-level directional offsets.
+- The muzzle socket remains available for firing presentation, while the light-specific subtree is created only when the soldier has enabled the weapon light.
+- Weapon-light geometry and beam direction inherit the full right-wrist chain, approved pose, runtime Standing Aim alignment, procedural walking motion, and authoritative tactical-facing pivot.
+- Articulated shot tracers begin at the transformed rendered muzzle socket when available. Classic soldiers, aliens, and unavailable rendered shooters keep the established cell-center fallback.
+- The legacy root-level flashlight branch is excluded for articulated soldiers, preventing a duplicate housing or spotlight while preserving the Classic path.
+- The flashlight housing uses the articulated shared-geometry cache, retaining persistent-renderer allocation discipline.
+- Visual light intensity and range remain 1.55 and 14 renderer units. Tactical illuminated hexes, LOS, darkness accuracy, fog, targeting, AI knowledge, and all other simulation authority are unchanged.
+- Weapon, armor, vest, and skin colors, single-rifle ownership, FPV weapon ownership, Classic fallback, and save format 4 remain unchanged.
+- Deterministic Build Health coverage checks right-wrist ownership, equipment hierarchy, transformed muzzle lookup, duplicate prevention, Classic fallback, facing isolation, and save compatibility.
+
+---
+
 # Build Update Addendum - v0.26.08.26.1312_STANDING_AIM_ALIGNMENT_AND_SOLDIER_CYCLE_CAMERA_PATCH
 
 ## Current Build Delta
@@ -51,7 +66,7 @@
 
 ## Priority Roadmap - Post-0046 Articulated Model and Release Cleanup
 
-**Status:** Active corrective sequence following the Browser 0046 code and live-runtime review. Item 1 is implemented in Browser 0816; the remaining items retain their priority order.
+**Status:** Active corrective sequence following the Browser 0046 code and live-runtime review. Items 1 and 2 are implemented through Browser 1628; the remaining items retain their priority order.
 
 ### 1. Articulated soldier orientation and facing-pivot separation - implemented in Browser 0816
 - Separate authoritative tactical facing from player-authored pose rotation. A dedicated parent **facing pivot** must apply the unit's current hex direction, while a child **pose root** owns Standing Carry, aiming, kneeling, prone, downed, ceremonial, victory, and procedural walk-cycle rotations.
@@ -60,7 +75,7 @@
 - Verify all six hex directions, turns during multi-cell movement, consecutive movement actions, standing-to-kneeling transitions, prone/downed transitions, firing at differently positioned targets, and movement completion in 3D Iso and TPV. FPV observer ownership must remain unchanged.
 - Add deterministic contracts proving pose application and walk animation cannot write to the facing pivot, that a soldier retains their last facing after the gait stops, and that model orientation remains presentation-only with no change to coordinates, paths, TU, LOS, accuracy, AI, or save format 4.
 
-### 2. Articulated weapon and equipment attachment parity
+### 2. Articulated weapon and equipment attachment parity - implemented in Browser 1628
 - Move the articulated soldier's weapon-light housing, beam origin, and any future carried equipment onto the articulated weapon/right-wrist hierarchy instead of leaving them at the legacy directional offsets.
 - Confirm the rifle, muzzle, hands, flashlight, firing tracer origin, and aim pose remain aligned through every facing and stance without creating duplicate weapon geometry.
 - Retain the current single-rifle presentation, equipment colors, armor colors, skin tones, and Classic fallback.
@@ -139,9 +154,9 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-26
-Current handoff build: `v0.26.08.26.1312_STANDING_AIM_ALIGNMENT_AND_SOLDIER_CYCLE_CAMERA_PATCH`
+Current handoff build: `v0.26.08.26.1628_ARTICULATED_WEAPON_LIGHT_AND_MUZZLE_ATTACHMENT_PARITY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1238 mirrors the articulated soldier's local left/right presentation so the right-wrist rifle chain appears on the anatomical right side, and repairs persistent unit invalidation so live shots visibly apply Standing Aim, Kneeling Aim, or Prone Aim for at least 900 ms. The independent tactical-facing pivot, approved pose values, Classic fallback, tactical authority, and save format 4 remain unchanged.**
+Current patch status: **Browser 1628 attaches the articulated flashlight housing, visual spotlight, target, and muzzle socket to the right-wrist rifle hierarchy. The weapon light and visual tracer origin now inherit pose and tactical-facing transforms without duplicate legacy equipment; tactical illumination and combat authority remain unchanged.**
 
 
 ## Browser 2216 - Articulated AEGIS Soldier Models + Classic Toggle

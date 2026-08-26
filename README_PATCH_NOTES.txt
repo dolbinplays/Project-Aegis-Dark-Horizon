@@ -1,3 +1,32 @@
+BUILD: v0.26.08.26.1628_ARTICULATED_WEAPON_LIGHT_AND_MUZZLE_ATTACHMENT_PARITY_PATCH
+TITLE: Articulated Weapon-Light + Muzzle Attachment Parity
+DATE: August 26, 2026
+
+Summary
+- Moves the articulated rifle's weapon-light housing, spotlight direction, and visual tracer origin onto the right-wrist weapon hierarchy so the equipment remains aligned through every pose and tactical facing.
+
+Key changes
+- Keeps the single articulated rifle owned by the named right-wrist joint.
+- Adds a weapon-local equipment root containing the flashlight housing, spotlight, and spotlight target.
+- Creates that articulated light subtree only while the soldier's weapon light is enabled, avoiding an inactive mesh/light on every soldier.
+- The complete weapon-light presentation now inherits Standing Carry, Standing Aim, Kneeling Aim, Prone Aim, walking, downed, and six-direction facing transforms.
+- Adds a weapon-local muzzle socket at the rendered barrel endpoint.
+- Human articulated shot tracers begin at the transformed muzzle socket when that rendered shooter is available.
+- Classic soldiers, aliens, and any unavailable rendered shooter retain the established cell-center tracer fallback.
+- Disables the old root-level flashlight branch for articulated soldiers, preventing duplicate housing and spotlight geometry.
+- Reuses cached flashlight-housing geometry instead of allocating a new articulated housing geometry for every rebuild.
+- Preserves the visual spotlight's existing 1.55 intensity and 14-unit range.
+- Adds deterministic Build Health coverage for right-wrist ownership, weapon/equipment hierarchy, transformed muzzle lookup, legacy-duplicate prevention, Classic fallback, facing-pivot isolation, and save format 4.
+
+Compatibility
+- Presentation-only: tactical illumination hexes, light range authority, LOS, fog, accuracy, targeting, damage, movement, TU, pathfinding, and AI are unchanged.
+- The current rifle, armor, vest, and skin colors and the single-rifle presentation are preserved.
+- FPV weapon ownership and Classic soldier presentation are unchanged.
+- Save format remains 4.
+- No game assets changed.
+
+--------------------------------------------------------------------------------
+
 BUILD: v0.26.08.26.1312_STANDING_AIM_ALIGNMENT_AND_SOLDIER_CYCLE_CAMERA_PATCH
 TITLE: Standing Aim Alignment + Soldier-Cycle Camera
 DATE: August 26, 2026
