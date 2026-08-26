@@ -1,3 +1,27 @@
+# Build Update Addendum — v0.26.08.26.0033_APPROVED_ARTICULATED_POSE_SET_PATCH
+
+## Current Build Delta
+- The articulated AEGIS pose library is now player-authored rather than approximate.
+- Approved authoritative poses: Standing Carry, Standing Aim, Kneeling Aim, Prone Aim, Death / Unconscious, Attention, At Ease, and Victory.
+- Kneeling and prone-alive live presentation reuse their approved aiming poses so no unapproved temporary body pose remains in tactical presentation.
+- Victory is now a real articulated pose authority during the mission victory dance, while the existing victory movement/bob remains presentation-only.
+- Deterministic Build Health checks preserve representative numeric anchors from all eight approved poses.
+- The standalone pose editor has been synchronized so future edits start from the same approved values used by the game.
+- Current skin tones, armor colors, scale, single FPV-style rifle, Classic fallback, and save format 4 remain intact.
+
+---
+
+# Build Update Addendum — v0.26.08.25.2356_ARTICULATED_SINGLE_RIFLE_AND_POSE_EDITOR_TOOL_PATCH
+
+## Current Build Delta
+- Removed the duplicate articulated rifle / groin-facing object by suppressing the old facing beam for articulated human soldiers.
+- Rebuilt the articulated soldier rifle from the same low-poly shape language used by the FPV weapon so the tactical carry weapon reads as the same family of rifle.
+- Kept a single articulated rifle mounted to the right-hand chain while preserving the articulated carry and aiming pose system.
+- Added a standalone articulated pose editor tool for hinge-style joint rotation, weapon offset tuning, appearance preview, and JSON export/import.
+- Current armor colors, current skin tones, Classic fallback, and save format remain intact.
+
+---
+
 # Build Update Addendum — v0.26.08.25.2311_ARTICULATED_AEGIS_HAND_ANCHORED_RIFLES_AND_AIM_POSE_FIX_PATCH
 
 ## Current Build Delta

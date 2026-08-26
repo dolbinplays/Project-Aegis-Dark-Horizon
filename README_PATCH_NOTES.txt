@@ -1,3 +1,51 @@
+BUILD: v0.26.08.26.0033_APPROVED_ARTICULATED_POSE_SET_PATCH
+TITLE: Approved Articulated AEGIS Pose Set
+DATE: August 26, 2026
+
+Summary
+- Replaces the temporary articulated soldier pose estimates with the exact player-authored pose-editor values approved for Standing Carry, Standing Aim, Kneeling Aim, Prone Aim, Death / Unconscious, Attention, At Ease, and Victory.
+
+Key changes
+- Standing Carry: exact approved body, arm, wrist, neck, and rifle transforms.
+- Standing Aim: exact approved aiming transforms, including body facing / neck counter-rotation.
+- Kneeling Aim: exact approved one-knee firing posture. The normal live kneeling visual uses this approved pose as well.
+- Prone Aim: exact approved prone firing posture. The live prone-alive visual uses this approved pose as well.
+- Death / Unconscious: exact approved downed pose and dropped-rifle transform.
+- Attention and At Ease: exact approved ceremonial/rest postures.
+- Victory: exact approved victory posture and now wired into articulated mission-victory presentation.
+- Build Health now checks numeric anchors from every approved pose so later patches cannot silently drift the authored values.
+- Standalone pose editor presets synchronized to the same approved pose library.
+
+Compatibility
+- Single FPV-style articulated rifle remains in place.
+- Classic soldier fallback remains available.
+- All current armor colors and all six current skin tones remain unchanged.
+- Save format remains 4.
+- No gameplay, AI, LOS, pathfinding, damage, or TU rules changed.
+
+--------------------------------------------------------------------------------
+
+BUILD: v0.26.08.25.2356_ARTICULATED_SINGLE_RIFLE_AND_POSE_EDITOR_TOOL_PATCH
+TITLE: Articulated Single Rifle + Pose Editor Tool
+DATE: August 25, 2026
+
+Summary
+- Fixes the articulated AEGIS soldier so only one rifle is rendered and adds a standalone articulated pose editor tool for authoring the poses you want.
+
+Key changes
+- Articulated soldiers now suppress the old facing beam / duplicate groin object, leaving only a single visible rifle in the articulated presentation.
+- The articulated rifle was rebuilt from the same low-poly receiver, shroud, barrel, grip, sight, and muzzle language used by the FPV weapon so it looks like the same family of gun.
+- The single rifle remains anchored to the right-hand wrist chain rather than the torso.
+- The package now includes a standalone AEGIS articulated pose editor HTML tool. It lets you rotate hinge joints, tweak root and weapon offsets, preview armor / skin / weapon palettes, and export or import pose JSON.
+- Classic fallback, current armor colors, current skin tones, and save format 4 remain unchanged.
+
+Regression notes
+- No save-format change. Save format remains 4.
+- No assets added or changed inside the game renderer.
+- Added one standalone helper HTML tool to the package.
+
+--------------------------------------------------------------------------------
+
 BUILD: v0.26.08.25.2311_ARTICULATED_AEGIS_HAND_ANCHORED_RIFLES_AND_AIM_POSE_FIX_PATCH
 TITLE: Articulated AEGIS Hand-Anchored Rifles + Aim Pose Fix
 DATE: August 25, 2026
