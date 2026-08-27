@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.27.1413_FIRE_TEAM_OBJECTIVE_ASSIST_AND_COMBINED_FORCE_PATCH",
+  "currentBuild": "v0.26.08.27.1502_FPV_TPV_AI_HANDOFF_PERSPECTIVE_PRESERVATION_HOTFIX",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "fire-team-objective-assist-and-combined-force-complete",
+  "status": "fpv-tpv-ai-handoff-perspective-preservation-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.27.1413_FIRE_TEAM_OBJECTIVE_ASSIST_AND_COMBINED_FORCE_PATCH",
+  "lastInspectedBuild": "v0.26.08.27.1502_FPV_TPV_AI_HANDOFF_PERSPECTIVE_PRESERVATION_HOTFIX",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.27.1413_FIRE_TEAM_OBJECTIVE_ASSIST_AND_COMBINED_FORCE_PATCH",
+    "browserBuild": "v0.26.08.27.1502_FPV_TPV_AI_HANDOFF_PERSPECTIVE_PRESERVATION_HOTFIX",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [

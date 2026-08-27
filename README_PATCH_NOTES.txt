@@ -1,3 +1,24 @@
+BUILD: v0.26.08.27.1502_FPV_TPV_AI_HANDOFF_PERSPECTIVE_PRESERVATION_HOTFIX
+TITLE: FPV/TPV AI Handoff Perspective Preservation
+DATE: August 27, 2026
+
+Summary
+- Keeps the active First Person or Third Person observer camera selected when tactical decisions rebuild the Simulation AI stream instead of falling back to 3D Iso.
+
+Key changes
+- Before an active AI playback stream is cleared for recalculation, the tactical layer snapshots FPV/TPV and the view that should be restored after observer mode ends.
+- The same perspective is restored when the replacement AI stream becomes active, centered on the current observed soldier.
+- Automatic and manual Civilian Escort Support decisions, mission-objective reassignment, and Command Map order changes all use the preservation path.
+- The Transferring Tactical Command overlay remains a temporary planning interruption rather than an implicit camera-mode change.
+- Take Back Control and terminal AI cleanup still exit observer mode normally and return to the player's prior 2D Hex or 3D Iso view.
+
+Validation
+- Live Build Health reports 545/591; all three new FPV/TPV handoff contracts pass.
+- No browser runtime errors were recorded. Embedded JavaScript syntax, release seam, and whitespace checks pass.
+- Save format remains 4 and assets are unchanged.
+
+---
+
 BUILD: v0.26.08.27.1413_FIRE_TEAM_OBJECTIVE_ASSIST_AND_COMBINED_FORCE_PATCH
 TITLE: Fire-Team Objective Assist + Combined Force
 DATE: August 27, 2026

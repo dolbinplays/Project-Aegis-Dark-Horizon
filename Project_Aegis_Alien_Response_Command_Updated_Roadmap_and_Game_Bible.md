@@ -1,14 +1,27 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.27.1413_FIRE_TEAM_OBJECTIVE_ASSIST_AND_COMBINED_FORCE_PATCH`
+Current browser build: `v0.26.08.27.1502_FPV_TPV_AI_HANDOFF_PERSPECTIVE_PRESERVATION_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 1413: Fire-Team Objective Assist + Combined Force
+## Current Build Addendum — Browser 1502: FPV/TPV AI Handoff Perspective Preservation
 
 ### Current Build Delta
+- If Simulation AI is recalculated while First Person View or Third Person View is active, the tactical layer now snapshots the active observer perspective and the prior tactical view.
+- Automatic and manual Civilian Escort Support decisions, mission-objective reassignment, and Command Map order changes all preserve that snapshot before replacing the current AI playback stream.
+- When the replacement stream becomes active, the same FPV or TPV camera is restored around the current observed soldier instead of falling back to 3D Iso.
+- The **Transferring Tactical Command** overlay remains a temporary planning interruption and no longer changes the player's selected observer camera.
+- **Take Back Control**, terminal mission cleanup, and genuine exits from observer mode still restore the earlier 2D Hex or 3D Iso presentation normally.
+- Live Browser 1502 Build Health reports 545/591. All three new observer-handoff contracts pass and no browser runtime errors were recorded.
+- Embedded JavaScript syntax, release seam, and whitespace checks pass. Assets are unchanged and save format remains 4.
+
+---
+
+## Historical Build Record — v0.26.08.27.1413_FIRE_TEAM_OBJECTIVE_ASSIST_AND_COMBINED_FORCE_PATCH
+
+### Historical Build Delta
 - The mission-objective assignment screen now offers two distinct roles: a fire team may **Own an objective**, or **Follow and assist** another fire team that directly owns one.
 - One primary team remains authoritative for each objective. Any number of other teams may reinforce it, while self-assist, assist chains, and duplicate direct owners are rejected.
 - An assisting fire-team leader receives a live rear/flank formation slot around the primary leader. The destination moves with the primary formation rather than remaining fixed at the objective's original coordinate.
@@ -216,6 +229,30 @@ Authoritative playable artifact: `index.html`
 - Keep the current approved pose editor as the working authoring tool and move or clearly label superseded editor versions so testers do not accidentally edit an obsolete preset library.
 - Document the facing-parent/pose-child transform contract inside the editor handoff so future exported root rotations cannot overwrite tactical facing when copied into the game.
 - Normalize the recent Game Bible addendum formatting/encoding and ensure every articulated patch is represented consistently in detailed and in-game patch history.
+
+---
+
+## Roadmap Addition - Articulated Civilian and VIP Models
+
+**Status:** Approved tactical-presentation item. Extend the established lightweight articulated AEGIS hierarchy and animation system to civilians and VIPs without changing their authoritative movement, escort, fear, cover, pathfinding, extraction, or mission-resolution behavior.
+
+### Appearance and equipment
+- Civilians use varied deterministic clothing combinations drawn from a civilian-appropriate color palette so a crowd does not read as a uniformed group. Preserve current skin-tone and body-proportion variation where available.
+- VIPs use recognizable black suits, with bounded shirt, tie, skin-tone, and body-proportion variation so separate VIPs remain visually distinguishable.
+- Civilian and VIP articulated models carry no rifle or other soldier weapon geometry in any of these poses. Any future armed-security or armed-civilian role must remain an explicit gameplay role rather than being inferred from this presentation model.
+
+### Pose and movement authority
+- A calm, stationary civilian or VIP uses the approved **Attention** stance with all weapon geometry removed.
+- A frightened, stationary civilian or VIP who is not actively taking cover uses the approved **Victory** upper-body stance with no weapon, repurposing its raised-arm silhouette as a clear fear/panic presentation.
+- While moving, civilians and VIPs use the established articulated soldier walking leg cycle. Calm movers retain the unarmed Attention upper-body language; frightened movers retain the unarmed Victory/fear upper-body language while the standard walking legs animate beneath it.
+- A frightened civilian or VIP who is trying to take cover and is currently stationary combines the approved **Kneeling** legs with the unarmed **Victory** arms. Once movement resumes, the model returns to the walking-leg fear presentation; once fear clears, it returns to the calm unarmed presentation.
+- Presentation state must follow existing authoritative calm, frightened, moving, and cover-seeking state. The renderer must not create new fear knowledge, destinations, movement allowances, cover claims, or AI decisions merely to select an animation.
+
+### Renderer and regression requirements
+- Reuse shared articulated geometry, materials, pivots, pose application, gait timing, tactical-facing authority, persistent unit nodes, and existing Iso/TPV presentation paths rather than introducing a second animation loop or per-frame geometry construction.
+- Preserve fog and knowledge boundaries: a hidden civilian/VIP model, pose, clothing, or fear state must never reveal an unseen unit or hidden threat.
+- Verify calm idle, frightened idle, calm walk, frightened walk, stationary cover-seeking crouch, fear recovery, escort following, Skyranger boarding, injury/death, roof cutaway, night lighting, and camera transitions in 3D Iso and TPV.
+- Add deterministic Build Health contracts for unarmed geometry, civilian clothing variation, VIP suit authority, pose selection, walking-leg reuse, stationary frightened cover pose, tactical-facing separation, and unchanged save format/gameplay outcomes.
 
 ---
 
