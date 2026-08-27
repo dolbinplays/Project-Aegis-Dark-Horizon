@@ -1,3 +1,28 @@
+BUILD: v0.26.08.26.2315_BROWSER_BUILD_METADATA_AND_PATCH_HISTORY_SYNCHRONIZATION_PATCH
+TITLE: Browser Build Metadata + Patch-History Synchronization
+DATE: August 26, 2026
+
+Summary
+- Establishes one authoritative browser release identity across the artifact, manifest, documentation, and in-game history while locking old patch records to the builds that introduced them.
+
+Key changes
+- Twenty-two historical in-game patch records no longer inherit CURRENT_GAME_BUILD and therefore cannot be relabeled when the next build ships.
+- The articulated history explicitly retains Browsers 2216, 2249, 2311, 2356, 0033, 0046, 0816, 1238, 1312, 1628, and 1739 as distinct releases.
+- Patch-history build IDs are unique again, so the version picker has stable keys and prior releases cannot disappear behind duplicate current-build values.
+- The Game Bible now starts with one authoritative project/build header; older build addenda are clearly historical records rather than competing current declarations.
+- The release checker verifies current-build parity in the manifest, README, Game Bible, and browser artifact and rejects mutable historical history records.
+- A deterministic Build Health contract verifies the current build, articulated history, one mutable latest entry, version derivation, and unchanged save format 4.
+- No gameplay, renderer, AI, tactical rules, assets, or save schema changed.
+
+Validation
+- All 5 non-empty embedded JavaScript blocks pass node --check.
+- The release seam checker passes for Browser 2315 and verifies current-build/document parity, one mutable latest history record, immutable articulated records, and unique historical build IDs.
+- Live start-screen and Patch Notes testing shows Browser 2315 as latest and all 130 listed releases with distinct version labels.
+- Repeated live Build Health runs report 524-525/572; the final clean reload is 525/572. The new metadata/history contract passes, and the one-check variation is the documented randomized failed-mission fixture rather than a new deterministic failure.
+- Save format remains 4 and assets are unchanged.
+
+---
+
 BUILD: v0.26.08.26.2000_EMERGENCY_TACTICAL_JSON_AND_COORDINATED_ALIEN_SEARCH_PATCH
 TITLE: Emergency Tactical JSON + Coordinated Alien Search
 DATE: August 26, 2026

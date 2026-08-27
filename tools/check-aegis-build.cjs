@@ -12,6 +12,8 @@ const nativeAudioBusPath = path.join(root, "godot", "default_bus_layout.tres");
 const dialogueDirectory = path.join(root, "assets", "audio", "dialogue");
 const dialogueManifestPath = path.join(dialogueDirectory, "manifest.js");
 const alternateAudioDirectory = path.join(root, "assets", "audio", "alternate");
+const patchNotesPath = path.join(root, "README_PATCH_NOTES.txt");
+const gameBiblePath = path.join(root, "Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md");
 
 const html = fs.readFileSync(indexPath, "utf8");
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
@@ -19,6 +21,8 @@ const nativeContent = JSON.parse(fs.readFileSync(nativeContentPath, "utf8"));
 const nativeMain = fs.readFileSync(nativeMainPath, "utf8");
 const nativeTactical = fs.readFileSync(nativeTacticalPath, "utf8");
 const nativeAudioBus = fs.readFileSync(nativeAudioBusPath, "utf8");
+const patchNotes = fs.readFileSync(patchNotesPath, "utf8");
+const gameBible = fs.readFileSync(gameBiblePath, "utf8");
 const dialogueBox = { window: {} };
 vm.runInNewContext(fs.readFileSync(dialogueManifestPath, "utf8"), dialogueBox, { filename: dialogueManifestPath });
 const dialogue = dialogueBox.window.PROJECT_AEGIS_RECORDED_DIALOGUE;
@@ -796,6 +800,9 @@ const required = [
   "bridgeScaleY",
   "recordedDialogueStyleForSoldier",
   "data-aegis-recorded-dialogue=\"segmented-takes\"",
+  "BROWSER_BUILD_METADATA_AND_PATCH_HISTORY_SYNCHRONIZATION_PATCH",
+  "browserBuildMetadataAndPatchHistorySynchronizationContractTest",
+  "Browser build metadata and historical patch IDs remain synchronized and immutable",
   "runSelfTests"
 ];
 
@@ -818,6 +825,32 @@ if (!html.slice(patchHistoryDeclaration, patchHistoryOwnerEnd).includes('title:"
 }
 if (!html.slice(patchHistoryDeclaration, patchHistoryOwnerEnd).includes('title:"Multi-Fire-Team VIP Rescue Traffic"')) {
   missing.push("the current multi-fire-team VIP rescue traffic patch note must remain inside its campaign owner");
+}
+const patchHistorySource = patchHistoryDeclaration >= 0 && patchHistoryOwnerEnd > patchHistoryDeclaration ? html.slice(patchHistoryDeclaration, patchHistoryOwnerEnd) : "";
+const mutableHistoryBuilds = (patchHistorySource.match(/\{build:CURRENT_GAME_BUILD,date:/g) || []).length;
+if (mutableHistoryBuilds !== 1) {
+  missing.push(`exactly one latest patch-history record may inherit CURRENT_GAME_BUILD; found ${mutableHistoryBuilds}`);
+}
+const explicitHistoryBuilds = [...patchHistorySource.matchAll(/\{build:"([^"]+)",date:/g)].map((match) => match[1]);
+const duplicateHistoryBuilds = [...new Set(explicitHistoryBuilds.filter((build, index) => explicitHistoryBuilds.indexOf(build) !== index))];
+if (duplicateHistoryBuilds.length) {
+  missing.push(`patch-history build IDs must be unique: ${duplicateHistoryBuilds.join(", ")}`);
+}
+for (const immutableBuild of [
+  "v0.26.08.25.2216_ARTICULATED_AEGIS_SOLDIER_MODELS_AND_CLASSIC_TOGGLE_PATCH",
+  "v0.26.08.25.2249_ARTICULATED_AEGIS_WEAPON_HANDLING_AND_POSE_POLISH_PATCH",
+  "v0.26.08.25.2311_ARTICULATED_AEGIS_HAND_ANCHORED_RIFLES_AND_AIM_POSE_FIX_PATCH",
+  "v0.26.08.25.2356_ARTICULATED_SINGLE_RIFLE_AND_POSE_EDITOR_TOOL_PATCH",
+  "v0.26.08.26.0033_APPROVED_ARTICULATED_POSE_SET_PATCH",
+  "v0.26.08.26.0046_ARTICULATED_STANDING_CARRY_WALK_CYCLE_PATCH",
+  "v0.26.08.26.0816_ARTICULATED_SOLDIER_FACING_PIVOT_AND_STANCE_AIM_AUTHORITY_PATCH",
+  "v0.26.08.26.1238_RIGHT_HANDED_ARTICULATED_SOLDIERS_AND_VISIBLE_AIM_POSE_PATCH",
+  "v0.26.08.26.1312_STANDING_AIM_ALIGNMENT_AND_SOLDIER_CYCLE_CAMERA_PATCH",
+  "v0.26.08.26.1628_ARTICULATED_WEAPON_LIGHT_AND_MUZZLE_ATTACHMENT_PARITY_PATCH",
+  "v0.26.08.26.1739_ARTICULATED_AIM_WALK_DIRECTION_AND_RANGE_ACCURACY_PATCH",
+  "v0.26.08.26.2000_EMERGENCY_TACTICAL_JSON_AND_COORDINATED_ALIEN_SEARCH_PATCH"
+]) {
+  if (!patchHistorySource.includes(`build:"${immutableBuild}"`)) missing.push(`immutable patch-history build is missing: ${immutableBuild}`);
 }
 
 for (const obsoleteNeedle of [
@@ -1021,6 +1054,15 @@ if (manifest.gameplayParity?.browserBuild !== manifest.currentBuild) {
 }
 if (manifest.lastInspectedBuild !== manifest.currentBuild) {
   missing.push("manifest lastInspectedBuild must match currentBuild");
+}
+if (!patchNotes.startsWith(`BUILD: ${manifest.currentBuild}\n`) && !patchNotes.startsWith(`BUILD: ${manifest.currentBuild}\r\n`)) {
+  missing.push("README patch notes must begin with the manifest currentBuild");
+}
+if (!gameBible.startsWith("# PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE") || !gameBible.includes(`Current browser build: \`${manifest.currentBuild}\``)) {
+  missing.push("Game Bible must begin with its authoritative project header and manifest currentBuild");
+}
+if ((gameBible.match(/^Current browser build:/gm) || []).length !== 1) {
+  missing.push("Game Bible must contain exactly one authoritative Current browser build declaration");
 }
 
 if (manifest.gameplayParity?.nativeBuild !== manifest.nativePrototype?.build || nativeContent.build !== manifest.nativePrototype?.build) {

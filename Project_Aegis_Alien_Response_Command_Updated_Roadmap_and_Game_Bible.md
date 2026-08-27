@@ -1,6 +1,27 @@
-# Build Update Addendum - v0.26.08.26.2000_EMERGENCY_TACTICAL_JSON_AND_COORDINATED_ALIEN_SEARCH_PATCH
+# PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-## Current Build Delta
+Current browser build: `v0.26.08.26.2315_BROWSER_BUILD_METADATA_AND_PATCH_HISTORY_SYNCHRONIZATION_PATCH`
+
+Current save format: `4`
+
+Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 2315: Browser Build Metadata + Patch-History Synchronization
+
+### Current Build Delta
+- The browser artifact, manifest current/inspected/parity fields, README, in-game version library, Game Bible, and release checker now share one authoritative build identity.
+- Twenty-two historical in-game records now retain their original immutable build IDs instead of inheriting `CURRENT_GAME_BUILD` and being relabeled by every later release.
+- The full articulated sequence remains explicit and chronological, including Approved Pose Set 0033, Standing Carry Walk Cycle 0046, Facing Pivot 0816, and the later right-handed, aiming, camera, attachment, gait-direction, and range-accuracy patches.
+- Patch-history IDs are unique again, preserving stable version-picker keys and preventing earlier releases from disappearing behind duplicate latest-build values.
+- Historical Game Bible addenda remain available but are labeled as historical records beneath this single authoritative project/build header.
+- Live Browser 2315 validation confirms the start-screen label and all 130 history entries. Repeated Build Health runs are 524-525/572, the final clean reload is 525/572, and the new synchronization contract passes; the one-check variation is the established randomized failed-mission fixture.
+- Gameplay, rendering, AI, movement, LOS, accuracy, objectives, assets, and save format 4 are unchanged.
+
+---
+
+## Historical Build Record - v0.26.08.26.2000_EMERGENCY_TACTICAL_JSON_AND_COORDINATED_ALIEN_SEARCH_PATCH
+
+### Historical Build Delta
 - Normal slot saves still use browser storage, but a rejected write now reports whether storage quota is full or storage access is unavailable.
 - A rejected slot save directly serializes the current campaign and live tactical state from memory into a downloadable emergency JSON. This does not require an earlier successful slot save, and the file remains import-compatible.
 - The existing **Download Current Backup** action remains the proactive storage-independent backup route.
@@ -12,9 +33,9 @@
 
 ---
 
-# Build Update Addendum - v0.26.08.26.1739_ARTICULATED_AIM_WALK_DIRECTION_AND_RANGE_ACCURACY_PATCH
+## Historical Build Record — v0.26.08.26.1739_ARTICULATED_AIM_WALK_DIRECTION_AND_RANGE_ACCURACY_PATCH
 
-## Current Build Delta
+### Historical Build Delta
 - Standing Aim is reversed 180 degrees from Browser 1312's observed runtime orientation so a standing shooter now faces the selected target during the readable aiming hold.
 - The correction remains pose-local beneath the authoritative six-direction facing pivot. It does not alter shot endpoints, targeting, muzzle ownership, map coordinates, or the approved authored pose library.
 - The articulated Standing Carry gait rephases knee bend and ankle recovery against the existing hip stride so the rear leg pushes off while the leading leg reaches forward. Upper-body carry, rifle posture, route, TU, speed, formation following, and pathfinding remain unchanged.
@@ -26,9 +47,9 @@
 
 ---
 
-# Build Update Addendum - v0.26.08.26.1628_ARTICULATED_WEAPON_LIGHT_AND_MUZZLE_ATTACHMENT_PARITY_PATCH
+## Historical Build Record — v0.26.08.26.1628_ARTICULATED_WEAPON_LIGHT_AND_MUZZLE_ATTACHMENT_PARITY_PATCH
 
-## Current Build Delta
+### Historical Build Delta
 - The articulated rifle's flashlight housing, spotlight, spotlight target, and muzzle socket now live beneath the right-wrist weapon rig rather than using root-level directional offsets.
 - The muzzle socket remains available for firing presentation, while the light-specific subtree is created only when the soldier has enabled the weapon light.
 - Weapon-light geometry and beam direction inherit the full right-wrist chain, approved pose, runtime Standing Aim alignment, procedural walking motion, and authoritative tactical-facing pivot.
@@ -41,9 +62,9 @@
 
 ---
 
-# Build Update Addendum - v0.26.08.26.1312_STANDING_AIM_ALIGNMENT_AND_SOLDIER_CYCLE_CAMERA_PATCH
+## Historical Build Record — v0.26.08.26.1312_STANDING_AIM_ALIGNMENT_AND_SOLDIER_CYCLE_CAMERA_PATCH
 
-## Current Build Delta
+### Historical Build Delta
 - Standing Aim now receives a runtime-local 90-degree rightward yaw so its rifle barrel aligns with the authoritative shot direction.
 - The correction is composed beneath the existing tactical-facing pivot. It cannot change the soldier's authoritative six-direction map facing, firing vector, selected target, LOS, accuracy, or damage.
 - The approved player-authored Standing Aim values remain intact in the pose library; Standing Carry, Kneeling Aim, Prone Aim, walking, downed, ceremonial, and victory presentation are unchanged.
@@ -54,9 +75,9 @@
 
 ---
 
-# Build Update Addendum - v0.26.08.26.1238_RIGHT_HANDED_ARTICULATED_SOLDIERS_AND_VISIBLE_AIM_POSE_PATCH
+## Historical Build Record — v0.26.08.26.1238_RIGHT_HANDED_ARTICULATED_SOLDIERS_AND_VISIBLE_AIM_POSE_PATCH
 
-## Current Build Delta
+### Historical Build Delta
 - The articulated AEGIS soldier is mirrored once across its local X axis so its named right shoulder, arm, wrist, and rifle chain now appear on the soldier's anatomical right side when facing forward.
 - The rifle remains attached to the right wrist and the left arm remains the supporting fore-end arm; no duplicate weapon or second pose library is introduced.
 - The mirror sits beneath the dedicated tactical-facing pivot, preserving all six authoritative map orientations from Browser 0816.
@@ -67,9 +88,9 @@
 
 ---
 
-# Build Update Addendum - v0.26.08.26.0816_ARTICULATED_SOLDIER_FACING_PIVOT_AND_STANCE_AIM_AUTHORITY_PATCH
+## Historical Build Record — v0.26.08.26.0816_ARTICULATED_SOLDIER_FACING_PIVOT_AND_STANCE_AIM_AUTHORITY_PATCH
 
-## Current Build Delta
+### Historical Build Delta
 - Articulated AEGIS soldiers now compose two independent presentation transforms: a parent tactical-facing pivot owns the current six-direction hex orientation, while a child pose root owns the approved stance, aiming, downed, ceremonial, victory, and procedural walk transforms.
 - Walking, stance changes, firing, end-of-movement restoration, and other approved pose applications cannot overwrite or forget the soldier's tactical facing.
 - Authored local yaw remains intact beneath the facing pivot, including Standing Aim body/neck counter-rotation.
@@ -79,9 +100,9 @@
 
 ---
 
-# Build Update Addendum — v0.26.08.26.0046_ARTICULATED_STANDING_CARRY_WALK_CYCLE_PATCH
+## Historical Build Record — v0.26.08.26.0046_ARTICULATED_STANDING_CARRY_WALK_CYCLE_PATCH
 
-## Current Build Delta
+### Historical Build Delta
 - Articulated AEGIS soldiers now have a lightweight procedural walking cycle derived from the approved Standing Carry pose.
 - Walking alternates hip, knee, and ankle motion while applying restrained root bob, side-to-side weight transfer, torso counter-sway, and neck compensation.
 - The approved Standing Carry arm and rifle transforms remain authoritative during movement; the gait layers underneath them rather than replacing the player-authored pose.
@@ -94,7 +115,7 @@
 
 ## Priority Roadmap - Post-0046 Articulated Model and Release Cleanup
 
-**Status:** Active corrective sequence following the Browser 0046 code and live-runtime review. Items 1 and 2 are implemented through Browser 1739; the remaining items retain their priority order. Browser 1739 also supersedes Browser 1312's observed Standing Aim direction and corrects the gait phase.
+**Status:** Active corrective sequence following the Browser 0046 code and live-runtime review. Items 1 through 3 are implemented through Browser 2315; items 4 through 6 retain their priority order. Browser 1739 also supersedes Browser 1312's observed Standing Aim direction and corrects the gait phase.
 
 ### 1. Articulated soldier orientation and facing-pivot separation - implemented in Browser 0816
 - Separate authoritative tactical facing from player-authored pose rotation. A dedicated parent **facing pivot** must apply the unit's current hex direction, while a child **pose root** owns Standing Carry, aiming, kneeling, prone, downed, ceremonial, victory, and procedural walk-cycle rotations.
@@ -108,7 +129,7 @@
 - Confirm the rifle, muzzle, hands, flashlight, firing tracer origin, and aim pose remain aligned through every facing and stance without creating duplicate weapon geometry.
 - Retain the current single-rifle presentation, equipment colors, armor colors, skin tones, and Classic fallback.
 
-### 3. Browser build metadata and patch-history synchronization
+### 3. Browser build metadata and patch-history synchronization - implemented in Browser 2315
 - Synchronize the actual current browser build across `CURRENT_GAME_BUILD`, `src/manifest.json` current/inspected/parity fields, start screen, detailed patch notes, in-game version history, Game Bible header/status, release checker, and handoff/package naming.
 - Give historical articulated entries explicit immutable build IDs. Do not reuse `CURRENT_GAME_BUILD` for an older history entry, because that currently labels the Approved Pose Set as Browser 0046 and omits the Standing Carry Walk Cycle from the in-game history.
 - Restore one clearly authoritative Game Bible header after the recent addenda and retain the chronological articulated patch record without duplicate or stale current-build declarations.
@@ -131,9 +152,9 @@
 
 ---
 
-# Build Update Addendum — v0.26.08.26.0033_APPROVED_ARTICULATED_POSE_SET_PATCH
+## Historical Build Record — v0.26.08.26.0033_APPROVED_ARTICULATED_POSE_SET_PATCH
 
-## Current Build Delta
+### Historical Build Delta
 - The articulated AEGIS pose library is now player-authored rather than approximate.
 - Approved authoritative poses: Standing Carry, Standing Aim, Kneeling Aim, Prone Aim, Death / Unconscious, Attention, At Ease, and Victory.
 - Kneeling and prone-alive live presentation reuse their approved aiming poses so no unapproved temporary body pose remains in tactical presentation.
@@ -144,9 +165,9 @@
 
 ---
 
-# Build Update Addendum — v0.26.08.25.2356_ARTICULATED_SINGLE_RIFLE_AND_POSE_EDITOR_TOOL_PATCH
+## Historical Build Record — v0.26.08.25.2356_ARTICULATED_SINGLE_RIFLE_AND_POSE_EDITOR_TOOL_PATCH
 
-## Current Build Delta
+### Historical Build Delta
 - Removed the duplicate articulated rifle / groin-facing object by suppressing the old facing beam for articulated human soldiers.
 - Rebuilt the articulated soldier rifle from the same low-poly shape language used by the FPV weapon so the tactical carry weapon reads as the same family of rifle.
 - Kept a single articulated rifle mounted to the right-hand chain while preserving the articulated carry and aiming pose system.
@@ -155,9 +176,9 @@
 
 ---
 
-# Build Update Addendum — v0.26.08.25.2311_ARTICULATED_AEGIS_HAND_ANCHORED_RIFLES_AND_AIM_POSE_FIX_PATCH
+## Historical Build Record — v0.26.08.25.2311_ARTICULATED_AEGIS_HAND_ANCHORED_RIFLES_AND_AIM_POSE_FIX_PATCH
 
-## Current Build Delta
+### Historical Build Delta
 - Articulated AEGIS rifles are now hand-anchored from the right wrist instead of torso-anchored.
 - Standing movement/idle now uses a clearer cross-chest ready-carry posture.
 - Added distinct standing, kneeling, and prone aiming presentation poses during live human shot playback.
@@ -166,9 +187,9 @@
 
 ---
 
-# Build Update Addendum — v0.26.08.25.2249_ARTICULATED_AEGIS_WEAPON_HANDLING_AND_POSE_POLISH_PATCH
+## Historical Build Record — v0.26.08.25.2249_ARTICULATED_AEGIS_WEAPON_HANDLING_AND_POSE_POLISH_PATCH
 
-## Current Build Delta
+### Historical Build Delta
 - Refined the new articulated AEGIS soldier presentation so rifles no longer read as chest-mounted.
 - Standing now uses a more natural cross-body carry posture.
 - Kneeling and prone alive now use more deliberate shouldered aiming posture language.
@@ -178,13 +199,13 @@
 
 ---
 
-# PROJECT AEGIS / ALIEN RESPONSE COMMAND
-## Codex Handoff: Updated Full Roadmap + Game Bible
+## Archived Codex Handoff Context
+### Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-26
-Current handoff build: `v0.26.08.26.2000_EMERGENCY_TACTICAL_JSON_AND_COORDINATED_ALIEN_SEARCH_PATCH`
+Historical handoff baseline: `v0.26.08.26.2000_EMERGENCY_TACTICAL_JSON_AND_COORDINATED_ALIEN_SEARCH_PATCH` (the authoritative current build is declared at the top of this document)
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1739 reverses the observed Standing Aim firing direction, corrects the articulated foot cycle so walking reads forward, and gives Manual, Reaction, Simulation, recovery, and alien shots one bounded range-accuracy curve with 95%-97% legal point-blank fire. Save format remains 4.**
+Historical patch status at this archived handoff: **Browser 1739 reverses the observed Standing Aim firing direction, corrects the articulated foot cycle so walking reads forward, and gives Manual, Reaction, Simulation, recovery, and alien shots one bounded range-accuracy curve with 95%-97% legal point-blank fire. Save format remains 4.**
 
 
 ## Browser 2216 - Articulated AEGIS Soldier Models + Classic Toggle
