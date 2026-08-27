@@ -1,3 +1,30 @@
+BUILD: v0.26.08.27.0924_FIRE_TEAM_MISSION_OBJECTIVE_ASSIGNMENT_AND_REPLAN_PATCH
+TITLE: Fire-Team Mission Objective Assignment + Replan
+DATE: August 27, 2026
+
+Summary
+- Adds a mission-scoped decision board for assigning known VIPs and other tactical goals to specific fire teams while preserving the familiar default AI doctrine for every unassigned team.
+
+Key changes
+- Missions with multiple known goals open the assignment board at landing. Every living fire team can select one explicit goal or remain on Default AI Doctrine.
+- Tracked VIPs are assignable at landing. Ordinary civilians, Alien Field Beacons, crashed-UFO bays, and alien-base command cores join the board only when AEGIS legitimately knows them.
+- Identifying a new goal reopens the same board, highlights the new entry, and lets the player revise every fire-team assignment.
+- One known goal can have only one explicit fire team, preventing accidental duplicate VIP assignments.
+- Explicit VIP assignments feed the existing rescue coordinator, building ingress, escort, formation, extraction, and traffic logic. Teams left on Default retain the established automatic allocation behavior.
+- Non-VIP assignments reuse persistent fire-team command orders. Rescued, destroyed, lost, or otherwise resolved goals release stale explicit assignments back to Default.
+- Routine alien sightings continue through the current contact-replan system rather than repeatedly opening this board. Alien contact outranks an unformed rescue approach, and the Civilian Escort Support decision retains higher authority once an escort column exists.
+- Assignment data survives the live tactical cache, save/load, Simulation frames, and control-mode handoffs without changing tactical outcome authority.
+- Movement, TU, pathfinding, LOS, fog, cover, accuracy, targeting, formations, damage, mission objectives, and hidden information are unchanged.
+
+Validation
+- All 5 non-empty embedded JavaScript blocks pass node --check.
+- The release seam checker passes for Browser 0924 with synchronized artifact, manifest, patch-history, and Game Bible identity.
+- A deterministic Build Health contract covers tracked/hidden goal knowledge, explicit and default VIP allocation, escort-contact authority, beacon knowledge gating, frame persistence, and unchanged save format 4.
+- Live Browser 0924 Build Health reports 535/582 checks passing. All nine focused objective-assignment checks pass; the remaining 47 failures are established diagnostics unrelated to this patch.
+- Save format remains 4 and assets are unchanged.
+
+---
+
 BUILD: v0.26.08.27.0813_SEGMENTED_ORGANIC_TERRAIN_COLOR_TRANSITIONS_PATCH
 TITLE: Segmented Organic Terrain Color Transitions
 DATE: August 27, 2026

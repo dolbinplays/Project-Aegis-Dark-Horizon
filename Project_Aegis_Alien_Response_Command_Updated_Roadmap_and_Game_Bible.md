@@ -1,14 +1,30 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.27.0813_SEGMENTED_ORGANIC_TERRAIN_COLOR_TRANSITIONS_PATCH`
+Current browser build: `v0.26.08.27.0924_FIRE_TEAM_MISSION_OBJECTIVE_ASSIGNMENT_AND_REPLAN_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 0813: Segmented Organic Terrain Color Transitions
+## Current Build Addendum — Browser 0924: Fire-Team Mission Objective Assignment + Replan
 
 ### Current Build Delta
+- When more than one mission goal is known at landing, the tactical layer presents a fire-team objective assignment board modeled on the existing escort-support decision screen.
+- Every living fire team may receive one explicit goal or remain on **Default AI Doctrine**, which preserves the autonomous search, rescue, combat, reinforcement-source, and formation behavior used before this patch.
+- Tracked VIPs are assignable at landing even before direct visual contact. Ordinary civilians, Alien Field Beacons, crashed-UFO bays, and alien-base command cores are listed only after AEGIS legitimately knows them.
+- A newly identified goal reopens the same board, highlights the new entry, and permits all current assignments to be revised. Routine alien sightings stay in the existing contact-replan loop so combat does not produce repeated assignment popups.
+- Explicit VIP assignments feed the established rescue coordinator and therefore retain current building ingress, formation, escort-column, extraction, and traffic-yield behavior. Default teams remain eligible for the existing automatic VIP distribution logic.
+- Non-VIP objectives use the existing persistent fire-team command-order path. A goal can have only one explicit fire team, and resolved or unavailable goals release stale assignments back to default doctrine.
+- Visible alien contact outranks an unformed VIP approach. Once a civilian/VIP escort exists, the Civilian Escort Support decision remains authoritative: supports may stay with the column or break off to engage without erasing the underlying mission assignment.
+- Assignment state persists through the live tactical cache, computer saves, Simulation playback frames, and control handoffs. Save format remains 4.
+- Live Browser 0924 Build Health reports 535/582 checks passing. All nine focused objective-assignment checks pass; the remaining 47 failures are established diagnostics unrelated to this patch.
+- Movement, TU, pathfinding, LOS, fog, cover, accuracy, targeting, damage, objective resolution, hidden-information authority, renderer behavior, and assets are unchanged.
+
+---
+
+## Historical Build Record — v0.26.08.27.0813_SEGMENTED_ORGANIC_TERRAIN_COLOR_TRANSITIONS_PATCH
+
+### Historical Build Delta
 - Open-ground color regions now preserve a deterministic irregular core in the existing authored palette rather than meeting at hard square/block borders.
 - Region centers receive bounded seed-based offsets, and eight directional core radii vary independently so adjacent cores do not repeat one silhouette.
 - Every transition hex projects onto the line to its nearest meaningfully different neighboring color anchor. The line is divided into 100 discrete segments, and the hex deterministically samples within the ramp interval crossing its footprint.
