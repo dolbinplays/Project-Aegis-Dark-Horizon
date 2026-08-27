@@ -1,14 +1,25 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.27.1205_FIRE_TEAM_ASSIGNMENT_MODAL_LAYERING_HOTFIX`
+Current browser build: `v0.26.08.27.1306_RELEASE_CHECKER_AND_BUILD_HEALTH_CONTRACT_REPAIR_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 1205: Fire-Team Assignment Modal Layering Hotfix
+## Current Build Addendum — Browser 1306: Release Checker + Build Health Contract Repair
 
 ### Current Build Delta
+- The 3D Iso Night Brightness contract now recognizes the current persistent-renderer dependency order, including the articulated `soldierModelStyle` preference between established Iso presentation dependencies.
+- All substantive Night Brightness invariants remain enforced: renderer exposure, ambient fill, material lift, perspective neutrality, unchanged local-light range, and no tactical fog/LOS/accuracy/AI mutation.
+- The Field Beacon intelligence contract now uses a loaded laser-equipped observer for known kinetic-shield guidance while retaining a deliberately unarmed observer for the independent known-field no-breach assertion.
+- In the same live browser harness, Build Health improves from 534/582 to 536/582. Both targeted checks pass with no runtime errors.
+- This patch repairs diagnostic assumptions only. Gameplay, renderer output, beacon knowledge progression, shield behavior, movement, AI, assets, and save format 4 are unchanged.
+
+---
+
+## Historical Build Record — v0.26.08.27.1205_FIRE_TEAM_ASSIGNMENT_MODAL_LAYERING_HOTFIX
+
+### Historical Build Delta
 - The fire-team mission-objective assignment screen now renders through a React portal attached directly to the document body.
 - This removes the modal from the tactical panel's local stacking and clipping contexts, preventing the 2D/3D tactical map, renderer canvas, and tactical HUD from painting over it.
 - The assignment screen retains its full-screen backdrop and remains below the deliberately higher-priority Civilian Escort Support decision when an escort column encounters alien contact.
@@ -156,7 +167,7 @@ Authoritative playable artifact: `index.html`
 
 ## Priority Roadmap - Post-0046 Articulated Model and Release Cleanup
 
-**Status:** Active corrective sequence following the Browser 0046 code and live-runtime review. Items 1 through 3 are implemented through Browser 2315; items 4 through 6 retain their priority order. Browser 1739 also supersedes Browser 1312's observed Standing Aim direction and corrects the gait phase.
+**Status:** Active corrective sequence following the Browser 0046 code and live-runtime review. Items 1 through 4 are implemented through Browser 1306; items 5 and 6 retain their priority order. Browser 1739 also supersedes Browser 1312's observed Standing Aim direction and corrects the gait phase.
 
 ### 1. Articulated soldier orientation and facing-pivot separation - implemented in Browser 0816
 - Separate authoritative tactical facing from player-authored pose rotation. A dedicated parent **facing pivot** must apply the unit's current hex direction, while a child **pose root** owns Standing Carry, aiming, kneeling, prone, downed, ceremonial, victory, and procedural walk-cycle rotations.
@@ -175,7 +186,7 @@ Authoritative playable artifact: `index.html`
 - Give historical articulated entries explicit immutable build IDs. Do not reuse `CURRENT_GAME_BUILD` for an older history entry, because that currently labels the Approved Pose Set as Browser 0046 and omits the Standing Carry Walk Cycle from the in-game history.
 - Restore one clearly authoritative Game Bible header after the recent addenda and retain the chronological articulated patch record without duplicate or stale current-build declarations.
 
-### 4. Release checker and Build Health contract repair
+### 4. Release checker and Build Health contract repair - implemented in Browser 1306
 - Update the persistent-renderer release checks so the new `soldierModelStyle` dependency may sit between the existing Iso Color, Night Brightness, ground-mode, and Fit Map dependencies without weakening those presentation-only invariants.
 - Correct the Browser 2049 beacon-intelligence test fixture: use a breach-capable observer for the known kinetic-guidance assertion while retaining a deliberately incapable observer for the separate known-field no-breach assertion.
 - Re-run embedded JavaScript syntax, build seams, whitespace checks, critical startup smoke, and full live Build Health. Record the current unrelated failure baseline separately from new articulated contracts.

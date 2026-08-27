@@ -1,3 +1,24 @@
+BUILD: v0.26.08.27.1306_RELEASE_CHECKER_AND_BUILD_HEALTH_CONTRACT_REPAIR_PATCH
+TITLE: Release Checker + Build Health Contract Repair
+DATE: August 27, 2026
+
+Summary
+- Repairs two stale Build Health assumptions so the diagnostics accurately validate the current persistent renderer and staged Field Beacon intelligence behavior.
+
+Key changes
+- The 3D Iso Night Brightness contract now recognizes the current persistent-renderer dependency sequence, including `soldierModelStyle` between the existing presentation dependencies.
+- The contract still proves that night brightness changes renderer exposure and ambient shadow fill without changing light range, illuminated hexes, fog, LOS, accuracy, or AI knowledge.
+- The beacon-intelligence fixture uses a loaded laser-equipped observer for known kinetic-shield guidance, while its separate known-field no-breach case retains a deliberately unarmed observer.
+- This corrects the diagnostic fixtures only; renderer output, shield discovery, objective wording, beacon behavior, and tactical authority are unchanged.
+
+Validation
+- Live Build Health improves from 534/582 to 536/582 in the same browser harness.
+- Both targeted checks pass and no runtime errors are recorded.
+- Embedded JavaScript syntax, release seam, and whitespace checks pass.
+- Save format remains 4 and assets are unchanged.
+
+---
+
 BUILD: v0.26.08.27.1205_FIRE_TEAM_ASSIGNMENT_MODAL_LAYERING_HOTFIX
 TITLE: Fire-Team Assignment Modal Layering Hotfix
 DATE: August 27, 2026
