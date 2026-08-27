@@ -1,3 +1,26 @@
+BUILD: v0.26.08.27.1413_FIRE_TEAM_OBJECTIVE_ASSIST_AND_COMBINED_FORCE_PATCH
+TITLE: Fire-Team Objective Assist + Combined Force
+DATE: August 27, 2026
+
+Summary
+- Lets the player reinforce an important assigned objective with one or more intact fire teams that dynamically follow its primary team without merging identities or breaking established formations.
+
+Key changes
+- The mission-objective assignment board now separates **Own an objective** from **Follow and assist** choices.
+- A fire team may assist another fire team only when that primary team directly owns a known objective. Self-assist and assist chains are rejected.
+- Multiple teams may assist the same primary. Their leaders receive distinct live rear/flank slots around the primary leader, effectively creating a larger coordinated force without replacing any fire-team leader or support formation.
+- The follow destination updates with the primary leader instead of retaining a frozen objective coordinate. Supporting soldiers continue to form around their own leader.
+- Visible alien contact and active Civilian Escort Support decisions temporarily override objective-follow movement. The assist assignment remains intact so the combined force can resume after contact.
+- Assisting teams are excluded from claiming a separate VIP through default rescue allocation.
+- Assignment state remains compatible with tactical cache, save/load, Simulation playback, Hybrid control, and AI Command under save format 4.
+
+Validation
+- Consecutive live Build Health runs report 541-542/588. All six new objective-assist contracts pass in both runs; the one-check variation is the documented randomized failed-mission fixture rather than this patch.
+- Embedded JavaScript syntax, release seam, and whitespace checks pass with no browser runtime errors.
+- Save format remains 4 and assets are unchanged.
+
+---
+
 BUILD: v0.26.08.27.1306_RELEASE_CHECKER_AND_BUILD_HEALTH_CONTRACT_REPAIR_PATCH
 TITLE: Release Checker + Build Health Contract Repair
 DATE: August 27, 2026

@@ -1,12 +1,27 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.27.1306_RELEASE_CHECKER_AND_BUILD_HEALTH_CONTRACT_REPAIR_PATCH`
+Current browser build: `v0.26.08.27.1413_FIRE_TEAM_OBJECTIVE_ASSIST_AND_COMBINED_FORCE_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 1306: Release Checker + Build Health Contract Repair
+## Current Build Addendum — Browser 1413: Fire-Team Objective Assist + Combined Force
+
+### Current Build Delta
+- The mission-objective assignment screen now offers two distinct roles: a fire team may **Own an objective**, or **Follow and assist** another fire team that directly owns one.
+- One primary team remains authoritative for each objective. Any number of other teams may reinforce it, while self-assist, assist chains, and duplicate direct owners are rejected.
+- An assisting fire-team leader receives a live rear/flank formation slot around the primary leader. The destination moves with the primary formation rather than remaining fixed at the objective's original coordinate.
+- Multiple assisting teams receive distinct reinforcement slots. Every team retains its own identity, leader, support soldiers, movement pacing, and established internal formation behavior.
+- Assisting teams do not independently claim another VIP through default rescue allocation. Direct VIP owners continue through the established approach, ingress, contact, escort, and extraction systems.
+- Visible alien contact and active Civilian Escort Support decisions retain higher tactical authority. They temporarily supersede the follow move without deleting the assist relationship, allowing the combined force to resume its assigned push afterward.
+- Objective-assist state persists through live tactical caching, save/load, Simulation frames, Hybrid control, and AI Command without a save-schema change.
+- Consecutive live Browser 1413 Build Health runs report 541-542/588. All six new assist contracts pass in both runs; the one-check variation is the documented randomized failed-mission fixture. No browser runtime errors were recorded.
+- Embedded JavaScript syntax, release seam, and whitespace checks pass. Assets are unchanged and save format remains 4.
+
+---
+
+## Historical Build Record — v0.26.08.27.1306_RELEASE_CHECKER_AND_BUILD_HEALTH_CONTRACT_REPAIR_PATCH
 
 ### Current Build Delta
 - The 3D Iso Night Brightness contract now recognizes the current persistent-renderer dependency order, including the articulated `soldierModelStyle` preference between established Iso presentation dependencies.
