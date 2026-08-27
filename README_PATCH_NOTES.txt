@@ -1,3 +1,33 @@
+BUILD: v0.26.08.26.2000_EMERGENCY_TACTICAL_JSON_AND_COORDINATED_ALIEN_SEARCH_PATCH
+TITLE: Emergency Tactical JSON + Coordinated Alien Search
+DATE: August 26, 2026
+
+Summary
+- Preserves the current campaign and live tactical battle as a direct JSON download when browser slot storage fails, while replacing nearest-fog circling with coordinated fire-team sectors and observed-UFO sweep priorities.
+
+Key changes
+- Browser slot-write failures now distinguish quota exhaustion from unavailable storage access.
+- If a normal slot write fails, the game builds an emergency campaign JSON directly from the current in-memory state and downloads it without depending on localStorage.
+- The emergency file includes activeTacticalState, identifies itself as an emergency export, records the storage-failure category, and remains compatible with the established campaign importer.
+- The existing Download Current Backup button continues to provide the same storage-independent route at any time.
+- Hidden-alien searches now assign deterministic, non-overlapping eight-hex sectors to fire teams instead of making every team repeatedly choose its nearest unrevealed cell.
+- Search targets expire after eight rounds without completion, allowing a team to abandon an unreachable or nonproductive destination and advance to another sector.
+- Once AEGIS has observed a landed reinforcement craft, a designated search team prioritizes its ramp cells. Observed crashed-UFO bay approaches receive the same treatment.
+- Unobserved craft are not used as AI targets, preserving fog-of-war and knowledge authority.
+- Build Health adds a direct emergency-export/search contract and expands the established last-alien sweep contract.
+
+Validation
+- All 5 non-empty embedded JavaScript blocks pass node --check.
+- The static build-seam checker passes for the completed build.
+- Final browser Build Health reports 524/571 passing. The new contract passes; 47 unrelated legacy assertions remain failing.
+
+Compatibility
+- Movement, TU, pathfinding, LOS, fog, formations, targeting, damage, mission objectives, and alien positions are unchanged.
+- Save format remains 4; the emergency metadata is optional export-wrapper information.
+- No game assets changed.
+
+--------------------------------------------------------------------------------
+
 BUILD: v0.26.08.26.1739_ARTICULATED_AIM_WALK_DIRECTION_AND_RANGE_ACCURACY_PATCH
 TITLE: Articulated Aim/Walk Direction + Range Accuracy
 DATE: August 26, 2026

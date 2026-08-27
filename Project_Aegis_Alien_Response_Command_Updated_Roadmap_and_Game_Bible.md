@@ -1,3 +1,17 @@
+# Build Update Addendum - v0.26.08.26.2000_EMERGENCY_TACTICAL_JSON_AND_COORDINATED_ALIEN_SEARCH_PATCH
+
+## Current Build Delta
+- Normal slot saves still use browser storage, but a rejected write now reports whether storage quota is full or storage access is unavailable.
+- A rejected slot save directly serializes the current campaign and live tactical state from memory into a downloadable emergency JSON. This does not require an earlier successful slot save, and the file remains import-compatible.
+- The existing **Download Current Backup** action remains the proactive storage-independent backup route.
+- When living aliens remain but none are observed, fire teams divide the battlefield into deterministic, non-overlapping eight-hex search sectors. This replaces the local nearest-unrevealed-cell behavior that could keep squads orbiting the already explored center of a large map.
+- A search target expires after eight rounds without completion so unreachable or nonproductive destinations cannot consume unlimited rounds.
+- AEGIS search doctrine deliberately checks ramp cells of an observed landed reinforcement craft and approaches to an observed crashed-UFO bay. It receives no knowledge of an unobserved craft or hidden alien position.
+- Fog, LOS, pathfinding, formation movement, TU, objectives, damage, targeting, and save schema retain their established authority. Save format remains 4.
+- Final browser Build Health is 524/571. The new emergency-backup/coordinated-search contract passes; 47 unrelated legacy assertions remain documented.
+
+---
+
 # Build Update Addendum - v0.26.08.26.1739_ARTICULATED_AIM_WALK_DIRECTION_AND_RANGE_ACCURACY_PATCH
 
 ## Current Build Delta
@@ -168,7 +182,7 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-26
-Current handoff build: `v0.26.08.26.1739_ARTICULATED_AIM_WALK_DIRECTION_AND_RANGE_ACCURACY_PATCH`
+Current handoff build: `v0.26.08.26.2000_EMERGENCY_TACTICAL_JSON_AND_COORDINATED_ALIEN_SEARCH_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
 Current patch status: **Browser 1739 reverses the observed Standing Aim firing direction, corrects the articulated foot cycle so walking reads forward, and gives Manual, Reaction, Simulation, recovery, and alien shots one bounded range-accuracy curve with 95%-97% legal point-blank fire. Save format remains 4.**
 
