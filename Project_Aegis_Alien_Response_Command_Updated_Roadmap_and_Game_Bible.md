@@ -1,14 +1,29 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.27.1502_FPV_TPV_AI_HANDOFF_PERSPECTIVE_PRESERVATION_HOTFIX`
+Current browser build: `v0.26.08.27.1550_ARTICULATED_RENDERER_PERFORMANCE_AND_BOUNDED_LOD_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 1502: FPV/TPV AI Handoff Perspective Preservation
+## Current Build Addendum — Browser 1550: Articulated Renderer Performance + Bounded LOD
 
 ### Current Build Delta
+- Full articulated AEGIS soldiers now merge only rigid pieces that never move relative to one another: helmet shell plus brim, the three primary rifle-body pieces, and the two dark rifle-detail pieces. Hips, knees, ankles, shoulders, elbows, wrists, torso, neck, tactical-facing pivot, muzzle socket, weapon light, gait, stances, and aiming remain independently articulated.
+- The representative armored full model falls from 24 structural mesh submissions to 20, a 16.7% reduction. Shared cached geometry and materials remain persistent across soldiers and ordinary tactical updates.
+- Fit Map and 64-cell Map/Full Iso views use the existing seven-mesh Classic presentation as a bounded articulated LOD because individual joints are not readable at that distance. Performance mode also uses the LOD at Wide zoom. The comparable distant soldier submission count is 70.8% below the former full articulated model.
+- Near, Close, Quality-mode Wide, FPV, TPV, incoming-fire reaction cameras, aiming poses, and walking animation always retain full articulation. The player-facing Articulated preference therefore remains authoritative wherever its visual detail is useful.
+- Effective detail tier is part of the persistent unit signature. Only crossing a genuine full/LOD boundary reconstructs affected soldier nodes; movement, selection, camera panning, targeting, fog changes, and ordinary animation retain the established persistent renderer lifecycle.
+- The live renderer diagnostic now separates Classic, articulated-full, and articulated-LOD frame buckets and reports draw calls, triangles, visible tier counts, unit-node creates, and mutations for same-battlefield device testing.
+- Structural comparison: 6 soldiers = 144 legacy / 120 optimized full / 42 LOD; 12 = 288 / 240 / 84; 24 = 576 / 480 / 168. Actual frame time remains dependent on the full battlefield and device and is recorded rather than inferred from mesh count.
+- Live Browser 1550 Build Health reports 549/596 against the same campaign's 544/591 pre-patch baseline. All five new contracts pass; the existing unrelated failure count remains 47.
+- Embedded JavaScript syntax, release seam, JSON, and whitespace checks pass. Assets are unchanged and save format remains 4.
+
+---
+
+## Historical Build Record — v0.26.08.27.1502_FPV_TPV_AI_HANDOFF_PERSPECTIVE_PRESERVATION_HOTFIX
+
+### Historical Build Delta
 - If Simulation AI is recalculated while First Person View or Third Person View is active, the tactical layer now snapshots the active observer perspective and the prior tactical view.
 - Automatic and manual Civilian Escort Support decisions, mission-objective reassignment, and Command Map order changes all preserve that snapshot before replacing the current AI playback stream.
 - When the replacement stream becomes active, the same FPV or TPV camera is restored around the current observed soldier instead of falling back to 3D Iso.
@@ -195,7 +210,7 @@ Authoritative playable artifact: `index.html`
 
 ## Priority Roadmap - Post-0046 Articulated Model and Release Cleanup
 
-**Status:** Active corrective sequence following the Browser 0046 code and live-runtime review. Items 1 through 4 are implemented through Browser 1306; items 5 and 6 retain their priority order. Browser 1739 also supersedes Browser 1312's observed Standing Aim direction and corrects the gait phase.
+**Status:** Active corrective sequence following the Browser 0046 code and live-runtime review. Items 1 through 5 are implemented through Browser 1550; item 6 remains the final cleanup step. Browser 1739 also supersedes Browser 1312's observed Standing Aim direction and corrects the gait phase.
 
 ### 1. Articulated soldier orientation and facing-pivot separation - implemented in Browser 0816
 - Separate authoritative tactical facing from player-authored pose rotation. A dedicated parent **facing pivot** must apply the unit's current hex direction, while a child **pose root** owns Standing Carry, aiming, kneeling, prone, downed, ceremonial, victory, and procedural walk-cycle rotations.
@@ -219,7 +234,7 @@ Authoritative playable artifact: `index.html`
 - Correct the Browser 2049 beacon-intelligence test fixture: use a breach-capable observer for the known kinetic-guidance assertion while retaining a deliberately incapable observer for the separate known-field no-breach assertion.
 - Re-run embedded JavaScript syntax, build seams, whitespace checks, critical startup smoke, and full live Build Health. Record the current unrelated failure baseline separately from new articulated contracts.
 
-### 5. Articulated renderer performance comparison and bounded optimization
+### 5. Articulated renderer performance comparison and bounded optimization - implemented in Browser 1550
 - Measure Classic versus Articulated on the same deterministic battlefield with 6, 12, and 24 visible AEGIS soldiers at Fit Map, ordinary tactical zoom, and close Iso/TPV views across Performance, Auto, and Quality modes.
 - Record renderer draw calls, triangles, average frame time, approximate FPS, unit-node rebuilds, and animation-frame cost while idle and while several soldiers walk. Shared geometry/materials reduce allocation but do not by themselves batch the roughly two dozen independently drawn articulated body/weapon meshes per soldier.
 - If the articulated default materially reduces performance, reduce material/draw fragmentation, introduce a bounded distant-Iso simplified presentation or LOD, or keep Classic as the automatic Performance-mode fallback. Do not sacrifice the approved close-view poses merely to lower distant-map cost.

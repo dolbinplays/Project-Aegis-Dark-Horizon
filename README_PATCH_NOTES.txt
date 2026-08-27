@@ -1,3 +1,31 @@
+BUILD: v0.26.08.27.1550_ARTICULATED_RENDERER_PERFORMANCE_AND_BOUNDED_LOD_PATCH
+TITLE: Articulated Renderer Performance + Bounded LOD
+DATE: August 27, 2026
+
+Summary
+- Reduces the rendering cost of articulated AEGIS soldiers while keeping full joint-driven models wherever their additional detail is visually useful.
+
+Key changes
+- Merges the rigid helmet shell/brim into one cached geometry and consolidates the rifle body and dark-detail pieces into two cached geometries. Animated body joints, tactical facing, muzzle origin, weapon light, stance poses, and gait remain independent.
+- An armored full articulated soldier now presents 20 structural meshes instead of 24, reducing its model-level draw submissions by 16.7% before battlefield visibility and renderer batching are considered.
+- Fit Map and 64-cell Map/Full Iso views use the existing seven-mesh Classic silhouette as a bounded articulated LOD. Performance mode also uses the LOD at Wide zoom. This reduces comparable distant soldier submissions by 70.8% while retaining armor, helmet, weapon, facing, life state, lighting, and map position.
+- Near, Close, Quality-mode Wide, FPV, TPV, incoming-fire reaction cameras, firing poses, and walking animation retain the full articulated hierarchy.
+- The LOD tier is part of each persistent unit presentation signature, so crossing a genuine detail boundary rebuilds only the affected unit nodes. Movement, selection, panning, targeting, and ordinary animation do not cause LOD rebuilds.
+- Renderer diagnostics now maintain independent Classic, articulated-full, and articulated-LOD frame buckets and report draw calls, triangles, visible model-tier counts, unit creates, and unit mutations.
+
+Performance comparison
+- 6 soldiers: legacy articulated 144 structural submissions; optimized full detail 120; distant LOD 42.
+- 12 soldiers: legacy articulated 288; optimized full detail 240; distant LOD 84.
+- 24 soldiers: legacy articulated 576; optimized full detail 480; distant LOD 168.
+- Full-detail structural reduction: 16.7%. Distant-Iso structural reduction: 70.8%. Runtime frame timing remains device- and battlefield-dependent and is recorded by the live same-battlefield diagnostic rather than inferred from mesh count alone.
+
+Validation
+- Live Build Health reports 549/596 against the same campaign's 544/591 pre-patch baseline. All five new articulated-renderer contracts pass, with the unrelated failure count unchanged at 47.
+- Embedded JavaScript syntax, release seam, JSON, and whitespace checks pass.
+- Tactical rules, FPV/TPV pose presentation, save schema, and save format remain unchanged at format 4. Assets are unchanged.
+
+---
+
 BUILD: v0.26.08.27.1502_FPV_TPV_AI_HANDOFF_PERSPECTIVE_PRESERVATION_HOTFIX
 TITLE: FPV/TPV AI Handoff Perspective Preservation
 DATE: August 27, 2026
