@@ -1,3 +1,23 @@
+BUILD: v0.26.08.27.1205_FIRE_TEAM_ASSIGNMENT_MODAL_LAYERING_HOTFIX
+TITLE: Fire-Team Assignment Modal Layering Hotfix
+DATE: August 27, 2026
+
+Summary
+- Moves the mission-objective fire-team assignment screen into the document-level modal layer so the Three.js tactical map and tactical HUD can no longer render over it.
+
+Key changes
+- The assignment screen now uses a React portal attached directly to the document body, escaping tactical-panel transforms, clipping, and stacking contexts.
+- Its full-screen backdrop, assignment cards, selectors, and action buttons render above the 2D and 3D Iso battle presentations.
+- The higher-priority Civilian Escort Support decision retains its existing overlay priority when alien contact interrupts an escort.
+- Objective choices, AI priorities, pathing, formations, tactical authority, and save data are unchanged.
+
+Validation
+- Embedded JavaScript syntax and release seam checks pass.
+- Build Health now verifies the assignment modal uses the document-level portal.
+- Save format remains 4 and assets are unchanged.
+
+---
+
 BUILD: v0.26.08.27.0924_FIRE_TEAM_MISSION_OBJECTIVE_ASSIGNMENT_AND_REPLAN_PATCH
 TITLE: Fire-Team Mission Objective Assignment + Replan
 DATE: August 27, 2026

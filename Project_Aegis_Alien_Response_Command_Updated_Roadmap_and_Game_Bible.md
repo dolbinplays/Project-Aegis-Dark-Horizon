@@ -1,14 +1,24 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.27.0924_FIRE_TEAM_MISSION_OBJECTIVE_ASSIGNMENT_AND_REPLAN_PATCH`
+Current browser build: `v0.26.08.27.1205_FIRE_TEAM_ASSIGNMENT_MODAL_LAYERING_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 0924: Fire-Team Mission Objective Assignment + Replan
+## Current Build Addendum — Browser 1205: Fire-Team Assignment Modal Layering Hotfix
 
 ### Current Build Delta
+- The fire-team mission-objective assignment screen now renders through a React portal attached directly to the document body.
+- This removes the modal from the tactical panel's local stacking and clipping contexts, preventing the 2D/3D tactical map, renderer canvas, and tactical HUD from painting over it.
+- The assignment screen retains its full-screen backdrop and remains below the deliberately higher-priority Civilian Escort Support decision when an escort column encounters alien contact.
+- Objective assignments, AI doctrine, movement, pathfinding, formations, fog, LOS, mission authority, assets, and save format 4 are unchanged.
+
+---
+
+## Historical Build Record — v0.26.08.27.0924_FIRE_TEAM_MISSION_OBJECTIVE_ASSIGNMENT_AND_REPLAN_PATCH
+
+### Historical Build Delta
 - When more than one mission goal is known at landing, the tactical layer presents a fire-team objective assignment board modeled on the existing escort-support decision screen.
 - Every living fire team may receive one explicit goal or remain on **Default AI Doctrine**, which preserves the autonomous search, rescue, combat, reinforcement-source, and formation behavior used before this patch.
 - Tracked VIPs are assignable at landing even before direct visual contact. Ordinary civilians, Alien Field Beacons, crashed-UFO bays, and alien-base command cores are listed only after AEGIS legitimately knows them.
