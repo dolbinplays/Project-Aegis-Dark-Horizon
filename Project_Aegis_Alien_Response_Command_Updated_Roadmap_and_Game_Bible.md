@@ -1,3 +1,17 @@
+# Build Update Addendum - v0.26.08.26.1739_ARTICULATED_AIM_WALK_DIRECTION_AND_RANGE_ACCURACY_PATCH
+
+## Current Build Delta
+- Standing Aim is reversed 180 degrees from Browser 1312's observed runtime orientation so a standing shooter now faces the selected target during the readable aiming hold.
+- The correction remains pose-local beneath the authoritative six-direction facing pivot. It does not alter shot endpoints, targeting, muzzle ownership, map coordinates, or the approved authored pose library.
+- The articulated Standing Carry gait rephases knee bend and ankle recovery against the existing hip stride so the rear leg pushes off while the leading leg reaches forward. Upper-body carry, rifle posture, route, TU, speed, formation following, and pathfinding remain unchanged.
+- Manual fire, reaction fire, normal Simulation AI fire, isolated AI-recovery fire, and alien fire now use one shared distance curve.
+- A legal one-hex point-blank shot resolves between 95% and 97% before an intervening-window penalty. Close range gains a bounded bonus, eight hexes is neutral, and long range receives a capped penalty.
+- Stance, fire mode, darkness, fear, morale, equipment, target cover, windows, LOS, and weapon range retain their existing authority. Range changes probability only after a shot is otherwise legal.
+- Manual shot-result feedback and AI shot metadata use the same range-adjusted probability used for resolution.
+- Deterministic Build Health coverage verifies pose reversal, forward gait phase, curve breakpoints, point-blank bounds, every tactical firing path, and save format 4.
+
+---
+
 # Build Update Addendum - v0.26.08.26.1628_ARTICULATED_WEAPON_LIGHT_AND_MUZZLE_ATTACHMENT_PARITY_PATCH
 
 ## Current Build Delta
@@ -66,7 +80,7 @@
 
 ## Priority Roadmap - Post-0046 Articulated Model and Release Cleanup
 
-**Status:** Active corrective sequence following the Browser 0046 code and live-runtime review. Items 1 and 2 are implemented through Browser 1628; the remaining items retain their priority order.
+**Status:** Active corrective sequence following the Browser 0046 code and live-runtime review. Items 1 and 2 are implemented through Browser 1739; the remaining items retain their priority order. Browser 1739 also supersedes Browser 1312's observed Standing Aim direction and corrects the gait phase.
 
 ### 1. Articulated soldier orientation and facing-pivot separation - implemented in Browser 0816
 - Separate authoritative tactical facing from player-authored pose rotation. A dedicated parent **facing pivot** must apply the unit's current hex direction, while a child **pose root** owns Standing Carry, aiming, kneeling, prone, downed, ceremonial, victory, and procedural walk-cycle rotations.
@@ -154,9 +168,9 @@
 ## Codex Handoff: Updated Full Roadmap + Game Bible
 
 Last updated: 2026-08-26
-Current handoff build: `v0.26.08.26.1628_ARTICULATED_WEAPON_LIGHT_AND_MUZZLE_ATTACHMENT_PARITY_PATCH`
+Current handoff build: `v0.26.08.26.1739_ARTICULATED_AIM_WALK_DIRECTION_AND_RANGE_ACCURACY_PATCH`
 Native vertical slice: `v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE`
-Current patch status: **Browser 1628 attaches the articulated flashlight housing, visual spotlight, target, and muzzle socket to the right-wrist rifle hierarchy. The weapon light and visual tracer origin now inherit pose and tactical-facing transforms without duplicate legacy equipment; tactical illumination and combat authority remain unchanged.**
+Current patch status: **Browser 1739 reverses the observed Standing Aim firing direction, corrects the articulated foot cycle so walking reads forward, and gives Manual, Reaction, Simulation, recovery, and alien shots one bounded range-accuracy curve with 95%-97% legal point-blank fire. Save format remains 4.**
 
 
 ## Browser 2216 - Articulated AEGIS Soldier Models + Classic Toggle

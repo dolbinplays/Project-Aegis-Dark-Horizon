@@ -1,3 +1,30 @@
+BUILD: v0.26.08.26.1739_ARTICULATED_AIM_WALK_DIRECTION_AND_RANGE_ACCURACY_PATCH
+TITLE: Articulated Aim/Walk Direction + Range Accuracy
+DATE: August 26, 2026
+
+Summary
+- Reverses the misdirected Standing Aim presentation, makes the articulated foot cycle read as forward walking, and gives every tactical firearm path one bounded distance-based accuracy curve.
+
+Key changes
+- Standing Aim now uses the opposite runtime yaw from Browser 1312, a 180-degree correction from that build's observed firing presentation.
+- The correction remains beneath the authoritative six-direction tactical-facing pivot and does not change the selected target, shot vector, or muzzle-socket ownership.
+- Rephases the active knee bend and ankle recovery against the existing hip stride so the rear leg pushes off while the leading leg reaches forward, preserving the approved Standing Carry upper body, rifle pose, route, speed, and root bob.
+- Adds a shared range modifier for manual fire, reaction fire, ordinary Simulation AI fire, AI-recovery fire, and alien fire.
+- One-hex point-blank fire resolves at 95%-97% before any intervening-window penalty.
+- Close shots receive a bounded bonus, the curve is neutral at eight hexes, and longer shots receive a capped penalty.
+- Stance, fire mode, darkness, fear, morale, equipment, cover, LOS, windows, and weapon range remain part of shot legality and accuracy.
+- Manual shot-result feedback uses the same range-adjusted chance as shot resolution; Simulation shot records use the same helper.
+- Build Health covers the corrected pose yaw, gait phase, accuracy breakpoints, point-blank bounds, all five firing paths, and save format 4.
+
+Compatibility
+- Movement coordinates, pathfinding, TU cost, fire-team formations, AI movement, targeting authority, LOS, damage, fog, and save data are unchanged.
+- Approved authored pose values remain unchanged; the correction is applied only by the runtime presentation layer.
+- Classic soldiers and FPV weapon ownership are unchanged.
+- Save format remains 4.
+- No game assets changed.
+
+--------------------------------------------------------------------------------
+
 BUILD: v0.26.08.26.1628_ARTICULATED_WEAPON_LIGHT_AND_MUZZLE_ATTACHMENT_PARITY_PATCH
 TITLE: Articulated Weapon-Light + Muzzle Attachment Parity
 DATE: August 26, 2026
