@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.27.1550_ARTICULATED_RENDERER_PERFORMANCE_AND_BOUNDED_LOD_PATCH",
+  "currentBuild": "v0.26.08.27.1629_ARTICULATED_FULL_WIDE_STATIC_DETAIL_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "articulated-renderer-performance-and-bounded-lod-complete",
+  "status": "articulated-full-wide-static-detail-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.27.1550_ARTICULATED_RENDERER_PERFORMANCE_AND_BOUNDED_LOD_PATCH",
+  "lastInspectedBuild": "v0.26.08.27.1629_ARTICULATED_FULL_WIDE_STATIC_DETAIL_PATCH",
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +37,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.27.1550_ARTICULATED_RENDERER_PERFORMANCE_AND_BOUNDED_LOD_PATCH",
+    "browserBuild": "v0.26.08.27.1629_ARTICULATED_FULL_WIDE_STATIC_DETAIL_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -198,7 +198,8 @@
       "bounded-tactical-range-accuracy",
       "immutable-browser-build-metadata-and-patch-history",
       "segmented-organic-terrain-color-transitions",
-      "articulated-renderer-performance-and-bounded-lod"
+      "articulated-renderer-performance-and-bounded-lod",
+      "articulated-full-wide-static-detail"
     ],
     "temporaryExceptions": [
       {

@@ -1,3 +1,24 @@
+BUILD: v0.26.08.27.1629_ARTICULATED_FULL_WIDE_STATIC_DETAIL_PATCH
+TITLE: Articulated Full/Wide Static Detail
+DATE: August 27, 2026
+
+Summary
+- Uses detailed articulated AEGIS soldiers in Full and Wide 3D Iso while holding their leg joints stationary to avoid unnecessary mid-distance gait animation.
+
+Key changes
+- Full and Wide now use the optimized 20-mesh articulated soldier whenever the Articulated Soldiers presentation option is selected, replacing the seven-mesh Classic silhouette previously used at these zooms.
+- The new articulated-static tier retains armor colors, helmet, rifle, facing, standing/kneeling/aiming poses, injury and death state, and normal battlefield translation.
+- Walking-leg animation is explicitly disabled for articulated-static models. A moving soldier still travels along the authoritative movement path, but its legs remain in the appropriate stationary stance.
+- Near, Close, FPV, TPV, and incoming-fire reaction cameras retain fully animated articulated soldiers. Map and Fit Map retain the seven-mesh Classic LOD.
+- Persistent unit signatures and renderer diagnostics now distinguish articulated-full, articulated-static, articulated-LOD, and Classic tiers.
+
+Validation
+- The five articulated-renderer Build Health contracts now cover Full/Wide static articulation, Map/Fit Map LOD, Near/Close and perspective animation, static gait suppression, persistent tier boundaries, and diagnostic accounting.
+- Embedded JavaScript syntax, release seam, JSON, and whitespace checks pass.
+- This is presentation-only: tactical simulation, movement, TU use, pathfinding, LOS, targeting, fog, AI behavior, save data, and save format 4 remain unchanged. Assets are unchanged.
+
+---
+
 BUILD: v0.26.08.27.1550_ARTICULATED_RENDERER_PERFORMANCE_AND_BOUNDED_LOD_PATCH
 TITLE: Articulated Renderer Performance + Bounded LOD
 DATE: August 27, 2026
