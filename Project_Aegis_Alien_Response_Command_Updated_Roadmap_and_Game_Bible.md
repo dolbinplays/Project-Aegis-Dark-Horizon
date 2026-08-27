@@ -1,14 +1,29 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.26.2315_BROWSER_BUILD_METADATA_AND_PATCH_HISTORY_SYNCHRONIZATION_PATCH`
+Current browser build: `v0.26.08.27.0813_SEGMENTED_ORGANIC_TERRAIN_COLOR_TRANSITIONS_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 2315: Browser Build Metadata + Patch-History Synchronization
+## Current Build Addendum — Browser 0813: Segmented Organic Terrain Color Transitions
 
 ### Current Build Delta
+- Open-ground color regions now preserve a deterministic irregular core in the existing authored palette rather than meeting at hard square/block borders.
+- Region centers receive bounded seed-based offsets, and eight directional core radii vary independently so adjacent cores do not repeat one silhouette.
+- Every transition hex projects onto the line to its nearest meaningfully different neighboring color anchor. The line is divided into 100 discrete segments, and the hex deterministically samples within the ramp interval crossing its footprint.
+- The stepped sampling prevents a uniformly smooth gradient while remaining stable across save/load and repeated generation from the same mission seed.
+- Structural terrain—including roads, paths, streams, irrigation, building floors, doors, and pedestrian surfaces—keeps its authored palette and tactical readability.
+- The shared palette reaches 2D Hex, Legacy 3D, Continuous 3D Iso, FPV, and TPV at mission terrain-build time only. No camera, selection, fog, or unit movement event regenerates it.
+- Neighbor-anchor palette samples are cached per mission/region, keeping the additional generation work bounded across Small, Medium, and Large maps.
+- Live Browser 0813 Build Health is 526/573; the new deterministic terrain-transition contract and prior build-metadata contract both pass.
+- Terrain authority, coordinates, movement, pathfinding, TU, LOS, fog, cover, accuracy, AI knowledge, objectives, damage, assets, and save format 4 are unchanged.
+
+---
+
+## Historical Build Record — v0.26.08.26.2315_BROWSER_BUILD_METADATA_AND_PATCH_HISTORY_SYNCHRONIZATION_PATCH
+
+### Historical Build Delta
 - The browser artifact, manifest current/inspected/parity fields, README, in-game version library, Game Bible, and release checker now share one authoritative build identity.
 - Twenty-two historical in-game records now retain their original immutable build IDs instead of inheriting `CURRENT_GAME_BUILD` and being relabeled by every later release.
 - The full articulated sequence remains explicit and chronological, including Approved Pose Set 0033, Standing Carry Walk Cycle 0046, Facing Pivot 0816, and the later right-handed, aiming, camera, attachment, gait-direction, and range-accuracy patches.

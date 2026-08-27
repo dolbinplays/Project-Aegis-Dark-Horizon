@@ -1,3 +1,27 @@
+BUILD: v0.26.08.27.0813_SEGMENTED_ORGANIC_TERRAIN_COLOR_TRANSITIONS_PATCH
+TITLE: Segmented Organic Terrain Color Transitions
+DATE: August 27, 2026
+
+Summary
+- Preserves recognizable authored-color cores inside open-ground regions while replacing hard block borders with deterministic, irregular, 100-step color transitions toward neighboring regions.
+
+Key changes
+- Every open-ground region receives a seed-jittered center and eight independently seeded core radii, producing irregular cores rather than repeated circles or squares.
+- Hexes outside a core project onto the line between their own region anchor and the nearest meaningfully different neighboring color anchor.
+- Each line is treated as 100 discrete color segments. A hex deterministically chooses from the segment interval crossing that cell, retaining visible variation instead of becoming a smooth gradient.
+- Core hexes retain the established palette. Roads, paths, water, irrigation, buildings, doors, sidewalks, and other authored structural surfaces bypass the transition system.
+- The same generated palette feeds 2D Hex, Legacy 3D ground, Continuous 3D Iso, FPV, and TPV without adding per-frame work or terrain rebuilds.
+- Neighbor-anchor palette samples are cached by mission and region, bounding the extra generation work on 64x64, 80x80, and 96x96 maps.
+- Tactical coordinates, terrain semantics, movement, TU, pathfinding, LOS, fog, cover, accuracy, AI knowledge, damage, objectives, and save format 4 are unchanged.
+
+Validation
+- All 5 non-empty embedded JavaScript blocks pass node --check.
+- The release seam checker passes for Browser 0813, including synchronized manifest/document/history identity.
+- Live Build Health is 526/573. The new irregular-core/100-step transition contract and the prior metadata/history contract both pass.
+- Save format remains 4 and assets are unchanged.
+
+---
+
 BUILD: v0.26.08.26.2315_BROWSER_BUILD_METADATA_AND_PATCH_HISTORY_SYNCHRONIZATION_PATCH
 TITLE: Browser Build Metadata + Patch-History Synchronization
 DATE: August 26, 2026

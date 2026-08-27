@@ -803,6 +803,12 @@ const required = [
   "BROWSER_BUILD_METADATA_AND_PATCH_HISTORY_SYNCHRONIZATION_PATCH",
   "browserBuildMetadataAndPatchHistorySynchronizationContractTest",
   "Browser build metadata and historical patch IDs remain synchronized and immutable",
+  "TACTICAL_SEGMENTED_ORGANIC_TERRAIN_COLOR_TRANSITIONS_PATCH",
+  "tacticalSegmentedTerrainColorPalette",
+  "tacticalTerrainColorRegionCoreRadius",
+  "TACTICAL_SEGMENTED_TERRAIN_ANCHOR_PALETTE_CACHE",
+  "tacticalSegmentedOrganicTerrainColorTransitionsContractTest",
+  "Terrain colors preserve irregular seeded cores and use deterministic 100-step neighbor transitions",
   "runSelfTests"
 ];
 
@@ -848,7 +854,8 @@ for (const immutableBuild of [
   "v0.26.08.26.1312_STANDING_AIM_ALIGNMENT_AND_SOLDIER_CYCLE_CAMERA_PATCH",
   "v0.26.08.26.1628_ARTICULATED_WEAPON_LIGHT_AND_MUZZLE_ATTACHMENT_PARITY_PATCH",
   "v0.26.08.26.1739_ARTICULATED_AIM_WALK_DIRECTION_AND_RANGE_ACCURACY_PATCH",
-  "v0.26.08.26.2000_EMERGENCY_TACTICAL_JSON_AND_COORDINATED_ALIEN_SEARCH_PATCH"
+  "v0.26.08.26.2000_EMERGENCY_TACTICAL_JSON_AND_COORDINATED_ALIEN_SEARCH_PATCH",
+  "v0.26.08.26.2315_BROWSER_BUILD_METADATA_AND_PATCH_HISTORY_SYNCHRONIZATION_PATCH"
 ]) {
   if (!patchHistorySource.includes(`build:"${immutableBuild}"`)) missing.push(`immutable patch-history build is missing: ${immutableBuild}`);
 }
