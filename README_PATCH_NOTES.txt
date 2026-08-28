@@ -1,3 +1,30 @@
+BUILD: v0.26.08.28.0910_ARTICULATED_CIVILIAN_VIP_APPEARANCE_FEAR_AND_MOVEMENT_PATCH
+TITLE: Articulated Civilian/VIP Appearance, Fear + Movement
+DATE: August 28, 2026
+
+Summary
+- Replaces the close and mid-distance civilian/VIP silhouettes with lightweight unarmed articulated characters whose appearance and pose follow existing tactical state.
+
+Key changes
+- Ordinary civilians receive deterministic varied clothing, skin, hair, and bounded height variation. Tracked VIPs use black or charcoal suits with restrained shirt and tie variation.
+- Near, Close, Full, Wide, FPV, and TPV use a ten-submission vertex-colored civilian hierarchy. Map and Fit Map retain the bounded Classic civilian LOD.
+- Calm civilians use Attention. Panicked civilians use the existing Victory arms as a readable fear posture. A stationary panicked civilian beside valid hard cover combines those arms with kneeling legs.
+- Moving civilians and VIPs reuse the established soldier gait for hips, knees, ankles, torso bob, and neck stabilization while preserving the current calm/fear upper-body pose.
+- Panic recovery returns the character to Attention. Existing escort movement, visibility, boarding/extraction, injury, collapse, and prone-death state continue to drive presentation.
+- Diagnostics count articulated civilians and VIPs separately. No civilian owns a weapon rig, muzzle socket, or weapon light.
+
+Performance / authority
+- The articulated civilian uses exactly 10 structural mesh submissions: torso, head, four leg segments, and four arm segments. Rigid clothing, shoes, hands, hair, shirt, and tie details are merged with vertex colors inside those segments.
+- The persistent renderer reuses cached geometry/materials and only rebuilds a civilian node when its real signature or LOD tier changes. Gait animation mutates retained joints only.
+- This is presentation-only. AI, movement, pathfinding, TU, LOS, fog, cover, targeting, damage, mission objectives, civilian panic/recovery rolls, rescue/extraction state, and save data are unchanged.
+
+Validation
+- Embedded JavaScript syntax, release-seam, JSON, and whitespace checks pass before packaging.
+- Build Health adds five deterministic contracts, including a runtime construction test requiring exactly ten vertex-colored meshes, no weapon/muzzle ownership, fear-arm preservation during gait, pose-state mapping, and save format 4.
+- `assets/` is unchanged. Save format remains 4.
+
+---
+
 BUILD: v0.26.08.27.2300_ARTICULATED_POSE_EDITOR_AND_DOCUMENTATION_CONSOLIDATION_PATCH
 TITLE: Articulated Pose Editor + Documentation Consolidation
 DATE: August 27, 2026

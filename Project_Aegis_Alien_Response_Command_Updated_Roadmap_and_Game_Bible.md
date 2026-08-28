@@ -1,14 +1,27 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.27.2300_ARTICULATED_POSE_EDITOR_AND_DOCUMENTATION_CONSOLIDATION_PATCH`
+Current browser build: `v0.26.08.28.0910_ARTICULATED_CIVILIAN_VIP_APPEARANCE_FEAR_AND_MOVEMENT_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 2300: Articulated Pose Editor + Documentation Consolidation
+## Current Build Addendum — Browser 0910: Articulated Civilian/VIP Appearance, Fear + Movement
 
 ### Current Build Delta
+- Ordinary civilians now use deterministic varied clothing, skin, hair, and bounded height variation. Tracked VIPs use readable black/charcoal suits with limited shirt and tie variation.
+- Civilians and VIPs are unarmed articulated characters in Near, Close, Full, Wide, FPV, and TPV. Their ten structural submissions merge rigid clothing details with vertex colors while retaining the joints needed for pose and gait. Map and Fit Map retain the bounded Classic civilian LOD.
+- Calm civilians use the approved Attention pose. Panicked civilians use the approved Victory arms as a readable frightened posture. A stationary panicked civilian beside valid hard cover combines those fear arms with kneeling legs.
+- Moving civilians and VIPs reuse the established soldier leg gait without replacing their calm or frightened upper-body pose. The animation follows existing movement playback and never owns movement authority.
+- Panic recovery restores Attention. Escort following, building routes, Skyranger boarding/extraction, fog visibility, injury, collapse, and prone-death presentation continue to read existing authoritative unit state.
+- Persistent renderer diagnostics now distinguish articulated civilians, articulated VIPs, and civilian LOD. The runtime Build Health contract constructs a ten-mesh civilian, verifies no weapon/muzzle hierarchy, and confirms gait changes the hips while preserving the fear arms.
+- AI, movement, pathfinding, TU, LOS, fog, cover, targeting, damage, objectives, panic/recovery rules, save data, assets, and save format 4 are unchanged.
+
+---
+
+## Historical Build Record — Browser 2300: Articulated Pose Editor + Documentation Consolidation
+
+### Historical Build Delta
 - `AEGIS_Articulated_Pose_Editor_CURRENT.html` is the stable entry point for future articulated authoring and forwards to the approved 0033 eight-pose library.
 - The approved editor is visibly identified as the current authoring tool. The superseded 2356 editor remains available for historical reproduction but opens with an archived warning and a direct link to the stable launcher.
 - The approved editor now demonstrates the runtime transform hierarchy: a six-direction **Facing Preview** rotates a dedicated tactical-facing parent while the editable pose remains on a child root.
@@ -293,9 +306,9 @@ Authoritative playable artifact: `index.html`
 
 ---
 
-## Roadmap Addition - Articulated Civilian and VIP Models
+## Implemented System - Articulated Civilian and VIP Models
 
-**Status:** Approved tactical-presentation item. Extend the established lightweight articulated AEGIS hierarchy and animation system to civilians and VIPs without changing their authoritative movement, escort, fear, cover, pathfinding, extraction, or mission-resolution behavior.
+**Status:** Implemented in Browser 0910. The established lightweight articulated hierarchy and animation system now presents civilians and VIPs without changing their authoritative movement, escort, fear, cover, pathfinding, extraction, or mission-resolution behavior.
 
 ### Appearance and equipment
 - Civilians use varied deterministic clothing combinations drawn from a civilian-appropriate color palette so a crowd does not read as a uniformed group. Preserve current skin-tone and body-proportion variation where available.
@@ -314,6 +327,7 @@ Authoritative playable artifact: `index.html`
 - Preserve fog and knowledge boundaries: a hidden civilian/VIP model, pose, clothing, or fear state must never reveal an unseen unit or hidden threat.
 - Verify calm idle, frightened idle, calm walk, frightened walk, stationary cover-seeking crouch, fear recovery, escort following, Skyranger boarding, injury/death, roof cutaway, night lighting, and camera transitions in 3D Iso and TPV.
 - Add deterministic Build Health contracts for unarmed geometry, civilian clothing variation, VIP suit authority, pose selection, walking-leg reuse, stationary frightened cover pose, tactical-facing separation, and unchanged save format/gameplay outcomes.
+- Browser 0910 implements the model as ten cached vertex-colored structural submissions in full/mid tiers and retains Classic civilian LOD for Map/Fit Map. Focused contracts cover deterministic appearance, unarmed ownership, pose mapping, gait isolation, renderer wiring, death handling, and save format 4.
 
 ---
 
