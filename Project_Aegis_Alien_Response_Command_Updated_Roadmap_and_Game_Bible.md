@@ -1,14 +1,26 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.28.0910_ARTICULATED_CIVILIAN_VIP_APPEARANCE_FEAR_AND_MOVEMENT_PATCH`
+Current browser build: `v0.26.08.28.1101_OBJECTIVE_ASSIGNMENT_TRANSACTIONAL_CANCEL_AND_DRAFT_PRESERVATION_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 0910: Articulated Civilian/VIP Appearance, Fear + Movement
+## Current Build Addendum — Browser 1101: Objective Assignment Transactional Cancel + Draft Preservation
 
 ### Current Build Delta
+- The fire-team **Assign Objectives** overlay now includes a clear **Cancel** action beside the existing commit action.
+- Objective selectors remain draft-only while the overlay is open. Direct owners, Default AI Doctrine teams, and follow/assist relationships on live tactical units do not change until **Apply Objective Assignments** is pressed.
+- Cancel discards all draft selections, reconstructs the controls from authoritative live assignments, and closes the overlay. Repeated open/edit/cancel cycles therefore preserve the exact pre-open assignment state.
+- Cancel does not call assignment mutation, invalidate or restart Simulation/Hybrid AI, transfer command, reset formations, or restart movement. Apply remains the sole commit path.
+- Three focused Build Health contracts cover direct/default/assist restoration, explicit Cancel wiring, repeated cancellation, no-replan boundaries, and save format 4.
+- Assets and tactical gameplay authority are unchanged. Save format remains 4.
+
+---
+
+## Historical Build Record — Browser 0910: Articulated Civilian/VIP Appearance, Fear + Movement
+
+### Historical Build Delta
 - Ordinary civilians now use deterministic varied clothing, skin, hair, and bounded height variation. Tracked VIPs use readable black/charcoal suits with limited shirt and tie variation.
 - Civilians and VIPs are unarmed articulated characters in Near, Close, Full, Wide, FPV, and TPV. Their ten structural submissions merge rigid clothing details with vertex colors while retaining the joints needed for pose and gait. Map and Fit Map retain the bounded Classic civilian LOD.
 - Calm civilians use the approved Attention pose. Panicked civilians use the approved Victory arms as a readable frightened posture. A stationary panicked civilian beside valid hard cover combines those fear arms with kneeling legs.
@@ -553,6 +565,62 @@ The deterministic contract covers spoiler-free pre-observation language, attack 
 - Focused browser diagnostics pass exact Easy/Medium/Hard initial and wave counts, wave-two reopening, old-save migration, a six-unit Hard beacon wave, eight unique low-threat Manual positions, a 30-defender Hard alien base with one commander, and live Manual source wiring.
 - A dedicated threat-six fixture passes a staged six-plus-two Hard beacon arrival with eight persistent IDs, one commander, shield protection recorded for every arrival, eight unique current cells after the ring clears, and one cinematic owner.
 - Embedded JavaScript syntax, whitespace, manifest, version, patch-note, and game-bible seams remain required before release.
+
+
+## Roadmap Addition - Transactional Objective Assignment Cancel
+
+**Status:** Implemented in Browser 1101.
+
+- When the player manually opens the fire-team objective-assignment screen with **Assign Objectives**, capture the complete assignment state that exists at the moment the window opens, including direct objective owners, Default AI Doctrine selections, and follow/assist relationships.
+- Treat every selection made while that window is open as a local draft. Do not mutate live fire-team orders, cached tactical state, AI planning, escort authority, or save data until the player explicitly confirms the changes.
+- Add a clearly labeled **Cancel** button. Cancel closes the assignment window, discards the entire draft, and restores the exact pre-open assignment snapshot as though **Assign Objectives** had never been clicked.
+- Cancel must not trigger an AI replan, tactical-command transfer, formation reset, objective release, or movement restart beyond naturally resuming the control state that was paused while the window was open.
+- The existing confirmation/apply action remains the only path that commits revised assignments. Closing through an equivalent dismissal route, if one is retained, must follow the same discard semantics as Cancel rather than silently applying partial changes.
+- Add deterministic Build Health coverage for direct owners, Default teams, assisting teams, several edited draft fields, cancel-with-no-change, repeated open/cancel cycles, and unchanged save format 4.
+- Browser 1101 implements the Cancel button as a transactional discard: draft choices are rebuilt from untouched live assignments, the modal closes without any AI replan or command handoff, and Apply remains the only mutation path.
+
+
+## Roadmap Addition - Orange Laser Carbine Equipment Identity
+
+**Status:** Approved Barracks/equipment readability item; implementation pending.
+
+- Change the **Laser Carbine** equipment accent to a clearly readable orange so it cannot be confused with the current green and blue weapon presentations on Soldier/Barracks cards.
+- Apply the orange identity consistently anywhere the same weapon is shown for selection or inspection, including equipped-weapon labels, loadout choices, Base Stores/Quartermaster listings, transfer summaries, and relevant tactical inventory UI.
+- Preserve the explicit **Laser Carbine** text and weapon icon rather than relying on color alone. Choose an orange with sufficient contrast against both dark and light card backgrounds and keep selection, disabled, unavailable, and hover states distinguishable.
+- This is an interface-presentation change only. Do not alter Laser Carbine damage, accuracy, range, TU costs, ammunition, research, manufacturing, inventory counts, tactical projectile behavior, or save data.
+- Add a deterministic UI contract confirming that Laser Carbine uses the canonical orange equipment token while neighboring green and blue weapon categories remain visually distinct under save format 4.
+
+
+## Roadmap Addition - Selected-Squad Morale Summary on Mission Control
+
+**Status:** Approved deployment-information item; implementation pending.
+
+- On the Missions screen, show the **highest morale**, **lowest morale**, and **average morale** of the currently selected squad so the commander can consider its mental readiness before committing it to an operation.
+- Recalculate the three values immediately whenever the selected squad or its eligible mission roster changes. Use the same authoritative current morale values displayed by the existing soldier systems; do not substitute maximum morale, a cached pre-mission value, or a qualitative estimate.
+- Make empty, unavailable, or fully incapacitated squad states explicit instead of displaying a misleading zero average. Keep the summary readable beside the existing squad readiness and mission-launch information.
+- This panel is informational and must not itself change squad selection, morale, mission eligibility, AI behavior, or launch resolution.
+- Add deterministic UI coverage for a mixed-morale squad, a one-soldier squad, roster changes, unavailable members, no eligible members, and exact highest/lowest/arithmetic-average calculations.
+
+
+## Roadmap Addition - Mental Health Center and Specialist Treatment Queue
+
+**Status:** Approved base-facility and soldier-recovery system; implementation pending.
+
+### Facility and staffing
+- Add a buildable **Mental Health Center** for soldiers whose morale or mental state is in dire need of recovery.
+- Each completed Mental Health Center includes one Mental Health Specialist and has room for three additional specialists, for a maximum of four staffed treatment positions per facility. Additional facilities independently add the same included specialist and three recruitable staffing positions.
+- Each staffed specialist can conduct one soldier session at a time. Soldiers waiting for treatment are seen on a first-come, first-served basis; adding staff increases concurrent hourly throughput without changing queue order.
+
+### Treatment behavior
+- One treatment session lasts one uninterrupted Geoscape hour. A completed session improves morale/mental recovery more quickly than ordinary downtime activities, with final recovery values to be balanced against campaign difficulty and facility upkeep.
+- Mental Health Center sessions do **not** improve friendships, rivalries, squad cohesion, or any other soldier-to-soldier relationship. Rec Room and Training Center activities retain their separate social and relationship opportunities.
+- If a soldier is assigned to a mission before the current hour-long session completes, cancel that session with **no partial morale or mental-state improvement**. The released specialist can take the next FCFS patient, and the interrupted soldier may re-enter the queue after returning if treatment is still needed.
+- Clearly show queued, in-session, elapsed/remaining time, interrupted, and completed states in the Base/personnel interface. Mission assignment and launch confirmation should warn when a selected soldier will forfeit an incomplete session.
+- Facility treatment must advance only from authoritative Geoscape time, remain paused while the strategic clock is paused, and resolve consistently through ordinary ticks, accelerated time, day/month advancement, save/load, transfers, wounds, KIA state, and facility loss or unavailability.
+
+### Persistence and validation
+- Persist facility count, specialist staffing, FCFS queue order, active patient/specialist ownership, and session elapsed time using normalized defaults compatible with existing saves. Keep save format 4 unless implementation proves a schema migration unavoidable.
+- Add deterministic contracts for the included specialist, four-specialist facility cap, multiple-facility scaling, FCFS ordering, concurrent treatment, exactly one-hour completion, zero benefit on a 59-minute mission interruption, post-mission requeue, no relationship mutation, time-compression parity, and safe save/load normalization.
 
 
 ## Roadmap Addition - Unescorted Civilian/VIP Shelter and Fear Flight

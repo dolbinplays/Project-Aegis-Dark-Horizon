@@ -1,3 +1,23 @@
+BUILD: v0.26.08.28.1101_OBJECTIVE_ASSIGNMENT_TRANSACTIONAL_CANCEL_AND_DRAFT_PRESERVATION_PATCH
+TITLE: Objective Assignment Transactional Cancel + Draft Preservation
+DATE: August 28, 2026
+
+Summary
+- Adds a true Cancel path to the fire-team objective board so tentative edits can be abandoned without changing any live assignment or restarting tactical AI.
+
+Key changes
+- The Assign Objectives overlay now shows Cancel beside Apply Objective Assignments.
+- Direct objective owners, Default AI Doctrine teams, and follow/assist relationships remain authoritative while the overlay is open. All dropdown changes are draft-only.
+- Cancel rebuilds the displayed choices from the untouched live units and closes the overlay. Reopening shows the same assignments that existed before the cancelled edit.
+- Cancel never invokes the assignment mutator, AI-stream invalidation, Simulation/Hybrid restart, command transfer, formation reset, or movement restart.
+- Apply Objective Assignments remains the only commit path.
+
+Validation
+- Three deterministic Build Health contracts cover exact direct/default/assist restoration, UI wiring, repeated cancellation, no AI replan, and unchanged save format 4.
+- Embedded JavaScript syntax, release seams, JSON, and whitespace checks pass. `assets/` is unchanged.
+
+---
+
 BUILD: v0.26.08.28.0910_ARTICULATED_CIVILIAN_VIP_APPEARANCE_FEAR_AND_MOVEMENT_PATCH
 TITLE: Articulated Civilian/VIP Appearance, Fear + Movement
 DATE: August 28, 2026
