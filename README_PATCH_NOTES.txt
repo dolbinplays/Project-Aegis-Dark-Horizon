@@ -1,3 +1,23 @@
+BUILD: v0.26.08.28.1422_ORANGE_LASER_CARBINE_EQUIPMENT_IDENTITY_PATCH
+TITLE: Orange Laser Carbine Equipment Identity
+DATE: August 28, 2026
+
+Summary
+- Gives the Laser Carbine one high-contrast orange identity across equipment lists, soldier presentation, articulated weapons, and tactical fire without changing its combat behavior.
+
+Key changes
+- Laser Carbine inventory and Quartermaster glyphs use an orange border and dark-orange surface with an explicit accessible label; the name and weapon icon remain visible so color is never the only identifier.
+- Soldier cards add an orange equipment accent when the carried weapon is a Laser Carbine, and articulated Laser Carbine geometry reads the same canonical orange token.
+- Laser shot presentation is orange, separating it from green plasma weapons and common blue AEGIS interface accents.
+- Workshop text calls out the orange coding. Research, manufacturing cost, work, stores, transfers, ammunition, accuracy, damage, range, and TU rules are unchanged.
+
+Validation
+- Five deterministic Build Health contracts cover the canonical token, accessible glyph, soldier-card marker, articulated weapon, tactical shot, unchanged Workshop data, combat identity, and save format 4.
+- Live Browser Build Health reports 567/613: all five Browser 1422 contracts pass and the remaining 46 failures are the unchanged unrelated legacy diagnostics.
+- Startup, latest Patch Notes history, embedded JavaScript syntax, release seams, JSON, and whitespace checks pass. `assets/` is unchanged.
+
+---
+
 BUILD: v0.26.08.28.1101_OBJECTIVE_ASSIGNMENT_TRANSACTIONAL_CANCEL_AND_DRAFT_PRESERVATION_PATCH
 TITLE: Objective Assignment Transactional Cancel + Draft Preservation
 DATE: August 28, 2026

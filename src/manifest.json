@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.28.1101_OBJECTIVE_ASSIGNMENT_TRANSACTIONAL_CANCEL_AND_DRAFT_PRESERVATION_PATCH",
+  "currentBuild": "v0.26.08.28.1422_ORANGE_LASER_CARBINE_EQUIPMENT_IDENTITY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "objective-assignment-transactional-cancel-and-draft-preservation-complete",
+  "status": "orange-laser-carbine-equipment-identity-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.28.1101_OBJECTIVE_ASSIGNMENT_TRANSACTIONAL_CANCEL_AND_DRAFT_PRESERVATION_PATCH",
+  "lastInspectedBuild": "v0.26.08.28.1422_ORANGE_LASER_CARBINE_EQUIPMENT_IDENTITY_PATCH",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -47,7 +47,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.28.1101_OBJECTIVE_ASSIGNMENT_TRANSACTIONAL_CANCEL_AND_DRAFT_PRESERVATION_PATCH",
+    "browserBuild": "v0.26.08.28.1422_ORANGE_LASER_CARBINE_EQUIPMENT_IDENTITY_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [

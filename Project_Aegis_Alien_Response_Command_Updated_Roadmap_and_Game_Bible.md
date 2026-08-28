@@ -1,14 +1,27 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.28.1101_OBJECTIVE_ASSIGNMENT_TRANSACTIONAL_CANCEL_AND_DRAFT_PRESERVATION_PATCH`
+Current browser build: `v0.26.08.28.1422_ORANGE_LASER_CARBINE_EQUIPMENT_IDENTITY_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 1101: Objective Assignment Transactional Cancel + Draft Preservation
+## Current Build Addendum — Browser 1422: Orange Laser Carbine Equipment Identity
 
 ### Current Build Delta
+- The **Laser Carbine** now owns one canonical orange equipment-presentation token rather than sharing the generic blue weapon treatment.
+- Inventory and Quartermaster glyphs use a high-contrast orange border/surface plus an explicit accessible **Laser Carbine orange equipment identity** label. The weapon name and icon remain authoritative so color is not the only identifier.
+- Soldier cards add an orange equipped-weapon accent, articulated Laser Carbine geometry uses the same orange token, and tactical laser fire uses a related orange shot color. Green plasma and blue AEGIS interface accents remain visually distinct.
+- Workshop text explains the orange equipment coding while retaining the existing Laser Carbine research, cost, work, stores, transfer, and combat data.
+- Five focused Build Health contracts cover canonical color identity, accessible UI glyphs, soldier-card and articulated-model presentation, tactical weapon classification, Workshop data, and save format 4.
+- Live Browser 1422 Build Health reports 567/613: all five new contracts pass, while the remaining 46 failures are the same unrelated legacy diagnostics. Startup and latest Patch Notes history also validate without console errors.
+- Combat damage, accuracy, range, TU costs, ammunition, AI, movement, LOS, inventory authority, assets, and save data are unchanged. Save format remains 4.
+
+---
+
+## Historical Build Record — Browser 1101: Objective Assignment Transactional Cancel + Draft Preservation
+
+### Historical Build Delta
 - The fire-team **Assign Objectives** overlay now includes a clear **Cancel** action beside the existing commit action.
 - Objective selectors remain draft-only while the overlay is open. Direct owners, Default AI Doctrine teams, and follow/assist relationships on live tactical units do not change until **Apply Objective Assignments** is pressed.
 - Cancel discards all draft selections, reconstructs the controls from authoritative live assignments, and closes the overlay. Repeated open/edit/cancel cycles therefore preserve the exact pre-open assignment state.
@@ -582,13 +595,14 @@ The deterministic contract covers spoiler-free pre-observation language, attack 
 
 ## Roadmap Addition - Orange Laser Carbine Equipment Identity
 
-**Status:** Approved Barracks/equipment readability item; implementation pending.
+**Status:** Implemented in Browser 1422.
 
 - Change the **Laser Carbine** equipment accent to a clearly readable orange so it cannot be confused with the current green and blue weapon presentations on Soldier/Barracks cards.
 - Apply the orange identity consistently anywhere the same weapon is shown for selection or inspection, including equipped-weapon labels, loadout choices, Base Stores/Quartermaster listings, transfer summaries, and relevant tactical inventory UI.
 - Preserve the explicit **Laser Carbine** text and weapon icon rather than relying on color alone. Choose an orange with sufficient contrast against both dark and light card backgrounds and keep selection, disabled, unavailable, and hover states distinguishable.
 - This is an interface-presentation change only. Do not alter Laser Carbine damage, accuracy, range, TU costs, ammunition, research, manufacturing, inventory counts, tactical projectile behavior, or save data.
 - Add a deterministic UI contract confirming that Laser Carbine uses the canonical orange equipment token while neighboring green and blue weapon categories remain visually distinct under save format 4.
+- Browser 1422 implements the canonical orange token across accessible equipment glyphs, equipped soldier-card accents, articulated weapon color, tactical laser-shot presentation, and Workshop description. Combat classification and statistics remain unchanged.
 
 
 ## Roadmap Addition - Selected-Squad Morale Summary on Mission Control
@@ -621,6 +635,20 @@ The deterministic contract covers spoiler-free pre-observation language, attack 
 ### Persistence and validation
 - Persist facility count, specialist staffing, FCFS queue order, active patient/specialist ownership, and session elapsed time using normalized defaults compatible with existing saves. Keep save format 4 unless implementation proves a schema migration unavoidable.
 - Add deterministic contracts for the included specialist, four-specialist facility cap, multiple-facility scaling, FCFS ordering, concurrent treatment, exactly one-hour completion, zero benefit on a 59-minute mission interruption, post-mission requeue, no relationship mutation, time-compression parity, and safe save/load normalization.
+
+
+## Roadmap Addition - Scheduled Daylight Mission Arrival
+
+**Status:** Approved strategic mission-planning option; implementation pending.
+
+- Add an optional **Schedule Daylight Arrival** control to mission launch planning. It should calculate the earliest departure time that allows the selected Skyranger to reach the incident during local daylight, using the mission location, authoritative Geoscape clock, aircraft travel time, route, fuel/range rules, and the same solar model used by the globe and tactical lighting.
+- Show the commander the proposed departure time, estimated local landing time, expected daylight/twilight/night condition, travel duration, and total delay before confirmation. Keep **Launch Immediately** available as the default familiar behavior.
+- Scheduling must advance real campaign time; it must not simply force the tactical renderer into daylight. UFOs, incidents, research, construction, healing, panic, refueling, aircraft movement, and every other time-driven system continue progressing normally while the response force waits.
+- Clearly warn when waiting risks incident expiration, increased panic, alien reinforcement or escalation, loss of a mobile target, an aircraft/fuel-readiness change, or any other known strategic consequence. Do not guarantee that a volatile incident will still exist at the scheduled launch time.
+- Reserve the selected response force and Skyranger while a launch is scheduled, show the order on Mission Control/Geoscape, and allow the player to cancel it or replace it with an immediate launch before departure. If the aircraft, squad, base, incident, or route becomes invalid, cancel or block departure with an explicit explanation rather than launching a different force silently.
+- Revalidate the incident, roster, aircraft readiness, route, fuel, range, and destination immediately before takeoff. After departure, use ordinary authoritative flight and arrival resolution so weather, solar time, landing placement, mission generation, and save/load remain deterministic.
+- Support daylight scheduling for one- and two-Skyranger deployments without allowing the aircraft to arrive in separate tactical time windows. When no practical daylight arrival exists before a known deadline, explain why and leave immediate/manual launch available.
+- Add deterministic contracts for longitude/date-boundary calculations, dawn and dusk boundaries, short and long flights, delayed departure, incident expiration while waiting, cancellation, preflight invalidation, two-Skyranger synchronization, save/load of a pending order, and agreement between the predicted and actual tactical lighting period.
 
 
 ## Roadmap Addition - Unescorted Civilian/VIP Shelter and Fear Flight
