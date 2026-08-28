@@ -1,12 +1,26 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.27.2013_ARTICULATED_FULL_WIDE_DETAIL_AND_OBJECTIVE_MEMORY_PATCH`
+Current browser build: `v0.26.08.27.2209_ARTICULATED_TACTICAL_MID_LOD_AND_FULL_WIDE_GAIT_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 2013: Articulated Full/Wide Detail + Objective Memory
+## Current Build Addendum — Browser 2209: Articulated Tactical Mid-LOD + Full/Wide Gait
+
+### Current Build Delta
+- Full and Wide 3D Iso now use a dedicated **articulated-mid** AEGIS soldier tier with 11 structural submissions instead of the optimized close model's 20.
+- Rigid geometry is merged within each retained joint segment. Torso/vest, head/neck/helmet, forearm/hand, lower-leg/boot, and rifle assemblies use cached vertex-colored geometry so their equipment and appearance colors remain readable without separate material submissions.
+- Hips, knees, shoulders, elbows, tactical-facing pivot, stance authority, standing and kneeling aim poses, damage/death state, and gait animation remain active. Full/Wide soldiers therefore animate their legs while moving and return to the appropriate stance afterward.
+- Near, Close, FPV, TPV, incoming-fire reaction views, and cinematics retain the optimized 20-submission full articulated model. Map and Fit Map retain the seven-submission Classic LOD.
+- Structural Full/Wide comparison: 6 soldiers fall from 120 to 66 model submissions, 12 from 240 to 132, and 24 from 480 to 264—a 45% reduction in the soldier-model portion of renderer submissions.
+- Persistent unit signatures, frame buckets, and diagnostics now distinguish articulated-full, articulated-mid, articulated-LOD, and Classic presentation tiers.
+- The deterministic runtime contract constructs an actual articulated-mid soldier, verifies exactly 11 vertex-colored meshes, requires all retained major joints, and confirms that the established gait changes its hip motion. Two live Browser 2209 Build Health runs report 551/598; all five revised renderer contracts and both Browser 2013 objective-memory contracts pass. The 47 unrelated failures include the known randomized failed-simulation fixture that happened to pass in the 552/598 Browser 2013 run.
+- Browser 2013 civilian objective identity memory remains active. Tactical coordinates, movement, TU, pathfinding, LOS, targeting, fog, AI authority, saves, assets, and save format 4 remain unchanged.
+
+---
+
+## Historical Build Record — Browser 2013: Articulated Full/Wide Detail + Objective Memory
 
 ### Current Build Delta
 - With **Articulated Soldiers** selected, Full and Wide 3D Iso now use the optimized detailed articulated soldier rather than substituting the seven-mesh Classic silhouette.
@@ -226,7 +240,7 @@ Authoritative playable artifact: `index.html`
 
 ## Priority Roadmap - Post-0046 Articulated Model and Release Cleanup
 
-**Status:** Active corrective sequence following the Browser 0046 code and live-runtime review. Items 1 through 5 are implemented through Browser 2013; item 6 remains the final cleanup step. Browser 1739 also supersedes Browser 1312's observed Standing Aim direction and corrects the gait phase.
+**Status:** Active corrective sequence following the Browser 0046 code and live-runtime review. Items 1 through 5 are implemented through Browser 2209; item 6 remains the final cleanup step. Browser 1739 also supersedes Browser 1312's observed Standing Aim direction and corrects the gait phase.
 
 ### 1. Articulated soldier orientation and facing-pivot separation - implemented in Browser 0816
 - Separate authoritative tactical facing from player-authored pose rotation. A dedicated parent **facing pivot** must apply the unit's current hex direction, while a child **pose root** owns Standing Carry, aiming, kneeling, prone, downed, ceremonial, victory, and procedural walk-cycle rotations.
@@ -250,12 +264,12 @@ Authoritative playable artifact: `index.html`
 - Correct the Browser 2049 beacon-intelligence test fixture: use a breach-capable observer for the known kinetic-guidance assertion while retaining a deliberately incapable observer for the separate known-field no-breach assertion.
 - Re-run embedded JavaScript syntax, build seams, whitespace checks, critical startup smoke, and full live Build Health. Record the current unrelated failure baseline separately from new articulated contracts.
 
-### 5. Articulated renderer performance comparison and bounded optimization - implemented in Browser 1550, refined in Browser 2013
+### 5. Articulated renderer performance comparison and bounded optimization - implemented in Browser 1550, refined through Browser 2209
 - Measure Classic versus Articulated on the same deterministic battlefield with 6, 12, and 24 visible AEGIS soldiers at Fit Map, ordinary tactical zoom, and close Iso/TPV views across Performance, Auto, and Quality modes.
 - Record renderer draw calls, triangles, average frame time, approximate FPS, unit-node rebuilds, and animation-frame cost while idle and while several soldiers walk. Shared geometry/materials reduce allocation but do not by themselves batch the roughly two dozen independently drawn articulated body/weapon meshes per soldier.
 - If the articulated default materially reduces performance, reduce material/draw fragmentation, introduce a bounded distant-Iso simplified presentation or LOD, or keep Classic as the automatic Performance-mode fallback. Do not sacrifice the approved close-view poses merely to lower distant-map cost.
 - Keep the Classic toggle until the articulated path meets an explicit representative-map performance gate and completes wider night, roof-cutaway, multi-Skyranger, death, victory, and tactical-cinematic field testing.
-- Browser 2013 restores the detailed articulated body at Full and Wide while suppressing its walking-leg cycle. Map and Fit Map retain the Classic LOD; Near/Close and perspective cameras retain full articulation and gait.
+- Browser 2209 replaces Browser 2013's stationary 20-submission Full/Wide tier with a dedicated 11-submission articulated-mid model. It preserves the hips, knees, shoulders, elbows, facing pivot, stance/aim authority, equipment colors, and walking gait while consolidating small rigid segments. Map and Fit Map retain the seven-submission Classic LOD; Near/Close and perspective cameras retain the optimized 20-submission full articulation.
 
 ### 6. Pose-editor and documentation consolidation
 - Keep the current approved pose editor as the working authoring tool and move or clearly label superseded editor versions so testers do not accidentally edit an obsolete preset library.

@@ -1,3 +1,31 @@
+BUILD: v0.26.08.27.2209_ARTICULATED_TACTICAL_MID_LOD_AND_FULL_WIDE_GAIT_PATCH
+TITLE: Articulated Tactical Mid-LOD + Full/Wide Gait
+DATE: August 27, 2026
+
+Summary
+- Replaces the stationary 20-submission Full/Wide soldier presentation with an 11-submission articulated tactical model that retains recognizable equipment, colors, stance poses, and animated walking.
+
+Key changes
+- Full and Wide 3D Iso now select an **articulated-mid** tier whenever Articulated Soldiers is enabled.
+- Rigid pieces are merged within their joint segment: torso with vest, head with neck and helmet, forearms with hands, lower legs with boots, and all rifle pieces. Vertex colors retain armor, vest, skin, boot, helmet, and weapon separation without restoring extra material submissions.
+- Hips, knees, shoulders, elbows, tactical facing, standing/kneeling stance authority, aiming, damage/death presentation, and gait animation remain active.
+- Near, Close, FPV, TPV, incoming-fire reactions, and cinematics retain the optimized 20-submission full model. Map and Fit Map retain the seven-submission Classic LOD.
+- Persistent unit signatures and diagnostics distinguish articulated-full, articulated-mid, articulated-LOD, and Classic tiers.
+
+Structural comparison
+- 6 soldiers: 120 full-detail submissions versus 66 mid-LOD submissions.
+- 12 soldiers: 240 versus 132.
+- 24 soldiers: 480 versus 264.
+- Full/Wide soldier-model submissions are reduced by 45%. Actual whole-frame improvement remains battlefield- and device-dependent.
+
+Validation
+- Build Health covers tier selection, the 11-submission profile, retained joint/pose/gait authority, vertex-colored rigid merging, persistent tier transitions, and diagnostic accounting. Its runtime smoke test constructs the model, verifies exactly 11 colored meshes, and confirms that the gait changes retained hip motion.
+- Two live Browser 2209 runs report 551/598. All five revised articulated-renderer contracts and both civilian-objective-memory contracts pass. The 47 unrelated failures include the known randomized **Failed simulated missions wipe the whole squad** fixture, which happened to pass in the 552/598 Browser 2013 run.
+- Civilian objective identity memory from Browser 2013 remains active.
+- Tactical simulation, movement, TU, pathfinding, LOS, targeting, fog, AI, save data, and save format 4 are unchanged. Assets are unchanged.
+
+---
+
 BUILD: v0.26.08.27.2013_ARTICULATED_FULL_WIDE_DETAIL_AND_OBJECTIVE_MEMORY_PATCH
 TITLE: Articulated Full/Wide Detail + Objective Memory
 DATE: August 27, 2026
