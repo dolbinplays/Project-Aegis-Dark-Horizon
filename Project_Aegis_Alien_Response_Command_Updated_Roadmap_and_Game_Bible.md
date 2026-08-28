@@ -1,14 +1,27 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.28.1422_ORANGE_LASER_CARBINE_EQUIPMENT_IDENTITY_PATCH`
+Current browser build: `v0.26.08.28.1457_SELECTED_SQUAD_MORALE_SUMMARY_MISSION_CONTROL_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 1422: Orange Laser Carbine Equipment Identity
+## Current Build Addendum — Browser 1457: Selected-Squad Morale Summary on Mission Control
 
 ### Current Build Delta
+- Mission Control now renders a live **Selected Squad Morale** panel directly below the primary-squad choices, before the optional support-squad and launch controls.
+- **Morale Score** equals `100 - current morale stress`; higher is better. This re-expresses the existing authoritative stress value without replacing or changing the Steady, Stable, Tense, Shaken, and Critical thresholds.
+- The panel shows the selected primary squad's exact highest, lowest, and arithmetic-average scores and recalculates on every squad or roster change.
+- KIA and in-transit personnel are excluded. Wounded members remain included because the current mission workflow permits explicit wounded deployment overrides. A squad with no deployable members shows a clear unavailable explanation rather than a zero average.
+- Five deterministic Build Health contracts cover mixed morale, single-soldier squads, live roster changes, unavailable members, wounded overrides, UI wiring, and save format 4. All five pass in Browser 1457.
+- Live Mission Control validates the unavailable-roster presentation. Full Build Health reports 571/618; the one additional failure beyond the usual 46 is the pre-existing randomized **Failed simulated missions wipe the whole squad** fixture.
+- Morale changes, launch eligibility, AI, movement, mission resolution, assets, and save authority are unchanged. Save format remains 4.
+
+---
+
+## Historical Build Record — Browser 1422: Orange Laser Carbine Equipment Identity
+
+### Historical Build Delta
 - The **Laser Carbine** now owns one canonical orange equipment-presentation token rather than sharing the generic blue weapon treatment.
 - Inventory and Quartermaster glyphs use a high-contrast orange border/surface plus an explicit accessible **Laser Carbine orange equipment identity** label. The weapon name and icon remain authoritative so color is not the only identifier.
 - Soldier cards add an orange equipped-weapon accent, articulated Laser Carbine geometry uses the same orange token, and tactical laser fire uses a related orange shot color. Green plasma and blue AEGIS interface accents remain visually distinct.
@@ -607,13 +620,14 @@ The deterministic contract covers spoiler-free pre-observation language, attack 
 
 ## Roadmap Addition - Selected-Squad Morale Summary on Mission Control
 
-**Status:** Approved deployment-information item; implementation pending.
+**Status:** Implemented in Browser 1457.
 
 - On the Missions screen, show the **highest morale**, **lowest morale**, and **average morale** of the currently selected squad so the commander can consider its mental readiness before committing it to an operation.
 - Recalculate the three values immediately whenever the selected squad or its eligible mission roster changes. Use the same authoritative current morale values displayed by the existing soldier systems; do not substitute maximum morale, a cached pre-mission value, or a qualitative estimate.
 - Make empty, unavailable, or fully incapacitated squad states explicit instead of displaying a misleading zero average. Keep the summary readable beside the existing squad readiness and mission-launch information.
 - This panel is informational and must not itself change squad selection, morale, mission eligibility, AI behavior, or launch resolution.
 - Add deterministic UI coverage for a mixed-morale squad, a one-soldier squad, roster changes, unavailable members, no eligible members, and exact highest/lowest/arithmetic-average calculations.
+- Browser 1457 implements the selected-primary-squad panel using `100 - moraleStress`, explicit deployable-roster filtering, live recalculation, an unavailable state, and five passing deterministic UI/authority contracts.
 
 
 ## Roadmap Addition - Mental Health Center and Specialist Treatment Queue

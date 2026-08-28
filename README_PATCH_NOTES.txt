@@ -1,3 +1,24 @@
+BUILD: v0.26.08.28.1457_SELECTED_SQUAD_MORALE_SUMMARY_MISSION_CONTROL_PATCH
+TITLE: Selected-Squad Morale Summary on Mission Control
+DATE: August 28, 2026
+
+Summary
+- Adds live highest, lowest, and average mental-readiness scores for the selected primary squad before mission launch.
+
+Key changes
+- Mission Control now places a Selected Squad Morale panel immediately below the primary-squad choices.
+- Morale Score is `100 - current morale stress`, so higher values indicate better readiness while preserving the existing Steady, Stable, Tense, Shaken, and Critical states.
+- Highest, lowest, and arithmetic average recalculate whenever the selected squad or its authoritative roster changes.
+- KIA and in-transit personnel are excluded. Wounded mission overrides remain included because the existing launch workflow permits their explicit deployment.
+- Squads with no deployable personnel display an unavailable explanation instead of a misleading zero score.
+
+Validation
+- Five new deterministic Build Health contracts pass for mixed morale, one soldier, roster changes, unavailable members, wounded overrides, UI wiring, and save format 4.
+- Live Mission Control renders the unavailable-roster state correctly. Full Build Health reports 571/618; the additional failure over the usual 46 is the pre-existing randomized `Failed simulated missions wipe the whole squad` fixture, not this patch.
+- Startup, embedded JavaScript syntax, release seams, JSON, and whitespace checks pass. `assets/` is unchanged.
+
+---
+
 BUILD: v0.26.08.28.1422_ORANGE_LASER_CARBINE_EQUIPMENT_IDENTITY_PATCH
 TITLE: Orange Laser Carbine Equipment Identity
 DATE: August 28, 2026
