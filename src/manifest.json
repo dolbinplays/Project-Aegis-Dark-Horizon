@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.27.2209_ARTICULATED_TACTICAL_MID_LOD_AND_FULL_WIDE_GAIT_PATCH",
+  "currentBuild": "v0.26.08.27.2300_ARTICULATED_POSE_EDITOR_AND_DOCUMENTATION_CONSOLIDATION_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "articulated-tactical-mid-lod-and-full-wide-gait-complete",
+  "status": "articulated-pose-editor-and-documentation-consolidation-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,17 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.27.2209_ARTICULATED_TACTICAL_MID_LOD_AND_FULL_WIDE_GAIT_PATCH",
+  "lastInspectedBuild": "v0.26.08.27.2300_ARTICULATED_POSE_EDITOR_AND_DOCUMENTATION_CONSOLIDATION_PATCH",
+  "authoringTools": {
+    "articulatedPoseEditor": {
+      "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
+      "approved": "AEGIS_Articulated_Pose_Editor_v0.26.08.26.0033_APPROVED_ARTICULATED_POSE_SET_PATCH.html",
+      "archived": [
+        "AEGIS_Articulated_Pose_Editor_v0.26.08.25.2356_ARTICULATED_SINGLE_RIFLE_AND_POSE_EDITOR_TOOL_PATCH.html"
+      ],
+      "facingPreviewExported": false
+    }
+  },
   "nativePrototype": {
     "engine": "Godot 4.7.1",
     "projectFile": "project.godot",
@@ -37,7 +47,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.27.2209_ARTICULATED_TACTICAL_MID_LOD_AND_FULL_WIDE_GAIT_PATCH",
+    "browserBuild": "v0.26.08.27.2300_ARTICULATED_POSE_EDITOR_AND_DOCUMENTATION_CONSOLIDATION_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -201,7 +211,8 @@
       "articulated-renderer-performance-and-bounded-lod",
       "articulated-full-wide-static-detail",
       "fire-team-objective-discovery-memory",
-      "articulated-tactical-mid-lod-and-full-wide-gait"
+      "articulated-tactical-mid-lod-and-full-wide-gait",
+      "articulated-pose-editor-and-documentation-consolidation"
     ],
     "temporaryExceptions": [
       {

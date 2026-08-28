@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>AEGIS Articulated Pose Editor</title>
+<title>AEGIS Approved Articulated Pose Editor — Current Authoring Tool</title>
 <style>
   :root{--bg:#0b1220;--panel:#111827;--panel2:#0f172a;--line:#334155;--text:#e5eefc;--muted:#94a3b8;--accent:#22d3ee;}
   *{box-sizing:border-box} body{margin:0;background:linear-gradient(135deg,#020617,#0f172a 55%,#111827);color:var(--text);font:14px/1.4 system-ui,Segoe UI,Roboto,sans-serif;}
@@ -23,6 +23,8 @@
   .overlay{position:absolute;left:12px;bottom:12px;background:rgba(2,6,23,.82);border:1px solid #334155;border-radius:12px;padding:10px 12px;font-size:12px;color:#cbd5e1;max-width:440px}
   details{border-top:1px solid #1e293b;padding-top:8px;margin-top:8px} summary{cursor:pointer;color:#cbd5e1;font-weight:700}
   .jointGroup{padding-bottom:8px;margin-bottom:8px;border-bottom:1px dashed #334155}
+  .currentBadge{display:inline-flex;margin:0 0 8px;padding:4px 8px;border:1px solid #22c55e;border-radius:999px;background:rgba(20,83,45,.55);color:#bbf7d0;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+  .authority{border-color:#0891b2;background:rgba(8,47,73,.7)} .authority strong{color:#a5f3fc}
   @media (max-width:1300px){.app{grid-template-columns:340px 1fr} .panel.right{grid-column:1 / span 2; border-left:0;border-top:1px solid #1e293b}}
   @media (max-width:900px){.app{grid-template-columns:1fr} .panel,.panel.right{border:none;border-bottom:1px solid #1e293b} .viewer{min-height:50vh}}
 </style>
@@ -31,7 +33,8 @@
 <div class="app">
   <aside class="panel">
     <div class="toolbar">
-      <h1>AEGIS Articulated Pose Editor</h1><div class="muted">Pose library: v0.26.08.26.0033_APPROVED_ARTICULATED_POSE_SET_PATCH</div>
+      <div class="currentBadge">Current approved authoring tool</div>
+      <h1>AEGIS Articulated Pose Editor</h1><div class="muted">Authoritative pose library: v0.26.08.26.0033_APPROVED_ARTICULATED_POSE_SET_PATCH</div>
       <div class="muted">Drag in the preview to orbit, wheel to zoom. Use the hinge sliders to pose the articulated body. Export JSON and paste the result into the game pose authority.</div>
     </div>
     <div class="card">
@@ -40,6 +43,8 @@
       <div class="row"><label for="armorSelect">Armor</label><select id="armorSelect"></select></div>
       <div class="row"><label for="skinSelect">Skin</label><select id="skinSelect"></select></div>
       <div class="row"><label for="weaponColorSelect">Weapon Color</label><select id="weaponColorSelect"></select></div>
+      <div class="row"><label for="facingSelect">Facing Preview</label><select id="facingSelect"></select></div>
+      <div class="muted">Facing is a parent-only tactical preview and is never included in exported pose JSON.</div>
       <div class="buttonRow" style="margin-top:10px">
         <button id="resetPresetBtn">Reset To Preset</button>
         <button id="mirrorArmsBtn">Mirror Arms</button>
@@ -58,6 +63,11 @@
       <div class="buttonRow"><button id="copyBtn">Copy JSON</button><button id="loadBtn">Load JSON</button></div>
       <textarea id="jsonOutput"></textarea>
       <div class="muted">All rotation sliders are in degrees. The exported JSON is converted to radians for the game.</div>
+    </div>
+    <div class="card authority"><h2>Transform Authority / Handoff</h2>
+      <div class="muted"><strong>Tactical facing parent:</strong> the game owns the outer facing pivot and rotates it toward the unit's authoritative hex direction. The Facing Preview control demonstrates that parent but never enters the pose export.</div>
+      <div class="muted" style="margin-top:8px"><strong>Pose child:</strong> exported <code>rootPosition</code> and <code>rootRotation</code> belong only to the articulated pose root beneath the facing pivot. Copy them unchanged into <code>tacticalArticulatedSoldierPoseSpec</code>; never apply them to, replace, or reset the tactical-facing parent.</div>
+      <div class="muted" style="margin-top:8px"><strong>Runtime rule:</strong> walking, aiming, kneeling, damage, death, and victory may animate the pose child. Only authoritative unit direction may write the facing parent.</div>
     </div>
   </aside>
 </div>
@@ -85,10 +95,11 @@ const SKIN_OPTIONS = [
 const WEAPON_OPTIONS = [
   {key:'ballistic',label:'Ballistic',value:'#334155'},{key:'laser',label:'Laser',value:'#b91c1c'},{key:'plasma',label:'Plasma',value:'#16a34a'},{key:'alloy',label:'Alloy',value:'#475569'}
 ];
+const FACING_OPTIONS = [{key:'E',label:'East',angle:90},{key:'NE',label:'North-East',angle:150},{key:'NW',label:'North-West',angle:-150},{key:'W',label:'West',angle:-90},{key:'SW',label:'South-West',angle:-30},{key:'SE',label:'South-East',angle:30}];
 const JOINT_ORDER = ['torso','neck','leftShoulder','rightShoulder','leftElbow','rightElbow','leftWrist','rightWrist','leftHip','rightHip','leftKnee','rightKnee','leftAnkle','rightAnkle'];
 const DEG_KEYS = ['rootRotation','torso','neck','leftShoulder','rightShoulder','leftElbow','rightElbow','leftWrist','rightWrist','leftHip','rightHip','leftKnee','rightKnee','leftAnkle','rightAnkle','weaponRotation'];
 const POS_KEYS = ['rootPosition','weaponPosition'];
-const state = {preset:'standing',armor:'field',skin:'light2',weaponColor:'ballistic',pose:JSON.parse(JSON.stringify(PRESETS.standing))};
+const state = {preset:'standing',armor:'field',skin:'light2',weaponColor:'ballistic',facing:'E',pose:JSON.parse(JSON.stringify(PRESETS.standing))};
 const mount = document.getElementById('canvasMount');
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x09111f);
@@ -99,17 +110,18 @@ scene.add(new THREE.GridHelper(10,20,0x335068,0x223040));
 const refDoor = new THREE.Mesh(new THREE.BoxGeometry(.9,1.8,.1), new THREE.MeshStandardMaterial({color:0x475569,transparent:true,opacity:.25})); refDoor.position.set(1.7,.9,-.8); scene.add(refDoor);
 const refCover = new THREE.Mesh(new THREE.BoxGeometry(.9,.8,.45), new THREE.MeshStandardMaterial({color:0x64748b,transparent:true,opacity:.35})); refCover.position.set(1.7,.4,.35); scene.add(refCover);
 const geo = {foot:new THREE.BoxGeometry(0.16,0.09,0.27), shin:new THREE.CylinderGeometry(0.075,0.09,0.25,6), thigh:new THREE.CylinderGeometry(0.09,0.11,0.28,6), torso:new THREE.CylinderGeometry(0.24,0.17,0.38,6), neck:new THREE.CylinderGeometry(0.065,0.075,0.07,6), head:new THREE.SphereGeometry(0.155,8,6), upperArm:new THREE.CylinderGeometry(0.065,0.08,0.23,6), forearm:new THREE.CylinderGeometry(0.055,0.065,0.21,6), hand:new THREE.BoxGeometry(0.10,0.105,0.115), plate:new THREE.BoxGeometry(0.30,0.22,0.055), helmetShell:new THREE.SphereGeometry(0.178,8,6,0,Math.PI*2,0,Math.PI*0.63), helmetBrim:new THREE.CylinderGeometry(0.19,0.17,0.042,8), firstPersonWeapon:new THREE.BoxGeometry(0.15,0.12,0.92), firstPersonShroud:new THREE.BoxGeometry(0.24,0.15,0.42), firstPersonReceiver:new THREE.BoxGeometry(0.22,0.18,0.32), firstPersonGrip:new THREE.BoxGeometry(0.1,0.26,0.12), firstPersonSight:new THREE.BoxGeometry(0.05,0.08,0.11), firstPersonMuzzle:new THREE.CylinderGeometry(0.055,0.055,0.09,10)};
-let soldierRoot = null, joints = {};
+let soldierFacingRoot = null, soldierRoot = null, joints = {};
 function colorHex(hex){ return new THREE.Color(hex); }
 function makeMat(hex, rough=.55, metal=.12){ return new THREE.MeshStandardMaterial({color:colorHex(hex), roughness:rough, metalness:metal}); }
 function buildSoldier(){
-  if(soldierRoot) scene.remove(soldierRoot);
+  if(soldierFacingRoot) scene.remove(soldierFacingRoot);
   joints = {};
   const armor = ARMOR_OPTIONS.find(a=>a.key===state.armor) || ARMOR_OPTIONS[0];
   const skin = SKIN_OPTIONS.find(a=>a.key===state.skin) || SKIN_OPTIONS[1];
   const weaponColor = WEAPON_OPTIONS.find(a=>a.key===state.weaponColor) || WEAPON_OPTIONS[0];
   const bodyMat = makeMat(armor.armor,.58,.16), vestMat = makeMat(armor.vest,.66,.10), skinMat = makeMat(skin.value,.62,.02), bootMat = makeMat('#111827',.78,.04), weaponBodyMat = makeMat(weaponColor.value,.42,.22), weaponDarkMat = makeMat('#111827',.76,.08), weaponMetalMat = makeMat('#0f172a',.35,.68), helmetMat = makeMat(armor.armor,.52,.22);
-  const root = new THREE.Group(); root.scale.set(1,0.80,1); scene.add(root); soldierRoot = root;
+  const facingRoot = new THREE.Group(); facingRoot.name='AEGIS tactical-facing preview parent'; scene.add(facingRoot); soldierFacingRoot = facingRoot;
+  const root = new THREE.Group(); root.name='AEGIS exported pose child'; root.scale.set(1,0.80,1); facingRoot.add(root); soldierRoot = root;
   const pivot=(name,parent,pos)=>{ const g=new THREE.Group(); g.position.set(...pos); g.name=name; parent.add(g); joints[name]=g; return g; };
   const mesh=(parent,geometry,material,pos=[0,0,0],scale=[1,1,1],rot=[0,0,0])=>{ const m = new THREE.Mesh(geometry,material); m.position.set(...pos); m.scale.set(...scale); m.rotation.set(...rot); parent.add(m); return m; };
   const torso = pivot('torso', root, [0,0,0]); mesh(torso,geo.torso,bodyMat,[0,0.20,0],[1.08,1,0.68]); mesh(torso,geo.plate,vestMat,[0,0.21,0.145]);
@@ -118,22 +130,24 @@ function buildSoldier(){
   const buildArm=(side,x)=>{ const shoulder=pivot(side+'Shoulder',torso,[x,0.33,0]); mesh(shoulder,geo.upperArm,bodyMat,[0,-0.115,0]); const elbow=pivot(side+'Elbow',shoulder,[0,-0.23,0]); mesh(elbow,geo.forearm,bodyMat,[0,-0.105,0]); const wrist=pivot(side+'Wrist',elbow,[0,-0.21,0]); mesh(wrist,geo.hand,skinMat,[0,-0.055,0.02]); }; buildArm('left',-0.245); buildArm('right',0.245);
   const weapon = pivot('weapon', joints.rightWrist, state.pose.weaponPosition.slice()); joints.weapon = weapon;
   mesh(weapon,geo.firstPersonWeapon,weaponBodyMat,[0,0,0.26],[0.62,0.62,0.62]); mesh(weapon,geo.firstPersonShroud,weaponBodyMat,[0,-0.02,0.46],[0.62,0.62,0.62]); mesh(weapon,geo.firstPersonReceiver,weaponBodyMat,[0,-0.01,0.58],[0.62,0.62,0.62]); mesh(weapon,geo.firstPersonGrip,weaponDarkMat,[0,-0.12,0.60],[0.62,0.62,0.62],[-0.32,0,0]); mesh(weapon,geo.firstPersonSight,weaponDarkMat,[0,0.06,0.31],[0.62,0.62,0.62]); mesh(weapon,geo.firstPersonMuzzle,weaponMetalMat,[0,0,-0.02],[0.62,0.62,0.62],[Math.PI/2,0,0]);
-  applyPose();
+  applyFacingPreview(); applyPose();
 }
 function deg(v){ return v * Math.PI / 180; } function rad(v){ return v * 180 / Math.PI; }
+function applyFacingPreview(){ if(!soldierFacingRoot) return; const facing=FACING_OPTIONS.find(option=>option.key===state.facing)||FACING_OPTIONS[0]; soldierFacingRoot.rotation.set(0,deg(facing.angle),0); }
 function setRotation(obj, arr){ if(!obj) return; obj.rotation.set(deg(arr[0]),deg(arr[1]),deg(arr[2])); }
 function applyPose(){ if(!soldierRoot) return; const p=state.pose; soldierRoot.position.set(...p.rootPosition); soldierRoot.rotation.set(deg(p.rootRotation[0]),deg(p.rootRotation[1]),deg(p.rootRotation[2])); setRotation(joints.torso,p.torso); setRotation(joints.neck,p.neck); setRotation(joints.leftShoulder,p.leftShoulder); setRotation(joints.rightShoulder,p.rightShoulder); setRotation(joints.leftElbow,p.leftElbow); setRotation(joints.rightElbow,p.rightElbow); setRotation(joints.leftWrist,p.leftWrist); setRotation(joints.rightWrist,p.rightWrist); setRotation(joints.leftHip,p.leftHip); setRotation(joints.rightHip,p.rightHip); setRotation(joints.leftKnee,p.leftKnee); setRotation(joints.rightKnee,p.rightKnee); setRotation(joints.leftAnkle,p.leftAnkle); setRotation(joints.rightAnkle,p.rightAnkle); if(joints.weapon){ joints.weapon.position.set(...p.weaponPosition); joints.weapon.rotation.set(deg(p.weaponRotation[0]),deg(p.weaponRotation[1]),deg(p.weaponRotation[2])); } updateJson(); }
 function updateJson(){ const out = {}; Object.keys(state.pose).forEach(key=>{ const value = state.pose[key]; out[key] = value.map((n,idx)=> (DEG_KEYS.includes(key) ? Number((n*Math.PI/180).toFixed(4)) : Number(n.toFixed(4)) )); }); document.getElementById('jsonOutput').value = JSON.stringify(out,null,2); }
 function makeSliderTriplet(container,key,label,min,max,step,isDegrees=true){ const wrap=document.createElement('details'); wrap.open=true; wrap.className='jointGroup'; const summary=document.createElement('summary'); summary.textContent=label; wrap.appendChild(summary); ['X','Y','Z'].forEach((axis,idx)=>{ const row=document.createElement('div'); row.className='xyz'; const letter=document.createElement('div'); letter.textContent=axis; const range=document.createElement('input'); range.type='range'; range.min=min; range.max=max; range.step=step; range.value=state.pose[key][idx]; const num=document.createElement('input'); num.type='number'; num.min=min; num.max=max; num.step=step; num.value=state.pose[key][idx]; const sync=(v)=>{ state.pose[key][idx]=Number(v); range.value=v; num.value=v; applyPose(); }; range.addEventListener('input',e=>sync(e.target.value)); num.addEventListener('input',e=>sync(e.target.value)); row.append(letter,range,num); wrap.appendChild(row); }); container.appendChild(wrap); }
 function rebuildControls(){ const jointControls=document.getElementById('jointControls'); jointControls.innerHTML=''; JOINT_ORDER.forEach(key=>makeSliderTriplet(jointControls,key,key,-180,180,1,true)); const core=document.getElementById('coreControls'); core.innerHTML=''; makeSliderTriplet(core,'rootPosition','rootPosition',-2,2,0.01,false); makeSliderTriplet(core,'rootRotation','rootRotation',-180,180,1,true); makeSliderTriplet(core,'weaponPosition','weaponPosition',-1,1,0.01,false); makeSliderTriplet(core,'weaponRotation','weaponRotation',-180,180,1,true); }
 function clonePreset(name){ return JSON.parse(JSON.stringify(PRESETS[name])); }
-function syncAppearanceSelects(){ document.getElementById('presetSelect').value=state.preset; document.getElementById('armorSelect').value=state.armor; document.getElementById('skinSelect').value=state.skin; document.getElementById('weaponColorSelect').value=state.weaponColor; }
+function syncAppearanceSelects(){ document.getElementById('presetSelect').value=state.preset; document.getElementById('armorSelect').value=state.armor; document.getElementById('skinSelect').value=state.skin; document.getElementById('weaponColorSelect').value=state.weaponColor; document.getElementById('facingSelect').value=state.facing; }
 function fillSelect(id, list){ const el=document.getElementById(id); el.innerHTML=''; list.forEach(item=>{ const opt=document.createElement('option'); opt.value=item.key; opt.textContent=item.label; el.appendChild(opt); }); }
-fillSelect('presetSelect', Object.keys(PRESETS).map(key=>({key,label:key}))); fillSelect('armorSelect', ARMOR_OPTIONS); fillSelect('skinSelect', SKIN_OPTIONS); fillSelect('weaponColorSelect', WEAPON_OPTIONS); syncAppearanceSelects();
+fillSelect('presetSelect', Object.keys(PRESETS).map(key=>({key,label:key}))); fillSelect('armorSelect', ARMOR_OPTIONS); fillSelect('skinSelect', SKIN_OPTIONS); fillSelect('weaponColorSelect', WEAPON_OPTIONS); fillSelect('facingSelect', FACING_OPTIONS); syncAppearanceSelects();
 document.getElementById('presetSelect').addEventListener('change', e=>{ state.preset=e.target.value; state.pose=clonePreset(state.preset); rebuildControls(); buildSoldier(); });
 document.getElementById('armorSelect').addEventListener('change', e=>{ state.armor=e.target.value; buildSoldier(); });
 document.getElementById('skinSelect').addEventListener('change', e=>{ state.skin=e.target.value; buildSoldier(); });
 document.getElementById('weaponColorSelect').addEventListener('change', e=>{ state.weaponColor=e.target.value; buildSoldier(); });
+document.getElementById('facingSelect').addEventListener('change', e=>{ state.facing=e.target.value; applyFacingPreview(); });
 document.getElementById('resetPresetBtn').addEventListener('click', ()=>{ state.pose=clonePreset(state.preset); rebuildControls(); buildSoldier(); });
 document.getElementById('mirrorArmsBtn').addEventListener('click', ()=>{ ['Shoulder','Elbow','Wrist'].forEach(part=>{ const left='left'+part,right='right'+part; state.pose[right]=[state.pose[left][0],-state.pose[left][1],-state.pose[left][2]]; }); rebuildControls(); applyPose(); });
 document.getElementById('mirrorLegsBtn').addEventListener('click', ()=>{ ['Hip','Knee','Ankle'].forEach(part=>{ const left='left'+part,right='right'+part; state.pose[right]=[state.pose[left][0],-state.pose[left][1],-state.pose[left][2]]; }); rebuildControls(); applyPose(); });

@@ -1,3 +1,27 @@
+BUILD: v0.26.08.27.2300_ARTICULATED_POSE_EDITOR_AND_DOCUMENTATION_CONSOLIDATION_PATCH
+TITLE: Articulated Pose Editor + Documentation Consolidation
+DATE: August 27, 2026
+
+Summary
+- Establishes one stable current articulated-pose authoring entry point, clearly archives the superseded preset tool, and makes the tactical-facing-parent / exported-pose-child transform boundary explicit and testable.
+
+Key changes
+- `AEGIS_Articulated_Pose_Editor_CURRENT.html` is the stable launcher for future pose work and forwards to the approved 0033 eight-pose library.
+- The approved editor is visibly marked **Current approved authoring tool**.
+- A six-direction Facing Preview now rotates a dedicated `AEGIS tactical-facing preview parent`, while the editable/exported pose remains on its `AEGIS exported pose child`.
+- Facing Preview never enters exported JSON. `rootPosition`, `rootRotation`, body joints, and weapon transforms continue to represent pose-local values for `tacticalArticulatedSoldierPoseSpec`.
+- The historical 2356 editor remains available for reproduction but now opens with an unmistakable archived/superseded warning and a direct link to the current launcher.
+- The manifest and release checker identify the launcher, approved editor, archived editor, all eight approved presets, and the non-exported facing-preview contract.
+- Recent Game Bible records now consistently distinguish the current build delta from historical build deltas, and the completed articulated cleanup sequence points next to articulated civilian/VIP presentation.
+
+Validation
+- Embedded JavaScript syntax checks cover the game and both pose editors.
+- Build Health adds two deterministic registry/transform-authority contracts without changing tactical outcomes.
+- Live Browser 2300 Build Health reports 554/600: both new contracts pass over the 552/598 Browser 2013 baseline, with the same 46 unrelated failures. Changing Facing Preview from East to West leaves the exported pose JSON byte-for-byte unchanged.
+- Save format remains 4. Tactical rendering, approved poses, AI, movement, TU, pathfinding, LOS, targeting, fog, saves, and `assets/` remain unchanged.
+
+---
+
 BUILD: v0.26.08.27.2209_ARTICULATED_TACTICAL_MID_LOD_AND_FULL_WIDE_GAIT_PATCH
 TITLE: Articulated Tactical Mid-LOD + Full/Wide Gait
 DATE: August 27, 2026

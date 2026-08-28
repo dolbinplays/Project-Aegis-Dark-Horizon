@@ -1,14 +1,28 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.27.2209_ARTICULATED_TACTICAL_MID_LOD_AND_FULL_WIDE_GAIT_PATCH`
+Current browser build: `v0.26.08.27.2300_ARTICULATED_POSE_EDITOR_AND_DOCUMENTATION_CONSOLIDATION_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 2209: Articulated Tactical Mid-LOD + Full/Wide Gait
+## Current Build Addendum — Browser 2300: Articulated Pose Editor + Documentation Consolidation
 
 ### Current Build Delta
+- `AEGIS_Articulated_Pose_Editor_CURRENT.html` is the stable entry point for future articulated authoring and forwards to the approved 0033 eight-pose library.
+- The approved editor is visibly identified as the current authoring tool. The superseded 2356 editor remains available for historical reproduction but opens with an archived warning and a direct link to the stable launcher.
+- The approved editor now demonstrates the runtime transform hierarchy: a six-direction **Facing Preview** rotates a dedicated tactical-facing parent while the editable pose remains on a child root.
+- Facing Preview is never exported. Exported `rootPosition`, `rootRotation`, joint rotations, and weapon transforms remain local pose-child data for `tacticalArticulatedSoldierPoseSpec`; they must never replace or reset authoritative unit facing.
+- The manifest and release checker register the launcher, approved editor, archived editor, eight approved presets, and non-exported facing-preview contract. Two matching Build Health contracts cover the in-game registry and save-format boundary.
+- Live Browser 2300 Build Health reports 554/600: both new contracts pass over the 552/598 Browser 2013 baseline, with the same 46 unrelated failures. Direct editor testing confirms that changing Facing Preview from East to West leaves exported pose JSON byte-for-byte unchanged.
+- The Post-0046 articulated correction sequence is complete. The next approved presentation patch is the articulated civilian/VIP model roadmap item.
+- Tactical rendering, the approved poses, AI, coordinates, movement, TU, pathfinding, LOS, targeting, fog, save data, assets, and save format 4 remain unchanged.
+
+---
+
+## Historical Build Record — Browser 2209: Articulated Tactical Mid-LOD + Full/Wide Gait
+
+### Historical Build Delta
 - Full and Wide 3D Iso now use a dedicated **articulated-mid** AEGIS soldier tier with 11 structural submissions instead of the optimized close model's 20.
 - Rigid geometry is merged within each retained joint segment. Torso/vest, head/neck/helmet, forearm/hand, lower-leg/boot, and rifle assemblies use cached vertex-colored geometry so their equipment and appearance colors remain readable without separate material submissions.
 - Hips, knees, shoulders, elbows, tactical-facing pivot, stance authority, standing and kneeling aim poses, damage/death state, and gait animation remain active. Full/Wide soldiers therefore animate their legs while moving and return to the appropriate stance afterward.
@@ -22,7 +36,7 @@ Authoritative playable artifact: `index.html`
 
 ## Historical Build Record — Browser 2013: Articulated Full/Wide Detail + Objective Memory
 
-### Current Build Delta
+### Historical Build Delta
 - With **Articulated Soldiers** selected, Full and Wide 3D Iso now use the optimized detailed articulated soldier rather than substituting the seven-mesh Classic silhouette.
 - These mid-distance soldiers retain their armor colors, matching helmet, rifle, facing, standing and kneeling stances, stance-appropriate aiming poses, damage/death presentation, and normal translation along authoritative movement paths.
 - Full/Wide models use a dedicated **articulated-static** renderer tier. Their walking leg cycle is disabled, so they provide greater visible detail without continuously animating joint motion that is difficult to read at those zooms.
@@ -38,7 +52,7 @@ Authoritative playable artifact: `index.html`
 
 ## Historical Build Record — Browser 1550: Articulated Renderer Performance + Bounded LOD
 
-### Current Build Delta
+### Historical Build Delta
 - Full articulated AEGIS soldiers now merge only rigid pieces that never move relative to one another: helmet shell plus brim, the three primary rifle-body pieces, and the two dark rifle-detail pieces. Hips, knees, ankles, shoulders, elbows, wrists, torso, neck, tactical-facing pivot, muzzle socket, weapon light, gait, stances, and aiming remain independently articulated.
 - The representative armored full model falls from 24 structural mesh submissions to 20, a 16.7% reduction. Shared cached geometry and materials remain persistent across soldiers and ordinary tactical updates.
 - Fit Map and 64-cell Map/Full Iso views use the existing seven-mesh Classic presentation as a bounded articulated LOD because individual joints are not readable at that distance. Performance mode also uses the LOD at Wide zoom. The comparable distant soldier submission count is 70.8% below the former full articulated model.
@@ -81,7 +95,7 @@ Authoritative playable artifact: `index.html`
 
 ## Historical Build Record — v0.26.08.27.1306_RELEASE_CHECKER_AND_BUILD_HEALTH_CONTRACT_REPAIR_PATCH
 
-### Current Build Delta
+### Historical Build Delta
 - The 3D Iso Night Brightness contract now recognizes the current persistent-renderer dependency order, including the articulated `soldierModelStyle` preference between established Iso presentation dependencies.
 - All substantive Night Brightness invariants remain enforced: renderer exposure, ambient fill, material lift, perspective neutrality, unchanged local-light range, and no tactical fog/LOS/accuracy/AI mutation.
 - The Field Beacon intelligence contract now uses a loaded laser-equipped observer for known kinetic-shield guidance while retaining a deliberately unarmed observer for the independent known-field no-breach assertion.
@@ -240,7 +254,7 @@ Authoritative playable artifact: `index.html`
 
 ## Priority Roadmap - Post-0046 Articulated Model and Release Cleanup
 
-**Status:** Active corrective sequence following the Browser 0046 code and live-runtime review. Items 1 through 5 are implemented through Browser 2209; item 6 remains the final cleanup step. Browser 1739 also supersedes Browser 1312's observed Standing Aim direction and corrects the gait phase.
+**Status:** Completed through Browser 2300. Browser 1739 supersedes Browser 1312's observed Standing Aim direction and corrects the gait phase; Browser 2209 supplies the animated tactical mid-LOD; Browser 2300 establishes the authoritative editor handoff and closes the cleanup sequence.
 
 ### 1. Articulated soldier orientation and facing-pivot separation - implemented in Browser 0816
 - Separate authoritative tactical facing from player-authored pose rotation. A dedicated parent **facing pivot** must apply the unit's current hex direction, while a child **pose root** owns Standing Carry, aiming, kneeling, prone, downed, ceremonial, victory, and procedural walk-cycle rotations.
@@ -271,10 +285,11 @@ Authoritative playable artifact: `index.html`
 - Keep the Classic toggle until the articulated path meets an explicit representative-map performance gate and completes wider night, roof-cutaway, multi-Skyranger, death, victory, and tactical-cinematic field testing.
 - Browser 2209 replaces Browser 2013's stationary 20-submission Full/Wide tier with a dedicated 11-submission articulated-mid model. It preserves the hips, knees, shoulders, elbows, facing pivot, stance/aim authority, equipment colors, and walking gait while consolidating small rigid segments. Map and Fit Map retain the seven-submission Classic LOD; Near/Close and perspective cameras retain the optimized 20-submission full articulation.
 
-### 6. Pose-editor and documentation consolidation
+### 6. Pose-editor and documentation consolidation - implemented in Browser 2300
 - Keep the current approved pose editor as the working authoring tool and move or clearly label superseded editor versions so testers do not accidentally edit an obsolete preset library.
 - Document the facing-parent/pose-child transform contract inside the editor handoff so future exported root rotations cannot overwrite tactical facing when copied into the game.
 - Normalize the recent Game Bible addendum formatting/encoding and ensure every articulated patch is represented consistently in detailed and in-game patch history.
+- Browser 2300 adds a stable current-editor launcher, labels the 0033 tool as authoritative, marks 2356 as archived, demonstrates the facing-parent/pose-child hierarchy without exporting tactical facing, and registers these seams in Build Health and the release checker.
 
 ---
 

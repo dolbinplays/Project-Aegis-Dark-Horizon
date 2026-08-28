@@ -14,6 +14,9 @@ const dialogueManifestPath = path.join(dialogueDirectory, "manifest.js");
 const alternateAudioDirectory = path.join(root, "assets", "audio", "alternate");
 const patchNotesPath = path.join(root, "README_PATCH_NOTES.txt");
 const gameBiblePath = path.join(root, "Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md");
+const poseEditorLauncherPath = path.join(root, "AEGIS_Articulated_Pose_Editor_CURRENT.html");
+const approvedPoseEditorPath = path.join(root, "AEGIS_Articulated_Pose_Editor_v0.26.08.26.0033_APPROVED_ARTICULATED_POSE_SET_PATCH.html");
+const archivedPoseEditorPath = path.join(root, "AEGIS_Articulated_Pose_Editor_v0.26.08.25.2356_ARTICULATED_SINGLE_RIFLE_AND_POSE_EDITOR_TOOL_PATCH.html");
 
 const html = fs.readFileSync(indexPath, "utf8");
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
@@ -23,6 +26,9 @@ const nativeTactical = fs.readFileSync(nativeTacticalPath, "utf8");
 const nativeAudioBus = fs.readFileSync(nativeAudioBusPath, "utf8");
 const patchNotes = fs.readFileSync(patchNotesPath, "utf8");
 const gameBible = fs.readFileSync(gameBiblePath, "utf8");
+const poseEditorLauncher = fs.readFileSync(poseEditorLauncherPath, "utf8");
+const approvedPoseEditor = fs.readFileSync(approvedPoseEditorPath, "utf8");
+const archivedPoseEditor = fs.readFileSync(archivedPoseEditorPath, "utf8");
 const dialogueBox = { window: {} };
 vm.runInNewContext(fs.readFileSync(dialogueManifestPath, "utf8"), dialogueBox, { filename: dialogueManifestPath });
 const dialogue = dialogueBox.window.PROJECT_AEGIS_RECORDED_DIALOGUE;
@@ -96,6 +102,11 @@ const required = [
   "tacticalArticulatedSoldierFacingPivotContractTest",
   "AEGIS articulated tactical facing pivot",
   "Articulated soldier facing remains authoritative across walking and stance-correct aiming poses",
+  "ARTICULATED_POSE_EDITOR_AND_DOCUMENTATION_CONSOLIDATION_PATCH",
+  "ARTICULATED_POSE_EDITOR_TOOL_REGISTRY",
+  "articulatedPoseEditorConsolidationContractChecks",
+  "Pose-editor registry identifies one stable current launcher approved library and explicitly archived predecessor",
+  "Pose exports keep tactical facing on a separate parent and preserve save format four",
   "TACTICAL_ARTICULATED_SOLDIER_RIGHT_HANDED_PRESENTATION_PATCH",
   "TACTICAL_ARTICULATED_SOLDIER_LOCAL_MIRROR_X",
   "tacticalArticulatedSoldierRightHandedPresentationContractTest",
@@ -1070,6 +1081,25 @@ if (!gameBible.startsWith("# PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED 
 }
 if ((gameBible.match(/^Current browser build:/gm) || []).length !== 1) {
   missing.push("Game Bible must contain exactly one authoritative Current browser build declaration");
+}
+const poseEditorManifest = manifest.authoringTools?.articulatedPoseEditor;
+if (poseEditorManifest?.launcher !== path.basename(poseEditorLauncherPath) || poseEditorManifest?.approved !== path.basename(approvedPoseEditorPath) || poseEditorManifest?.archived?.length !== 1 || poseEditorManifest.archived[0] !== path.basename(archivedPoseEditorPath) || poseEditorManifest.facingPreviewExported !== false) {
+  missing.push("manifest must register one stable current pose-editor launcher, the approved 0033 library, one archived 2356 predecessor, and non-exported facing preview");
+}
+if (!poseEditorLauncher.includes(`url=${path.basename(approvedPoseEditorPath)}`) || !poseEditorLauncher.includes(`location.replace("${path.basename(approvedPoseEditorPath)}")`)) {
+  missing.push("stable articulated pose-editor launcher must forward to the approved 0033 tool");
+}
+for (const needle of ["Current approved authoring tool", "Facing Preview", "AEGIS tactical-facing preview parent", "AEGIS exported pose child", "Facing Preview control demonstrates that parent but never enters the pose export", "Object.keys(state.pose)"]) {
+  if (!approvedPoseEditor.includes(needle)) missing.push(`approved pose editor is missing current-authority seam: ${needle}`);
+}
+for (const poseName of ["standing", "standingAim", "kneelingAim", "proneAim", "proneDead", "attention", "atEase", "victory"]) {
+  if (!approvedPoseEditor.includes(`${poseName}: {`)) missing.push(`approved pose editor is missing authoritative preset: ${poseName}`);
+}
+if (!archivedPoseEditor.includes("ARCHIVED / SUPERSEDED POSE EDITOR") || !archivedPoseEditor.includes(path.basename(poseEditorLauncherPath))) {
+  missing.push("superseded 2356 pose editor must carry an archived warning and link to the stable current launcher");
+}
+if (approvedPoseEditor.includes("out.facing") || approvedPoseEditor.includes("state.pose.facing")) {
+  missing.push("approved pose editor must never include tactical Facing Preview in pose JSON");
 }
 
 if (manifest.gameplayParity?.nativeBuild !== manifest.nativePrototype?.build || nativeContent.build !== manifest.nativePrototype?.build) {
