@@ -1,12 +1,12 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.27.1629_ARTICULATED_FULL_WIDE_STATIC_DETAIL_PATCH`
+Current browser build: `v0.26.08.27.2013_ARTICULATED_FULL_WIDE_DETAIL_AND_OBJECTIVE_MEMORY_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 1629: Articulated Full/Wide Static Detail
+## Current Build Addendum — Browser 2013: Articulated Full/Wide Detail + Objective Memory
 
 ### Current Build Delta
 - With **Articulated Soldiers** selected, Full and Wide 3D Iso now use the optimized detailed articulated soldier rather than substituting the seven-mesh Classic silhouette.
@@ -15,6 +15,9 @@ Authoritative playable artifact: `index.html`
 - Near, Close, FPV, TPV, and incoming-fire reaction cameras continue to use fully animated articulated models. Map and Fit Map continue to use the inexpensive Classic LOD.
 - Persistent presentation signatures and diagnostics now distinguish articulated-full, articulated-static, articulated-LOD, and Classic tiers. Only a real zoom-tier transition reconstructs affected soldier nodes.
 - The five articulated-renderer Build Health contracts now cover Full/Wide static articulation, Map/Fit Map LOD, Near/Close and perspective animation, gait suppression, persistent tier changes, and diagnostic accounting.
+- An ordinary civilian's objective identity is now remembered after AEGIS first identifies that individual. Temporary loss of sight and later re-spotting no longer manufacture a new objective or repeatedly reopen the fire-team assignment board.
+- Objective memory is mission-scoped and can seed from the cached live tactical state after a component remount. Dead, rescued, and extracted civilians still leave the active objective list, while genuinely new goals still trigger reassignment review.
+- Live Browser 2013 Build Health reports 552/598. All five articulated-renderer contracts and both objective-memory contracts pass; 46 existing unrelated checks remain failing.
 - This is presentation-only. Tactical coordinates, movement, TU costs, pathfinding, LOS, fog, targeting, AI behavior, save data, assets, and save format 4 remain unchanged.
 
 ---
@@ -223,7 +226,7 @@ Authoritative playable artifact: `index.html`
 
 ## Priority Roadmap - Post-0046 Articulated Model and Release Cleanup
 
-**Status:** Active corrective sequence following the Browser 0046 code and live-runtime review. Items 1 through 5 are implemented through Browser 1629; item 6 remains the final cleanup step. Browser 1739 also supersedes Browser 1312's observed Standing Aim direction and corrects the gait phase.
+**Status:** Active corrective sequence following the Browser 0046 code and live-runtime review. Items 1 through 5 are implemented through Browser 2013; item 6 remains the final cleanup step. Browser 1739 also supersedes Browser 1312's observed Standing Aim direction and corrects the gait phase.
 
 ### 1. Articulated soldier orientation and facing-pivot separation - implemented in Browser 0816
 - Separate authoritative tactical facing from player-authored pose rotation. A dedicated parent **facing pivot** must apply the unit's current hex direction, while a child **pose root** owns Standing Carry, aiming, kneeling, prone, downed, ceremonial, victory, and procedural walk-cycle rotations.
@@ -247,12 +250,12 @@ Authoritative playable artifact: `index.html`
 - Correct the Browser 2049 beacon-intelligence test fixture: use a breach-capable observer for the known kinetic-guidance assertion while retaining a deliberately incapable observer for the separate known-field no-breach assertion.
 - Re-run embedded JavaScript syntax, build seams, whitespace checks, critical startup smoke, and full live Build Health. Record the current unrelated failure baseline separately from new articulated contracts.
 
-### 5. Articulated renderer performance comparison and bounded optimization - implemented in Browser 1550, refined in Browser 1629
+### 5. Articulated renderer performance comparison and bounded optimization - implemented in Browser 1550, refined in Browser 2013
 - Measure Classic versus Articulated on the same deterministic battlefield with 6, 12, and 24 visible AEGIS soldiers at Fit Map, ordinary tactical zoom, and close Iso/TPV views across Performance, Auto, and Quality modes.
 - Record renderer draw calls, triangles, average frame time, approximate FPS, unit-node rebuilds, and animation-frame cost while idle and while several soldiers walk. Shared geometry/materials reduce allocation but do not by themselves batch the roughly two dozen independently drawn articulated body/weapon meshes per soldier.
 - If the articulated default materially reduces performance, reduce material/draw fragmentation, introduce a bounded distant-Iso simplified presentation or LOD, or keep Classic as the automatic Performance-mode fallback. Do not sacrifice the approved close-view poses merely to lower distant-map cost.
 - Keep the Classic toggle until the articulated path meets an explicit representative-map performance gate and completes wider night, roof-cutaway, multi-Skyranger, death, victory, and tactical-cinematic field testing.
-- Browser 1629 restores the detailed articulated body at Full and Wide while suppressing its walking-leg cycle. Map and Fit Map retain the Classic LOD; Near/Close and perspective cameras retain full articulation and gait.
+- Browser 2013 restores the detailed articulated body at Full and Wide while suppressing its walking-leg cycle. Map and Fit Map retain the Classic LOD; Near/Close and perspective cameras retain full articulation and gait.
 
 ### 6. Pose-editor and documentation consolidation
 - Keep the current approved pose editor as the working authoring tool and move or clearly label superseded editor versions so testers do not accidentally edit an obsolete preset library.
