@@ -369,6 +369,36 @@ Authoritative playable artifact: `index.html`
 
 ---
 
+## Roadmap Addition - Expanded VIP Identity and High-Value Security Details
+
+**Status:** Approved character-presentation and allied-security roadmap item. The ordinary VIP appearance expansion should build on Browser 0910's existing articulated civilian/VIP renderer; high-value security details remain dependent on the planned high-value principal mission system.
+
+### Ordinary VIP appearance diversity
+- Replace the current mostly black/charcoal VIP wardrobe with a restrained deterministic business palette that can include navy, charcoal, medium gray, dark brown, muted blue, and other credible suit colors. Coordinate shirts, blouses, ties, and accessories so VIPs remain professional and visually distinct without becoming brightly randomized civilians.
+- Include male and female VIP presentation variants. Female VIPs may wear professional pant suits or business-appropriate dresses, with optional jackets and restrained color variation. Clothing and body presentation are visual identity only and must not change health, TU, bravery, AI priority, rescue value, or any other gameplay rule.
+- Add several lightweight hair silhouettes and a bounded natural hair-color palette. Hair, clothing, skin tone, and presentation variant must derive from stable character or mission identity data so the same VIP does not reroll appearance during camera changes, save/load, or tactical playback.
+- Preserve the existing unarmed authority for ordinary VIPs. A suit, dress, hair style, or pose must never imply a weapon, armor, security role, or combat capability that the authoritative unit does not possess.
+- Preserve Browser 0910's implemented movement rule: moving VIPs reuse the established articulated soldier leg gait while their unarmed upper body reflects calm or frightened state. Extend and regression-test that gait across pant suits and dress silhouettes; do not create a second animation clock or let a dress/skirt mesh hide, clip through, or reverse the walking motion.
+- Retain the existing calm Attention pose, frightened raised-arm pose, and frightened cover-seeking kneel unless a later approved pose set supersedes them. Injury, death, extraction, roof cutaway, night lighting, and tactical cinematics must continue selecting the authoritative state rather than an outfit-specific approximation.
+
+### High-value principal security details
+- When high-value principal missions are implemented, introduce their protection personnel as an explicit allied **Security Detail** unit role rather than visually arming ordinary VIPs. Security personnel should use coordinated black suits, light shirts, restrained ties, sunglasses, and several deterministic face/hair variations so they read as a professional protective team without all being identical.
+- Give security-detail members a bounded conventional weapon pool containing several generic handgun and compact-SMG classes, such as a service pistol, heavy pistol, machine pistol, and compact submachine gun. Use original/generic equipment identities rather than real-world trademarks, with distinct authoritative range, accuracy, damage, ammunition, fire-mode, and TU profiles.
+- Keep their weapons visibly matched to their authoritative loadout in articulated Iso, FPV, and TPV presentation. Holstered or unavailable weapons cannot fire, an SMG model cannot represent a pistol attack, and presentation must not grant ammunition, burst fire, range, or reaction capability.
+- Security AI should prioritize the principal's immediate survival: maintain protective positions, use available cover, engage known nearby threats when doing so does not abandon the principal, support evacuation, and perform an orderly handoff to AEGIS escorts. It must obey normal LOS, fog, ammunition, TU, morale, injury, occupancy, and pathfinding rules and cannot use hidden alien knowledge.
+- Define security-detail command authority explicitly before shipping. The preferred baseline is allied AI control with concise protect/follow/hold or evacuation orders where useful, rather than silently adding each guard to an AEGIS fire team. Objective assignment, escort-support decisions, extraction traffic, and loss-of-contact recovery must recognize the role without allowing guards to occupy required VIP ramp space.
+- Black suits and sunglasses should remain the strong visual identifier for the security detail, while the expanded palette makes ordinary VIPs visibly distinct. The mission UI and unit-status panel must also label **Security Detail** so role recognition never depends on color alone.
+- Decide recovery and campaign ownership rules before implementation. Security weapons and surviving guards must not automatically become permanent AEGIS inventory or personnel merely because they reached extraction unless the mission explicitly authorizes that outcome.
+
+### Performance and acceptance gates
+- Reuse the established cached articulated geometry, shared materials, persistent unit nodes, pose hierarchy, soldier leg-gait timing, and current full/mid/Classic distance tiers. Wardrobe and hair diversity should primarily use shared geometry plus deterministic colors or a small bounded silhouette library rather than unique per-character meshes or per-frame rebuilds.
+- Keep Map/Fit Map on the inexpensive distant-unit presentation. Full/Wide may use the established articulated-mid tier, while Near/Close and perspective views may show the fuller hair, clothing, sunglasses, and weapon silhouettes within the existing renderer budgets.
+- Add deterministic Build Health coverage for wardrobe and hair stability, male/female presentation availability, pant-suit and dress compatibility with the walking gait, ordinary VIP unarmed authority, security-role black-suit/sunglasses identity, bounded security weapon assignment, visible weapon/loadout agreement, fog-safe rendering, save/load identity stability, and unchanged tactical outcomes.
+- Manually test calm walking, frightened walking, stationary cover seeking, building ingress/egress, escort formation, Skyranger boarding, injury/death, roof cutaway, daylight/night lighting, and every camera distance. Test security details protecting, fighting beside, handing off, and extracting with a high-value principal without blocking AEGIS or the principal.
+- Preserve save format 4 for appearance derived from existing stable identities. A save-format increase is justified only if future security-detail gameplay requires persistent state that cannot be normalized safely.
+
+---
+
 ## Historical Build Record — v0.26.08.26.0033_APPROVED_ARTICULATED_POSE_SET_PATCH
 
 ### Historical Build Delta
