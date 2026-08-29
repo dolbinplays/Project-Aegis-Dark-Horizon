@@ -1,14 +1,28 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.28.1457_SELECTED_SQUAD_MORALE_SUMMARY_MISSION_CONTROL_PATCH`
+Current browser build: `v0.26.08.28.1810_MENTAL_HEALTH_CENTER_AND_SPECIALIST_TREATMENT_QUEUE_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 1457: Selected-Squad Morale Summary on Mission Control
+## Current Build Addendum — Browser 1810: Mental Health Center + Specialist Treatment Queue
 
 ### Current Build Delta
+- Bases can now construct a **Mental Health Center** for $425k with $60k monthly upkeep. Each completed facility includes one specialist and provides room for three additional hires, for four simultaneous treatment positions per center.
+- Additional specialists cost $85k to hire and $22k monthly upkeep. Staffing and facilities scale independently by base; every staffed specialist treats one soldier at a time.
+- Soldier requests enter an explicit first-come, first-served queue. The Soldiers interface reports waiting position, active-session progress, remaining minutes, cancellation/completion history, staffing, and hiring controls.
+- One uninterrupted authoritative Geoscape hour reduces stress by 12 and panic by 3. Ordinary ticks, accelerated time, day progression, and multi-hour compression all use the same bounded treatment progression.
+- Cancellation, mission assignment, transfer, wounding, KIA, or facility loss before minute 60 forfeits the entire incomplete hour and grants no partial benefit. Launch confirmation warns when selected personnel have progress at risk.
+- Mental-health treatment suspends ordinary downtime for the patient and never changes friendships, rivalries, squad cohesion, or other relationship state. Rec Room and Training Center social behavior remains separate.
+- Queue order, specialist count, elapsed progress, completion count, and last treatment status persist as ordinary normalized base/soldier fields. Save format remains 4 and `assets/` is unchanged.
+- Seven deterministic Build Health contracts cover included/additional staffing, FCFS order, concurrent throughput, exact completion, 59-minute interruption, time compression, relationship isolation, UI/launch warning wiring, and persistence. Consecutive live Browser runs report 578-579/625; the single-check variation is the pre-existing randomized failed-simulation fixture, the usual 46 unrelated legacy failures are unchanged, and no console errors occur.
+
+---
+
+## Historical Build Record — Browser 1457: Selected-Squad Morale Summary on Mission Control
+
+### Historical Build Delta
 - Mission Control now renders a live **Selected Squad Morale** panel directly below the primary-squad choices, before the optional support-squad and launch controls.
 - **Morale Score** equals `100 - current morale stress`; higher is better. This re-expresses the existing authoritative stress value without replacing or changing the Steady, Stable, Tense, Shaken, and Critical thresholds.
 - The panel shows the selected primary squad's exact highest, lowest, and arithmetic-average scores and recalculates on every squad or roster change.
@@ -662,7 +676,7 @@ The deterministic contract covers spoiler-free pre-observation language, attack 
 
 ## Roadmap Addition - Mental Health Center and Specialist Treatment Queue
 
-**Status:** Approved base-facility and soldier-recovery system; implementation pending.
+**Status:** Implemented in Browser 1810.
 
 ### Facility and staffing
 - Add a buildable **Mental Health Center** for soldiers whose morale or mental state is in dire need of recovery.
@@ -679,6 +693,7 @@ The deterministic contract covers spoiler-free pre-observation language, attack 
 ### Persistence and validation
 - Persist facility count, specialist staffing, FCFS queue order, active patient/specialist ownership, and session elapsed time using normalized defaults compatible with existing saves. Keep save format 4 unless implementation proves a schema migration unavoidable.
 - Add deterministic contracts for the included specialist, four-specialist facility cap, multiple-facility scaling, FCFS ordering, concurrent treatment, exactly one-hour completion, zero benefit on a 59-minute mission interruption, post-mission requeue, no relationship mutation, time-compression parity, and safe save/load normalization.
+- Browser 1810 implements the buildable facility, one-included/three-additional staffing model, authoritative FCFS hourly queue, concurrent and compressed-time progression, full interruption forfeiture, mission warning, relationship isolation, soldier controls, and save-format-four persistence. Initial balance values are 12 stress and 3 panic recovery per completed hour.
 
 
 ## Roadmap Addition - Scheduled Daylight Mission Arrival

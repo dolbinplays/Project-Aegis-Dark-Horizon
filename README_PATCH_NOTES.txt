@@ -1,3 +1,25 @@
+BUILD: v0.26.08.28.1810_MENTAL_HEALTH_CENTER_AND_SPECIALIST_TREATMENT_QUEUE_PATCH
+TITLE: Mental Health Center + Specialist Treatment Queue
+DATE: August 28, 2026
+
+Summary
+- Adds a buildable, staffed Mental Health Center with authoritative one-hour FCFS treatment, concurrent specialists, and zero-benefit interruption.
+
+Key changes
+- Mental Health Center is available in Base construction for $425k with $60k monthly upkeep. Each facility includes one specialist and room for three additional hires; each staffed specialist treats one soldier at a time.
+- Soldier-card controls expose requests, FCFS queue position, active-session progress, remaining time, cancellation, staffing, and additional specialist hiring. Additional specialists cost $85k and $22k monthly upkeep.
+- One uninterrupted authoritative Geoscape hour reduces stress by 12 and panic by 3. Ordinary ticks and compressed time share the same progression helper.
+- Cancellation, mission assignment, transfer, wounding, KIA, or facility loss before minute 60 clears all session progress with no partial improvement. Mission launch confirmation warns when selected personnel will forfeit an incomplete session.
+- Treatment suspends ordinary social downtime and never changes friendships, rivalries, or squad cohesion. Completed patients leave the queue, allowing the next FCFS soldier to begin immediately during the same compressed interval.
+- Facility staffing, queue order, elapsed progress, completion history, and interruption history persist as ordinary base/soldier fields under save format 4.
+
+Validation
+- Seven deterministic Build Health contracts pass for included/additional staffing, concurrent FCFS order, exact one-hour completion, 59-minute interruption, time-compression parity, relationship isolation, UI/launch-warning wiring, and save format 4.
+- Consecutive live Browser Build Health runs report 578-579/625. The one-check variation is the pre-existing randomized `Failed simulated missions wipe the whole squad` fixture; the usual 46 unrelated legacy diagnostics are unchanged and this patch adds no new failure. Startup and the Soldiers/Base interfaces render without browser console errors.
+- Embedded JavaScript syntax, release seams, JSON, whitespace, and asset-integrity checks pass. `assets/` is unchanged.
+
+---
+
 BUILD: v0.26.08.28.1457_SELECTED_SQUAD_MORALE_SUMMARY_MISSION_CONTROL_PATCH
 TITLE: Selected-Squad Morale Summary on Mission Control
 DATE: August 28, 2026
