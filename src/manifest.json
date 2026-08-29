@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.28.1810_MENTAL_HEALTH_CENTER_AND_SPECIALIST_TREATMENT_QUEUE_PATCH",
+  "currentBuild": "v0.26.08.29.1450_PERFORMANCE_MODE_FPV_TPV_SOLDIER_MID_LOD_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "mental-health-center-specialist-treatment-queue-complete",
+  "status": "performance-mode-fpv-tpv-soldier-mid-lod-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.28.1810_MENTAL_HEALTH_CENTER_AND_SPECIALIST_TREATMENT_QUEUE_PATCH",
+  "lastInspectedBuild": "v0.26.08.29.1450_PERFORMANCE_MODE_FPV_TPV_SOLDIER_MID_LOD_PATCH",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -47,7 +47,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.28.1810_MENTAL_HEALTH_CENTER_AND_SPECIALIST_TREATMENT_QUEUE_PATCH",
+    "browserBuild": "v0.26.08.29.1450_PERFORMANCE_MODE_FPV_TPV_SOLDIER_MID_LOD_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -538,6 +538,10 @@
       {
         "system": "articulated-aegis-soldier-presentation",
         "reason": "The browser now provides player-authored articulated AEGIS poses, an anatomically right-sided right-wrist rifle chain, a Standing Carry gait, a Classic fallback, separate tactical-facing versus pose-local pivots, shot-driven persistent-renderer invalidation, merged rigid helmet/rifle geometry, and a bounded distant-Iso articulated LOD with per-model diagnostics. Native Godot requires an engine-native articulated presentation and equivalent measured LOD policy."
+      },
+      {
+        "system": "performance-mode-fpv-tpv-soldier-mid-lod",
+        "reason": "The browser now selects the animated articulated mid-LOD for world-space AEGIS soldiers in FPV, TPV, and reaction views whenever the resolved quality profile is Performance, while higher quality retains full detail and the dedicated FPV weapon layer remains separate. Native Godot requires an engine-native perspective-character LOD policy with equivalent presentation-only authority."
       }
     ]
   }

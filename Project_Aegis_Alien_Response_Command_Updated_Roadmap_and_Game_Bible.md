@@ -1,14 +1,28 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.28.1810_MENTAL_HEALTH_CENTER_AND_SPECIALIST_TREATMENT_QUEUE_PATCH`
+Current browser build: `v0.26.08.29.1450_PERFORMANCE_MODE_FPV_TPV_SOLDIER_MID_LOD_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 1810: Mental Health Center + Specialist Treatment Queue
+## Current Build Addendum — Browser 1450: Performance-Mode FPV/TPV Soldier Mid-LOD
 
 ### Current Build Delta
+- Explicit **Performance** and hardware-resolved **Auto Performance** now select the established animated eleven-submission articulated-mid model for world-space AEGIS soldiers in FPV, TPV, and incoming-fire reaction TPV.
+- **Quality** and **Auto Balanced** retain the optimized twenty-submission full articulated model. Existing Iso Near/Close, Full/Wide, Map, and Fit Map tier rules remain unchanged.
+- The mid tier retains standing and kneeling aim, right-handed weapon handling, tactical facing, walking gait, armor/helmet color, injury, collapse, muzzle attachment, and weapon-light hierarchy.
+- The separate camera-owned FPV carried weapon/hands presentation remains intact and readable. Only world-space soldier geometry changes tier.
+- Persistent model signatures rebuild soldier nodes only when the resolved tier actually changes; camera movement, unit movement, selection, targeting, and ordinary animation continue reusing the renderer, scene, caches, and unit nodes.
+- Diagnostics now identify Iso, FPV, TPV, or reaction TPV beside the active full/mid/distant model tier and expose one-, six-, twelve-, and twenty-four-soldier comparisons. Performance perspective scenes reduce the structural soldier budget from 20 to 11 submissions each, a 45% reduction before broader scene batching.
+- This is a presentation-only optimization. Tactical coordinates, movement, TU, pathfinding, formation following, LOS, fog, cover, accuracy, targeting, ammunition, damage, AI, objectives, save data, and save format 4 are unchanged. `assets/` is unchanged.
+- All seven revised/new articulated-renderer Build Health contracts pass. Two consecutive live Browser runs report 580/627 with no console warnings or errors; the 47 failures are the unchanged 46 unrelated legacy diagnostics plus the pre-existing randomized failed-simulation fixture.
+
+---
+
+## Historical Build Record — Browser 1810: Mental Health Center + Specialist Treatment Queue
+
+### Historical Build Delta
 - Bases can now construct a **Mental Health Center** for $425k with $60k monthly upkeep. Each completed facility includes one specialist and provides room for three additional hires, for four simultaneous treatment positions per center.
 - Additional specialists cost $85k to hire and $22k monthly upkeep. Staffing and facilities scale independently by base; every staffed specialist treats one soldier at a time.
 - Soldier requests enter an explicit first-come, first-served queue. The Soldiers interface reports waiting position, active-session progress, remaining minutes, cancellation/completion history, staffing, and hiring controls.
@@ -358,9 +372,9 @@ Authoritative playable artifact: `index.html`
 
 ---
 
-## Roadmap Addition - Performance-Mode FPV/TPV Soldier Mid-LOD
+## Implemented System - Performance-Mode FPV/TPV Soldier Mid-LOD
 
-**Status:** Approved tactical-renderer optimization; implementation pending.
+**Status:** Implemented in Browser 1450.
 
 - When tactical quality is explicitly set to **Performance**, use the established lower-mesh articulated soldier presentation for world-space AEGIS soldiers rendered in **First Person View** and **Third Person View** instead of always forcing the full close-detail model. Apply the same rule when **Auto** legitimately resolves to the Performance profile; Auto/Quality profiles that resolve to higher detail retain the full articulated model.
 - Reuse the existing animated articulated mid-LOD, shared geometry/material caches, facing parent, stance and aiming poses, right-handed weapon hierarchy, gait, injury/death state, armor colors, helmet colors, and persistent-unit mutation path. Do not create a new model system or rebuild character geometry every animation frame.

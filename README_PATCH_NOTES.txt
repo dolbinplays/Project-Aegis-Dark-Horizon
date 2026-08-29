@@ -1,3 +1,30 @@
+BUILD: v0.26.08.29.1450_PERFORMANCE_MODE_FPV_TPV_SOLDIER_MID_LOD_PATCH
+TITLE: Performance-Mode FPV/TPV Soldier Mid-LOD
+DATE: August 29, 2026
+
+Summary
+- Reduces world-space articulated soldier rendering cost in First Person, Third Person, and incoming-fire reaction views whenever the resolved tactical quality profile is Performance.
+
+Key changes
+- Explicit Performance and hardware-resolved Auto Performance now select the established animated 11-submission articulated-mid model for world-space AEGIS soldiers in FPV, TPV, and reaction TPV.
+- Quality and Auto Balanced retain the optimized 20-submission full articulated model. Existing Iso Near/Close, Full/Wide, Map, and Fit Map tier rules remain unchanged.
+- Mid-LOD soldiers retain standing and kneeling aim, right-handed weapon handling, tactical facing, gait, armor and helmet colors, injury/collapse state, muzzle attachment, and weapon-light hierarchy.
+- The separate camera-owned FPV carried weapon/hands layer remains full and readable; only battlefield soldier geometry changes tier.
+- Persistent unit signatures recreate a soldier node only when its resolved model tier changes. Camera movement, unit movement, selection, targeting, and ordinary animation continue reusing the renderer, scene, caches, and unit nodes.
+- Renderer diagnostics now identify Iso, FPV, TPV, and reaction TPV beside the active model tier and expose structural comparisons for 1, 6, 12, and 24 soldiers.
+- This is presentation-only. Movement, TU, pathfinding, formation following, LOS, fog, cover, accuracy, targeting, ammunition, damage, AI, objectives, save data, and save format 4 are unchanged.
+
+Performance comparison
+- The per-soldier structural submission budget falls from 20 to 11 in Performance perspective views, a 45% reduction: 1 soldier 20 to 11, 6 soldiers 120 to 66, 12 soldiers 240 to 132, and 24 soldiers 480 to 264.
+- Actual frame time remains scene-, hardware-, visibility-, and camera-dependent; the existing live diagnostic records average frame time, approximate FPS, draw calls, triangles, active view/tier, node creates, and node mutations on the current battlefield.
+
+Validation
+- Deterministic Build Health contracts cover explicit Performance, Auto Performance, Auto Balanced, Quality, FPV, TPV, reaction TPV, persistent tier signatures, the separate FPV weapon rig, animated 11-mesh construction, diagnostics, and save format 4.
+- Two consecutive live Browser Build Health runs report 580/627. All seven articulated-renderer contracts pass; the 47 failures are the unchanged 46 unrelated legacy diagnostics plus the pre-existing randomized `Failed simulated missions wipe the whole squad` fixture. Startup, current Patch Notes history, and the Save / Load interface render without browser console warnings or errors.
+- Embedded JavaScript syntax, release seams, JSON, whitespace, and asset-integrity checks pass. `assets/` is unchanged.
+
+---
+
 BUILD: v0.26.08.28.1810_MENTAL_HEALTH_CENTER_AND_SPECIALIST_TREATMENT_QUEUE_PATCH
 TITLE: Mental Health Center + Specialist Treatment Queue
 DATE: August 28, 2026
