@@ -412,6 +412,24 @@ Authoritative playable artifact: `index.html`
 
 ---
 
+## Roadmap Addition - Smooth Articulated Hex-to-Hex Locomotion
+
+**Status:** Approved tactical-presentation refinement for AEGIS soldiers, civilians, and VIPs; implementation pending.
+
+- Move each visible articulated soldier, civilian, and VIP continuously between consecutive authoritative hex centers instead of visually teleporting the model from one occupied cell to the next. The articulated walking gait should play throughout the translation and settle cleanly into the correct standing, kneeling, frightened, escort, injury, or other authoritative pose at the destination.
+- Reuse the existing action movement trail and shared hex-to-world transform. Interpolate only along the exact legal path cells already selected by movement/pathfinding; never cut a corner through a wall, closed door, vehicle, blocked prop, occupied cell, fire hazard, building edge, Skyranger hull, or unexplored off-path terrain.
+- Keep tactical simulation fully discrete and hex-authoritative. Occupancy, TU spending, pathfinding, LOS, fog, cover, reactions, contact discovery, targeting, damage, extraction, escort contact, objectives, and AI decisions continue using authoritative cell state rather than the model's temporary visual position between cells.
+- Synchronize visual translation, leg gait, facing turns, footfalls, path display, camera tracking, and playback duration from one per-step presentation timeline. The model should face into the next path segment, rotate smoothly at turns, and arrive exactly at the final hex center without overshoot, snap-back, drift, duplicated motion, or walking in place.
+- Apply the same locomotion path to Manual movement, Hybrid leaders and supports, Simulation AI, civilian/VIP autonomous movement, escort following, building ingress/egress, Skyranger boarding, evacuation, panic flight, and tactical cinematics. Do not create separate interpolation implementations for each control mode or unit role.
+- In TPV and any camera following a moving unit, derive the camera target from the interpolated presentation root so the observer glides with the character rather than jumping once per hex. FPV movement should consume the same progress value for camera travel and gait/bob while preserving its separate camera-space weapon authority.
+- Preserve fog and hidden-information boundaries. Hidden units need no visible interpolation, and a temporarily interpolated model cannot reveal a cell, become targetable, trigger a reaction, establish escort contact, enter extraction, or expose a hidden objective before the authoritative movement step says it has done so.
+- Battle Speed may scale the presentation duration, but every non-skipped setting must retain a readable minimum transition and preserve action order. Pauses for newly spotted aliens, reactions, injury, death, mission victory, or player command must stop/resume at a deterministic movement boundary without leaving the rendered model detached from authoritative state.
+- Mutate only persistent unit-root transforms and articulated joints during interpolation. Do not rebuild soldier/civilian geometry, materials, the battlefield, continuous ground, fog, buildings, or static-scene caches every frame. Full and mid-LOD articulated models must share the same progress stream.
+- Active-mission save/load should normalize a movement already in progress safely: either persist the bounded presentation step/fraction or restore the model to the authoritative cell before resuming, without repeating TU, reactions, contact discovery, damage, or movement decisions. Campaign save format should remain 4 if normalized presentation state is sufficient.
+- Add deterministic Build Health coverage for exact start/end centers, multi-cell paths, turns, doors and building routes, ramps, civilian/VIP escorts, panic movement, Manual/Hybrid/Simulation parity, FPV/TPV camera following, battle-speed scaling, contact/reaction interruption, hidden-unit authority, save/load continuation, zero snap-back, and no renderer/static-scene rebuild during ordinary locomotion.
+
+---
+
 ## Roadmap Addition - Expanded VIP Identity and High-Value Security Details
 
 **Status:** Approved character-presentation and allied-security roadmap item. The ordinary VIP appearance expansion should build on Browser 0910's existing articulated civilian/VIP renderer; high-value security details remain dependent on the planned high-value principal mission system.
