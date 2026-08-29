@@ -372,6 +372,21 @@ Authoritative playable artifact: `index.html`
 
 ---
 
+## Roadmap Addition - Exact Overhead Rifle-Barrel Shot Alignment
+
+**Status:** Approved articulated firing-presentation correction; implementation pending.
+
+- When an AEGIS soldier fires, compute a presentation-only horizontal aim vector from the authoritative shooter hex/world center to the resolved shot target captured in that shot's playback snapshot. Rotate the articulated firing presentation so the rifle barrel, viewed directly from above, visibly points along that vector instead of merely choosing the nearest coarse six-direction facing.
+- Measure the final rendered barrel direction from the transformed weapon/muzzle hierarchy after tactical-facing, pose-root, standing/kneeling/prone aim, right-handed weapon, and model-local corrections have all been applied. Do not assume the soldier root or torso forward axis is identical to the rifle's actual barrel axis.
+- Prefer a dedicated temporary fire-time aim-yaw pivot or bounded upper-body/weapon correction beneath tactical position authority. If the whole soldier must rotate for readability, keep the feet centered on the authoritative hex and do not let the visual rotation change movement facing, cover facing, reaction arcs, pathing, or the unit's post-shot simulation state.
+- Apply the correction to standing, kneeling, and prone firing; Manual, Hybrid, Simulation, reaction fire, burst fire, and cinematic/replay presentation must use the same shot snapshot and alignment helper. Hold the corrected aim pose long enough to render clearly, then return to the soldier's authoritative idle/movement facing without snapping through an unrelated direction.
+- Use the resolved shot endpoint even if the alien dies, moves, becomes hidden, or is removed after resolution, so playback does not rotate toward a stale live target. Never reveal an unseen target or create a shot that was not already legally resolved.
+- Keep tracer/projectile origin at the transformed muzzle socket and verify that the muzzle-to-endpoint line agrees with the visible barrel direction. Account for future elevation through a separate pitch path while this requirement specifically corrects the overhead yaw.
+- This is presentation-only. Do not change targeting, target selection, LOS, fog, accuracy, distance modifiers, cover, ammunition, TU, damage, hit rolls, AI knowledge, weapon range, shot endpoints, or save data.
+- Add deterministic Build Health coverage for all six neighboring directions plus non-cardinal long shots, standing/kneeling/prone poses, right-handed geometry, every firing-control path, target death/removal before playback, aim-hold duration, post-shot facing restoration, and a small angular tolerance between the projected barrel vector and shooter-to-target vector. Manually verify from directly overhead in Close, Near, Full, Wide, FPV/TPV observer playback, Performance mid-LOD, and Quality full-detail modes.
+
+---
+
 ## Implemented System - Articulated Civilian and VIP Models
 
 **Status:** Implemented in Browser 0910. The established lightweight articulated hierarchy and animation system now presents civilians and VIPs without changing their authoritative movement, escort, fear, cover, pathfinding, extraction, or mission-resolution behavior.
