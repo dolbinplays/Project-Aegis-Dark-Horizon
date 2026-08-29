@@ -358,6 +358,20 @@ Authoritative playable artifact: `index.html`
 
 ---
 
+## Roadmap Addition - Performance-Mode FPV/TPV Soldier Mid-LOD
+
+**Status:** Approved tactical-renderer optimization; implementation pending.
+
+- When tactical quality is explicitly set to **Performance**, use the established lower-mesh articulated soldier presentation for world-space AEGIS soldiers rendered in **First Person View** and **Third Person View** instead of always forcing the full close-detail model. Apply the same rule when **Auto** legitimately resolves to the Performance profile; Auto/Quality profiles that resolve to higher detail retain the full articulated model.
+- Reuse the existing animated articulated mid-LOD, shared geometry/material caches, facing parent, stance and aiming poses, right-handed weapon hierarchy, gait, injury/death state, armor colors, helmet colors, and persistent-unit mutation path. Do not create a new model system or rebuild character geometry every animation frame.
+- Preserve the dedicated FPV carried-weapon/arms presentation where it is a separate camera-owned layer. Lowering the world-soldier mesh must not remove the player's readable weapon, muzzle, weapon light, hands, ammunition state, or stance feedback.
+- Keep standing and kneeling aim, walking, firing, hit reactions, death/collapse, escort movement, cinematics, roof cutaway, lighting, and the unified tactical status HUD readable in both perspective cameras. Performance mode may consolidate small rigid details, but it must not fall back to a stationary or directionally incorrect character.
+- This is presentation-only. It cannot change movement, TU, pathfinding, formation following, LOS, fog, cover, accuracy, targeting, ammunition, damage, AI knowledge, mission objectives, control ownership, save data, or camera selection.
+- Extend persistent-renderer diagnostics to distinguish full and mid-LOD perspective actors. Compare identical FPV/TPV scenes with 1, 6, 12, and 24 visible soldiers under Performance, Auto, and Quality, recording draw calls, triangles, average frame time, FPS, node rebuilds, and gait cost.
+- Add deterministic Build Health coverage proving Performance selects the lower-mesh perspective tier, Quality retains full detail, Auto follows its resolved hardware profile, camera transitions rebuild only on a real tier change, FPV weapon ownership remains intact, all articulated pose/animation authority survives, and save format remains unchanged.
+
+---
+
 ## Implemented System - Articulated Civilian and VIP Models
 
 **Status:** Implemented in Browser 0910. The established lightweight articulated hierarchy and animation system now presents civilians and VIPs without changing their authoritative movement, escort, fear, cover, pathfinding, extraction, or mission-resolution behavior.
