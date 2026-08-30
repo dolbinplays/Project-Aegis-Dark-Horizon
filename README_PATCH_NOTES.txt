@@ -1,3 +1,25 @@
+BUILD: v0.26.08.29.2053_EXACT_OVERHEAD_RIFLE_BARREL_SHOT_ALIGNMENT_PATCH
+TITLE: Exact Overhead Rifle-Barrel Shot Alignment
+DATE: August 29, 2026
+
+Summary
+- Aligns the articulated rifle barrel to the exact resolved shot endpoint from an overhead view without changing tactical facing or any combat authority.
+
+Key changes
+- Full and 11-submission mid articulated soldiers now have a temporary fire-time yaw pivot between the authoritative six-direction facing parent and the authored pose root.
+- When a shot is presented, the renderer measures the transformed weapon-to-muzzle barrel vector and turns that temporary pivot toward the resolved impact cell. Misses continue aiming at their already-resolved miss location rather than a mutable target object.
+- Standing, kneeling, and prone shooters keep the appropriate authored aim pose. Manual, Hybrid, Simulation, reaction, burst, and cinematic playback inherit the correction through the shared shot snapshot.
+- Clearing the shot resets only the temporary aim pivot. The soldier's existing tactical-facing pivot remains unchanged and resumes presentation authority cleanly after the aim hold.
+- Persistent unit nodes are mutated in place. The patch does not rebuild soldier geometry, static terrain, fog, buildings, or other battlefield caches during ordinary firing.
+- Target selection, LOS, fog, distance modifiers, cover, accuracy, TU, ammunition, damage, AI knowledge, shot resolution, movement, and save data are unchanged. Save format remains 4.
+
+Validation
+- Seven focused Build Health contracts cover the six neighboring hex directions, non-cardinal long shots, a 2.5-degree tolerance, full/mid hierarchy, standing/kneeling/prone poses, resolved hit/miss endpoints, runtime alignment/reset, facing preservation, persistent mutation, and save format 4.
+- Full live Build Health reports 594/641: all seven new contracts pass; the remaining failures are the same 46 unrelated existing diagnostics plus the pre-existing intermittent `Failed simulated missions wipe the whole squad` fixture.
+- Embedded JavaScript syntax, build seams, whitespace, and live start-screen/history checks pass. `assets/` is unchanged.
+
+---
+
 BUILD: v0.26.08.29.1656_VALANT_MENTAL_HEALTH_CENTER_STAFFING_AND_AUTONOMOUS_APPOINTMENTS_PATCH
 TITLE: V.A.L.A.N.T. Staffing + Autonomous Appointments
 DATE: August 29, 2026

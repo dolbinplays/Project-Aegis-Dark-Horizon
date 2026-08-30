@@ -1,10 +1,23 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.29.1656_VALANT_MENTAL_HEALTH_CENTER_STAFFING_AND_AUTONOMOUS_APPOINTMENTS_PATCH`
+Current browser build: `v0.26.08.29.2053_EXACT_OVERHEAD_RIFLE_BARREL_SHOT_ALIGNMENT_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 2053: Exact Overhead Rifle-Barrel Shot Alignment
+
+### Current Build Delta
+- Full and animated mid-LOD articulated AEGIS soldiers now include a dedicated temporary fire-time yaw pivot between the authoritative six-direction tactical-facing parent and the player-authored pose root.
+- Firing presentation measures the final transformed weapon-to-muzzle barrel vector, projects it onto the battlefield plane, and rotates the temporary pivot toward the resolved shot endpoint. The resolved impact cell remains authoritative for hits and misses even if the original target later dies, moves, hides, or is removed.
+- Standing, kneeling, and prone shooters retain their appropriate authored aim pose. Manual, Hybrid, Simulation, reaction, burst, and cinematic playback use the same correction because they share the existing shot snapshot.
+- Ending the aim hold resets only the temporary yaw pivot. Tactical facing is never overwritten, and the normal facing parent resumes presentation authority without changing coordinates, movement, reactions, cover arcs, or post-shot state.
+- The correction mutates persistent unit transforms in place. It does not recreate character geometry, rebuild the renderer/static scene, or invalidate terrain, fog, buildings, vehicles, and other unrelated presentation caches.
+- Target selection, LOS, fog, cover, distance accuracy, TU, ammunition, damage, AI knowledge, mission objectives, shot outcomes, and save data are unchanged. Save format remains **4** and `assets/` is unchanged.
+- Seven focused Build Health contracts cover all six neighboring directions, non-cardinal long shots, a 2.5-degree angular tolerance, full/mid hierarchy, standing/kneeling/prone poses, resolved endpoints, runtime alignment/reset, facing preservation, persistent mutation, and save authority. Full live Build Health reports **594/641** with all new checks passing; the remaining failures are the same 46 unrelated existing diagnostics plus the pre-existing intermittent failed-simulation fixture.
+
+---
 
 ## Current Build Addendum — Browser 1656: V.A.L.A.N.T. Staffing + Autonomous Appointments
 
@@ -402,7 +415,7 @@ Authoritative playable artifact: `index.html`
 
 ## Roadmap Addition - Exact Overhead Rifle-Barrel Shot Alignment
 
-**Status:** Approved articulated firing-presentation correction; implementation pending.
+**Status:** Implemented in Browser 2053.
 
 - When an AEGIS soldier fires, compute a presentation-only horizontal aim vector from the authoritative shooter hex/world center to the resolved shot target captured in that shot's playback snapshot. Rotate the articulated firing presentation so the rifle barrel, viewed directly from above, visibly points along that vector instead of merely choosing the nearest coarse six-direction facing.
 - Measure the final rendered barrel direction from the transformed weapon/muzzle hierarchy after tactical-facing, pose-root, standing/kneeling/prone aim, right-handed weapon, and model-local corrections have all been applied. Do not assume the soldier root or torso forward axis is identical to the rifle's actual barrel axis.
