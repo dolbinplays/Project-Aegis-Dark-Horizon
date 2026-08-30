@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.30.0826_SKYRANGER_EXTRACTION_CORRIDOR_CIVILIAN_PRIORITY_YIELD_PATCH",
+  "currentBuild": "v0.26.08.30.1036_TACTICAL_3D_ISO_SUPPORT_SLAB_REMOVAL_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "skyranger-extraction-corridor-civilian-priority-yield-complete",
+  "status": "tactical-3d-iso-support-slab-removal-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.30.0826_SKYRANGER_EXTRACTION_CORRIDOR_CIVILIAN_PRIORITY_YIELD_PATCH",
+  "lastInspectedBuild": "v0.26.08.30.1036_TACTICAL_3D_ISO_SUPPORT_SLAB_REMOVAL_PATCH",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -47,7 +47,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.30.0826_SKYRANGER_EXTRACTION_CORRIDOR_CIVILIAN_PRIORITY_YIELD_PATCH",
+    "browserBuild": "v0.26.08.30.1036_TACTICAL_3D_ISO_SUPPORT_SLAB_REMOVAL_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -550,6 +550,10 @@
       {
         "system": "skyranger-extraction-corridor-civilian-priority-yield",
         "reason": "The browser now lets AI soldiers already inside a player Skyranger corridor plan through civilian ramp traffic and uses a controlled vacated-cell yield to prevent escort deadlocks without permitting overlapping occupancy. Native Godot requires equivalent extraction-lane traffic priority."
+      },
+      {
+        "system": "tactical-3d-iso-support-slab-removal",
+        "reason": "The browser has retired the battlefield-sized rectangular support plane beneath 3D Iso while retaining the continuous tactical ground, exact ground-plane picking, and non-authoritative world-continuation scenery. Native Godot should avoid an equivalent table-like support slab while preserving its own tactical coordinate authority."
       }
     ]
   }

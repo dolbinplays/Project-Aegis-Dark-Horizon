@@ -1,3 +1,24 @@
+BUILD: v0.26.08.30.1036_TACTICAL_3D_ISO_SUPPORT_SLAB_REMOVAL_PATCH
+TITLE: Tactical 3D Iso Support-Slab Removal
+DATE: August 30, 2026
+
+Summary
+- Removes the battlefield-sized rectangular support plane beneath 3D Iso missions so the tactical surface reads as part of the surrounding world rather than a board resting on a table.
+
+Key changes
+- The former stable terrain bed now retires through a compatibility-safe no-op. It allocates no PlaneGeometry, material, mesh, texture, or draw call, and renderer diagnostics explicitly report that the support slab is absent.
+- The cached continuous Iso ground remains at its established world height and continues to provide exact raycast-to-authoritative-hex picking. No tactical object or overlay was repositioned.
+- The terrain skirt, edge-derived distant scenery, sky, horizon silhouettes, haze, fog, perimeter indicators, roofs, cinematics, and FPV/TPV ground paths remain independent and intact.
+- Camera movement, rotation, pan, zoom, Fit Map, selection, unit movement, targeting, fog changes, and AI playback do not rebuild terrain as a consequence of this change.
+- This is presentation-only. Hex coordinates, movement, TU, pathfinding, occupancy, LOS, cover, hazards, accuracy, AI knowledge, extraction, objectives, mission resolution, and save data are unchanged. Save format remains 4.
+
+Validation
+- Six focused Build Health contracts cover absent slab allocation/attachment, explicit runtime diagnostics, retained continuous ground and world-continuation layers, authoritative ground picking, camera-only invalidation, presentation-only scope, and save format 4.
+- Full live Build Health reports 610/657 with all six support-slab contracts passing. The remaining 47 failures are the existing unrelated diagnostic baseline, and the browser console reports no warnings or errors.
+- Embedded JavaScript syntax, build seams, JSON, and whitespace checks pass. `assets/` is unchanged.
+
+---
+
 BUILD: v0.26.08.30.0826_SKYRANGER_EXTRACTION_CORRIDOR_CIVILIAN_PRIORITY_YIELD_PATCH
 TITLE: Skyranger Extraction-Corridor Civilian Priority Yield
 DATE: August 30, 2026

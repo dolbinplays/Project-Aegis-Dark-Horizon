@@ -1,12 +1,24 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.30.0826_SKYRANGER_EXTRACTION_CORRIDOR_CIVILIAN_PRIORITY_YIELD_PATCH`
+Current browser build: `v0.26.08.30.1036_TACTICAL_3D_ISO_SUPPORT_SLAB_REMOVAL_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 0826: Skyranger Extraction-Corridor Civilian Priority Yield
+## Current Build Addendum — Browser 1036: Tactical 3D Iso Support-Slab Removal
+
+### Current Build Delta
+- The battlefield-sized stable terrain bed beneath 3D Iso missions has been retired. Its persistent-scene lifecycle hook remains as a compatibility-safe no-op but creates no geometry, material, mesh, texture, or draw call.
+- The cached continuous Iso ground remains at its established world height and retains exact raycast-to-authoritative-hex picking. No soldiers, aliens, civilians/VIPs, structures, floors, vehicles, Skyrangers, props, objectives, effects, fog, or tactical overlays were repositioned.
+- The non-interactive terrain skirt, edge-derived distant scenery, sky, horizon silhouettes, atmospheric treatment, perimeter indicators, roofs, cinematics, and FPV/TPV presentation remain independent and intact.
+- Camera pan, rotation, zoom, **Fit Map**, selection, unit movement, targeting, fog changes, and ordinary AI playback continue to reuse the persistent terrain scene and do not rebuild the ground texture.
+- This is presentation-only. Tactical hex authority, movement, TU, pathfinding, occupancy, LOS, cover, hazards, accuracy, AI knowledge, extraction, objectives, mission results, and save data remain unchanged. Save format remains **4** and `assets/` is unchanged.
+- Six deterministic Build Health contracts cover absent slab allocation/attachment, explicit diagnostics, retained tactical ground and world continuation, authoritative picking, camera-only invalidation, presentation-only scope, and save compatibility. Full live Build Health reports **610/657** with every new contract passing; the remaining 47 failures are the existing unrelated diagnostic baseline, and the browser console reports no warnings or errors.
+
+---
+
+## Historical Build Addendum — Browser 0826: Skyranger Extraction-Corridor Civilian Priority Yield
 
 ### Current Build Delta
 - AI soldiers already inside a player Skyranger extraction corridor may plan through civilian/VIP ramp traffic instead of treating the queue as an impassable wall.
@@ -654,6 +666,17 @@ Historical patch status at this archived handoff: **Browser 1739 reverses the ob
 - Twelve deterministic Build Health contracts cover map-size-aware bounds, authoritative-edge sampling, presentation-only state, no tactical mutation, no picking registration, cached lifecycle, feature continuation, instancing, map-sized backdrop radii, persistent edge readability, Iso/FPV/TPV compatibility, and save format 4.
 - Repeated fresh-campaign browser runs report **513-514/560** passing. All twelve new contracts pass consistently; one pre-existing randomized failed-mission fixture accounts for the 46/47-failure variation, while the remaining debt is unrelated geoscape, AI, visibility, mission-result, and presentation coverage.
 - Embedded JavaScript syntax and whitespace validation pass. Save format remains **4**, and no files under `assets/` changed.
+
+### Implemented in Browser 1036 — remove the 3D Iso battlefield support slab
+
+- Remove the thick block/table/slab presentation currently visible beneath the tactical battlefield in elevated **3D Iso** mission views. The battlefield should read as terrain continuing into its environment, not as a heavy board resting on a solid rectangular pedestal.
+- Retain the visible hex-aligned tactical ground surface and its subtle cell readability treatment, map-edge/perimeter indicators, terrain skirt, skybox, horizon silhouettes, distant scenery, atmospheric haze, and any other non-interactive background layers.
+- Do not lower, resize, rotate, or otherwise move the authoritative tactical surface to hide the slab. Soldiers, aliens, civilians/VIPs, buildings, floors, vehicles, Skyrangers, props, objectives, overlays, fog, effects, and click/picking conversion must remain aligned to the same established hex centers and world height.
+- Remove or disable the slab geometry/material itself rather than replacing it with per-cell sidewalls, underside meshes, or another high-cost structure. Preserve the persistent renderer/cache lifecycle and dispose of any retired slab resource cleanly.
+- Camera rotation, pan, zoom, **Fit Map**, close/near/full/wide views, 64x64/80x80/96x96 maps, daylight/twilight/night lighting, fog, roof cutaway, alien-base levels, FPV/TPV transitions, and tactical cinematics must not expose a new black void, clipping plane, z-fighting seam, or horizon gap.
+- This is presentation-only. It must not change terrain authority, coordinates, elevation, movement, TU, pathfinding, occupancy, LOS, cover, hazards, accuracy, AI knowledge, extraction, objectives, mission results, or save format.
+- Add deterministic Build Health coverage confirming that the legacy support slab is absent in 3D Iso, the tactical ground and background continuation layers remain present, picking still resolves through the authoritative ground plane, camera movement does not rebuild terrain, and save format remains **4**.
+- Browser 1036 implements this as a zero-allocation lifecycle no-op, preserving the established scene-build call boundary for compatibility while eliminating the retired support-plane geometry and draw call.
 
 
 ## Browser 2049 - Intelligence-Gated Field Beacon Shield Objective Text
@@ -3596,6 +3619,18 @@ Roadmap-only planning update (2026-08-19): **AEGIS tactical AI should treat dist
 
 
 Implementation update (2026-08-19, Browser 1935): **The first tactical stance consistency slice is now implemented for kneeling. Manual and Simulation-AI control share the same movement transition: kneeling persists while stationary across rounds, actual movement clears kneeling, auto-standing to move carries no extra stance charge, explicit stationary Kneel/Stand remains 4 TU, already-kneeling stationary logic does not pay the stance cost twice, and 2D/3D Iso/FPV/TPV/reaction-TPV presentation consumes the same stance. The current +10 outgoing accuracy / -8 incoming-hit balance is intentionally unchanged. A future balance pass may still explore stronger directional-cover/exposed-profile interactions, but those are not part of Browser 1935.**
+
+### Approved follow-up — proactive AI kneeling doctrine
+
+- AI-controlled AEGIS soldiers should evaluate **Kneel** more often as a deliberate firing-position choice, using the established outgoing-accuracy benefit and reduced incoming-hit profile when the expected advantage justifies the stance TU cost.
+- Favor kneeling when a soldier has useful LOS and weapon range, is holding suitable cover or a stable firing lane, expects to take or exchange ranged fire, can still afford one or more worthwhile shots after paying the stance cost, and does not need immediate movement for a higher-priority objective.
+- A soldier already behind advantageous cover with a viable target should be allowed to kneel and fire from that position—including multiple legal shots when TU, ammunition, fire mode, LOS, and target life permit—rather than being driven to move first.
+- Preserve kneeling across rounds while the soldier continues holding the position. Do not repeatedly pay the stance cost, stand and kneel without a tactical reason, or add a mandatory kneel animation before every shot.
+- Avoid kneeling when it would prevent necessary escort/extraction movement, breaching, reaching a player-issued Hybrid objective, responding to newly spotted aliens, escaping fire/explosive hazards, maintaining fire-team cohesion, treating an injury, or addressing an immediate close-range/flanking threat.
+- The decision should compare expected accuracy, incoming-fire exposure, cover direction/quality, target distance, reserve choice, remaining TU, ammunition, weapon/fire mode, visible threats, objective urgency, and the cost of standing again if movement will probably be required next turn.
+- Fire-team members should make individual stance decisions so an entire team does not kneel automatically when only one or two soldiers have useful firing positions. Leaders must remain able to maneuver and supporting soldiers must continue honoring formation, escort, and Hybrid-command authority.
+- Manual, Hybrid-support, and Simulation-AI playback must show the same authoritative kneeling state in 2D Hex, 3D Iso, FPV, TPV, reaction cameras, shot results, saves, and resumed tactical state. The AI may choose the stance, but it may not receive hidden LOS/target knowledge or different accuracy/defense rules from the player.
+- Add deterministic Build Health coverage for kneel-and-fire utility scoring, stationary covered repeat fire, no duplicate stance cost, stance persistence, movement auto-stand, escort/objective overrides, close-threat rejection, TU/ammunition legality, formation preservation, and unchanged save format.
 
 ### Future tactical stance exploration — Prone
 
