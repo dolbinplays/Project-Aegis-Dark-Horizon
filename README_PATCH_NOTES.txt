@@ -1,3 +1,27 @@
+BUILD: v0.26.08.29.1656_VALANT_MENTAL_HEALTH_CENTER_STAFFING_AND_AUTONOMOUS_APPOINTMENTS_PATCH
+TITLE: V.A.L.A.N.T. Staffing + Autonomous Appointments
+DATE: August 29, 2026
+
+Summary
+- Renames the Mental Health Center, moves specialist staffing into the selected Base facility panel, and lets severely stressed soldiers join the established FCFS care queue autonomously.
+
+Key changes
+- The facility is now the V.A.L.A.N.T. Mental Health Center: Validation, Acceptance, Listening, Advocacy, Nurturing, and Therapy. Its persistent `mentalhealth` facility key is unchanged for existing saves.
+- Selecting a built V.A.L.A.N.T. facility shows included and additional specialists, occupied and available staffed positions, maximum capacity, FCFS queue length, hire cost, added upkeep, and a clear hiring blocker when applicable.
+- Specialist hiring no longer appears on Soldier cards. The selected Base facility now owns a two-step Review/Confirm hire action; the established $85k cost, $22k monthly upkeep, per-base staffing, and four-specialist-per-facility cap remain authoritative.
+- Ready soldiers at a staffed center automatically request care when stress reaches 60 (Shaken/Critical) or persistent panic reaches 20. Same-boundary requests sort by severity and then stable soldier ID before joining the existing queue.
+- Commander and autonomous requests use one FCFS queue. Request origin is visible, duplicate requests are rejected, and a commander cancellation or completed session imposes a one-day autonomous rebooking cooldown while manual requests remain available.
+- Mission commitment, transfer, wounds, KIA, facility loss, one-hour uninterrupted progress, zero partial benefit, time compression, and relationship isolation retain the Browser 1810 authority.
+- Request origin and cooldown normalize as ordinary optional soldier fields under save format 4. Older queued saves without an origin are treated as commander-requested without losing queue order or progress.
+
+Validation
+- Seven focused Build Health contracts pass for V.A.L.A.N.T. naming, selected-facility staffing, confirmed base-local hiring, Soldier-card separation, severity ordering, duplicate prevention, cooldowns, completion, old-save normalization, and save format 4.
+- Live Base testing confirms the staffing panel appears only for a selected built V.A.L.A.N.T. facility, remains absent from the construction preview, and preserves the hire confirmation. Live Soldiers testing confirms care controls remain and hiring controls are absent.
+- Full live Build Health reports 588/634 before the release-identity synchronization pass: all seven new contracts pass and the 46 unrelated existing failures are unchanged.
+- Embedded JavaScript syntax and release seams pass. `assets/` is unchanged.
+
+---
+
 BUILD: v0.26.08.29.1450_PERFORMANCE_MODE_FPV_TPV_SOLDIER_MID_LOD_PATCH
 TITLE: Performance-Mode FPV/TPV Soldier Mid-LOD
 DATE: August 29, 2026

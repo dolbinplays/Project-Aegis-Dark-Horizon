@@ -1,10 +1,24 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.29.1450_PERFORMANCE_MODE_FPV_TPV_SOLDIER_MID_LOD_PATCH`
+Current browser build: `v0.26.08.29.1656_VALANT_MENTAL_HEALTH_CENTER_STAFFING_AND_AUTONOMOUS_APPOINTMENTS_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1656: V.A.L.A.N.T. Staffing + Autonomous Appointments
+
+### Current Build Delta
+- The Mental Health Center is now the **V.A.L.A.N.T. Mental Health Center**, standing for **Validation, Acceptance, Listening, Advocacy, Nurturing, and Therapy**. The persistent facility key remains `mentalhealth`, so existing facilities and save-format-four campaigns continue loading without migration or duplication.
+- Selecting a completed V.A.L.A.N.T. facility in the Base view now shows its included and additional specialists, occupied and available staffed positions, maximum capacity, FCFS queue length, hire cost, added upkeep, and any funding/capacity blocker.
+- Specialist hiring has moved off Soldier cards. The selected facility owns a two-step **Review Specialist Hire / Confirm Hire** action, while the existing $85k hire cost, $22k monthly upkeep, per-base ownership, and one-included/three-additional staffing rule remain authoritative.
+- Ready, stationed soldiers can now request their own appointment when stress reaches 60 (**Shaken/Critical**) or persistent panic reaches 20. Multiple same-boundary requests are ordered by severity and then stable soldier ID before entering the existing shared FCFS queue.
+- Autonomous and commander requests use the same queue and expose their origin in treatment status. Duplicate requests are rejected. Commander cancellation and completed care impose a one-day autonomous rebooking cooldown, while the commander may still submit a deliberate manual request during that interval.
+- Mission commitment, transfers, wounds, KIA, facility loss, one-hour uninterrupted progress, zero partial benefit, time compression, relationship isolation, and launch warnings retain Browser 1810 authority.
+- Request origin and cooldown are normalized optional soldier fields under save format 4. Older queued soldiers without an origin normalize as commander-requested without losing position or progress.
+- Seven focused Build Health contracts pass. Live Base and Soldiers checks confirm selected-facility-only staffing, persistent two-step confirmation, no construction-preview leakage, and no duplicate Soldier-card hire controls. Full live Build Health reports 588/634 before final release synchronization; the 46 unrelated existing failures are unchanged. `assets/` is unchanged.
+
+---
 
 ## Current Build Addendum — Browser 1450: Performance-Mode FPV/TPV Soldier Mid-LOD
 
@@ -758,7 +772,7 @@ The deterministic contract covers spoiler-free pre-observation language, attack 
 
 ### Approved follow-up - V.A.L.A.N.T. identity, facility staffing panel, and autonomous appointments
 
-**Status:** Approved interface and personnel-behavior refinement; implementation pending.
+**Status:** Implemented in Browser 1656.
 
 - Rename the facility everywhere to the **V.A.L.A.N.T. Mental Health Center**, standing for **Validation, Acceptance, Listening, Advocacy, Nurturing, and Therapy**. Use the expanded name in its first description and accessible help text; the shorter **V.A.L.A.N.T. Center** may be used where interface width is limited. Existing saves containing the `mentalhealth` facility key must continue loading without migration or duplicate facilities.
 - Move the **Hire Mental Health Specialist** control off individual soldier cards and into the selected-facility description panel in the **Base** view. The control appears only when a V.A.L.A.N.T. Mental Health Center tile is selected.
@@ -770,6 +784,7 @@ The deterministic contract covers spoiler-free pre-observation language, attack 
 - Self-scheduling may occur only during valid strategic downtime and from authoritative campaign state. It cannot delay a mission automatically, remove a soldier from a squad, spend funds, change relationships, reveal hidden tactical information, or alter tactical AI. Mission-launch warnings still explain when an incomplete self-scheduled session will be forfeited.
 - Persist request origin, queue order, rescheduling eligibility/cooldown, and session progress with normalized save-format-four fields if possible. Older Browser 1810 queues without a request-origin field should normalize as commander-requested without losing their position or progress.
 - Add deterministic Build Health coverage for the V.A.L.A.N.T. name and expansion, selected-facility-only hiring, correct per-base staffing/cost updates, no soldier-card hire duplication, autonomous severe-stress enrollment, stable severity ordering, no duplicate requests, commander cancellation/cooldown, mission interruption, existing-save normalization, and unchanged relationship/tactical authority.
+- Browser 1656 implements the V.A.L.A.N.T. identity, selected-facility staffing/hire panel, two-step commander confirmation, Soldier-card separation, severe-stress autonomous enrollment, deterministic severity ordering, shared FCFS ownership, visible request origin, one-day autonomous rebooking cooldown, and save-format-four normalization.
 
 
 ## Roadmap Addition - Scheduled Daylight Mission Arrival
