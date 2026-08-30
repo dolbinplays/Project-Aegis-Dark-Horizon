@@ -1,3 +1,26 @@
+BUILD: v0.26.08.30.1358_OCCLUSION_PROOF_VISIBLE_TARGET_HEX_MARKERS_PATCH
+TITLE: Occlusion-Proof Visible-Target Hex Markers
+DATE: August 30, 2026
+
+Summary
+- Adds a consistent red glowing target-hex aid across 2D Hex, 3D Iso, First Person, and Third Person mission views without changing what AEGIS can see or target.
+
+Key changes
+- Living alien contacts currently exposed by established AEGIS visibility authority receive a red ring around their authoritative tactical hex. Active, revealed Alien Field Beacons use the same marker language while destroyed or disabled beacons do not.
+- 3D Iso rings use the existing hex-to-world transform and depth-independent materials, so the marker remains readable through buildings, roofs, walls, vehicles, vegetation, terrain props, and smoke presentation while staying fixed to the correct cell.
+- FPV and TPV use a shared projected ground-hex HUD marker that remains visible through visual occluders and follows the active perspective camera. This also restores the persistent renderer's detached observer-HUD mount without creating another renderer or scene.
+- 2D Hex adds the marker inside already-authorized alien and active-beacon glyphs. The red outline remains distinct from blue selection, lime movement, cyan extraction, magenta beacon shields, and shot-result presentation.
+- Hidden, dead, extracted, destroyed, disabled, friendly, and civilian entities are excluded. A resolved battlefield exposes no current-target markers.
+- Marker updates reuse persistent dynamic roots. Visibility or unit-state changes refresh the small target overlay only; camera movement, target markers, and observer projection do not rebuild terrain, buildings, fog geometry, or the static scene.
+- Tactical coordinates, movement, TU, pathfinding, LOS, fog, cover, hazards, accuracy, targeting, AI knowledge, objectives, damage, and save data are unchanged. Save format remains 4.
+
+Validation
+- Seven deterministic Build Health contracts cover target eligibility, hidden-information exclusion, living/active removal gates, 2D Hex, 3D Iso, FPV, TPV, authoritative anchoring, occlusion-proof depth state, persistent invalidation, presentation-only scope, and save format 4.
+- Full live Build Health reports 622/670 with all seven new contracts passing. The remaining 48 failures are existing unrelated diagnostics, and the browser console reports no warnings or errors.
+- Embedded JavaScript syntax, build seams, JSON, and whitespace checks pass. `assets/` is unchanged.
+
+---
+
 BUILD: v0.26.08.30.1103_BROWSER_TACTICAL_MEMORY_LIFECYCLE_AND_TEARDOWN_PATCH
 TITLE: Browser Tactical Memory Lifecycle + Teardown
 DATE: August 30, 2026

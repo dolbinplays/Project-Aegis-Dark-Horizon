@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.30.1103_BROWSER_TACTICAL_MEMORY_LIFECYCLE_AND_TEARDOWN_PATCH",
+  "currentBuild": "v0.26.08.30.1358_OCCLUSION_PROOF_VISIBLE_TARGET_HEX_MARKERS_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "browser-tactical-memory-lifecycle-and-teardown-first-pass-complete",
+  "status": "occlusion-proof-visible-target-hex-markers-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.30.1103_BROWSER_TACTICAL_MEMORY_LIFECYCLE_AND_TEARDOWN_PATCH",
+  "lastInspectedBuild": "v0.26.08.30.1358_OCCLUSION_PROOF_VISIBLE_TARGET_HEX_MARKERS_PATCH",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -47,7 +47,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.30.1103_BROWSER_TACTICAL_MEMORY_LIFECYCLE_AND_TEARDOWN_PATCH",
+    "browserBuild": "v0.26.08.30.1358_OCCLUSION_PROOF_VISIBLE_TARGET_HEX_MARKERS_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [

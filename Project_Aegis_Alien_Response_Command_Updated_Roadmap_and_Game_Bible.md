@@ -1,12 +1,25 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.30.1103_BROWSER_TACTICAL_MEMORY_LIFECYCLE_AND_TEARDOWN_PATCH`
+Current browser build: `v0.26.08.30.1358_OCCLUSION_PROOF_VISIBLE_TARGET_HEX_MARKERS_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 1103: Browser Tactical Memory Lifecycle + Teardown
+## Current Build Addendum — Browser 1358: Occlusion-Proof Visible-Target Hex Markers
+
+### Current Build Delta
+- Every living alien contact currently exposed by established AEGIS visibility authority now receives a red glowing ring around its authoritative tactical hex. Active revealed Alien Field Beacons use the same language; destroyed, disabled, dead, extracted, friendly, civilian, hidden, and resolved targets do not qualify.
+- **2D Hex** places the marker inside the already-authorized hostile or beacon glyph. **3D Iso** uses the existing authoritative hex-to-world projection with a depth-independent dynamic ring that stays readable through structures, roofs, vehicles, vegetation, props, units, and smoke presentation.
+- **First Person** and **Third Person** share a projected ground-hex HUD marker attached to the active perspective camera. The persistent renderer's detached observer-HUD mount has been restored without adding another renderer, scene, or visibility system.
+- Target-marker changes invalidate only the persistent dynamic ring/HUD presentation when visibility or unit state changes. Terrain, continuous-ground textures, buildings, fog geometry, and the static battlefield remain cached.
+- The red outline remains visually separate from selection, movement range, extraction, Alien Field Beacon shields, objective trackers, and shot effects. It adds no interaction or hitbox and does not alter target eligibility.
+- Seven deterministic Build Health contracts cover target eligibility, hidden-information exclusion, living/active removal, all four tactical views, authoritative anchoring, occlusion-proof depth state, persistent invalidation, presentation-only scope, and save format **4**. `assets/` is unchanged.
+- Full live Build Health reports **622/670** with all seven new contracts passing. The remaining 48 failures are existing unrelated diagnostics, and the browser console reports no warnings or errors.
+
+---
+
+## Historical Build Addendum — Browser 1103: Browser Tactical Memory Lifecycle + Teardown
 
 ### Current Build Delta
 - Completed tactical missions now release mission-owned live, reinforcement, prepared-deployment, building, terrain-palette, static-terrain, and visibility cache entries. Cache cleanup is idempotent and preserves unrelated active tactical state.
@@ -62,6 +75,17 @@ Authoritative playable artifact: `index.html`
 - A **Head of V.A.L.A.N.T. Mental Health Services** can identify soldiers whose stress or mental state warrants care but whose personality makes them reluctant or unwilling to self-schedule. Personality-driven treatment reluctance must create an advisory/command decision, not force enrollment invisibly.
 - Extend the system to other departments where a clear gameplay loop exists, with distinct recruitment cost, salary/upkeep, competence/personality traits, configurable authority, readable activity logs, and dismissal/replacement rules.
 - Every automated action must be previewable/auditable, respect base ownership, inventory, research, transfers, mission commitments, queue/capacity rules, and save authority, and provide manual opt-out plus per-policy locks. Add deterministic Build Health coverage before implementation.
+
+---
+
+## Implemented — Browser 1358: Occlusion-Proof Visible-Target Hex Markers
+
+- Every currently viable hostile target visible to AEGIS receives a clearly readable red glowing circle around its authoritative tactical hex in **2D Hex, 3D Iso, First Person, and Third Person** mission views.
+- Render the marker as an independent tactical overlay that remains readable through buildings, roofs, walls, vehicles, vegetation, terrain props, units, smoke presentation, and other visual occluders. It may use a depth-independent ring, projected HUD element, or equivalent low-cost presentation appropriate to each camera, but must stay anchored to the correct hex as the camera moves, rotates, pans, or zooms.
+- Visibility authority remains unchanged: create the marker only for a living/active target that current AEGIS knowledge and visibility rules already expose as targetable. Remove or hide it immediately when that target dies, is destroyed/disabled, leaves the map, or is no longer visible under the established fog/LOS rules. Do not reveal hidden aliens, undiscovered beacons/objectives, unseen reinforcements, or last-known positions as if they were current targets.
+- Cover viable alien units and destructible hostile objectives such as a confirmed active Alien Field Beacon when they are legal targets. Do not mark civilians, VIPs, friendly soldiers, scenery, destroyed targets, or non-targetable objectives.
+- Keep selection, movement range, extraction zones, beacon shields, objective indicators, shot tracers, cinematics, fog, and status overlays visually distinguishable. Add a restrained pulse/glow and accessibility-conscious contrast without filling the hex or obscuring the target itself.
+- Playtesting should determine whether a presentation-only player toggle is still desirable. Browser 1358 includes deterministic Build Health coverage for visibility gating, target eligibility, correct hex anchoring, occlusion-proof rendering in all four views, prompt removal after target loss, no hidden-knowledge leak, bounded renderer mutation, and unchanged save/gameplay authority.
 
 ---
 
