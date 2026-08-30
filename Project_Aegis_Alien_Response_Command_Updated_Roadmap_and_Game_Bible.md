@@ -1,12 +1,25 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.30.1036_TACTICAL_3D_ISO_SUPPORT_SLAB_REMOVAL_PATCH`
+Current browser build: `v0.26.08.30.1103_BROWSER_TACTICAL_MEMORY_LIFECYCLE_AND_TEARDOWN_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 1036: Tactical 3D Iso Support-Slab Removal
+## Current Build Addendum — Browser 1103: Browser Tactical Memory Lifecycle + Teardown
+
+### Current Build Delta
+- Completed tactical missions now release mission-owned live, reinforcement, prepared-deployment, building, terrain-palette, static-terrain, and visibility cache entries. Cache cleanup is idempotent and preserves unrelated active tactical state.
+- Persistent tactical renderer teardown now disposes cached continuous-ground and FPV/TPV canvas textures once, shrinks their CPU canvas backing stores, clears renderer-owned maps/sets/arrays, detaches scene/camera references, and retires the global runtime diagnostic handle.
+- A guarded Three.js renderer lifecycle makes every retired Project Aegis renderer explicitly release render lists, its WebGL context, and drawing-buffer allocation. This also covers Geoscape renderers recreated around tactical missions.
+- Lightweight diagnostics are available on demand through `window.__AEGIS_TACTICAL_MEMORY_LIFECYCLE_REPORT()`, including active/peak tactical runtimes, released contexts/textures/canvases, completed-mission cache releases, and live cache sizes. No sampling loop was added to gameplay.
+- Six deterministic Build Health contracts cover cache eviction, cleanup idempotence and scope, canvas-texture disposal, WebGL context release, retained-reference cleanup, diagnostic availability, and save format **4**.
+- Full live Build Health reports **616/663** with all six new contracts passing. The remaining 47 failures are the existing unrelated diagnostic baseline, and the browser console reports no warnings or errors.
+- This first pass addresses concrete ownership defects without changing tactical or campaign behavior. The ten-mission browser heap/GPU soak and plateau measurement remain in the approved roadmap as the acceptance gate for closing the broader long-session investigation. `assets/` is unchanged.
+
+---
+
+## Historical Build Addendum — Browser 1036: Tactical 3D Iso Support-Slab Removal
 
 ### Current Build Delta
 - The battlefield-sized stable terrain bed beneath 3D Iso missions has been retired. Its persistent-scene lifecycle hook remains as a compatibility-safe no-op but creates no geometry, material, mesh, texture, or draw call.
@@ -49,6 +62,37 @@ Authoritative playable artifact: `index.html`
 - A **Head of V.A.L.A.N.T. Mental Health Services** can identify soldiers whose stress or mental state warrants care but whose personality makes them reluctant or unwilling to self-schedule. Personality-driven treatment reluctance must create an advisory/command decision, not force enrollment invisibly.
 - Extend the system to other departments where a clear gameplay loop exists, with distinct recruitment cost, salary/upkeep, competence/personality traits, configurable authority, readable activity logs, and dismissal/replacement rules.
 - Every automated action must be previewable/auditable, respect base ownership, inventory, research, transfers, mission commitments, queue/capacity rules, and save authority, and provide manual opt-out plus per-policy locks. Add deterministic Build Health coverage before implementation.
+
+---
+
+## Implemented First Pass / Remaining Validation — Browser Memory Lifecycle and Long-Session Stability
+
+- Browser 1103 implements deterministic mission-cache eviction, persistent tactical renderer reference cleanup, canvas-backing release, and explicit WebGL context retirement across Project Aegis Three.js renderers.
+- The remaining work is measurement-led: run the full ten-mission heap/GPU soak described below, compare the warm plateau against later mission returns, and use the new lifecycle report to identify any ownership count that still grows. Keep this item open until that acceptance gate is completed on the browser build.
+
+### Field report and priority
+- Investigate the reported growth from roughly **800 MB after starting a new campaign** to **more than 4 GB after several completed missions**, accompanied by a noticeable tactical-performance slowdown. Treat the exact figures as a field observation to reproduce rather than an assumed single-source diagnosis.
+- Prioritize this as a long-session stability problem. Normal warm-up and cache growth may increase memory initially, but repeated mission launch, completion, return to strategy, and relaunch cycles must settle into a bounded plateau rather than retain most resources from every battlefield.
+
+### Required ownership audit
+- Measure JavaScript heap, DOM nodes, listeners, timers, animation frames, Web Audio nodes/buffers, canvases, object URLs, WebGL contexts, Three.js geometries, materials, textures, render targets, cached terrain canvases, persistent renderer resources, and approximate renderer draw/triangle counters before and after each mission lifecycle boundary.
+- Verify that mission completion and tactical unmount cancel every Simulation/Hybrid playback timer, queued continuation, delayed dialogue callback, cinematic timer, requestAnimationFrame loop, observer transition, shot-feedback timeout, and window/document listener that no longer has an owner.
+- Audit Three.js disposal and reference release for terrain, world-continuation textures, fog/overlay batches, roofs, buildings, vehicles, units, effects, articulated models, FPV/TPV weapon layers, renderer contexts, shared caches, and mission-specific canvas textures. Reusable immutable assets may remain cached, but mission-bound resources must not remain reachable indefinitely.
+- Audit React and campaign state for retained tactical units/covers, visibility sets, explored cells, AI frame queues, archived tactical timelines, shot stacks, objective-assignment snapshots, path caches, mission-result closures, and prior renderer runtimes. Keep only intentionally bounded report/history data after a mission ends.
+- Confirm recorded dialogue, music, Enhanced SFX, and decoded audio caches reuse canonical buffers instead of creating duplicate decoded copies per playback or mission. Close/disconnect transient nodes and release temporary media references without interrupting currently playing audio.
+- Inspect browser-storage and emergency-backup serialization paths for accidental in-memory duplication of full campaign/tactical snapshots. Saving, autosaving, exporting, and Build Health must release temporary JSON strings, Blobs, object URLs, and test fixtures after use.
+
+### Instrumentation and acceptance gates
+1. Add a lightweight developer memory/lifecycle report that records mission sequence number, active renderer/runtime count, WebGL context count, live animation/timer/listener ownership where observable, tactical cache sizes, texture rebuild/disposal counts, and renderer memory counters. Keep it off the hot path unless diagnostics are enabled.
+2. Establish a reproducible deterministic soak route covering at least ten launch → tactical play/Simulation → mission completion → result → Geoscape cycles, including 64x64, 80x80, and 96x96 maps; day/night; buildings and roof cutaway; continuous ground; FPV/TPV transitions; cinematics; reinforcements; and save/load between representative cycles.
+3. Capture comparable memory checkpoints after startup, first tactical warm-up, each mission return, an explicit idle/GC opportunity where browser tooling permits it, and the final mission. Separate ordinary process/GPU allocation from retained JavaScript heap when the available browser tooling can do so.
+4. After initial warm-up, mission-return memory and renderer-resource counts should remain approximately stable rather than increase linearly. Target post-cleanup retained memory within **15% of the warm plateau** across repeated equivalent missions, while documenting browser/GPU allocations that cannot be forced or measured reliably.
+5. Compare first-mission and final-mission camera movement, AI playback, Fit Map, Close/Near/Full/Wide Iso, FPV, and TPV. Sustained frame time should not regress by more than **10%** on the same deterministic scene after the soak run unless an identified external browser condition explains the variance.
+6. Add deterministic Build Health contracts for one active tactical renderer, cleanup idempotence, disposed texture/material/geometry ownership, cancelled timers/RAF/listeners, bounded tactical histories and AI frame queues, released Blob URLs, canonical audio-buffer reuse, no retained prior-mission runtime, and unchanged save format.
+7. Do not solve the leak by removing persistent rendering, shortening player-visible history below its documented limits, disabling sound, reducing tactical map sizes, weakening visual quality defaults, or changing gameplay authority. Correct resource ownership and bound caches explicitly.
+
+### Gameplay and compatibility boundary
+- This pass must not change tactical coordinates, movement, TU, pathfinding, LOS, fog, cover, accuracy, AI decisions, fire-team formations, civilian/VIP behavior, objectives, mission outcomes, strategic progression, or save contents. Save format should remain **4** unless a genuine persistent-schema requirement is discovered and documented before implementation.
 
 ---
 

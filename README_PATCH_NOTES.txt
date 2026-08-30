@@ -1,3 +1,25 @@
+BUILD: v0.26.08.30.1103_BROWSER_TACTICAL_MEMORY_LIFECYCLE_AND_TEARDOWN_PATCH
+TITLE: Browser Tactical Memory Lifecycle + Teardown
+DATE: August 30, 2026
+
+Summary
+- Adds the first targeted long-session memory pass by releasing mission-owned caches, canvas textures, persistent renderer references, and retired WebGL contexts at their true lifecycle boundaries.
+
+Key changes
+- Completed tactical missions now evict their live snapshot, reinforcement state, prepared deployment, building plans/cells, static terrain, segmented terrain palettes, and visibility caches. Unrelated active-mission state remains intact.
+- Persistent tactical renderer teardown disposes terrain/FPV/TPV canvas textures once, collapses their CPU canvas backing stores, clears retained maps, sets, arrays, scene/camera references, and the global diagnostic runtime handle.
+- Every disposed Project Aegis Three.js renderer now explicitly releases its WebGL context and render lists. This includes the recurring Geoscape surfaces that are recreated when entering and leaving missions.
+- Runtime metrics now track active and peak tactical renderers, released contexts, textures, canvases, cache entries, and completed-mission releases. `window.__AEGIS_TACTICAL_MEMORY_LIFECYCLE_REPORT()` returns the current snapshot only when requested, so it adds no polling hot path.
+- This is a lifecycle/ownership patch only. Tactical coordinates, movement, TU, pathfinding, LOS, fog, cover, AI, civilians/VIPs, fire teams, objectives, results, strategic progression, and save contents are unchanged. Save format remains 4.
+
+Validation
+- Six focused Build Health contracts cover completed-mission cache eviction, idempotence, unrelated active-state preservation, texture/canvas release, WebGL context release, persistent-runtime reference cleanup, diagnostics, and save format 4.
+- Full live Build Health reports 616/663 with all six new contracts passing. The remaining 47 failures are the existing unrelated diagnostic baseline, and the browser console reports no warnings or errors.
+- The deterministic contracts establish resource ownership; the roadmap retains the full ten-mission browser heap/GPU soak as the next measurement gate before declaring the entire long-session investigation closed.
+- `assets/` is unchanged.
+
+---
+
 BUILD: v0.26.08.30.1036_TACTICAL_3D_ISO_SUPPORT_SLAB_REMOVAL_PATCH
 TITLE: Tactical 3D Iso Support-Slab Removal
 DATE: August 30, 2026
