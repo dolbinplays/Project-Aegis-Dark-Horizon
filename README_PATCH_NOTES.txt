@@ -1,3 +1,43 @@
+BUILD: v0.26.08.30.0826_SKYRANGER_EXTRACTION_CORRIDOR_CIVILIAN_PRIORITY_YIELD_PATCH
+TITLE: Skyranger Extraction-Corridor Civilian Priority Yield
+DATE: August 30, 2026
+
+Summary
+- Prevents civilians and VIPs clustered on a Skyranger ramp from trapping an AI soldier inside the craft.
+
+Key changes
+- AI soldiers already inside a Skyranger extraction corridor can plan through civilian ramp traffic rather than treating the whole queue as an impassable wall.
+- When the next corridor cell is occupied by a civilian or VIP, that person yields into the soldier's simultaneously vacated cell. This lets the soldier leave while the queue advances without overlapping units.
+- Civilians moved onto the authoritative boarding cell are immediately resolved through the established rescued/extracted state so they cannot remain as hidden occupancy.
+- The exception is restricted to civilian traffic in the selected player Skyranger corridor. Aliens, vehicles, hard cover, off-corridor civilians, ordinary collision, TU, LOS, fog, AI knowledge, and save data remain unchanged. Save format remains 4.
+
+Validation
+- Four focused Build Health contracts cover corridor-aware planning, controlled soldier/civilian yielding, unique living-unit occupancy, restricted scope, and save format 4.
+- Full live Build Health reports 604/651 with all four corridor contracts and all six beacon-result contracts passing. The remaining 47 failures are the existing unrelated diagnostic baseline.
+- Embedded JavaScript syntax, build seams, JSON, and whitespace checks pass. `assets/` is unchanged.
+
+---
+
+BUILD: v0.26.08.29.2133_SIMULATION_AI_BEACON_SHOT_RESULT_AUTHORITY_PATCH
+TITLE: Simulation AI Beacon Shot-Result Authority
+DATE: August 29, 2026
+
+Summary
+- Prevents beacon-targeted Simulation AI attacks from reporting Target Down unless the authoritative beacon state confirms that the device was destroyed or disabled.
+
+Key changes
+- Beacon-targeted grenades now separate nearby alien casualties from the beacon's own target result. Killing an alien in the blast no longer marks a surviving beacon as down.
+- Direct AI and endgame-watchdog attacks record beacon identity, pre-shot HP, maximum HP, applied damage, rounds fired, and target-specific destruction state.
+- Dialogue and map playback reconcile beacon shot records against the same cover record used for HP, shields, rendering, reinforcement transit, and mission objectives. A stale or collateral lethal flag is demoted while the beacon remains active.
+- Tactical shot results now say BEACON HIT for a surviving device and BEACON DESTROYED only after authoritative neutralization.
+- Beacon damage, shields, reinforcement transit cancellation, tactical objectives, TU, ammunition, AI targeting, fog, and save data are otherwise unchanged. Save format remains 4.
+
+Validation
+- Six focused Build Health contracts cover active/destroyed beacon reconciliation, collateral grenade kills, soldier dialogue, shot-result labels, Simulation metadata, playback wiring, and save format 4.
+- Embedded JavaScript syntax, build seams, JSON, and whitespace checks pass. `assets/` is unchanged.
+
+---
+
 BUILD: v0.26.08.29.2053_EXACT_OVERHEAD_RIFLE_BARREL_SHOT_ALIGNMENT_PATCH
 TITLE: Exact Overhead Rifle-Barrel Shot Alignment
 DATE: August 29, 2026

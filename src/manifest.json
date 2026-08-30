@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.29.2053_EXACT_OVERHEAD_RIFLE_BARREL_SHOT_ALIGNMENT_PATCH",
+  "currentBuild": "v0.26.08.30.0826_SKYRANGER_EXTRACTION_CORRIDOR_CIVILIAN_PRIORITY_YIELD_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "exact-overhead-rifle-barrel-shot-alignment-complete",
+  "status": "skyranger-extraction-corridor-civilian-priority-yield-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.29.2053_EXACT_OVERHEAD_RIFLE_BARREL_SHOT_ALIGNMENT_PATCH",
+  "lastInspectedBuild": "v0.26.08.30.0826_SKYRANGER_EXTRACTION_CORRIDOR_CIVILIAN_PRIORITY_YIELD_PATCH",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -47,7 +47,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.29.2053_EXACT_OVERHEAD_RIFLE_BARREL_SHOT_ALIGNMENT_PATCH",
+    "browserBuild": "v0.26.08.30.0826_SKYRANGER_EXTRACTION_CORRIDOR_CIVILIAN_PRIORITY_YIELD_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -542,6 +542,14 @@
       {
         "system": "performance-mode-fpv-tpv-soldier-mid-lod",
         "reason": "The browser now selects the animated articulated mid-LOD for world-space AEGIS soldiers in FPV, TPV, and reaction views whenever the resolved quality profile is Performance, while higher quality retains full detail and the dedicated FPV weapon layer remains separate. Native Godot requires an engine-native perspective-character LOD policy with equivalent presentation-only authority."
+      },
+      {
+        "system": "simulation-ai-beacon-shot-result-authority",
+        "reason": "The browser now separates beacon-targeted collateral kills from device destruction and reconciles AI dialogue and shot-result presentation against the authoritative beacon cover record. Native Godot requires the same target-specific damage-result and presentation authority."
+      },
+      {
+        "system": "skyranger-extraction-corridor-civilian-priority-yield",
+        "reason": "The browser now lets AI soldiers already inside a player Skyranger corridor plan through civilian ramp traffic and uses a controlled vacated-cell yield to prevent escort deadlocks without permitting overlapping occupancy. Native Godot requires equivalent extraction-lane traffic priority."
       }
     ]
   }

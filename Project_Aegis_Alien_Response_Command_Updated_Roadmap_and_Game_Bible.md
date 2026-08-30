@@ -1,12 +1,46 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.29.2053_EXACT_OVERHEAD_RIFLE_BARREL_SHOT_ALIGNMENT_PATCH`
+Current browser build: `v0.26.08.30.0826_SKYRANGER_EXTRACTION_CORRIDOR_CIVILIAN_PRIORITY_YIELD_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 2053: Exact Overhead Rifle-Barrel Shot Alignment
+## Current Build Addendum — Browser 0826: Skyranger Extraction-Corridor Civilian Priority Yield
+
+### Current Build Delta
+- AI soldiers already inside a player Skyranger extraction corridor may plan through civilian/VIP ramp traffic instead of treating the queue as an impassable wall.
+- When an adjacent civilian occupies the soldier's next corridor cell, the civilian yields into the cell the soldier simultaneously vacates. The controlled exchange preserves unique occupancy while allowing the soldier and evacuation queue to progress in opposite directions.
+- A yielding civilian moved onto the authoritative boarding cell is resolved through the established rescued/extracted state immediately and cannot remain as hidden ramp occupancy.
+- This exception is limited to civilian traffic in the selected player Skyranger corridor. Aliens, vehicles, hard cover, off-corridor civilians, ordinary unit collisions, movement, TU, LOS, fog, AI knowledge, objectives, and save data are unchanged. Save format remains **4** and `assets/` is unchanged.
+- Four deterministic Build Health contracts cover corridor-aware route planning, controlled yielding, unique occupancy, restricted scope, and save compatibility. Full live Build Health reports **604/651** with all four new corridor checks and all six beacon-result checks passing; the remaining 47 failures are the existing unrelated diagnostic baseline.
+
+---
+
+## Historical Build Addendum — Browser 2133: Simulation AI Beacon Shot-Result Authority
+
+### Current Build Delta
+- Simulation AI beacon attacks now carry target-specific result authority. A nearby alien killed by a beacon-targeted Frag Grenade is recorded as collateral and cannot make a surviving beacon report **Target Down**.
+- Direct and endgame-watchdog beacon fire records the device identity, pre-shot and maximum HP, applied damage, rounds, and authoritative destroyed state for tactical playback.
+- AI dialogue and 3D/2D map playback reconcile beacon shot flags against the frame's authoritative cover record. An active beacon always demotes a stale lethal presentation flag; only a shot already marked lethal plus a destroyed/disabled cover state confirms neutralization.
+- The Tactical Shot Results stack uses **BEACON HIT** while the device survives and **BEACON DESTROYED** after confirmed neutralization, removing the ambiguous generic target label.
+- Beacon HP, shields, reinforcement transit cancellation, mission completion, damage, TU, ammunition, AI target selection, fog/knowledge, and save data are unchanged. Save format remains **4** and `assets/` is unchanged.
+- Six deterministic Build Health contracts cover collateral grenade kills, active/destroyed state reconciliation, voice cues, shot-card labels, resolver metadata, playback wiring, and save compatibility.
+
+---
+
+## Approved Roadmap — Recruitable Department Heads and Advisory Automation
+
+- Add named, recruitable heads for major AEGIS departments. Each department head provides optional, player-configurable automation and concise operational warnings; they advise and execute doctrine without silently overriding explicit commander choices.
+- A **Head Quartermaster** can maintain per-role loadout policies, issue newly produced weapons and armor by rank/combat power/role, preserve explicitly locked equipment, and maintain configurable mission-ready reserves of medpacs, medkits, ammunition, and other consumables.
+- A **Head of Medical** can warn when projected casualties exceed Sickbay bed capacity, report supply or staffing shortages, and identify researched facilities/upgrades that improve survival or recovery time.
+- A **Head of V.A.L.A.N.T. Mental Health Services** can identify soldiers whose stress or mental state warrants care but whose personality makes them reluctant or unwilling to self-schedule. Personality-driven treatment reluctance must create an advisory/command decision, not force enrollment invisibly.
+- Extend the system to other departments where a clear gameplay loop exists, with distinct recruitment cost, salary/upkeep, competence/personality traits, configurable authority, readable activity logs, and dismissal/replacement rules.
+- Every automated action must be previewable/auditable, respect base ownership, inventory, research, transfers, mission commitments, queue/capacity rules, and save authority, and provide manual opt-out plus per-policy locks. Add deterministic Build Health coverage before implementation.
+
+---
+
+## Historical Build Addendum — Browser 2053: Exact Overhead Rifle-Barrel Shot Alignment
 
 ### Current Build Delta
 - Full and animated mid-LOD articulated AEGIS soldiers now include a dedicated temporary fire-time yaw pivot between the authoritative six-direction tactical-facing parent and the player-authored pose root.
