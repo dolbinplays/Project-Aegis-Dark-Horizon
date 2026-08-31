@@ -1,10 +1,23 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.30.1656_BROWSER_LONG_SESSION_MEMORY_OWNERSHIP_AND_STREAM_COMPACTION_PATCH`
+Current browser build: `v0.26.08.30.1728_ISO_VISIBLE_TARGET_RED_GLOW_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1728: 3D Iso Visible-Target Red Glow Hotfix
+
+### Current Build Delta
+- Corrects the 3D Iso target-ring presentation shown in field screenshots where valid visible alien markers rendered as black circles while the FPV/TPV target HUD correctly appeared red.
+- The Iso marker now uses a dedicated unlit **MeshBasicMaterial** rather than the shared scene-lit Standard/Lambert material factory. This prevents night lighting, light direction, material response, fog, and tone mapping from collapsing the ring toward black.
+- Each eligible target receives a bright red core ring plus a larger semi-transparent **additive red halo**. Both layers disable depth testing and depth writing and use high render order, keeping the target aid visible through roofs, walls, ceilings, vehicles, vegetation, props, smoke presentation, and other visual occluders.
+- The marker remains anchored through the existing authoritative hex-to-world transform. Visibility and target-eligibility authority are unchanged: only already-visible living aliens and active revealed Alien Field Beacons qualify.
+- The change is presentation-only. Targeting legality, LOS, fog, cover, accuracy, AI knowledge, movement, TU, damage, objectives, mission results, strategic state, and saves are unchanged. Save format remains **4** and `assets/` is unchanged.
+- The visible-target Build Health suite now explicitly verifies the unlit bright-red core, fog/tone-mapping immunity, additive halo, depth-independent rendering, and persistent-authority boundary.
+
+---
+
 
 ## Current Build Addendum — Browser 1656: Browser Long-Session Memory Ownership + Stream Compaction
 

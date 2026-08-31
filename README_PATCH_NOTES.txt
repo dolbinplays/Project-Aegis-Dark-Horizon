@@ -1,3 +1,26 @@
+BUILD: v0.26.08.30.1728_ISO_VISIBLE_TARGET_RED_GLOW_HOTFIX
+TITLE: 3D Iso Visible-Target Red Glow Hotfix
+DATE: August 30, 2026
+
+Summary
+- Fixes the 3D Iso visible-target rings rendering black instead of the intended glowing red used by the perspective target HUD.
+
+Key changes
+- 3D Iso visible-target rings no longer use the shared scene-lit MeshStandardMaterial / MeshLambertMaterial path. They now use dedicated unlit MeshBasicMaterial overlays so battlefield lighting cannot darken them.
+- The target marker now has a bright red core ring plus a slightly larger additive red halo, matching the readable glow language seen in FPV/TPV.
+- Both Iso marker layers disable depth testing and depth writing, disable fog and tone mapping, use high render order, and remain attached to the authoritative target hex. Roofs, walls, buildings, vehicles, vegetation, smoke presentation, and other scene geometry therefore cannot occlude the marker.
+- Existing marker eligibility remains authoritative: only already-visible living aliens and active revealed Alien Field Beacons receive target rings. Hidden, dead, destroyed, disabled, friendly, and civilian entities remain excluded.
+- The fix is presentation-only. Target selection, targeting legality, LOS, fog, cover, accuracy, AI knowledge, movement, TU, damage, objectives, mission results, and save data are unchanged. Save format remains 4.
+- Assets are unchanged.
+
+Validation
+- All 5 non-empty embedded JavaScript blocks pass `node --check`.
+- The visible-target Build Health contract is extended to require the unlit MeshBasicMaterial core, fog/tone-mapping immunity, additive halo, authoritative anchoring, and depth-independent rendering.
+- Static release/version history checks confirm Browser 1656 remains an immutable historical entry while Browser 1728 is the current build.
+- Live WebGL visual confirmation should still be performed on the player's machine because this environment does not provide the same game-rendering session.
+
+---
+
 BUILD: v0.26.08.30.1656_BROWSER_LONG_SESSION_MEMORY_OWNERSHIP_AND_STREAM_COMPACTION_PATCH
 TITLE: Browser Long-Session Memory Ownership + Stream Compaction
 DATE: August 30, 2026
