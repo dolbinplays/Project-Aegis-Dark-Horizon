@@ -1,3 +1,33 @@
+BUILD: v0.26.08.30.1656_BROWSER_LONG_SESSION_MEMORY_OWNERSHIP_AND_STREAM_COMPACTION_PATCH
+TITLE: Browser Long-Session Memory Ownership + Stream Compaction
+DATE: August 30, 2026
+
+Summary
+- Adds the second targeted long-session memory pass after the player's post-1103 field session still climbed from roughly 700 MB to about 4.5 GB over approximately six missions.
+
+Key changes
+- Streamed Simulation AI no longer retains every already-played full battlefield frame for the rest of the mission. It keeps the previous/current action boundary plus future/prefetched frames, while a compact prior-shot flag preserves continuation behavior after old frames are released.
+- Rotating autosave no longer deep-clones the complete live tactical cache during ordinary parent renders. It retains a lightweight current-state provider and builds the full save payload only when the autosave interval actually writes. Explicit manual saves are unchanged.
+- Completed missions now release the mission-scoped known-objective memory map that Browser 1103 did not evict.
+- Renderer teardown removes the detached target HUD mount, clears render-target/animation-loop ownership, releases replaced world-continuation canvas textures through the common disposer, and nulls large texture/root/scene references after disposal.
+- Renderer context-release diagnostics now correctly return success when the global disposal guard performs the final context loss from inside renderer.dispose().
+- The memory lifecycle report now includes streamed AI frames discarded, tactical save-payload builds, and known-objective-memory size for the next soak run.
+
+Validation
+- Six deterministic Build Health contracts cover streamed-frame compaction and prior-shot continuity, complete mission-cache eviction, lazy autosave snapshot construction, stronger renderer teardown, extended diagnostics, and unchanged save format 4.
+- All 5 non-empty embedded JavaScript blocks pass `node --check`; static release-identity/seam checks also pass.
+- A live Chromium page smoke was attempted, but this execution environment blocks browser navigation to local/localhost artifacts, so I am not claiming a live Build Health result from this environment.
+- The supplied Month 3 / Day 12 Browser 1103 campaign is treated as the real-world reproduction profile, but leaked browser/GPU allocations are not serialized inside a save file; the ten-mission live browser soak remains the acceptance gate before declaring the investigation closed.
+- Tactical rules, AI decisions, coordinates, movement, TU, pathfinding, LOS, fog, cover, damage, objectives, strategic progression, and assets are unchanged. Save format remains 4.
+
+Manual memory soak gate
+- Import the supplied Month 3 / Day 12 Browser 1103 campaign into Browser 1656, or continue an equivalent campaign. Record browser memory after load, after first tactical warm-up, and after every mission return for at least 10 missions.
+- In the browser console, `window.__AEGIS_TACTICAL_MEMORY_LIFECYCLE_REPORT()` should show `renderer.active` returning to 0 outside tactical view, `caches.knownObjectiveMemory` not growing with completed missions, and `streaming.framesDiscarded` increasing during longer Simulation-AI battles.
+- `streaming.tacticalSavePayloadBuilds` should increase when a manual save/export or rotating autosave actually serializes tactical state; ordinary tactical presentation updates should no longer manufacture full autosave payloads.
+- After the first warm mission, repeated comparable mission returns should approach a plateau rather than climb linearly. Keep the roadmap target of retained memory within roughly 15% of the warm plateau as the acceptance goal.
+
+---
+
 BUILD: v0.26.08.30.1358_OCCLUSION_PROOF_VISIBLE_TARGET_HEX_MARKERS_PATCH
 TITLE: Occlusion-Proof Visible-Target Hex Markers
 DATE: August 30, 2026

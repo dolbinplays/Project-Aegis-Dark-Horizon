@@ -1,10 +1,24 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.30.1358_OCCLUSION_PROOF_VISIBLE_TARGET_HEX_MARKERS_PATCH`
+Current browser build: `v0.26.08.30.1656_BROWSER_LONG_SESSION_MEMORY_OWNERSHIP_AND_STREAM_COMPACTION_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1656: Browser Long-Session Memory Ownership + Stream Compaction
+
+### Current Build Delta
+- The player's real Browser 1103 field session is now the primary reproduction profile for the still-open memory investigation: roughly 700 MB near campaign start grew toward 4.5 GB after about six missions. Because the exported Month 3 / Day 12 save identifies Browser 1103, this confirms the symptom persisted after the first teardown patch rather than representing only the pre-1103 baseline.
+- Streamed Simulation AI now bounds retained playback history. Already-consumed full battlefield frames are discarded once the next one-round batch is appended, while the immediately relevant action boundary and future/prefetched frames remain available. A small cumulative prior-shot flag replaces the need to keep old shot-bearing frames solely for continuation authority.
+- Rotating autosave now defers heavyweight tactical serialization. Ordinary parent renders update a lightweight current-state provider; `getCurrentGameData()` and the JSON-safe tactical clone execute only when the autosave interval actually writes. Manual save/export authority is unchanged.
+- Completed-mission cleanup now includes `TACTICAL_KNOWN_OBJECTIVE_MEMORY_BY_MISSION`, closing a mission-keyed map missed by Browser 1103. The on-demand lifecycle report exposes that cache size along with discarded streamed-frame and tactical-save-payload-build counters.
+- Persistent renderer teardown additionally removes the detached visible-target HUD root, clears animation-loop/render-target ownership, routes replaced world-continuation canvas textures through the common texture/canvas disposer, and nulls large runtime-owned root/texture/scene references after disposal.
+- The renderer-context helper now returns a successful first-release result even when the installed `WebGLRenderer.dispose` guard performs `forceContextLoss()` internally. This repairs diagnostic semantics without changing rendering.
+- Six deterministic Build Health contracts cover frame-history compaction, preserved prior-shot authority, complete mission-scoped cache release, lazy autosave construction, strengthened renderer ownership cleanup, lifecycle diagnostics, and save format **4**. `assets/` remains unchanged.
+- This does **not** close the memory investigation by itself. The acceptance gate remains the ten-mission browser soak with memory/resource checkpoints after warm-up and each mission return.
+
+---
 
 ## Current Build Addendum — Browser 1358: Occlusion-Proof Visible-Target Hex Markers
 
@@ -89,9 +103,10 @@ Authoritative playable artifact: `index.html`
 
 ---
 
-## Implemented First Pass / Remaining Validation — Browser Memory Lifecycle and Long-Session Stability
+## Implemented Second Pass / Remaining Soak Validation — Browser Memory Lifecycle and Long-Session Stability
 
 - Browser 1103 implements deterministic mission-cache eviction, persistent tactical renderer reference cleanup, canvas-backing release, and explicit WebGL context retirement across Project Aegis Three.js renderers.
+- Browser 1656 follows the post-1103 field report by bounding streamed AI battlefield-frame history, making autosave tactical serialization lazy, evicting the missed objective-memory map, and strengthening runtime reference/context teardown semantics.
 - The remaining work is measurement-led: run the full ten-mission heap/GPU soak described below, compare the warm plateau against later mission returns, and use the new lifecycle report to identify any ownership count that still grows. Keep this item open until that acceptance gate is completed on the browser build.
 
 ### Field report and priority
