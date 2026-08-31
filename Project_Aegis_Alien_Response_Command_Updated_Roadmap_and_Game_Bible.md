@@ -15,11 +15,13 @@ Authoritative playable artifact: `index.html`
 - The marker remains anchored through the existing authoritative hex-to-world transform. Visibility and target-eligibility authority are unchanged: only already-visible living aliens and active revealed Alien Field Beacons qualify.
 - The change is presentation-only. Targeting legality, LOS, fog, cover, accuracy, AI knowledge, movement, TU, damage, objectives, mission results, strategic state, and saves are unchanged. Save format remains **4** and `assets/` is unchanged.
 - The visible-target Build Health suite now explicitly verifies the unlit bright-red core, fog/tone-mapping immunity, additive halo, depth-independent rendering, and persistent-authority boundary.
+- Release metadata is repaired and synchronized: `index.html`, `src/manifest.json`, patch notes, and this Game Bible identify Browser 1728; superseded addenda are historical; and the index-only ZIP has been regenerated and extraction-checked.
+- Live local-browser validation boots cleanly, lists Browser 1728 as the latest in-game history entry, and reports **630/677** Build Health checks passing. Every visible-target and red-glow hotfix contract passes, the remaining 47 failures are the existing unrelated diagnostic baseline, and the browser console contains no warnings or errors.
 
 ---
 
 
-## Current Build Addendum — Browser 1656: Browser Long-Session Memory Ownership + Stream Compaction
+## Historical Build Addendum — Browser 1656: Browser Long-Session Memory Ownership + Stream Compaction
 
 ### Current Build Delta
 - The player's real Browser 1103 field session is now the primary reproduction profile for the still-open memory investigation: roughly 700 MB near campaign start grew toward 4.5 GB after about six missions. Because the exported Month 3 / Day 12 save identifies Browser 1103, this confirms the symptom persisted after the first teardown patch rather than representing only the pre-1103 baseline.
@@ -33,7 +35,7 @@ Authoritative playable artifact: `index.html`
 
 ---
 
-## Current Build Addendum — Browser 1358: Occlusion-Proof Visible-Target Hex Markers
+## Historical Build Addendum — Browser 1358: Occlusion-Proof Visible-Target Hex Markers
 
 ### Current Build Delta
 - Every living alien contact currently exposed by established AEGIS visibility authority now receives a red glowing ring around its authoritative tactical hex. Active revealed Alien Field Beacons use the same language; destroyed, disabled, dead, extracted, friendly, civilian, hidden, and resolved targets do not qualify.
@@ -91,6 +93,25 @@ Authoritative playable artifact: `index.html`
 - The Tactical Shot Results stack uses **BEACON HIT** while the device survives and **BEACON DESTROYED** after confirmed neutralization, removing the ambiguous generic target label.
 - Beacon HP, shields, reinforcement transit cancellation, mission completion, damage, TU, ammunition, AI target selection, fog/knowledge, and save data are unchanged. Save format remains **4** and `assets/` is unchanged.
 - Six deterministic Build Health contracts cover collateral grenade kills, active/destroyed state reconciliation, voice cues, shot-card labels, resolver metadata, playback wiring, and save compatibility.
+
+---
+
+## Approved Roadmap — First-Class Fire-Team Beacon Assault Orders
+
+- Replace the current generic `mission-objective:beacon` waypoint with a typed **Beacon Assault** order. An explicit fire-team assignment must retain the beacon device identity and destruction intent rather than directing the team toward the occupied beacon-center hex.
+- The assigned team selects its best breach-capable assaulter and uses the authoritative beacon shield-entry planner to reach an open legal cell inside the seven-hex shield while the leader and supporting soldiers maintain formation, clear approach traffic, provide security, and engage known live aliens when necessary.
+- A compatible ranged weapon, Frag Grenade, or legal close assault from inside the shield should be used as soon as a valid attack exists. Soldiers already holding a viable firing position must not be forced to move before attacking, and the beacon assault must not be disqualified merely because its typed objective created a command target.
+- Extend the established beacon-endgame must-progress accountability to explicitly assigned beacon teams before the beacon becomes the sole remaining objective. Each assault pass must damage the beacon, reduce the assaulter's legal approach distance, enter the shield, clear a friendly obstruction, or produce a specific blocked-capability report instead of wandering, holding indefinitely, or burning rounds.
+- If the assigned team has no loaded compatible weapon, usable grenade, valid shield-entry path, sufficient TU, or living breach-capable member, report the exact limitation to the player and permit reassignment or an assisting fire team. A team assigned to follow and assist the beacon team should inherit the assault-support goal without competing for the same destination cell.
+- Preserve established tactical priorities: an active civilian/VIP escort and a currently known live alien remain higher priority than beacon work. Once that interruption is resolved or contact is lost under authoritative knowledge rules, the assigned team resumes its Beacon Assault order automatically.
+- Preserve Manual, Hybrid, and Simulation control semantics. Hybrid must retain the player's typed Beacon Assault assignment without excluding that team from beacon-strike behavior or switching to full Simulation AI; clearing, cancelling, or replacing the assignment must remove its derived assault state cleanly.
+- Add deterministic Build Health contracts proving that an explicit beacon assignment targets a legal assault cell rather than the beacon center, activates beacon attack logic despite having an objective order, respects shield/knowledge authority, progresses before the endgame phase, reports an incapable team, supports assisting teams, resumes after higher-priority contact/escort work, preserves unique occupancy and formation movement, and leaves save format **4** unchanged.
+
+### Confirmed current-build cause
+
+- Known beacon objectives currently store the beacon's exact center coordinates, and `tacticalApplyFireTeamObjectiveAssignments()` converts them into ordinary `mission-objective:` fire-team commands.
+- That command creates `playerCommandTarget`, while the dedicated beacon-strike eligibility branch requires `!playerCommandTarget`. The explicit instruction to deal with the beacon can therefore suppress the behavior that actually breaches and attacks it.
+- Full Simulation can sometimes clear the conflict only when the separately selected automatic beacon strike team happens to match the assigned team. Hybrid preserves player orders and can make the contradiction more persistent. The existing Beacon Endgame Must-Progress watchdog becomes decisive only after live-alien and rescue work is exhausted, explaining the delayed finish seen in play.
 
 ---
 
@@ -161,7 +182,7 @@ Authoritative playable artifact: `index.html`
 
 ---
 
-## Current Build Addendum — Browser 1656: V.A.L.A.N.T. Staffing + Autonomous Appointments
+## Historical Build Addendum — Browser 1656: V.A.L.A.N.T. Staffing + Autonomous Appointments
 
 ### Current Build Delta
 - The Mental Health Center is now the **V.A.L.A.N.T. Mental Health Center**, standing for **Validation, Acceptance, Listening, Advocacy, Nurturing, and Therapy**. The persistent facility key remains `mentalhealth`, so existing facilities and save-format-four campaigns continue loading without migration or duplication.
@@ -175,7 +196,7 @@ Authoritative playable artifact: `index.html`
 
 ---
 
-## Current Build Addendum — Browser 1450: Performance-Mode FPV/TPV Soldier Mid-LOD
+## Historical Build Addendum — Browser 1450: Performance-Mode FPV/TPV Soldier Mid-LOD
 
 ### Current Build Delta
 - Explicit **Performance** and hardware-resolved **Auto Performance** now select the established animated eleven-submission articulated-mid model for world-space AEGIS soldiers in FPV, TPV, and incoming-fire reaction TPV.

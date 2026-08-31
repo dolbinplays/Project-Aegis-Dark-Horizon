@@ -14,10 +14,11 @@ Key changes
 - Assets are unchanged.
 
 Validation
-- All 5 non-empty embedded JavaScript blocks pass `node --check`.
+- All 5 non-empty `index.html` JavaScript blocks pass the embedded syntax checker.
 - The visible-target Build Health contract is extended to require the unlit MeshBasicMaterial core, fog/tone-mapping immunity, additive halo, authoritative anchoring, and depth-independent rendering.
-- Static release/version history checks confirm Browser 1656 remains an immutable historical entry while Browser 1728 is the current build.
-- Live WebGL visual confirmation should still be performed on the player's machine because this environment does not provide the same game-rendering session.
+- Static release/version history checks confirm `index.html`, `src/manifest.json`, this archive, and the Game Bible all identify Browser 1728 while Browser 1656 and Browser 1358 remain immutable historical entries.
+- The repaired index-only release package is `Alien_Response_Command_Game_v0_26_08_30_1728_ISO_VISIBLE_TARGET_RED_GLOW_HOTFIX_INDEX_ONLY.zip`; its embedded `index.html` is syntax-checked after extraction.
+- Live local-browser validation boots Browser 1728, exposes it as the latest in-game history entry, reports **630/677** full Build Health checks passing with every visible-target/hotfix contract passing, and records no browser-console warnings or errors. The remaining 47 failures are the existing unrelated diagnostic baseline; final field confirmation should still exercise the marker inside a live 3D Iso mission.
 
 ---
 
