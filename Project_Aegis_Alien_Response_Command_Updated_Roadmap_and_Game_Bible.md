@@ -5971,6 +5971,24 @@ Browser build `v0.26.08.15.1208_DEFERRED_BUILD_HEALTH_AND_STABLE_GEOCLOCK_INDEX_
 - A callback ref is refreshed on every render and points at the current `advanceGeoscapeTimeByMinutes` closure. The stable interval invokes that ref, preserving current state without repeated teardown/setup.
 - Clock pause, speed changes, screen departure, and game over remain authoritative cleanup boundaries.
 
+## Approved roadmap - paused Geoscape strategic-activity freeze
+
+- Treat **Pause** as a hard authoritative strategic-time boundary. While the Geoscape clock is paused, no elapsed-time tick may run radar/detection rolls, create UFO contacts, spawn or advance alien activity, generate incidents or missions, progress alien routes or timers, change contact quality, or perform daily/monthly alien-activity rolls.
+- UI renders, opening or closing panels, switching between the globe and Terminator Map, changing bases, save/load restoration, browser focus changes, and presentation animation must never substitute for an authoritative Geoscape tick or consume an alien-activity random roll.
+- Notifications or visual presentation for an event already committed before the pause may finish displaying, but pausing prevents any new UFO, contact, incident, terror site, crash/landing mission, reinforcement source, alien-base activity, or other strategic event from becoming authoritative.
+- Unpausing resumes from the preserved clock, timers, routes, and deterministic random state. Do not create a catch-up burst for time that did not pass while paused, and do not discard activity legitimately scheduled for a future unpaused tick.
+- Player-directed actions that are valid without advancing time, such as reviewing contacts, issuing an interceptor order, selecting a mission, managing a base, or changing the selected time speed, remain available. Those actions must not implicitly advance the alien simulation unless their existing authoritative rule explicitly consumes strategic time.
+- Save/load while paused must preserve paused speed, event timers, contact state, route progress, and deterministic scheduling without creating an event during serialization, hydration, or the first presentation render.
+- Add deterministic Build Health coverage for repeated paused ticks/renders, every Geoscape panel and view, focus loss/restoration, save/load while paused, already-queued alerts, unpause resumption, no backlog burst, and unchanged save format.
+
+## Approved roadmap - deterministic tactical mission-start presentation
+
+- Every newly entered tactical mission starts at **100% Battle Speed**, in **3D Iso**, at the **Full** zoom preset, providing a consistent deployment overview before the commander chooses another observation or playback setup.
+- Apply these defaults once at mission-view initialization after the battlefield is ready. Do not repeatedly force them during the mission, after AI replanning, when opening an overlay, after selecting a unit, or when switching among Manual, Hybrid, and Simulation control.
+- Mission-start defaults take precedence over a perspective or zoom choice remembered from the previous mission. Once the current mission begins, player changes to Battle Speed, 3D Iso zoom, FPV, or TPV remain in effect under their established mission-local rules, including the planned Hybrid observer-view recall behavior.
+- Active-tactical save/load restores that mission's current presentation choices rather than reapplying deployment defaults. Campaign save format and every authoritative tactical rule remain unchanged because speed/view/zoom selection is presentation state.
+- Add deterministic Build Health coverage for fresh Manual, Hybrid, and Simulation missions; single- and multi-Skyranger deployments; active-tactical save/load; mission-to-mission reset; and protection against later re-renders reapplying the defaults.
+
 ## Cleanup-series roadmap
 
 - Completed in Browser 1342: make the Three.js tactical renderer persistent across movement, selection, and soldier-state updates; retain renderer, scene, caches, and static battlefield objects while mutating changed actors/effects.
