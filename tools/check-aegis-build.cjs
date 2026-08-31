@@ -1,9 +1,11 @@
 const fs = require("fs");
+const crypto = require("crypto");
 const path = require("path");
 const vm = require("vm");
 
 const root = path.resolve(__dirname, "..");
 const indexPath = path.join(root, "index.html");
+const runtimeSourcePath = path.join(root, "src", "browser-runtime.html");
 const manifestPath = path.join(root, "src", "manifest.json");
 const nativeContentPath = path.join(root, "godot", "data", "content.json");
 const nativeMainPath = path.join(root, "godot", "scripts", "main.gd");
@@ -18,7 +20,16 @@ const poseEditorLauncherPath = path.join(root, "AEGIS_Articulated_Pose_Editor_CU
 const approvedPoseEditorPath = path.join(root, "AEGIS_Articulated_Pose_Editor_v0.26.08.26.0033_APPROVED_ARTICULATED_POSE_SET_PATCH.html");
 const archivedPoseEditorPath = path.join(root, "AEGIS_Articulated_Pose_Editor_v0.26.08.25.2356_ARTICULATED_SINGLE_RIFLE_AND_POSE_EDITOR_TOOL_PATCH.html");
 
-const html = fs.readFileSync(indexPath, "utf8");
+const packagedHtml = fs.readFileSync(indexPath, "utf8");
+const runtimeSource = fs.readFileSync(runtimeSourcePath, "utf8");
+const runtimePayloadMatch = packagedHtml.match(/<script id="aegis-runtime-payload"[^>]*>([\s\S]*?)<\/script>/i);
+let packagedRuntime = "";
+try {
+  packagedRuntime = runtimePayloadMatch ? Buffer.from(runtimePayloadMatch[1].trim(), "base64").toString("utf8") : "";
+} catch {
+  packagedRuntime = "";
+}
+const html = packagedRuntime || packagedHtml;
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
 const nativeContent = JSON.parse(fs.readFileSync(nativeContentPath, "utf8"));
 const nativeMain = fs.readFileSync(nativeMainPath, "utf8");
@@ -79,6 +90,15 @@ function wavTakeEnergy(filePath, take, sampleLimit = 12000) {
 const required = [
   manifest.currentBuild,
   `const CURRENT_GAME_VERSION=currentGameVersionFromBuild()`,
+  "POST_MISSION_RUNTIME_REBOOT_AND_AUDIO_CONTINUITY_PATCH",
+  "POST_MISSION_RUNTIME_REBOOT_RELEASE_INTEGRATION_PATCH",
+  "writePostMissionRuntimeRebootCheckpoint",
+  "runtimeResumeId:checkpointId",
+  "postMissionRuntimeResumePendingRef.current=token",
+  "requestAnimationFrame(commit)",
+  "Post-mission autosave and resume token share build-bound checkpoint identity",
+  "After-action report restoration is acknowledged after committed report state and presentation frames",
+  "Complete pre-reboot gameplay lineage remains packaged",
   "ARCHITECTURE_MODULE_PLAN",
   "CONTINUOUS_ISO_GROUND_RENDERING_AND_PERFORMANCE_PATCH",
   "tacticalThreePersistentBuildIsoGround",
@@ -860,6 +880,40 @@ const required = [
 ];
 
 const missing = required.filter((needle) => !html.includes(needle));
+if (!runtimePayloadMatch) {
+  missing.push("index.html must contain the packaged disposable browser runtime payload");
+} else if (packagedRuntime !== runtimeSource) {
+  missing.push("packaged index runtime must be byte-identical to src/browser-runtime.html");
+}
+const expectedRuntimeBytes = Buffer.byteLength(runtimeSource, "utf8");
+const expectedRuntimeHash = crypto.createHash("sha256").update(Buffer.from(runtimeSource, "utf8")).digest("hex");
+const payloadOpeningTag = packagedHtml.match(/<script id="aegis-runtime-payload"[^>]*>/i)?.[0] || "";
+if (!payloadOpeningTag.includes(`data-source-bytes="${expectedRuntimeBytes}"`)) {
+  missing.push("packaged runtime payload must publish its exact UTF-8 source byte length");
+}
+if (!payloadOpeningTag.includes(`data-sha256="${expectedRuntimeHash}"`)) {
+  missing.push("packaged runtime payload must publish the SHA-256 of its canonical source");
+}
+if (!packagedHtml.includes(`data-aegis-host-build="${manifest.currentBuild}"`) || !packagedHtml.includes(`const BUILD='${manifest.currentBuild}'`)) {
+  missing.push("persistent runtime host and embedded game must share the manifest currentBuild");
+}
+for (const hostContract of [
+  "RESUME_WATCHDOG_MS=30000",
+  "recovery:'verified-autosave-retry-or-start-screen'",
+  "Retry Verified Autosave",
+  "Continue to Start Screen",
+  "token.checkpointId!==payload.checkpointId",
+]) {
+  if (!packagedHtml.includes(hostContract)) missing.push(`persistent runtime host contract missing: ${hostContract}`);
+}
+const runtimePackager = fs.readFileSync(path.join(root, "tools", "package-runtime-shell.cjs"), "utf8");
+for (const lineageMarker of [
+  "TACTICAL_FIRST_CLASS_FIRE_TEAM_BEACON_ASSAULT_ORDERS_PATCH",
+  "TACTICAL_FPV_TPV_ALIEN_CIRCULAR_CROSSHAIR_TARGET_MARKERS_PATCH",
+  "TACTICAL_SMOOTH_ARTICULATED_HEX_TO_HEX_LOCOMOTION_PATCH",
+]) {
+  if (!runtimePackager.includes(lineageMarker)) missing.push(`runtime packager stale-lineage guard missing: ${lineageMarker}`);
+}
 const patchHistoryOwnerStart = html.indexOf("function AlienResponseCommand");
 const patchHistoryOwnerEnd = html.indexOf("}const AEGIS_RUN_SELF_TESTS_BEFORE_2355_PATCH=runSelfTests;", patchHistoryOwnerStart);
 const patchHistoryDeclaration = html.indexOf("const PATCH_NOTES_HISTORY=", patchHistoryOwnerStart);

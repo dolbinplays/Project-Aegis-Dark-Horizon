@@ -1,3 +1,28 @@
+BUILD: v0.26.08.31.1153_POST_MISSION_RUNTIME_REBOOT_RELEASE_INTEGRATION_PATCH
+TITLE: Post-Mission Runtime Reboot Release Integration
+DATE: August 31, 2026
+
+Summary
+- Rebuilds the post-mission disposable-runtime memory boundary on the complete Browser 2102 game lineage and hardens packaging, recovery, and After Action Report restoration.
+
+Key changes
+- Browser 1921 first-class Beacon Assault orders, Browser 2005 FPV/TPV alien target crosshairs, and Browser 2102 smooth articulated locomotion are all present in the packaged runtime. The stale Browser 1728-era payload from the experimental artifact is no longer used.
+- `src/browser-runtime.html` is the committed canonical browser runtime. `tools/package-runtime-shell.cjs` deterministically packages it into the playable `index.html`, refuses stale lineage, and records the exact UTF-8 payload length and SHA-256.
+- Mission aftermath still writes, reads back, and verifies a clean post-mission autosave before releasing the old iframe. The autosave, session token, and host reboot request now share a build-bound checkpoint identity.
+- The host destroys the retired iframe and creates a fresh same-origin runtime. Restore completion is acknowledged only after React has committed the Reports screen and selected mission result, followed by two presentation frames.
+- A 30-second watchdog detects a replacement runtime that never confirms restoration. A persistent recovery panel offers **Retry Verified Autosave** or **Continue to Start Screen** rather than silently hiding a failed recovery.
+- Existing music enabled state, music and SFX volume, selection mode, soundtrack, and report-theme bridge remain continuous across the runtime replacement.
+- The wrapper-aware syntax and release-seam validators now decode the payload, inspect the actual game, compare it byte-for-byte with the canonical runtime, and validate its published hash and lineage guards.
+- Tactical authority, campaign outcomes, save contents, and save format remain unchanged. Save format is 4 and `assets/` is unchanged.
+
+Validation
+- The deterministic packager generated `index.html` from the canonical runtime and reported the matching payload byte length and SHA-256.
+- All decoded embedded JavaScript blocks pass the syntax checker.
+- Static release seams validate payload/source identity, build synchronization, recovery controls, watchdog coverage, checkpoint binding, report-commit acknowledgement, and all pre-existing gameplay markers.
+- Live browser startup renders the versioned start screen with no console errors. The long-session six-mission memory soak and a natural post-mission reboot remain playtest gates because they require completing representative tactical missions.
+
+---
+
 BUILD: v0.26.08.30.2102_SMOOTH_ARTICULATED_HEX_TO_HEX_LOCOMOTION_PATCH
 TITLE: Smooth Articulated Hex-to-Hex Locomotion
 DATE: August 30, 2026

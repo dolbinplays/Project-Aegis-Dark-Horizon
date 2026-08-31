@@ -1,12 +1,30 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.30.2102_SMOOTH_ARTICULATED_HEX_TO_HEX_LOCOMOTION_PATCH`
+Current browser build: `v0.26.08.31.1153_POST_MISSION_RUNTIME_REBOOT_RELEASE_INTEGRATION_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 2102: Smooth Articulated Hex-to-Hex Locomotion
+## Current Build Addendum — Browser 1153: Post-Mission Runtime Reboot Release Integration
+
+### Current Build Delta
+- Mission completion now establishes a true browser-runtime lifecycle boundary: campaign aftermath is applied, a clean post-mission autosave is written and read back, then the retired React/Three.js iframe is destroyed and replaced before the exact After Action Report is restored.
+- The release is rebuilt from the complete Browser 2102 lineage. First-class fire-team Beacon Assault orders, FPV/TPV alien crosshair markers, and smooth articulated movement remain present and are protected by deterministic packaging guards.
+- `src/browser-runtime.html` is the canonical raw game source. `tools/package-runtime-shell.cjs` packages that source into the root `index.html` and records payload byte length plus SHA-256, while release validation decodes and compares the playable payload byte-for-byte.
+- The verified autosave, resume token, and host request share a build-bound checkpoint identity. A mismatched build, slot, report, or checkpoint cannot authorize disposal of the current runtime.
+- Restore success is reported only after React commits the Reports screen and selected mission report, followed by two presentation frames. A 30-second watchdog and persistent **Retry Verified Autosave** / **Continue to Start Screen** controls replace the earlier timing-only acknowledgement and disappearing failure notice.
+- The persistent host retains the debrief transition and report-theme audio bridge while the heavy game document is replaced. Music enabled state, music/SFX volume, selection mode, and soundtrack remain session-continuous.
+- This is lifecycle and release-integration work only. Tactical coordinates, movement, pathfinding, TU, LOS, fog, cover, AI, formations, escorts, objectives, damage, campaign results, and save data remain authoritative and unchanged. Save format remains **4** and `assets/` is unchanged.
+
+### Long-Session Validation Gate
+- Run at least six completed missions in one browser session and record browser-process memory immediately before mission completion, at the debrief transition, and after the replacement runtime restores Reports.
+- Confirm every completed mission returns to the exact report, music remains continuous when enabled, no retired tactical canvas remains reachable through diagnostics, and later missions retain Browser 1921/2005/2102 behavior.
+- Chromium may retain process or GPU allocations after JavaScript objects become unreachable; success is measured by bounded repeated-mission growth and restored tactical performance, not by requiring Task Manager to return exactly to launch memory.
+
+---
+
+## Historical Build Addendum — Browser 2102: Smooth Articulated Hex-to-Hex Locomotion
 
 ### Current Build Delta
 - Visible full- and mid-detail articulated AEGIS soldiers, civilians, and VIPs now ease continuously between consecutive authoritative hex centers through one shared persistent-node presentation timeline.
