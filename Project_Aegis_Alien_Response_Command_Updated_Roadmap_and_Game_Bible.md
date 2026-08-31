@@ -1,12 +1,26 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.30.1728_ISO_VISIBLE_TARGET_RED_GLOW_HOTFIX`
+Current browser build: `v0.26.08.30.1921_FIRST_CLASS_FIRE_TEAM_BEACON_ASSAULT_ORDERS_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 1728: 3D Iso Visible-Target Red Glow Hotfix
+## Current Build Addendum — Browser 1921: First-Class Fire-Team Beacon Assault Orders
+
+### Current Build Delta
+- An explicit **Alien Field Beacon** objective is now a typed `beacon-assault` order, not an ordinary map waypoint. The typed order retains device identity and destruction intent without creating the `playerCommandTarget` conflict that previously disqualified the assigned team from real beacon-strike behavior.
+- Known Field Beacon objective records derive open shield-entry cells from the authoritative seven-cell field, exclude the solid beacon center and hard cover, and choose the nearest legal assault anchor for the assigned team.
+- The assigned team chooses its best living soldier with a loaded ranged weapon or usable Frag Grenade. That breacher is exempt from formation pacing while making the approach, uses the established shield-entry pathfinder when the weapon cannot penetrate externally, and holds a legal firing position instead of moving before an available shot.
+- Known live aliens and active civilian/VIP escort duties retain higher authority. The Beacon Assault assignment is not erased by either interruption and resumes once established knowledge and duty state permit.
+- Objective-assist teams continue following the primary assault team as intact formations. They do not become duplicate objective owners or compete for the beacon-center cell.
+- Incapable teams report `no-loaded-weapon-or-frag-grenade` or another bounded assault blocker instead of wandering. A designated breacher that repeatedly fails to reduce its approach distance records `approach-route-obstructed`; supporting members then use the existing beacon-perimeter clearing planner.
+- Eight deterministic Build Health contracts cover legal assault-cell selection, center-cell exclusion, typed identity, team-local breacher choice, legal inside-field attack, incapable-team reporting, must-progress/perimeter clearing, assisting teams, priority boundaries, and unchanged save format **4**. `assets/` is unchanged.
+- Embedded JavaScript and static release-seam checks pass. A new live Build Health total is not claimed because this environment's in-app browser blocks direct local `file:` navigation; the prior live baseline remains **630/677**, including 47 unrelated historical failures.
+
+---
+
+## Historical Build Addendum — Browser 1728: 3D Iso Visible-Target Red Glow Hotfix
 
 ### Current Build Delta
 - Corrects the 3D Iso target-ring presentation shown in field screenshots where valid visible alien markers rendered as black circles while the FPV/TPV target HUD correctly appeared red.
@@ -96,7 +110,7 @@ Authoritative playable artifact: `index.html`
 
 ---
 
-## Approved Roadmap — First-Class Fire-Team Beacon Assault Orders
+## Implemented — First-Class Fire-Team Beacon Assault Orders
 
 - Replace the current generic `mission-objective:beacon` waypoint with a typed **Beacon Assault** order. An explicit fire-team assignment must retain the beacon device identity and destruction intent rather than directing the team toward the occupied beacon-center hex.
 - The assigned team selects its best breach-capable assaulter and uses the authoritative beacon shield-entry planner to reach an open legal cell inside the seven-hex shield while the leader and supporting soldiers maintain formation, clear approach traffic, provide security, and engage known live aliens when necessary.
@@ -107,11 +121,11 @@ Authoritative playable artifact: `index.html`
 - Preserve Manual, Hybrid, and Simulation control semantics. Hybrid must retain the player's typed Beacon Assault assignment without excluding that team from beacon-strike behavior or switching to full Simulation AI; clearing, cancelling, or replacing the assignment must remove its derived assault state cleanly.
 - Add deterministic Build Health contracts proving that an explicit beacon assignment targets a legal assault cell rather than the beacon center, activates beacon attack logic despite having an objective order, respects shield/knowledge authority, progresses before the endgame phase, reports an incapable team, supports assisting teams, resumes after higher-priority contact/escort work, preserves unique occupancy and formation movement, and leaves save format **4** unchanged.
 
-### Confirmed current-build cause
+### Resolved prior-build cause
 
-- Known beacon objectives currently store the beacon's exact center coordinates, and `tacticalApplyFireTeamObjectiveAssignments()` converts them into ordinary `mission-objective:` fire-team commands.
-- That command creates `playerCommandTarget`, while the dedicated beacon-strike eligibility branch requires `!playerCommandTarget`. The explicit instruction to deal with the beacon can therefore suppress the behavior that actually breaches and attacks it.
-- Full Simulation can sometimes clear the conflict only when the separately selected automatic beacon strike team happens to match the assigned team. Hybrid preserves player orders and can make the contradiction more persistent. The existing Beacon Endgame Must-Progress watchdog becomes decisive only after live-alien and rescue work is exhausted, explaining the delayed finish seen in play.
+- Browser 1921 resolves the confirmed conflict: Field Beacon assignment now emits typed `beacon-assault` metadata and a legal shield-entry anchor, while the resolver recognizes that order as assault intent rather than a generic `playerCommandTarget`.
+- The dedicated team-local breacher, immediate-attack hold, bounded obstruction counter, and support perimeter-clearing behavior apply before the beacon becomes the sole remaining objective.
+- Full Simulation and Hybrid retain the player's explicit objective identity while known live aliens and active escorts remain higher priority. Clearing, replacing, or defaulting the assignment still removes its derived command state through the established objective transaction.
 
 ---
 

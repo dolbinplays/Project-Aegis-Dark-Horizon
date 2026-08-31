@@ -1,3 +1,27 @@
+BUILD: v0.26.08.30.1921_FIRST_CLASS_FIRE_TEAM_BEACON_ASSAULT_ORDERS_PATCH
+TITLE: First-Class Fire-Team Beacon Assault Orders
+DATE: August 30, 2026
+
+Summary
+- Makes assigning a fire team to an Alien Field Beacon mean breach and destroy it, rather than issuing a generic waypoint that can suppress the beacon-combat AI.
+
+Key changes
+- Known Field Beacon objectives now include legal, open shield-entry cells. The assigned destination excludes the solid beacon-center hex.
+- Fire-team command state distinguishes a typed `beacon-assault` from an ordinary waypoint and retains the objective/device identity. Missing metadata from older save-format-four tactical state safely defaults to waypoint behavior, while an existing explicit beacon objective is recognized by its established mission-objective identity.
+- The assigned team selects its own best living breach-capable soldier. That assaulter uses the established close-assault shield-entry planner independently of leader formation pacing and holds position to shoot or throw a Frag Grenade as soon as a legal attack exists.
+- Known live aliens and active civilian/VIP escort duties remain higher priority. When those interruptions clear, the typed assignment remains available and the assault resumes.
+- Teams following through the objective-assist system continue to reinforce the primary beacon team without becoming a competing objective owner.
+- A team with no loaded ranged weapon or usable Frag Grenade reports the exact blocker. A designated breacher that repeatedly fails to reduce approach distance records a route obstruction and directs supporting soldiers through the established perimeter-clearing planner.
+- Save format remains 4. Assets are unchanged.
+
+Validation
+- All 5 non-empty embedded JavaScript blocks pass the syntax checker.
+- The static Project Aegis build/release seam check passes for Browser 1921.
+- Eight deterministic Build Health contracts cover legal assault-cell selection, center-cell exclusion, typed order identity, team-local breacher selection, shield-entry firing, incapable-team reporting, must-progress/perimeter clearing, assisting teams, priority boundaries, and save format 4.
+- The in-app browser security policy blocks direct navigation to local `file:` builds in this environment, so a fresh live Build Health total is not claimed for Browser 1921. The previous live baseline was 630/677 with 47 unrelated failures.
+
+---
+
 BUILD: v0.26.08.30.1728_ISO_VISIBLE_TARGET_RED_GLOW_HOTFIX
 TITLE: 3D Iso Visible-Target Red Glow Hotfix
 DATE: August 30, 2026
