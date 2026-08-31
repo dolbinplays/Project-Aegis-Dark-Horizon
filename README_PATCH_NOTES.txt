@@ -1,3 +1,26 @@
+BUILD: v0.26.08.30.2005_FPV_TPV_ALIEN_CIRCULAR_CROSSHAIR_TARGET_MARKERS_PATCH
+TITLE: FPV / TPV Alien Circular Crosshair Target Markers
+DATE: August 30, 2026
+
+Summary
+- Replaces the ground-level perspective target ellipse for visible alien contacts with a compact red circular crosshair projected above the alien model.
+
+Key changes
+- First Person and Third Person observer views now render a bright-red circular ring with four short cardinal ticks and a clear center above each currently valid alien target.
+- The crosshair uses the existing persistent observer-HUD root and authoritative hex-to-world projection. It follows camera motion, unit movement, stance/animation changes, perspective handoffs, and distance-aware scaling without adding another renderer or mesh layer.
+- Alien Field Beacons keep the established FPV/TPV ground-objective ring, but receive a red target circle only after AEGIS has confirmed that Field Beacons are active reinforcement sources. Merely seeing an unknown beacon does not identify it as a threat.
+- The 3D Iso glowing target-hex circles and 2D Hex target rings are unchanged in shape. Eligibility remains tied to current AEGIS visibility and campaign-intelligence authority. Hidden, dead, extracted, friendly, civilian, remembered, and not-yet-understood beacon contacts never receive a target marker.
+- The marker stays occlusion-proof as a HUD presentation while qualifying, remains visually separate from the weapon reticle, and is removed when the shared target set no longer includes the alien.
+- Targeting, LOS, fog, AI knowledge, accuracy, range, movement, pathfinding, TU, damage, objectives, renderer ownership, tactical outcomes, and save data are unchanged. Save format remains 4. Assets are unchanged.
+
+Validation
+- All 5 non-empty embedded JavaScript blocks pass the syntax checker.
+- Static release/version checks pass for Browser 2005.
+- The existing visible-target suite now includes five additional deterministic contracts covering alien-only crosshair styling, above-model anchoring, four cardinal ticks with bounded distance scaling, knowledge-gated beacon circles, retained beacon and Iso/2D presentation, persistent camera projection, and unchanged save format 4.
+- The in-app browser security policy blocks direct navigation to local `file:` builds in this environment, so a new live Build Health total is not claimed. The prior live baseline remains 630/677 with 47 unrelated historical failures.
+
+---
+
 BUILD: v0.26.08.30.1921_FIRST_CLASS_FIRE_TEAM_BEACON_ASSAULT_ORDERS_PATCH
 TITLE: First-Class Fire-Team Beacon Assault Orders
 DATE: August 30, 2026

@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.30.1921_FIRST_CLASS_FIRE_TEAM_BEACON_ASSAULT_ORDERS_PATCH",
+  "currentBuild": "v0.26.08.30.2005_FPV_TPV_ALIEN_CIRCULAR_CROSSHAIR_TARGET_MARKERS_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "first-class-fire-team-beacon-assault-orders-complete",
+  "status": "fpv-tpv-alien-circular-crosshair-target-markers-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.30.1921_FIRST_CLASS_FIRE_TEAM_BEACON_ASSAULT_ORDERS_PATCH",
+  "lastInspectedBuild": "v0.26.08.30.2005_FPV_TPV_ALIEN_CIRCULAR_CROSSHAIR_TARGET_MARKERS_PATCH",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -47,7 +47,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.30.1921_FIRST_CLASS_FIRE_TEAM_BEACON_ASSAULT_ORDERS_PATCH",
+    "browserBuild": "v0.26.08.30.2005_FPV_TPV_ALIEN_CIRCULAR_CROSSHAIR_TARGET_MARKERS_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -550,6 +550,10 @@
       {
         "system": "first-class-fire-team-beacon-assault-orders",
         "reason": "The browser now turns explicit Field Beacon assignments into typed team-local breach-and-destroy orders with legal shield-entry cells, immediate legal attacks, bounded progress reporting, and support perimeter clearing. Native Godot requires equivalent objective intent and assault-progress authority."
+      },
+      {
+        "system": "fpv-tpv-alien-circular-crosshair-target-markers",
+        "reason": "The browser now projects alien-only red circular crosshairs above visible alien models in FPV and TPV while retaining knowledge-gated beacon ground-objective rings and Iso/2D target-hex circles. Native Godot requires an equivalent perspective presentation over the same visibility and campaign-intelligence authority."
       },
       {
         "system": "skyranger-extraction-corridor-civilian-priority-yield",

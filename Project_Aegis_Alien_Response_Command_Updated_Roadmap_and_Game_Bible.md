@@ -1,12 +1,25 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.30.1921_FIRST_CLASS_FIRE_TEAM_BEACON_ASSAULT_ORDERS_PATCH`
+Current browser build: `v0.26.08.30.2005_FPV_TPV_ALIEN_CIRCULAR_CROSSHAIR_TARGET_MARKERS_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 1921: First-Class Fire-Team Beacon Assault Orders
+## Current Build Addendum — Browser 2005: FPV / TPV Alien Circular Crosshair Target Markers
+
+### Current Build Delta
+- First Person and Third Person observer views now replace the ground-level visible-alien target ellipse with a compact bright-red circular crosshair projected **above the alien model**.
+- The crosshair uses a clear center, four short cardinal ticks, bounded glow, and distance-aware scaling. It is a target-identification aid and remains visually separate from the player's weapon reticle and shot feedback.
+- The persistent observer-HUD path continues to derive each marker from the shared visible-target authority and authoritative hex-to-world transform. Camera movement, alien movement, stance/animation changes, FPV/TPV handoffs, and articulated or lower-detail model presentation therefore keep the symbol attached to the same target without another renderer or mesh layer.
+- Alien Field Beacons retain their established ground-objective ring in FPV/TPV, but receive any red target circle only after AEGIS has confirmed that Field Beacons are active reinforcement sources. Visual contact with an unknown beacon does not prematurely identify it as a hostile spawn point.
+- Existing glowing target-hex circles in **3D Iso** and the established **2D Hex** target rings are unchanged in shape. Hidden, dead, extracted, friendly, civilian, remembered, and not-yet-understood beacon contacts remain excluded. Losing current visibility removes the alien from the shared target set and therefore removes its crosshair without changing fog or knowledge authority.
+- Five additional deterministic Build Health contracts cover alien-only presentation, above-model anchoring, cardinal ticks and bounded distance scaling, campaign-knowledge-gated beacon circles, preserved beacon/Iso/2D treatment, per-frame persistent camera projection, and unchanged save format **4**. `assets/` is unchanged.
+- Embedded JavaScript and static release-seam checks pass. A new live Build Health total is not claimed because the in-app browser security policy blocks direct local `file:` navigation; the prior live baseline remains **630/677**, including 47 unrelated historical failures.
+
+---
+
+## Historical Build Addendum — Browser 1921: First-Class Fire-Team Beacon Assault Orders
 
 ### Current Build Delta
 - An explicit **Alien Field Beacon** objective is now a typed `beacon-assault` order, not an ordinary map waypoint. The typed order retains device identity and destruction intent without creating the `playerCommandTarget` conflict that previously disqualified the assigned team from real beacon-strike behavior.
@@ -148,6 +161,25 @@ Authoritative playable artifact: `index.html`
 - Cover viable alien units and destructible hostile objectives such as a confirmed active Alien Field Beacon when they are legal targets. Do not mark civilians, VIPs, friendly soldiers, scenery, destroyed targets, or non-targetable objectives.
 - Keep selection, movement range, extraction zones, beacon shields, objective indicators, shot tracers, cinematics, fog, and status overlays visually distinguishable. Add a restrained pulse/glow and accessibility-conscious contrast without filling the hex or obscuring the target itself.
 - Playtesting should determine whether a presentation-only player toggle is still desirable. Browser 1358 includes deterministic Build Health coverage for visibility gating, target eligibility, correct hex anchoring, occlusion-proof rendering in all four views, prompt removal after target loss, no hidden-knowledge leak, bounded renderer mutation, and unchanged save/gameplay authority.
+
+---
+
+## Implemented — Browser 2005: FPV / TPV Circular Crosshair Target Markers
+
+- Replace the current red circular ground/hex marker for **valid alien targets in First Person and Third Person views** with a compact red circular crosshair displayed above the alien model. The marker should read as a target-identification aid rather than a second weapon-aim reticle.
+- Keep the existing glowing red circles around authoritative target hexes in **3D Iso** unchanged. Keep the established 2D Hex presentation unchanged unless it is reviewed separately.
+- Anchor the perspective marker to a stable point above the alien's head or upper model bounds and project it through the existing persistent camera/HUD path. It must track movement, stance, animation, camera motion, FPV/TPV switching, battle-speed changes, and articulated or lower-LOD alien presentation without jittering or drifting onto another unit.
+- Preserve the current occlusion-proof readability requirement: the red circular crosshair may remain visible through roofs, walls, vehicles, vegetation, smoke presentation, and other scenery, but only while the alien remains a currently valid visible target under authoritative AEGIS knowledge, per-observer LOS, fog, range, level, and life-state rules.
+- Never create a crosshair for hidden aliens, remembered/last-known positions, dead or extracted units, civilians, VIPs, AEGIS personnel, or scenery. Remove it immediately when the target stops qualifying. Confirmed Alien Field Beacons and other non-unit objectives retain their existing objective/target presentation until a separate perspective-specific symbol is approved.
+- Use a restrained bright-red ring with short cardinal crosshair ticks, a small clear center, bounded pulse/glow, and distance-aware scaling. It must remain distinguishable from the player's weapon reticle, shot-impact feedback, selection state, damage/status icons, objective trackers, and Tactical Shot Results.
+- Implement this as a presentation-only replacement of the FPV/TPV target-marker visual. Do not change target eligibility, targeting, LOS, fog, AI knowledge, accuracy, range, damage, TU, movement, objectives, renderer ownership, or save data.
+- Add deterministic Build Health coverage for FPV and TPV marker shape/anchor, camera tracking, visible-target gating, immediate removal, occlusion-proof presentation, alien-only scope, unchanged Iso circles, unchanged beacon/objective markers, bounded persistent-renderer invalidation, and save format **4**. Manually verify at close and long range, daylight/night, indoors/outdoors, roof cutaway, moving targets, multiple simultaneous targets, every alien model/stance, and FPV/TPV handoffs.
+
+### Implementation result
+
+- Browser 2005 implements the alien-only circular crosshair through the existing persistent perspective HUD. The marker is projected from the alien's authoritative cell to a fixed above-model height every observer frame, uses four cardinal ticks and a clear center, and retains bounded distance scaling.
+- Confirmed Beacon objectives remain on the established ground-ring presentation, while Iso and 2D target-circle shapes are unchanged. A beacon does not enter that target set until campaign intelligence confirms its reinforcement-source function; the shared visible-target set still owns visibility gating and immediate removal.
+- Static syntax/release validation and deterministic contract coverage pass. Close/long-range, day/night, indoor/outdoor, moving-target, multiple-contact, and FPV/TPV field play remain the manual visual acceptance gate.
 
 ---
 
