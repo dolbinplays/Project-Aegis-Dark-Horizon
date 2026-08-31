@@ -1,3 +1,28 @@
+BUILD: v0.26.08.30.2102_SMOOTH_ARTICULATED_HEX_TO_HEX_LOCOMOTION_PATCH
+TITLE: Smooth Articulated Hex-to-Hex Locomotion
+DATE: August 30, 2026
+
+Summary
+- Visible full- and mid-detail articulated AEGIS soldiers, civilians, and VIPs now move continuously between consecutive authoritative hex centers instead of visually teleporting one cell at a time.
+
+Key changes
+- One shared presentation timeline now eases persistent articulated unit roots from their previous visual position to the next authoritative path cell. It applies to Manual, Hybrid, Simulation AI, escort, and autonomous movement because it observes the common renderer update seam rather than creating role-specific movement systems.
+- Visual facing rotates through the shortest angle at path turns while the established articulated leg gait remains active throughout each translated step. Destination stance, frightened/calm civilian presentation, and other authoritative poses settle cleanly when translation finishes.
+- Each playback step now supplies its presentation duration. Battle Speed therefore scales Simulation movement, while all movement remains bounded to a readable 90-620 ms transition.
+- FPV and TPV camera targets follow the same interpolated unit root; their existing smoothing, camera ownership, weapon presentation, compass, and view selection remain intact.
+- Only an adjacent authoritative step is interpolated. A load, model-tier change, newly revealed unit, interruption, or other non-adjacent update normalizes directly to its authoritative cell instead of drawing an illegal shortcut through a wall, door, building, vehicle, prop, Skyranger hull, or occupied space.
+- Interpolation mutates only existing persistent unit transforms and articulated joints. Terrain, continuous ground, fog, buildings, roofs, materials, geometry, static-scene caches, and the renderer are not rebuilt per frame.
+- Occupancy, movement, pathfinding, TU, LOS, fog, cover, reactions, contact discovery, targeting, damage, extraction, escorts, AI decisions, objectives, mission results, and save data remain discrete and unchanged. Save format remains 4. Assets are unchanged.
+
+Validation
+- All 5 non-empty embedded JavaScript blocks pass the syntax checker.
+- Seven new deterministic Build Health contracts pass, including a runtime midpoint/end-point smoke test for exact root translation and visual facing.
+- Live local-browser Build Health reports 643/697 with every new locomotion contract passing. The remaining 54 failures are unrelated existing diagnostics.
+- The live browser start screen, deferred Build Health panel, in-game patch-history ownership, and browser console were checked; no console warnings or errors were recorded.
+- Static release/version checks and extraction validation cover the Browser 2102 index-only package.
+
+---
+
 BUILD: v0.26.08.30.2005_FPV_TPV_ALIEN_CIRCULAR_CROSSHAIR_TARGET_MARKERS_PATCH
 TITLE: FPV / TPV Alien Circular Crosshair Target Markers
 DATE: August 30, 2026

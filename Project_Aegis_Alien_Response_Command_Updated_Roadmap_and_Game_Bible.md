@@ -1,12 +1,23 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.30.2005_FPV_TPV_ALIEN_CIRCULAR_CROSSHAIR_TARGET_MARKERS_PATCH`
+Current browser build: `v0.26.08.30.2102_SMOOTH_ARTICULATED_HEX_TO_HEX_LOCOMOTION_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 2005: FPV / TPV Alien Circular Crosshair Target Markers
+## Current Build Addendum — Browser 2102: Smooth Articulated Hex-to-Hex Locomotion
+
+### Current Build Delta
+- Visible full- and mid-detail articulated AEGIS soldiers, civilians, and VIPs now ease continuously between consecutive authoritative hex centers through one shared persistent-node presentation timeline.
+- Root translation, the existing leg gait, shortest-path visual facing turns, footstep pacing, and FPV/TPV camera targets share each authoritative step's Battle-Speed-aware duration, bounded to 90-620 ms.
+- Only adjacent path steps interpolate. Long jumps, load normalization, model replacement, and newly revealed units snap safely to authority rather than drawing shortcuts through blocked terrain.
+- The simulation remains discrete: coordinates, occupancy, TU, pathfinding, LOS, fog, reactions, discovery, extraction, AI, objectives, outcomes, and saves are unchanged. Save format remains **4** and `assets/` is unchanged.
+- Seven deterministic contracts, including a runtime midpoint/end-point transform smoke test, pass. Live Build Health reports **643/697** with all new checks passing and no browser-console warnings or errors; 54 unrelated existing diagnostics remain.
+
+---
+
+## Historical Build Addendum — Browser 2005: FPV / TPV Alien Circular Crosshair Target Markers
 
 ### Current Build Delta
 - First Person and Third Person observer views now replace the ground-level visible-alien target ellipse with a compact bright-red circular crosshair projected **above the alien model**.
@@ -664,7 +675,7 @@ Authoritative playable artifact: `index.html`
 
 ## Roadmap Addition - Smooth Articulated Hex-to-Hex Locomotion
 
-**Status:** Approved tactical-presentation refinement for AEGIS soldiers, civilians, and VIPs; implementation pending.
+**Status:** Implemented in Browser 2102 for visible full- and mid-detail articulated AEGIS soldiers, civilians, and VIPs through the shared persistent Three.js unit-root timeline. Gameplay remains hex-authoritative; distant Classic LODs normalize directly to authoritative cells.
 
 - Move each visible articulated soldier, civilian, and VIP continuously between consecutive authoritative hex centers instead of visually teleporting the model from one occupied cell to the next. The articulated walking gait should play throughout the translation and settle cleanly into the correct standing, kneeling, frightened, escort, injury, or other authoritative pose at the destination.
 - Reuse the existing action movement trail and shared hex-to-world transform. Interpolate only along the exact legal path cells already selected by movement/pathfinding; never cut a corner through a wall, closed door, vehicle, blocked prop, occupied cell, fire hazard, building edge, Skyranger hull, or unexplored off-path terrain.
