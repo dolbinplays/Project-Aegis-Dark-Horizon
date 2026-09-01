@@ -1,12 +1,26 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.31.1705_ARTICULATED_SEGMENT_FACING_AND_FORWARD_WALK_PATCH`
+Current browser build: `v0.26.08.31.1857_ALIEN_VIP_INFORMATION_SEARCH_AND_SHARED_MEMORY_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 1705: Articulated Segment Facing + Forward Walk
+## Current Build Addendum — Browser 1857: Alien VIP Information Search + Shared Memory
+
+### Current Build Delta
+- Alien VIP targeting is now explicitly information-limited. An alien may acquire a tracked VIP only through personal LOS, an eligible nearby ally's current or retained report, a bounded approximate disturbance clue, or mission-authored prior intelligence.
+- Losing contact freezes the last legitimately observed cell. A hidden VIP's live coordinates no longer update pursuit; informed aliens investigate the recorded position and then expand a deterministic search through nearby open cells and plausible structures.
+- Living aliens within **28 hexes** may communicate confirmed sightings and retained reports. The shared record contains a source, confidence, observation round, and reported cell rather than permanent hidden-unit tracking.
+- Direct/shared confirmed memory lasts **12 rounds**. Approximate noise/distress suspicion lasts **6 rounds**, places the investigation point two to four hexes from the event, and never reveals the event or VIP's exact cell. Expired knowledge falls back to the established building/sector sweep.
+- Narratively authored scenarios such as an abduction already in progress may seed exact starting knowledge. The initial coordinate is captured once per alien and remains a last-known record if the VIP later moves unseen.
+- Streamed Simulation and live tactical Alien turns consume the same objective planner. Existing continuation coordinates, target identity, observation round, and search progress preserve the behavior through AI playback and save/load under save format **4**.
+- Human escort ownership, civilian/VIP decision logic, movement, pathfinding, TU, LOS, fog, targeting, damage, mission objectives, outcomes, renderer state, and assets remain unchanged.
+- Nine deterministic contracts cover hidden targets, direct observation, lost contact, expanding search, communication, expiry, authored prior knowledge, approximate clues, and continuation authority. Repeated live Build Health reports **660-661/715**, with every new contract passing, 54 stable unrelated historical diagnostics plus the known randomized failed-mission fixture, and no console errors.
+
+---
+
+## Historical Build Addendum — Browser 1705: Articulated Segment Facing + Forward Walk
 
 ### Current Build Delta
 - Smooth articulated movement now derives walking yaw from the actual projected world-space direction between the current authoritative hex center and the next one. Stale combat facing, destination facing, previous movement direction, and camera orientation cannot steer the walking body.
@@ -1309,7 +1323,7 @@ The deterministic contract covers spoiler-free pre-observation language, attack 
 
 ## Roadmap Addition - Tactical AI / VIP Missions: Alien VIP Detection & Search AI
 
-**Status:** Approved tactical-knowledge and VIP-mission AI item. Replace omniscient alien VIP tracking with information-based detection, memory, communication, and search behavior.
+**Status:** Implemented in Browser 1857 as the first complete information-based detection, memory, communication, and search pass. More authored clue producers and scenario-specific briefing content may extend the same authority later.
 
 ### Detection and knowledge authority
 - Aliens do not know an undetected VIP's exact location merely because the authoritative mission state contains it. They must search until the VIP is legitimately spotted or detected.
@@ -1333,6 +1347,14 @@ The deterministic contract covers spoiler-free pre-observation language, attack 
 4. Verify confirmed sighting communication reaches eligible allied aliens once, preserves observation age, and does not grant permanent live tracking.
 5. Test authored abduction and previously tracked-target scenarios where exact starting knowledge is intentional, documented, and stable through save/load.
 6. Preserve VIP rescue rules, escort ownership, civilian behavior, LOS, fog, pathfinding, TU, mission outcomes, and save authority outside the explicitly added alien-knowledge state.
+
+### Browser 1857 implementation record
+- The shared alien objective planner now separates personally visible VIPs, confirmed last-known reports, approximate suspected areas, and ordinary uninformed search. No branch reads a hidden VIP's current coordinate unless the mission explicitly authors prior exact knowledge or a legitimate noise event supplies a source cell.
+- Confirmed direct and allied reports use bounded 12-round memory; approximate disturbance clues use six rounds. Reaching a stored point transitions to deterministic expanding rings and nearby plausible structural waypoints before ordinary sector search resumes.
+- Sighting exchange is limited to living aliens within 28 hexes. It copies the observed coordinate and observation age once; it does not create a live reference to the target.
+- Explicit scenario intelligence is represented by `alienVipPriorKnowledge`, `alienVipKnowledge`, or an equivalent authored mission flag and optional target/cell fields. The initial location is consumed as a fixed report rather than repeatedly sampling hidden movement.
+- Existing generic tactical continuation fields preserve target identity, last-known coordinate, observation round, and search progress through streamed Simulation and active save/load. No persistent schema addition was required, so save format remains **4**.
+- Nine focused Build Health contracts pass in the live browser. The implementation also retains the earlier hidden-VIP test that verifies uninformed aliens choose a search sector rather than the VIP entity.
 
 
 ## Browser 2251 - Tactical Building Roofs + Player-Aware Cutaway

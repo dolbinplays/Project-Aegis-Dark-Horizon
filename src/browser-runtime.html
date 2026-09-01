@@ -566,6 +566,8 @@ const TACTICAL_DELIBERATE_BREACH_AND_CLEAR_ACTIONS_PATCH=true;
 const TACTICAL_ALIEN_BEACON_PHASE3_HACK_AND_COMMANDER_BADGE_PATCH=true;
 const TACTICAL_AI_TERMINAL_VICTORY_COMMIT_PATCH=true;
 const TACTICAL_AI_STREAM_SELF_HEAL_AND_SEARCH_STALL_RECOVERY_PATCH=true;
+const TACTICAL_ALIEN_VIP_INFORMATION_SEARCH_AND_SHARED_MEMORY_PATCH=true;
+const TACTICAL_ALIEN_VIP_KNOWLEDGE_RULES=Object.freeze({communicationRange:28,confirmedMemoryRounds:12,suspectedMemoryRounds:6,maxSearchRadius:8,noiseHearingRange:22});
 const TACTICAL_HAZARD_PATH_PRIORITY_QUEUE_PATCH=true;
 const TACTICAL_BUILDING_INTERIOR_FLOOR_TILE_PRESENTATION_PATCH=true;
 const TACTICAL_PERSPECTIVE_BIOME_HORIZON_BACKDROP_PATCH=true;
@@ -783,7 +785,7 @@ function installAegisGlobalHoverHelp(){
 function AegisHoverHelpToggleButton({light=false,compact=false}){const[enabled,setEnabled]=useState(()=>readAegisHoverHelpEnabled());useEffect(()=>{const sync=event=>setEnabled(normalizeAegisHoverHelpEnabled(event?.detail?.enabled));window.addEventListener(AEGIS_HOVER_HELP_CHANGE_EVENT,sync);return()=>window.removeEventListener(AEGIS_HOVER_HELP_CHANGE_EVENT,sync);},[]);const toggle=()=>setEnabled(writeAegisHoverHelpEnabled(!enabled));return/*#__PURE__*/React.createElement("button",{type:"button",onClick:toggle,"aria-pressed":enabled,"data-aegis-hover-help-toggle":"true","data-aegis-help":enabled?"Turn contextual button explanations off. Controls continue working normally, and the preference is remembered on this device.":"Turn contextual button explanations on. Rest the pointer over supported controls for three seconds to read their purpose.",className:`${compact?"px-3 py-2 text-xs":"px-4 py-3 text-sm"} rounded-2xl border font-black shadow-sm transition ${enabled?light?"border-cyan-200/70 bg-cyan-900/60 text-cyan-50":"border-cyan-400/60 bg-cyan-950/55 text-cyan-100":light?"border-slate-400/60 bg-slate-950/70 text-slate-200":"border-slate-600 bg-slate-950 text-slate-300"}`},enabled?"Hover Help: On":"Hover Help: Off");}
 if(typeof document!=="undefined"){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",installAegisGlobalHoverHelp,{once:true});else setTimeout(installAegisGlobalHoverHelp,0);}
 
-const CURRENT_GAME_BUILD="v0.26.08.31.1705_ARTICULATED_SEGMENT_FACING_AND_FORWARD_WALK_PATCH";
+const CURRENT_GAME_BUILD="v0.26.08.31.1857_ALIEN_VIP_INFORMATION_SEARCH_AND_SHARED_MEMORY_PATCH";
 const POST_MISSION_RUNTIME_REBOOT_AND_AUDIO_CONTINUITY_PATCH=true;
 const POST_MISSION_RUNTIME_REBOOT_RELEASE_INTEGRATION_PATCH=true;
 const AEGIS_AUDIO_CONTINUITY_STORAGE_KEY="project-aegis-audio-continuity-v1";
@@ -5964,6 +5966,113 @@ function tacticalRetireAlienDropshipCovers(covers = []) {
   return (covers || []).filter((cover) => !cover?.alienDropshipPart && !String(cover?.visual || "").startsWith("alien-dropship-"));
 }
 
+function tacticalAlienVipTrackedTarget(unit = null) {
+  return Boolean(unit?.team === "civilian" && unit.vipTracker === true && Number(unit.hp) > 0 && unit.alive !== false && !unit.rescued);
+}
+function tacticalAlienVipScenarioPriorKnowledge(mission = null) {
+  const mode = String(mission?.alienVipPriorKnowledge || mission?.alienVipKnowledge || "").toLowerCase();
+  return Boolean(mission?.alienKnowsVipLocation === true || mission?.alienVipPriorKnowledge === true || ["exact", "confirmed", "tracked", "abduction-in-progress"].includes(mode));
+}
+function tacticalAlienVipApproximateClueCell(source = null, mission = null, clueId = "vip-noise", gridSize = TACTICAL_GRID_SIZE) {
+  const origin = tacticalValidCoordinatePair(source?.x, source?.y, gridSize);
+  if (!origin) return null;
+  const ring = [];
+  for (let y = Math.max(2, origin.y - 4); y <= Math.min(gridSize - 3, origin.y + 4); y += 1) {
+    for (let x = Math.max(2, origin.x - 4); x <= Math.min(gridSize - 3, origin.x + 4); x += 1) {
+      const distance = tacticalDistance(origin, { x, y });
+      if (distance >= 2 && distance <= 4) ring.push({ x, y });
+    }
+  }
+  if (!ring.length) return origin;
+  let identity = Math.abs(tacticalSeed(mission || {}));
+  for (const character of String(clueId || "vip-noise")) identity = (identity * 33 + character.charCodeAt(0)) >>> 0;
+  return ring[identity % ring.length];
+}
+function tacticalAlienVipNoiseClue(alien = null, units = [], mission = null, round = 1) {
+  const gridSize = tacticalGridSizeFrom(mission, alien, units);
+  return (units || []).filter(tacticalAlienVipTrackedTarget).map((vip) => {
+    const clueRound = Number(vip.vipNoiseRound ?? vip.distressRound);
+    if (!Number.isFinite(clueRound) || clueRound > Number(round) || Number(round) - clueRound > TACTICAL_ALIEN_VIP_KNOWLEDGE_RULES.suspectedMemoryRounds) return null;
+    const source = tacticalValidCoordinatePair(vip.vipNoiseX ?? vip.distressX ?? vip.x, vip.vipNoiseY ?? vip.distressY ?? vip.y, gridSize);
+    if (!source || tacticalDistance(alien, source) > TACTICAL_ALIEN_VIP_KNOWLEDGE_RULES.noiseHearingRange) return null;
+    const approximate = tacticalAlienVipApproximateClueCell(source, mission, `${vip.id}:${clueRound}`, gridSize);
+    return approximate ? { state: "suspected", source: "noise", targetId: null, targetTeam: "civilian", x: approximate.x, y: approximate.y, observationRound: clueRound, sourceAlienId: null } : null;
+  }).filter(Boolean).sort((left, right) => right.observationRound - left.observationRound || tacticalDistance(alien, left) - tacticalDistance(alien, right))[0] || null;
+}
+function tacticalAlienVipKnowledgeFor(alien = null, units = [], covers = [], mission = null, round = 1) {
+  if (!alien || !tacticalAlienVipPriorityMission(mission, units)) return null;
+  const gridSize = tacticalGridSizeFrom(mission, alien, units, covers);
+  const vipRecords = (units || []).filter((unit) => unit?.team === "civilian" && unit.vipTracker === true);
+  const vips = vipRecords.filter(tacticalAlienVipTrackedTarget);
+  if (!vips.length) return null;
+  const vipById = new Map(vipRecords.map((vip) => [vip.id, vip]));
+  const currentRound = Math.max(1, Number(round) || 1);
+  const candidates = [];
+  const addCandidate = (candidate) => {
+    const cell = tacticalValidCoordinatePair(candidate?.x, candidate?.y, gridSize);
+    if (!cell) return;
+    const memoryLimit = candidate.source === "scenario" ? Number.POSITIVE_INFINITY : candidate.state === "suspected" ? TACTICAL_ALIEN_VIP_KNOWLEDGE_RULES.suspectedMemoryRounds : TACTICAL_ALIEN_VIP_KNOWLEDGE_RULES.confirmedMemoryRounds;
+    const observationRound = Math.max(0, Number(candidate.observationRound) || 0);
+    if (currentRound - observationRound > memoryLimit) return;
+    candidates.push({ ...candidate, ...cell, observationRound });
+  };
+  const ownTargetTeam = String(alien.alienKnownTargetTeam || "");
+  const ownVipTargetId = alien.alienVipKnownTargetId || (ownTargetTeam.startsWith("civilian") ? alien.alienKnownTargetId : null);
+  if (ownVipTargetId && vipById.has(ownVipTargetId)) {
+    addCandidate({ state: (alien.alienVipKnowledgeConfidence || alien.alienKnownTargetConfidence) === "suspected" ? "suspected" : "confirmed", source: ownTargetTeam === "civilian-scenario" ? "scenario" : alien.alienVipKnowledgeSource || alien.alienKnownTargetSource || "memory", targetId: ownVipTargetId, targetTeam: "civilian", x: alien.alienVipLastKnownX ?? alien.alienLastKnownTargetX, y: alien.alienVipLastKnownY ?? alien.alienLastKnownTargetY, observationRound: alien.alienVipKnowledgeRound ?? alien.alienKnownTargetRound ?? alien.alienSearchRound ?? 0, sourceAlienId: alien.alienVipKnowledgeSourceAlienId || alien.alienKnownTargetSourceAlienId || null });
+  }
+  const communicatingAllies = (units || []).filter((ally) => ally?.team === "alien" && ally.id !== alien.id && Number(ally.hp) > 0 && ally.alive !== false && tacticalDistance(alien, ally) <= TACTICAL_ALIEN_VIP_KNOWLEDGE_RULES.communicationRange);
+  communicatingAllies.forEach((ally) => {
+    const sighted = vips.filter((vip) => tacticalAlienCanSeeTarget(ally, vip, covers, mission)).sort((left, right) => tacticalDistance(ally, left) - tacticalDistance(ally, right) || String(left.id).localeCompare(String(right.id)))[0] || null;
+    if (sighted) addCandidate({ state: "confirmed", source: "shared-sighting", targetId: sighted.id, targetTeam: "civilian", x: sighted.x, y: sighted.y, observationRound: currentRound, sourceAlienId: ally.id });
+    else {
+      const allyTargetTeam = String(ally.alienKnownTargetTeam || "");
+      const allyVipTargetId = ally.alienVipKnownTargetId || (allyTargetTeam.startsWith("civilian") ? ally.alienKnownTargetId : null);
+      if (allyVipTargetId && vipById.has(allyVipTargetId)) addCandidate({ state: (ally.alienVipKnowledgeConfidence || ally.alienKnownTargetConfidence) === "suspected" ? "suspected" : "confirmed", source: allyTargetTeam === "civilian-scenario" ? "scenario" : "shared-memory", targetId: allyVipTargetId, targetTeam: "civilian", x: ally.alienVipLastKnownX ?? ally.alienLastKnownTargetX, y: ally.alienVipLastKnownY ?? ally.alienLastKnownTargetY, observationRound: ally.alienVipKnowledgeRound ?? ally.alienKnownTargetRound ?? ally.alienSearchRound ?? 0, sourceAlienId: ally.id });
+    }
+  });
+  if (tacticalAlienVipScenarioPriorKnowledge(mission) && !alien.alienVipScenarioKnowledgeConsumed && !ownVipTargetId) {
+    const authoredId = mission?.alienVipPriorKnowledgeTargetId || mission?.alienVipTargetId || null;
+    const target = (authoredId && vipById.get(authoredId)) || [...vips].sort((left, right) => String(left.id).localeCompare(String(right.id)))[0] || null;
+    const authoredCell = tacticalValidCoordinatePair(mission?.alienVipPriorKnowledgeX, mission?.alienVipPriorKnowledgeY, gridSize);
+    const cell = authoredCell || target;
+    if (target && cell) addCandidate({ state: "confirmed", source: "scenario", targetId: target.id, targetTeam: "civilian", x: cell.x, y: cell.y, observationRound: currentRound, sourceAlienId: null });
+  }
+  const clue = tacticalAlienVipNoiseClue(alien, units, mission, currentRound);
+  if (clue) addCandidate(clue);
+  return candidates.sort((left, right) => (right.state === "confirmed" ? 1 : 0) - (left.state === "confirmed" ? 1 : 0) || right.observationRound - left.observationRound || tacticalDistance(alien, left) - tacticalDistance(alien, right) || String(left.targetId || "").localeCompare(String(right.targetId || "")))[0] || null;
+}
+function tacticalAlienVipSearchTarget({ alien = null, knowledge = null, covers = [], units = [], mission = null, round = 1, alienIndex = 0 } = {}) {
+  if (!alien || !knowledge) return null;
+  const gridSize = tacticalGridSizeFrom(mission, alien, units, covers);
+  const origin = tacticalValidCoordinatePair(knowledge.x, knowledge.y, gridSize);
+  if (!origin) return null;
+  const vipSearchPhase = String(alien.alienObjectivePhase || "").startsWith("vip-");
+  const priorTarget = tacticalValidCoordinatePair(alien.alienVipSearchTargetX ?? (vipSearchPhase ? alien.alienSearchTargetX : null), alien.alienVipSearchTargetY ?? (vipSearchPhase ? alien.alienSearchTargetY : null), gridSize);
+  let searchIndex = Math.max(0, Number(alien.alienVipSearchIndex ?? (vipSearchPhase ? alien.alienSearchIndex : 0)) || 0);
+  if (priorTarget && tacticalDistance(alien, priorTarget) > 1) return { target: { id: "alien-vip-search", ...priorTarget, team: "search", hp: 1, alive: true }, patch: { alienObjectivePhase: knowledge.state === "suspected" ? "vip-suspected-search" : "vip-last-known-search" } };
+  if (priorTarget) searchIndex += 1;
+  const age = Math.max(0, Number(round) - Number(knowledge.observationRound || 0));
+  const radius = clamp(1 + Math.floor(searchIndex / 6) + Math.floor(age / 3), 1, TACTICAL_ALIEN_VIP_KNOWLEDGE_RULES.maxSearchRadius);
+  const occupied = new Set((units || []).filter((unit) => unit.id !== alien.id && Number(unit.hp) > 0 && unit.alive !== false && !unit.rescued).map((unit) => tacticalKey(unit.x, unit.y)));
+  const candidates = [];
+  for (let y = Math.max(2, origin.y - radius - 1); y <= Math.min(gridSize - 3, origin.y + radius + 1); y += 1) {
+    for (let x = Math.max(2, origin.x - radius - 1); x <= Math.min(gridSize - 3, origin.x + radius + 1); x += 1) {
+      const distance = tacticalDistance(origin, { x, y });
+      if (distance < Math.max(1, radius - 1) || distance > radius + 1 || isHardCoverAt(covers, x, y) || occupied.has(tacticalKey(x, y))) continue;
+      candidates.push({ x, y });
+    }
+  }
+  tacticalAlienSearchWaypoints(mission, covers, gridSize, origin).filter((cell) => tacticalDistance(origin, cell) <= radius + 2 && !isHardCoverAt(covers, cell.x, cell.y) && !occupied.has(tacticalKey(cell.x, cell.y))).forEach((cell) => {
+    if (!candidates.some((candidate) => candidate.x === cell.x && candidate.y === cell.y)) candidates.push(cell);
+  });
+  if (!candidates.length) return null;
+  let identity = Math.abs(tacticalSeed(mission || {}) + Number(alienIndex || 0) * 17 + searchIndex * 31);
+  for (const character of String(alien.id || "alien")) identity = (identity * 33 + character.charCodeAt(0)) >>> 0;
+  const target = candidates[identity % candidates.length];
+  return { target: { id: "alien-vip-search", x: target.x, y: target.y, team: "search", hp: 1, alive: true }, patch: { alienObjectivePhase: knowledge.state === "suspected" ? "vip-suspected-search" : "vip-last-known-search", alienVipSearchIndex: searchIndex, alienVipSearchOriginX: origin.x, alienVipSearchOriginY: origin.y, alienVipSearchTargetX: target.x, alienVipSearchTargetY: target.y, alienSearchIndex: searchIndex, alienSearchTargetX: target.x, alienSearchTargetY: target.y, alienSearchRound: knowledge.observationRound } };
+}
+
 function tacticalAlienVipPriorityMission(mission = null, units = []) {
   const civilians = units.filter((unit) => unit.team === "civilian" && unit.hp > 0 && !unit.rescued);
   return tacticalCivilianObjectiveForMission(mission || {}, civilians.length).mandatory;
@@ -6058,8 +6167,19 @@ function tacticalAlienObjectivePlan({ alien = null, units = [], covers = [], mis
   if (!alien) return { target: null, targetKind: "none", visibleTarget: false, patch: {} };
   const gridSize = tacticalGridSizeFrom(mission, units, covers, alien);
   const visible = tacticalAlienVisibleTargetPlan(alien, units, covers, mission);
-  if (visible) return { ...visible, patch: { alienObjectivePhase: "engage", alienKnownTargetId: visible.target.id, alienKnownTargetTeam: visible.target.team, alienLastKnownTargetX: visible.target.x, alienLastKnownTargetY: visible.target.y, alienEmergencyCallRequested: false, alienExfilStallTurns: 0 } };
-  const rememberedUnit=alien.alienKnownTargetId?(units||[]).find((unit)=>unit?.id===alien.alienKnownTargetId&&Number(unit.hp)>0&&unit.alive!==false&&!unit.rescued):null;
+  if (visible) {
+    const vipPatch = visible.targetKind === "vip" ? { alienVipKnownTargetId: visible.target.id, alienVipLastKnownX: visible.target.x, alienVipLastKnownY: visible.target.y, alienVipKnowledgeRound: Math.max(1, Number(round) || 1), alienVipKnowledgeSource: "direct-sighting", alienVipKnowledgeSourceAlienId: alien.id, alienVipKnowledgeConfidence: "confirmed", alienVipSearchIndex: 0, alienVipSearchOriginX: visible.target.x, alienVipSearchOriginY: visible.target.y, alienVipSearchTargetX: null, alienVipSearchTargetY: null } : {};
+    const retainVipMemory = visible.targetKind !== "vip" && tacticalAlienVipPriorityMission(mission, units) && String(alien.alienKnownTargetTeam || "").startsWith("civilian") && alien.alienKnownTargetId;
+    return { ...visible, patch: { alienObjectivePhase: "engage", alienKnownTargetId: retainVipMemory ? alien.alienKnownTargetId : visible.target.id, alienKnownTargetTeam: retainVipMemory ? alien.alienKnownTargetTeam : visible.target.team, alienLastKnownTargetX: retainVipMemory ? alien.alienLastKnownTargetX : visible.target.x, alienLastKnownTargetY: retainVipMemory ? alien.alienLastKnownTargetY : visible.target.y, alienKnownTargetRound: retainVipMemory ? alien.alienKnownTargetRound : Math.max(1, Number(round) || 1), alienKnownTargetSource: retainVipMemory ? alien.alienKnownTargetSource : visible.targetKind === "vip" ? "direct-sighting" : "direct-contact", alienKnownTargetConfidence: "confirmed", alienSearchRound: visible.targetKind === "vip" ? Math.max(1, Number(round) || 1) : alien.alienSearchRound, alienEmergencyCallRequested: false, alienExfilStallTurns: 0, ...vipPatch } };
+  }
+  const vipKnowledge = tacticalAlienVipKnowledgeFor(alien, units, covers, mission, round);
+  if (vipKnowledge) {
+    const knowledgePatch = { alienKnownTargetId: vipKnowledge.targetId, alienKnownTargetTeam: vipKnowledge.source === "scenario" ? "civilian-scenario" : "civilian", alienLastKnownTargetX: vipKnowledge.x, alienLastKnownTargetY: vipKnowledge.y, alienKnownTargetRound: vipKnowledge.observationRound, alienKnownTargetSource: vipKnowledge.source, alienKnownTargetSourceAlienId: vipKnowledge.sourceAlienId, alienKnownTargetConfidence: vipKnowledge.state, alienVipKnownTargetId: vipKnowledge.targetId, alienVipLastKnownX: vipKnowledge.x, alienVipLastKnownY: vipKnowledge.y, alienVipKnowledgeRound: vipKnowledge.observationRound, alienVipKnowledgeSource: vipKnowledge.source, alienVipKnowledgeSourceAlienId: vipKnowledge.sourceAlienId, alienVipKnowledgeConfidence: vipKnowledge.state, alienVipScenarioKnowledgeConsumed: Boolean(alien.alienVipScenarioKnowledgeConsumed || vipKnowledge.source === "scenario"), alienSearchRound: vipKnowledge.observationRound };
+    if (tacticalDistance(alien, vipKnowledge) > 1) return { target: { id: vipKnowledge.state === "suspected" ? "alien-vip-suspected-area" : "alien-vip-last-known", x: vipKnowledge.x, y: vipKnowledge.y, team: "search", hp: 1, alive: true }, targetKind: vipKnowledge.state === "suspected" ? "vip-suspected" : "vip-last-known", visibleTarget: false, patch: { ...knowledgePatch, alienObjectivePhase: vipKnowledge.state === "suspected" ? "vip-suspected" : "vip-last-known" } };
+    const vipSearch = tacticalAlienVipSearchTarget({ alien, knowledge: vipKnowledge, covers, units, mission, round, alienIndex });
+    if (vipSearch) return { target: vipSearch.target, targetKind: "vip-search", visibleTarget: false, patch: { ...knowledgePatch, ...(vipSearch.patch || {}) } };
+  }
+  const rememberedUnit=!String(alien.alienKnownTargetTeam||"").startsWith("civilian")&&alien.alienKnownTargetId?(units||[]).find((unit)=>unit?.id===alien.alienKnownTargetId&&Number(unit.hp)>0&&unit.alive!==false&&!unit.rescued):null;
   const remembered=rememberedUnit?tacticalValidCoordinatePair(alien.alienLastKnownTargetX,alien.alienLastKnownTargetY,gridSize):null;
   if (remembered && tacticalDistance(alien, remembered) > 1) return { target: { id: "alien-last-known-contact", ...remembered, team: "search", hp: 1, alive: true }, targetKind: "last-known", visibleTarget: false, patch: { alienObjectivePhase: "last-known" } };
   const isReinforcement = Boolean(alien.isReinforcement);
@@ -6088,7 +6208,7 @@ function tacticalAlienObjectivePlan({ alien = null, units = [], covers = [], mis
   const formationTarget = tacticalAlienFormationSearchCell(center, alien.reinforcementFormationIndex ?? alienIndex, covers, units, gridSize, alien.id);
   const searchBeacon = !isReinforcement ? tacticalActiveAlienBeacon(covers) : null;
   const target = searchBeacon && tacticalDistance(formationTarget, searchBeacon) <= 4 ? center : formationTarget;
-  return { target: { id: "alien-search-sector", ...target, team: "search", hp: 1, alive: true }, targetKind: "search", visibleTarget: false, patch: { reinforcementPhase: isReinforcement ? "search" : alien.reinforcementPhase, alienObjectivePhase: vipMission ? "vip-search" : "hunt-search", alienKnownTargetId: null, alienKnownTargetTeam: null, alienLastKnownTargetX: null, alienLastKnownTargetY: null, alienSearchIndex: searchIndex, alienSearchTargetX: target.x, alienSearchTargetY: target.y, alienSearchRound: Number(round) || 1 } };
+  return { target: { id: "alien-search-sector", ...target, team: "search", hp: 1, alive: true }, targetKind: "search", visibleTarget: false, patch: { reinforcementPhase: isReinforcement ? "search" : alien.reinforcementPhase, alienObjectivePhase: vipMission ? "vip-search" : "hunt-search", alienKnownTargetId: null, alienKnownTargetTeam: null, alienLastKnownTargetX: null, alienLastKnownTargetY: null, alienKnownTargetRound: null, alienKnownTargetSource: null, alienKnownTargetSourceAlienId: null, alienKnownTargetConfidence: null, alienVipKnownTargetId: null, alienVipLastKnownX: null, alienVipLastKnownY: null, alienVipKnowledgeRound: null, alienVipKnowledgeSource: null, alienVipKnowledgeSourceAlienId: null, alienVipKnowledgeConfidence: null, alienVipSearchIndex: 0, alienVipSearchOriginX: null, alienVipSearchOriginY: null, alienVipSearchTargetX: null, alienVipSearchTargetY: null, alienSearchIndex: searchIndex, alienSearchTargetX: target.x, alienSearchTargetY: target.y, alienSearchRound: Number(round) || 1 } };
 }
 function tacticalApplyCivilianThreatPanic(units = [], covers = [], mission = null, shotAtIds = []) {
   const shotAt = new Set(shotAtIds || []);
@@ -7455,6 +7575,58 @@ function tacticalAlienVipHuntPanicAndReinforcementSearchContractTest() {
     && arrival.landed && arrival.reinforcements.every((unit) => unit.emergedFromAlienRamp && unit.reinforcementPhase === "rally" && unit.reinforcementRallyX === rallyState.rallyX && unit.reinforcementRallyY === rallyState.rallyY)
     && arrival.reinforcements.some((unit) => rampKeys.has(tacticalKey(unit.x, unit.y)));
 }
+function tacticalAlienVipInformationSearchContractChecks() {
+  const mission = { id: "vip-information-search", kind: "Town Abduction", missionIntent: "Abduction", threat: 3, seed: 4281, tacticalMapTier: "small" };
+  const alien = { id: "vip-searcher", name: "Searcher", team: "alien", hp: 30, alive: true, x: 5, y: 5, tu: 50, maxTu: 50, acc: 58, gridSize: 64 };
+  const hiddenVip = { id: "vip-hidden", name: "Hidden VIP", team: "civilian", hp: 18, alive: true, x: 50, y: 50, vipTracker: true, revealed: false, rescued: false, gridSize: 64 };
+  const hiddenPlan = tacticalAlienObjectivePlan({ alien, units: [alien, hiddenVip], covers: [], mission, round: 1, alienIndex: 0 });
+  const visibleVip = { ...hiddenVip, id: "vip-visible", x: 8, y: 5 };
+  const visiblePlan = tacticalAlienObjectivePlan({ alien, units: [alien, visibleVip], covers: [], mission, round: 2, alienIndex: 0 });
+  const movedVip = { ...visibleVip, x: 48, y: 47 };
+  const informed = { ...alien, alienKnownTargetId: visibleVip.id, alienKnownTargetTeam: "civilian", alienLastKnownTargetX: 8, alienLastKnownTargetY: 5, alienSearchRound: 2, alienObjectivePhase: "engage" };
+  const lostPlan = tacticalAlienObjectivePlan({ alien: informed, units: [informed, movedVip], covers: [], mission, round: 4, alienIndex: 0 });
+  const interveningSoldier = { id: "vip-memory-soldier", name: "Soldier", team: "human", hp: 40, alive: true, x: 6, y: 5, gridSize: 64 };
+  const contactPlan = tacticalAlienObjectivePlan({ alien: informed, units: [informed, movedVip, interveningSoldier], covers: [], mission, round: 4, alienIndex: 0 });
+  const atLastKnown = { ...informed, x: 8, y: 5 };
+  const expandingPlan = tacticalAlienObjectivePlan({ alien: atLastKnown, units: [atLastKnown, movedVip], covers: [], mission, round: 5, alienIndex: 0 });
+  const blocker = { id: "vip-share-wall", x: 8, y: 10, hp: 100, kind: "hard", block: 1 };
+  const receiver = { ...alien, id: "vip-receiver", x: 4, y: 10 };
+  const spotter = { ...alien, id: "vip-spotter", x: 11, y: 9 };
+  const sharedVip = { ...hiddenVip, id: "vip-shared", x: 12, y: 10 };
+  const sharedKnowledge = tacticalAlienVipKnowledgeFor(receiver, [receiver, spotter, sharedVip], [blocker], mission, 6);
+  const sharedPlan = tacticalAlienObjectivePlan({ alien: receiver, units: [receiver, spotter, sharedVip], covers: [blocker], mission, round: 6, alienIndex: 0 });
+  const distantSpotter = { ...spotter, id: "vip-distant-spotter", x: 48, y: 48 };
+  const distantVip = { ...sharedVip, id: "vip-distant", x: 50, y: 48 };
+  const outOfRangeKnowledge = tacticalAlienVipKnowledgeFor(receiver, [receiver, distantSpotter, distantVip], [], mission, 6);
+  const stale = { ...informed, alienSearchRound: 1 };
+  const stalePlan = tacticalAlienObjectivePlan({ alien: stale, units: [stale, movedVip], covers: [], mission, round: 20, alienIndex: 0 });
+  const priorMission = { ...mission, id: "vip-authored-prior", alienVipPriorKnowledge: "abduction-in-progress", alienVipPriorKnowledgeTargetId: hiddenVip.id };
+  const priorPlan = tacticalAlienObjectivePlan({ alien, units: [alien, hiddenVip], covers: [], mission: priorMission, round: 1, alienIndex: 0 });
+  const priorMemory = { ...alien, ...priorPlan.patch, x: 6, y: 5 };
+  const relocatedVip = { ...hiddenVip, x: 54, y: 53 };
+  const priorFollowup = tacticalAlienObjectivePlan({ alien: priorMemory, units: [priorMemory, relocatedVip], covers: [], mission: priorMission, round: 2, alienIndex: 0 });
+  const noisyVip = { ...hiddenVip, id: "vip-noise", distressRound: 5, distressX: 24, distressY: 24 };
+  const listener = { ...alien, id: "vip-listener", x: 17, y: 18 };
+  const noiseKnowledge = tacticalAlienVipKnowledgeFor(listener, [listener, noisyVip], [], mission, 6);
+  const objectiveSource = String(tacticalAlienObjectivePlan);
+  const continuationSource = String(resolveMission) + String(tacticalAiContinuationFromPlaybackFrame);
+  return {
+    "An entirely undetected VIP never becomes an exact alien target": hiddenPlan.target?.id !== hiddenVip.id && (hiddenPlan.target?.x !== hiddenVip.x || hiddenPlan.target?.y !== hiddenVip.y) && hiddenPlan.targetKind === "search",
+    "A legitimate direct sighting records a confirmed VIP last-known position": visiblePlan.target?.id === visibleVip.id && visiblePlan.targetKind === "vip" && visiblePlan.patch?.alienVipKnowledgeSource === "direct-sighting" && visiblePlan.patch?.alienLastKnownTargetX === visibleVip.x,
+    "Lost contact investigates the recorded cell instead of the VIP's hidden live cell": lostPlan.targetKind === "vip-last-known" && lostPlan.target?.x === 8 && lostPlan.target?.y === 5 && (lostPlan.target.x !== movedVip.x || lostPlan.target.y !== movedVip.y) && contactPlan.target?.id === interveningSoldier.id && contactPlan.patch?.alienKnownTargetId === visibleVip.id,
+    "Reaching last-known contact expands a bounded search without hidden-coordinate tracking": expandingPlan.targetKind === "vip-search" && tacticalDistance(expandingPlan.target, { x: 8, y: 5 }) <= TACTICAL_ALIEN_VIP_KNOWLEDGE_RULES.maxSearchRadius + 1 && (expandingPlan.target.x !== movedVip.x || expandingPlan.target.y !== movedVip.y),
+    "Eligible nearby aliens share confirmed sightings through explicit communication range": sharedKnowledge?.source === "shared-sighting" && sharedKnowledge?.sourceAlienId === spotter.id && sharedKnowledge?.x === sharedVip.x && sharedPlan.targetKind === "vip-last-known" && outOfRangeKnowledge === null,
+    "Expired VIP memory falls back to ordinary search rather than reacquiring hidden coordinates": stalePlan.targetKind === "search" && stalePlan.target?.id !== movedVip.id && (stalePlan.target?.x !== movedVip.x || stalePlan.target?.y !== movedVip.y),
+    "Authored scenario prior knowledge is captured once and does not become live hidden tracking": priorPlan.targetKind === "vip-last-known" && priorPlan.patch?.alienKnownTargetTeam === "civilian-scenario" && priorFollowup.target?.x === hiddenVip.x && priorFollowup.target?.y === hiddenVip.y && (priorFollowup.target.x !== relocatedVip.x || priorFollowup.target.y !== relocatedVip.y),
+    "Noise evidence creates an approximate suspected area instead of an exact VIP coordinate": noiseKnowledge?.state === "suspected" && noiseKnowledge?.source === "noise" && (noiseKnowledge.x !== noisyVip.x || noiseKnowledge.y !== noisyVip.y) && (noiseKnowledge.x !== noisyVip.distressX || noiseKnowledge.y !== noisyVip.distressY),
+    "VIP knowledge remains presentation-neutral and uses persisted continuation fields under save format four": objectiveSource.includes("tacticalAlienVipKnowledgeFor") && objectiveSource.includes("alienSearchRound") && continuationSource.includes("alienKnownTargetId") && continuationSource.includes("alienLastKnownTargetX") && CURRENT_SAVE_FORMAT_VERSION === 4,
+  };
+}
+const AEGIS_RUN_SELF_TESTS_BEFORE_ALIEN_VIP_INFORMATION_SEARCH = runSelfTests;
+runSelfTests = function runSelfTestsWithAlienVipInformationSearch() {
+  const checks = tacticalAlienVipInformationSearchContractChecks();
+  return [...AEGIS_RUN_SELF_TESTS_BEFORE_ALIEN_VIP_INFORMATION_SEARCH(), ...Object.entries(checks).map(([name, pass]) => ({ name, pass: TACTICAL_ALIEN_VIP_INFORMATION_SEARCH_AND_SHARED_MEMORY_PATCH && pass }))];
+};
 function tacticalAiRescueRoute({ unit = null, targets = [], covers = [], units = [], maxSteps = TACTICAL_AI_MAX_MOVE_STEPS, stopAdjacent = false, visited = [], threats = [], mission = null } = {}) {
   if (!unit || !targets.length) return { cell: unit, path: unit ? [{ x: unit.x, y: unit.y }] : [], steps: 0, reached: false };
   const boundedSteps = clamp(Math.floor(Number(maxSteps) || 0), 0, TACTICAL_AI_MAX_MOVE_STEPS);
@@ -11127,7 +11299,7 @@ function endTurn() {
       if (liveTarget && movingAlien.tu >= 14 && tacticalDistance(movingAlien, liveTarget) <= 20 && hasLineOfSight(movingAlien, liveTarget.x, liveTarget.y, covers, mission)) {
         fireAt(movingAlien, liveTarget, objective.targetKind === "vip" ? "finds and fires at VIP" : liveTarget.team === "civilian" ? "fires at civilian" : "advances and fires at");
       } else {
-        const action = objective.targetKind === "rally" ? "heads for the caller's last known position" : objective.targetKind === "dropship" ? "falls back toward the alien landing craft" : objective.targetKind === "beacon" ? "falls back toward the Alien Field Beacon" : objective.targetKind === "insertion" ? "falls back toward its insertion point" : objective.targetKind === "emergency-call" ? "reaches its extraction point and transmits an emergency reinforcement call" : objective.targetKind === "search" ? "fans out to search for civilians, VIPs, or AEGIS soldiers" : objective.targetKind === "last-known" ? "checks a last known contact" : "advances toward a contact";
+        const action = objective.targetKind === "rally" ? "heads for the caller's last known position" : objective.targetKind === "dropship" ? "falls back toward the alien landing craft" : objective.targetKind === "beacon" ? "falls back toward the Alien Field Beacon" : objective.targetKind === "insertion" ? "falls back toward its insertion point" : objective.targetKind === "emergency-call" ? "reaches its extraction point and transmits an emergency reinforcement call" : objective.targetKind === "search" ? "fans out to search for civilians, VIPs, or AEGIS soldiers" : objective.targetKind === "vip-last-known" ? "investigates a reported VIP contact" : objective.targetKind === "vip-suspected" ? "searches an approximate disturbance area" : objective.targetKind === "vip-search" ? "expands its search around a lost contact" : objective.targetKind === "last-known" ? "checks a last known contact" : "advances toward a contact";
         newLogs.push(alien.name + " " + action + ".");
       }
     });
@@ -12099,7 +12271,8 @@ PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.30.1921_FIRST_CLASS_FIRE_TEAM_BEACO
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.30.2102_SMOOTH_ARTICULATED_HEX_TO_HEX_LOCOMOTION_PATCH",date:"August 30, 2026",title:"Smooth Articulated Hex-to-Hex Locomotion",summary:"Moves visible full- and mid-detail articulated soldiers, civilians, and VIPs continuously between consecutive authoritative hex centers while leaving the tactical simulation fully discrete.",items:["Visible articulated AEGIS soldiers, civilians, and VIPs now ease between consecutive authoritative hex centers instead of visually teleporting from cell to cell.","One persistent-node motion timeline drives root translation, the existing walking gait, and shortest-path visual facing turns for Manual, Hybrid, Simulation, escort, and autonomous movement playback.","Movement duration follows each playback step and Battle Speed within a readable 90-620 ms presentation bound. The final visual root lands exactly on the authoritative destination without drift or snap-back.","FPV and TPV camera targets follow the same interpolated presentation root. Their existing camera smoothing, weapon presentation, compass, and view ownership remain intact.","Only adjacent authoritative path steps interpolate. Long jumps, model rebuilds, newly revealed units, and load normalization snap directly to the authoritative cell rather than drawing an illegal path through walls, vehicles, structures, or other blockers.","Occupancy, pathfinding, TU, LOS, fog, reactions, contact discovery, targeting, extraction, AI decisions, objectives, mission results, and save data remain discrete and unchanged. Save format remains 4 and assets are unchanged.","Seven deterministic Build Health contracts plus a runtime midpoint/end-point smoke test cover exact centers, easing, facing turns, duration bounds, articulated role parity, perspective camera following, persistent-scene ownership, normalization, and save compatibility."]});
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.30.2005_FPV_TPV_ALIEN_CIRCULAR_CROSSHAIR_TARGET_MARKERS_PATCH",date:"August 30, 2026",title:"FPV / TPV Alien Circular Crosshair Target Markers",summary:"Replaces the perspective-view ground ellipse for visible alien contacts with a compact red circular crosshair projected above the alien model while preserving every authoritative visibility and tactical rule.",items:["FPV and TPV visible alien contacts now use a bright-red circular crosshair with four short cardinal ticks and a clear center above the model rather than a ground-level target ellipse.","The marker follows the existing persistent observer HUD and authoritative hex-to-world projection every rendered frame, including camera movement, unit movement, stance animation, perspective handoffs, and distance-aware scaling.","Alien Field Beacons retain their established ground-objective ring in FPV/TPV, and receive any red target circle only after AEGIS has confirmed that Field Beacons are active reinforcement sources. Merely seeing an unknown beacon does not label it as a threat.","The glowing target-hex circles in 3D Iso and 2D Hex remain unchanged in shape. Marker eligibility still comes exclusively from the existing visible-target and campaign-intelligence authority; hidden, dead, extracted, friendly, civilian, and remembered contacts never gain a marker.","The crosshair is presentation-only and remains distinct from the weapon reticle. LOS, fog, AI knowledge acquisition, targeting, accuracy, range, TU, movement, damage, objectives, renderer ownership, and save data are unchanged.","Five additional deterministic contracts cover alien-only styling, the above-model anchor, cardinal ticks and bounded scaling, knowledge-gated beacon circles, retained Iso/2D presentation, persistent projection, and save format 4. Assets are unchanged."]});
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.31.1153_POST_MISSION_RUNTIME_REBOOT_RELEASE_INTEGRATION_PATCH",date:"August 31, 2026",title:"Post-Mission Runtime Reboot Release Integration",summary:"Rebuilds the verified post-mission disposable-runtime boundary on the complete Browser 2102 game lineage and hardens packaging, recovery, and report-restoration acknowledgement.",items:["The embedded runtime now includes Browser 1921 first-class Beacon Assault orders, Browser 2005 FPV/TPV alien crosshairs, and Browser 2102 smooth articulated locomotion instead of silently packaging a stale Browser 1728-era payload.","A committed raw browser runtime in src/browser-runtime.html is now the deterministic packaging source. The packaging tool refuses to build when required lineage markers are absent and records exact payload byte length plus SHA-256 identity.","The post-mission autosave and resume token now share a build-bound checkpoint identity. The host accepts a reboot only when build, slot, report, and checkpoint all match the verified record.","Resume completion is acknowledged only after React has committed the Reports screen and selected mission report, followed by two presentation frames; the former fixed 120 ms acknowledgement is retired.","A 30-second host watchdog detects replacement runtimes that never acknowledge restoration. A persistent recovery panel can retry the verified autosave or deliberately continue to the start screen instead of silently hiding a failed recovery.","Audio continuity, disposable iframe teardown, exact After Action Report restoration, tactical authority, save data, and save format 4 remain unchanged. Assets are unchanged."]});
-PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 31, 2026",title:"Articulated Segment Facing + Forward Walk",summary:"Makes every smooth articulated walking step face its actual world-space travel segment, then restores authoritative destination facing on arrival.",items:["Smooth locomotion now derives travel yaw from the current and next authoritative hex centers after projection into the shared Three.js world coordinate system; stale combat facing and camera orientation no longer steer the walking body.","A bounded lead turn reaches the new segment heading during the opening 24% of each step and then holds that heading through translation, preventing sideways sliding, backward-looking gait, and delayed whole-step turns.","Each turn in a multi-cell route receives its own segment heading. The final frame restores the facing selected by the authoritative tactical state for stance, targeting, reactions, escorts, formations, and commands.","Manual, Hybrid, Simulation, civilian/VIP escort, and autonomous movement continue through the same shared persistent-node wrapper; this correction does not add a second path or animation clock.","The post-mission reboot Build Health contract now inspects its component-local checkpoint writer through the component source instead of referencing that local function from global test scope, allowing the full suite to run again.","Deterministic contracts cover six travel directions, early turn acquisition, exact destination position, destination-facing restoration, persistent-root mutation, and unchanged save format 4.","Live browser startup is clean and Build Health reports 652/706; both new movement-facing contracts and the repaired reboot checkpoint contract pass, with 54 unrelated historical diagnostics remaining.","Pathfinding, occupied cells, TU, LOS, fog, reactions, targeting, AI decisions, formations, mission outcomes, save data, and assets are unchanged."]});
+PATCH_NOTES_HISTORY.unshift({build:"v0.26.08.31.1705_ARTICULATED_SEGMENT_FACING_AND_FORWARD_WALK_PATCH",date:"August 31, 2026",title:"Articulated Segment Facing + Forward Walk",summary:"Makes every smooth articulated walking step face its actual world-space travel segment, then restores authoritative destination facing on arrival.",items:["Smooth locomotion now derives travel yaw from the current and next authoritative hex centers after projection into the shared Three.js world coordinate system; stale combat facing and camera orientation no longer steer the walking body.","A bounded lead turn reaches the new segment heading during the opening 24% of each step and then holds that heading through translation, preventing sideways sliding, backward-looking gait, and delayed whole-step turns.","Each turn in a multi-cell route receives its own segment heading. The final frame restores the facing selected by the authoritative tactical state for stance, targeting, reactions, escorts, formations, and commands.","Manual, Hybrid, Simulation, civilian/VIP escort, and autonomous movement continue through the same shared persistent-node wrapper; this correction does not add a second path or animation clock.","The post-mission reboot Build Health contract now inspects its component-local checkpoint writer through the component source instead of referencing that local function from global test scope, allowing the full suite to run again.","Deterministic contracts cover six travel directions, early turn acquisition, exact destination position, destination-facing restoration, persistent-root mutation, and unchanged save format 4.","Live browser startup is clean and Build Health reports 652/706; both new movement-facing contracts and the repaired reboot checkpoint contract pass, with 54 unrelated historical diagnostics remaining.","Pathfinding, occupied cells, TU, LOS, fog, reactions, targeting, AI decisions, formations, mission outcomes, save data, and assets are unchanged."]});
+PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"August 31, 2026",title:"Alien VIP Information Search + Shared Memory",summary:"Replaces exact hidden-VIP tracking with direct sightings, bounded shared knowledge, last-known investigation, approximate clues, and expanding searches.",items:["An alien can pursue or fire on a VIP only after a legitimate personal sightline, an eligible nearby ally's current sighting, a retained last-known report, an approximate disturbance clue, or explicit scenario-authored prior knowledge.","Losing sight records the observed cell. Hidden VIP movement no longer updates that record; aliens investigate the stored position and then expand a deterministic bounded search through nearby open cells and plausible structures.","Confirmed sightings and retained reports can be communicated only between living aliens within a 28-hex communication range. Shared records preserve observation age and location rather than granting ongoing access to the hidden unit.","Explicit abduction-in-progress or tracked-target missions may seed exact starting knowledge. That location is captured once and never becomes live hidden-coordinate tracking after the VIP moves.","Recent authored VIP noise/distress evidence creates a deterministic approximate area two to four hexes from the source and expires after six rounds; it does not reveal the event or VIP's exact cell.","Direct and shared confirmed memory expires after 12 rounds unless scenario-authored, after which ordinary building/sector search resumes. Search targets remain bounded and avoid living occupancy and hard cover.","The same objective planner drives streamed Simulation and live tactical Alien turns. Existing generic continuation fields retain knowledge across playback and save/load without changing save format 4.","Nine new deterministic Build Health contracts pass. Repeated live Build Health reports 660-661/715; 54 stable unrelated historical diagnostics and the known randomized failed-mission fixture remain, while the browser console is clean.","Human escort ownership, civilian/VIP behavior, LOS, fog, movement, TU, damage, objectives, mission results, tactical presentation, save data, and assets are otherwise unchanged."]});
 function PatchNotesLibraryScreen(){
   const selected=PATCH_NOTES_HISTORY.find(entry=>entry.build===selectedPatchBuild)||PATCH_NOTES_HISTORY[0];
   const items=selected.items||[selected.summary];

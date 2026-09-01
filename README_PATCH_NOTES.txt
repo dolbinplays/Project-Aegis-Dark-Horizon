@@ -1,3 +1,26 @@
+BUILD: v0.26.08.31.1857_ALIEN_VIP_INFORMATION_SEARCH_AND_SHARED_MEMORY_PATCH
+TITLE: Alien VIP Information Search + Shared Memory
+DATE: August 31, 2026
+
+Summary
+- Replaces exact hidden-VIP tracking with information-limited alien detection, last-known memory, bounded communication, approximate clues, and expanding search behavior.
+
+Key changes
+- Aliens can acquire a VIP only through personal LOS, an eligible nearby alien's confirmed report, retained last-known information, an approximate disturbance clue, or explicit scenario-authored prior knowledge.
+- Losing sight freezes the VIP's last legitimately observed hex. Hidden VIP movement never updates that record; informed aliens investigate it and then fan outward through deterministic open-cell and nearby-structure search points.
+- Living aliens within 28 hexes may share a current VIP sighting or retained report. Shared information carries the location, source, confidence, and observation age rather than permanent access to hidden tactical state.
+- Ordinary confirmed memory expires after 12 rounds and suspected noise memory after 6. Search then returns to the established building and sector sweep instead of silently reacquiring the hidden target.
+- Recent authored VIP noise/distress evidence produces an approximate cell two to four hexes from its source. The suspected point is deterministic, time-bounded, and never the exact sound or hidden VIP cell.
+- Narratively appropriate missions can explicitly seed prior exact knowledge, such as an abduction already in progress. The starting location is captured once; moving the hidden VIP does not move the aliens' record.
+- The shared objective planner serves streamed Simulation and live tactical Alien turns. Existing continuation fields retain last-known coordinates, observation age, and expanding-search progress without changing save format 4.
+- Human escort ownership, civilian/VIP behavior, movement, pathfinding, TU, LOS, fog, targeting, damage, objectives, mission results, tactical presentation, save data, and assets are otherwise unchanged.
+
+Validation
+- Nine deterministic contracts cover completely hidden VIPs, direct sightings, contact loss, bounded expanding search, allied sighting reports, memory expiry, one-time scenario intelligence, approximate clues, and continuation/save authority.
+- Embedded JavaScript syntax passes. Repeated live Build Health reports **660-661/715** with all nine new contracts passing, 54 stable unrelated historical diagnostics plus the known randomized failed-mission fixture, and no browser-console errors.
+
+---
+
 BUILD: v0.26.08.31.1705_ARTICULATED_SEGMENT_FACING_AND_FORWARD_WALK_PATCH
 TITLE: Articulated Segment Facing + Forward Walk
 DATE: August 31, 2026
