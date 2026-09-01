@@ -3921,6 +3921,20 @@ Roadmap-only planning update (2026-08-19): **AEGIS tactical AI should treat dist
 
 Implementation update (2026-08-19, Browser 1935): **The first tactical stance consistency slice is now implemented for kneeling. Manual and Simulation-AI control share the same movement transition: kneeling persists while stationary across rounds, actual movement clears kneeling, auto-standing to move carries no extra stance charge, explicit stationary Kneel/Stand remains 4 TU, already-kneeling stationary logic does not pay the stance cost twice, and 2D/3D Iso/FPV/TPV/reaction-TPV presentation consumes the same stance. The current +10 outgoing accuracy / -8 incoming-hit balance is intentionally unchanged. A future balance pass may still explore stronger directional-cover/exposed-profile interactions, but those are not part of Browser 1935.**
 
+### Approved follow-up — explicit stand before movement
+
+**Status:** Roadmapped stance-authority change. This deliberately supersedes Browser 1935's free auto-stand behavior once implemented; the Browser 1935 section above remains the accurate historical record for the current implementation.
+
+- A kneeling AEGIS soldier must complete an explicit **Stand** action before beginning any walking movement. Movement must never silently clear kneeling or grant a free posture change on the first path step.
+- Standing uses the established **4 TU** stance-change cost. A kneeling soldier with fewer than 4 TU may remain in place, fire or perform another legal kneeling action, but cannot start a walking route during that turn.
+- Manual movement previews and destination clicks must communicate **Stand required — 4 TU** instead of showing a route the soldier cannot legally begin. After standing, reachable range is recalculated from the remaining TU and the selected reserve option.
+- Hybrid and Simulation AI must budget the Stand cost before choosing a movement destination. The AI may stand and then move only as far as the remaining TU permits; it may not plan a full standing-distance route and deduct the stance cost afterward.
+- The stand transition is a distinct authoritative action in tactical logs and playback. The soldier must visibly settle into the standing pose before the first walking step in 2D Hex, 3D Iso, FPV, and TPV, without adding a duplicate movement phase or allowing later animation to snap the unit back into kneeling.
+- Fire-team leaders and supporting soldiers follow the same rule during formation catch-up, Hybrid support movement, escort duty, extraction, beacon assault, emergency search, and Simulation AI. A member who cannot afford to stand should hold or trigger a legal team replan rather than stall every other fire team.
+- Remaining behind useful cover to kneel and fire is still valid and should not force a stand. The rule applies only when walking begins; stationary aiming, reaction fire, medical/item actions that are legal while kneeling, and ending the turn remain governed by their existing rules.
+- Saving and loading preserves the soldier's actual kneeling state. A queued or canceled destination must not stand the soldier, spend TU, or leave a hidden pending movement state. Save format should remain **4** unless implementation uncovers a genuinely necessary persistent-schema change.
+- Add deterministic Build Health coverage for Manual, Hybrid, Simulation, escort, formation, extraction, beacon, and emergency-search movement; fewer than 4 TU, exactly 4 TU, and Stand-plus-route budgets; cancellation before standing; stance/log/pose order; save/reload; and unchanged LOS, fog, cover, accuracy, pathfinding, objective, and damage authority.
+
 ### Approved follow-up — proactive AI kneeling doctrine
 
 - AI-controlled AEGIS soldiers should evaluate **Kneel** more often as a deliberate firing-position choice, using the established outgoing-accuracy benefit and reduced incoming-hit profile when the expected advantage justifies the stance TU cost.
@@ -3931,7 +3945,7 @@ Implementation update (2026-08-19, Browser 1935): **The first tactical stance co
 - The decision should compare expected accuracy, incoming-fire exposure, cover direction/quality, target distance, reserve choice, remaining TU, ammunition, weapon/fire mode, visible threats, objective urgency, and the cost of standing again if movement will probably be required next turn.
 - Fire-team members should make individual stance decisions so an entire team does not kneel automatically when only one or two soldiers have useful firing positions. Leaders must remain able to maneuver and supporting soldiers must continue honoring formation, escort, and Hybrid-command authority.
 - Manual, Hybrid-support, and Simulation-AI playback must show the same authoritative kneeling state in 2D Hex, 3D Iso, FPV, TPV, reaction cameras, shot results, saves, and resumed tactical state. The AI may choose the stance, but it may not receive hidden LOS/target knowledge or different accuracy/defense rules from the player.
-- Add deterministic Build Health coverage for kneel-and-fire utility scoring, stationary covered repeat fire, no duplicate stance cost, stance persistence, movement auto-stand, escort/objective overrides, close-threat rejection, TU/ammunition legality, formation preservation, and unchanged save format.
+- Add deterministic Build Health coverage for kneel-and-fire utility scoring, stationary covered repeat fire, no duplicate stance cost, stance persistence, explicit stand-before-movement legality, escort/objective overrides, close-threat rejection, TU/ammunition legality, formation preservation, and unchanged save format.
 
 ### Future tactical stance exploration — Prone
 
