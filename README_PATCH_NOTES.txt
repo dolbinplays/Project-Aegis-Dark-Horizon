@@ -1,3 +1,25 @@
+BUILD: v0.26.09.01.0958_VIEWPORT_BOUNDED_SCROLLABLE_OBJECTIVE_ASSIGNMENT_PATCH
+TITLE: Viewport-Bounded Scrollable Objective Assignment
+DATE: September 1, 2026
+
+Summary
+- Keeps the Assign Objectives command board entirely inside the visible browser window and makes long two-Skyranger fire-team rosters scroll internally.
+
+Key changes
+- Replaces the ineffective `max-h-[92vh]` Tailwind token, which was not present in the embedded precompiled stylesheet, with an explicit dynamic-viewport maximum that works in the packaged offline build.
+- Known mission objectives and every fire-team assignment row now occupy a dedicated internal scroll region with contained mouse-wheel and touchpad scrolling.
+- The title and explanation remain above the scrolling content. Use Default Logic for All, Cancel, and Apply Objective Assignments remain below it and reachable regardless of roster length.
+- Compact viewport padding and the existing responsive stacked assignment rows support shorter displays, browser zoom, and Windows display scaling without requiring the player to zoom out.
+- The board remains portaled above 2D Hex, 3D Iso, FPV, and TPV tactical presentation. Its backdrop continues to block interaction with the battlefield.
+- The dialog receives keyboard focus when opened, restores the previously focused control when closed, and lets Escape invoke the existing transactional Cancel behavior.
+- Objective ownership, Default AI Doctrine, follow/assist relationships, tactical AI, saves, and save format 4 are unchanged. `assets/` is unchanged.
+
+Validation
+- Deterministic Build Health covers the shipped viewport bound, internal scroll ownership, persistent action controls, responsive layout, keyboard cancellation/focus restoration, portal layering, two-Skyranger roster scale, and unchanged save format.
+- Deterministic packaging, embedded JavaScript syntax, manifest parsing, payload/source identity, and static release seams pass.
+
+---
+
 BUILD: v0.26.09.01.0058_TACTICAL_MISSION_DEFAULT_PRESENTATION_PATCH
 TITLE: Tactical Mission Default Presentation
 DATE: September 1, 2026

@@ -1,12 +1,26 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.01.0058_TACTICAL_MISSION_DEFAULT_PRESENTATION_PATCH`
+Current browser build: `v0.26.09.01.0958_VIEWPORT_BOUNDED_SCROLLABLE_OBJECTIVE_ASSIGNMENT_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 0058: Tactical Mission Default Presentation
+## Current Build Addendum — Browser 0958: Viewport-Bounded Scrollable Objective Assignment
+
+### Current Build Delta
+- The **Assign Objectives** board is now explicitly bounded to the visible dynamic viewport, including the larger fire-team roster produced by two-Skyranger deployments. Players no longer need to reduce browser zoom to reach its lower controls.
+- The prior `max-h-[92vh]` class was absent from the embedded precompiled Tailwind stylesheet and therefore supplied no shipped height constraint. Browser 0958 replaces it with an inline dynamic-viewport maximum that survives deterministic offline packaging.
+- Known-objective cards and fire-team assignment rows share one dedicated internal scroll region with contained wheel and touchpad behavior. The title/explanation and the complete action footer remain outside that region.
+- **Use Default Logic for All**, **Cancel**, and **Apply Objective Assignments** remain visible and reachable at every roster length. Direct ownership, Default AI Doctrine, and follow/assist draft semantics are unchanged.
+- Compact padding and the existing responsive row layout support short laptop-height viewports, browser zoom, and display scaling without horizontal clipping.
+- The dialog remains portaled above 2D Hex, 3D Iso, FPV, and TPV presentation, receives focus when opened, restores prior focus when closed, and maps Escape to the existing transactional Cancel path.
+- Objective knowledge, assignment authority, AI planning, movement, TU, LOS, fog, formations, escort behavior, objectives, saves, assets, and campaign outcomes are unchanged. Save format remains **4**.
+- Deterministic coverage checks the shipped viewport constraint, internal scroll boundary, persistent action footer, responsive layout, two-Skyranger roster scale, focus/keyboard behavior, portal ownership, and unchanged save format.
+
+---
+
+## Historical Build Addendum — Browser 0058: Tactical Mission Default Presentation
 
 ### Current Build Delta
 - Fresh tactical missions now begin in the persistent **3D Iso** view at **Full** zoom with **Battle Speed 100%**.
@@ -1060,7 +1074,7 @@ The deterministic contract covers spoiler-free pre-observation language, attack 
 
 ## Roadmap Addition - Viewport-Bounded, Scrollable Objective Assignment
 
-**Status:** Approved future Tactical UI / fire-team command update.
+**Status:** Implemented in Browser 0958.
 
 - Keep the **Assign Objectives** window entirely within the visible browser viewport, including missions deploying two Skyrangers and the resulting larger fire-team roster. The player must never need to reduce browser zoom merely to reach the bottom of the window.
 - Give the modal a viewport-aware maximum height with safe margins above and below it. Its fire-team/objective assignment content should scroll inside the window whenever the roster, known-objective list, display scaling, or available screen height would otherwise push content off-screen.
@@ -1070,6 +1084,7 @@ The deterministic contract covers spoiler-free pre-observation language, attack 
 - Keep the tactical scene inert behind the modal and retain the corrected portal/layering behavior so the assignment screen remains above the mission map in 2D Hex, 3D Iso, FPV, and TPV presentation states.
 - Preserve keyboard focus within the dialog, allow mouse-wheel/touchpad scrolling over its assignment body, and restore focus to the control that opened it after Apply or Cancel.
 - Add deterministic UI/Build Health coverage for one- and two-Skyranger deployments, maximum practical fire-team and objective counts, direct/default/assist choices at the top and bottom of the scroll region, Apply and Cancel reachability, short laptop-height viewports, increased display scaling, and no tactical or save-format changes.
+- Browser 0958 implements the viewport-bound modal, internal roster/objective scrolling, persistent action controls, responsive compact spacing, portal preservation, focus restoration, and Escape-to-Cancel behavior without changing save format **4**.
 
 
 ## Roadmap Addition - Fire-Team Reassignment After Objective Loss
