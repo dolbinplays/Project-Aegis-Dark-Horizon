@@ -1,3 +1,26 @@
+BUILD: v0.26.09.01.1111_RAMP_CONTACT_NONCLIPPING_CIVILIAN_BOARDING_PATCH
+TITLE: Ramp-Contact Nonclipping Civilian Boarding
+DATE: September 1, 2026
+
+Summary
+- Ends long-running Skyranger evacuation deadlocks by making exterior ramp contact the soldier-owned extraction handoff and giving escorted civilians/VIPs a sequenced, presentation-only walk into the craft.
+
+Key changes
+- The first exterior cell of the correct Skyranger ramp is now the terminal extraction target for escort soldiers. Manual and AI pathing treat the remaining narrow ramp/troop-bay cells as unavailable to soldiers.
+- Boarding begins only after the escort soldier's rendered model reaches the exact ramp-contact cell. An adjacent soldier cannot trigger an early extraction.
+- Every civilian/VIP currently escorted by that soldier receives a deterministic approach and ramp trail through that same craft. The escort remains outside rather than entering the troop bay.
+- Boarding civilians temporarily ignore living-unit occupancy for their presentation trail, preventing other evacuees, soldiers, or ramp traffic from blocking the animation.
+- Multiple evacuees board in stable escort order. Simulation playback waits for the escort movement to finish, then plays each civilian/VIP walk separately.
+- A civilian/VIP remains visible and unextracted during playback and disappears only after reaching the final interior boarding point.
+- Active legacy tactical states that contain a living soldier inside an interior ramp cell relocate that soldier to the nearest legal battlefield cell during integrity repair.
+- Interior ramp movement blocking is independent of LOS and cover authority. Rescue scoring, mission objectives, TU, fog, two-Skyranger selection, saves, and save format 4 are unchanged. `assets/` is unchanged.
+
+Validation
+- Deterministic Build Health covers exact contact gating, exterior-only soldier routes, hard-blocked troop-bay movement, nonblocking civilian trails, sequential multi-VIP playback, two-Skyranger craft ownership, loaded-state repair, Manual/Simulation parity, and unchanged save format.
+- Deterministic packaging, embedded JavaScript syntax, manifest parsing, payload/source identity, and static release seams pass.
+
+---
+
 BUILD: v0.26.09.01.0958_VIEWPORT_BOUNDED_SCROLLABLE_OBJECTIVE_ASSIGNMENT_PATCH
 TITLE: Viewport-Bounded Scrollable Objective Assignment
 DATE: September 1, 2026

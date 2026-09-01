@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.09.01.0958_VIEWPORT_BOUNDED_SCROLLABLE_OBJECTIVE_ASSIGNMENT_PATCH",
+  "currentBuild": "v0.26.09.01.1111_RAMP_CONTACT_NONCLIPPING_CIVILIAN_BOARDING_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "viewport-bounded-scrollable-objective-assignment-complete",
+  "status": "ramp-contact-nonclipping-civilian-boarding-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.09.01.0958_VIEWPORT_BOUNDED_SCROLLABLE_OBJECTIVE_ASSIGNMENT_PATCH",
+  "lastInspectedBuild": "v0.26.09.01.1111_RAMP_CONTACT_NONCLIPPING_CIVILIAN_BOARDING_PATCH",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -47,7 +47,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.09.01.0958_VIEWPORT_BOUNDED_SCROLLABLE_OBJECTIVE_ASSIGNMENT_PATCH",
+    "browserBuild": "v0.26.09.01.1111_RAMP_CONTACT_NONCLIPPING_CIVILIAN_BOARDING_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [

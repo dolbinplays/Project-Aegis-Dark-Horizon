@@ -1,12 +1,27 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.01.0958_VIEWPORT_BOUNDED_SCROLLABLE_OBJECTIVE_ASSIGNMENT_PATCH`
+Current browser build: `v0.26.09.01.1111_RAMP_CONTACT_NONCLIPPING_CIVILIAN_BOARDING_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 0958: Viewport-Bounded Scrollable Objective Assignment
+## Current Build Addendum — Browser 1111: Ramp-Contact Nonclipping Civilian Boarding
+
+### Current Build Delta
+- A soldier escort now owns evacuation only through the **exterior ramp contact cell**. Reaching that exact cell starts the civilian/VIP handoff; merely standing adjacent does not.
+- AI and manual soldier paths terminate at the ramp contact. The remaining narrow ramp and troop-bay aisle cells are movement-blocked for soldiers, removing the route that could trap an escort behind evacuees.
+- Every living civilian/VIP currently escorted by that soldier receives a deterministic approach-and-boarding trail through the same Skyranger. The escort remains on the exterior contact while the evacuees continue inside.
+- The civilian/VIP boarding phase is deliberately nonclipping for presentation. Living-unit occupancy cannot block its approach/ramp trail, while ordinary terrain and building obstacles remain respected before the ramp.
+- Multiple evacuees board one at a time in stable escort order. Simulation playback first completes the escort's visible movement to the ramp, then plays each evacuee's walking animation.
+- A boarding civilian/VIP remains rendered until their individual trail reaches the final interior cell. Only then does the rescued/extracted state remove the model.
+- Two-Skyranger deployments select the craft whose ramp the escort actually touches. Loaded legacy states that placed a living soldier in the troop-bay aisle relocate the soldier to a legal exterior cell.
+- The added interior movement prohibition does not turn the ramp into LOS or cover geometry. TU, fog, knowledge, rescue totals, mission resolution, formation support, saves, assets, and save format **4** remain unchanged.
+- Deterministic coverage verifies exact contact timing, exterior-only soldier paths, nonblocking civilian movement, stable multi-VIP sequencing, visual persistence through the final step, two-craft ownership, integrity repair, Manual/Simulation parity, and save compatibility.
+
+---
+
+## Historical Build Addendum — Browser 0958: Viewport-Bounded Scrollable Objective Assignment
 
 ### Current Build Delta
 - The **Assign Objectives** board is now explicitly bounded to the visible dynamic viewport, including the larger fire-team roster produced by two-Skyranger deployments. Players no longer need to reduce browser zoom to reach its lower controls.
