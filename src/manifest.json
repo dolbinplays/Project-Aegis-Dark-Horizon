@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.31.2203_POST_MISSION_RESUME_SINGLE_CHECKPOINT_CONSUMER_HOTFIX",
+  "currentBuild": "v0.26.08.31.2307_POST_MISSION_RECOVERY_OUTCOME_ANNOUNCEMENT_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "post-mission-resume-single-checkpoint-consumer-hotfix-complete",
+  "status": "post-mission-recovery-outcome-announcement-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.31.2203_POST_MISSION_RESUME_SINGLE_CHECKPOINT_CONSUMER_HOTFIX",
+  "lastInspectedBuild": "v0.26.08.31.2307_POST_MISSION_RECOVERY_OUTCOME_ANNOUNCEMENT_PATCH",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -47,7 +47,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.31.2203_POST_MISSION_RESUME_SINGLE_CHECKPOINT_CONSUMER_HOTFIX",
+    "browserBuild": "v0.26.08.31.2307_POST_MISSION_RECOVERY_OUTCOME_ANNOUNCEMENT_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -208,6 +208,7 @@
       "bounded-tactical-range-accuracy",
       "immutable-browser-build-metadata-and-patch-history",
       "post-mission-runtime-reboot-release-integration",
+      "post-mission-recovery-outcome-announcement",
       "articulated-segment-facing-and-forward-walk",
       "alien-vip-information-search-and-shared-memory",
       "segmented-organic-terrain-color-transitions",
@@ -569,6 +570,10 @@
       {
         "system": "post-mission-runtime-reboot-release-integration",
         "reason": "The browser now packages its complete game in a disposable same-origin runtime and restores a verified post-mission autosave after replacing that runtime. Native Godot owns an engine-native scene and resource lifecycle and should apply the lifecycle boundary principle rather than porting the browser iframe host."
+      },
+      {
+        "system": "post-mission-recovery-outcome-announcement",
+        "reason": "The browser now authenticates and plays one recorded mission-success or mission-failure command announcement after a verified disposable-runtime report restore. Native Godot requires the equivalent engine-native debrief lifecycle and voice-queue boundary."
       },
       {
         "system": "articulated-segment-facing-and-forward-walk",

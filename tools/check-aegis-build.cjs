@@ -93,6 +93,11 @@ const required = [
   "POST_MISSION_RUNTIME_REBOOT_AND_AUDIO_CONTINUITY_PATCH",
   "POST_MISSION_RUNTIME_REBOOT_RELEASE_INTEGRATION_PATCH",
   "POST_MISSION_RUNTIME_RESUME_SINGLE_CHECKPOINT_CONSUMER_HOTFIX",
+  "POST_MISSION_RECOVERY_OUTCOME_ANNOUNCEMENT_PATCH",
+  "postMissionRecoveryOutcomeEvent",
+  "postMissionRecoveryReportMatchesToken",
+  "Post-recovery outcome selection is bound to the exact report and checkpoint",
+  "Post-recovery result dialogue waits for accepted host acknowledgement and consumes its token once",
   "writePostMissionRuntimeRebootCheckpoint",
   "runtimeResumeId:checkpointId",
   "postMissionRuntimeResumePendingRef.current=token",
@@ -923,6 +928,10 @@ for (const hostContract of [
   "Retry Verified Autosave",
   "Continue to Start Screen",
   "token.checkpointId!==payload.checkpointId",
+  "typeof token.success==='boolean'",
+  "token.success!==(payload.success===true)",
+  "info.success!==lastVerifiedToken.success",
+  "return true;",
 ]) {
   if (!packagedHtml.includes(hostContract)) missing.push(`persistent runtime host contract missing: ${hostContract}`);
 }

@@ -1,12 +1,26 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.31.2203_POST_MISSION_RESUME_SINGLE_CHECKPOINT_CONSUMER_HOTFIX`
+Current browser build: `v0.26.08.31.2307_POST_MISSION_RECOVERY_OUTCOME_ANNOUNCEMENT_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 2203: Post-Mission Resume Single Checkpoint Consumer Hotfix
+## Current Build Addendum — Browser 2307: Post-Mission Recovery Outcome Announcement
+
+### Current Build Delta
+- After the memory-management runtime replacement restores the exact After Action Report, the game now plays the existing recorded **Mission successful** or **Mission failed** command line for the authoritative result.
+- Success/failure is carried by the same build-, autosave-slot-, report-, and checkpoint-bound resume token. The persistent host verifies the outcome during the reboot request and again when the replacement runtime acknowledges completion.
+- The replacement runtime also verifies that the restored report's outcome matches the token. A mismatched checkpoint/report/outcome enters genuine recovery handling and cannot play either line.
+- Dialogue waits for the Reports screen and exact report to commit, followed by two presentation frames and explicit host acceptance. It uses the existing ordered computer-dialogue queue, dedicated voice bus, Voices setting, voice volume, and music duck/restore ownership.
+- The resume token is consumed before the accepted-host dialogue gate. React remounts, reopening Reports, navigation, and already-consumed checkpoints cannot replay it; a genuine retry announces only after later verified acceptance.
+- This command-level debrief announcement remains separate from the battlefield **That's the last of them** cue. Recovery failure and **Continue to Start Screen** paths remain silent.
+- Campaign outcomes, rewards, casualties, panic, recovered equipment, report content, runtime disposal, memory reduction, audio assets, and tactical authority are unchanged. Save format remains **4**.
+- Deterministic coverage checks both event mappings, exact report/outcome binding, accepted-host timing, token consumption, retry/failure silence boundaries, dialogue ownership, and tactical all-clear separation.
+
+---
+
+## Historical Build Addendum — Browser 2203: Post-Mission Resume Single Checkpoint Consumer Hotfix
 
 ### Current Build Delta
 - The false **Recovery Check Required** loop after a successful post-mission memory reset is fixed. The correct After Action Report was already being restored, but an obsolete earlier resume effect consumed the token and acknowledged success without the required checkpoint identity.
@@ -61,22 +75,6 @@ Authoritative playable artifact: `index.html`
 - Run at least six completed missions in one browser session and record browser-process memory immediately before mission completion, at the debrief transition, and after the replacement runtime restores Reports.
 - Confirm every completed mission returns to the exact report, music remains continuous when enabled, no retired tactical canvas remains reachable through diagnostics, and later missions retain Browser 1921/2005/2102 behavior.
 - Chromium may retain process or GPU allocations after JavaScript objects become unreachable; success is measured by bounded repeated-mission growth and restored tactical performance, not by requiring Task Manager to return exactly to launch memory.
-
-## Roadmap Addition - Outcome Announcement After Post-Mission Memory Recovery
-
-**Status:** Approved future audio/lifecycle integration update.
-
-- When the post-mission memory-management cycle successfully completes and the verified After Action Report is restored, play the appropriate recorded command announcement: **Mission successful** for a successful result or **Mission failed** for a failed result.
-- Carry the authoritative success/failure outcome with the same build-, autosave-, report-, and checkpoint-bound resume record used by the disposable-runtime handoff. Do not infer the outcome from button colors, report title text, stale tactical state, reward amounts, or the previously retired iframe.
-- Queue the announcement only after the replacement runtime has committed the Reports screen and exact selected mission report and the host has accepted the matching checkpoint. It must not play while the old tactical runtime is being destroyed, during the loading screen, or before recovery validation succeeds.
-- Play the announcement exactly once per completed mission/recovery event. Runtime retries, React remounts, duplicate presentation frames, reopening the report, navigating away and back, or reloading an already-consumed checkpoint must not repeat it.
-- Keep this command-level result message separate from tactical all-clear dialogue such as **That's the last of them**. A final-kill callout may occur on the battlefield, while the success/failure announcement belongs to the completed return-to-base/debrief boundary.
-- Use the existing recorded-dialogue queue and dedicated voice bus. Respect Voices On/Off, voice volume, current music ducking, report-theme audio continuity, and accessibility preferences; do not create a second audio element or bypass the established dialogue ownership/cooldown system.
-- If verified recovery genuinely fails, do not play either outcome message merely because the recovery panel appeared. Play it only after a later retry successfully restores the bound report. Continuing to a fresh start screen without verified report recovery must not announce an unverified outcome.
-- The announcement is presentation-only. It cannot change mission success, rewards, casualties, panic, research, recovered equipment, report contents, save state, or memory cleanup. Save format should remain **4**.
-- Add deterministic Build Health coverage for success and failure selection, checkpoint/report binding, post-commit timing, exactly-once event identity, retry deduplication, voice-disabled behavior, music duck/restore ownership, no collision with tactical all-clear dialogue, recovery-failure silence, and unchanged campaign authority.
-
----
 
 ## Historical Build Addendum — Browser 2102: Smooth Articulated Hex-to-Hex Locomotion
 

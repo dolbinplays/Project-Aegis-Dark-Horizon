@@ -1,3 +1,26 @@
+BUILD: v0.26.08.31.2307_POST_MISSION_RECOVERY_OUTCOME_ANNOUNCEMENT_PATCH
+TITLE: Post-Mission Recovery Outcome Announcement
+DATE: August 31, 2026
+
+Summary
+- Plays the appropriate recorded Mission successful or Mission failed command line after the memory-management reboot has restored and authenticated the exact After Action Report.
+
+Key changes
+- The resume token's authoritative success boolean now remains bound to the build, autosave slot, report ID, and checkpoint ID through the reboot request and the host's completion acknowledgement.
+- The replacement runtime verifies that the restored report has the same success/failure outcome as the checkpoint before applying it. A mismatch enters recovery handling and remains silent.
+- Dialogue is queued only after React commits the Reports screen, selects the exact report, completes two presentation frames, and receives an explicit acceptance from the persistent host.
+- Successful mission reports queue `mission_successful`; failed reports queue `mission_failed` through the existing computer-dialogue queue, dedicated voice bus, Voices setting, and established music duck/restore path.
+- The resume token is consumed before the accepted-host dialogue gate. Remounts, report reopening, and already-consumed checkpoints cannot repeat the line; a genuine retry can announce only after later verified acceptance.
+- The result line remains separate from the tactical `thats_the_last_of_them` cue. Recovery failure and Continue to Start Screen paths do not announce an unverified outcome.
+- Campaign outcomes, rewards, casualties, panic, recovered equipment, report contents, memory disposal, audio assets, and save format 4 are unchanged.
+
+Validation
+- Deterministic Build Health covers success/failure event selection, report/outcome binding, accepted-host timing, token consumption, and separation from the tactical all-clear cue.
+- The release checker requires outcome-bearing tokens and exact outcome agreement at both host handshakes.
+- Deterministic packaging, embedded JavaScript syntax, manifest parsing, payload/source identity, and static release seams pass.
+
+---
+
 BUILD: v0.26.08.31.2203_POST_MISSION_RESUME_SINGLE_CHECKPOINT_CONSUMER_HOTFIX
 TITLE: Post-Mission Resume Single Checkpoint Consumer Hotfix
 DATE: August 31, 2026
