@@ -1033,6 +1033,23 @@ The deterministic contract covers spoiler-free pre-observation language, attack 
 - Browser 1101 implements the Cancel button as a transactional discard: draft choices are rebuilt from untouched live assignments, the modal closes without any AI replan or command handoff, and Apply remains the only mutation path.
 
 
+## Roadmap Addition - Fire-Team Reassignment After Objective Loss
+
+**Status:** Approved future Tactical AI / mission-command update.
+
+- When a fire team permanently loses its assigned objective, present the player with the existing **Assign Objectives** window so the affected team can be redirected deliberately instead of silently falling back to an unclear behavior. Examples include aliens killing its assigned VIP, another team extracting that VIP, another actor destroying or disabling its assigned beacon, or an objective becoming authoritatively resolved or impossible.
+- Trigger only from an authoritative objective-state transition. Temporary loss of LOS, an alien-contact interruption, a Civilian Escort Support decision, a short-lived path obstruction, a temporarily unreachable door, or ordinary movement replanning must not repeatedly reopen the assignment window.
+- Finish the action that caused the loss—including any VIP death or destruction cinematic—then pause Manual, Hybrid, or Simulation playback at the next safe command boundary before opening the window. Do not roll back damage, TU, movement, casualties, fog knowledge, or the causal action.
+- Highlight every affected fire team and identify why its former assignment ended, such as **VIP killed**, **VIP extracted**, **Beacon destroyed**, or **Objective no longer available**. Remove the invalid goal from selectable active objectives while retaining it as a concise resolved/lost explanation for that prompt.
+- Preserve every unaffected direct assignment, Default AI Doctrine choice, and follow/assist relationship in the transactional draft. If a primary team's objective is lost, include that primary and all teams assigned to follow/assist it in the same prompt so the player can redirect the combined force together or separate it.
+- The affected team may receive any currently known valid objective, follow and assist another valid objective-owning team, or return to **Default AI Doctrine**. The board must not reveal hidden aliens, undiscovered civilians, unknown beacons, unseen UFO bays, or any other objective AEGIS has not legitimately identified.
+- Because the old objective is already invalid, **Cancel** restores all unaffected assignments exactly but leaves affected teams on Default AI Doctrine; it must never resurrect a dead VIP or stale objective reference. **Apply Objective Assignments** remains the only way to commit a new direct or assist assignment.
+- Deduplicate by objective identity and invalidation event. Several objectives lost before the next safe command boundary should produce one combined assignment window, and dismissing or applying it must prevent the same loss from prompting again when units, cameras, visibility, or streamed AI frames refresh.
+- If the objective loss immediately creates a terminal mission result—for example, the death of a mandatory high-value principal whose survival is the mission's absolute success condition—mission failure/victory presentation takes priority and no assignment window should obstruct the result.
+- Persist the handled-invalidation state through active tactical saves, streamed Simulation continuation, runtime reboot/recovery, and control handoffs without changing save format **4** unless implementation discovers a genuinely necessary schema change.
+- Add deterministic Build Health coverage for VIP death, extraction by another team, beacon/objective resolution, primary-plus-assist reassignment, combined simultaneous losses, Default/Apply/Cancel behavior, single-event deduplication, hidden-objective exclusion, safe playback pause, terminal mission precedence, save/reload, and unchanged movement, TU, LOS, fog, damage, escort, formation, and mission-result authority.
+
+
 ## Roadmap Addition - Orange Laser Carbine Equipment Identity
 
 **Status:** Implemented in Browser 1422.
