@@ -1,12 +1,25 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.31.2307_POST_MISSION_RECOVERY_OUTCOME_ANNOUNCEMENT_PATCH`
+Current browser build: `v0.26.09.01.0058_TACTICAL_MISSION_DEFAULT_PRESENTATION_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 2307: Post-Mission Recovery Outcome Announcement
+## Current Build Addendum — Browser 0058: Tactical Mission Default Presentation
+
+### Current Build Delta
+- Fresh tactical missions now begin in the persistent **3D Iso** view at **Full** zoom with **Battle Speed 100%**.
+- Simulation AI's independent watch-zoom fallback is also **Full**, so handing a fresh battle to AI command does not unexpectedly switch the battlefield to Wide.
+- The defaults are presentation-only fallbacks. The existing controls still allow 2D Hex, all zoom levels, FPV, TPV, and Battle Speed from 10% through 150% at any time.
+- Active tactical missions restored from live cache or save data retain their stored view, ordinary zoom, AI watch zoom, and Battle Speed. Loading an ongoing fight cannot reset the player's choices to the new defaults.
+- Invalid loaded presentation values are clamped to supported ranges without affecting tactical state.
+- Movement, occupancy, TU, pathfinding, LOS, fog, cover, accuracy, reactions, AI behavior, objectives, outcomes, campaign data, and assets are unchanged. Save format remains **4**.
+- Deterministic coverage verifies fresh defaults, saved-state precedence, bounded invalid data, Simulation AI handoff zoom, and unchanged authority.
+
+---
+
+## Historical Build Addendum — Browser 2307: Post-Mission Recovery Outcome Announcement
 
 ### Current Build Delta
 - After the memory-management runtime replacement restores the exact After Action Report, the game now plays the existing recorded **Mission successful** or **Mission failed** command line for the authoritative result.

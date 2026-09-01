@@ -1,3 +1,25 @@
+BUILD: v0.26.09.01.0058_TACTICAL_MISSION_DEFAULT_PRESENTATION_PATCH
+TITLE: Tactical Mission Default Presentation
+DATE: September 1, 2026
+
+Summary
+- Starts fresh tactical missions in 3D Iso at Full zoom with Battle Speed set to 100%, without overwriting the choices stored by an active saved battle.
+
+Key changes
+- New manual tactical deployments open directly in the persistent 3D Iso view rather than 2D Hex.
+- The ordinary mission zoom now starts at Full.
+- Simulation AI's separate watch-zoom selection also starts at Full, so activating AI command does not immediately replace the requested default with Wide.
+- Battle Speed starts at 100% instead of 50%. This changes presentation timing only; TU, AI decisions, reactions, accuracy, damage, and tactical results are unchanged.
+- Players may still select 2D Hex, any zoom level, FPV, TPV, or Battle Speed from 10% through 150% after deployment.
+- Cached and saved active missions keep their stored view, zoom, AI watch zoom, and Battle Speed. The new values are fallbacks only for fresh mission presentation.
+- Invalid loaded presentation values are bounded safely. Campaign save format remains 4 and `assets/` is unchanged.
+
+Validation
+- Deterministic Build Health covers all three fresh defaults, Simulation AI's watch zoom, saved-state precedence, invalid-value bounds, and unchanged save format.
+- Deterministic packaging, embedded JavaScript syntax, manifest parsing, payload/source identity, and static release seams pass.
+
+---
+
 BUILD: v0.26.08.31.2307_POST_MISSION_RECOVERY_OUTCOME_ANNOUNCEMENT_PATCH
 TITLE: Post-Mission Recovery Outcome Announcement
 DATE: August 31, 2026

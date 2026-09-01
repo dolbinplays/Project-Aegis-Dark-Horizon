@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.08.31.2307_POST_MISSION_RECOVERY_OUTCOME_ANNOUNCEMENT_PATCH",
+  "currentBuild": "v0.26.09.01.0058_TACTICAL_MISSION_DEFAULT_PRESENTATION_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "post-mission-recovery-outcome-announcement-complete",
+  "status": "tactical-mission-default-presentation-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.08.31.2307_POST_MISSION_RECOVERY_OUTCOME_ANNOUNCEMENT_PATCH",
+  "lastInspectedBuild": "v0.26.09.01.0058_TACTICAL_MISSION_DEFAULT_PRESENTATION_PATCH",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -47,7 +47,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.08.31.2307_POST_MISSION_RECOVERY_OUTCOME_ANNOUNCEMENT_PATCH",
+    "browserBuild": "v0.26.09.01.0058_TACTICAL_MISSION_DEFAULT_PRESENTATION_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -209,6 +209,7 @@
       "immutable-browser-build-metadata-and-patch-history",
       "post-mission-runtime-reboot-release-integration",
       "post-mission-recovery-outcome-announcement",
+      "tactical-mission-default-presentation",
       "articulated-segment-facing-and-forward-walk",
       "alien-vip-information-search-and-shared-memory",
       "segmented-organic-terrain-color-transitions",
@@ -574,6 +575,10 @@
       {
         "system": "post-mission-recovery-outcome-announcement",
         "reason": "The browser now authenticates and plays one recorded mission-success or mission-failure command announcement after a verified disposable-runtime report restore. Native Godot requires the equivalent engine-native debrief lifecycle and voice-queue boundary."
+      },
+      {
+        "system": "tactical-mission-default-presentation",
+        "reason": "Fresh browser tactical missions now default to 3D Iso, Full zoom, and 100% playback speed while restored battles retain their saved choices. Native Godot requires equivalent engine-native initial camera and playback preferences."
       },
       {
         "system": "articulated-segment-facing-and-forward-walk",
