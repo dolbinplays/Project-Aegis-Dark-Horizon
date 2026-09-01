@@ -92,6 +92,7 @@ const required = [
   `const CURRENT_GAME_VERSION=currentGameVersionFromBuild()`,
   "POST_MISSION_RUNTIME_REBOOT_AND_AUDIO_CONTINUITY_PATCH",
   "POST_MISSION_RUNTIME_REBOOT_RELEASE_INTEGRATION_PATCH",
+  "POST_MISSION_RUNTIME_RESUME_SINGLE_CHECKPOINT_CONSUMER_HOTFIX",
   "writePostMissionRuntimeRebootCheckpoint",
   "runtimeResumeId:checkpointId",
   "postMissionRuntimeResumePendingRef.current=token",
@@ -891,6 +892,14 @@ const required = [
 ];
 
 const missing = required.filter((needle) => !html.includes(needle));
+const postMissionResumeConsumerNeedle = 'useEffect(()=>{if(postMissionRuntimeResumeAttemptedRef.current)return;postMissionRuntimeResumeAttemptedRef.current=true;if(typeof sessionStorage==="undefined")return;';
+const postMissionResumeConsumerCount = runtimeSource.split(postMissionResumeConsumerNeedle).length - 1;
+if (postMissionResumeConsumerCount !== 1) {
+  missing.push(`post-mission runtime must have exactly one resume-token consumer; found ${postMissionResumeConsumerCount}`);
+}
+if (runtimeSource.includes('window.setTimeout(()=>aegisNotifyHostRuntimeResumeComplete({reportId:token.reportId,autosaveSlot:token.autosaveSlot,missionKind:token.missionKind||"Operation"}),120)')) {
+  missing.push("obsolete post-mission early acknowledgement without checkpoint identity must remain removed");
+}
 if (!runtimePayloadMatch) {
   missing.push("index.html must contain the packaged disposable browser runtime payload");
 } else if (packagedRuntime !== runtimeSource) {

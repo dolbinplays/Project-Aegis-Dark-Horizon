@@ -21,6 +21,7 @@ const requiredLineageMarkers = [
   "TACTICAL_ALIEN_VIP_INFORMATION_SEARCH_AND_SHARED_MEMORY_PATCH",
   "POST_MISSION_RUNTIME_REBOOT_AND_AUDIO_CONTINUITY_PATCH",
   "POST_MISSION_RUNTIME_REBOOT_RELEASE_INTEGRATION_PATCH",
+  "POST_MISSION_RUNTIME_RESUME_SINGLE_CHECKPOINT_CONSUMER_HOTFIX",
 ];
 const missingLineage = requiredLineageMarkers.filter((marker) => !source.includes(marker));
 if (missingLineage.length) {

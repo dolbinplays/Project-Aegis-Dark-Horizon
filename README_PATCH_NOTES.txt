@@ -1,3 +1,25 @@
+BUILD: v0.26.08.31.2203_POST_MISSION_RESUME_SINGLE_CHECKPOINT_CONSUMER_HOTFIX
+TITLE: Post-Mission Resume Single Checkpoint Consumer Hotfix
+DATE: August 31, 2026
+
+Summary
+- Fixes the false Recovery Check Required loop that appeared after a successful memory-releasing runtime reboot and correct After Action Report restore.
+
+Key changes
+- Removes an obsolete earlier resume effect that consumed the verified token before the newer checkpoint-aware restore path could process it.
+- The retired effect restored the correct report but acknowledged success without `checkpointId`, causing the persistent host to correctly reject the incomplete acknowledgement as a different checkpoint.
+- The replacement runtime now has exactly one resume-token consumer. It verifies build, autosave slot, report, and checkpoint identity before applying campaign data.
+- Success remains deferred until React has committed the Reports screen and selected mission report, followed by two presentation frames.
+- Genuine restore failures still retain Retry Verified Autosave and Continue to Start Screen recovery controls. Successful restores now dismiss the transition automatically.
+- Runtime disposal, memory release, campaign aftermath, report selection, music continuity, tactical outcomes, and save contents are unchanged. Save format remains 4 and `assets/` is unchanged.
+
+Validation
+- Source inspection confirms one `postMissionRuntimeResumeAttemptedRef` consumer, one checkpoint-bearing completion acknowledgement, and no legacy 120 ms early acknowledgement.
+- A new deterministic Build Health contract protects the single checkpoint-aware consumer boundary.
+- Deterministic packaging, embedded JavaScript syntax, manifest parsing, payload/source identity, and static release-seam validation pass.
+
+---
+
 BUILD: v0.26.08.31.1857_ALIEN_VIP_INFORMATION_SEARCH_AND_SHARED_MEMORY_PATCH
 TITLE: Alien VIP Information Search + Shared Memory
 DATE: August 31, 2026

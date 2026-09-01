@@ -1,12 +1,24 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.31.1857_ALIEN_VIP_INFORMATION_SEARCH_AND_SHARED_MEMORY_PATCH`
+Current browser build: `v0.26.08.31.2203_POST_MISSION_RESUME_SINGLE_CHECKPOINT_CONSUMER_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 1857: Alien VIP Information Search + Shared Memory
+## Current Build Addendum — Browser 2203: Post-Mission Resume Single Checkpoint Consumer Hotfix
+
+### Current Build Delta
+- The false **Recovery Check Required** loop after a successful post-mission memory reset is fixed. The correct After Action Report was already being restored, but an obsolete earlier resume effect consumed the token and acknowledged success without the required checkpoint identity.
+- The replacement runtime now has one authoritative resume-token consumer. It validates the current build, autosave slot, report ID, and checkpoint ID before restoring the campaign.
+- The obsolete 120 ms early acknowledgement is removed. Success continues to wait for the Reports screen and selected mission report to commit, followed by two presentation frames, before the persistent host closes the transition.
+- Genuine recovery failures still expose **Retry Verified Autosave** and **Continue to Start Screen**. A successful verified restore no longer requires either button.
+- Runtime disposal and its observed memory reduction remain intact. Campaign aftermath, report content, tactical outcomes, audio continuity, save data, and assets are unchanged. Save format remains **4**.
+- Deterministic coverage requires exactly one checkpoint-aware token consumer and forbids the retired early acknowledgement signature. Packaging, embedded JavaScript syntax, manifest parsing, payload/source identity, and static release seams pass.
+
+---
+
+## Historical Build Addendum — Browser 1857: Alien VIP Information Search + Shared Memory
 
 ### Current Build Delta
 - Alien VIP targeting is now explicitly information-limited. An alien may acquire a tracked VIP only through personal LOS, an eligible nearby ally's current or retained report, a bounded approximate disturbance clue, or mission-authored prior intelligence.
