@@ -62,6 +62,20 @@ Authoritative playable artifact: `index.html`
 - Confirm every completed mission returns to the exact report, music remains continuous when enabled, no retired tactical canvas remains reachable through diagnostics, and later missions retain Browser 1921/2005/2102 behavior.
 - Chromium may retain process or GPU allocations after JavaScript objects become unreachable; success is measured by bounded repeated-mission growth and restored tactical performance, not by requiring Task Manager to return exactly to launch memory.
 
+## Roadmap Addition - Outcome Announcement After Post-Mission Memory Recovery
+
+**Status:** Approved future audio/lifecycle integration update.
+
+- When the post-mission memory-management cycle successfully completes and the verified After Action Report is restored, play the appropriate recorded command announcement: **Mission successful** for a successful result or **Mission failed** for a failed result.
+- Carry the authoritative success/failure outcome with the same build-, autosave-, report-, and checkpoint-bound resume record used by the disposable-runtime handoff. Do not infer the outcome from button colors, report title text, stale tactical state, reward amounts, or the previously retired iframe.
+- Queue the announcement only after the replacement runtime has committed the Reports screen and exact selected mission report and the host has accepted the matching checkpoint. It must not play while the old tactical runtime is being destroyed, during the loading screen, or before recovery validation succeeds.
+- Play the announcement exactly once per completed mission/recovery event. Runtime retries, React remounts, duplicate presentation frames, reopening the report, navigating away and back, or reloading an already-consumed checkpoint must not repeat it.
+- Keep this command-level result message separate from tactical all-clear dialogue such as **That's the last of them**. A final-kill callout may occur on the battlefield, while the success/failure announcement belongs to the completed return-to-base/debrief boundary.
+- Use the existing recorded-dialogue queue and dedicated voice bus. Respect Voices On/Off, voice volume, current music ducking, report-theme audio continuity, and accessibility preferences; do not create a second audio element or bypass the established dialogue ownership/cooldown system.
+- If verified recovery genuinely fails, do not play either outcome message merely because the recovery panel appeared. Play it only after a later retry successfully restores the bound report. Continuing to a fresh start screen without verified report recovery must not announce an unverified outcome.
+- The announcement is presentation-only. It cannot change mission success, rewards, casualties, panic, research, recovered equipment, report contents, save state, or memory cleanup. Save format should remain **4**.
+- Add deterministic Build Health coverage for success and failure selection, checkpoint/report binding, post-commit timing, exactly-once event identity, retry deduplication, voice-disabled behavior, music duck/restore ownership, no collision with tactical all-clear dialogue, recovery-failure silence, and unchanged campaign authority.
+
 ---
 
 ## Historical Build Addendum — Browser 2102: Smooth Articulated Hex-to-Hex Locomotion
