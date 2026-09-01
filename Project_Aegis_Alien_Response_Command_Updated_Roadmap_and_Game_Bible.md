@@ -1058,6 +1058,20 @@ The deterministic contract covers spoiler-free pre-observation language, attack 
 - Browser 1101 implements the Cancel button as a transactional discard: draft choices are rebuilt from untouched live assignments, the modal closes without any AI replan or command handoff, and Apply remains the only mutation path.
 
 
+## Roadmap Addition - Viewport-Bounded, Scrollable Objective Assignment
+
+**Status:** Approved future Tactical UI / fire-team command update.
+
+- Keep the **Assign Objectives** window entirely within the visible browser viewport, including missions deploying two Skyrangers and the resulting larger fire-team roster. The player must never need to reduce browser zoom merely to reach the bottom of the window.
+- Give the modal a viewport-aware maximum height with safe margins above and below it. Its fire-team/objective assignment content should scroll inside the window whenever the roster, known-objective list, display scaling, or available screen height would otherwise push content off-screen.
+- Keep the window title, explanatory context, and primary **Apply Objective Assignments** / **Cancel** controls visible or immediately reachable while the assignment body scrolls. A long roster must not strand either action below the viewport.
+- Preserve the transactional draft behavior while scrolling: direct objective owners, Default AI Doctrine selections, and follow/assist relationships remain editable without applying anything until the player confirms. Cancel must still restore the complete pre-open state.
+- Use a responsive layout that can reduce columns or stack assignment controls on shorter or narrower displays without horizontal clipping. Support ordinary browser zoom and Windows display scaling rather than assuming one desktop resolution.
+- Keep the tactical scene inert behind the modal and retain the corrected portal/layering behavior so the assignment screen remains above the mission map in 2D Hex, 3D Iso, FPV, and TPV presentation states.
+- Preserve keyboard focus within the dialog, allow mouse-wheel/touchpad scrolling over its assignment body, and restore focus to the control that opened it after Apply or Cancel.
+- Add deterministic UI/Build Health coverage for one- and two-Skyranger deployments, maximum practical fire-team and objective counts, direct/default/assist choices at the top and bottom of the scroll region, Apply and Cancel reachability, short laptop-height viewports, increased display scaling, and no tactical or save-format changes.
+
+
 ## Roadmap Addition - Fire-Team Reassignment After Objective Loss
 
 **Status:** Approved future Tactical AI / mission-command update.
