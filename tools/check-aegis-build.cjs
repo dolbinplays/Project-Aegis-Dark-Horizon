@@ -288,7 +288,7 @@ const required = [
   "tacticalVipExtractionIngressYield",
   "tacticalAiCoveredFiringHoldState",
   "tacticalAiCoveredFireActionBudget",
-  "Orphaned VIP escorts release immediately and crowded Skyranger ingress yields without overlap",
+  "Orphaned VIP escorts release immediately while ramp-contact boarding avoids soldier ingress",
   "AEGIS soldiers hold useful cover and spend legal TU on bounded repeat fire",
   "const clearVehicles = inside && footprint.every",
   "isHardCoverAt(arrivalCovers",
