@@ -1,3 +1,24 @@
+BUILD: v0.26.08.31.1705_ARTICULATED_SEGMENT_FACING_AND_FORWARD_WALK_PATCH
+TITLE: Articulated Segment Facing + Forward Walk
+DATE: August 31, 2026
+
+Summary
+- Corrects smooth articulated locomotion so moving soldiers face each world-space path segment instead of retaining a stale combat, camera, or prior-segment facing.
+
+Key changes
+- Travel yaw is derived from the same projected start and destination hex centers that drive persistent-root translation, keeping facing and motion on one presentation authority.
+- The model completes its shortest-path turn during the opening 24% of a step and holds the segment heading through the remainder of translation, preventing sideways sliding and backward-looking walking.
+- Every turn in a multi-cell route receives a fresh segment heading. On arrival, the model restores the authoritative destination facing required by stance, target, reaction, escort, formation, or command state.
+- Manual, Hybrid, Simulation, civilian/VIP escort, and autonomous playback retain the shared movement wrapper and animation clock.
+- Repairs the prior reboot integration's Build Health scope error by inspecting its component-local checkpoint writer through `AlienResponseCommand` source rather than attempting an invalid global function reference.
+- Pathfinding, coordinates, occupancy, TU, LOS, fog, reactions, targeting, AI decisions, formations, mission results, save data, and assets are unchanged. Save format remains 4.
+
+Validation
+- Deterministic contracts cover six travel directions, early segment-facing acquisition, shortest-path turning, exact destination centers, destination-facing restoration, persistent-scene ownership, and save compatibility.
+- Deterministic packaging, embedded JavaScript syntax, manifest parsing, and static build-seam validation pass. Live browser startup is clean and Build Health reports **652/706**, with both new movement-facing contracts and the repaired reboot checkpoint contract passing; 54 existing unrelated diagnostics remain.
+
+---
+
 BUILD: v0.26.08.31.1153_POST_MISSION_RUNTIME_REBOOT_RELEASE_INTEGRATION_PATCH
 TITLE: Post-Mission Runtime Reboot Release Integration
 DATE: August 31, 2026

@@ -1,12 +1,26 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.08.31.1153_POST_MISSION_RUNTIME_REBOOT_RELEASE_INTEGRATION_PATCH`
+Current browser build: `v0.26.08.31.1705_ARTICULATED_SEGMENT_FACING_AND_FORWARD_WALK_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 1153: Post-Mission Runtime Reboot Release Integration
+## Current Build Addendum — Browser 1705: Articulated Segment Facing + Forward Walk
+
+### Current Build Delta
+- Smooth articulated movement now derives walking yaw from the actual projected world-space direction between the current authoritative hex center and the next one. Stale combat facing, destination facing, previous movement direction, and camera orientation cannot steer the walking body.
+- Each step completes a shortest-path lead turn during its opening 24%, then holds that segment heading through translation. Multi-cell routes recompute at every turn so the body and forward leg gait no longer appear to strafe, slide sideways, or walk backward.
+- Arrival restores the authoritative tactical facing selected for stance, target, reaction, escort, formation, or command state. Shot-specific aiming remains a separate temporary child-pivot correction and is unchanged.
+- Manual, Hybrid, Simulation, civilian/VIP escort, and autonomous movement continue using one persistent-node locomotion wrapper. Only existing root transforms and articulated joints mutate during playback.
+- The prior reboot integration's Build Health scope error is repaired: its contract inspects the component-local checkpoint writer through `AlienResponseCommand` source instead of attempting an invalid global reference, allowing the full deferred suite to execute.
+- Coordinates, occupied cells, paths, TU, LOS, fog, cover, reactions, targeting, AI decisions, formations, objectives, mission results, save data, and assets are unchanged. Save format remains **4**.
+- Deterministic contracts cover all six travel directions, early turn acquisition, exact destination centers, destination-facing restoration, persistent-scene ownership, and save compatibility.
+- Deterministic packaging, embedded JavaScript syntax, manifest parsing, and static release seams pass. Live browser startup is clean and Build Health reports **652/706**; both new movement-facing contracts and the repaired reboot checkpoint contract pass, while 54 unrelated historical diagnostics remain.
+
+---
+
+## Historical Build Addendum — Browser 1153: Post-Mission Runtime Reboot Release Integration
 
 ### Current Build Delta
 - Mission completion now establishes a true browser-runtime lifecycle boundary: campaign aftermath is applied, a clean post-mission autosave is written and read back, then the retired React/Three.js iframe is destroyed and replaced before the exact After Action Report is restored.
@@ -707,6 +721,12 @@ Authoritative playable artifact: `index.html`
 - Active-mission save/load should normalize a movement already in progress safely: either persist the bounded presentation step/fraction or restore the model to the authoritative cell before resuming, without repeating TU, reactions, contact discovery, damage, or movement decisions. Campaign save format should remain 4 if normalized presentation state is sufficient.
 - Add deterministic Build Health coverage for exact start/end centers, multi-cell paths, turns, doors and building routes, ramps, civilian/VIP escorts, panic movement, Manual/Hybrid/Simulation parity, FPV/TPV camera following, battle-speed scaling, contact/reaction interruption, hidden-unit authority, save/load continuation, zero snap-back, and no renderer/static-scene rebuild during ordinary locomotion.
 
+### Implemented correction - articulated walking direction (Browser 1705)
+- A soldier using smooth articulated locomotion now faces the direction of the path segment currently being traversed. Walking yaw comes from the same consecutive authoritative hex centers and shared world projection that drive visual translation rather than stale combat facing, destination facing, camera orientation, or the previous movement segment.
+- Facing updates at every turn in a multi-hex route and interpolates by the shortest sensible rotation during the opening 24% of the new segment. The feet and body read as walking forward rather than strafing, sliding sideways, or walking backward.
+- After the final segment, the model settles into the authoritative destination facing required by stance, target, reaction, escort, formation, or command state. This presentation correction does not change occupied cells, path choice, TU, LOS, reactions, targeting, formation offsets, or AI decisions.
+- The correction applies consistently to Manual, Hybrid, and Simulation playback and every articulated soldier LOD that uses smooth locomotion. Deterministic coverage includes straight paths, six directions, shortest-path turns, early turn acquisition, exact arrival, destination-facing restoration, and unchanged save format.
+
 ---
 
 ## Roadmap Addition - Expanded VIP Identity and High-Value Security Details
@@ -1286,6 +1306,33 @@ The deterministic contract covers spoiler-free pre-observation language, attack 
 4. Keep the refuge undiscovered. Confirm alien movement, camera, roofs, fog, LOS, targeting, and UI do not leak the VIP or locked-building state.
 5. Save/load before discovery, while AEGIS waits at the door, during a breach, after unlock, and after structural destruction. Door state, refuge occupants, knowledge, pathing, and escort ownership restore exactly once.
 6. Confirm VIP quota resolution, optional/high-value VIP distinctions, damage/cinematic queues, reinforcement logic, building roofs/cutaway, and save format remain authoritative.
+
+## Roadmap Addition - Tactical AI / VIP Missions: Alien VIP Detection & Search AI
+
+**Status:** Approved tactical-knowledge and VIP-mission AI item. Replace omniscient alien VIP tracking with information-based detection, memory, communication, and search behavior.
+
+### Detection and knowledge authority
+- Aliens do not know an undetected VIP's exact location merely because the authoritative mission state contains it. They must search until the VIP is legitimately spotted or detected.
+- A confirmed sighting records the VIP's last-known position. If contact is lost, informed aliens investigate that position and then expand their search rather than continuing to track the VIP's hidden live coordinates.
+- Nearby gunfire, visible movement, noise, structural disturbance, or other legitimate clues may create an approximate suspected area. A clue must not reveal an exact hex unless the sensing rule genuinely provides exact information.
+- Confirmed VIP sightings may be shared with allied aliens through an explicit communication rule. Shared knowledge carries the confirmed location and observation time, not ongoing access to hidden authoritative state.
+
+### Search behavior
+- Aliens without confirmed contact search plausible buildings, rooms, cover, routes, and suspected areas using only information available to their side.
+- Search expands outward from last-known or suspected areas when the VIP is not found, while bounded progress and fallback rules prevent repeated visits, corner loops, or round-burning stalls.
+- New evidence can refine or replace a suspected area. Reacquiring the VIP restores confirmed-contact pursuit; losing contact returns the aliens to last-known-position investigation and expanding search.
+
+### Scenario-specific prior knowledge
+- Certain mission scenarios may explicitly begin with aliens already knowing a VIP's location when narratively appropriate, including an abduction in progress or a previously tracked high-value target.
+- Prior knowledge must be authored as mission-state intelligence with a clear narrative source. It is an exception to the normal detection rules, not a general permission for omniscient alien tracking.
+
+### Validation boundary
+1. Keep a VIP completely undetected and confirm alien paths, attacks, targeting, roofs, fog, and UI never reveal or converge directly on the hidden exact coordinate.
+2. Allow a sighting, break contact, and move the VIP. Confirm informed aliens investigate the recorded last-known position and expand their search without following the hidden current position.
+3. Generate approximate noise and movement clues and confirm they create bounded suspected areas rather than exact-coordinate knowledge.
+4. Verify confirmed sighting communication reaches eligible allied aliens once, preserves observation age, and does not grant permanent live tracking.
+5. Test authored abduction and previously tracked-target scenarios where exact starting knowledge is intentional, documented, and stable through save/load.
+6. Preserve VIP rescue rules, escort ownership, civilian behavior, LOS, fog, pathfinding, TU, mission outcomes, and save authority outside the explicitly added alien-knowledge state.
 
 
 ## Browser 2251 - Tactical Building Roofs + Player-Aware Cutaway
