@@ -1,10 +1,26 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.01.2147_LAST_KNOWN_CONTACT_LOS_CLEARANCE_HOTFIX`
+Current browser build: `v0.26.09.01.2229_CONTACT_TOMBSTONE_AND_BEACON_ASSAULT_RESUME_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 2229: Contact Tombstone + Beacon Assault Resume Hotfix
+
+### Current Build Delta
+- Resolved Last Known Contact records now act as authoritative playback tombstones. A queued or streamed Simulation frame carrying the same or an older sighting round cannot reactivate a marker that a later legitimate empty-cell inspection already cleared.
+- A later genuine sighting with an observation round newer than the tombstone starts a fresh contact epoch normally; same-alien and same-hex re-sightings remain valid.
+- Last-known reports are not owned by their original observer. The death or removal of the reporting soldier does not prevent another living AEGIS soldier with legitimate LOS to the recorded cell from resolving the report.
+- Explicit **Beacon Assault** objective assignments remain persistent through combat interruptions. Visible aliens may temporarily pull the assigned team into ordinary combat, but once visible contact is gone the team immediately returns to approaching and destroying the assigned beacon.
+- Hybrid AI's generated `hybrid-round:*` waypoint is treated as a transient control artifact and cannot outrank a persistent Beacon Assault assignment after combat clears. Deliberate player-authored Command Map orders remain distinct and are not silently discarded.
+- Active civilian/VIP escort duty remains a higher-priority interruption. Beacon shield capability, LOS, TU, ammunition, grenades, pathfinding, formations, hidden information, and target legality remain authoritative.
+- Save format remains **4** and `assets/` is unchanged.
+
+### Validation
+- Deterministic coverage now includes reporter-death clearance, stale-playback resurrection rejection, fresh post-resolution re-sighting, visible-alien interruption, automatic Beacon Assault resumption, Hybrid transient-waypoint suppression, and preservation of player-authored waypoints.
+
+---
 
 ## Current Build Addendum — Browser 2147: Last-Known Contact LOS Clearance Hotfix
 

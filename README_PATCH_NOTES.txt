@@ -1,3 +1,24 @@
+BUILD: v0.26.09.01.2229_CONTACT_TOMBSTONE_AND_BEACON_ASSAULT_RESUME_HOTFIX
+TITLE: Contact Tombstone + Beacon Assault Resume Hotfix
+DATE: September 1, 2026
+
+Summary
+- Prevents cleared Last Known Contact markers from being resurrected by stale Simulation playback and makes explicitly assigned Beacon Assault teams automatically resume beacon destruction after temporary visible-alien combat.
+
+Key changes
+- A resolved contact record now blocks older/same-sighting playback frames from reactivating its marker or observed-contact flag.
+- A genuinely newer sighting after the resolution round creates fresh contact state normally.
+- The soldier who originally reported the alien may die; any other living AEGIS soldier with legitimate LOS can still clear the marker.
+- Spotted aliens may temporarily interrupt an explicitly assigned Beacon Assault team. The assignment itself remains intact.
+- As soon as visible contact is gone and no active civilian/VIP escort owns the soldier, the assigned team automatically resumes its beacon approach/attack.
+- Hybrid AI transient round waypoints no longer override that persistent beacon assignment after combat clears; deliberate player Command Map waypoints remain separate.
+- Beacon shields, weapon capability, TU, ammo, grenades, LOS, fog, pathfinding, formations, escorts, saves, and assets are otherwise unchanged. Save format remains 4.
+
+Validation
+- Added deterministic contracts for stale-frame tombstones, reporter-death clearance, fresh re-sightings, combat interruption/resume, Hybrid transient waypoint yielding, and player-waypoint preservation.
+
+---
+
 BUILD: v0.26.09.01.2147_LAST_KNOWN_CONTACT_LOS_CLEARANCE_HOTFIX
 TITLE: Last-Known Contact LOS Clearance Hotfix
 DATE: September 1, 2026
