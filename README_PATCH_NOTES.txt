@@ -1,3 +1,49 @@
+BUILD: v0.26.09.02.1455_EXPLICIT_BEACON_ASSAULT_COMMITMENT_HOTFIX
+TITLE: Explicit Beacon Assault Commitment Hotfix
+DATE: September 2, 2026
+
+Summary
+- Prevents an explicitly assigned fire team from abandoning an active Alien Field Beacon after one or more nonlethal attacks. Once the team has engaged the beacon, it remains committed until the device is actually destroyed or legitimately disabled.
+
+Key changes
+- A successful nonlethal attack on an explicitly assigned beacon creates a team-level Beacon Engagement Lock bound to the exact beacon ID.
+- The lock persists across tactical rounds and streamed Simulation batches. Arrival, inspection, partial damage, lack of another action this turn, or the death of the last living alien cannot complete or release the assignment.
+- When no living aliens remain, an explicitly assigned Beacon Assault team becomes the authoritative owner of the beacon endgame. The must-progress watchdog selects a breach-capable soldier from that assigned team instead of replacing the player's assignment with a generic nearest-soldier choice.
+- The assigned leader and designated assaulter keep closing on and attacking the beacon. Other members hold/support locally and cannot fall through into sector search or generic patrol while the engagement lock is active.
+- Visible alien combat may still interrupt temporarily. An escort-owning fire-team leader remains locked to civilian/VIP extraction. When the interruption clears, the beacon team resumes the same engagement automatically.
+- Destroying or legitimately disabling the beacon clears the engagement lock. Changing/removing the assignment also prevents a stale lock from becoming a new autonomous objective.
+- The existing “That's the last of them” voice cue remains tied to the final living alien and is intentionally unchanged; it does not indicate that an active beacon has been neutralized.
+- Last Known Contact behavior, beacon shields, TU, ammunition, LOS, damage, save format 4, and assets remain unchanged.
+
+Validation
+- Embedded runtime JavaScript passes syntax validation. Deterministic coverage checks explicit endgame ownership, nonlethal engagement-lock persistence, neutralization cleanup, support hold behavior, streamed snapshot fields, and save format 4.
+- Package validation checks one mutable current history entry, frozen Browser 1415 history, exact runtime payload byte count/SHA-256, byte-for-byte payload/source identity, and ZIP integrity.
+
+---
+
+BUILD: v0.26.09.02.1455_EXPLICIT_BEACON_ASSAULT_COMMITMENT_HOTFIX
+TITLE: Explicit Beacon Assault Commitment Hotfix
+DATE: September 2, 2026
+
+Summary
+- Prevents an explicitly assigned fire team from abandoning an active Alien Field Beacon after one or more nonlethal attacks. Once the team has engaged the beacon, it remains committed until the device is actually destroyed or legitimately disabled.
+
+Key changes
+- A successful nonlethal attack on an explicitly assigned beacon creates a team-level Beacon Engagement Lock bound to the exact beacon ID.
+- The lock persists across tactical rounds and streamed Simulation batches. Arrival, inspection, partial damage, lack of another action this turn, or the death of the last living alien cannot complete or release the assignment.
+- When no living aliens remain, an explicitly assigned Beacon Assault team becomes the authoritative owner of the beacon endgame. The must-progress watchdog selects a breach-capable soldier from that assigned team instead of replacing the player's assignment with a generic nearest-soldier choice.
+- The assigned leader and designated assaulter keep closing on and attacking the beacon. Other members hold/support locally and cannot fall through into sector search or generic patrol while the engagement lock is active.
+- Visible alien combat may still interrupt temporarily. An escort-owning fire-team leader remains locked to civilian/VIP extraction. When the interruption clears, the beacon team resumes the same engagement automatically.
+- Destroying or legitimately disabling the beacon clears the engagement lock. Changing/removing the assignment also prevents a stale lock from becoming a new autonomous objective.
+- The existing “That's the last of them” voice cue remains tied to the final living alien and is intentionally unchanged; it does not indicate that an active beacon has been neutralized.
+- Last Known Contact behavior, beacon shields, TU, ammunition, LOS, damage, save format 4, and assets remain unchanged.
+
+Validation
+- Embedded runtime JavaScript passes syntax validation. Deterministic coverage checks explicit endgame ownership, nonlethal engagement-lock persistence, neutralization cleanup, support hold behavior, streamed snapshot fields, and save format 4.
+- Package validation checks one mutable current history entry, frozen Browser 1415 history, exact runtime payload byte count/SHA-256, byte-for-byte payload/source identity, and ZIP integrity.
+
+---
+
 BUILD: v0.26.09.02.1415_LAST_KNOWN_CONTACT_AUTHORITATIVE_TEAM_PURSUIT_HOTFIX
 TITLE: Last-Known Contact Authoritative Team Pursuit Hotfix
 DATE: September 2, 2026

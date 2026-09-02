@@ -1,10 +1,52 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.02.1415_LAST_KNOWN_CONTACT_AUTHORITATIVE_TEAM_PURSUIT_HOTFIX`
+Current browser build: `v0.26.09.02.1455_EXPLICIT_BEACON_ASSAULT_COMMITMENT_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1455: Explicit Beacon Assault Commitment Hotfix
+
+### Current Build Delta
+- An explicitly assigned **Alien Field Beacon** objective is now commitment-based once the assigned team successfully attacks the device. A nonlethal hit creates a fire-team-level **Beacon Engagement Lock** tied to that exact active beacon.
+- The lock remains active across rounds and streamed Simulation batches until the beacon is actually destroyed or legitimately disabled. Reaching the beacon, observing it, entering its shield, partially damaging it, spending the current turn's TU/ammunition, or killing the final living alien cannot complete the order.
+- When the battlefield has no living aliens and an explicit Beacon Assault assignment exists, that assigned fire team owns the remaining beacon endgame. The must-progress watchdog selects a capable assaulter from that team rather than substituting a generic nearest AEGIS soldier or another fire team.
+- The assigned leader and current breach-capable assaulter remain oriented toward closing/attacking the beacon. Other assigned team members hold or provide local support instead of falling through into Default Search, patrol, distress response, or another autonomous map sweep while the engagement lock is active.
+- Visible alien combat remains a temporary interrupt, and an escort-owning fire-team leader retains the absolute extraction lock established in Browser 1347. Once those higher-priority interruptions end, the exact same beacon engagement automatically resumes.
+- Destroying or legitimately disabling the device clears the lock for the full team. Removing/replacing the explicit assignment prevents a stale engagement token from creating a new autonomous objective.
+- The **That's the last of them** command voice remains intentionally tied to the death of the final living alien. It is not a beacon-completion cue and does not release Beacon Assault.
+- Browser 1415 Last Known Contact team pursuit, Browser 1347 continuation/escort lock, formation rules, beacon shielding, TU, LOS, damage, mission objectives, save data, assets, and save format **4** remain authoritative.
+
+### Deterministic Coverage
+- Explicit Beacon Assault team identity owns the no-alien beacon endgame.
+- A nonlethal beacon attack creates a team lock bound to the surviving beacon ID.
+- The lock persists in streamed tactical snapshots and blocks support wandering.
+- Neutralization clears the lock.
+- Save format remains **4**.
+
+---
+
+## Current Build Addendum — Browser 1455: Explicit Beacon Assault Commitment Hotfix
+
+### Current Build Delta
+- An explicitly assigned **Alien Field Beacon** objective is now commitment-based once the assigned team successfully attacks the device. A nonlethal hit creates a fire-team-level **Beacon Engagement Lock** tied to that exact active beacon.
+- The lock remains active across rounds and streamed Simulation batches until the beacon is actually destroyed or legitimately disabled. Reaching the beacon, observing it, entering its shield, partially damaging it, spending the current turn's TU/ammunition, or killing the final living alien cannot complete the order.
+- When the battlefield has no living aliens and an explicit Beacon Assault assignment exists, that assigned fire team owns the remaining beacon endgame. The must-progress watchdog selects a capable assaulter from that team rather than substituting a generic nearest AEGIS soldier or another fire team.
+- The assigned leader and current breach-capable assaulter remain oriented toward closing/attacking the beacon. Other assigned team members hold or provide local support instead of falling through into Default Search, patrol, distress response, or another autonomous map sweep while the engagement lock is active.
+- Visible alien combat remains a temporary interrupt, and an escort-owning fire-team leader retains the absolute extraction lock established in Browser 1347. Once those higher-priority interruptions end, the exact same beacon engagement automatically resumes.
+- Destroying or legitimately disabling the device clears the lock for the full team. Removing/replacing the explicit assignment prevents a stale engagement token from creating a new autonomous objective.
+- The **That's the last of them** command voice remains intentionally tied to the death of the final living alien. It is not a beacon-completion cue and does not release Beacon Assault.
+- Browser 1415 Last Known Contact team pursuit, Browser 1347 continuation/escort lock, formation rules, beacon shielding, TU, LOS, damage, mission objectives, save data, assets, and save format **4** remain authoritative.
+
+### Deterministic Coverage
+- Explicit Beacon Assault team identity owns the no-alien beacon endgame.
+- A nonlethal beacon attack creates a team lock bound to the surviving beacon ID.
+- The lock persists in streamed tactical snapshots and blocks support wandering.
+- Neutralization clears the lock.
+- Save format remains **4**.
+
+---
 
 ## Current Build Addendum — Browser 1415: Last-Known Contact Authoritative Team Pursuit
 
