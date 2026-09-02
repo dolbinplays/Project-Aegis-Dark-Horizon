@@ -1,10 +1,24 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.02.1347_LAST_KNOWN_CONTACT_CONTINUATION_AND_ESCORT_LEADER_LOCK_HOTFIX`
+Current browser build: `v0.26.09.02.1415_LAST_KNOWN_CONTACT_AUTHORITATIVE_TEAM_PURSUIT_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1415: Last-Known Contact Authoritative Team Pursuit
+
+### Current Build Delta
+- Unresolved **Last Known Contact** reports now create sticky, leader-owned fire-team investigation assignments. Once a team is assigned a reported cell, the assignment remains locked until that marker is legitimately verified/reacquired or no longer exists.
+- The fire-team leader owns the reported cell and uses a dedicated pursuit planner aimed at the exact marker or a legal LOS-verification position. Supporting soldiers remain formation followers around that leader and never select independent Last Known Contact destinations.
+- A marker that is already legitimately visible from the investigating soldier's current position is resolved immediately; adjacency is not required when LOS already verifies the cell is empty.
+- If the direct route is temporarily obstructed, the planner may choose only a legal cell that verifies the marker or makes real progress toward it. It may not fall through into generic patrol/fanout and send the team away from an unresolved report. If no legal progress exists, the team holds the investigation and reports the obstruction.
+- Valid team-marker locks persist in streamed tactical snapshots. Resolving one contact removes only locks whose reported cell is no longer active; teams investigating other unresolved contacts retain their assignments.
+- Priority remains: escort-owning leader extraction lock, visible alien combat, active escort support, Last Known Contact investigation, re-form, persistent assignment, then default sector search.
+- Existing Last Known Contact tombstones/clearance, threat-music continuation, Beacon Assault persistence, fire-team formation doctrine, fog, LOS, TU, pathfinding, mission outcomes, assets, and save format **4** remain authoritative.
+- Deterministic coverage verifies sticky team ownership, shared leader/support target identity, strict marker-directed movement, direct LOS verification, streamed target persistence, inter-team deconfliction, and unchanged save format.
+
+---
 
 ## Current Build Addendum — Browser 1347: Last-Known Contact Continuation + Escort Leader Lock Hotfix
 

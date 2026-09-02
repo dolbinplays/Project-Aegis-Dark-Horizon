@@ -1,3 +1,27 @@
+BUILD: v0.26.09.02.1415_LAST_KNOWN_CONTACT_AUTHORITATIVE_TEAM_PURSUIT_HOTFIX
+TITLE: Last-Known Contact Authoritative Team Pursuit Hotfix
+DATE: September 2, 2026
+
+Summary
+- Makes unresolved Last Known Contact markers concrete, sticky fire-team destinations so default-doctrine teams cannot wander away from them while the live alien that created the report remains unlocated.
+
+Key changes
+- Each available fire team now receives a leader-owned Last Known Contact cell assignment that remains locked until the marker is legitimately resolved or reacquired.
+- Support soldiers inherit the leader's marker assignment and continue moving through formation slots instead of choosing independent investigation/search targets.
+- Leaders use a dedicated marker-pursuit planner aimed at the exact reported cell or a legal LOS-verification position. Generic patrol/fanout is not a permitted fallback while the marker remains unresolved.
+- If direct pathing is obstructed, alternate movement must either produce legitimate LOS verification or reduce distance to the marker; otherwise the team holds the marker assignment instead of moving away.
+- A soldier who can already legitimately see the reported cell clears it immediately without needing to walk adjacent first.
+- Locked marker identity is serialized through streamed tactical snapshots, and resolving one report does not erase still-valid assignments to other reports.
+- Escort-leader extraction lock and currently visible aliens remain higher priority; Beacon Assault and all other persistent/default objectives remain deferred until unresolved Last Known Contact duty is cleared.
+- Save format remains 4 and assets are unchanged.
+
+Validation
+- Five embedded runtime JavaScript blocks pass node --check.
+- Deterministic Build Health coverage checks sticky fire-team marker ownership, leader/support target sharing, strict marker-directed movement, direct LOS verification, streamed persistence, assignment deconfliction, and unchanged save format.
+- Packaged runtime byte length/SHA-256 and byte-for-byte source identity are validated.
+
+---
+
 BUILD: v0.26.09.02.1347_LAST_KNOWN_CONTACT_CONTINUATION_AND_ESCORT_LEADER_LOCK_HOTFIX
 TITLE: Last-Known Contact Continuation + Escort Leader Lock Hotfix
 DATE: September 2, 2026
