@@ -1,12 +1,32 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.02.0954_POST_CONTACT_FORMATION_AND_BEACON_OBJECTIVE_RESUME_HOTFIX`
+Current browser build: `v0.26.09.02.1144_BEACON_NEUTRALIZATION_AND_FIRE_TEAM_SEARCH_FORMATION_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 0954: Post-Contact Formation + Beacon Objective Resume Hotfix
+## Current Build Addendum — Browser 1144: Beacon Neutralization + Fire-Team Search Formation Hotfix
+
+### Current Build Delta
+- An explicit **Alien Field Beacon** assignment is now unresolved until the assigned beacon is actually **destroyed or legitimately disabled**. Reaching the beacon, seeing it, entering its shield, reaching an assault anchor, or inspecting it can never satisfy the assignment by itself.
+- When AEGIS has confirmed that a beacon is an alien reinforcement spawn point but has not discovered a non-destructive shutdown method, the assigned team's doctrine is explicitly **Destroy the beacon**. If a legitimate disable method is later learned, either disabling or destroying it satisfies the objective.
+- An assigned Beacon Assault team cannot fall through into generic fallback patrol while its beacon remains active. A soldier that cannot make a legal beacon move or attack during the current turn holds/re-forms instead of walking away from the device.
+- Visible alien contact may still pull the team into a firefight, and an active civilian/VIP escort remains a higher-priority duty. Once that interruption ends, the fire team re-forms and resumes the same Beacon Assault until neutralization is confirmed.
+- Post-contact deconfliction is now explicitly **fire-team-level**, not soldier-level. Only fire-team leaders own and advance post-contact split-search slots. Supporting soldiers never receive independent fanout instructions.
+- Systematic alien hunting uses the fire-team leader as the shared search authority. Every member of the same team derives the same sector/search destination while supports move to their formation slots around the leader rather than choosing separate points inside that sector.
+- Any visible-alien firefight now arms a one-time formation-recovery state for each fire team. When the fight ends, the leader holds long enough for surviving supports to recover formation before a persistent objective or generic sector sweep resumes.
+- Last Known Contact priority and the successful Browser 0041 marker-resolution behavior remain unchanged. Different **fire teams** may head toward different markers/sectors, but individual members of a fire team remain together unless combat, escort, or a specific breacher action temporarily requires separation.
+- Save format remains **4**. Beacon shields, weapon/grenade legality, LOS, TU, pathfinding, fog, escort authority, hidden information, assets, and campaign outcomes are unchanged.
+
+### Validation
+- Added deterministic coverage for beacon terminal-state authority, early-game destruction doctrine, fallback-patrol exclusion, leader-only post-contact split ownership, shared leader-derived search targets, post-firefight formation recovery, and unchanged save format **4**.
+- Field acceptance: assign a fire team to a known early-game beacon, allow alien contact to interrupt it, then confirm the team re-forms, returns to the beacon, and keeps acting against it until the device is destroyed rather than walking away after inspection.
+
+---
+
+
+## Historical Build Addendum — Browser 0954: Post-Contact Formation + Beacon Objective Resume Hotfix
 
 ### Current Build Delta
 - A fire team emerging from a live alien firefight or completed Last Known Contact investigation now enters an explicit **formation recovery** phase before any ordinary post-contact sweep or persistent objective movement resumes.

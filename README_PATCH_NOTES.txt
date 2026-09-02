@@ -1,3 +1,25 @@
+BUILD: v0.26.09.02.1144_BEACON_NEUTRALIZATION_AND_FIRE_TEAM_SEARCH_FORMATION_HOTFIX
+TITLE: Beacon Neutralization + Fire-Team Search Formation Hotfix
+DATE: September 2, 2026
+
+Summary
+- Keeps assigned Beacon Assault teams committed until the beacon is neutralized and makes post-contact/search deconfliction operate at the fire-team level so support soldiers stay in formation.
+
+Key changes
+- A Beacon Assault assignment is complete only when its assigned beacon is destroyed or legitimately disabled. Arrival, inspection, shield entry, or reaching an assault cell is not completion.
+- If AEGIS knows the beacon is a reinforcement spawn point but has not learned a non-destructive shutdown method, the assigned team explicitly uses destruction doctrine.
+- Active beacon assignments are excluded from generic fallback patrol. Members that cannot legally move or attack the beacon this turn hold or re-form instead of wandering away.
+- Visible aliens and active civilian/VIP escorts may temporarily interrupt Beacon Assault; the same persistent assignment resumes after formation recovery.
+- Post-contact split-search state is now leader-owned. Only leaders receive sector/fanout slots; support soldiers receive formation-follow behavior.
+- Systematic search targets are derived from the fire-team leader so every member of one team shares the same search destination while supports remain in formation.
+- Any visible firefight arms formation recovery. When combat ends, leaders hold while supports reform before objectives or sector search resume.
+- Last Known Contact marker clearing, shields, LOS, TU, pathfinding, saves, assets, and save format 4 remain unchanged.
+
+Validation
+- Embedded JavaScript syntax checks, build/version synchronization, payload byte/SHA identity, deterministic contracts, and ZIP integrity are required for release.
+
+---
+
 BUILD: v0.26.09.02.0954_POST_CONTACT_FORMATION_AND_BEACON_OBJECTIVE_RESUME_HOTFIX
 TITLE: Post-Contact Formation + Beacon Objective Resume Hotfix
 DATE: September 2, 2026
