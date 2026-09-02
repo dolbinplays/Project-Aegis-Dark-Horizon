@@ -1,3 +1,28 @@
+BUILD: v0.26.09.02.1527_EXPLICIT_BEACON_ASSAULT_STREAM_AUTHORITY_HOTFIX
+TITLE: Explicit Beacon Assault Stream Authority Hotfix
+DATE: September 2, 2026
+
+Summary
+- Fixes the case where Bravo can remain assigned to an Alien Field Beacon in Assign Objectives but streamed Simulation loses the typed Beacon Assault order, allowing the team to leave after the firefight.
+
+Key changes
+- Tactical snapshots now serialize fire-team command kind, preferred target, objective type, and objective target ID.
+- Playback hydration preserves those fields, so streamed AI continuations cannot silently downgrade a Beacon Assault into a generic waypoint.
+- The persistent explicit Beacon assignment itself preserves confirmed mission knowledge; a continuation cannot retain the assignment while treating the beacon as unknown.
+- Every eligible AI turn validates an explicit Beacon assignment against the still-active beacon and reconstructs missing/degraded typed Beacon Assault command metadata before ordinary movement selection.
+- The persistent Assign Objectives assignment is the repair authority; deliberate non-objective player Command Map orders are not overwritten.
+- A ballistic soldier who emptied the current magazine during combat remains a valid early-game beacon assaulter when reloading would make the weapon usable. The AI spends 18 TU to reload and remains committed to the beacon.
+- Visible aliens may interrupt temporarily; an escort-owning leader remains locked to civilian/VIP extraction. Once clear, the assigned team resumes Beacon Assault until the device is destroyed or legitimately disabled.
+- “That's the last of them” remains tied to the final living alien and is unchanged.
+- Save format remains 4; assets are unchanged.
+
+Validation
+- All embedded runtime JavaScript blocks and the host shell pass syntax validation.
+- Deterministic coverage checks streamed typed-command preservation, assignment-based command repair, reloadable ballistic capability, and unchanged save format.
+- Release validation checks one mutable current history entry, frozen Browser 1455 history, exact runtime payload byte count/SHA-256, byte-for-byte payload/source identity, and ZIP integrity.
+
+---
+
 BUILD: v0.26.09.02.1455_EXPLICIT_BEACON_ASSAULT_COMMITMENT_HOTFIX
 TITLE: Explicit Beacon Assault Commitment Hotfix
 DATE: September 2, 2026

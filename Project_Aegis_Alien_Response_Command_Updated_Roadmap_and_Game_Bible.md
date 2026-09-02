@@ -1,10 +1,31 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.02.1455_EXPLICIT_BEACON_ASSAULT_COMMITMENT_HOTFIX`
+Current browser build: `v0.26.09.02.1527_EXPLICIT_BEACON_ASSAULT_STREAM_AUTHORITY_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1527: Explicit Beacon Assault Stream Authority Hotfix
+
+### Current Build Delta
+- An explicit **Alien Field Beacon** assignment is now sufficient tactical authority to reconstruct the team's typed Beacon Assault order whenever a streamed Simulation frame or continuation omitted/degraded that command metadata. The Assign Objectives assignment and the active beacon identity are the durable source of truth.
+- Stream snapshots now carry `fireTeamCommandKind`, preferred-target identity, objective type, and objective target ID. A Beacon Assault therefore remains a Beacon Assault across AI batch boundaries instead of silently becoming an ordinary waypoint while the UI still shows the beacon assignment.
+- The persistent explicit Beacon assignment itself counts as confirmed mission knowledge for that beacon. A streamed continuation cannot preserve the assignment while simultaneously downgrading AI behavior to “beacon unknown.”
+- At each eligible AEGIS action, the resolver validates the explicit beacon assignment against the still-active beacon before ordinary movement selection. Missing mission-objective Beacon command metadata is restored to a typed `beacon-assault` order with the same beacon target. Deliberate non-objective Command Map orders remain respected.
+- Early-game ballistic teams no longer become falsely incapable merely because the firefight emptied their current magazine. If a ballistic rifle can damage the current beacon shield after reloading and the soldier has 18 TU, the team remains breach-capable; the soldier reloads and stays committed to Beacon Assault.
+- Visible alien combat can still interrupt temporarily, and an escort-owning leader remains absolutely locked to civilian/VIP extraction. Once those conditions clear, the persistent beacon assignment resumes until the beacon is destroyed or legitimately disabled.
+- Reaching, observing, or standing near the beacon is still not completion. The existing Browser 1455 engagement lock remains an additional post-attack safeguard rather than the first point at which the assignment becomes authoritative.
+- Last Known Contact pursuit, formation recovery, beacon shielding, LOS, TU, damage, save data, assets, and save format **4** remain authoritative.
+
+### Deterministic Coverage
+- A degraded streamed Beacon waypoint is rebuilt into a typed Beacon Assault from the persistent assignment.
+- Typed Beacon command metadata survives Simulation snapshots and playback merge.
+- An empty early-game ballistic magazine remains reloadable Beacon Assault capability.
+- Beacon command authority is restored before ordinary movement selection.
+- Save format remains **4**.
+
+---
 
 ## Current Build Addendum — Browser 1455: Explicit Beacon Assault Commitment Hotfix
 
