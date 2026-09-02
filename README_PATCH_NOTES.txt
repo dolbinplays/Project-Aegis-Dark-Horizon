@@ -1,3 +1,26 @@
+BUILD: v0.26.09.02.0041_LAST_KNOWN_CONTACT_PRIORITY_AND_SEARCH_DECONFLICTION_HOTFIX
+TITLE: Last-Known Contact Priority + Search Deconfliction Hotfix
+DATE: September 2, 2026
+
+Summary
+- Hardens last-known-contact clearing, gives unresolved markers authoritative non-combat/non-escort priority, distributes teams across multiple reports, and splits converged teams back into separate search sectors after clearance.
+
+Key changes
+- Resolution tombstones now suppress stale contact state in ordinary contact updates as well as playback merges.
+- A visible dead alien clears stale contact state instead of spawning a new marker. Hidden death knowledge is not leaked.
+- Inspecting an empty reported cell clears every stale report on that same cell/deck, including overlapping records.
+- Reports are shared AEGIS knowledge and remain clearable after the original observer dies.
+- With no live alien visible and no active civilian/VIP escort, marker investigation outranks distress search, beacons, UFO-bay inspection, assigned/assist objectives, transient Hybrid movement, and normal fog search.
+- Multiple markers are assigned across fire teams by recency/distance/stable identity.
+- Once a marker clears, stale search targets are reset; if no marker remains, fire teams resume distinct sector slots so teams that converged do not continue sweeping together.
+- Persistent assignments are deferred, not deleted. Combat and active escort duty still interrupt marker work and normal objectives resume afterward.
+- Save format 4 and assets are unchanged.
+
+Validation
+- Deterministic contracts cover tombstones, dead observers/dead aliens, stacked reports, marker priority, multi-team assignment, post-clear sector splitting, combat/escort exceptions, and save compatibility.
+
+---
+
 BUILD: v0.26.09.01.2229_CONTACT_TOMBSTONE_AND_BEACON_ASSAULT_RESUME_HOTFIX
 TITLE: Contact Tombstone + Beacon Assault Resume Hotfix
 DATE: September 1, 2026

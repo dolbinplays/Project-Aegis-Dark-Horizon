@@ -1,11 +1,30 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.01.2229_CONTACT_TOMBSTONE_AND_BEACON_ASSAULT_RESUME_HOTFIX`
+Current browser build: `v0.26.09.02.0041_LAST_KNOWN_CONTACT_PRIORITY_AND_SEARCH_DECONFLICTION_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
+
+## Current Build Addendum — Browser 0041: Last-Known Contact Priority + Search Deconfliction Hotfix
+
+### Current Build Delta
+- Resolved last-known-contact tombstones are now enforced by the ordinary contact-memory updater as well as Simulation playback hydration. Stale `aegisContactObserved` state at or before the resolution round cannot recreate a marker.
+- A visible dead alien resolves stale contact state rather than being recorded as a fresh living contact. An unseen death still does not reveal hidden information.
+- Verifying an empty reported cell clears every stale report for that same cell and deck, preventing overlapping records from making a marker appear to return after only one alien record was resolved.
+- Last-known reports remain shared AEGIS knowledge. Their original observer may be dead; any living soldier with legitimate LOS to the recorded cell can clear them.
+- With no currently visible living alien and no active civilian/VIP escort duty, unresolved Last Known Contact markers now outrank distress investigation, Beacon Assault, UFO-bay inspection, objective assistance, transient Hybrid orders, and ordinary search behavior. Persistent assignments are deferred rather than erased.
+- Multiple unresolved marker cells are distributed deterministically across available fire-team leaders using recency, distance, and stable team identity so teams investigate separate reports when possible.
+- Clearing a marker resets stale local-contact/hunt targets. If no reports remain, fire teams immediately return to the established sectorized alien hunt using distinct team slots, preventing multiple teams that converged on the same marker from sweeping the map in one clump.
+- Visible-alien firefights and active civilian/VIP escorts remain the only automatic priorities above marker investigation. After those duties end, marker clearance resumes; after all markers clear, normal assigned objectives and doctrine resume.
+- Save format remains **4**. LOS, fog, TU, pathfinding, formation membership, hidden-information authority, objectives, assets, and campaign outcomes are unchanged.
+
+### Validation
+- Added deterministic coverage for multi-marker fire-team assignment, same-cell stacked-report clearance, stale ordinary-update tombstone suppression, dead-visible-alien resolution, post-contact search-sector splitting, priority ordering, escort/combat exceptions, and save compatibility.
+- Field acceptance should reproduce the reported sequence: lose contact with several aliens, investigate/verify the marker cells, turn away repeatedly, confirm cleared markers never return, then confirm converged fire teams spread into different search sectors.
+
+---
 ## Current Build Addendum — Browser 2229: Contact Tombstone + Beacon Assault Resume Hotfix
 
 ### Current Build Delta
