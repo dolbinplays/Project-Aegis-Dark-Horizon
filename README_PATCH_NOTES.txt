@@ -1,3 +1,26 @@
+BUILD: v0.26.09.02.1347_LAST_KNOWN_CONTACT_CONTINUATION_AND_ESCORT_LEADER_LOCK_HOTFIX
+TITLE: Last-Known Contact Continuation + Escort Leader Lock Hotfix
+DATE: September 2, 2026
+
+Summary
+- Makes unresolved Last Known Contact reports a true Simulation/mission-resolution duty after the final visible alien falls, stabilizes Mission Threat music across streamed playback, and permanently locks an escort-owning fire-team leader to civilian/VIP extraction.
+
+Key changes
+- The main Simulation loop now continues while any Last Known Contact report remains unresolved, even when no living alien remains on the battlefield.
+- Mission terminal resolution cannot declare the battlefield secured or finalize victory while an unresolved marker remains.
+- Unresolved reports reassert `alienContactSeen` in streamed continuation snapshots and no longer depend on the legacy contact-seen bit remaining set.
+- Pre-contact civilian/objective claiming treats unresolved reports as ongoing contact knowledge, preventing unrelated free-team behavior from restarting before marker clearance. Existing engaged escorts remain authoritative.
+- A fire-team leader who already owns living civilian/VIP followers is hard-locked to extraction. Visible aliens, Last Known Contact reports, beacons, and other objectives cannot pull that leader away until the evacuees are extracted, killed, released, or reassigned.
+- Escort support behavior is unchanged: supporting soldiers may break off to engage spotted aliens when the selected escort-support doctrine allows it, while the leader remains with the civilian/VIP column.
+- Mission Threat Theme contact intensity is latched across active streamed-AI playback after contact begins, preventing rapid intense/search crossfades at transient frame boundaries.
+- Existing Last Known Contact LOS/tombstone clearing, team-level marker deconfliction, formation recovery, Beacon Assault persistence, fog, TU, pathfinding, saves, assets, and save format 4 remain unchanged.
+
+Validation
+- Deterministic contracts cover Simulation continuation with dead aliens + live markers, terminal-resolution blocking, streamed contact-memory retention, pre-contact claim suppression, escort-leader lock over live combat/contact duty, support breakoff preservation, threat-music latching, and unchanged save format 4.
+- All embedded runtime JavaScript blocks and the packaged host-shell script pass syntax validation. Payload byte count/SHA-256 and byte-for-byte source identity are release gates.
+
+---
+
 BUILD: v0.26.09.02.1225_TACTICAL_FIRE_TEAM_PRIORITY_AND_OBJECTIVE_STATE_MACHINE_PATCH
 TITLE: Tactical Fire-Team Priority + Objective State Machine
 DATE: September 2, 2026

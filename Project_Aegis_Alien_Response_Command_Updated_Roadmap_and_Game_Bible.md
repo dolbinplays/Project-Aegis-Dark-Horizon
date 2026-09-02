@@ -1,10 +1,33 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.02.1225_TACTICAL_FIRE_TEAM_PRIORITY_AND_OBJECTIVE_STATE_MACHINE_PATCH`
+Current browser build: `v0.26.09.02.1347_LAST_KNOWN_CONTACT_CONTINUATION_AND_ESCORT_LEADER_LOCK_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1347: Last-Known Contact Continuation + Escort Leader Lock Hotfix
+
+### Current Build Delta
+- **Unresolved Last Known Contact reports are now a first-class Simulation continuation condition.** The AI stream does not stop merely because the final living/visible alien has been killed; if AEGIS still has unverified reported cells, available teams continue investigating them until the reports are legitimately cleared.
+- Mission terminal resolution uses the same authority. A battlefield with zero living aliens but one or more unresolved Last Known Contact reports is **not yet secured** and cannot finalize victory or drop teams back to lower-priority objectives.
+- Contact continuity no longer depends on the older `alienContactSeen` boolean surviving every streamed boundary. Any unresolved report reasserts contact memory in the continuation snapshot, and playback-frame continuation recognizes retained marker state.
+- Pre-contact civilian claiming also recognizes unresolved Last Known Contact reports as ongoing tactical contact. Free teams therefore cannot restart unrelated pre-contact rescue/objective behavior while the map still contains unverified alien reports.
+- **Escort-leader lock:** once a fire-team leader has living civilian/VIP followers assigned to that leader, extraction becomes that leader's highest tactical priority. Visible alien combat, Last Known Contact investigation, Beacon Assault, Command Map orders, and normal search cannot pull the leader away until those evacuees are extracted, killed, released, or reassigned.
+- The existing Escort Support choice remains authoritative for non-leaders. Supporting soldiers may break off to fight visible aliens when the player/doctrine selects that behavior, but the leader remains with the civilian/VIP column and continues moving it toward the Skyranger.
+- Mission Threat Theme contact intensity is latched during an active streamed Simulation sequence once contact is established. This prevents rapid intense/search crossfades when intermediate playback frames temporarily sit between the final kill and the next authoritative Last Known Contact investigation frame.
+- Browser 1225's fire-team state machine, Browser 1144's leader-owned sector search, Browser 0041's marker clearing/deconfliction, Beacon Assault persistence, formation recovery, LOS, fog, TU, pathfinding, damage, saves, assets, and save format **4** remain authoritative.
+
+### Deterministic Coverage
+- Simulation continues with zero living aliens while unresolved Last Known Contact reports remain.
+- Mission terminal state refuses battlefield-secured/victory status until every marker is resolved.
+- Stream continuation and pre-contact claim logic retain Last Known Contact authority.
+- An escort-owning leader remains in Escort state even when visible aliens and unresolved Last Known Contact reports coexist.
+- Escort-support breakoff configuration remains available to supporting soldiers.
+- Threat-music contact intensity remains stable through streamed playback boundaries.
+- Save format remains **4**.
+
+---
 
 ## Current Build Addendum — Browser 1225: Tactical Fire-Team Priority + Objective State Machine
 
