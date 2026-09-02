@@ -1,3 +1,28 @@
+BUILD: v0.26.09.02.1601_VIP_RESCUE_OBJECTIVE_AUTHORITY_AND_BEACON_ISOLATION_HOTFIX
+TITLE: VIP Rescue Objective Authority + Beacon Isolation Hotfix
+DATE: September 2, 2026
+
+Summary
+- Fixes the case where unengaged VIP rescue/search logic can pull every fire team toward a VIP building, including a team that remains explicitly assigned to an Alien Field Beacon.
+
+Key changes
+- Secure-rescue search excludes explicit non-civilian objective teams such as Beacon Assault.
+- Follow/Assist teams are not given autonomous VIP/building search destinations.
+- Generic tracker search excludes VIPs already reserved by explicit player assignments.
+- If every unresolved VIP is explicitly owned, unrelated Default teams are not sent toward the same building by the rescue-search layer.
+- Explicit VIP teams continue pursuing their own assigned targets; Default teams search only for genuinely unassigned rescue targets.
+- The Beacon Assault execution gate uses the same assignment-authenticated `beaconKnowledgeForRound` authority as target selection and command reconstruction.
+- Simulation continuation treats an explicit Beacon assignment as confirmed beacon authority even if an older global knowledge flag is missing.
+- Visible alien combat and escort-leader extraction remain higher-priority interruptions.
+- Save format remains 4; assets are unchanged.
+
+Validation
+- Embedded JavaScript syntax and host-shell syntax pass.
+- Deterministic coverage checks rescue-search exclusion, reserved-VIP tracker exclusion, Beacon execution authority, and unchanged save format.
+- Release validation checks payload byte count/SHA-256, byte-for-byte runtime identity, build/history synchronization, and ZIP integrity.
+
+---
+
 BUILD: v0.26.09.02.1527_EXPLICIT_BEACON_ASSAULT_STREAM_AUTHORITY_HOTFIX
 TITLE: Explicit Beacon Assault Stream Authority Hotfix
 DATE: September 2, 2026

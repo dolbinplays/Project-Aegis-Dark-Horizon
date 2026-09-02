@@ -1,10 +1,31 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.02.1527_EXPLICIT_BEACON_ASSAULT_STREAM_AUTHORITY_HOTFIX`
+Current browser build: `v0.26.09.02.1601_VIP_RESCUE_OBJECTIVE_AUTHORITY_AND_BEACON_ISOLATION_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1601: VIP Rescue Objective Authority + Beacon Isolation Hotfix
+
+### Current Build Delta
+- Autonomous VIP/tracker/building search may no longer commandeer a fire team that has an explicit non-civilian objective. A team assigned to an **Alien Field Beacon** is excluded from secure-rescue search movement unless the player changes that assignment.
+- Follow/Assist teams are also excluded from autonomous rescue search; they converge only through their explicit assist relationship.
+- VIPs already reserved by explicit civilian assignments are removed from the generic tracker-search pool. Default AI teams therefore do not crowd the same VIP/building merely because another team has already been deliberately assigned there.
+- When every unresolved VIP is already owned by explicit teams, the generic secure-rescue building sweep does not activate for unrelated teams. Explicit VIP teams continue their own approach/contact routes.
+- This closes an authority split where the VIP assignment planner respected Bravo's Beacon assignment but the separate secure-rescue search pass could still give Bravo a building target before ordinary objective movement ran.
+- The Beacon Assault final execution gate now uses `beaconKnowledgeForRound`, which already authenticates an explicit Beacon assignment, rather than independently requiring the older global beacon-knowledge flag.
+- Simulation continuation likewise treats an explicit active Beacon assignment as confirmed mission authority. The UI assignment, continuation gate, target selection, and attack gate now agree on the same objective.
+- Visible alien combat remains a temporary interruption. An escort-owning leader remains locked to extraction. Save format **4**, LOS, TU, pathfinding, damage, beacon shields, Last Known Contact behavior, and assets remain unchanged.
+
+### Deterministic Coverage
+- Explicit Beacon teams are absent from autonomous VIP/building search actors.
+- Explicitly reserved VIPs are excluded from generic tracker assignment.
+- Fully reserved VIP sets do not trigger unrelated secure-rescue sweep movement.
+- Beacon execution uses assignment-authenticated per-round knowledge.
+- Save format remains **4**.
+
+---
 
 ## Current Build Addendum — Browser 1527: Explicit Beacon Assault Stream Authority Hotfix
 
