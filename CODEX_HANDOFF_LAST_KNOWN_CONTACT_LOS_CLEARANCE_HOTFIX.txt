@@ -1,0 +1,25 @@
+PROJECT AEGIS HOTFIX HANDOFF
+BUILD: v0.26.09.01.2147_LAST_KNOWN_CONTACT_LOS_CLEARANCE_HOTFIX
+
+Issue fixed:
+Last-known alien markers were visually disappearing while their tile was in view but returning after the observer looked away because authoritative contact memory only auto-cleared by <=1 hex proximity.
+
+Root cause:
+`tacticalUpdateAlienContactMemory()` used `tacticalDistance(human, marker) <= TACTICAL_LAST_KNOWN_CONTACT_REACHED_DISTANCE` to retire `aegisLastSeenMarkerActive`. The renderer could temporarily suppress presentation independently, leaving the underlying record unresolved. `tacticalResolveLastKnownAlienContactAt()` also allowed proximity/report arrival to clear without an LOS verification.
+
+Hotfix:
+- Added `tacticalLastKnownAlienContactCellVerifiedBy()` using the existing same-deck + `hasLineOfSight()` authority.
+- `tacticalUpdateAlienContactMemory()` now permanently clears the contact record when any living AEGIS observer legitimately sees the stored cell empty.
+- `tacticalResolveLastKnownAlienContactAt()` now requires the intended report cell plus an investigating observer with legitimate LOS.
+- Simulation AI continues local investigation if report arrival does not yet provide verification.
+- New sightings reset/refresh contact memory, allowing a later new marker at the same location only after a real new sighting and loss.
+- Save format remains 4.
+
+Field acceptance:
+1. Spot alien.
+2. Lose LOS so Last Known Contact appears.
+3. Reorient/move a soldier until the recorded tile is legitimately visible while the alien is elsewhere.
+4. Confirm marker disappears.
+5. Turn/move away and confirm it does not return.
+6. Confirm a wall/smoke/out-of-cone view does not clear the record.
+7. Re-sight an alien on that same tile, lose it again, and confirm a new marker can be created.

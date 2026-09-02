@@ -1,3 +1,27 @@
+BUILD: v0.26.09.01.2147_LAST_KNOWN_CONTACT_LOS_CLEARANCE_HOTFIX
+TITLE: Last-Known Contact LOS Clearance Hotfix
+DATE: September 1, 2026
+
+Summary
+- Fixes last-known alien markers returning after a soldier has already looked at the recorded tile and verified that the alien is gone.
+
+Key changes
+- A living AEGIS soldier on the recorded deck now clears the underlying last-known-contact record when ordinary authoritative LOS confirms the stored hex is empty.
+- The marker therefore stays gone after the observer turns away; presentation can no longer merely suppress it while leaving an unresolved record behind.
+- Proximity alone no longer clears a report through walls, heavy smoke, or outside the soldier's vision cone.
+- Simulation AI uses the same LOS verification before resolving a report and continues bounded local investigation when the cell cannot yet be verified.
+- A later legitimate alien sighting refreshes the record normally, including on the same hex, so a new marker can appear there only after a new sighting followed by another loss of contact.
+- Hidden alien coordinates remain secret and are never consulted to clear the marker.
+- Threat-music intensity now tracks the corrected authoritative unresolved-report state.
+- Movement, TU, pathfinding, fog, targeting, civilian/VIP behavior, alien AI, save data, assets, and save format 4 are unchanged.
+
+Validation
+- Deterministic Build Health coverage now includes LOS-based empty-cell verification, blocked-LOS retention, Simulation clearance authority, and same-cell re-sighting/re-loss.
+- Embedded JavaScript syntax, host/payload build identity, payload byte count/SHA-256, payload/source identity, and documentation synchronization were checked for this release.
+- Live tactical field confirmation should reproduce the original case: lose contact, look directly at the empty marker tile, turn away, and confirm the marker does not return.
+
+---
+
 BUILD: v0.26.09.01.1553_LAST_KNOWN_ALIEN_CONTACT_AND_THREAT_MUSIC_PATCH
 TITLE: Last-Known Alien Contacts + Threat-Music Memory
 DATE: September 1, 2026

@@ -1,12 +1,26 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.01.1553_LAST_KNOWN_ALIEN_CONTACT_AND_THREAT_MUSIC_PATCH`
+Current browser build: `v0.26.09.01.2147_LAST_KNOWN_CONTACT_LOS_CLEARANCE_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 1553: Last-Known Alien Contacts + Threat-Music Memory
+## Current Build Addendum — Browser 2147: Last-Known Contact LOS Clearance Hotfix
+
+### Current Build Delta
+- Last-known alien markers now retire from the **authoritative contact record** as soon as a living AEGIS soldier on the recorded deck legitimately observes the stored hex and confirms the alien is no longer there. Turning away afterward cannot resurrect the marker.
+- Clearance uses the existing AEGIS vision cone, vision range, smoke obscuration, cover/window LOS rules, and deck authority. It does not read or infer the hidden alien's current coordinates.
+- Proximity alone is no longer sufficient. A soldier beside a report but unable to see the recorded cell through a wall, heavy smoke, or outside the current vision cone cannot clear it.
+- Simulation AI's report-arrival path now invokes the same LOS-authoritative clearance rule. If the cell is not yet verifiable, the soldier continues the established bounded local report search instead of deleting the report.
+- Reacquiring an alien refreshes the stored sighting normally. If that alien later occupies the same cell and contact is lost again, a new last-known marker may be created there; the hotfix clears reports, not map locations.
+- Mission Threat Theme ownership follows the corrected record lifecycle: contact intensity persists while the report is truly unresolved and drops only after authoritative clearance.
+- Hidden movement secrecy, live-contact targeting, civilian/VIP escorts, fire-team assignments, beacon objectives, movement, TU, pathfinding, fog, damage, saves, assets, and save format **4** are unchanged.
+- Deterministic coverage now checks LOS-based empty-cell verification, blocked-LOS retention, Simulation resolution authority, same-cell re-sighting/re-loss, marker persistence, music state, and save compatibility.
+
+---
+
+## Historical Build Addendum — Browser 1553: Last-Known Alien Contacts + Threat-Music Memory
 
 ### Current Build Delta
 - Every alien legitimately observed by an AEGIS soldier now records a player-side contact report containing only the verified hex, deck, round, and observer. Hidden movement cannot update or refine that report.
