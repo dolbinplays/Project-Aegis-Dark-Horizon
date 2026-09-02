@@ -1,3 +1,27 @@
+BUILD: v0.26.09.01.1553_LAST_KNOWN_ALIEN_CONTACT_AND_THREAT_MUSIC_PATCH
+TITLE: Last-Known Alien Contacts + Threat-Music Memory
+DATE: September 1, 2026
+
+Summary
+- Preserves momentary AEGIS alien sightings as knowledge-authoritative investigation markers, directs eligible AI search toward them, and keeps mission contact music elevated until each report is resolved.
+
+Key changes
+- A verified alien sighting now records only the observed hex, deck, round, and observer. Hidden alien movement never updates that record.
+- Losing LOS creates a persistent Last Known Contact marker in 2D Hex, 3D Iso, FPV, and TPV without rendering the hidden alien or exposing its live position.
+- Reacquiring the alien, alive or dead, removes the stale marker and refreshes the report from the newly observed location.
+- When no live alien is visible and no higher-priority escort or explicit objective applies, Simulation AI converges on unresolved contact reports before resuming ordinary fog search.
+- Reaching the reported area without reacquiring the alien clears the marker and returns the team to mission-status doctrine.
+- Unresolved reports keep the contact/intense segment of the Mission Threat Theme active. Clearing every report with no visible alien returns the existing crossfade to the low-intensity search segment.
+- Contact lifecycle fields persist through deterministic Simulation snapshots and streamed playback. Older optional frame data cannot silently erase a newer report.
+- Marker presentation is independent of continuous ground, fog, hidden-unit rendering, and static-scene rebuilds.
+- Live contact, active escort, player/fire-team orders, beacon objectives, TU, LOS, fog, movement, damage, saves, and save format 4 remain authoritative. `assets/` is unchanged.
+
+Validation
+- Deterministic Build Health covers first observation, hidden-position secrecy, report search priority, marker clearing, threat-music ownership, 2D/3D/FPV/TPV presentation, streamed playback continuity, and unchanged save format.
+- Deterministic packaging, embedded JavaScript syntax, manifest parsing, payload/source identity, and static release seams pass.
+
+---
+
 BUILD: v0.26.09.01.1111_RAMP_CONTACT_NONCLIPPING_CIVILIAN_BOARDING_PATCH
 TITLE: Ramp-Contact Nonclipping Civilian Boarding
 DATE: September 1, 2026

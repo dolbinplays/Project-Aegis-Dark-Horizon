@@ -1,27 +1,26 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.01.1111_RAMP_CONTACT_NONCLIPPING_CIVILIAN_BOARDING_PATCH`
+Current browser build: `v0.26.09.01.1553_LAST_KNOWN_ALIEN_CONTACT_AND_THREAT_MUSIC_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
 
-## Current Build Addendum — Browser 1111: Ramp-Contact Nonclipping Civilian Boarding
+## Current Build Addendum — Browser 1553: Last-Known Alien Contacts + Threat-Music Memory
 
 ### Current Build Delta
-- A soldier escort now owns evacuation only through the **exterior ramp contact cell**. Reaching that exact cell starts the civilian/VIP handoff; merely standing adjacent does not.
-- AI and manual soldier paths terminate at the ramp contact. The remaining narrow ramp and troop-bay aisle cells are movement-blocked for soldiers, removing the route that could trap an escort behind evacuees.
-- Every living civilian/VIP currently escorted by that soldier receives a deterministic approach-and-boarding trail through the same Skyranger. The escort remains on the exterior contact while the evacuees continue inside.
-- The civilian/VIP boarding phase is deliberately nonclipping for presentation. Living-unit occupancy cannot block its approach/ramp trail, while ordinary terrain and building obstacles remain respected before the ramp.
-- Multiple evacuees board one at a time in stable escort order. Simulation playback first completes the escort's visible movement to the ramp, then plays each evacuee's walking animation.
-- A boarding civilian/VIP remains rendered until their individual trail reaches the final interior cell. Only then does the rescued/extracted state remove the model.
-- Two-Skyranger deployments select the craft whose ramp the escort actually touches. Loaded legacy states that placed a living soldier in the troop-bay aisle relocate the soldier to a legal exterior cell.
-- The added interior movement prohibition does not turn the ramp into LOS or cover geometry. TU, fog, knowledge, rescue totals, mission resolution, formation support, saves, assets, and save format **4** remain unchanged.
-- Deterministic coverage verifies exact contact timing, exterior-only soldier paths, nonblocking civilian movement, stable multi-VIP sequencing, visual persistence through the final step, two-craft ownership, integrity repair, Manual/Simulation parity, and save compatibility.
+- Every alien legitimately observed by an AEGIS soldier now records a player-side contact report containing only the verified hex, deck, round, and observer. Hidden movement cannot update or refine that report.
+- Losing LOS creates a persistent **Last Known Contact** marker at the verified location in 2D Hex, 3D Iso, FPV, and TPV. It does not render the hidden alien or disclose the alien's current coordinates.
+- Reacquiring the alien, alive or dead, removes the stale marker and refreshes contact memory from the newly verified location.
+- When no living alien is currently visible and no higher-priority live escort or explicit objective owns the unit, Simulation AI investigates unresolved reports before returning to ordinary fog search.
+- Reaching the last-known area without reacquiring the alien clears that report and releases the team back to the mission's current objective doctrine.
+- An unresolved contact marker keeps the Mission Threat Theme on its contact/intense segment. Once every report is cleared and no alien is visible, the existing crossfade returns to the low-intensity search segment.
+- Contact state is included in deterministic AI snapshots and playback hydration. Playback cannot erase a report merely because an older frame omitted the newer optional fields.
+- Marker presentation remains separate from continuous ground, fog, unit rendering, and static scenery; camera movement and selection do not rebuild terrain.
+- Live-alien engagement, active escorts, player/fire-team orders, beacon objectives, LOS, fog, TU, pathfinding, formation movement, damage, saves, assets, and save format **4** remain authoritative and unchanged.
+- Deterministic coverage verifies contact capture, hidden-position secrecy, AI convergence, reacquisition/area-clear resolution, music state, all four tactical views, streamed playback continuity, and save compatibility.
 
 ### Roadmap Intake — Tactical Awareness, Battle HUD, VIP Presentation, Fire-Team Continuity, Buildings, Facing, and Base Construction
-- **Alien last-known-position contacts:** any alien legitimately spotted by an AEGIS soldier, including a momentary sighting during movement playback, creates a knowledge-authoritative last-seen marker when contact is lost. Seeing that alien again, alive or dead, removes the marker. With no visible living alien, eligible soldiers investigate the marker; after reaching it without reacquiring the contact, the marker clears and ordinary mission-status logic resumes. Hidden alien coordinates must never update the marker.
-- **Threat-music memory:** an unresolved last-seen alien marker keeps the contact/intense loop of the Mission Threat Theme active just as a currently visible alien does. Once the marker is resolved without reacquisition and no other contact remains, music may crossfade back to the low-intensity search loop.
 - **Fire-team physiological HUD row:** add one compact battle-screen panel per fire team along the bottom edge. Member abbreviations/icons use the formation diamond: leader centered at top, left/right support below, and optional fourth member centered at bottom. Each member receives a tiny animated heart trace whose color transitions from calm blue at full health to bright red when incapacitated or dead, while trace speed independently scales from steady at calm to extremely rapid during panic. The widget must remain cheap, readable, and synchronized with authoritative health, incapacity, and fear state.
 - **Tactical Readability relocation:** remove the always-visible battlefield overlay and place Tactical Readability beneath the left-column Time panel behind a button/expandable control, preserving the same information without covering the tactical scene.
 - **Visible VIP death cinema:** when a VIP known and currently visible to AEGIS is killed by aliens, use the existing bounded slow-motion hit/death camera language. Do not reveal unseen VIP deaths or attacker information.
@@ -32,6 +31,21 @@ Authoritative playable artifact: `index.html`
 - **Circular facing selector:** replace the cardinal-direction list with a spatial circular control aligned to the tactical camera/map so intended facing is immediately understandable without translating compass labels.
 - **Turn-to-target shooting:** selecting an alien for a manual shot automatically calculates and charges the authoritative TU needed to face it before validating/fire commitment. If the complete action is illegal, the soldier gives a concise reason-specific voice response such as no sightline, out of range, insufficient TU, blocked shot, or unavailable weapon; no TU/ammunition is spent unless the corresponding authoritative step commits.
 - **Base facility replacement:** allow an occupied build cell to replace its existing facility with another through an explicit destruction/replacement confirmation. The confirmation must identify the lost facility, construction cost/time, displaced staff/occupants, storage or capacity consequences, and any temporary loss of services before mutating base state.
+
+---
+
+## Historical Build Addendum — Browser 1111: Ramp-Contact Nonclipping Civilian Boarding
+
+### Current Build Delta
+- A soldier escort owns evacuation only through the **exterior ramp contact cell**. Reaching that exact cell starts the civilian/VIP handoff; merely standing adjacent does not.
+- AI and manual soldier paths terminate at the ramp contact. The remaining narrow ramp and troop-bay aisle cells are movement-blocked for soldiers, removing the route that could trap an escort behind evacuees.
+- Every living civilian/VIP currently escorted by that soldier receives a deterministic approach-and-boarding trail through the same Skyranger. The escort remains on the exterior contact while the evacuees continue inside.
+- The civilian/VIP boarding phase is deliberately nonclipping for presentation. Living-unit occupancy cannot block its approach/ramp trail, while ordinary terrain and building obstacles remain respected before the ramp.
+- Multiple evacuees board one at a time in stable escort order. Simulation playback first completes the escort's visible movement to the ramp, then plays each evacuee's walking animation.
+- A boarding civilian/VIP remains rendered until their individual trail reaches the final interior cell. Only then does the rescued/extracted state remove the model.
+- Two-Skyranger deployments select the craft whose ramp the escort actually touches. Loaded legacy states that placed a living soldier in the troop-bay aisle relocate the soldier to a legal exterior cell.
+- The added interior movement prohibition does not turn the ramp into LOS or cover geometry. TU, fog, knowledge, rescue totals, mission resolution, formation support, saves, assets, and save format **4** remain unchanged.
+- Deterministic coverage verifies exact contact timing, exterior-only soldier paths, nonblocking civilian movement, stable multi-VIP sequencing, visual persistence through the final step, two-craft ownership, integrity repair, Manual/Simulation parity, and save compatibility.
 
 ---
 
