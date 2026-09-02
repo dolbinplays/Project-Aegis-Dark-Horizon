@@ -1,10 +1,27 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.02.0041_LAST_KNOWN_CONTACT_PRIORITY_AND_SEARCH_DECONFLICTION_HOTFIX`
+Current browser build: `v0.26.09.02.0954_POST_CONTACT_FORMATION_AND_BEACON_OBJECTIVE_RESUME_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 0954: Post-Contact Formation + Beacon Objective Resume Hotfix
+
+### Current Build Delta
+- A fire team emerging from a live alien firefight or completed Last Known Contact investigation now enters an explicit **formation recovery** phase before any ordinary post-contact sweep or persistent objective movement resumes.
+- The acting fire-team leader holds while surviving supports return to their exact effective formation cells. This closes the field behavior where leaders immediately departed after a fight and left supports scattered across the contact area.
+- After formation is restored, a persistent **Assign Objectives** order resumes before generic distress, patrol, or sector-search behavior. Explicit Beacon Assault, objective-assist, and other persistent assignments are preserved rather than converted into post-contact fanout.
+- Explicit **Alien Field Beacon** assignments therefore survive temporary alien combat and Last Known Contact duty. Once those higher-priority conditions are resolved and the fire team has re-formed, the team resumes the assigned beacon approach/destruction doctrine automatically.
+- Fixes a resolver-order defect where a lingering civilian distress/search target could enter the `directResponse` movement branch before Beacon Assault movement even though later target selection correctly preferred the beacon. Persistent assigned objectives now block that stale direct-response branch while resuming.
+- The designated Beacon Assault breacher participates in the one-time re-form phase after contact, then returns to the established independent shield-entry/attack behavior. Supporting soldiers resume formation/security roles around the assault. If no member is currently breach-capable, the leader holds the assigned objective and reports the exact blocker instead of wandering into generic search.
+- Teams without a persistent objective still use Browser 0041's deconflicted post-contact sector slots, but only **after** their fire team has re-formed.
+- Visible live aliens remain the highest tactical interruption and active civilian/VIP escorts remain above contact recovery. Beacon shield capability, LOS, TU, pathfinding, weapon/grenade requirements, hidden information, save format **4**, and assets remain unchanged.
+
+### Validation
+- Deterministic Build Health coverage verifies leader hold/support re-form, recovery completion before search split, persistent Beacon Assault survival/resumption, stale distress-branch suppression, visible-combat interruption, and unchanged save format **4**.
+
+---
 
 
 ## Current Build Addendum — Browser 0041: Last-Known Contact Priority + Search Deconfliction Hotfix

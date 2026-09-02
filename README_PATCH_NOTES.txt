@@ -1,3 +1,26 @@
+BUILD: v0.26.09.02.0954_POST_CONTACT_FORMATION_AND_BEACON_OBJECTIVE_RESUME_HOTFIX
+TITLE: Post-Contact Formation + Beacon Objective Resume Hotfix
+DATE: September 2, 2026
+
+Summary
+- Re-forms fire teams after combat/contact investigations before resuming persistent objectives, and prevents stale distress/search movement from pulling explicitly assigned Beacon Assault teams away from their beacon.
+
+Key changes
+- When a firefight or Last Known Contact investigation ends, affected fire teams enter an explicit formation-recovery phase. Leaders hold while surviving supports return to their exact effective formation cells.
+- Generic post-contact sector fanout is deferred until the fire team is re-formed.
+- After formation recovery, persistent Assign Objectives orders resume before ordinary distress, patrol, or sector-search behavior.
+- An explicit Alien Field Beacon assignment therefore survives alien contact and marker investigation and resumes automatically once the immediate threat is dealt with.
+- Fixes the resolver branch where lingering distress/search state could execute direct movement before Beacon Assault movement despite the beacon being the selected target.
+- The designated beacon breacher participates in the one-time re-form phase, then regains independent shield-entry/attack behavior. If the assigned team currently has no capable breacher, its leader holds/re-forms and reports the blocker instead of wandering into generic search.
+- Unassigned teams still split into their established deconflicted search sectors after re-forming.
+- Visible aliens and active civilian/VIP escorts remain higher priority. Beacon shields, TU, LOS, pathfinding, ammunition, grenades, saves, assets, and save format 4 remain unchanged.
+
+Validation
+- Deterministic contracts cover leader hold/support re-form, completion of recovery before split-search release, persistent Beacon Assault identity, suppression of stale distress movement, combat interruption, and unchanged save format 4.
+- Release packaging verifies synchronized build identity, runtime payload byte count/SHA-256, byte-for-byte payload/source identity, embedded JavaScript syntax, and ZIP integrity.
+
+---
+
 BUILD: v0.26.09.02.0041_LAST_KNOWN_CONTACT_PRIORITY_AND_SEARCH_DECONFLICTION_HOTFIX
 TITLE: Last-Known Contact Priority + Search Deconfliction Hotfix
 DATE: September 2, 2026
