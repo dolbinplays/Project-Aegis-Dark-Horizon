@@ -1,10 +1,33 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.02.1144_BEACON_NEUTRALIZATION_AND_FIRE_TEAM_SEARCH_FORMATION_HOTFIX`
+Current browser build: `v0.26.09.02.1225_TACTICAL_FIRE_TEAM_PRIORITY_AND_OBJECTIVE_STATE_MACHINE_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1225: Tactical Fire-Team Priority + Objective State Machine
+
+### Current Build Delta
+- Tactical AI now resolves one authoritative shared state per fire team through the strict ladder **Live Combat → Active Escort → Last Known Contact → Re-form → Persistent Assignment → Default Search**. Lower-priority behaviors cannot take movement authority while a higher state owns the team.
+- The chosen state, priority, reason, round, and objective identity are copied to every living member. This makes the fire-team decision explicit instead of allowing each soldier to independently fall through combat, distress, search, command, beacon, and patrol branches.
+- Visible alien contact temporarily owns the team without deleting its standing assignment. Active civilian/VIP escort remains next priority. Unresolved Last Known Contact reports still outrank ordinary mission objectives and search.
+- When combat/contact work ends and the team is scattered, **Re-form** becomes authoritative. The leader holds while supports recover formation; only after formation is restored can the standing objective or default sector sweep resume.
+- **Persistent Assignment** covers explicit/assist mission objectives, assigned Beacon Assault, and active fire-team command orders. Distress movement and generic fallback patrol are inaccessible while this state owns the team.
+- An assigned active Alien Field Beacon therefore remains a standing objective across combat, contact investigation, and re-form transitions. If the team cannot legally advance or attack on a particular action, it holds/re-forms rather than silently abandoning the beacon for generic search.
+- Only **Default Search** may invoke generic fallback patrol. Systematic remaining-alien search continues to use leader-owned sector authority from Browser 1144; supporting soldiers derive formation slots from the leader instead of selecting independent fanout destinations.
+- FPV/TPV current-order presentation exposes Re-form and Last Known Contact team states to make field behavior easier to diagnose. State fields are optional save/playback metadata under save format **4**.
+- Existing Last Known Contact marker resolution, Beacon shield/weapon/grenade rules, escort authority, LOS, fog, TU, pathfinding, damage, mission outcomes, and assets remain unchanged.
+
+### Deterministic Coverage
+- State precedence across all six levels.
+- One shared state written to every living member.
+- Persistent objectives cannot fall into distress movement or fallback patrol.
+- Search targets are inaccessible to persistent assignments unless a higher contact state owns the team.
+- Re-form/contact state presentation and streamed snapshot retention.
+- Save format remains **4**.
+
+---
 
 ## Current Build Addendum — Browser 1144: Beacon Neutralization + Fire-Team Search Formation Hotfix
 

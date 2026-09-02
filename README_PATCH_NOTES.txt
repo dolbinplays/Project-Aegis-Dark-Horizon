@@ -1,3 +1,28 @@
+BUILD: v0.26.09.02.1225_TACTICAL_FIRE_TEAM_PRIORITY_AND_OBJECTIVE_STATE_MACHINE_PATCH
+TITLE: Tactical Fire-Team Priority + Objective State Machine
+DATE: September 2, 2026
+
+Summary
+- Consolidates competing tactical AI movement/objective behaviors into one authoritative fire-team state so temporary interruptions no longer erase or bypass standing objectives.
+
+Key changes
+- Strict fire-team priority: Live Combat, Active Escort, Last Known Contact, Re-form, Persistent Assignment, Default Search.
+- Every living member receives the same team state, priority, reason, round, and objective identity.
+- Visible alien combat and escort/contact duties temporarily interrupt standing objectives without deleting them.
+- Scattered teams explicitly re-form before persistent objectives or default sector search resume.
+- Beacon Assault, explicit/assist objectives, and active fire-team command orders block stale distress movement and generic patrol.
+- Generic fallback patrol is legal only in Default Search.
+- Persistent assignments with no legal action hold/re-form rather than wander.
+- Existing leader-owned search-sector deconfliction and support formation following are preserved.
+- FPV/TPV current-order text exposes Re-form and Last Known Contact states for field diagnosis.
+- New state metadata is retained through tactical snapshots while save format remains 4.
+
+Validation
+- Deterministic contracts cover state precedence, shared state ownership, persistent-objective fallback blocking, state-owned search access, diagnostics, snapshot fields, and unchanged save format.
+- Embedded JavaScript syntax, packaged payload byte/SHA identity, history/version synchronization, and ZIP integrity are release gates.
+
+---
+
 BUILD: v0.26.09.02.1144_BEACON_NEUTRALIZATION_AND_FIRE_TEAM_SEARCH_FORMATION_HOTFIX
 TITLE: Beacon Neutralization + Fire-Team Search Formation Hotfix
 DATE: September 2, 2026
