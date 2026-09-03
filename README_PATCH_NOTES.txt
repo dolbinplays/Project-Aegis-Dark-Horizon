@@ -1,3 +1,28 @@
+BUILD: v0.26.09.02.2233_EXPLICIT_VIP_POST_COMBAT_RESUME_HOTFIX
+TITLE: Explicit VIP Post-Combat Resume Hotfix
+DATE: September 2, 2026
+
+Summary
+- Fixes explicitly VIP-assigned fire teams that re-form after a firefight but then sit indefinitely until the player switches them back to Default AI.
+
+Key changes
+- An explicit living/unrescued VIP assignment now counts as active rescue work even when the VIP is unrevealed and excluded from generic tracker/search allocation.
+- The rescue phase no longer exits early simply because all remaining VIPs are already reserved by explicit teams.
+- Explicit VIP approach does not require the generic vipTracker flag once the player has deliberately assigned the objective.
+- Post-contact formation completion clears stale rescue-route target/visited/stall scratch state while preserving aiVipRescueTargetId and the persistent Assign Objectives assignment.
+- Expected transition: VIP approach -> visible-alien combat -> re-form -> resume the same VIP approach automatically.
+- Default AI is no longer needed as a manual reset.
+- Browser 2155 escort separation/fear/catch-up pacing, Browser 2124 null-contact purge, Beacon Assault behavior, LOS, TU, collision, save format 4, and assets remain unchanged.
+
+Validation
+- Embedded runtime JavaScript syntax checks pass.
+- Host shell JavaScript syntax check passes.
+- Packaged runtime is verified byte-for-byte against the canonical source with matching source byte count and SHA-256.
+- Patch-history metadata keeps exactly one mutable current-build entry.
+- ZIP extraction/integrity validation passes.
+
+---
+
 BUILD: v0.26.09.02.2155_CIVILIAN_ESCORT_SEPARATION_FEAR_AND_CATCHUP_PACING_PATCH
 TITLE: Civilian Escort Separation Fear + Catch-Up Pacing
 DATE: September 2, 2026

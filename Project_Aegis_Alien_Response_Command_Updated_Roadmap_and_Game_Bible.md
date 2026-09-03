@@ -1,10 +1,27 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.02.2155_CIVILIAN_ESCORT_SEPARATION_FEAR_AND_CATCHUP_PACING_PATCH`
+Current browser build: `v0.26.09.02.2233_EXPLICIT_VIP_POST_COMBAT_RESUME_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 2233: Explicit VIP Post-Combat Resume Hotfix
+
+### Current Build Delta
+- Fixes the field case where a fire team is explicitly assigned to a VIP, temporarily breaks away to fight visible aliens, successfully re-forms after combat, and then sits indefinitely instead of resuming its original VIP approach. Switching the team to Default AI is no longer required to restart movement.
+- Root cause: explicitly reserved VIPs are intentionally excluded from generic rescue/tracker search, but the rescue-turn early-return gate previously treated the absence of generic search work as permission to stop processing. An unrevealed assigned VIP could therefore leave the team in persistent-objective hold even though the player-authored VIP assignment remained intact.
+- A living, unrescued, unescorted **explicitly assigned VIP** now counts as active rescue work in its own right. The rescue phase continues and sends the assigned fire-team leader toward that VIP even when the VIP is not currently revealed and no generic tracker/search assignment exists.
+- Explicit VIP approach no longer depends on the generic `vipTracker` flag after the player has deliberately assigned that known civilian objective to a team.
+- Completing post-contact formation recovery now clears only stale rescue-route scratch state (`aiRescueTargetId`, visited cells, and stall counters). The persistent `aiVipRescueTargetId` and the player-authored Assign Objectives record remain untouched, forcing a clean route rebuild to the same VIP.
+- The intended transition is now deterministic: **VIP APPROACH → visible-alien combat interruption → RE-FORM → VIP APPROACH**, unless a genuinely higher-priority live combat, active escort, or valid Last Known Contact duty exists.
+- Browser 2155 civilian fear/cover/catch-up behavior, Browser 2124 Last Known Contact null-target purge, Beacon Assault authority/cohesion, TU, LOS, collision, assets, and save format **4** remain unchanged.
+
+### Validation
+- Deterministic Build Health coverage verifies that an unrevealed explicitly assigned VIP survives planning, bypasses the old no-spotted/no-generic-search early return, does not require `vipTracker`, and retains its persistent assignment while stale post-combat rescue-route scratch state is reset.
+- This completes the **post-combat objective-resume** portion of the approved **VIP Rescue Approach, Contact, and Building Deconfliction** roadmap item. Doorway ownership, alternate-ingress replanning, and multi-team building deconfliction remain future work.
+
+---
 
 ## Current Build Addendum — Browser 2155: Civilian Escort Separation Fear + Catch-Up Pacing
 
@@ -586,6 +603,22 @@ Authoritative playable artifact: `index.html`
 - Browser 1921 resolves the confirmed conflict: Field Beacon assignment now emits typed `beacon-assault` metadata and a legal shield-entry anchor, while the resolver recognizes that order as assault intent rather than a generic `playerCommandTarget`.
 - The dedicated team-local breacher, immediate-attack hold, bounded obstruction counter, and support perimeter-clearing behavior apply before the beacon becomes the sole remaining objective.
 - Full Simulation and Hybrid retain the player's explicit objective identity while known live aliens and active escorts remain higher priority. Clearing, replacing, or defaulting the assignment still removes its derived command state through the established objective transaction.
+
+---
+
+## Approved Roadmap — VIP Rescue Approach, Contact, and Building Deconfliction
+
+- Make the complete pre-escort rescue sequence deterministic and resistant to doorway/building deadlocks: **assigned VIP approach → legitimate building ingress → leader/VIP contact → escort ownership → formation → extraction**.
+- **One assigned fire team owns each VIP's approach.** Other fire teams must not crowd that VIP or its building unless they are explicitly assigned to follow/assist that primary team. A persistent non-VIP assignment such as Beacon Assault remains isolated from autonomous VIP/building-search logic.
+- The assigned fire-team leader selects and owns a specific legitimate **building ingress route and doorway**. Supporting soldiers remain attached to the leader in formation and provide security instead of independently competing for the same doorway or VIP contact cell.
+- If the preferred entrance is blocked or the team fails to make measurable approach progress for a bounded number of attempts/rounds, recalculate using another legitimate entrance or approach cell rather than stacking indefinitely. Do not solve blockage by clipping through walls, occupied cells, vehicles, closed geometry, or other invalid terrain.
+- Establish escort ownership **immediately when the leader reaches a legitimate engagement/contact position with the assigned VIP**. A nearby assigned VIP must not remain stationary for repeated rounds merely because the ideal contact cell is occupied or the leader is one legal adjacent/interaction position away.
+- When multiple VIPs occupy the same building, distribute their explicitly assigned teams across viable entrances/contact approaches where possible so all teams do not converge on the same doorway. Preserve one primary owner per VIP and existing Follow/Assist semantics.
+- Add bounded **no-progress detection**. A VIP-rescue approach counts as progress when the team reduces legitimate route distance to its assigned VIP, reaches/changes to a viable ingress cell, opens or clears an approach route, enters the target structure, or establishes VIP contact. If none occurs within the bounded window, invalidate the stale route and replan.
+- Visible alien contact may temporarily interrupt an unengaged VIP approach, but once the firefight/contact duty ends the team must resume the **same assigned VIP** rather than forgetting the assignment, joining generic search, or being redirected to another rescue target. Once the leader actually owns escorted civilians/VIPs, the existing escort-leader extraction lock remains absolute until that escort is resolved.
+- Preserve Browser 2155 escort behavior after contact: separated civilians/VIPs may become frightened and seek legitimate cover, a lagging evacuee slows the escort leader to catch-up pacing, the leader never abandons owned evacuees, and Skyranger ramp/boarding authority remains unchanged.
+- Add concise developer diagnostics for rescue ownership and progress, e.g. **`ALPHA — VIP APPROACH: Morgan | Door 3 | 8 hexes | progressing`**, including current VIP ID/name, ingress target, route distance, no-progress counter, contact/escort state, and any specific blocker. Diagnostics must not reveal hidden information to the player-facing UI.
+- Add deterministic Build Health coverage for explicit VIP ownership, Beacon/non-rescue isolation, multi-VIP same-building deconfliction, support formation at ingress, alternate-door replanning, blocked/occupied contact cells, no-progress recovery, combat interruption/resumption, transition into Browser 2155 escort behavior, and unchanged save format **4**.
 
 ---
 
