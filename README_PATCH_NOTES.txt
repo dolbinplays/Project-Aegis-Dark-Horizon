@@ -1,3 +1,25 @@
+BUILD: v0.26.09.03.1511_BEACON_OBJECTIVE_COMPLETION_AND_ASSIST_RELEASE_HOTFIX
+TITLE: Beacon Objective Completion + Assist Release Hotfix
+DATE: September 3, 2026
+
+Summary
+- Fixes Beacon-assigned and dependent Assist fire teams that finish the Beacon objective, re-form, and then remain frozen in a completed persistent-assignment state.
+
+Key changes
+- The assigned Beacon target now has an explicit objective-completion lifecycle. Destroyed, disabled, or legitimately removed completed targets release their persistent assignment.
+- The primary team's Beacon assignment, typed Beacon Assault command, engagement lock/resume residue, and stale persistent-objective tactical metadata are cleared together.
+- Any fire team assigned only to Assist that primary team is released in the same transaction when the Beacon objective completes.
+- The primary team does not wait for the assisting team to form up; each fire team retains its own formation recovery.
+- Once its own re-forming is complete, every released team returns to Default AI/deconflicted sector search automatically.
+- Active Beacon objectives and active Assist relationships are untouched while the assigned target remains active.
+- VIP rescue, Last Known Contact, escort authority, Beacon shield/breach rules, collision, LOS, TU, damage, assets, and save format 4 remain unchanged.
+
+Validation
+- Deterministic Build Health covers active-vs-completed assignment release, dependent Assist release, unrelated VIP assignment preservation, Default Search eligibility after recovery, streamed Simulation reconciliation, and save format 4.
+- Embedded runtime and host JavaScript syntax, payload/source identity, byte count/SHA-256, patch-history uniqueness, and ZIP integrity are release-checked.
+
+---
+
 BUILD: v0.26.09.03.1403_VIP_RESCUE_APPROACH_CONTACT_AND_BUILDING_DECONFLICTION_PATCH
 TITLE: VIP Rescue Approach, Contact + Building Deconfliction
 DATE: September 3, 2026

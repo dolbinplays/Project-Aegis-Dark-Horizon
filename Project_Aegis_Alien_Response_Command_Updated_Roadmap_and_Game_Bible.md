@@ -1,10 +1,27 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.03.1403_VIP_RESCUE_APPROACH_CONTACT_AND_BUILDING_DECONFLICTION_PATCH`
+Current browser build: `v0.26.09.03.1511_BEACON_OBJECTIVE_COMPLETION_AND_ASSIST_RELEASE_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1511: Beacon Objective Completion + Assist Release Hotfix
+
+### Current Build Delta
+- Fixes the field case where a fire team completes an explicitly assigned **Alien Field Beacon** objective, re-forms successfully, and then remains stationary because the completed assignment still holds `PERSISTENT_ASSIGNMENT` authority.
+- Beacon assignments now have an explicit completion lifecycle tied to their assigned beacon target. If that exact beacon is destroyed, disabled, or legitimately removed after completion, the objective record is retired instead of remaining indefinitely actionable.
+- Completion clears the primary team's persistent Beacon assignment, typed Beacon Assault command metadata, Beacon engagement lock/resume residue, and stale tactical-state objective metadata. It does **not** erase legitimate post-combat formation-recovery state.
+- A fire team assigned to **Assist** the Beacon team is released in the same completion transaction when the primary Beacon objective ends. Assist formations remain independent; the primary team never waits for an assisting team to rendezvous or join its formation before moving again.
+- After any required re-forming is complete, both the former Beacon team and released Assist teams return automatically to **Default AI / deconflicted sector search**. No Assign Objectives toggle or Default-AI manual reset is required.
+- Active Beacon assignments are unchanged while the target is still active. Visible-alien combat, escort-leader locks, valid Last Known Contact investigation, VIP rescue, Beacon shield/breach rules, TU, LOS, collision, and damage remain authoritative.
+- The cleanup runs at the beginning of each streamed Simulation round so completed Beacon/Assist assignment residue cannot survive into later AI chunks. Save format remains **4**.
+
+### Validation
+- Deterministic Build Health coverage checks that an active Beacon does not release assignments, neutralization releases both primary and dependent Assist teams, unrelated explicit VIP assignments survive, the released primary team becomes eligible for Default Search after formation recovery, and save format remains **4**.
+- Runtime/host syntax, embedded-payload identity, SHA-256/byte count, patch-history ownership, and ZIP integrity are release-checked during packaging.
+
+---
 
 ## Current Build Addendum — Browser 1403: VIP Rescue Approach, Contact + Building Deconfliction
 
