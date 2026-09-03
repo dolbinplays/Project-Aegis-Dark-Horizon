@@ -1,3 +1,28 @@
+BUILD: v0.26.09.02.2124_LAST_KNOWN_CONTACT_NULL_TARGET_PURGE_AND_OBJECTIVE_RELEASE_HOTFIX
+TITLE: Last-Known Contact Null-Target Purge + Objective Release Hotfix
+DATE: September 2, 2026
+
+Summary
+- Fixes phantom Last Known Contact tasks whose coordinates have already been cleared but whose marker/task flags survive, producing `hex null,null` and preventing fire teams from resuming assigned VIP rescue/objective work.
+
+Key changes
+- Last Known Contact coordinates now require a strict valid battlefield cell. `null`, `undefined`, empty strings, NaN, and out-of-map values can no longer become a false 0,0 contact through JavaScript numeric coercion.
+- An active marker with no valid recorded cell is automatically retired as corrupted/stale contact state.
+- When no valid unresolved contact remains, stale leader/team contact locks, local contact-search coordinates, and Last Known Contact tactical-state metadata are cleared so teams can re-form and resume their persistent VIP or mission assignments.
+- Simulation performs the sanitation at the beginning of every AEGIS round, preventing malformed streamed state from repeatedly reclaiming tactical priority.
+- Playback contact-memory merge now refuses to reactivate a contact/marker unless it has a valid coordinate pair.
+- FPV/TPV current-objective presentation uses the same strict coordinate validation and will not display `hex null,null`.
+- Battlefield load/remount integrity repair now validates stored Last Known Contact, local contact-search, and locked team-contact coordinate pairs.
+- Valid Last Known Contact behavior remains unchanged: real markers retain their established priority, team pursuit, LOS verification, tombstones, music ownership, and search deconfliction.
+- Beacon Assault behavior and save format 4 are unchanged.
+
+Validation
+- All embedded runtime JavaScript blocks and the persistent host shell pass syntax checks.
+- Deterministic coverage includes a malformed `markerActive:true + null/null` record and verifies that it is purged, the fire-team contact lock releases, the HUD cannot print `null,null`, and the team's VIP objective becomes current again.
+- Release validation checks exact runtime payload byte count/SHA-256, byte-for-byte payload/source identity, one mutable current patch-history entry, and ZIP integrity.
+
+---
+
 BUILD: v0.26.09.02.1919_BEACON_ASSAULT_TEAM_COHESION_AND_FORMATION_RECOVERY_HOTFIX
 TITLE: Beacon Assault Team Cohesion + Formation Recovery Hotfix
 DATE: September 2, 2026

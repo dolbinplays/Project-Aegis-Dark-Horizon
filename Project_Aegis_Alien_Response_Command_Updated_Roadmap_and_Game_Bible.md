@@ -1,10 +1,33 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.02.1919_BEACON_ASSAULT_TEAM_COHESION_AND_FORMATION_RECOVERY_HOTFIX`
+Current browser build: `v0.26.09.02.2124_LAST_KNOWN_CONTACT_NULL_TARGET_PURGE_AND_OBJECTIVE_RELEASE_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 2124: Last-Known Contact Null-Target Purge + Objective Release Hotfix
+
+### Current Build Delta
+- Fixes the observed **`Search last known contact near hex null,null`** failure. The root cause was a malformed contact lifecycle state in which a Last Known Contact marker/task flag could survive after its X/Y coordinates were already cleared. JavaScript numeric coercion could then treat `null` as zero in several legacy validity checks.
+- Last Known Contact existence now requires one strict, playable coordinate pair. `null`, `undefined`, empty, NaN, partial, and out-of-map coordinates are never considered an unresolved report.
+- At the beginning of every AEGIS Simulation round, malformed active contact records are purged. Their alien contact flag is retired and any stale fire-team/local investigation locks referencing the invalid report are removed.
+- If no valid Last Known Contact remains, a fire team cannot stay in `LAST_KNOWN_CONTACT` state solely because old streamed metadata says it was searching. The state is released so established **re-form → persistent assignment** authority can take over. This specifically allows teams assigned to unengaged VIPs to return to gathering/rescue instead of remaining trapped by a coordinate-less contact task.
+- Playback memory merge now requires valid contact coordinates before restoring `aegisContactObserved` or `aegisLastSeenMarkerActive`, preventing an older/malformed frame from manufacturing another phantom task.
+- FPV/TPV current-objective text uses the same strict map-cell validator and therefore cannot render `hex null,null` or silently reinterpret it as `0,0`.
+- Battlefield integrity repair now includes AEGIS last-seen coordinates, local contact-search targets, and locked Last Known Contact team targets, including cleanup of dependent lock metadata when those pairs are invalid.
+- Legitimate Last Known Contact markers are unchanged: they still outrank ordinary/default work, use leader-owned team pursuit, require legitimate LOS verification, retain resolution tombstones, drive threat music while unresolved, and deconflict search teams after resolution.
+- Beacon Assault authority, VIP ownership rules, escort locks, TU, fog, LOS, pathfinding, damage, assets, and save format **4** remain unchanged.
+
+### Deterministic Coverage
+- A synthetic alien with `aegisLastSeenMarkerActive=true` and `aegisLastSeenX/Y=null` creates zero real markers.
+- The malformed record is purged and cannot keep `tacticalMissionHasUnresolvedAlienContact()` true.
+- A fire team carrying stale null contact-search/lock state is released from Last Known Contact tactical state.
+- The same team's explicit VIP objective immediately becomes the current HUD objective after release.
+- Playback cannot reactivate a marker without a valid cell.
+- Save format remains **4**.
+
+---
 
 ## Current Build Addendum — Browser 1919: Beacon Assault Team Cohesion + Formation Recovery Hotfix
 
