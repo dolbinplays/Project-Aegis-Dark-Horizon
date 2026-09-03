@@ -1,10 +1,31 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.02.1601_VIP_RESCUE_OBJECTIVE_AUTHORITY_AND_BEACON_ISOLATION_HOTFIX`
+Current browser build: `v0.26.09.02.1919_BEACON_ASSAULT_TEAM_COHESION_AND_FORMATION_RECOVERY_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1919: Beacon Assault Team Cohesion + Formation Recovery Hotfix
+
+### Current Build Delta
+- Fixes the case where one Bravo support correctly becomes the Beacon Assault breacher and can eventually destroy the device, while the leader and other support retreat after combat and then stop because ordinary formation recovery is waiting for the detached breacher to return.
+- An active explicit Beacon Assault now **reforms forward**. Generic post-contact formation recovery is completed/retired for that team once the firefight and higher-priority duties are clear; it cannot pull the leader away from the still-active beacon.
+- The fire-team leader is the **Beacon Assault movement anchor**. The leader continues closing on the active beacon rather than holding at a pre-assault regroup location.
+- The designated breach-capable member remains free to use the legal firing/shield-entry position and attack the beacon. The breacher is intentionally exempt from the ordinary formation diamond while the assault is active.
+- The remaining support soldier follows a normal formation slot around the advancing leader and therefore moves with the assault group rather than independently wandering or waiting for the breacher to re-form.
+- During this forward rebuild, leader-anchor, breacher, and support-form-up movement bypass ordinary fire-team pace gating. A breacher already ahead at the beacon can no longer reduce the leader's movement allowance to zero and create a permanent formation wait.
+- After the group is established, non-breacher members remain local to the assault and provide support/cover while the selected breacher or any compatible member continues attacks until the beacon is destroyed or legitimately disabled.
+- Visible alien combat and the escort-leader extraction lock remain higher priority. Browser 1601 VIP objective isolation, Last Known Contact authority, beacon shielding, TU, LOS, pathfinding, damage, saves, assets, and save format **4** remain unchanged.
+
+### Deterministic Coverage
+- Active Beacon Assault suppresses generic post-contact retreat/regroup behavior.
+- Leader, breacher, and remaining support receive distinct assault-cohesion roles.
+- Leader-anchor and support-form-up movement cannot be pace-blocked by the detached breacher.
+- Existing ordinary post-contact formation behavior remains unchanged for teams without an active Beacon Assault.
+- Save format remains **4**.
+
+---
 
 ## Current Build Addendum — Browser 1601: VIP Rescue Objective Authority + Beacon Isolation Hotfix
 

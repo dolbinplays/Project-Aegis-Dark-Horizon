@@ -1,3 +1,26 @@
+BUILD: v0.26.09.02.1919_BEACON_ASSAULT_TEAM_COHESION_AND_FORMATION_RECOVERY_HOTFIX
+TITLE: Beacon Assault Team Cohesion + Formation Recovery Hotfix
+DATE: September 2, 2026
+
+Summary
+- Fixes the case where the designated Beacon Assault breacher stays at the beacon and succeeds alone while the leader and other support retreat after combat and become stuck trying to reform around a member who is intentionally detached for the assault.
+
+Key changes
+- Active explicit Beacon Assault overrides generic post-contact regrouping; the team reforms forward around the beacon objective instead of retreating to a pre-assault leader position.
+- The fire-team leader becomes the assault movement anchor and keeps closing on the still-active beacon.
+- The designated breacher remains free to occupy the legal firing/shield-entry position and continue attacking.
+- The other support follows its normal formation slot around the advancing leader rather than independently leaving or idling.
+- Leader-anchor, breacher, and support-form-up movement bypass ordinary fire-team pace gating during the assault rebuild, preventing the detached breacher from freezing the leader's movement allowance.
+- Once positioned, non-breach members remain local to the beacon assault while the device remains active.
+- Visible combat and escort-leader extraction remain higher priority; VIP isolation, Last Known Contact behavior, shields, TU, LOS, damage, save format 4, and assets are unchanged.
+
+Validation
+- Embedded runtime and host-shell JavaScript syntax checks pass.
+- Deterministic coverage verifies forward Beacon regrouping, distinct leader/breacher/support roles, pace override, ordinary-team formation preservation, and save format 4.
+- Release validation checks one mutable current history entry, exact runtime payload byte count/SHA-256, byte-for-byte payload/source identity, and ZIP integrity.
+
+---
+
 BUILD: v0.26.09.02.1601_VIP_RESCUE_OBJECTIVE_AUTHORITY_AND_BEACON_ISOLATION_HOTFIX
 TITLE: VIP Rescue Objective Authority + Beacon Isolation Hotfix
 DATE: September 2, 2026
