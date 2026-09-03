@@ -1,3 +1,27 @@
+BUILD: v0.26.09.03.1548_TACTICAL_ROUND_PREPARATION_INTERSTITIAL_AND_FLAVOR_PATCH
+TITLE: Tactical Round Preparation Interstitial + Flavor
+DATE: September 3, 2026
+
+Summary
+- Turns real between-round streamed-AI waits into an intentional AEGIS tactical-command interstitial while leaving successful background one-round-ahead planning invisible.
+
+Key changes
+- The interstitial is shown only when playback has actually reached the end of its prepared buffer and the next streamed tactical round is still pending/required. It never appears merely because background look-ahead is running.
+- A 260 ms anti-flicker threshold hides very short waits; planning is never deliberately delayed to make the presentation visible.
+- The functional layer shows the upcoming round plus FIRE TEAMS RECEIVING ORDERS / CALCULATING TACTICAL ROUND. A separate deterministic flavor line supplies personality without revealing hidden tactical information.
+- Flavor is weighted mostly serious with occasional humor. The approved **Synchronizing Swatches…** Parker Lewis nod is included with original AEGIS lines such as Redistributing ammunition and optimism… and Waiting for Bravo to get the memo….
+- At 1.8 seconds of visible waiting, flavor is replaced with the truthful **AI THINKING ONE ROUND AHEAD…** status. Existing automatic replanning and Retry AI Continuation diagnostics remain unchanged.
+- The first-round Transferring Tactical Command screen now also carries deterministic flavor beneath its real planning progress.
+- The overlay preserves the current 3D Iso/FPV/TPV observer perspective and disappears immediately when the next round arrives. Reduced-motion preferences disable its scan/pulse/card-in animation.
+- AI decisions, objective priority, Battle Speed, TU, LOS, pathfinding, save state, assets, and save format 4 are unchanged.
+
+Validation
+- All five executable embedded runtime JavaScript blocks pass node syntax validation.
+- Build Health coverage verifies deterministic flavor, the Synchronizing Swatches line, continuation-derived round number, end-of-buffer gating, anti-flicker timing, long-wait escalation, reduced-motion support, initial handoff flavor, and save format 4.
+- Host shell/payload metadata, exact embedded-runtime byte identity, byte count/SHA-256, patch-history uniqueness, and ZIP integrity are release-checked.
+
+---
+
 BUILD: v0.26.09.03.1511_BEACON_OBJECTIVE_COMPLETION_AND_ASSIST_RELEASE_HOTFIX
 TITLE: Beacon Objective Completion + Assist Release Hotfix
 DATE: September 3, 2026
