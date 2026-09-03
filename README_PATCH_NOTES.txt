@@ -1,3 +1,27 @@
+BUILD: v0.26.09.03.1403_VIP_RESCUE_APPROACH_CONTACT_AND_BUILDING_DECONFLICTION_PATCH
+TITLE: VIP Rescue Approach, Contact + Building Deconfliction
+DATE: September 3, 2026
+
+Summary
+- Makes the complete assigned-VIP approach deterministic from fire-team ownership through building ingress and contact, while preventing multi-team doorway pileups and automatically replanning stalled approaches.
+
+Key changes
+- Each assigned VIP has one authoritative fire-team approach owner; explicitly assigned VIPs cannot be swept into another team's escort merely because they share a building.
+- The assigned leader remains the approach anchor and supports continue using established formation movement around that leader.
+- VIPs inside buildings receive deterministic door/breach ingress reservations. Teams targeting the same structure prefer different legal openings when available.
+- If only one usable entrance exists, one team owns it while another stages clear of the doorway until ingress ownership becomes available.
+- A VIP approach with no movement/progress for two attempts invalidates its current entrance, clears only temporary route scratch state, and recalculates another entrance on the next round. The persistent Assign Objectives record remains intact.
+- Successful leader/VIP contact immediately clears temporary ingress state and transitions into the established escort/extraction behavior.
+- AI observer diagnostics can show VIP name, selected door/breach, remaining distance, and progressing/staged state.
+- Browser 2233 post-combat VIP resume, Browser 2155 civilian fear/catch-up pacing, Browser 2124 Last Known Contact sanitation, Beacon Assault authority/cohesion, LOS, TU, collision, assets, and save format 4 remain intact.
+
+Validation
+- All five executable embedded runtime JavaScript blocks pass `node --check`.
+- A targeted deconfliction smoke test verifies two teams choose separate available doors, explicit VIP ownership prevents cross-team collection, and a second team queues when only one entrance exists.
+- Host shell/payload metadata, SHA-256/byte count, patch-history uniqueness, and ZIP integrity are release-checked during packaging.
+
+---
+
 BUILD: v0.26.09.02.2233_EXPLICIT_VIP_POST_COMBAT_RESUME_HOTFIX
 TITLE: Explicit VIP Post-Combat Resume Hotfix
 DATE: September 2, 2026

@@ -1,30 +1,10 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.03.1403_VIP_RESCUE_APPROACH_CONTACT_AND_BUILDING_DECONFLICTION_PATCH`
+Current browser build: `v0.26.09.02.2233_EXPLICIT_VIP_POST_COMBAT_RESUME_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
-
-## Current Build Addendum — Browser 1403: VIP Rescue Approach, Contact + Building Deconfliction
-
-### Current Build Delta
-- Implements the core of the approved **VIP Rescue Approach, Contact, and Building Deconfliction** roadmap item on top of Browser 2233. The pre-escort sequence now has one authoritative fire-team owner from persistent assignment through approach, building ingress, leader/VIP contact, and handoff into escort/extraction.
-- **Explicit VIP ownership is exclusive.** A fire team contacting civilians inside a shared building will not automatically absorb a VIP explicitly assigned to another team. Unassigned civilians in the same structure may still join the contacting leader up to the normal escort capacity.
-- Assigned VIPs inside buildings now receive deterministic **ingress reservations**. Each rescue leader evaluates legitimate doors and existing breaches using the established hazard-aware route authority; teams targeting the same building prefer different openings when alternatives exist.
-- When only one usable entrance exists, the first rescue team owns that ingress while later teams receive an intentional staging/queue state clear of the doorway. Once the current owner enters the structure, the waiting team can inherit the opening on a later round instead of piling into the same cell cluster.
-- The fire-team leader remains the movement anchor during VIP approach. Supporting soldiers follow the existing fire-team formation mover rather than independently selecting the VIP, doorway, or contact cell.
-- VIP approach now carries bounded **no-progress recovery**. Two failed approach attempts mark the current opening stale for several rounds, clear only temporary rescue-route/ingress scratch state, and force another ingress calculation without erasing the persistent VIP assignment.
-- On legitimate adjacency/contact, the temporary ingress reservation is cleared and the team transitions immediately into the established escort state. Browser 2155 separation fear, cover seeking, half-pace catch-up, and extraction behavior then remain authoritative.
-- AI observer diagnostics can carry a concise line such as **`ALPHA — VIP APPROACH: Morgan | Door 18,24 | 8 hexes | progressing`** or a staged/waiting variant. The data is derived from already-known assigned objectives and does not expose hidden alien information.
-- Browser 2233 post-combat objective resume remains intact: **VIP APPROACH → combat interruption → RE-FORM → same VIP APPROACH**. Beacon Assault isolation, Last Known Contact null-target sanitation, collision, LOS, TU, assets, and save format **4** remain unchanged.
-
-### Validation
-- Runtime syntax validation passes for all five executable embedded JavaScript blocks.
-- A targeted executable smoke test verifies that two teams assigned to two VIPs in the same building choose different openings when two doors exist, cannot collect one another's explicitly assigned VIP, and intentionally queue one team when only a single entrance exists.
-- Deterministic Build Health contracts cover ownership, ingress assignment, bounded stalled-route replanning, streamed approach metadata, diagnostics, and save format **4**.
-
----
 
 ## Current Build Addendum — Browser 2233: Explicit VIP Post-Combat Resume Hotfix
 
@@ -629,8 +609,6 @@ Authoritative playable artifact: `index.html`
 ---
 
 ## Approved Roadmap — VIP Rescue Approach, Contact, and Building Deconfliction
-
-**Implementation status — Browser 1403:** Core approach ownership, explicit-VIP contact isolation, building ingress reservation/deconfliction, single-entry staging, bounded stalled-route replanning, post-combat resume, and approach diagnostics are implemented. Continue field-testing complex occupied doorways/contact cells and preserve the remaining Build Health hardening as follow-up reliability work.
 
 - Make the complete pre-escort rescue sequence deterministic and resistant to doorway/building deadlocks: **assigned VIP approach → legitimate building ingress → leader/VIP contact → escort ownership → formation → extraction**.
 - **One assigned fire team owns each VIP's approach.** Other fire teams must not crowd that VIP or its building unless they are explicitly assigned to follow/assist that primary team. A persistent non-VIP assignment such as Beacon Assault remains isolated from autonomous VIP/building-search logic.

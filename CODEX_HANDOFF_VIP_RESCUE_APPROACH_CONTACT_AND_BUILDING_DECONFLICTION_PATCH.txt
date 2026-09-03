@@ -1,0 +1,39 @@
+PROJECT AEGIS / ALIEN RESPONSE COMMAND — CODEX HANDOFF
+
+Build: v0.26.09.03.1403_VIP_RESCUE_APPROACH_CONTACT_AND_BUILDING_DECONFLICTION_PATCH
+Base lineage: v0.26.09.02.2233_EXPLICIT_VIP_POST_COMBAT_RESUME_HOTFIX
+Save format: 4
+
+Primary patch goal
+Implement the core approved VIP Rescue Approach, Contact, and Building Deconfliction roadmap item so explicitly assigned rescue teams own their VIP approach, deconflict building entrances, recover from stalled routes, and transition into escort without doctrine resets or multi-team doorway pileups.
+
+Implemented authority
+1. `tacticalExplicitVipOwnerTeamMap` makes explicit civilian assignment exclusive during group contact. A team cannot collect a VIP explicitly assigned to another fire team.
+2. `tacticalVipApproachIngressCandidates` evaluates doors and existing breaches with hazard-aware path authority while ignoring only the moving team's own formation members for planning.
+3. `tacticalVipApproachIngressAssignments` groups assigned teams by target building and reserves different openings when available. If one opening must be shared, the later team receives an intentional staged queue cell.
+4. `tacticalVipApproachRoute` drives the leader to the reserved exterior approach, through the opening, then to legitimate VIP contact. The established fire-team formation mover keeps supports attached to the leader.
+5. Two no-progress attempts mark the current opening stale for three rounds, clear only temporary ingress/rescue-route scratch state, and cause a new opening to be selected on the following round. The persistent Assign Objectives record and `aiVipRescueTargetId` are preserved.
+6. Successful contact clears temporary ingress state and transitions directly into existing escort/extraction authority.
+7. AI turn diagnostics can expose `aiVipApproachStatusLabel` with team, VIP, door/breach, distance, and progressing/staged state. These optional fields persist across streamed Simulation snapshots.
+8. Browser 2233 post-combat resume remains authoritative and now rebuilds ingress state cleanly after combat/re-forming.
+
+Important boundaries
+- Do not regress Browser 2155 civilian separation/fear/cover/catch-up pacing.
+- Do not regress Browser 2124 Last Known Contact null-target purge.
+- Do not let rescue-search logic override explicit Beacon Assault or other non-civilian assignments.
+- Do not clip through walls, hard cover, occupied non-team cells, vehicles, or invalid terrain to solve congestion.
+- Save format remains 4; the new fields are optional tactical continuation state.
+- Assets are unchanged.
+
+Targeted validation
+- Five embedded executable JavaScript blocks pass `node --check`.
+- Standalone deconfliction smoke test: two explicit teams/two VIPs/two doors -> separate ingress reservations.
+- Explicit contact smoke test: Alpha contacting VIP A does not collect VIP B assigned to Bravo.
+- Single-entry smoke test: one doorway -> first team owns ingress, second team receives queued staging state.
+
+Recommended field tests
+1. Assign Alpha and Charlie to separate VIPs inside the same two-door building; verify they approach separate entrances and make contact with their own VIPs.
+2. Repeat with a one-door building; verify one team stages clear instead of piling into the doorway, then resumes after the first team enters.
+3. Block the preferred entrance long enough to trigger no-progress recovery; verify the assignment remains visible while the team chooses another legitimate opening.
+4. Interrupt both teams with visible aliens; after combat and re-forming, verify each resumes its original VIP with a fresh ingress plan.
+5. After contact, verify Browser 2155 escort catch-up/fear behavior and Skyranger extraction continue normally.
