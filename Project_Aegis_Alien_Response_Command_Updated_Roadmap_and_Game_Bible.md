@@ -1,10 +1,28 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.02.2124_LAST_KNOWN_CONTACT_NULL_TARGET_PURGE_AND_OBJECTIVE_RELEASE_HOTFIX`
+Current browser build: `v0.26.09.02.2155_CIVILIAN_ESCORT_SEPARATION_FEAR_AND_CATCHUP_PACING_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 2155: Civilian Escort Separation Fear + Catch-Up Pacing
+
+### Current Build Delta
+- Escorted civilians/VIPs now track whether they have fallen out of formation with their escort leader. A civilian more than **4 hexes** from the leader becomes separation-frightened rather than continuing to trail passively through exposed terrain.
+- A separation-frightened civilian selects the nearest **reachable legitimate covered cell** using the existing battlefield cover, occupancy, hazard, building, and pathfinding authorities. Hard-cover cells themselves, occupied cells, and Skyranger interior-ramp cells are never selected as refuge destinations.
+- After the civilian reaches the chosen cover position, the fear state transitions into catch-up behavior. The civilian begins working back toward its assigned escort-formation slot rather than remaining indefinitely in cover. Separation fear clears only after the civilian returns within the bounded rejoin distance and formation tolerance.
+- If **any** escorted civilian/VIP is out of formation, the escort-owning soldier is placed in **half escort pace**. Simulation limits the leader to roughly half the ordinary TU-based movement distance for that turn and uses the unused movement beats to let lagging civilians advance while the leader holds.
+- Manual escort movement follows the same doctrine: the legal movement range is halved and movement costs the equivalent of **8 TU per cell** while catch-up is active, preventing repeated manual move orders from bypassing the slowdown.
+- Multiple evacuees are evaluated independently. One lagging civilian slows the whole escorted column, but each civilian maintains its own bounded separation, cover, sheltered, and rejoin state. The escort leader never abandons the group because of separation.
+- The new escort state is included in streamed Simulation snapshots so AI chunk boundaries cannot erase a civilian's separation/fear/catch-up state. Completed extraction clears the temporary fields.
+- Existing escort-leader extraction priority, support break-off decisions, VIP ownership, building-egress handling, ramp-contact boarding, Last Known Contact behavior, Beacon Assault, LOS, collision, hazards, saves, and save format **4** remain authoritative.
+
+### Validation
+- Deterministic Build Health coverage checks separation fear activation, reachable cover selection, half-speed AI pacing, bounded catch-up holds, manual half-pace movement, streamed-state persistence, and unchanged save format **4**.
+- Release validation checks all embedded runtime JavaScript blocks, host-shell JavaScript, payload/source identity, SHA-256/byte count, current-build history ownership, and ZIP extraction integrity.
+
+---
 
 ## Current Build Addendum — Browser 2124: Last-Known Contact Null-Target Purge + Objective Release Hotfix
 

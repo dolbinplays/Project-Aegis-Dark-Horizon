@@ -1,3 +1,29 @@
+BUILD: v0.26.09.02.2155_CIVILIAN_ESCORT_SEPARATION_FEAR_AND_CATCHUP_PACING_PATCH
+TITLE: Civilian Escort Separation Fear + Catch-Up Pacing
+DATE: September 2, 2026
+
+Summary
+- Makes escorted civilians/VIPs react to separation, seek reachable cover when frightened, and catch back up while their escort leader deliberately slows to half movement pace.
+
+Key changes
+- Civilians/VIPs more than 4 hexes from their escort leader become separation-frightened and seek the nearest reachable legitimate covered position.
+- Cover selection respects hard-cover occupancy, living-unit occupancy, hazards, buildings, map bounds, and Skyranger ramp restrictions.
+- After reaching cover, separated civilians work back toward their escort formation and clear the separation fear only after returning within the rejoin threshold.
+- Any out-of-formation follower places the escort leader at roughly half normal TU-based movement distance; unused movement beats are used for civilian catch-up while the leader holds.
+- Manual escort movement follows the same half-pace rule and uses an effective 8 TU per movement cell while catch-up is active.
+- Multiple civilians retain independent separation/cover state; one lagging follower slows the column without breaking escort ownership.
+- Separation/fear/catch-up fields persist through streamed Simulation snapshots and clear on extraction.
+- Escort leader lock, support break-off doctrine, building egress, ramp boarding, Last Known Contact, Beacon Assault, LOS, collision, save format 4, and assets remain unchanged.
+
+Validation
+- Embedded runtime JavaScript syntax checks pass.
+- Host shell JavaScript syntax check passes.
+- Packaged runtime is verified byte-for-byte against the canonical source with matching source byte count and SHA-256.
+- Patch-history metadata keeps one mutable current-build entry.
+- ZIP extraction/integrity validation passes.
+
+---
+
 BUILD: v0.26.09.02.2124_LAST_KNOWN_CONTACT_NULL_TARGET_PURGE_AND_OBJECTIVE_RELEASE_HOTFIX
 TITLE: Last-Known Contact Null-Target Purge + Objective Release Hotfix
 DATE: September 2, 2026
