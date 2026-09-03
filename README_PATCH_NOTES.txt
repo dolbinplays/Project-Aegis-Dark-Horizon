@@ -1,3 +1,30 @@
+BUILD: v0.26.09.03.1610_VIP_CIVILIAN_SKYRANGER_BOARDING_CINEMATIC_PATCH
+TITLE: VIP / Civilian Skyranger Boarding Cinematic
+DATE: September 3, 2026
+
+Summary
+- Adds a rear-ramp cinematic that begins only when a civilian/VIP physically steps onto the Skyranger ramp and cuts away just after the evacuee enters the troop bay.
+
+Key changes
+- Uses the existing non-clipping ramp-contact boarding trail rather than replacing extraction/pathfinding logic.
+- Normal approach movement remains visible in the player's current view; the cinematic begins only when the active evacuee reaches a real ramp cell.
+- The Three.js cinematic camera sits slightly above/behind the rear ramp and looks forward into the troop bay while tracking the active evacuee.
+- The shot covers the complete readable beat: step onto ramp → ascend ramp → cross into interior → cut away just after entry.
+- Multiple evacuees retain the existing authoritative boarding queue and therefore receive sequential, non-overlapping cinematic shots.
+- Multi-Skyranger missions select the craft from strict recorded ramp-contact coordinates; null/blank metadata cannot coerce to a bogus coordinate.
+- Boarding camera authority temporarily overrides Iso/FPV/TPV/reaction observer cameras only during the ramp segment; the prior observer mode resumes automatically.
+- Boarding from 2D Hex temporarily mounts the 3D cinematic and restores 2D afterward without changing AI, selection, objectives, or Battle Speed.
+- Existing playback continues to defer the visible extracted/cull state until the recorded interior trail completes.
+- Critical-kill camera state yields while boarding is active.
+- TU, pathfinding, escort ownership, AI decisions, mission outcomes, assets, and save format 4 are unchanged.
+
+Validation
+- All five executable embedded runtime JavaScript blocks pass node syntax validation.
+- Build Health coverage checks ramp-only triggering, rear-door camera geometry, priority/restoration, multi-craft ownership, queued boarding, deferred extraction presentation, and save format 4.
+- Host shell/payload identity, byte count/SHA-256, patch-history uniqueness, and ZIP integrity are release-checked.
+
+---
+
 BUILD: v0.26.09.03.1548_TACTICAL_ROUND_PREPARATION_INTERSTITIAL_AND_FLAVOR_PATCH
 TITLE: Tactical Round Preparation Interstitial + Flavor
 DATE: September 3, 2026
