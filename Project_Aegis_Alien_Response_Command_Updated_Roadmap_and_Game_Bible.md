@@ -1,10 +1,47 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.03.2304_LAST_KNOWN_CONTACT_RESCUE_BARRIER_AND_CAUSAL_THREAT_MUSIC_HOTFIX`
+Current browser build: `v0.26.09.03.2320_REPLACEMENT_BEACON_CLEAR_RING_AND_IMMEDIATE_DIFFICULTY_WAVE_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 2320: Replacement Beacon Clear Ring + Immediate Difficulty Wave
+
+### Current Build Delta
+- Fixes the field-reported case where a replacement Alien Field Beacon could be dropped close enough to a Skyranger that one or more of the six reinforcement-ring hexes were embedded inside the craft geometry.
+- Replacement Beacon placement now treats the **Beacon center plus all six adjacent reinforcement cells as one seven-hex deployment footprint**. A candidate is rejected if any of those cells overlaps a living unit, building cell, live cover/vehicle footprint, or any player Skyranger hull/ramp footprint.
+- Multi-hex road vehicles and Skyrangers are validated by their complete tactical footprint rather than only by an anchor coordinate. The alien craft must select another drop cell—or retry next round—until the entire reinforcement ring is usable.
+- Also changes replacement deployment timing: a replacement Beacon no longer appears by itself and merely arms a delayed bootstrap wave. **The replacement Beacon arrives together with the normal reinforcement group for the currently selected reinforcement difficulty.**
+- Wave strength continues to use the authoritative `tacticalAlienReinforcementWaveSize(...)` helper. Easy and Medium use their normal mission/threat-scaled wave size; Hard uses the established doubled wave size.
+- The six ring hexes are consumed first. If an exceptional mission/difficulty combination requests more than six aliens, overflow may use additional legal nearby cells rather than truncating the wave.
+- Replacement deployment still resets stale state from the destroyed Beacon generation, including partial-arrival, check-in, commander-death, and call-eligibility bookkeeping, before committing the new generation.
+- After the immediate replacement wave arrives, the selected difficulty's existing subsequent-wave doctrine remains authoritative.
+- Simulation AI and manual tactical play share the same replacement deployment function, immediate roster update, visibility/knowledge logic, and reinforcement presentation metadata.
+- Save format remains **4**.
+
+### Placement Authority
+- Required clear footprint: **7 cells total** — Beacon center + six adjacent spawn cells.
+- Reject candidate on: living AEGIS/alien/civilian occupancy, live cover footprint, vehicle footprint, building geometry, player Skyranger hull, or player Skyranger ramp.
+- No partial-ring deployments are allowed. If one ring cell is invalid, the entire candidate is invalid.
+
+### Replacement Arrival Strength
+- **Easy:** immediate normal Easy wave.
+- **Medium:** immediate normal Medium wave, then normal repeated-wave cadence when applicable.
+- **Hard:** immediate doubled Hard wave, then normal Hard repeated-wave cadence.
+- The replacement Beacon and its first reinforcement group are one deployment event rather than two disconnected events.
+
+### Validation
+- All five executable runtime JavaScript blocks pass `node --check`.
+- Build Health covers Skyranger-overlap rejection, seven-cell footprint integrity, immediate Easy/Medium/Hard wave counts, doubled Hard strength, ring-first placement, and save format 4.
+- Release packaging verifies synchronized host/runtime build metadata, exact payload/source byte identity, declared byte count/SHA-256, one mutable current history entry, frozen Browser 2304 history, and ZIP integrity.
+
+### Field Acceptance
+- Destroy a Beacon and allow a replacement to deploy near a Skyranger-heavy part of the map. Confirm the alien craft never chooses a location where any of the six ring hexes intersects the Skyranger or other geometry.
+- On each reinforcement difficulty, confirm the replacement Beacon appears **with** the expected number of aliens immediately rather than appearing alone and waiting for a later bootstrap wave.
+- On Hard, confirm the replacement group reflects the doubled reinforcement doctrine.
+
+---
 
 ## Current Build Addendum — Browser 2304: Last Known Contact Rescue Barrier + Causal Threat Music Hotfix
 

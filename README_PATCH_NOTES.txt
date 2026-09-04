@@ -1,3 +1,28 @@
+BUILD: v0.26.09.03.2320_REPLACEMENT_BEACON_CLEAR_RING_AND_IMMEDIATE_DIFFICULTY_WAVE_PATCH
+TITLE: Replacement Beacon Clear Ring + Immediate Difficulty Wave
+DATE: September 3, 2026
+
+Summary
+- Makes replacement Alien Field Beacon deployment validate the complete center-plus-six-cell reinforcement footprint and makes the replacement arrive with the difficulty-appropriate reinforcement group immediately.
+
+Key changes
+- A replacement Beacon candidate is valid only if the Beacon center and all six adjacent reinforcement cells are clear.
+- The full footprint is checked against living units, buildings, all live cover/vehicle footprint cells, and every player Skyranger hull/ramp cell.
+- Partial rings are rejected; the alien craft selects another candidate or retries the deployment next round.
+- Replacement Beacon placement now immediately materializes the mission's normal difficulty-scaled reinforcement wave instead of waiting for a later bootstrap arrival.
+- Easy and Medium retain their normal wave size; Hard retains its doubled reinforcement-wave size.
+- Ring cells are used first; exceptional overflow beyond six aliens may use additional legal nearby cells instead of reducing the wave.
+- Stale state from the previous Beacon generation is still cleared before the new generation begins.
+- Simulation and manual tactical modes both consume the same immediate replacement-wave result.
+- Save format remains 4.
+
+Validation
+- All five embedded runtime JavaScript blocks pass syntax validation.
+- Targeted Build Health coverage checks Skyranger-overlap rejection, complete seven-hex footprint availability, immediate Easy/Medium/Hard arrival counts, Hard doubling, ring-first placement, and save format 4.
+- Final packaging checks host/runtime build synchronization, exact embedded payload/source identity, declared byte count/SHA-256, one mutable current patch-history entry, frozen Browser 2304 history, and ZIP integrity.
+
+---
+
 BUILD: v0.26.09.03.2304_LAST_KNOWN_CONTACT_RESCUE_BARRIER_AND_CAUSAL_THREAT_MUSIC_HOTFIX
 TITLE: Last Known Contact Rescue Barrier + Causal Threat Music Hotfix
 DATE: September 3, 2026
