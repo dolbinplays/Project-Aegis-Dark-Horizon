@@ -1,3 +1,27 @@
+BUILD: v0.26.09.03.2153_BEACON_STREAM_FRAME_PREIMPACT_VISUAL_HOLD_HOTFIX
+TITLE: Beacon Stream-Frame Pre-Impact Visual Hold Hotfix
+DATE: September 3, 2026
+
+Summary
+- Fixes the Browser 2116 streamed-AI regression where the Beacon could vanish at the beginning of its destruction round because earlier playback frames shared the same mutable `covers` array that later contained the wreck.
+
+Key changes
+- Each streamed tactical frame captures a detached presentation-only snapshot of the active Alien Field Beacon.
+- Lethal Beacon direct-fire, Frag Grenade, and endgame-watchdog shot records carry their own pre-impact Beacon snapshot.
+- Earlier playback frames restore their frame-owned Beacon snapshot in Three.js if the shared authoritative covers array has already mutated to the destroyed state.
+- The lethal frame restores the shot-owned pre-impact Beacon until the existing slow-motion projectile/grenade reaches impact.
+- If nested snapshot state is ever absent, the cinematic can reconstruct an intact presentation Beacon from shot target coordinates and pre-impact HP metadata.
+- Presentation snapshots never affect LOS, AI, pathfinding, objectives, reinforcement cancellation, terminal state, or saves.
+- Browser 2116 timing/camera/explosion behavior and save format 4 remain unchanged.
+
+Validation
+- All five executable runtime JavaScript blocks pass syntax validation.
+- Targeted executable regression reproduces shared mutable covers contamination and verifies the earlier frame still renders an active Beacon.
+- Targeted lethal-frame regression verifies a destroyed authoritative cover can be restored from the shot-owned pre-impact snapshot without any previous active cover.
+- Final packaging verifies host/runtime build synchronization, exact embedded payload identity, byte count/SHA-256, one mutable current patch-history entry, and ZIP integrity.
+
+---
+
 BUILD: v0.26.09.03.2116_BEACON_DESTRUCTION_SLOW_MOTION_PROJECTILE_CINEMATIC_PATCH
 TITLE: Beacon Destruction Slow-Motion Projectile Cinematic
 DATE: September 3, 2026

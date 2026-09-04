@@ -1,10 +1,37 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.03.2116_BEACON_DESTRUCTION_SLOW_MOTION_PROJECTILE_CINEMATIC_PATCH`
+Current browser build: `v0.26.09.03.2153_BEACON_STREAM_FRAME_PREIMPACT_VISUAL_HOLD_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 2153: Beacon Stream-Frame Pre-Impact Visual Hold Hotfix
+
+### Current Build Delta
+- Fixes the field-reported Browser 2116 regression where the Alien Field Beacon disappeared at the beginning of the round in which it would be destroyed and therefore was absent from its own slow-motion destruction cinematic.
+- Root cause: streamed Simulation frames stored the mutable tactical `covers` array by reference. Later Beacon destruction mutated that same array, so earlier playback frames could inherit the future destroyed/wreck state even though the Beacon was still supposed to exist at that point in the round.
+- Each streamed frame now records a **detached presentation-only active-Beacon snapshot** when the Beacon is still active. This small snapshot is independent of later `covers` mutations and is used only by the Three.js renderer.
+- Lethal Beacon direct-fire, Frag Grenade, and endgame-watchdog shot records now also carry a **pre-impact Beacon snapshot** captured before damage changes the cover record.
+- The Three.js renderer restores the frame-owned active Beacon snapshot throughout earlier playback frames if the shared authoritative covers array has already advanced to the destroyed state.
+- On the lethal frame, the shot-owned pre-impact snapshot keeps the Beacon rendered with its true pre-impact HP/visual state while the projectile or grenade travels. The existing Browser 2116 impact commit then reveals the wreck after the shot reaches the target.
+- A final reconstruction fallback can rebuild an intact Beacon presentation from the lethal shot's target coordinates/HP metadata if both prior-render state and nested snapshot data are unexpectedly missing.
+- These visual snapshots never enter LOS, pathfinding, AI, reinforcement cancellation, objective completion, mission terminal logic, or save data. Authoritative `covers` remain unchanged.
+- Browser 2116 projectile/grenade timing, camera, impact explosion, Browser 1942 victory effects, Browser 1926 Skyranger boarding, and save format **4** remain unchanged.
+
+### Validation
+- All five executable runtime JavaScript blocks pass `node --check`.
+- Targeted executable regression coverage reproduces a shared mutable `covers` array that is active when an earlier frame is captured and later mutated to a destroyed Beacon. The earlier frame still presents an active positive-HP Beacon.
+- The same test verifies the lethal frame can restore the intact Beacon from its own pre-impact snapshot with no previous active cover available.
+- Build Health now requires frame-level Beacon presentation snapshots, shot-level pre-impact snapshots, renderer-only stream-frame restoration, the existing slow-motion cinematic, and save format 4.
+- Release packaging verifies host/runtime build synchronization, exact embedded payload identity, declared byte count/SHA-256, one mutable current patch-history entry, frozen Browser 2116 history, and ZIP integrity.
+
+### Field Acceptance
+- Run Simulation AI through a round where the Beacon is destroyed late in the AEGIS action sequence. The Beacon should remain visible from the beginning of that round through the final projectile/grenade travel.
+- Confirm the wreck appears only at the existing impact commit point, after the explosion begins.
+- Confirm earlier rounds do not prematurely display the future destroyed Beacon state.
+
+---
 
 ## Current Build Addendum — Browser 2116: Beacon Destruction Slow-Motion Projectile Cinematic
 
