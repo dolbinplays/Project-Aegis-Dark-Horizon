@@ -1,3 +1,27 @@
+BUILD: v0.26.09.04.0750_FINAL_VIP_BOARDING_TERMINAL_VICTORY_CUT_PATCH
+TITLE: Final VIP Boarding Terminal Victory Cut
+DATE: September 4, 2026
+
+Summary
+- Makes the final required VIP's completed Skyranger boarding step an immediate mission-terminal checkpoint when no other tactical objective remains, skipping queued cleanup/re-form movement before Tactical Victory.
+
+Key changes
+- After a civilian/VIP finishes the final interior Skyranger boarding step, the game re-evaluates the ordinary mission terminal state with playback-pending ignored only for that checkpoint.
+- The cutoff is permitted only when there are no living aliens, unresolved Last Known Contact reports, active Beacon/reinforcement-source or required UFO-bay duty, pending reinforcement arrival, or remaining mandatory rescue work.
+- If that VIP was the last objective, the current movement frame stops at the boarding commit and later queued soldier reset/re-form/cleanup animation steps are discarded.
+- Any unnecessary streamed AI continuation is invalidated so it cannot append tactically irrelevant movement after the mission has already become terminal.
+- The rescued VIP commits normally; surviving soldiers keep the battlefield positions they had actually reached at the cutoff rather than jumping to positions from skipped movement.
+- The game creates the normal Mission success/Tactical Victory presentation from the cutoff state so victory celebration/music can begin immediately.
+- If any objective remains, playback continues normally with no change to alien hunt, Last Known Contact, Beacon, reinforcement, escort, rescue, or failure logic.
+- Movement-delay estimation uses the same cutoff authority. Save format remains 4.
+
+Validation
+- All five embedded runtime JavaScript blocks pass syntax validation.
+- Deterministic Build Health coverage verifies terminal final-VIP boarding, living-alien blocking, pending-reinforcement blocking, queued-playback cancellation, Mission success synthesis, and save format 4.
+- Final packaging verifies synchronized host/runtime build metadata, exact embedded payload/source byte identity, declared byte count/SHA-256, frozen Browser 2320 history, and ZIP integrity.
+
+---
+
 BUILD: v0.26.09.03.2320_REPLACEMENT_BEACON_CLEAR_RING_AND_IMMEDIATE_DIFFICULTY_WAVE_PATCH
 TITLE: Replacement Beacon Clear Ring + Immediate Difficulty Wave
 DATE: September 3, 2026

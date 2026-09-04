@@ -1,10 +1,35 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.03.2320_REPLACEMENT_BEACON_CLEAR_RING_AND_IMMEDIATE_DIFFICULTY_WAVE_PATCH`
+Current browser build: `v0.26.09.04.0750_FINAL_VIP_BOARDING_TERMINAL_VICTORY_CUT_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 0750: Final VIP Boarding Terminal Victory Cut
+
+### Current Build Delta
+- Fixes the field-reported case where the final required VIP could complete the Skyranger boarding cinematic, but Simulation AI still played queued fire-team reset/re-form/cleanup movement before the mission was allowed to enter Tactical Victory.
+- The final interior boarding step is now a **terminal mission checkpoint**. At that exact presentation boundary, the game re-runs the authoritative mission-terminal evaluation with only the generic playback-pending gate removed for the checkpoint.
+- The cutoff is deliberately strict. Queued movement is skipped only if ordinary mission authority confirms there are **no living aliens, no unresolved Last Known Contact reports, no active Alien Field Beacon/reinforcement-source or required UFO-bay duty, no reinforcement arrival still pending, and no remaining mandatory VIP/rescue work**.
+- If the boarding evacuee is therefore the final remaining mission objective, the current movement animation frame is truncated at that VIP's last interior boarding step. Later queued soldier cleanup/reset movement and unnecessary streamed continuation are canceled.
+- The rescued VIP still commits the normal authoritative `rescued/extracted` state. Other soldiers remain at the positions they had actually reached when boarding completed rather than visually teleporting through skipped routes.
+- A normal **Mission success / Tactical Victory** presentation is then created from that exact cutoff state, so victory music/celebration can begin without waiting for tactically irrelevant animation playback.
+- If any objective remains, no cutoff occurs and existing alien hunt, Last Known Contact, Beacon, reinforcement, escort, rescue, and mission-failure behavior continues unchanged.
+- Movement-delay estimation uses the same terminal checkpoint, preventing the UI from reserving time for animation steps that the terminal cutoff will never display.
+- Save format remains **4**.
+
+### Validation
+- All five executable runtime JavaScript blocks pass `node --check`.
+- Deterministic Build Health coverage checks that final-VIP boarding is eligible for the cutoff only on a genuinely terminal battlefield, and that a living alien or pending reinforcement blocks the cutoff.
+- Static release checks require the boarding checkpoint to cancel queued playback/stream continuation, synthesize the normal `Mission success` presentation, preserve save format 4, and keep the previous Browser 2320 history entry frozen.
+
+### Field Acceptance
+- Reproduce a rescue mission with all aliens neutralized, no unresolved Last Known Contact marker, no active Beacon/reinforcement-source duty, and one final living VIP still being escorted.
+- Let that VIP complete the Skyranger boarding cinematic. As soon as the final interior boarding step commits, confirm that no remaining soldier reset/re-form/cleanup movement plays and Tactical Victory appears immediately.
+- Repeat with one live alien, unresolved Last Known Contact, active Beacon, pending reinforcement arrival, or another required VIP still unresolved. In each case, confirm the game **does not** skip the remaining tactical work.
+
+---
 
 ## Current Build Addendum — Browser 2320: Replacement Beacon Clear Ring + Immediate Difficulty Wave
 
