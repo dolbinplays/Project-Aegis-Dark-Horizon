@@ -1,10 +1,34 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.03.1926_SKYRANGER_BOARDING_LIVE_POSE_DEFERRED_COMMIT_HOTFIX`
+Current browser build: `v0.26.09.03.1942_WEAPON_SPECIFIC_VICTORY_CELEBRATION_EFFECTS_AND_SPECTATOR_ORIENTATION_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1942: Weapon-Specific Victory Celebration Effects + Spectator Orientation
+
+### Current Build Delta
+- Implements the approved **Weapon-Specific Soldier Celebration Effects** roadmap item on top of the existing all-survivor victory dance.
+- **Ballistic Rifle:** emits repeated multicolored confetti bursts. The confetti pieces use staggered deterministic launch timing and drift/fall presentation rather than consuming ammunition or creating shot events.
+- **Laser Carbine:** emits a rotating/fanning array of bright red celebration beams.
+- **Plasma Lance:** emits a larger rotating array of green plasma/laser-like beams with a stronger central glow.
+- Unsupported/unarmed loadouts keep the normal victory dance with a small presentation-only fallback halo so every surviving soldier still participates.
+- Celebration effects are intentionally oversized for tactical overview readability. Normal 3D Iso uses a 1.75× presentation scale, Wide uses 2.45×, Full uses 2.85×, Map uses 3.15×, and Fit Map uses 3.35×. FPV/TPV use a closer-range 1.35× scale.
+- During FPV or TPV victory observation, the observed soldier performs a **presentation-only spectator-orientation scan**. Thirty-six candidate headings are scored by how many other surviving AEGIS soldiers fall inside a broad forward viewing cone; centrality and distance provide tie-breaking.
+- The observed soldier model and observer camera turn toward the highest-scoring party direction without moving the unit or changing authoritative tactical facing. TPV keeps the standard over-the-shoulder offset; FPV looks into the same party-maximizing direction.
+- Changing camera/view remains under player control; the orientation system has no tactical authority and cannot influence AI, LOS, targeting, reactions, cover, movement, TU, ammunition, damage, or mission results.
+- Per-soldier deterministic phase and start offsets prevent the entire squad from launching effects simultaneously.
+- `prefers-reduced-motion` keeps the weapon-family celebration identity while stabilizing beam rotation and shortening/slowing confetti travel.
+- Browser 1926 Skyranger boarding live-pose/deferred-commit behavior, recent rescue/Beacon/Last Known Contact fixes, and save format **4** are unchanged.
+
+### Validation
+- All five executable embedded runtime JavaScript blocks pass `node --check`.
+- Targeted extracted-helper smoke tests verify weapon-family classification, view-scale ordering (`Fit Map > Map > Full > normal`), and party orientation selecting the larger soldier cluster.
+- Build Health requires the celebration-effect registry, ballistic confetti palette, red Laser array, green Plasma array, view-aware scale authority, FPV/TPV spectator direction helper, and save format **4**.
+- Release packaging verifies host/runtime build synchronization, exact embedded payload/source identity, declared byte count/SHA-256, one mutable current patch-history entry, frozen Browser 1926 history, and ZIP integrity.
+
+---
 
 ## Current Build Addendum — Browser 1926: Skyranger Boarding Live Pose + Deferred Commit Hotfix
 

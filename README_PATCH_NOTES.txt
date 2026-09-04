@@ -1,3 +1,31 @@
+BUILD: v0.26.09.03.1942_WEAPON_SPECIFIC_VICTORY_CELEBRATION_EFFECTS_AND_SPECTATOR_ORIENTATION_PATCH
+TITLE: Weapon-Specific Victory Celebration Effects + Spectator Orientation
+DATE: September 3, 2026
+
+Summary
+- Upgrades tactical victory presentation with large weapon-family celebration effects that remain readable from ordinary 3D Iso through Full Map/Fit Map, plus party-maximizing FPV/TPV spectator orientation.
+
+Key changes
+- Ballistic Rifle soldiers launch looping multicolored confetti bursts during the existing victory celebration.
+- Laser Carbine soldiers generate rotating arrays of red laser beams.
+- Plasma Lance soldiers generate larger rotating arrays of green plasma/laser-like beams.
+- Unsupported/unarmed loadouts retain the existing victory dance with a subtle presentation-only fallback halo.
+- Celebration scale is view-aware: normal 3D Iso uses enlarged effects, Wide and Full step up further, Map is larger again, and Fit Map uses the largest scale so the party remains legible from the full tactical overview.
+- Effects use deterministic per-soldier phase/delay offsets so the whole squad does not fire its celebration on the same frame.
+- FPV/TPV victory observation evaluates 36 presentation-only facing candidates and turns the observed soldier/camera toward the direction containing the greatest number of other surviving AEGIS soldiers in a broad forward field of view.
+- TPV keeps the normal chase offset while re-aiming toward the party cluster; FPV looks in the same maximized party direction.
+- This orientation never changes authoritative tactical facing, movement, AI, LOS, reaction fire, TU, ammo, damage, objective state, or mission results.
+- Reduced-motion preference keeps the effect family identity but slows/stabilizes sweeping motion and shortens confetti travel.
+- Browser 1926 Skyranger boarding live-pose/deferred extraction behavior remains unchanged. Save format remains 4.
+
+Validation
+- All five executable embedded runtime JavaScript blocks pass syntax validation.
+- Targeted helper smoke tests verify Ballistic/Laser/Plasma family mapping, Fit Map > Map > Full > normal effect scale, and spectator orientation choosing a two-soldier cluster over a single soldier in the opposite direction.
+- Build Health statically verifies celebration registry wiring, weapon-family colors, view-aware scaling, FPV/TPV orientation, and save format 4.
+- Final package verifies host/runtime build synchronization, exact embedded payload identity, byte count/SHA-256, one mutable current patch-history entry, and ZIP integrity.
+
+---
+
 BUILD: v0.26.09.03.1926_SKYRANGER_BOARDING_LIVE_POSE_DEFERRED_COMMIT_HOTFIX
 TITLE: Skyranger Boarding Live Pose + Deferred Commit Hotfix
 DATE: September 3, 2026
