@@ -1,10 +1,32 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.03.1820_BUILDING_WIDE_RESCUE_HANDOFF_AND_SKYRANGER_BOARDING_CINEMATIC_HOTFIX`
+Current browser build: `v0.26.09.03.1855_SKYRANGER_BOARDING_SNAPSHOT_AUTHORITY_AND_DEFERRED_EXTRACTION_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1855: Skyranger Boarding Snapshot Authority + Deferred Extraction
+
+### Current Build Delta
+- Fixes the field-reported Browser 1820 failure where VIPs/civilians still disappeared before walking onto the Skyranger ramp and no boarding cinematic appeared.
+- Root cause: the authoritative rescue handoff created `rampBoardingPresentation`, `rampBoardingEscortId`, boarding order, and ramp-touch coordinates, but `resolveMission()`'s streamed `snapshotUnits()` omitted those fields. The playback frame therefore retained `rescued/extracted` plus a movement trail while losing the information that the trail was a Skyranger boarding sequence.
+- Because the frame no longer looked like boarding, ordinary movement-path validation could treat the Skyranger interior ramp geometry as hard blockers. If the recorded trail was rejected, no animation plan existed to defer extraction and the final `rescued/extracted` state culled the evacuee immediately.
+- Stream snapshots now preserve the full boarding-presentation metadata: `rampBoardingPresentation`, `rampBoardingEscortId`, `rampBoardingOrder`, `rampBoardingTouchX`, and `rampBoardingTouchY`.
+- Playback also has a defensive fallback: a civilian/VIP that transitions from unrescued to rescued and has a recorded movement trail is treated as a boarding-presentation actor even if typed boarding metadata is partially degraded.
+- Boarding-authoritative paths ignore normal Skyranger interior ramp blockers, preserving the recorded ramp walk instead of trying to rebuild it as ordinary battlefield movement.
+- The visible tactical unit remains `rescued:false` / `extracted:false` while that movement plan is playing; the authoritative rescued/extracted state is applied only after the final boarding step.
+- Moving-unit/camera ownership recognizes both the preserved typed metadata and the trail fallback, allowing the Browser 1610/1820 rear-ramp cinematic to engage on the actual ramp step.
+- Multi-Skyranger craft identity still uses preserved ramp-touch coordinates when available, with path-cell fallback and strict null validation.
+- Browser 1820 same-building rescue consolidation/assignment handoff remains intact and unchanged. Browser 1548 interstitials, Browser 1511 Beacon/Assist release, Browser 2124 Last Known Contact sanitation, AI priorities, TU/LOS/collision rules, and save format **4** remain unchanged.
+
+### Validation
+- All five executable runtime JavaScript blocks pass `node --check`.
+- Targeted smoke coverage verifies both a fully typed boarding frame and a metadata-degraded rescued-civilian frame with a recorded trail stay `pending:true`, `animate:true`, and boarding-authoritative rather than being immediately culled.
+- Build Health checks snapshot metadata preservation, trail fallback, deferred visible extraction, boarding-camera moving-unit authority, and save format **4**.
+- Release packaging verifies host-shell syntax, embedded runtime/source byte identity, declared byte count/SHA-256, patch-history ownership, and ZIP integrity.
+
+---
 
 ## Current Build Addendum — Browser 1820: Building-Wide Rescue Handoff + Skyranger Boarding Cinematic Hotfix
 

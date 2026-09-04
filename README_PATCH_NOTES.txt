@@ -1,3 +1,27 @@
+BUILD: v0.26.09.03.1855_SKYRANGER_BOARDING_SNAPSHOT_AUTHORITY_AND_DEFERRED_EXTRACTION_HOTFIX
+TITLE: Skyranger Boarding Snapshot Authority + Deferred Extraction Hotfix
+DATE: September 3, 2026
+
+Summary
+- Fixes the surviving VIP/civilian Skyranger boarding failure by preserving boarding metadata in streamed Simulation snapshots and making the recorded extraction trail authoritative enough to defer the visible rescued/extracted state until presentation completes.
+
+Key changes
+- Streamed civilian snapshots now preserve `rampBoardingPresentation`, `rampBoardingEscortId`, `rampBoardingOrder`, `rampBoardingTouchX`, and `rampBoardingTouchY`. Browser 1820 was creating these fields correctly during rescue handoff but dropping them before playback.
+- Losing those fields previously made boarding playback look like ordinary movement. The Skyranger interior ramp could then be treated as blocked cover, causing the recorded trail to be rejected and the frame's final `rescued/extracted` state to be applied immediately.
+- A rescued civilian/VIP that changed from unrescued to rescued and has a recorded movement trail is now treated as a boarding-presentation actor even if one typed boarding field is absent.
+- Ramp playback ignores the normal Skyranger interior blockers for that recorded extraction trail and keeps the evacuee visually unrescued/unextracted until the final path step is committed.
+- Moving-unit/camera ownership now accepts the preserved boarding metadata plus the rescued-civilian trail fallback, allowing the rear-ramp cinematic to activate on the actual ramp step.
+- Multi-Skyranger ramp-touch identity remains preserved; strict null handling remains in place.
+- Browser 1820 building-wide rescue consolidation, Browser 1548 tactical-round interstitials, Beacon/Assist completion release, Last Known Contact sanitation, TU/LOS/collision authority, assets, and save format 4 remain unchanged.
+
+Validation
+- All five executable embedded runtime JavaScript blocks pass `node --check`.
+- A targeted smoke test verifies that both a fully typed boarding frame and a metadata-degraded rescued-civilian frame with a recorded trail remain pending/animated instead of immediately committing extraction.
+- Static Build Health coverage verifies snapshot preservation, trail fallback, deferred visual extraction, boarding moving-unit authority, and save format 4.
+- Final packaging verifies host-shell JavaScript, exact embedded-runtime byte identity, declared source byte count/SHA-256, one mutable current patch-history entry, frozen Browser 1820 history, and ZIP integrity.
+
+---
+
 BUILD: v0.26.09.03.1820_BUILDING_WIDE_RESCUE_HANDOFF_AND_SKYRANGER_BOARDING_CINEMATIC_HOTFIX
 TITLE: Building-Wide Rescue Handoff + Skyranger Boarding Cinematic Hotfix
 DATE: September 3, 2026
