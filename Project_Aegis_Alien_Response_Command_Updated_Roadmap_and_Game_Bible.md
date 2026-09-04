@@ -1,10 +1,28 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.03.1855_SKYRANGER_BOARDING_SNAPSHOT_AUTHORITY_AND_DEFERRED_EXTRACTION_HOTFIX`
+Current browser build: `v0.26.09.03.1926_SKYRANGER_BOARDING_LIVE_POSE_DEFERRED_COMMIT_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1926: Skyranger Boarding Live Pose + Deferred Commit Hotfix
+
+### Current Build Delta
+- Fixes the field-reported Browser 1855 regression where the boarding cinematic finally played but living VIPs/civilians were shown in the prone/dead pose before and during boarding.
+- Root cause: the simulation intentionally normalizes a successfully rescued civilian to `alive:false` (`alive = hp > 0 && !rescued`). Browser 1855 correctly deferred the visible `rescued/extracted` flags during the ramp walk, but the interim presentation copy still inherited the final frame's `alive:false`.
+- The articulated civilian pose resolver therefore selected `proneDead` even though the evacuee still had positive HP and was being visually held on the battlefield for boarding.
+- Pending Skyranger boarding playback now explicitly keeps the presentation actor `alive:true`, preserves at least 1 HP, keeps `rescued:false` / `extracted:false`, and clears `fellThisFrame` for the complete recorded boarding trail.
+- This prevents both the articulated prone/dead pose and any death-transition animation from starting while a living VIP/civilian is stepping onto or walking up the ramp.
+- After the final interior step, the authoritative rescued/extracted state is committed normally and the evacuee leaves the battlefield presentation.
+- Browser 1855 snapshot authority and trail fallback remain authoritative; Browser 1820 building-wide rescue handoff, Browser 1548 interstitials, Beacon/Assist release, tactical AI behavior, and save format **4** are unchanged.
+
+### Validation
+- All five executable embedded runtime JavaScript blocks pass syntax validation.
+- Static Build Health coverage now requires pending boarding playback to force `alive:true` and clear `fellThisFrame` while deferring rescued/extracted state.
+- Release packaging verifies host-shell syntax, embedded runtime/source byte identity, declared byte count/SHA-256, one mutable current patch-history entry, frozen Browser 1855 history, and ZIP integrity.
+
+---
 
 ## Current Build Addendum — Browser 1855: Skyranger Boarding Snapshot Authority + Deferred Extraction
 

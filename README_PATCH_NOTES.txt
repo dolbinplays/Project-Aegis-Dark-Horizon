@@ -1,3 +1,25 @@
+BUILD: v0.26.09.03.1926_SKYRANGER_BOARDING_LIVE_POSE_DEFERRED_COMMIT_HOTFIX
+TITLE: Skyranger Boarding Live Pose + Deferred Commit Hotfix
+DATE: September 3, 2026
+
+Summary
+- Fixes the boarding-cinematic pose regression where a living VIP/civilian inherited the simulation's post-rescue `alive:false` state and appeared prone/dead while the deferred ramp-walk presentation was playing.
+
+Key changes
+- Pending boarding presentation now forces the evacuee's visual copy to `alive:true` for the full recorded ramp trail.
+- Positive HP is preserved while boarding; the actor remains visually `rescued:false` and `extracted:false` until the final interior step.
+- `fellThisFrame` is forced false during pending boarding so no death-transition animation can start on a living evacuee.
+- The authoritative rescued/extracted state still commits after the final boarding step, so mission bookkeeping is unchanged.
+- Browser 1855 snapshot metadata/trail authority and cinematic trigger remain intact.
+- Browser 1820 building-wide rescue handoff, tactical AI priorities, TU/LOS/collision rules, assets, and save format 4 remain unchanged.
+
+Validation
+- Five executable embedded runtime JS blocks pass syntax validation.
+- Build Health statically verifies the live-pose override (`alive:true`) and death-transition suppression during pending boarding.
+- Final package verifies host/runtime build synchronization, exact embedded payload identity, byte count/SHA-256, one mutable current patch-history entry, and ZIP integrity.
+
+---
+
 BUILD: v0.26.09.03.1855_SKYRANGER_BOARDING_SNAPSHOT_AUTHORITY_AND_DEFERRED_EXTRACTION_HOTFIX
 TITLE: Skyranger Boarding Snapshot Authority + Deferred Extraction Hotfix
 DATE: September 3, 2026
