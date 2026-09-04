@@ -1,3 +1,30 @@
+BUILD: v0.26.09.03.2116_BEACON_DESTRUCTION_SLOW_MOTION_PROJECTILE_CINEMATIC_PATCH
+TITLE: Beacon Destruction Slow-Motion Projectile Cinematic
+DATE: September 3, 2026
+
+Summary
+- Applies the deferred-presentation authority learned from the successful Skyranger boarding cinematic to Alien Field Beacon destruction: the lethal shot or grenade is shown in slow motion, the intact beacon remains visible through projectile travel, and the wreck state appears only after a large beacon-specific explosion at impact.
+
+Key changes
+- Lethal Beacon shots carry explicit presentation metadata through Simulation shot records for normal direct fire, Beacon-targeted Frag Grenades, and the endgame Beacon must-progress watchdog.
+- Before a lethal AI playback frame commits its destroyed cover state, the previous active Beacon is copied into a presentation-only hold. Authoritative mission state still changes immediately for reinforcement cancellation and AI logic, but the 3D renderer sees the intact Beacon until impact.
+- Manual direct-fire and manual Frag Grenade Beacon kills use the same deferred visual hold.
+- Direct weapon kills use an extended slow-motion projectile/tracer presentation. Frag Grenades use a longer visible arcing projectile path.
+- The dedicated Beacon-kill camera frames the shooter/projectile/Beacon during travel, then orbits the impact while the Beacon collapses.
+- Impact produces an oversized orange-white blast, violet/cyan alien-field collapse rings, dynamic light, and thrown alien debris. The destroyed/wreck Beacon presentation is released only after projectile impact.
+- Generic structure-destruction cinematics are suppressed for lethal Beacon shots so the dedicated projectile cinematic owns the sequence without competing camera events.
+- 2D Hex is temporarily promoted to the 3D cinematic and restored afterward; existing FPV, TPV, and Iso observer modes are restored after the presentation.
+- AI round playback waits long enough for the Beacon projectile/explosion sequence before advancing to the next frame.
+- Gameplay authority is unchanged: the cinematic cannot alter damage, TU, ammunition, AI, reinforcement cancellation, objective completion, or save data. Save format remains 4.
+
+Validation
+- All five executable embedded runtime JavaScript blocks pass syntax validation.
+- Targeted helper smoke test verifies a destroyed authoritative Beacon is restored as active in presentation until impact, and verifies the grenade travel window is longer than direct fire.
+- Build Health verifies the deferred visual hold, manual/AI release paths, renderer cinematic wiring, grenade arc, camera ownership, AI Beacon-kill metadata, and save format 4.
+- Final packaging verifies host/runtime build synchronization, exact embedded payload identity, byte count/SHA-256, one mutable current patch-history entry, and ZIP integrity.
+
+---
+
 BUILD: v0.26.09.03.1942_WEAPON_SPECIFIC_VICTORY_CELEBRATION_EFFECTS_AND_SPECTATOR_ORIENTATION_PATCH
 TITLE: Weapon-Specific Victory Celebration Effects + Spectator Orientation
 DATE: September 3, 2026

@@ -1,10 +1,39 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.03.1942_WEAPON_SPECIFIC_VICTORY_CELEBRATION_EFFECTS_AND_SPECTATOR_ORIENTATION_PATCH`
+Current browser build: `v0.26.09.03.2116_BEACON_DESTRUCTION_SLOW_MOTION_PROJECTILE_CINEMATIC_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 2116: Beacon Destruction Slow-Motion Projectile Cinematic
+
+### Current Build Delta
+- Implements a dedicated **Alien Field Beacon destruction cinematic** using the same architectural lesson that finally stabilized the VIP/civilian Skyranger boarding cinematic: authoritative simulation state may complete immediately, while presentation temporarily holds the pre-transition visual state until the recorded action reaches its visible commit point.
+- A lethal Beacon shot now creates a presentation-only copy of the still-active Beacon before the authoritative destroyed cover frame is applied. Reinforcement cancellation, objective completion, AI state, damage, TU, ammunition, and mission bookkeeping continue to use the real destroyed state.
+- The presentation copy remains intact while the final projectile travels and is released only just after impact, preventing the Beacon from disappearing or becoming a wreck before the lethal shot/grenade arrives.
+- **Direct fire:** ballistic, laser, and plasma Beacon kills use an extended slow-motion projectile/tracer sequence with a cinematic camera that includes the shooter-to-target line.
+- **Frag Grenade:** lethal Beacon grenades receive a visibly slower arcing projectile path before impact.
+- At impact the renderer creates a large Beacon-specific explosion: bright orange/white core, expanding blast shell, rotating violet/cyan field-collapse shock rings, dynamic impact light, and alien-colored debris.
+- The camera transitions from projectile tracking into an impact orbit and then restores the prior observer camera. A player in 2D Hex is temporarily promoted to 3D only for the cinematic and returned afterward; existing FPV/TPV/Iso states remain presentation-authoritative.
+- Lethal Beacon metadata is carried explicitly by Simulation direct-fire records, Beacon-targeted grenade records, and endgame Beacon watchdog shots. AI playback prioritizes a lethal Beacon shot when choosing the frame's visible shot presentation.
+- AI frame cadence reserves enough time for the projectile and explosion before normal playback advances.
+- The ordinary generic structure-destruction card/camera does not compete with the dedicated Beacon-kill cinematic.
+- Browser 1942 weapon-specific victory celebrations, Browser 1926 Skyranger live boarding pose/deferred extraction, rescue AI, Beacon/Assist assignment lifecycle, Last Known Contact sanitation, and save format **4** remain intact.
+
+### Validation
+- All five executable runtime JavaScript blocks pass `node --check`.
+- Targeted helper smoke coverage constructs an authoritative destroyed Beacon frame plus the prior active Beacon and verifies that the 3D presentation receives an active positive-HP Beacon until cinematic commit.
+- The same smoke coverage verifies a Frag Grenade receives a longer slow-motion travel window than a direct energy/ballistic shot.
+- Build Health checks AI/manual presentation hold/release wiring, lethal Beacon metadata, dedicated renderer root/camera animation, grenade arc, and save format 4.
+- Release packaging verifies host-shell syntax, embedded runtime/source byte identity, declared byte count/SHA-256, patch-history ownership, and ZIP integrity.
+
+### Field Acceptance
+- Assign or manually use a ballistic, laser, or plasma weapon to deliver the final Beacon hit and confirm the intact Beacon remains visible until the slow-motion projectile reaches it.
+- Destroy a Beacon with a Frag Grenade and confirm the thrown projectile is visibly tracked on an arc before the explosion.
+- Confirm the explosion reads clearly in 3D Iso and that FPV/TPV/2D Hex restore to the previous observer presentation after the cinematic.
+- Confirm the Beacon objective still completes and reinforcement transit is cancelled at the authoritative damage moment even though the visual wreck is deferred until impact.
+
 
 ## Current Build Addendum — Browser 1942: Weapon-Specific Victory Celebration Effects + Spectator Orientation
 
