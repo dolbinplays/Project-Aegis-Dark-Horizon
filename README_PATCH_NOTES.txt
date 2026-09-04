@@ -1,3 +1,25 @@
+BUILD: v0.26.09.04.1452_AI_BEACON_FRAME_STATE_AND_REPLACEMENT_PLAYBACK_HOTFIX
+TITLE: AI Beacon Frame State + Replacement Playback Hotfix
+DATE: September 4, 2026
+
+Summary
+- Fixes the live-observed case where Simulation AI played a Beacon-destroyed result and explosion while the tactical objective still showed an active Beacon with remaining HP.
+
+Key changes
+- Every buffered Simulation frame now receives its own shallow snapshot of cover-array membership. Later damage, wreck conversion, environmental changes, or replacement-Beacon deployment cannot retroactively rewrite an earlier frame.
+- The snapshot reuses unchanged cover objects rather than deep-cloning the battlefield, keeping the added frame authority bounded on 64x64, 80x80, and 96x96 maps.
+- Beacon shot playback verifies the exact device ID first and its authoritative impact coordinates second.
+- If the shot's Beacon cannot be found in that frame, the result fails closed: the lethal flag is demoted and the Beacon-destruction cinematic is suppressed.
+- Destruction of an original Beacon and deployment of a later replacement now remain distinct playback events with separate device identity, HP, objective state, and visuals.
+- The existing tactical damage calculation, replacement timing, AI priorities, movement, pathfinding, TU, LOS, fog, targeting, and reinforcement rules remain unchanged.
+- Save format remains 4 and no assets changed.
+
+Validation
+- Four focused Build Health contracts cover frame-cover snapshot stability, original-versus-replacement identity, missing-authority cinematic suppression, and save-format stability.
+- Embedded JavaScript, packaging, release metadata, and deterministic browser Build Health are revalidated for this build.
+
+---
+
 BUILD: v0.26.09.04.1308_TACTICAL_AI_ROUND_CONTEXT_INDEX_AND_CACHE_PATCH
 TITLE: Tactical AI Round Context Index + Cache
 DATE: September 4, 2026

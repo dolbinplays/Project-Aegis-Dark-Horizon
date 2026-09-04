@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.09.04.1308_TACTICAL_AI_ROUND_CONTEXT_INDEX_AND_CACHE_PATCH",
+  "currentBuild": "v0.26.09.04.1452_AI_BEACON_FRAME_STATE_AND_REPLACEMENT_PLAYBACK_HOTFIX",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "tactical-ai-round-context-index-and-cache-complete",
+  "status": "ai-beacon-frame-state-and-replacement-playback-hotfix-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.09.04.1308_TACTICAL_AI_ROUND_CONTEXT_INDEX_AND_CACHE_PATCH",
+  "lastInspectedBuild": "v0.26.09.04.1452_AI_BEACON_FRAME_STATE_AND_REPLACEMENT_PLAYBACK_HOTFIX",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -47,7 +47,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.09.04.1308_TACTICAL_AI_ROUND_CONTEXT_INDEX_AND_CACHE_PATCH",
+    "browserBuild": "v0.26.09.04.1452_AI_BEACON_FRAME_STATE_AND_REPLACEMENT_PLAYBACK_HOTFIX",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -219,7 +219,8 @@
       "fire-team-objective-discovery-memory",
       "articulated-tactical-mid-lod-and-full-wide-gait",
       "articulated-pose-editor-and-documentation-consolidation",
-      "tactical-ai-round-context-index-and-cache"
+      "tactical-ai-round-context-index-and-cache",
+      "ai-beacon-frame-state-and-replacement-playback-hotfix"
     ],
     "temporaryExceptions": [
       {

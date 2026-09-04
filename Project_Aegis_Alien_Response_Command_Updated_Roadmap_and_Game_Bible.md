@@ -1,10 +1,24 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.04.1308_TACTICAL_AI_ROUND_CONTEXT_INDEX_AND_CACHE_PATCH`
+Current browser build: `v0.26.09.04.1452_AI_BEACON_FRAME_STATE_AND_REPLACEMENT_PLAYBACK_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1452: AI Beacon Frame State + Replacement Playback Hotfix
+
+### Current Build Delta
+- Fixes the field-observed contradiction where the AI shot-result stack and slow-motion explosion announced **BEACON DESTROYED** while the reinforcement-source objective continued to show an active Alien Field Beacon with remaining HP.
+- Simulation frame capture now shallow-snapshots the authoritative cover-array membership. Subsequent cover replacement, Beacon wreck conversion, environmental updates, or replacement-device deployment cannot rewrite the cover state retained by an earlier playback frame.
+- The snapshot is intentionally structural: unchanged cover records are shared and only the array membership is frozen, avoiding a deep copy of thousands of terrain and structure records for each streamed frame.
+- Beacon shot playback resolves exact device identity first and authoritative impact coordinates second. If neither matches a Beacon in the frame, the result fails closed by removing its lethal presentation rather than trusting stale metadata.
+- An original destroyed Beacon and a later active replacement therefore retain separate identities, HP values, objective states, shot results, and cinematics during streamed playback.
+- Tactical damage, shield behavior, replacement timing, reinforcement counts, movement, pathfinding, TU costs, LOS, fog, targeting, AI priority, save data, and save format **4** remain unchanged.
+
+### Validation
+- Four focused Build Health contracts cover stable buffered cover membership, original-versus-replacement separation, suppression of a stale destruction cinematic when exact authority is missing, and unchanged save format 4.
+- Embedded JavaScript, packaging/source identity, release metadata, and live browser diagnostics are validated before release.
 
 ## Current Build Addendum — Browser 1308: Tactical AI Round Context Index + Cache
 
