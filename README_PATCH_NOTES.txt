@@ -1,3 +1,31 @@
+BUILD: v0.26.09.03.2304_LAST_KNOWN_CONTACT_RESCUE_BARRIER_AND_CAUSAL_THREAT_MUSIC_HOTFIX
+TITLE: Last Known Contact Rescue Barrier + Causal Threat Music Hotfix
+DATE: September 3, 2026
+
+Summary
+- Fixes two field-reported tactical continuity problems: unengaged VIP-assigned teams could resume rescue movement while a valid Last Known Position report was still unresolved, and the intense mission threat loop could remain latched after the final alien contact had already been killed/rendered.
+
+Key changes
+- A valid unresolved Last Known Position at the beginning of an AEGIS round now creates a round-start contact barrier for every fire-team leader that is not already actively escorting civilians/VIPs.
+- Explicit VIP assignments are preserved, but those teams cannot execute VIP approach/search movement during that entire round. They resume no earlier than the following round after the contact has actually been resolved.
+- This removes the older hidden-contact rescue-concurrency behavior that could leave only one team investigating the alien while other unengaged teams peeled away toward VIPs.
+- Active escort owners remain exempt and continue extraction under the existing escort-leader lock.
+- Tracker-guided rescue cannot begin while the round-start Last Known Contact barrier is active.
+- Because the barrier is frozen at round start, a lethal shot calculated later in the same Simulation round cannot make another team appear to act on the future result before the kill is rendered.
+- Threat music still latches across ordinary streamed frame boundaries to avoid contact/search flicker.
+- The latch now clears at an authoritative impact or phase-complete boundary once there is no visible alien contact and no valid unresolved Last Known Position. A stale marker on the just-observed dead target cannot keep the intense loop alive after the rendered kill.
+- Lower-priority VIP/objective behavior resumes normally on the next round after contact resolution.
+- Save format remains 4.
+
+Validation
+- All five executable embedded runtime JavaScript blocks pass syntax validation.
+- Targeted source/contract checks verify the round-start Last Known Contact barrier excludes unengaged rescue leaders but exempts an active escort leader.
+- Tracker-guided rescue is explicitly suppressed by the barrier.
+- Threat-music source checks verify an impact/phase contact-resolution boundary can clear the latch even while streamed AI playback continues.
+- Final packaging verifies host/runtime build synchronization, exact payload/source byte identity, declared byte count/SHA-256, one mutable current patch-history entry, frozen Browser 2224 history, save format 4, and ZIP integrity.
+
+---
+
 BUILD: v0.26.09.03.2224_BEACON_IMPACT_COMMIT_AND_REPLACEMENT_WAVE_REARM_HOTFIX
 TITLE: Beacon Impact Commit + Replacement Wave Rearm Hotfix
 DATE: September 3, 2026

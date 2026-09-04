@@ -1,10 +1,44 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.03.2224_BEACON_IMPACT_COMMIT_AND_REPLACEMENT_WAVE_REARM_HOTFIX`
+Current browser build: `v0.26.09.03.2304_LAST_KNOWN_CONTACT_RESCUE_BARRIER_AND_CAUSAL_THREAT_MUSIC_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 2304: Last Known Contact Rescue Barrier + Causal Threat Music Hotfix
+
+### Current Build Delta
+- Fixes the field-reported case where an unresolved final-alien Last Known Position marker remained on the map but fire teams assigned to VIPs, which had not yet made contact with those VIPs, peeled away from the combat/search area and resumed rescue approach.
+- Root cause: an older **hidden-contact rescue concurrency** rule intentionally kept only one eligible fire-team leader on hidden-alien search while allowing other free teams to recover VIPs. That rule predated the newer Last Known Contact priority doctrine and could override it during the rescue phase.
+- A valid unresolved Last Known Position at the **start of an AEGIS round** now creates a **round-start contact barrier**. Every fire-team leader without an already-active civilian/VIP escort is excluded from rescue-approach movement for that whole round.
+- Explicit VIP assignments are **deferred, not erased**. Once the contact is resolved, those teams may resume the same assigned VIP on the following round.
+- Existing active escort leaders remain exempt from the barrier and continue extraction under the absolute escort-leader lock. Supporting escort soldiers retain their configured Stay/Break-Off doctrine.
+- Tracker-guided rescue cannot begin while the round-start contact barrier is active.
+- The barrier is deliberately frozen for the whole round. If another team kills the final alien later in that already-computed round, an unengaged VIP team does not immediately redirect toward its VIP inside the same playback batch. This prevents a lower-priority movement from appearing before the player has actually seen the lethal shot/impact that makes it legal.
+- This is a **causal presentation rule**, not hidden-coordinate tracking: teams use only the valid Last Known Contact report and existing combat/search systems.
+- Also fixes the field-reported intense-mission-music continuation after the final alien is killed. The existing threat-music latch still survives harmless streamed frame boundaries to prevent rapid contact/search crossfades, but it no longer waits for the entire `aiPlayback` object to end.
+- At an authoritative **impact** or **phase-complete** playback boundary, if there is no active visible contact and no valid unresolved Last Known Position, the contact latch clears immediately and the lower-intensity tactical loop can resume.
+- For an observed lethal impact, stale Last Known Contact metadata attached to the now-dead target is ignored for music-release purposes; a marker on a different still-living contact remains authoritative.
+- Browser 2224 Beacon impact/replacement reinforcement fixes, Browser 2153 pre-impact visual hold, Browser 1926 boarding live-pose fix, VIP rescue deconfliction, weapon victory celebrations, saves, and save format 4 remain authoritative.
+
+### Tactical Priority Clarification
+- **Already escorting civilian/VIP:** escort leader continues extraction.
+- **Visible live alien:** engage contact.
+- **Valid unresolved Last Known Position:** every otherwise-free/unengaged fire team remains in combat-search authority for the round; uncontacted VIP approach is deferred.
+- **After rendered contact resolution:** persistent VIP/objective assignments may resume on the next round.
+
+### Validation
+- All five executable runtime JavaScript blocks pass `node --check`.
+- Build Health verifies that an unresolved Last Known Contact creates the rescue barrier, that an active escort leader is exempt, that tracker-guided rescue is suppressed, and that causal threat-music release exists during streamed playback.
+- Release packaging verifies host/runtime build synchronization, exact embedded payload/source byte identity, declared byte count/SHA-256, one mutable current history entry, frozen Browser 2224 history, and save format 4.
+
+### Field Acceptance
+- Leave one live alien with a valid Last Known Position marker while two fire teams have explicit VIP assignments but have not contacted those VIPs. Both unengaged teams should remain committed to the marker/search phase instead of heading toward the VIPs.
+- Let another team kill that alien later in the same round. The VIP-assigned teams should not appear to leave *before* the kill is rendered; they may resume their VIP approach on the following round.
+- After the final visible alien/valid marker is resolved, confirm the intense threat music falls back to the lower-intensity loop at the rendered contact-resolution boundary rather than continuing through unrelated cleanup movement.
+
+---
 
 ## Current Build Addendum — Browser 2224: Beacon Impact Commit + Replacement Wave Rearm Hotfix
 
