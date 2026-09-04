@@ -1,10 +1,42 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.03.2153_BEACON_STREAM_FRAME_PREIMPACT_VISUAL_HOLD_HOTFIX`
+Current browser build: `v0.26.09.03.2224_BEACON_IMPACT_COMMIT_AND_REPLACEMENT_WAVE_REARM_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 2224: Beacon Impact Commit + Replacement Wave Rearm Hotfix
+
+### Current Build Delta
+- Fixes the field-reported Browser 2153 presentation regression where the Alien Field Beacon correctly remained visible through the lethal slow-motion projectile/grenade cinematic but could remain visually intact after the explosion instead of committing to the authoritative destroyed/wreck state.
+- Root cause: releasing the active pre-impact presentation hold back to `null` allowed the still-current lethal playback frame to fall back to its detached active-Beacon snapshot and reconstruct the intact Beacon again after impact.
+- Beacon destruction presentation now has an explicit **impact commit state**. Before impact, the intact shot/frame snapshot owns presentation; after impact, the committed state forces the renderer to use the authoritative destroyed cover and prevents the lethal frame from resurrecting the Beacon.
+- The destroyed Beacon therefore follows an explicit presentation lifecycle: **active → lethal visual hold → projectile/grenade impact → Beacon explosion → committed wreck**.
+- Also fixes replacement Alien Field Beacons inheriting stale/exhausted reinforcement-cycle state from the previously destroyed Beacon, which could cause a replacement source to appear inactive or produce an under-strength/token reinforcement delivery.
+- A successfully deployed replacement Beacon now begins a **fresh reinforcement-source generation**. Deployment clears stale commander-death/check-in/call-eligibility and partial-arrival bookkeeping, assigns a new generation/wave identity, and immediately arms a bootstrap reinforcement wave.
+- The bootstrap wave uses the same mission/difficulty-aware `tacticalAlienReinforcementWaveSize(...)` authority as ordinary reinforcement waves and the standard reinforcement arrival delay. It therefore cannot intentionally degrade to a one-alien wave when the normal wave size is two or more.
+- The replacement Beacon becomes the new Beacon-centered rally source for that wave and records a fresh `arrivalTotalCount`, `arrivalDeployedCount: 0`, wave number, call round, and arrival round.
+- **Easy doctrine:** each replacement Beacon receives its own normal-strength single-wave cycle rather than inheriting the exhausted one-wave state of the prior Beacon.
+- **Medium/Hard/VIP doctrines:** the replacement Beacon receives the fresh bootstrap wave and then continues into the established repeated-wave cadence normally.
+- If a replacement Beacon is destroyed before its bootstrap wave arrives, the existing Beacon-offline transit cancellation remains authoritative and the next five-completed-turn replacement countdown begins normally.
+- Save format remains **4**.
+
+### Validation
+- All five executable runtime JavaScript blocks pass `node --check`.
+- Targeted Beacon-cinematic coverage verifies that the intact Beacon is presented while the lethal cinematic hold is active and that the authoritative destroyed/wreck cover is presented immediately once the impact commit state is set.
+- Targeted replacement-Beacon coverage seeds stale one-alien/partial-arrival and missed-check-in state, deploys a replacement Beacon, and verifies the stale bookkeeping is cleared and a fresh normal-strength wave is armed.
+- The replacement wave becomes arrival-ready on its scheduled round and the arrival helper consumes the full planned wave size rather than an inherited token count.
+- Build Health now checks the impact-commit lifecycle, replacement-wave bootstrap authority, stale-cycle sanitation, minimum normal wave strength, and save format 4.
+- Release packaging verifies host/runtime build synchronization, exact embedded payload/source byte identity, declared byte count/SHA-256, one mutable current patch-history entry, frozen Browser 2153 history, and ZIP integrity.
+
+### Field Acceptance
+- Destroy a Beacon with a direct shot or Frag Grenade. Confirm the Beacon remains intact through projectile travel, explodes at impact, and immediately becomes the destroyed/wreck presentation instead of reappearing intact.
+- Allow the aliens to deploy a replacement Beacon after the normal five-completed-turn redeployment delay. Confirm deployment announces/arms a fresh normal-strength wave and that the scheduled arrival delivers the expected reinforcement strength for the current mission/difficulty.
+- On Hard, a wave larger than the available adjacent Beacon spawn cells may stage across more than one arrival step; that is expected as long as the full planned wave count is preserved rather than reduced.
+- Destroy a replacement Beacon before its pending wave arrives and confirm the transit is canceled and another five-turn replacement cycle can begin if the mission remains active.
+
+---
 
 ## Current Build Addendum — Browser 2153: Beacon Stream-Frame Pre-Impact Visual Hold Hotfix
 

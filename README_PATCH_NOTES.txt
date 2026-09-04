@@ -1,3 +1,29 @@
+BUILD: v0.26.09.03.2224_BEACON_IMPACT_COMMIT_AND_REPLACEMENT_WAVE_REARM_HOTFIX
+TITLE: Beacon Impact Commit + Replacement Wave Rearm Hotfix
+DATE: September 3, 2026
+
+Summary
+- Fixes two Beacon lifecycle regressions: the intact pre-impact visual snapshot could reappear after the destruction explosion, and replacement Beacons could inherit stale/exhausted reinforcement-cycle state and deliver weak or inconsistent reinforcements.
+
+Key changes
+- Beacon destruction presentation now uses an explicit committed-after-impact state.
+- While the lethal projectile/grenade is traveling, the intact pre-impact snapshot still owns rendering.
+- At impact, the presentation hold is committed to the authoritative destroyed/wreck cover; the lethal frame can no longer resurrect the intact Beacon from its snapshot fallback.
+- Replacement Beacon deployment now clears stale commander/check-in/call-eligibility, legacy one-wave, and partial-arrival bookkeeping from the previous Beacon generation.
+- Every successful replacement deployment immediately arms a fresh bootstrap wave using the mission's normal reinforcement wave-size helper and the standard arrival delay.
+- The replacement wave gets a fresh wave number, full `arrivalTotalCount`, zero deployed count, Beacon-centered rally point, and `replacement-beacon-bootstrap` call reason.
+- Easy receives one normal-strength wave per replacement generation; Medium/Hard/VIP continue their normal repeated-wave cadence after the bootstrap wave.
+- Destroying a replacement Beacon before its pending wave arrives still cancels the transit and starts the next five-turn replacement countdown when the mission remains active.
+- Save format remains 4.
+
+Validation
+- All five executable embedded runtime JavaScript blocks pass syntax validation.
+- Targeted cinematic regression verifies active hold → impact commit → authoritative wreck with no intact-Beacon resurrection.
+- Targeted replacement regression seeds stale one-alien/partial state, deploys a replacement Beacon, verifies a fresh normal-strength wave is armed, verifies it becomes arrival-ready on schedule, and verifies the planned wave is consumed rather than a token inherited count.
+- Final packaging verifies host/runtime build synchronization, exact payload/source byte identity, declared byte count/SHA-256, one mutable current patch-history entry, frozen Browser 2153 history, save format 4, and ZIP integrity.
+
+---
+
 BUILD: v0.26.09.03.2153_BEACON_STREAM_FRAME_PREIMPACT_VISUAL_HOLD_HOTFIX
 TITLE: Beacon Stream-Frame Pre-Impact Visual Hold Hotfix
 DATE: September 3, 2026
