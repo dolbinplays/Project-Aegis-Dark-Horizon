@@ -97,6 +97,11 @@ const required = [
   "TACTICAL_MISSION_DEFAULT_PRESENTATION_PATCH",
   "TACTICAL_MISSION_DEFAULT_PRESENTATION",
   "tacticalMissionInitialPresentation",
+  "TACTICAL_AI_ROUND_CONTEXT_INDEX_AND_CACHE_PATCH",
+  "tacticalCreateAiRoundContext",
+  "tacticalAiRoundContextIndexAndCacheContractChecks",
+  "Simulation AI creates one round-local tactical context and activates it only around an actor turn",
+  "Authoritative terrain changes explicitly refresh cached cover indexes",
   "Fresh tactical missions default to 3D Iso and Full zoom",
   "Simulation AI defaults to Full watch zoom and one-hundred-percent Battle Speed",
   "Saved tactical presentation overrides remain authoritative on resume",
@@ -157,7 +162,7 @@ const required = [
   "tacticalMissionHasActiveAlienContact",
   "Losing sight creates one persistent last-known marker at the observed hex rather than the alien's hidden position",
   "Mission threat music remains in contact intensity while a last-known alien report is unresolved",
-  "Reaching and clearing the reported hex retires the marker and releases contact-intensity music",
+  "Legitimate LOS to an empty reported hex clears the authoritative marker so it cannot return when the observer looks away",
   "tacticalThreePersistentAnimateArticulatedHexMotion",
   "tacticalSmoothArticulatedHexLocomotionContractChecks",
   "Articulated locomotion begins and ends at exact authoritative hex centers without overshoot",
@@ -1602,7 +1607,7 @@ if (new Set(alternateSoundtrackFiles).size !== 15 || alternateSoundtrackFiles.so
 if (!html.includes("CONTACT_IN_THE_DARK_MISSION_SEGMENTS={search:{start:0,end:36},combat:{start:37,end:60}}") || !html.includes("CONTACT_IN_THE_DARK_CROSSFADE_MS=1400") || !html.includes("return aliensVisible?CONTACT_IN_THE_DARK_MISSION_SEGMENTS.combat:CONTACT_IN_THE_DARK_MISSION_SEGMENTS.search")) {
   missing.push("Contact in the Dark must retain the 0:00-0:36 search loop, 0:37-1:00 combat loop, and 1.4-second crossfade contract");
 }
-if (!html.includes("tacticalMissionHasVisibleAliens(units,covers,mission)") || !html.includes("hasLineOfSight(observer,unit.x,unit.y,covers,mission)") || !html.includes("onAlienVisibilityChange(tacticalMusicAliensVisible)")) {
+if (!html.includes("tacticalMissionHasVisibleAliens(units,covers,mission)") || !html.includes("hasLineOfSight(observer,unit.x,unit.y,covers,mission)") || !html.includes("onAlienVisibilityChange(Boolean(tacticalMusicActiveContact") || !html.includes("tacticalMusicPlaybackContactResolution")) {
   missing.push("mission music state must follow live soldier line of sight instead of permanent alien reveal memory");
 }
 if (!html.includes("audio.mediaFadingOut=outgoing") || !html.includes("cancelMusicMediaCrossfade(true)") || !html.includes("armContactInTheDarkLoop(incoming,targetKey,true)")) {

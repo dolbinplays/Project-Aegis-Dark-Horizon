@@ -24,6 +24,7 @@ const requiredLineageMarkers = [
   "POST_MISSION_RUNTIME_RESUME_SINGLE_CHECKPOINT_CONSUMER_HOTFIX",
   "POST_MISSION_RECOVERY_OUTCOME_ANNOUNCEMENT_PATCH",
   "TACTICAL_MISSION_DEFAULT_PRESENTATION_PATCH",
+  "TACTICAL_AI_ROUND_CONTEXT_INDEX_AND_CACHE_PATCH",
 ];
 const missingLineage = requiredLineageMarkers.filter((marker) => !source.includes(marker));
 if (missingLineage.length) {

@@ -1,3 +1,29 @@
+BUILD: v0.26.09.04.1308_TACTICAL_AI_ROUND_CONTEXT_INDEX_AND_CACHE_PATCH
+TITLE: Tactical AI Round Context Index + Cache
+DATE: September 4, 2026
+
+Summary
+- Introduces a transient shared Simulation-round lookup context so repeated pathfinding, occupancy, cover, fire-team, Beacon, and Last Known Contact queries reuse authoritative indexes and refresh only after relevant state changes.
+
+Key changes
+- Every Simulation AI round creates one short-lived context; it is active only around an individual AEGIS actor callback and is released immediately afterward.
+- Route planning reuses indexed hard-cover footprints, occupied cells, fire intensity, smoke density, and cached per-actor ignored-occupancy variants.
+- Fire-team membership/grouping, active-Beacon discovery, Last Known Contact cell groups, and cover-adjacency maps reuse the same context when called with the authoritative collections.
+- Movement, casualties, extraction/boarding, fire-team state, fear command changes, and contact-memory updates are detected before a unit-dependent index is reused.
+- UFO-bay phase/inspection changes, Beacon disable or damage, grenade terrain changes, shattered windows, and Beacon-shield impacts explicitly refresh cover-dependent indexes immediately.
+- A changed complete unit collection or cover-array identity is adopted at actor synchronization; unrelated/subset callers fall back to the established helper implementations.
+- The cache remains round-local, does not enter saved data, and is visible through lightweight runtime diagnostics for field measurement.
+- Tactical outcomes, pathfinding rules, movement, TU, LOS, fog, cover, hazards, targeting, damage, objectives, AI behavior, assets, and save format 4 are unchanged.
+
+Validation
+- Embedded JavaScript syntax validation passes across all nine non-empty script blocks in the four checked HTML artifacts.
+- Five Build Health contracts cover context lifetime, indexed path blockers/occupancy, shared tactical lookups, terrain invalidation, and save format 4.
+- The deterministic context test verifies unit movement invalidates occupancy and a new hard-cover cell appears after explicit cover invalidation.
+- Live local-browser Build Health reports 763/826 with all five new contracts passing and no console warnings or errors; 63 older unrelated diagnostics remain visible.
+- Release packaging checks the new lineage marker, synchronized build metadata, exact source payload length/SHA-256, and ZIP integrity.
+
+---
+
 BUILD: v0.26.09.04.1134_TACTICAL_RUNTIME_LIFECYCLE_AND_PLAYBACK_OPTIMIZATION_PATCH
 TITLE: Tactical Runtime Lifecycle + Playback Optimization
 DATE: September 4, 2026
