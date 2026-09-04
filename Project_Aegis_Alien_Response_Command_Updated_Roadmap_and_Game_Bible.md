@@ -1,10 +1,34 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.04.0750_FINAL_VIP_BOARDING_TERMINAL_VICTORY_CUT_PATCH`
+Current browser build: `v0.26.09.04.1134_TACTICAL_RUNTIME_LIFECYCLE_AND_PLAYBACK_OPTIMIZATION_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1134: Tactical Runtime Lifecycle + Playback Optimization
+
+### Current Build Delta
+- Restores `src/browser-runtime.html` as the single canonical browser source and synchronizes the release manifest, patch history, Game Bible, and packaged `index.html` around that authority.
+- Closes the Beacon destruction cinematic lifecycle gap: its projectile, collapse rings, light, blast, and debris are disposed when the cinematic finishes and are also cleared if the persistent Three.js runtime shuts down mid-effect.
+- Last Known Contact cleanup now computes the active reported-cell index once per cleanup pass rather than once for every living soldier.
+- Human AI pre-movement planning reuses one current unit snapshot across contact, Beacon, objective, recovery, and fire-team priority checks. Once the explicit Last Known Contact gate returns empty, fallback search does not repeat that same scan.
+- AI movement playback builds frame-local unit-ID indexes for movement plans and camera focus paths. Step animation and final hydration no longer repeatedly scan the full plan/current-unit arrays.
+- In-game patch history is normalized newest-first after patch-layer records are assembled, preserving the frozen 0750 history entry while making the current build the actual Latest entry.
+- These changes are implementation optimizations only. Tactical coordinates, pathfinding, movement, TU costs, LOS, fog, accuracy, targeting, fire-team formation, escort behavior, objectives, damage, save data, and save format **4** remain authoritative and unchanged.
+
+### Validation
+- All five executable browser-runtime JavaScript blocks pass syntax validation.
+- Six focused Build Health contracts cover Beacon resource disposal, single-pass contact indexing, pre-movement unit-snapshot reuse, movement-plan indexing, newest-first patch history, and save-format stability.
+- Packaging regenerates `index.html` directly from canonical source and records the exact UTF-8 source byte length and SHA-256.
+- Existing unrelated Build Health failures remain visible for deliberate behavioral-versus-contract triage.
+
+### Upcoming Performance Patch Sequence
+- Build a broader per-round tactical context for stable unit, fire-team, occupancy, cover, Beacon, and Last Known Contact indexes, with bounded refresh only after authoritative state changes.
+- Replace the remaining per-step timeout fan-out in streamed movement playback with a single cancellable sequencer or animation-frame timeline.
+- Reduce TacticalMission and `AlienResponseCommand` render-time array/string construction using stable revisions, memoized selectors, and smaller component boundaries.
+- Run full Build Health in responsive idle batches or a Worker and replace brittle source-string assertions with behavior-focused contracts where practical.
+- Consolidate duplicate full Roadmap/Game Bible snapshots and move large patch-history data out of executable component code while keeping the standalone artifact self-contained.
 
 ## Current Build Addendum — Browser 0750: Final VIP Boarding Terminal Victory Cut
 

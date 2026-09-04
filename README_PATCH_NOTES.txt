@@ -1,3 +1,29 @@
+BUILD: v0.26.09.04.1134_TACTICAL_RUNTIME_LIFECYCLE_AND_PLAYBACK_OPTIMIZATION_PATCH
+TITLE: Tactical Runtime Lifecycle + Playback Optimization
+DATE: September 4, 2026
+
+Summary
+- Restores one canonical browser-runtime source and release manifest, closes a Beacon-cinematic GPU cleanup gap, and removes repeated AI-contact and movement-playback allocations without changing tactical outcomes.
+
+Key changes
+- The current runtime is restored to src/browser-runtime.html, matching the packaged index payload and returning packaging/version authority to the documented source tree.
+- Beacon destruction projectile, field-collapse, dynamic-light, and debris objects are disposed immediately when the cinematic ends.
+- Renderer shutdown now also clears the Beacon cinematic root and releases its retained state if a mission/runtime closes during the effect.
+- Last Known Contact search reset creates its active contact-cell set once per reset operation instead of rebuilding it for every living soldier.
+- Each human AI pre-movement planning pass reuses one current unit snapshot for contact, Beacon, objective, recovery, and fire-team priority checks.
+- Once the explicit Last Known Contact priority gate has found no report, ordinary fallback search no longer repeats the same empty contact scan.
+- Streamed movement playback builds unit-ID indexes for movement plans, camera focus paths, and final state hydration instead of repeatedly scanning arrays during every animation step.
+- Patch-note history is normalized newest-first after all patch-layer entries are assembled, while the previous 0750 record remains frozen to its original build.
+- Tactical movement, pathfinding, TU costs, LOS, fog, AI priorities, objective authority, damage, save data, and save format remain unchanged.
+
+Validation
+- All five executable browser-runtime JavaScript blocks pass syntax validation.
+- Build Health adds six focused lifecycle/playback contracts covering cinematic disposal, contact reset indexing, AI unit-snapshot reuse, playback indexing, patch-history ordering, and save format 4.
+- The packaged index is regenerated from the canonical source with exact byte-length and SHA-256 metadata.
+- Existing unrelated Build Health failures remain documented for later contract triage rather than being hidden or deleted.
+
+---
+
 BUILD: v0.26.09.04.0750_FINAL_VIP_BOARDING_TERMINAL_VICTORY_CUT_PATCH
 TITLE: Final VIP Boarding Terminal Victory Cut
 DATE: September 4, 2026
