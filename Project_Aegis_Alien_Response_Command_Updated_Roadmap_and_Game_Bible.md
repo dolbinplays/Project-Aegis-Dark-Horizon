@@ -1,10 +1,30 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.03.1610_VIP_CIVILIAN_SKYRANGER_BOARDING_CINEMATIC_PATCH`
+Current browser build: `v0.26.09.03.1820_BUILDING_WIDE_RESCUE_HANDOFF_AND_SKYRANGER_BOARDING_CINEMATIC_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1820: Building-Wide Rescue Handoff + Skyranger Boarding Cinematic Hotfix
+
+### Current Build Delta
+- Refines Browser 1403 rescue ownership so **explicit VIP assignments remain exclusive during approach**, but once a fire team legitimately establishes escort ownership inside a shared building, that team gains **building-wide rescue authority** and may gather every other eligible living, unrescued, unescorted civilian/VIP in that same building.
+- Building-wide rescue consolidation is an explicit exception to the normal four-person contact cap. The full gathered group participates in the escort column, Browser 2155 separation/fear/catch-up pacing, and the authoritative Skyranger boarding queue.
+- If the gathering team takes custody of a VIP that had been explicitly assigned to another fire team, the displaced team's VIP objective is immediately retired. Its stale VIP-approach ingress/route scratch state is cleared, but legitimate combat and formation-recovery state is preserved so the normal priority state machine can decide the team's next action.
+- Civilian-specific **Assist** assignments whose sole dependency was the displaced VIP team are retired in the same handoff, preventing helper teams from remaining attached to a rescue objective that another team has already completed.
+- This supersedes the Browser 1403 rule that prevented same-building absorption of another team's assigned VIP **after escort contact is established**; pre-contact approach ownership, ingress reservation, doorway deconfliction, and stalled-route replanning remain authoritative.
+- Fixes the Browser 1610 field failure where a VIP/civilian could disappear as rescued before any ramp walk or boarding camera was shown. Pending extraction trails now bypass the generic sequential-action movement gate, including phase-complete streamed frames with no ordinary `actionMovementIds`.
+- The Skyranger boarding cinematic now derives its trigger from the evacuee's **active recorded movement-path cell**. This removes the render-timing race where React unit coordinates could lag the path index by one update and prevent the camera from ever recognizing the ramp step.
+- Manual boarding uses the same corrected path-index authority. The intended presentation remains **approach normally → step onto ramp → rear-ramp cinematic → ascend ramp → cross into troop bay → apply visible extraction/cull after the interior trail → restore prior observer view**.
+- Multi-Skyranger ramp identity, Browser 1548 tactical-round interstitials, Browser 1511 Beacon/Assist release, Last Known Contact sanitation, Beacon Assault authority, TU/LOS/collision rules, assets, and save format **4** remain intact.
+
+### Validation
+- All five executable embedded runtime JavaScript blocks pass `node --check`.
+- Build Health coverage verifies shared-building consolidation of another explicitly assigned VIP, displaced VIP-team release, building-wide rescue beyond the standard four-person contact cap, phase-complete boarding playback eligibility, movement-path-cell cinematic activation, and save format **4**.
+- Release packaging verifies host-shell syntax, exact embedded runtime/source identity, declared byte count and SHA-256, patch-history ownership, and ZIP integrity.
+
+---
 
 ## Current Build Addendum — Browser 1610: VIP / Civilian Skyranger Boarding Cinematic
 
@@ -71,7 +91,7 @@ Authoritative playable artifact: `index.html`
 
 ### Current Build Delta
 - Implements the core of the approved **VIP Rescue Approach, Contact, and Building Deconfliction** roadmap item on top of Browser 2233. The pre-escort sequence now has one authoritative fire-team owner from persistent assignment through approach, building ingress, leader/VIP contact, and handoff into escort/extraction.
-- **Explicit VIP ownership is exclusive.** A fire team contacting civilians inside a shared building will not automatically absorb a VIP explicitly assigned to another team. Unassigned civilians in the same structure may still join the contacting leader up to the normal escort capacity.
+- **Historical Browser 1403 behavior:** explicit VIP ownership was exclusive through contact and prevented one team from absorbing another team's assigned VIP. **Browser 1820 supersedes this after legitimate escort contact inside a shared building:** pre-contact approach ownership remains exclusive, but the team that establishes escort control may consolidate all eligible rescuees in that building and releases displaced assignments.
 - Assigned VIPs inside buildings now receive deterministic **ingress reservations**. Each rescue leader evaluates legitimate doors and existing breaches using the established hazard-aware route authority; teams targeting the same building prefer different openings when alternatives exist.
 - When only one usable entrance exists, the first rescue team owns that ingress while later teams receive an intentional staging/queue state clear of the doorway. Once the current owner enters the structure, the waiting team can inherit the opening on a later round instead of piling into the same cell cluster.
 - The fire-team leader remains the movement anchor during VIP approach. Supporting soldiers follow the existing fire-team formation mover rather than independently selecting the VIP, doorway, or contact cell.
@@ -82,7 +102,7 @@ Authoritative playable artifact: `index.html`
 
 ### Validation
 - Runtime syntax validation passes for all five executable embedded JavaScript blocks.
-- A targeted executable smoke test verifies that two teams assigned to two VIPs in the same building choose different openings when two doors exist, cannot collect one another's explicitly assigned VIP, and intentionally queue one team when only a single entrance exists.
+- A targeted executable smoke test for Browser 1403 originally verified separate ingress ownership and strict VIP-contact exclusivity. Browser 1820 preserves the ingress/queue checks but intentionally supersedes strict contact exclusivity after a team establishes building-wide escort ownership.
 - Deterministic Build Health contracts cover ownership, ingress assignment, bounded stalled-route replanning, streamed approach metadata, diagnostics, and save format **4**.
 
 ---

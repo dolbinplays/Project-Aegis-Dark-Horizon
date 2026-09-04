@@ -1,3 +1,28 @@
+BUILD: v0.26.09.03.1820_BUILDING_WIDE_RESCUE_HANDOFF_AND_SKYRANGER_BOARDING_CINEMATIC_HOTFIX
+TITLE: Building-Wide Rescue Handoff + Skyranger Boarding Cinematic Hotfix
+DATE: September 3, 2026
+
+Summary
+- Allows a fire team that establishes escort control inside a building to consolidate every other eligible civilian/VIP in that building, releases displaced VIP/Assist assignments cleanly, and fixes the Browser 1610 Skyranger boarding presentation so evacuees cannot disappear before their ramp walk/cinematic plays.
+
+Key changes
+- Once a fire team legitimately establishes rescue ownership inside a building, it can gather all other living, unrescued, unescorted civilians/VIPs in that same building, even when one was explicitly assigned to another fire team.
+- Same-building consolidation is an explicit exception to the standard four-person contact cap. The full gathered group participates in escort formation/catch-up behavior and the Skyranger boarding queue.
+- If a rescuee is collected by a different team, the displaced team's explicit VIP assignment and stale VIP-approach route metadata are cleared immediately. That team then returns to situation-appropriate Default AI after any current combat/re-form state.
+- Civilian-specific Assist assignments tied to the displaced VIP owner are also released so helpers cannot remain attached to an objective that no longer exists.
+- Before legitimate contact, explicit VIP approach ownership/deconfliction from Browser 1403 remains authoritative; building-wide consolidation supersedes exclusivity only after a team actually establishes escort ownership in the shared building.
+- Pending Skyranger extraction movement now bypasses the ordinary sequential-action movement gate. A phase-complete streamed frame can no longer apply rescued/extracted state before the recorded boarding trail is animated.
+- Boarding cinematic activation now derives from the evacuee's active recorded movement-path cell rather than waiting for React unit-position hydration. The camera therefore cuts when the evacuee actually steps onto the ramp.
+- Manual boarding uses the same path-index authority. Multi-Skyranger craft selection continues to use the recorded ramp touch, and the prior observer view is restored after the boarding sequence.
+- Browser 1548 round-preparation interstitials, Browser 1511 Beacon/Assist completion release, Browser 2155 fear/catch-up behavior, Browser 2124 Last Known Contact sanitation, TU/LOS/collision authority, assets, and save format 4 remain intact.
+
+Validation
+- All five executable embedded runtime JavaScript blocks pass node syntax validation.
+- Build Health coverage checks building-wide takeover of another explicitly assigned VIP, displaced-team objective release, the building-wide exception to the four-person escort cap, boarding playback eligibility on a phase-complete sequential frame, path-cell cinematic activation, and save format 4.
+- Final packaging verifies host-shell JavaScript, exact embedded-runtime byte identity, declared byte count/SHA-256, patch-history ownership, and ZIP integrity.
+
+---
+
 BUILD: v0.26.09.03.1610_VIP_CIVILIAN_SKYRANGER_BOARDING_CINEMATIC_PATCH
 TITLE: VIP / Civilian Skyranger Boarding Cinematic
 DATE: September 3, 2026
