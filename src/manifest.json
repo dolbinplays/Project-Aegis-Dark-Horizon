@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.09.04.1811_TACTICAL_AI_FRAME_COPY_ON_WRITE_PERFORMANCE_HOTFIX",
+  "currentBuild": "v0.26.09.04.2004_TACTICAL_AI_PLAYBACK_SEQUENCER_AND_FRAME_PACING_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "tactical-ai-frame-copy-on-write-performance-hotfix-complete",
+  "status": "tactical-ai-playback-sequencer-and-frame-pacing-patch-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.09.04.1811_TACTICAL_AI_FRAME_COPY_ON_WRITE_PERFORMANCE_HOTFIX",
+  "lastInspectedBuild": "v0.26.09.04.2004_TACTICAL_AI_PLAYBACK_SEQUENCER_AND_FRAME_PACING_PATCH",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -47,7 +47,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.09.04.1811_TACTICAL_AI_FRAME_COPY_ON_WRITE_PERFORMANCE_HOTFIX",
+    "browserBuild": "v0.26.09.04.2004_TACTICAL_AI_PLAYBACK_SEQUENCER_AND_FRAME_PACING_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -221,7 +221,8 @@
       "articulated-pose-editor-and-documentation-consolidation",
       "tactical-ai-round-context-index-and-cache",
       "ai-beacon-frame-state-and-replacement-playback-hotfix",
-      "tactical-ai-frame-copy-on-write-performance-hotfix"
+      "tactical-ai-frame-copy-on-write-performance-hotfix",
+      "tactical-ai-playback-sequencer-and-frame-pacing"
     ],
     "temporaryExceptions": [
       {
@@ -595,6 +596,10 @@
       {
         "system": "last-known-alien-contact-and-threat-music-memory",
         "reason": "The browser now preserves verified AEGIS alien sightings as unresolved last-known contact markers, directs idle search teams to clear them, and holds the contact-music segment without exposing hidden alien positions. Native Godot requires equivalent player-side contact memory, search priority, presentation, and audio-state ownership."
+      },
+      {
+        "system": "tactical-ai-playback-sequencer-and-frame-pacing",
+        "reason": "Browser playback now uses a cancellable timer/rAF sequencer with reusable movement jobs, stalled-frame pacing, and action-completion barriers. Native Godot retains its engine-native playback implementation."
       }
     ]
   }

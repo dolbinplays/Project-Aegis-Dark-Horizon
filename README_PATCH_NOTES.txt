@@ -1,3 +1,29 @@
+BUILD: v0.26.09.04.2004_TACTICAL_AI_PLAYBACK_SEQUENCER_AND_FRAME_PACING_PATCH
+TITLE: Tactical AI Playback Sequencer + Frame-Pacing
+DATE: September 4, 2026
+
+Summary
+- Replaces tactical per-step timeout fan-out with one cancellable sequencer and reusable movement/boarding jobs.
+
+Key changes
+- The sequencer owns at most one native timer or animation-frame handle. It sleeps between events and releases the handle when idle.
+- Movement retains one sequence job plus final hydration instead of one callback/timer per step. Single-file civilian boarding follows the same sequence mechanism.
+- Overdue events after a stall preserve their presentation intervals; movement and action results are never skipped to catch up.
+- Automatic frame advance, Pause Action completion, and Hybrid completion wait for pending movement, shot results, and dynamically scheduled Beacon impact commits.
+- Terminal VIP boarding, Take Back Control, contact replanning, and mission teardown cancel the previous generation without resurrecting a recurring job.
+- Diagnostics expose queue size, native wakes, maximum lateness/dispatch duration, stalls, and bounded per-view animation-frame interval samples during playback.
+- Per-view interval measurements are distinct from the older render-call duration diagnostic. No renderer FPS improvement is claimed from the scheduler workload test.
+- Tactical simulation, assets, and save format 4 are unchanged.
+
+Validation
+- Sixteen deterministic behavioral tests cover scheduler ordering, timing at 10/100/150 percent speed, stalls, cancellation, boundaries, error cleanup, and the shipped movement/boarding/handoff callbacks.
+- The 82-step workload retains 2 jobs and at most 1 native wake handle, and delivers all 83 movement/commit events.
+- Seeded browser comparison: baseline 773/836; patch 778/841. All five new scheduler contracts pass, with exactly the same 63 existing failures and no new failures.
+- Embedded JavaScript, packaging/source byte identity, synchronized metadata, and browser Build Health pass their applicable checks.
+- Hands-on 80x80/96x96 Iso/FPV/TPV frame-time comparison remains a manual playtest gate; no measured gameplay smoothness or FPS improvement is claimed.
+
+---
+
 BUILD: v0.26.09.04.1811_TACTICAL_AI_FRAME_COPY_ON_WRITE_PERFORMANCE_HOTFIX
 TITLE: Tactical AI Frame Copy-on-Write Performance Hotfix
 DATE: September 4, 2026

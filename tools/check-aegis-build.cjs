@@ -103,6 +103,7 @@ const required = [
   "Buffered AI frames retain their own cover-array membership across later Beacon replacement",
   "Missing exact Beacon authority fails closed instead of replaying a stale destruction cinematic",
   "TACTICAL_AI_FRAME_COVER_COPY_ON_WRITE_PERFORMANCE_HOTFIX",
+  "TACTICAL_AI_PLAYBACK_SEQUENCER_AND_FRAME_PACING_PATCH",
   "TACTICAL_AI_INACTIVE_HAZARD_ZERO_COPY_PERFORMANCE_HOTFIX",
   "Unchanged AI frames reuse one cover snapshot while cover mutations use copy-on-write",
   "Hazard-free rounds reuse authoritative unit and cover arrays while active hazards still advance",

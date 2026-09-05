@@ -1,10 +1,29 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.04.1811_TACTICAL_AI_FRAME_COPY_ON_WRITE_PERFORMANCE_HOTFIX`
+Current browser build: `v0.26.09.04.2004_TACTICAL_AI_PLAYBACK_SEQUENCER_AND_FRAME_PACING_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 2004: Tactical AI Playback Sequencer + Frame-Pacing
+
+### Current Build Delta
+- Tactical movement and civilian boarding reuse one sequence job; the scheduler owns at most one native timer or animation-frame handle and sleeps while waiting for its next event.
+- Long main-thread stalls stretch the presentation timeline instead of compressing overdue movement, shots, and results into a burst. Tactical events and final state are preserved.
+- Automatic frame advance, Pause Action completion, and Hybrid completion wait for pending action jobs, including a Beacon impact commit scheduled by an earlier shot.
+- Terminal VIP boarding and all existing control/replan/cleanup paths cancel the current generation. Cancelling from within a recurring callback cannot rearm it.
+- Runtime diagnostics add queue/wake/lateness counters and a bounded 600-sample animation-frame interval window for each tactical view during playback. These intervals are separate from the existing render-call duration statistic.
+- Save format remains **4**. The native Godot playback implementation remains covered by an explicit parity exception.
+
+### Validation
+- **16/16** deterministic behavioral tests pass, including shipped movement, final-VIP cutoff, nonterminal boarding, and Take Back Control callback bodies.
+- An 82-step synthetic workload delivers every movement/commit event with **2 retained jobs** and **1 maximum native wake handle**. This establishes bounded scheduling overhead, not a measured gameplay FPS gain.
+- Seeded browser Build Health: baseline **773/836**, patch **778/841**. All five new scheduler contracts pass; the same 63 existing failures remain and no new failure appears.
+- Embedded syntax, source/package identity, synchronized metadata, and the browser regression comparison pass. Hands-on 80x80/96x96 Iso/FPV/TPV frame-time comparison remains a manual playtest gate.
+
+### Next Work
+- Triage existing Build Health failures, then profile remaining TacticalMission and AlienResponseCommand render-time allocations on representative live missions.
 
 ## Current Build Addendum — Browser 1811: Tactical AI Frame Copy-on-Write Performance Hotfix
 
@@ -57,7 +76,7 @@ Authoritative playable artifact: `index.html`
 - Packaging regenerates `index.html` directly from canonical `src/browser-runtime.html`; release validation confirms synchronized metadata, exact payload/source identity, and the declared source length/SHA-256.
 
 ### Upcoming Performance Patch Sequence
-- Replace the remaining per-step timeout fan-out in streamed movement playback with a single cancellable sequencer or animation-frame timeline.
+- **Completed in Browser 2004:** replace per-step timeout fan-out with one cancellable playback sequencer and reusable movement jobs.
 - Reduce TacticalMission and `AlienResponseCommand` render-time array/string construction using stable revisions, memoized selectors, and smaller component boundaries.
 - Run full Build Health in responsive idle batches or a Worker and replace brittle source-string assertions with behavior-focused contracts where practical.
 - Consolidate duplicate full Roadmap/Game Bible snapshots and move large patch-history data out of executable component code while keeping the standalone artifact self-contained.

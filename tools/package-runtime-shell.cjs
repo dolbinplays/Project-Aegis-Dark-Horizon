@@ -27,6 +27,7 @@ const requiredLineageMarkers = [
   "TACTICAL_AI_ROUND_CONTEXT_INDEX_AND_CACHE_PATCH",
   "TACTICAL_AI_BEACON_FRAME_STATE_AND_REPLACEMENT_PLAYBACK_HOTFIX",
   "TACTICAL_AI_FRAME_COVER_COPY_ON_WRITE_PERFORMANCE_HOTFIX",
+  "TACTICAL_AI_PLAYBACK_SEQUENCER_AND_FRAME_PACING_PATCH",
 ];
 const missingLineage = requiredLineageMarkers.filter((marker) => !source.includes(marker));
 if (missingLineage.length) {
