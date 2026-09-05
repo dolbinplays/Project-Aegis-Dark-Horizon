@@ -42,12 +42,15 @@ const template = String.raw`<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
 <title>Alien Response Command</title>
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#020617;color:#e2e8f0;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 #aegis-host-shell{position:fixed;inset:0;background:#020617}
 #aegis-runtime{position:absolute;inset:0;width:100%;height:100%;border:0;background:#020617}
+html[data-aegis-layout="mobile"] #aegis-host-shell{height:var(--aegis-mobile-viewport-height,100dvh);bottom:auto}
+html[data-aegis-layout="mobile"] #aegis-runtime{inset:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);width:calc(100% - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px));height:calc(100% - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
+html[data-aegis-layout="mobile"] #aegis-host-transition-card{max-height:calc(100% - 16px);overflow:auto;padding:16px}
 #aegis-host-transition{position:absolute;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 38%,rgba(8,47,73,.96),rgba(2,6,23,.995) 58%);opacity:0;pointer-events:none;transition:opacity .34s ease}
 #aegis-host-transition.active{opacity:1;pointer-events:auto}
 #aegis-host-transition-card{width:min(680px,calc(100vw - 40px));padding:34px 30px;border:1px solid rgba(34,211,238,.48);border-radius:28px;background:rgba(2,6,23,.88);box-shadow:0 0 50px rgba(6,182,212,.16),0 24px 70px rgba(0,0,0,.55);text-align:center}
@@ -87,6 +90,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#020617;col
 <script>
 (function(){
   'use strict';
+  const updateMobileViewport=()=>document.documentElement.style.setProperty('--aegis-mobile-viewport-height',Math.round(window.visualViewport?.height||window.innerHeight)+'px');
+  updateMobileViewport();window.addEventListener('resize',updateMobileViewport);window.visualViewport?.addEventListener('resize',updateMobileViewport);
   const BUILD='__BUILD__';
   const RESUME_TOKEN_KEY='project-aegis-post-mission-runtime-resume-v1';
   const AUDIO_CONTINUITY_KEY='project-aegis-audio-continuity-v1';
