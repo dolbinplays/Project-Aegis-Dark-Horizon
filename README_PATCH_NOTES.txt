@@ -1,3 +1,26 @@
+BUILD: v0.26.09.04.1811_TACTICAL_AI_FRAME_COPY_ON_WRITE_PERFORMANCE_HOTFIX
+TITLE: Tactical AI Frame Copy-on-Write Performance Hotfix
+DATE: September 4, 2026
+
+Summary
+- Removes the shared tactical-playback allocation regression observed as choppy 3D Iso, FPV, and TPV AI turns while preserving the preceding Beacon frame-authority correction.
+
+Key changes
+- Unchanged buffered AI frames now reuse the same authoritative cover-array version instead of slicing the complete cover list for every human, alien, reinforcement, and terminal frame.
+- Cover state changes use copy-on-write before subsequent frames are captured. This covers Beacon damage and disablement, replacement deployment, UFO-bay inspection, grenades, windows, shield impacts, reactions, reinforcements, and environmental changes.
+- Hazard-free rounds now return the existing unit and cover collections immediately. They no longer clone the entire structure/prop collection and all tactical units merely to determine that no fire or smoke is active.
+- Active fire and smoke still run the complete established hazard simulation, including damage, decay, spread, smoke generation, and structural destruction.
+- The previous protection against stale or replacement-Beacon destruction playback remains in force.
+- The renderer itself is unchanged. No geometry, material, lighting, fog, camera, texture, draw-call, or model-LOD changes were made.
+- Save format remains 4 and no assets changed.
+
+Validation
+- Build Health covers stable snapshot reuse, copy-on-write frame separation, zero-copy hazard-free rounds, active smoke progression, stale Beacon-cinematic suppression, and save-format stability.
+- A synthetic 80x80/82-frame allocation comparison removed 524,800 frame reference slots and 524,800 hazard-cover object clones; measured preparation work fell from about 29.8ms to 8.1ms in that isolated workload. This measures the removed allocation paths, not renderer FPS.
+- Embedded JavaScript, source packaging, release metadata, and browser diagnostics are revalidated for this hotfix.
+
+---
+
 BUILD: v0.26.09.04.1452_AI_BEACON_FRAME_STATE_AND_REPLACEMENT_PLAYBACK_HOTFIX
 TITLE: AI Beacon Frame State + Replacement Playback Hotfix
 DATE: September 4, 2026

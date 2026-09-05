@@ -1,10 +1,27 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.04.1452_AI_BEACON_FRAME_STATE_AND_REPLACEMENT_PLAYBACK_HOTFIX`
+Current browser build: `v0.26.09.04.1811_TACTICAL_AI_FRAME_COPY_ON_WRITE_PERFORMANCE_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1811: Tactical AI Frame Copy-on-Write Performance Hotfix
+
+### Current Build Delta
+- Addresses the observed increase in choppiness across 3D Iso, FPV, and TPV AI playback after Browser 1452. Live renderer diagnostics still reported approximately **61 FPS**, **268 draw calls**, and **49,383 triangles** on the inspected Medium 80x80 mission, pointing to shared main-thread allocation/garbage-collection pressure rather than a new GPU rendering load.
+- Unchanged AI frames now share one authoritative cover-array version. The full cover collection is no longer sliced for each buffered human, alien, reinforcement, and terminal frame.
+- Simulation AI uses copy-on-write whenever cover membership or state changes, so historical frames remain stable without continuous allocation. Beacon damage/disablement, replacement deployment, UFO-bay inspection, grenades, windows, shields, reaction fire, reinforcement arrivals, and hazards all establish a new cover-array version before later frames are captured.
+- Hazard-free rounds use an early zero-copy return. This removes the prior full battlefield-cover and unit cloning pass when no active fire, smoke, or burning scenery exists.
+- Active environmental hazards retain their complete established simulation. Fire/smoke lifetime, spread, damage, cover destruction, and generated smoke remain authoritative.
+- The fix is shared by every Three.js tactical view because it reduces AI playback preparation and retained-frame pressure; it does not alter Iso, FPV, or TPV renderer geometry, model detail, materials, lighting, fog, cameras, textures, or draw calls.
+- Browser 1452's exact Beacon identity checks and stale-destruction fail-closed behavior remain intact.
+- Tactical decisions, movement, pathfinding, TU costs, LOS, visibility, fog, targeting, damage, reinforcement timing, objectives, save data, and save format **4** remain unchanged.
+
+### Validation
+- Focused Build Health contracts cover stable cover-version reuse, copy-on-write frame separation, hazard-free collection reuse, active-smoke advancement, original-versus-replacement Beacon identity, stale-cinematic suppression, and save-format stability.
+- An isolated 80x80/82-frame allocation comparison removed 524,800 frame reference slots and 524,800 hazard-cover clones, reducing measured preparation work from approximately **29.8ms** to **8.1ms**. This is an allocation-path comparison rather than an FPS claim.
+- Embedded JavaScript, canonical packaging, build metadata, and live browser diagnostics are validated before release.
 
 ## Current Build Addendum — Browser 1452: AI Beacon Frame State + Replacement Playback Hotfix
 
