@@ -1,3 +1,21 @@
+# CODEX HANDOFF — v0.26.09.07.1258_MOBILE_GEOSCAPE_TERMINATOR_AUDIO_TIME_RESUME_HOTFIX
+
+## Scope
+Physical-phone follow-up to Browser 1231. Preserve the accepted fixed Mobile Geoscape while correcting Terminator scaling and adding two small mobile quality-of-life controls. Save format remains 4.
+
+## Implemented
+- Mobile-only Terminator root now flex-fills the full center strategic pane and overrides the desktop `aspect-ratio: 2/1`; Standard/Desktop remains unchanged.
+- Right mobile rail adds master Mute / Unmute for music, SFX, and recorded voice. Individual audio settings remain intact; device-local mute preference restores them on Unmute.
+- Pause / Resume tracks the last nonzero Geoscape compression rate in device-local storage and resumes that exact rate.
+- Resume button identifies the stored rate (for example `Resume 30m`).
+
+## Preserve
+- Browser 1231 fixed Geoscape/scrollable rails/drawers.
+- PWA orientation `any`.
+- Save format 4, strategic simulation, day/night clock authority, map targeting, incident/UFO/base/range/ferry behavior.
+
+---
+
 # CODEX HANDOFF — v0.26.09.07.1231_MOBILE_GEOSCAPE_ADAPTIVE_PHONE_TABLET_LAYOUT_PATCH
 
 ## Scope

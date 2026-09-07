@@ -1,10 +1,22 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.07.1231_MOBILE_GEOSCAPE_ADAPTIVE_PHONE_TABLET_LAYOUT_PATCH`
+Current browser build: `v0.26.09.07.1258_MOBILE_GEOSCAPE_TERMINATOR_AUDIO_TIME_RESUME_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1258: Mobile Geoscape Terminator + Audio + Resume Hotfix
+
+- Physical-phone feedback showed the Terminator Map retaining a shallow desktop-style 2:1 strip inside the new tall mobile Geoscape, leaving most of the central strategic viewport blank. Mobile · Adaptive now allows the existing Terminator compositor and marker canvas to scale across the complete center pane while Standard/Desktop keeps its normal 2:1 map.
+- Map interaction remains normalized against the rendered element bounds, so incident selection, base-site selection, overlays, craft markers, and latitude/longitude targeting continue to use the same authoritative 720x360 world coordinates even when the mobile display is stretched to the phone/tablet viewport.
+- The right mobile command rail now includes a persistent **Mute / Unmute** control. This is a master mute over music, SFX, and recorded voice, while the individual enabled states and volume settings remain untouched and return when audio is restored. The mute preference is device-local and outside campaign saves.
+- **Pause Time / Resume** now remembers the player's latest nonzero Geoscape compression setting. If the player pauses at 30m, 1h, 6h, etc., Resume returns to that exact rate and displays it on the button. The preferred resume rate is device-local so pausing/saving does not require a save-format change.
+- Strategic time advancement, event prompts, day/night authority, incidents, UFO movement/interception, aircraft routing, base placement, desktop UI, campaign data, and save format **4** remain unchanged.
+
+### Mobile Optimization Roadmap Status
+- Geoscape remains the completed first systematic mobile screen, with Browser 1258 recorded as the first physical-phone refinement pass.
+- Base command screens remain the next planned systematic mobile optimization area after Geoscape acceptance.
 
 ## Current Build Addendum — Browser 1231: Adaptive Mobile Geoscape — Phone + Tablet
 

@@ -1,3 +1,29 @@
+BUILD: v0.26.09.07.1258_MOBILE_GEOSCAPE_TERMINATOR_AUDIO_TIME_RESUME_HOTFIX
+TITLE: Mobile Geoscape Terminator + Audio + Resume Hotfix
+DATE: September 7, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.07.1231_MOBILE_GEOSCAPE_ADAPTIVE_PHONE_TABLET_LAYOUT_PATCH
+
+Summary
+- Refines the accepted adaptive Mobile Geoscape based on physical-phone feedback: the Terminator Map now uses the full center pane, master audio can be muted from the mobile rail, and Pause/Resume restores the player's previous time-compression setting.
+
+Key changes
+- Mobile Terminator Map drops the desktop 2:1 presentation constraint and scales its existing 720x360 compositor/overlay across the entire available center strategic viewport between the side rails.
+- Pointer-to-world conversion continues to normalize taps against the rendered map bounds, so incident selection/base-site coordinates remain aligned after scaling.
+- Desktop/Standard Terminator Map retains its existing 2:1 presentation.
+- Adds a persistent Mute / Unmute button at the bottom of the right mobile command rail. It is a master mute for music, SFX, and recorded voice.
+- Master mute preserves the player's music enabled state, music volume, SFX volume, voice enabled state, and voice volume; Unmute restores those prior levels. The mute preference is device-local.
+- Pause Time now records the latest nonzero Geoscape time-compression choice. Resume shows and restores that exact speed instead of defaulting to 1m.
+- The last running Geoscape speed is stored device-locally so it remains available even when the campaign is saved while paused; save format remains 4.
+
+Validation
+- All executable runtime JavaScript blocks pass node --check.
+- Focused source contract verifies the new patch flag, mobile rail Mute/Unmute wiring, remembered-speed pause/resume wiring, Terminator map hook, and save format 4.
+- Manifest remains orientation:any; service-worker cache identity is advanced to this build.
+- Packaged runtime byte count/SHA-256 and host payload identity are regenerated and verified.
+
+---
+
 BUILD: v0.26.09.07.1231_MOBILE_GEOSCAPE_ADAPTIVE_PHONE_TABLET_LAYOUT_PATCH
 TITLE: Adaptive Mobile Geoscape — Phone + Tablet
 DATE: September 7, 2026

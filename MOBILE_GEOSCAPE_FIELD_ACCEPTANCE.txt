@@ -1,3 +1,10 @@
+BROWSER 1258 FOLLOW-UP CHECKS
+1. On the same portrait phone that showed the shallow Terminator strip, switch to Terminator Map. Confirm the map now occupies the full center pane between the rails instead of leaving a large blank area below it.
+2. Tap/select known incidents and try New Base site placement at several positions. Confirm the selected location tracks the visible point after the map is stretched.
+3. Set Geoscape speed to 30m (or another obvious non-default rate), tap Pause Time, then Resume. Confirm the Resume label shows that rate and the game returns to it. Repeat with a different rate.
+4. Tap Mute. Confirm music, SFX, and recorded voice are silent. Tap Unmute and confirm the prior mix returns rather than resetting volume sliders/settings.
+5. Reload the page/app and confirm the master mute preference and last running resume speed are retained device-locally.
+
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 MOBILE GEOSCAPE FIELD ACCEPTANCE — Browser 1231
 
