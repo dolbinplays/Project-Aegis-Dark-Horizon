@@ -1,10 +1,40 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.07.1345_MOBILE_TERMINATOR_COMPOSITOR_SCALE_HOTFIX`
+Current browser build: `v0.26.09.07.1404_MOBILE_BASE_COMMAND_ADAPTIVE_LAYOUT_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1404: Mobile Base Command Adaptive Layout
+
+- Continues the systematic Mobile · Adaptive screen conversion after the accepted Geoscape work. The **Base command screen is now the second optimized strategic screen**.
+- On Mobile · Adaptive, Base uses a fixed full-screen workspace between the independently scrollable left and right command rails. The complete 6×6 base facility grid remains mounted and visible rather than being pushed down a vertically scrolling page.
+- The persistent center keeps only the information needed while manipulating the grid: selected base identity/region, local storage usage, the base selector, facility artwork, selection state, and live activity markers.
+- Secondary management is moved behind right-rail buttons: **Base Info**, **Activity**, **Defense**, **Facility**, and **Build**. Each opens its own independently scrolling drawer and can be closed by tapping the active rail button again.
+- Base Info preserves the existing explanation of Geoscape base placement, base-defense hallway geometry, entry points, stores, containment, and downtime relevance.
+- Activity preserves the live/static Base Activity layer and soldier destination information.
+- Defense preserves readiness score, invasion entry summary, arms lockers, defender starts, air-defense strength, Sickbay note, and containment note.
+- Facility preserves selected-facility inspection, Hangar aircraft assignment/ferry/rebase/order controls, and specialized facility controls such as V.A.L.A.N.T. Mental Health Center staffing.
+- Build preserves the existing facility selector, costs/upkeep, facility description, and empty-tile placement authority.
+- Portrait phone presentation hides cramped facility-name ribbons over the grid artwork so the six-column facility board remains readable and touchable. Tablet widths expand both the board and drawers and can retain more grid labeling.
+- Standard/Desktop Base remains unchanged. Facility rules, costs, hangar footprint logic, aircraft state, activity state, base-defense calculations, save data, and save format **4** remain authoritative.
+
+### Mobile Optimization Roadmap Status
+- **Geoscape — completed and physically accepted**, including Browser 1345's Terminator compositor correction.
+- **Base command screen — implemented in Browser 1404; physical phone/tablet acceptance is the current gate.**
+- **Quartermaster / Inventory — next systematic screen after Base acceptance.**
+
+### Browser 1404 Field Acceptance
+- On a tall phone near the 1080×2340 target, open Base and confirm the entire command page itself does not vertically scroll.
+- Confirm the selected-base header and complete 6×6 facility grid fit between the command rails without requiring page scrolling.
+- Scroll each side rail independently when more buttons exist than fit vertically.
+- Open Base Info, Activity, Defense, Facility, and Build. Confirm each drawer scrolls independently and the base grid remains behind it.
+- Select built facilities and confirm Facility shows the matching details. Select Build, choose a facility, close the drawer, and confirm an empty grid tile can still be used to begin the normal construction flow.
+- Inspect a Hangar and exercise aircraft destination/rebase/order controls where available.
+- Repeat on a tablet-sized viewport and confirm the grid/drawers scale upward rather than becoming a narrow phone column.
+- Switch to Standard interface and confirm the desktop Base screen remains unchanged.
+
 
 ## Current Build Addendum — Browser 1345: Mobile Terminator Compositor Scale Hotfix
 
@@ -25,8 +55,9 @@ Authoritative playable artifact: `index.html`
 - Strategic time advancement, event prompts, day/night authority, incidents, UFO movement/interception, aircraft routing, base placement, desktop UI, campaign data, and save format **4** remain unchanged.
 
 ### Mobile Optimization Roadmap Status
-- Geoscape remains the completed first systematic mobile screen, with Browser 1258 recorded as the first physical-phone refinement pass.
-- Base command screens remain the next planned systematic mobile optimization area after Geoscape acceptance.
+- Geoscape is the completed/accepted first systematic mobile screen; Browser 1345 corrected the final Terminator compositor scaling issue found during physical-device review.
+- Base command is now implemented as the second optimized screen in Browser 1404.
+- Quartermaster / Inventory is next after Base physical-device acceptance.
 
 ## Current Build Addendum — Browser 1231: Adaptive Mobile Geoscape — Phone + Tablet
 
@@ -41,11 +72,11 @@ Authoritative playable artifact: `index.html`
 
 ## Mobile Optimization Roadmap — Systematic Screen Pass
 
-**Current status:** Geoscape completed first in Browser 1231.
+**Current status:** Geoscape accepted; Base command implemented second in Browser 1404.
 
-1. **Geoscape — implemented.** Fixed planet-first phone/tablet viewport, scrollable command rails, side drawers, no whole-page Geoscape scrolling.
-2. **Base command screens — next systematic pass after Geoscape acceptance.**
-3. Quartermaster / inventory.
+1. **Geoscape — implemented and physically accepted.** Fixed planet-first phone/tablet viewport, scrollable command rails, side drawers, no whole-page Geoscape scrolling; Terminator fill corrected in Browser 1345.
+2. **Base command screen — implemented in Browser 1404; physical phone/tablet acceptance pending.** Fixed 6×6 facility board plus Base Info / Activity / Defense / Facility / Build drawers.
+3. **Quartermaster / inventory — next systematic pass after Base acceptance.**
 4. Mainframe Database.
 5. Soldiers / Barracks.
 6. Research.

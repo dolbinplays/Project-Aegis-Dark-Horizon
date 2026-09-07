@@ -1,7 +1,7 @@
 {
-  "build": "v0.26.09.07.1345_MOBILE_TERMINATOR_COMPOSITOR_SCALE_HOTFIX",
+  "build": "v0.26.09.07.1404_MOBILE_BASE_COMMAND_ADAPTIVE_LAYOUT_PATCH",
   "save_format": 4,
-  "runtime_bytes": 6629124,
-  "runtime_sha256": "c82e4b7c8765ed2f2db2d139e634b900d9949164813e1d153b7d36eda742e191",
-  "host_sha256": "71484053909c7eb90e17b2d1135ea25aa1183785f12c3b7fbf3293a20477051f"
+  "runtime_bytes": 6638939,
+  "runtime_sha256": "de42a74a400b2feac2b12e62094a7cbbc1d82b624ee435091a62d3b682991bf3",
+  "host_sha256": "4b2a301d38418e2b8c93e409fb5e42ed73ea44d64d72174ea66a3462f0fc320f"
 }

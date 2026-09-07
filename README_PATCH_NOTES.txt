@@ -1,3 +1,35 @@
+BUILD: v0.26.09.07.1404_MOBILE_BASE_COMMAND_ADAPTIVE_LAYOUT_PATCH
+TITLE: Mobile Base Command Adaptive Layout
+DATE: September 7, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.07.1345_MOBILE_TERMINATOR_COMPOSITOR_SCALE_HOTFIX
+
+Summary
+- Continues the systematic phone/tablet optimization pass with the Base command screen after acceptance of the Mobile Geoscape.
+- Keeps the 6x6 base-management grid visible as the primary workspace and moves secondary base information/actions into independently scrollable right-side drawers.
+
+Key changes
+- Mobile · Adaptive Base is fixed to the available device viewport and no longer relies on whole-command-page vertical scrolling.
+- The center workspace keeps a compact selected-base header, local storage status, base selector, and the complete 6x6 facility grid visible.
+- The right command rail adds Base Info, Activity, Defense, Facility, and Build buttons.
+- Each Base button opens an independently scrollable drawer while the base grid stays mounted behind it.
+- Base Info contains the existing base-defense/pathing guidance.
+- Activity retains the live/static soldier activity layer controls and status.
+- Defense retains the existing readiness score, entries, arms lockers, defender starts, air defense, Sickbay, and containment notes.
+- Facility contains the complete selected-facility detail panel, including hangar aircraft/ferry/rebase/order controls and V.A.L.A.N.T. staffing when applicable.
+- Build contains the existing facility selector, build/upkeep/description information, and tile-placement instruction.
+- Phone portrait removes the tiny facility-name ribbons from grid tiles to preserve readable facility artwork and touch targets; tablet widths retain more detail and expand the grid/drawers.
+- Facility placement, construction cost/upkeep, hangar assignment, aircraft movement, soldier activity authority, base-defense rules, campaign state, and save format 4 are unchanged.
+
+Validation
+- All five executable runtime JavaScript blocks pass node --check.
+- Mobile Base source contract verifies drawer state, Base Info/Activity/Defense/Facility/Build rail actions, fixed base-layout/grid hooks, and save format 4.
+- Service-worker syntax and manifest JSON remain valid.
+- Packaged runtime byte count/SHA-256, host embedded payload identity, host/runtime build synchronization, and ZIP integrity are verified.
+- Physical-device acceptance remains required for the target 1080x2340-class smartphone and representative tablet sizes.
+
+---
+
 BUILD: v0.26.09.07.1345_MOBILE_TERMINATOR_COMPOSITOR_SCALE_HOTFIX
 TITLE: Mobile Terminator Compositor Scale Hotfix
 DATE: September 7, 2026

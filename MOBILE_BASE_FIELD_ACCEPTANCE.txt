@@ -1,0 +1,27 @@
+PROJECT AEGIS — MOBILE BASE COMMAND FIELD ACCEPTANCE
+Build: v0.26.09.07.1404_MOBILE_BASE_COMMAND_ADAPTIVE_LAYOUT_PATCH
+
+PHONE — TARGET REFERENCE 1080x2340 PORTRAIT CLASS
+1. Select Mobile · Adaptive and open Base.
+2. Confirm the whole Base command page does NOT vertically scroll.
+3. Confirm the selected-base header and complete 6x6 facility grid are visible between the left/right rails.
+4. Scroll the left and right rails independently; the center grid must not move.
+5. Open Base Info, Activity, Defense, Facility, and Build from the right rail.
+6. Confirm each drawer scrolls independently and tapping its active rail button closes it.
+7. Select several built facility tiles and verify Facility shows the matching facility details.
+8. Open Build, choose a facility, close the drawer, select an empty tile, and confirm the existing construction confirmation flow works.
+9. Inspect a Hangar and verify aircraft assignment/order/rebase/ferry controls remain usable.
+10. Confirm soldier activity markers remain visible on the base grid.
+11. Confirm portrait grid tiles remain readable/touchable even though name ribbons are hidden.
+12. Confirm Menu/Save, Pause/Resume, Mute/Unmute, Incidents, and UFO buttons still work.
+
+TABLET
+13. Repeat on a tablet-sized portrait viewport. The grid should scale larger and the drawer should widen without taking over the whole center.
+14. Rotate if practical and confirm the fixed Base workspace remains usable.
+
+STANDARD PARITY
+15. Switch to Standard interface and confirm the desktop Base screen is unchanged.
+
+REGRESSION
+16. Return to Geoscape and confirm Globe/Terminator behavior from Browser 1345 is unchanged.
+17. Confirm saves still report save format 4.

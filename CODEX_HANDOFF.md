@@ -1,3 +1,29 @@
+# CODEX HANDOFF — v0.26.09.07.1404_MOBILE_BASE_COMMAND_ADAPTIVE_LAYOUT_PATCH
+
+## Scope
+Second systematic Mobile · Adaptive screen pass. Preserve the accepted Geoscape and convert the Base command screen into a fixed phone/tablet workspace targeting a 1080×2340-class portrait smartphone while scaling upward to tablets. Save format remains 4.
+
+## Implemented
+- Mobile Base command root is fixed to the device viewport between the established scrollable command rails.
+- The 6×6 facility grid is the persistent center workspace with a compact base selector/storage header.
+- Right rail adds Base Info, Activity, Defense, Facility, and Build drawer toggles.
+- Each drawer uses independent vertical scrolling and does not dismount the underlying base grid.
+- Existing Base Info, activity layer, defense readiness, selected-facility/hangar controls, V.A.L.A.N.T. facility controls, and facility construction UI are reused rather than duplicated.
+- Portrait phone presentation hides facility-name ribbons on the 6×6 tiles to protect touch target/readability; tablet sizing expands the board/drawers.
+- Standard/Desktop Base remains untouched.
+
+## Invariants
+- Save format 4 unchanged.
+- Facility placement/cost/upkeep and 2×2 Hangar footprint authority unchanged.
+- Hangar assignment/order/rebase/ferry authority unchanged.
+- Base Activity and Base Defense calculations unchanged.
+- Browser 1345 Geoscape/Terminator correction, Browser 1258 master mute and remembered Resume speed, and PWA behavior retained.
+
+## Field gate
+Test Base on the same physical phone used for Geoscape acceptance, then on a representative tablet. Confirm no whole-page Base scrolling, complete grid visibility, independent rail/drawer scrolling, facility selection/build flow, Hangar controls, and Standard interface parity.
+
+---
+
 # CODEX HANDOFF — v0.26.09.07.1345_MOBILE_TERMINATOR_COMPOSITOR_SCALE_HOTFIX
 
 ## Scope
