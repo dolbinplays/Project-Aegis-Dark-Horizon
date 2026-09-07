@@ -1,3 +1,24 @@
+BUILD: v0.26.09.07.1110_GEOSCAPE_INTERFACE_CLEANUP_PATCH
+TITLE: Geoscape Interface Cleanup
+DATE: September 7, 2026
+
+Summary
+- Implements the two Geoscape cleanup roadmap items in Standard and Mobile layouts.
+
+Key changes
+- Operational Overlays starts collapsed. Its button beside Open Incident List opens and closes the existing range-ring and ferry-route controls.
+- Hiding the panel preserves the selected overlays and routes on the globe.
+- Removes the duplicate lower-right Active Incidents summary box. The top Open Incident List button keeps its count and opens the complete incident board.
+- Save format remains 4; panel visibility is temporary interface state.
+
+Validation
+- Standard (1440x900) and Mobile landscape (844x390) browser checks confirm default collapse, open/close behavior, keyboard activation, retained range/ferry selections, and access to both incidents through the top button.
+- The duplicate Active Incidents heading/card is absent from the Geoscape.
+- Seeded Build Health remains 783/845 with the same 62 existing failures and no new failures.
+- Embedded JavaScript syntax, source/package identity, synchronized build metadata, and build seam checks pass.
+
+---
+
 BUILD: v0.26.09.07.1105_MOBILE_LANDSCAPE_THUMB_INTERFACE_PATCH
 TITLE: Optional Mobile Landscape Thumb Interface
 DATE: September 7, 2026

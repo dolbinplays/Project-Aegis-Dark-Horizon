@@ -1,10 +1,17 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.07.1105_MOBILE_LANDSCAPE_THUMB_INTERFACE_PATCH`
+Current browser build: `v0.26.09.07.1110_GEOSCAPE_INTERFACE_CLEANUP_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1110: Geoscape Interface Cleanup
+
+- Operational Overlays starts collapsed behind a toggle beside Open Incident List. Selected range rings and ferry routes remain active while the controls are hidden.
+- Removes the lower-right Active Incidents summary; the top incident-list button retains its live count and complete board.
+- Applies to Standard and Mobile layouts. Save format remains 4; panel visibility is temporary interface state.
+- Browser checks at 1440x900 and 844x390 verify collapse/toggle behavior, retained overlay selections, keyboard activation, and the complete incident list. Seeded Build Health remains 783/845 with the same 62 existing failures. Syntax, packaging identity, and build metadata checks pass.
 
 ## Current Build Addendum — Browser 1105: Optional Mobile Landscape Thumb Interface
 
@@ -19,7 +26,7 @@ Authoritative playable artifact: `index.html`
 
 ## Roadmap Addition — Geoscape Interface Cleanup
 
-**Status:** Planned. Requested September 7, 2026.
+**Status:** Implemented in Browser 1110. Requested September 7, 2026.
 
 1. **Put Operational Overlays behind a button.** Keep the section collapsed by default and let players show or hide its existing range-ring and ferry-route controls with an Operational Overlays button. Collapsing the controls should preserve the selected overlays.
 2. **Remove the lower-right Active Incidents box.** Use the existing Open Incident List button at the top of the Geoscape screen to access incidents, freeing the space occupied by the duplicate box.
