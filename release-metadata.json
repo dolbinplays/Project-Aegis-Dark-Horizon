@@ -1,7 +1,7 @@
 {
-  "build": "v0.26.09.07.1127_PWA_INSTALLABLE_APP_SHELL_PATCH",
+  "build": "v0.26.09.07.1231_MOBILE_GEOSCAPE_ADAPTIVE_PHONE_TABLET_LAYOUT_PATCH",
   "save_format": 4,
-  "runtime_bytes": 6609480,
-  "runtime_sha256": "e29670f59967c93d6d0290152771154fbfde2412d4831e7427ffc3edafbab725",
-  "host_sha256": "d83815797cba91d393385b9a026c5d94eb1440d5e2180e426d8eb20a77e8abce"
+  "runtime_bytes": 6620867,
+  "runtime_sha256": "a1e32b9c23423e937a30bbc44680d9364c0b6a871e75799bb18c3ccc5cbe6c8c",
+  "host_sha256": "4deb637bc14722caaa88fbf78b14122ba2fe254308b736ee8e3c3b832a427349"
 }

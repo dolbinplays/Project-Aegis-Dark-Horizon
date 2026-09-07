@@ -1,5 +1,5 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND — PWA DEPLOYMENT
-Build: v0.26.09.07.1127_PWA_INSTALLABLE_APP_SHELL_PATCH
+Build: v0.26.09.07.1231_MOBILE_GEOSCAPE_ADAPTIVE_PHONE_TABLET_LAYOUT_PATCH
 
 HOW TO DEPLOY
 1. Copy the contents of this patch over the matching files in the existing Project Aegis GitHub Pages repository.
@@ -16,3 +16,5 @@ LOCAL TESTING
 
 UPDATE NOTE
 The service worker uses a build-versioned cache. A future patch should update the build/cache identity so old Aegis caches are retired on activation.
+
+Mobile Geoscape note (Browser 1231): the manifest now allows any orientation so the adaptive Geoscape can run in portrait on tall smartphones and scale through tablets.

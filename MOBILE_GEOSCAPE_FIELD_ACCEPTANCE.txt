@@ -1,0 +1,31 @@
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+MOBILE GEOSCAPE FIELD ACCEPTANCE — Browser 1231
+
+Primary phone target
+- 1080 x 2340 portrait-class smartphone (or equivalent CSS viewport / device scaling).
+- Mobile · Adaptive interface selected.
+- Installed PWA and ordinary mobile-browser launch should both be checked.
+
+Geoscape acceptance
+1. Enter the Geoscape in portrait. The whole command page must remain fixed; swiping the center must not scroll the entire page vertically.
+2. Confirm the Globe fits between the left and right rails and remains fully usable for drag/tap interaction.
+3. Switch to Terminator Map. It must fit the same center workspace without whole-page scrolling.
+4. Scroll the LEFT rail independently and verify every command section remains reachable.
+5. Scroll the RIGHT rail independently and verify Menu / Save, Command, Incidents, UFOs, Time / Status, Routes, Overlays, New Base/Base Site, and Pause/Resume remain reachable.
+6. Open Time / Status. Its drawer should scroll independently while some of the Globe/Terminator remains visible.
+7. Open Routes during an active flight. The route drawer should scroll independently and the planet should remain mounted behind/beside it.
+8. Open Operational Overlays, toggle range rings/ferry routes, close the drawer, and verify the selected overlays remain visible on the planet.
+9. Open New Base. Select a site directly on the still-visible planet, reopen/close the base drawer, and confirm placement state is preserved. Test Cancel Base Placement.
+10. Open Incident List and Active UFOs from the right rail and confirm those dedicated boards still work.
+11. Pause/resume time from the right rail. Open Time / Status and verify the existing speed controls still work.
+12. Rotate to landscape and back to portrait. The center planet and side rails should resize without page scrolling or pointer-capture errors.
+
+Tablet acceptance
+- Repeat on a tablet-class portrait viewport (roughly 800-1280 CSS px wide or equivalent device resolution).
+- Rails should scale wider, drawers should gain useful width, and the center planet should grow rather than remaining phone-sized.
+
+Regression checks
+- Standard desktop interface remains unchanged.
+- Save/load remains save format 4.
+- Geoscape globe pointer drag does not raise releasePointerCapture errors.
+- Range rings, ferry routes, incident selection, UFO markers, aircraft travel, and base placement remain authoritative.

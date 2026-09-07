@@ -1,3 +1,26 @@
+# CODEX HANDOFF — v0.26.09.07.1231_MOBILE_GEOSCAPE_ADAPTIVE_PHONE_TABLET_LAYOUT_PATCH
+
+## Scope
+First systematic mobile optimization patch: Geoscape only. Target a 1080×2340-class portrait phone and scale upward to tablets without changing strategic authority or save format 4.
+
+## Implemented
+- Fixed mobile Geoscape command viewport; no whole-page vertical scroll while Geoscape is active.
+- Persistent Globe/Terminator center between independently scrollable rails.
+- Mobile drawers: Time / Status, Routes, Operational Overlays, New Base.
+- Mobile-only base-placement cancel action.
+- Adaptive phone/tablet rail/drawer sizing.
+- PWA orientation changed to `any` to permit portrait use.
+
+## Preserve
+- Standard desktop UI behavior.
+- Save format 4 and all campaign data.
+- Existing globe pointer-capture hotfix, range/ferry overlays, incidents, UFO interception, aircraft travel, and base placement authority.
+
+## Next requested work
+After field acceptance of the Geoscape, continue screen-by-screen mobile optimization using the same principle: keep the primary workspace visible and move secondary controls into independently scrolling rails/drawers/sheets.
+
+---
+
 # Codex Handoff — v0.26.09.07.1127_PWA_INSTALLABLE_APP_SHELL_PATCH
 
 Implemented installable PWA support around the existing Project Aegis browser host.

@@ -1,10 +1,42 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.07.1127_PWA_INSTALLABLE_APP_SHELL_PATCH`
+Current browser build: `v0.26.09.07.1231_MOBILE_GEOSCAPE_ADAPTIVE_PHONE_TABLET_LAYOUT_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1231: Adaptive Mobile Geoscape — Phone + Tablet
+
+- Mobile Geoscape now uses a fixed full-screen strategic viewport rather than a vertically scrolling command page.
+- The Globe / Terminator Map remains the persistent center surface. Left and right side rails scroll independently and remain available at all times.
+- The right rail opens Time / Status, Routes, Operational Overlays, and New Base controls as independent scrollable drawers, while Incidents and UFOs retain their existing dedicated boards.
+- Desktop-only Geoscape header/actions, the region-button grid, help block, and inline travel card are removed from the persistent mobile center so the planet can fit a tall 1080×2340-class phone display.
+- Portrait phone sizing uses adaptive rail widths and a bounded planet stage; tablet widths scale rails and drawers upward without changing strategic logic. Landscape remains supported.
+- Base placement keeps the planet visible and provides a mobile-only Cancel Base Placement control.
+- Installed PWA orientation is now `any`, allowing portrait Geoscape instead of forcing landscape. Other screens retain the previous mobile treatment until their own systematic optimization pass.
+- Save format remains **4**.
+
+## Mobile Optimization Roadmap — Systematic Screen Pass
+
+**Current status:** Geoscape completed first in Browser 1231.
+
+1. **Geoscape — implemented.** Fixed planet-first phone/tablet viewport, scrollable command rails, side drawers, no whole-page Geoscape scrolling.
+2. **Base command screens — next systematic pass after Geoscape acceptance.**
+3. Quartermaster / inventory.
+4. Mainframe Database.
+5. Soldiers / Barracks.
+6. Research.
+7. Workshop.
+8. Squads.
+9. Sickbay.
+10. Missions / tactical launch and mission management.
+11. Reports / council review.
+12. Memorial.
+13. Tactical battle UI follow-up for portrait/tablet parity after strategic command screens.
+
+Target reference viewport: **1080×2340 portrait-class smartphone**, scaling upward to tablet sizes. The mobile command page should avoid whole-screen vertical scrolling wherever a persistent primary workspace (planet, map, board, or battlefield) benefits from remaining visible; secondary controls should prefer independently scrolling rails, drawers, sheets, or dialogs.
+
 
 ## Current Build Addendum — Browser 1127: Installable PWA App Shell
 

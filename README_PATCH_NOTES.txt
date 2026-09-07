@@ -1,3 +1,31 @@
+BUILD: v0.26.09.07.1231_MOBILE_GEOSCAPE_ADAPTIVE_PHONE_TABLET_LAYOUT_PATCH
+TITLE: Adaptive Mobile Geoscape — Phone + Tablet
+DATE: September 7, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.07.1127_PWA_INSTALLABLE_APP_SHELL_PATCH
+
+Summary
+- Starts the systematic mobile optimization pass with the Geoscape, targeting a tall 1080×2340-class smartphone viewport while scaling through tablets.
+
+Key changes
+- Mobile Geoscape is fixed to the device viewport; the command page no longer scrolls vertically while Geoscape is active.
+- The Globe / Terminator Map remains mounted in the center between independently scrollable left/right command rails.
+- Right-rail actions expose Time / Status, Routes, Operational Overlays, and New Base as separately scrollable drawers. Incidents and UFOs retain their dedicated boards.
+- Mobile hides the desktop Geoscape title/action bar, region-button grid, help footer, and inline travel summary from the persistent center.
+- Base placement continues directly on the visible planet while its setup controls live in a drawer. A mobile Cancel Base Placement action is included.
+- Portrait rail width scales from phone to tablet; landscape remains supported.
+- PWA manifest orientation changes from landscape to any so installed Aegis can use the new portrait Geoscape.
+- Other command/tactical screens retain their existing mobile layout until their own systematic optimization pass.
+- Strategic rules, globe interaction, incidents, aircraft, bases, overlays, save data, and save format 4 are unchanged.
+
+Validation
+- Runtime and host JavaScript syntax checks pass.
+- Manifest remains valid and now permits portrait/landscape orientation.
+- Source contract verifies fixed Geoscape hooks, adaptive rail actions, drawer state, Terminator-map hook, and save format 4.
+- Packaged runtime byte count/SHA-256 and host payload identity are regenerated and verified.
+
+---
+
 BUILD: v0.26.09.07.1127_PWA_INSTALLABLE_APP_SHELL_PATCH
 TITLE: Installable PWA App Shell
 DATE: September 7, 2026
