@@ -1,3 +1,11 @@
+BROWSER 1345 TERMINATOR COMPOSITOR HOTFIX CHECKS
+1. Reproduce the same Mobile · Adaptive Terminator Map view that previously showed a blank-looking strip along the right and bottom.
+2. Confirm ocean/land/day-night shading now reaches the complete bordered Terminator viewport, including the area behind E. Asia markers and the lower legend.
+3. Confirm markers no longer appear to float over a separate blank background outside the map.
+4. Tap incidents/base-placement points near the far right and bottom and confirm coordinate selection remains aligned.
+5. Switch Globe -> Terminator -> Globe and rotate/resize the device. Confirm no new layout gap appears.
+6. Confirm Mute/Unmute and remembered Pause/Resume speed from Browser 1258 still work.
+
 BROWSER 1258 FOLLOW-UP CHECKS
 1. On the same portrait phone that showed the shallow Terminator strip, switch to Terminator Map. Confirm the map now occupies the full center pane between the rails instead of leaving a large blank area below it.
 2. Tap/select known incidents and try New Base site placement at several positions. Confirm the selected location tracks the visible point after the map is stretched.

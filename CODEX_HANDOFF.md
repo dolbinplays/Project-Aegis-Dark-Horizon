@@ -1,3 +1,23 @@
+# CODEX HANDOFF — v0.26.09.07.1345_MOBILE_TERMINATOR_COMPOSITOR_SCALE_HOTFIX
+
+## Scope
+Field hotfix for the Browser 1258 mobile Terminator Map fill failure shown in the September 7 screenshot. Save format remains 4.
+
+## Root cause
+The Terminator background is not a static image with blank margins. `GlobalTickStableCompositorTerminatorSolarSurface` generates a 720×360 canvas and fills its parent. Browser 1258 also shipped an overly broad mobile CSS rule:
+
+`[data-aegis-terminator-map-root] > div.pointer-events-none { transform: scale(.82); ... }`
+
+The actual solar compositor is one of those direct children, so the background was rendered at 82% while the root and marker canvas stayed full-size.
+
+## Implemented
+- Remove the accidental compositor `scale(.82)` rule.
+- Keep the generated base map, day/night mask, full-size marker canvas, and pointer coordinate space aligned to the same Mobile · Adaptive viewport.
+- Preserve Browser 1258 master mute and remembered Resume speed.
+- Preserve desktop Terminator behavior and save format 4.
+
+---
+
 # CODEX HANDOFF — v0.26.09.07.1258_MOBILE_GEOSCAPE_TERMINATOR_AUDIO_TIME_RESUME_HOTFIX
 
 ## Scope

@@ -1,10 +1,20 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.07.1258_MOBILE_GEOSCAPE_TERMINATOR_AUDIO_TIME_RESUME_HOTFIX`
+Current browser build: `v0.26.09.07.1345_MOBILE_TERMINATOR_COMPOSITOR_SCALE_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1345: Mobile Terminator Compositor Scale Hotfix
+
+- Physical-device/screenshot verification showed that Browser 1258 still rendered the Terminator background only in the upper-left portion of the full Mobile · Adaptive viewport, with a broad blank-looking area along the right and bottom.
+- This was **not** a border contained in the world-map artwork. The strategic map is generated at runtime on a 720×360 canvas.
+- Root cause was a mobile CSS selector intended as a compact presentation adjustment: `[data-aegis-terminator-map-root] > div.pointer-events-none { transform: scale(.82); ... }`. The day/night solar compositor itself is a direct `pointer-events-none` child, so the rule shrank the complete map surface to 82% while the map root and marker overlay remained full-size.
+- Browser 1345 removes that compositor scale. The base ocean/land canvas, day/night terminator mask, marker overlay, labels, and input surface now use the same complete Terminator viewport.
+- Browser 1258 master audio Mute/Unmute and last-speed Pause/Resume behavior remain authoritative.
+- Standard/Desktop presentation, strategic simulation, map coordinates, campaign data, and save format **4** remain unchanged.
+
 
 ## Current Build Addendum — Browser 1258: Mobile Geoscape Terminator + Audio + Resume Hotfix
 

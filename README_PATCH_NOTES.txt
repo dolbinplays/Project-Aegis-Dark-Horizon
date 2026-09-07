@@ -1,3 +1,33 @@
+BUILD: v0.26.09.07.1345_MOBILE_TERMINATOR_COMPOSITOR_SCALE_HOTFIX
+TITLE: Mobile Terminator Compositor Scale Hotfix
+DATE: September 7, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.07.1258_MOBILE_GEOSCAPE_TERMINATOR_AUDIO_TIME_RESUME_HOTFIX
+
+Summary
+- Fixes the field-reported Terminator Map background appearing to have a wide border along the right and bottom while markers continued into that area.
+
+Root cause
+- The map is generated from a 720x360 canvas; there is no baked-in border in the map artwork.
+- An overly broad Mobile CSS selector targeted every direct pointer-events-none child of the Terminator Map root and applied transform: scale(.82).
+- That selector matched the full day/night solar compositor, shrinking the actual map surface into the upper-left while the root viewport and marker canvas remained full size.
+
+Fix
+- Removes the accidental 82% compositor transform.
+- The day/night base canvas, terminator mask, marker overlay, labels, and click/tap coordinate surface now occupy the same full Mobile · Adaptive Terminator viewport.
+- Standard/Desktop Terminator presentation is unchanged.
+- Browser 1258 master Mute/Unmute and remembered Pause/Resume speed remain unchanged.
+- Save format remains 4.
+
+Validation
+- Runtime JavaScript syntax passes.
+- Service worker syntax and manifest JSON remain valid.
+- The obsolete mobile compositor scale selector is absent from canonical runtime source.
+- Packaged runtime byte count/SHA-256 and host embedded payload are regenerated and verified.
+- ZIP integrity passes.
+
+---
+
 BUILD: v0.26.09.07.1258_MOBILE_GEOSCAPE_TERMINATOR_AUDIO_TIME_RESUME_HOTFIX
 TITLE: Mobile Geoscape Terminator + Audio + Resume Hotfix
 DATE: September 7, 2026
