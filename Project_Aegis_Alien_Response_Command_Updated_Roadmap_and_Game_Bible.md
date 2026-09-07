@@ -1,10 +1,26 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.07.1110_GEOSCAPE_INTERFACE_CLEANUP_PATCH`
+Current browser build: `v0.26.09.07.1127_PWA_INSTALLABLE_APP_SHELL_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1127: Installable PWA App Shell
+
+- Adds an installable Progressive Web App shell around the existing persistent browser host. Installed launches request fullscreen first where supported and otherwise use standalone mode, removing the normal address/navigation bar while keeping the OS/browser fallback behavior.
+- The manifest requests landscape orientation, AEGIS theme/background colors, and 192x192 / 512x512 maskable-capable icons. Relative `./` scope/start paths are retained for GitHub Pages project-site deployment.
+- The persistent host captures `beforeinstallprompt` when available and exposes installation state to the embedded game runtime. Start screen and Menu / Save now show an Install Aegis control; iPhone/iPad and browsers without the programmable prompt receive Add to Home Screen guidance.
+- A versioned service worker registers only in a secure/localhost context. It precaches the host shell/manifest/icons, uses network-first navigation with a cached `index.html` fallback, and opportunistically caches same-origin static GET resources without intercepting Range requests.
+- Normal browser play and local `file://` play remain supported. Local files simply report that PWA installation requires HTTPS/localhost; no campaign feature is disabled.
+- PWA installation/cache state is device/browser state and never enters campaign saves. Save format remains **4**. Strategic/tactical rules, Mobile · Landscape selection, and post-mission runtime reboot behavior are unchanged.
+
+### Browser 1127 Validation
+- Host/runtime build IDs and embedded-runtime byte count/SHA-256 are synchronized.
+- Manifest JSON parses and declares `display: standalone`, fullscreen-first `display_override`, `orientation: landscape`, relative scope/start URL, and both required icons.
+- Service-worker JavaScript and every executable runtime/host JavaScript block pass syntax validation.
+- Static contracts verify install UI wiring, standalone/fullscreen/iOS installed detection, local-file fallback messaging, service-worker secure-context gating, and unchanged save format 4.
+
 
 ## Current Build Addendum — Browser 1110: Geoscape Interface Cleanup
 

@@ -1,3 +1,26 @@
+BUILD: v0.26.09.07.1127_PWA_INSTALLABLE_APP_SHELL_PATCH
+TITLE: Installable PWA App Shell
+DATE: September 7, 2026
+
+Summary
+- Adds an installable PWA app shell so Alien Response Command can be launched from a phone home screen/app launcher without the normal browser address bar.
+
+Key changes
+- Adds manifest.webmanifest with standalone display, fullscreen-first display override where supported, landscape orientation, AEGIS theme colors, and 192/512 app icons.
+- The persistent host registers service-worker.js on HTTPS/localhost and keeps normal local file play unchanged when service workers are unavailable.
+- Start screen and Menu / Save now include Install Aegis. Chromium-style beforeinstallprompt is used when available; iPhone/iPad and unsupported prompt flows receive Add to Home Screen instructions.
+- Installed-mode detection recognizes standalone/fullscreen plus iOS navigator.standalone.
+- The service worker precaches the host/manifest/icons, uses a network-first navigation fallback, and caches same-origin static resources after successful loads while leaving Range requests alone.
+- PWA/cache state is device-local and does not alter campaign data. Save format remains 4.
+
+Validation
+- Host/runtime build IDs, runtime byte count, and SHA-256 are synchronized.
+- Manifest JSON and both icon files validate.
+- Host, runtime inline scripts, and service-worker JavaScript pass syntax checks.
+- PWA contract checks cover install UI wiring, standalone/fullscreen/iOS detection, secure-context/local-file behavior, and unchanged save format 4.
+
+---
+
 BUILD: v0.26.09.07.1110_GEOSCAPE_INTERFACE_CLEANUP_PATCH
 TITLE: Geoscape Interface Cleanup
 DATE: September 7, 2026
