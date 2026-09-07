@@ -1,10 +1,30 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.04.2004_TACTICAL_AI_PLAYBACK_SEQUENCER_AND_FRAME_PACING_PATCH`
+Current browser build: `v0.26.09.07.1105_MOBILE_LANDSCAPE_THUMB_INTERFACE_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1105: Optional Mobile Landscape Thumb Interface
+
+- Standard remains the default. Start screen and Menu / Save offer a device-local Mobile · Landscape choice independent of campaign save format 4.
+- Mobile reserves a central tactical viewport with navigation/camera controls on the left and combat/playback controls on the right. Additional commands, equipment, and tactical status use scrollable drawers.
+- Dialogs, tutorials, and the fire-team command map fit short screens with scrolling. Host safe-area insets and dynamic viewport sizing support phone browser chrome; the renderer follows its actual container size through resize observation.
+- Mobile Auto rendering resolves to Performance while explicit settings remain available. Tactical touch capture is guarded and drag/multiple-touch gestures suppress stray selections.
+- The September 5 Geoscape pointer-capture hotfix is now retained in canonical source as well as the packaged artifact.
+- Nine mobile behavior tests and all sixteen playback tests pass. Browser viewport checks supplement, but do not replace, physical iOS/Android touch and performance acceptance. No measured phone FPS improvement is claimed.
+- Seeded Build Health matches the previous packaged release at **783/845**, retaining the same **62 existing failures** with no added failures. Embedded syntax, packaging identity, and metadata checks pass.
+- Native Godot interface parity remains an explicit manifest exception.
+
+## Roadmap Addition — Geoscape Interface Cleanup
+
+**Status:** Planned. Requested September 7, 2026.
+
+1. **Put Operational Overlays behind a button.** Keep the section collapsed by default and let players show or hide its existing range-ring and ferry-route controls with an Operational Overlays button. Collapsing the controls should preserve the selected overlays.
+2. **Remove the lower-right Active Incidents box.** Use the existing Open Incident List button at the top of the Geoscape screen to access incidents, freeing the space occupied by the duplicate box.
+
+Apply both changes to Standard and Mobile layouts. Verify that overlay controls remain accessible and the top incident-list button still opens the complete incident list.
 
 ## Current Build Addendum — Browser 2004: Tactical AI Playback Sequencer + Frame-Pacing
 

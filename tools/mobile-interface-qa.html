@@ -1,0 +1,31 @@
+<!doctype html><meta charset="utf-8"><title>AEGIS mobile interface QA</title>
+<style>html,body{margin:0;height:100%;overflow:hidden;background:#081724;color:white;font:14px sans-serif}iframe{display:block;width:100%;height:100%;border:0}#result{position:fixed;bottom:0;left:0;max-height:45vh;overflow:auto;background:#081724;z-index:999;white-space:pre-wrap}</style>
+<iframe id="game" title="Game preview"></iframe><output id="result">Loading test harness…</output>
+<script>
+// Developer-only harness. Open through a local HTTP server; it never writes campaign saves.
+// Default: two-soldier tactical fixture. ?health: deterministic Build Health.
+// ?health&baseline: compare an earlier packaged host copied to /__mobile_baseline.html.
+const params=new URLSearchParams(location.search), frame=document.querySelector('#game'), result=document.querySelector('#result');
+frame.src=params.has('baseline')?'../__mobile_baseline.html':'../index.html';
+const deadline=Date.now()+30000;
+const ready=setInterval(()=>{
+  if(Date.now()>deadline){clearInterval(ready);result.textContent='Game load timed out. Check that the local server and requested packaged host are available.';return;}
+  const host=frame.contentWindow,w=host.document.querySelector('#aegis-runtime')?.contentWindow;
+  if(!w?.makeNewGameData||!w.document.querySelector('[data-aegis-layout-choice]'))return;
+  clearInterval(ready);
+  try{
+    if(params.has('health')){
+      w.writeAegisInterfaceLayout('standard');let seed=123456789;w.Math.random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
+      w.executeDeferredFullBuildHealth();const tests=w.runSelfTests();
+      result.textContent=JSON.stringify({passed:tests.filter(x=>x.pass).length,total:tests.length,failed:tests.filter(x=>!x.pass).map(x=>x.name)},null,2);frame.style.display='none';result.style.maxHeight='100vh';result.style.top='0';
+    }else{
+      w.writeAegisInterfaceLayout('mobile');
+      const game=w.makeNewGameData({openingIncidentSeed:12345});
+      w.document.getElementById('root').style.display='none';
+      const mount=w.document.createElement('div');w.document.body.appendChild(mount);
+      w.ReactDOM.createRoot(mount).render(w.React.createElement(w.TacticalMission,{mission:game.missions[0],squad:game.soldiers.slice(0,2),tech:game.tech,onFinish:()=>{result.style.display='block';result.textContent='Mission finished';}}));
+      result.style.display='none';
+    }
+  }catch(error){result.textContent=error.stack;}
+},100);
+</script>
