@@ -1,0 +1,10 @@
+Build: v0.26.09.07.2059_MOBILE_OBJECTIVE_ASSIGNMENT_MODAL_LAYERING_HOTFIX
+Save format: 4
+Runtime bytes: 6645208
+Runtime SHA-256: d51c7e5495b980757c427e7e51dfb715fcd93c61dfa8f1ae19c46cf784253ab7
+Host SHA-256: 46caaf9cd8fbdbc3b2500b7a056ee29e3500c4a07daeac2d2a888a1fc53308aa
+Explicit overlay zIndex present: True
+Precompiled z-[10010] present: True
+Escort support z-[10020] retained: True
+Portal retained: True
+One mutable current patch-history entry: 1

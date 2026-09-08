@@ -1,0 +1,30 @@
+<!doctype html><meta charset="utf-8"><title>AEGIS AI stream QA</title>
+<style>html,body{margin:0;height:100%;background:#081724;color:white;font:12px monospace}iframe{width:100%;height:82%;border:0}pre{margin:0;max-height:18%;overflow:auto}</style>
+<iframe id="game" title="AI mission test"></iframe><pre id="result">Loading seeded tactical fixture...</pre>
+<script>
+// Local developer fixture. Uses no campaign saves; gameplay still runs through TacticalMission.
+const params=new URLSearchParams(location.search),frame=document.querySelector('#game'),output=document.querySelector('#result');
+frame.src='../index.html';
+let w=null,missionId=null,lastSignature='',changedAt=Date.now(),errors=[];
+const ready=setInterval(()=>{
+  w=frame.contentWindow.document.querySelector('#aegis-runtime')?.contentWindow;
+  if(!w?.makeNewGameData||!w.document.querySelector('[data-aegis-layout-choice]'))return;
+  clearInterval(ready);
+  try{
+    let seed=Number(params.get('seed'))||123456789;w.Math.random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
+    w.writeAegisInterfaceLayout('standard');
+    w.addEventListener('error',event=>errors.push(String(event.error?.stack||event.message)));
+    const game=w.makeNewGameData({openingIncidentSeed:12345});
+    const mission={...game.missions[0],tacticalMapTier:'small'};missionId=mission.id;
+    w.document.getElementById('root').style.display='none';const mount=w.document.createElement('div');w.document.body.appendChild(mount);
+    w.ReactDOM.createRoot(mount).render(w.React.createElement(w.TacticalMission,{mission,squad:game.soldiers.slice(0,Number(params.get('squad'))||4),tech:game.tech,onFinish:()=>{output.textContent='Mission finished';}}));
+    setInterval(()=>{
+      const live=w.tacticalLiveStateSavePayload(missionId)?.liveState,p=live?.aiPlayback;
+      const units=(live?.units||[]).map(u=>({id:u.id,team:u.team,x:u.x,y:u.y,hp:u.hp,visible:u.visible,tu:u.tu}));
+      const signature=JSON.stringify([p?.streamFramesDiscarded,p?.frameIndex,p?.streamSimulatedRounds,units]);
+      if(signature!==lastSignature){lastSignature=signature;changedAt=Date.now();}
+      output.textContent=JSON.stringify({round:live?.tacticalRound,turn:live?.turn,frame:p?.frameIndex,frames:p?.frames?.length,simulatedRounds:p?.streamSimulatedRounds,unchangedSeconds:Math.round((Date.now()-changedAt)/1000),pending:p?.streamPending,complete:p?.streamComplete,failed:p?.streamFailed,error:p?.streamError,commandMapPaused:live?.commandMapPaused,escortPrompt:Boolean(live?.escortSupportPrompt),objectivePrompt:Boolean(live?.objectiveAssignmentPrompt),timeline:w.__AEGIS_TACTICAL_PLAYBACK_REPORT?.(),planning:w.__AEGIS_TACTICAL_AI_PERF__,errors},null,2);
+    },2000);
+  }catch(error){output.textContent=error.stack;}
+},100);
+</script>

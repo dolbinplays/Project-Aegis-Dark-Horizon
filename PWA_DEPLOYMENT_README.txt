@@ -1,5 +1,5 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND — PWA DEPLOYMENT
-Build: v0.26.09.07.1925_MOBILE_PWA_AUDIO_REGRESSION_FIX_PATCH
+Build: v0.26.09.07.2059_MOBILE_OBJECTIVE_ASSIGNMENT_MODAL_LAYERING_HOTFIX
 
 BUILD FROM SOURCE
 1. Edit src/browser-runtime.html for game changes and tools/package-runtime-shell.cjs for host/PWA changes.
@@ -26,3 +26,5 @@ The packager updates both build-versioned caches so old Aegis caches are retired
 Mobile Geoscape note (Browser 1231): the manifest now allows any orientation so the adaptive Geoscape can run in portrait on tall smartphones and scale through tablets.
 
 Browser 1258 note: the service-worker cache key advances for the Terminator/audio/time-resume mobile follow-up. Manifest orientation remains `any`.
+
+Browser 2059 note: Mobile · Adaptive Assign Objectives now owns an explicit z-index 10010 above tactical chrome; the service-worker cache key advances so installed PWAs receive the modal-layer fix.

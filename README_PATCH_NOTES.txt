@@ -1,3 +1,33 @@
+BUILD: v0.26.09.07.2059_MOBILE_OBJECTIVE_ASSIGNMENT_MODAL_LAYERING_HOTFIX
+TITLE: Mobile Objective Assignment Modal Layering Hotfix
+DATE: September 7, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.07.1925_MOBILE_PWA_AUDIO_REGRESSION_FIX_PATCH
+
+Summary
+- Fixes Simulation AI appearing to stop very early in a mission under Mobile · Adaptive when a newly discovered mission objective requires the player to review fire-team assignments.
+
+Root cause
+- The objective-assignment overlay correctly rendered through a document-body React portal and requested `z-[10010]`, but that arbitrary Tailwind utility was absent from the shipped precompiled stylesheet.
+- Mobile · Adaptive tactical presentation owns an explicit higher stacking layer than ordinary Standard tactical presentation, so the assignment dialog could exist underneath the mobile battlefield/command chrome.
+- AI was correctly waiting for the objective-assignment decision; changing to Standard controls merely exposed the already-pending modal.
+
+Fix
+- Assign Objectives now carries explicit inline `z-index: 10010`, independent of Tailwind utility generation.
+- The missing precompiled `.z-[10010]` rule is restored as a second guard.
+- Civilian Escort Support remains intentionally higher at z-index 10020.
+- No Simulation AI planning, tactical scheduling, pathfinding, TU, LOS, fog, objective authority, or campaign data rules change.
+- Save format remains 4.
+
+Validation
+- Runtime executable script blocks pass JavaScript syntax validation.
+- Static release checks verify the objective assignment portal has explicit z-index 10010, the precompiled utility exists, and the higher-priority escort-support modal remains z-index 10020.
+- Embedded runtime byte count/SHA-256 and host payload identity are regenerated and verified.
+- Service-worker cache identity advances to the new build so installed/mobile PWAs can receive the corrected runtime.
+- Physical phone/tablet field acceptance remains required for touch/viewport behavior.
+
+---
+
 BUILD: v0.26.09.07.1925_MOBILE_PWA_AUDIO_REGRESSION_FIX_PATCH
 TITLE: Mobile, PWA, and Audio Regression Fixes
 DATE: September 7, 2026

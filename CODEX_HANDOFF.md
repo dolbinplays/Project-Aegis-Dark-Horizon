@@ -1,3 +1,33 @@
+# CODEX HANDOFF — v0.26.09.07.2059_MOBILE_OBJECTIVE_ASSIGNMENT_MODAL_LAYERING_HOTFIX
+
+## Patch focus
+
+Mobile · Adaptive tactical objective-assignment layering hotfix. Simulation AI could appear to stall when a newly discovered objective opened the fire-team assignment board because the modal requested an uncompiled `z-[10010]` Tailwind utility and therefore rendered beneath the mobile tactical layer. Switching to Standard controls exposed the already-pending decision, confirming that AI was waiting rather than deadlocked.
+
+## Implementation
+
+- `FireTeamObjectiveAssignmentOverlay` remains portaled to `document.body`.
+- The overlay now sets inline `zIndex: 10010`, making modal authority independent of Tailwind compilation.
+- The precompiled stylesheet also includes `.z-[10010]{z-index:10010}` as a secondary guard.
+- Mobile tactical chrome and rails remain below the command modal.
+- Escort-support contact assignment remains at z-index 10020 and therefore still supersedes objective assignment when that higher-priority tactical decision is active.
+- Existing objective-assignment viewport bounding, internal scrolling, transactional Cancel/Apply behavior, and focus restoration are preserved.
+
+## Authority preserved
+
+No AI decision-making, round scheduling, pathfinding, movement, TU, LOS, fog, damage, objective discovery, fire-team assignment semantics, save data, or save-format changes. Save format remains 4.
+
+## Field reproduction / acceptance
+
+1. Select Mobile · Adaptive, start a tactical mission, and hand control to Simulation AI.
+2. Reach a point where a new mission objective is discovered.
+3. Confirm **New Mission Objective Identified / Assign fire teams to known goals** appears immediately above the battlefield and mobile rails.
+4. Apply or cancel the assignment and confirm Simulation AI continues normally.
+5. Repeat on PC while Mobile · Adaptive is selected, then on an actual phone.
+6. Confirm switching to Standard controls is no longer necessary to reveal the pending decision.
+
+---
+
 # CODEX HANDOFF — v0.26.09.07.1925_MOBILE_PWA_AUDIO_REGRESSION_FIX_PATCH
 
 ## Patch focus

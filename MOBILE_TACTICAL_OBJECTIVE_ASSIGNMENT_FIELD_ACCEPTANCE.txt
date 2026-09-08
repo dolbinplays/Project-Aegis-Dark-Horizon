@@ -1,0 +1,24 @@
+PROJECT AEGIS — MOBILE TACTICAL OBJECTIVE ASSIGNMENT FIELD ACCEPTANCE
+Build: v0.26.09.07.2059_MOBILE_OBJECTIVE_ASSIGNMENT_MODAL_LAYERING_HOTFIX
+
+PRIMARY REGRESSION
+1. On PC, choose Mobile · Adaptive before entering a tactical mission.
+2. Hand the mission to Simulation AI.
+3. Allow AI play to reach discovery of a new known mission objective.
+4. Confirm the **New Mission Objective Identified / Assign fire teams to known goals** modal appears immediately over the tactical battlefield and both mobile command rails.
+5. Do NOT switch to Standard controls. Apply an assignment and confirm AI playback/continuation resumes.
+6. Repeat using Cancel, then reopen Assign Objectives manually and confirm the board remains usable.
+
+PHONE / TABLET
+7. Repeat on the physical phone that previously looked stalled. Confirm the board is visible, internally scrollable, and its bottom actions are reachable.
+8. Repeat in portrait and landscape if practical.
+9. Repeat on a tablet-sized viewport.
+
+TACTICAL VIEW PARITY
+10. Trigger/review the board from 3D Iso, FPV, TPV, and 2D Hex where practical. It must remain above each view.
+11. Confirm the Civilian Escort Support decision can still appear above objective assignment when that higher-priority contact decision owns the moment.
+12. Switch to Standard controls and confirm ordinary assignment behavior remains unchanged.
+
+REGRESSION
+13. Confirm Simulation AI is not automatically resumed while an assignment decision is genuinely pending; the fix makes the decision visible rather than bypassing it.
+14. Confirm save format remains 4.
