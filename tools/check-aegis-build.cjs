@@ -965,6 +965,23 @@ for (const hostContract of [
   if (!packagedHtml.includes(hostContract)) missing.push(`persistent runtime host contract missing: ${hostContract}`);
 }
 const runtimePackager = fs.readFileSync(path.join(root, "tools", "package-runtime-shell.cjs"), "utf8");
+const releaseMetadata = JSON.parse(fs.readFileSync(path.join(root, "release-metadata.json"), "utf8"));
+if (releaseMetadata.build !== manifest.currentBuild || releaseMetadata.save_format !== manifest.saveFormat ||
+    releaseMetadata.runtime_bytes !== expectedRuntimeBytes || releaseMetadata.runtime_sha256 !== expectedRuntimeHash ||
+    releaseMetadata.host_sha256 !== crypto.createHash("sha256").update(packagedHtml).digest("hex")) {
+  missing.push("release metadata must match the authoritative manifest and packaged runtime/host bytes");
+}
+for (const pwaContract of ['<link rel="manifest" href="./manifest.webmanifest"',
+  "pwaInstall:'manifest-service-worker-install-prompt',getPwaState,requestInstall",
+  'navigator.serviceWorker.register("./service-worker.js"']) {
+  if (!runtimePackager.includes(pwaContract) || !packagedHtml.includes(pwaContract)) {
+    missing.push(`PWA support must exist in both the canonical packager and playable host: ${pwaContract}`);
+  }
+}
+const serviceWorker = fs.readFileSync(path.join(root, "service-worker.js"), "utf8");
+for (const cache of [`aegis-${manifest.currentBuild}`, `aegis-runtime-${manifest.currentBuild}`]) {
+  if (!serviceWorker.includes(`"${cache}"`)) missing.push(`service-worker cache must use the current build: ${cache}`);
+}
 for (const lineageMarker of [
   "TACTICAL_FIRST_CLASS_FIRE_TEAM_BEACON_ASSAULT_ORDERS_PATCH",
   "TACTICAL_FPV_TPV_ALIEN_CIRCULAR_CROSSHAIR_TARGET_MARKERS_PATCH",

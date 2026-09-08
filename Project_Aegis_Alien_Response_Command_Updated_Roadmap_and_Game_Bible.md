@@ -1,10 +1,19 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.07.1428_MOBILE_BASE_DRAWER_BOARD_VISIBILITY_HOTFIX`
+Current browser build: `v0.26.09.07.1925_MOBILE_PWA_AUDIO_REGRESSION_FIX_PATCH`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1925: Mobile, PWA, and Audio Regression Fixes
+
+- Geoscape drawers keep their own bounded width on narrow phones.
+- Mobile Geoscape and Base drawers remain below confirmation windows without changing board placement.
+- Master Mute remains authoritative through music crossfades, delayed dialogue callbacks, and the post-mission audio bridge.
+- Only game-shell navigation can update the offline game launch page; editor and tool pages remain separate.
+- The canonical packager retains PWA installation support and regenerates release hashes and service-worker cache versions.
+- Release identity is synchronized with the authoritative source manifest; Standard layout and save format 4 are preserved.
 
 ## Current Build Addendum — Browser 1428: Mobile Base Drawer Board Visibility Hotfix
 

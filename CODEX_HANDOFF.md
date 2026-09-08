@@ -1,3 +1,22 @@
+# CODEX HANDOFF — v0.26.09.07.1925_MOBILE_PWA_AUDIO_REGRESSION_FIX_PATCH
+
+## Patch focus
+
+- Geoscape drawers keep their own bounded width on narrow phones.
+- Mobile Geoscape and Base drawers remain below confirmation windows without changing board placement.
+- Master Mute remains authoritative through music crossfades, delayed dialogue callbacks, and the post-mission audio bridge.
+- Only game-shell navigation can update the offline game launch page; editor and tool pages remain separate.
+- The canonical packager retains PWA installation support and regenerates release hashes and service-worker cache versions.
+- Release identity is synchronized with the authoritative source manifest; Standard layout and save format 4 are preserved.
+
+## Validation
+
+Syntax and standard release checks pass. Focused suites pass 34/34. Seeded Build Health remains 792/854 with 62 pre-existing failures. Phone portrait, phone landscape, tablet, and Standard desktop flows were checked in the browser; construction completes with an unobscured, scrollable confirmation.
+
+Canonical release workflow is documented in PWA_DEPLOYMENT_README.txt. The new regression suite is tools/test-mobile-pwa-regressions.cjs. .gitattributes preserves bytes used by embedded payloads and release hashes on Windows. No campaign authority or save-format changes. Physical device installation/audio output remains a field check.
+
+---
+
 # CODEX HANDOFF — v0.26.09.07.1428_MOBILE_BASE_DRAWER_BOARD_VISIBILITY_HOTFIX
 
 ## Patch focus

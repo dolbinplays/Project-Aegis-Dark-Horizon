@@ -4,8 +4,9 @@ This folder is the staging area for gradually moving Project Aegis away from a s
 
 Current rule:
 - `index.html` remains the playable distribution build.
-- Source files in `src/` are contracts and extraction targets until a later build step is introduced.
-- Do not move runtime code out of `index.html` unless the generated/playable artifact is verified by Build Health.
+- `src/browser-runtime.html` is the canonical game runtime. Edit it, then run `node tools/package-runtime-shell.cjs` to regenerate the playable host.
+- `tools/package-runtime-shell.cjs` owns the persistent host and PWA shell. Packaging also updates `service-worker.js` cache versions and `release-metadata.json` hashes.
+- Keep the build identity in `src/manifest.json` synchronized before packaging. Run the syntax/build checks and focused regression tests, then verify the generated artifact with Build Health.
 
 Planned source areas:
 - `src/data/` - campaign constants, equipment, aliens, facilities, mission tables, text catalogs.

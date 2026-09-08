@@ -1,0 +1,6 @@
+# Preserve embedded payload bytes and release hashes on Windows checkouts.
+/index.html text eol=lf
+/src/browser-runtime.html text eol=lf
+/tools/package-runtime-shell.cjs text eol=lf
+/service-worker.js text eol=lf
+/release-metadata.json text eol=lf

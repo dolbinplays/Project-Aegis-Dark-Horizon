@@ -1,3 +1,29 @@
+BUILD: v0.26.09.07.1925_MOBILE_PWA_AUDIO_REGRESSION_FIX_PATCH
+TITLE: Mobile, PWA, and Audio Regression Fixes
+DATE: September 7, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.07.1428_MOBILE_BASE_DRAWER_BOARD_VISIBILITY_HOTFIX
+
+Summary
+- Geoscape drawers keep their own bounded width on narrow phones.
+- Mobile Geoscape and Base drawers remain below confirmation windows without changing board placement.
+- Master Mute remains authoritative through music crossfades, delayed dialogue callbacks, and the post-mission audio bridge.
+- Only game-shell navigation can update the offline game launch page; editor and tool pages remain separate.
+- The canonical packager retains PWA installation support and regenerates release hashes and service-worker cache versions.
+- Release identity is synchronized with the authoritative source manifest; Standard layout and save format 4 are preserved.
+
+Validation
+- node tools/check-embedded-js.cjs: passed (9 executable blocks across 4 HTML files).
+- node tools/check-aegis-build.cjs: passed, including PWA template, release hashes, and cache-version checks.
+- node tools/test-mobile-interface.cjs: 9/9 passed.
+- node tools/test-ai-playback-sequencer.cjs: 16/16 passed.
+- node --test tools/test-mobile-pwa-regressions.cjs: 9/9 passed.
+- Seeded full browser Build Health: 792/854, retaining the 62 pre-existing failures from the reviewed build.
+- Browser QA: 390x844 phone drawer bounds and scrollable/unobscured construction confirmation; 844x390 landscape cancellation and completed construction; 1024x768 tablet board/drawer separation; 1440x900 Standard layout restored. No runtime console errors in the campaign checks.
+- Repackaging is byte-for-byte reproducible; payload bytes and release hashes match. Physical device installation and audio output were not tested.
+
+---
+
 BUILD: v0.26.09.07.1428_MOBILE_BASE_DRAWER_BOARD_VISIBILITY_HOTFIX
 TITLE: Mobile Base Drawer Board Visibility Hotfix
 DATE: September 7, 2026

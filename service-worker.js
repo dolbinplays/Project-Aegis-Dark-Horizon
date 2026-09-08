@@ -1,5 +1,5 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.07.1428_MOBILE_BASE_DRAWER_BOARD_VISIBILITY_HOTFIX";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.07.1428_MOBILE_BASE_DRAWER_BOARD_VISIBILITY_HOTFIX";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.07.1925_MOBILE_PWA_AUDIO_REGRESSION_FIX_PATCH";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.07.1925_MOBILE_PWA_AUDIO_REGRESSION_FIX_PATCH";
 const AEGIS_SHELL = [
   "./index.html",
   "./manifest.webmanifest",
@@ -32,16 +32,20 @@ self.addEventListener("fetch", event => {
   if (request.headers.has("range")) return;
 
   if (request.mode === "navigate") {
+    const shellUrl = new URL("./index.html", self.registration.scope);
+    const rootUrl = new URL("./", shellUrl);
+    // Editors and QA pages must never become the installed game's launch page.
+    if (url.pathname !== shellUrl.pathname && url.pathname !== rootUrl.pathname) return;
     event.respondWith((async () => {
+      const cache = await caches.open(AEGIS_PWA_CACHE);
       try {
         const fresh = await fetch(request);
         if (isCacheableResponse(fresh)) {
-          const cache = await caches.open(AEGIS_PWA_CACHE);
-          cache.put("./index.html", fresh.clone()).catch(() => {});
+          await cache.put(shellUrl.href, fresh.clone()).catch(() => {});
         }
         return fresh;
       } catch {
-        return (await caches.match("./index.html")) || Response.error();
+        return (await cache.match(shellUrl.href)) || Response.error();
       }
     })());
     return;

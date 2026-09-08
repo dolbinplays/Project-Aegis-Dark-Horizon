@@ -13,6 +13,10 @@ if (!buildMatch || buildMatch[1].includes("__AEGIS_BUILD__")) {
 }
 
 const build = buildMatch[1];
+const manifest = JSON.parse(fs.readFileSync(path.join(root, "src", "manifest.json"), "utf8"));
+if ([manifest.currentBuild, manifest.lastInspectedBuild, manifest.gameplayParity?.browserBuild].some(value => value !== build)) {
+  throw new Error("Synchronize src/manifest.json with CURRENT_GAME_BUILD before packaging.");
+}
 const requiredLineageMarkers = [
   "TACTICAL_FIRST_CLASS_FIRE_TEAM_BEACON_ASSAULT_ORDERS_PATCH",
   "TACTICAL_FPV_TPV_ALIEN_CIRCULAR_CROSSHAIR_TARGET_MARKERS_PATCH",
@@ -44,6 +48,12 @@ const template = String.raw`<!DOCTYPE html>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
 <title>Alien Response Command</title>
+<link rel="manifest" href="./manifest.webmanifest"/>
+<meta name="theme-color" content="#020617"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Aegis"/>
+<link rel="apple-touch-icon" href="./assets/icons/aegis-192.png"/>
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#020617;color:#e2e8f0;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 #aegis-host-shell{position:fixed;inset:0;background:#020617}
@@ -93,6 +103,17 @@ html[data-aegis-layout="mobile"] #aegis-host-transition-card{max-height:calc(100
   const updateMobileViewport=()=>document.documentElement.style.setProperty('--aegis-mobile-viewport-height',Math.round(window.visualViewport?.height||window.innerHeight)+'px');
   updateMobileViewport();window.addEventListener('resize',updateMobileViewport);window.visualViewport?.addEventListener('resize',updateMobileViewport);
   const BUILD='__BUILD__';
+const pwaState={deferredPrompt:null,installed:false,serviceWorker:"unsupported",lastOutcome:null};
+  function pwaDisplayMode(){if(window.matchMedia?.("(display-mode: fullscreen)")?.matches)return"fullscreen";if(window.matchMedia?.("(display-mode: standalone)")?.matches||navigator.standalone===true)return"standalone";return"browser";}
+  function pwaInstalled(){return pwaDisplayMode()!=="browser";}
+  function getPwaState(){const protocol=window.location?.protocol||"";return{installed:pwaInstalled()||pwaState.installed,canPrompt:Boolean(pwaState.deferredPrompt&&!pwaInstalled()),displayMode:pwaDisplayMode(),secure:window.isSecureContext===true||protocol==="http:"&&/^(localhost|127\.0\.0\.1)$/i.test(location.hostname||""),protocol,ios:/iphone|ipad|ipod/i.test(navigator.userAgent||""),serviceWorker:pwaState.serviceWorker,lastOutcome:pwaState.lastOutcome};}
+  function notifyRuntimePwaState(){try{runtimeFrame?.contentWindow?.dispatchEvent(new CustomEvent("aegis-pwa-state-change",{detail:getPwaState()}));}catch{}}
+  async function requestInstall(){const prompt=pwaState.deferredPrompt;if(!prompt)return{...getPwaState(),outcome:"unavailable"};pwaState.deferredPrompt=null;try{await prompt.prompt();const choice=await prompt.userChoice;pwaState.lastOutcome=choice?.outcome||"unknown";if(pwaState.lastOutcome==="accepted")pwaState.installed=true;notifyRuntimePwaState();return{...getPwaState(),outcome:pwaState.lastOutcome};}catch(error){pwaState.lastOutcome="error";notifyRuntimePwaState();return{...getPwaState(),outcome:"error",message:String(error?.message||error)}}}
+  window.addEventListener("beforeinstallprompt",event=>{event.preventDefault();pwaState.deferredPrompt=event;pwaState.lastOutcome="available";notifyRuntimePwaState();});
+  window.addEventListener("appinstalled",()=>{pwaState.installed=true;pwaState.deferredPrompt=null;pwaState.lastOutcome="installed";notifyRuntimePwaState();});
+  try{window.matchMedia?.("(display-mode: standalone)")?.addEventListener?.("change",notifyRuntimePwaState);window.matchMedia?.("(display-mode: fullscreen)")?.addEventListener?.("change",notifyRuntimePwaState);}catch{}
+  function registerAegisServiceWorker(){const protocol=window.location?.protocol||"";const eligible=window.isSecureContext===true||protocol==="http:"&&/^(localhost|127\.0\.0\.1)$/i.test(location.hostname||"");if(!("serviceWorker" in navigator)){pwaState.serviceWorker="unsupported";notifyRuntimePwaState();return;}if(!eligible){pwaState.serviceWorker="insecure-context";notifyRuntimePwaState();return;}pwaState.serviceWorker="registering";navigator.serviceWorker.register("./service-worker.js",{scope:"./"}).then(registration=>{pwaState.serviceWorker="registered";registration.update?.().catch(()=>{});notifyRuntimePwaState();}).catch(error=>{pwaState.serviceWorker="failed";console.warn("AEGIS PWA service worker registration failed:",error);notifyRuntimePwaState();});}
+  window.addEventListener("load",registerAegisServiceWorker,{once:true});
   const RESUME_TOKEN_KEY='project-aegis-post-mission-runtime-resume-v1';
   const AUDIO_CONTINUITY_KEY='project-aegis-audio-continuity-v1';
   const RESUME_TOKEN_TTL_MS=30*60*1000;
@@ -114,16 +135,16 @@ html[data-aegis-layout="mobile"] #aegis-host-transition-card{max-height:calc(100
   let bridgeFadeFrame=0;
   let resumeWatchdog=0;
   let lastVerifiedToken=null;
-  let lastAudioState={musicPlaying:false,musicVolume:65,sfxVolume:70,musicSelectionMode:'auto',musicMode:'start',musicSoundtrack:'original'};
+  let lastAudioState={masterMuted:false,musicPlaying:false,musicVolume:65,sfxVolume:70,musicSelectionMode:'auto',musicMode:'start',musicSoundtrack:'original'};
 
   function readAudioContinuity(){try{const value=JSON.parse(sessionStorage.getItem(AUDIO_CONTINUITY_KEY)||'{}');return value&&typeof value==='object'?value:{};}catch{return {};}}
   Object.assign(lastAudioState,readAudioContinuity());
   function bridgeSource(state=lastAudioState){return state.musicSoundtrack==='alternate'?'assets/audio/alternate/after_action.mp3':'assets/audio/aegis_midi_reports.wav';}
-  function targetBridgeVolume(state=lastAudioState){return Math.max(0,Math.min(1,Number(state.musicVolume??65)/100));}
+  function targetBridgeVolume(state=lastAudioState){if(state.masterMuted===true)return 0;return Math.max(0,Math.min(1,Number(state.musicVolume??65)/100));}
   function cancelBridgeFade(){if(bridgeFadeFrame)cancelAnimationFrame(bridgeFadeFrame);bridgeFadeFrame=0;}
-  function fadeBridge(target,duration=360){cancelBridgeFade();const start=Number(bridge.volume)||0;const goal=Math.max(0,Math.min(1,Number(target)||0));const begun=performance.now();const tick=now=>{const t=Math.min(1,(now-begun)/Math.max(1,duration));const eased=t*t*(3-2*t);bridge.volume=start+(goal-start)*eased;if(t<1)bridgeFadeFrame=requestAnimationFrame(tick);else bridgeFadeFrame=0;};bridgeFadeFrame=requestAnimationFrame(tick);}
-  function ensureBridgePrimed(state=lastAudioState,forceSource=false){if(state.musicPlaying!==true)return false;const desired=bridgeSource(state);const current=(bridge.getAttribute('src')||'').replace(/^\.\//,'');if(forceSource||!current){try{bridge.src=desired;bridge.load();}catch{}}bridge.loop=true;bridge.volume=0;let playResult=null;try{playResult=bridge.play();}catch{metrics.bridgePlayFailures+=1;return false;}if(playResult?.then)playResult.then(()=>{metrics.bridgePrimed=true;}).catch(()=>{metrics.bridgePlayFailures+=1;});else metrics.bridgePrimed=true;return true;}
-  function syncAudio(state={},options={}){lastAudioState={...lastAudioState,...state,musicPlaying:state.musicPlaying===true,musicVolume:Math.max(0,Math.min(100,Number(state.musicVolume??lastAudioState.musicVolume??65))),sfxVolume:Math.max(0,Math.min(100,Number(state.sfxVolume??lastAudioState.sfxVolume??70))),musicSoundtrack:state.musicSoundtrack==='alternate'?'alternate':'original'};metrics.lastAudioState={...lastAudioState};try{sessionStorage.setItem(AUDIO_CONTINUITY_KEY,JSON.stringify(lastAudioState));}catch{}if(!lastAudioState.musicPlaying){cancelBridgeFade();bridge.volume=0;try{bridge.pause();}catch{}metrics.bridgePrimed=false;return;}if(options?.prime)ensureBridgePrimed(lastAudioState,!bridge.getAttribute('src'));}
+  function fadeBridge(target,duration=360){cancelBridgeFade();const start=Number(bridge.volume)||0;const goal=Math.max(0,Math.min(1,Number(target)||0));const begun=performance.now();const tick=now=>{const t=Math.min(1,(now-begun)/Math.max(1,duration));const eased=t*t*(3-2*t);bridge.volume=lastAudioState.masterMuted?0:start+(goal-start)*eased;if(t<1)bridgeFadeFrame=requestAnimationFrame(tick);else bridgeFadeFrame=0;};bridgeFadeFrame=requestAnimationFrame(tick);}
+  function ensureBridgePrimed(state=lastAudioState,forceSource=false){if(state.musicPlaying!==true||state.masterMuted===true)return false;const desired=bridgeSource(state);const current=(bridge.getAttribute('src')||'').replace(/^\.\//,'');if(forceSource||!current){try{bridge.src=desired;bridge.load();}catch{}}bridge.loop=true;bridge.volume=0;let playResult=null;try{playResult=bridge.play();}catch{metrics.bridgePlayFailures+=1;return false;}if(playResult?.then)playResult.then(()=>{metrics.bridgePrimed=true;}).catch(()=>{metrics.bridgePlayFailures+=1;});else metrics.bridgePrimed=true;return true;}
+  function syncAudio(state={},options={}){lastAudioState={...lastAudioState,...state,musicPlaying:state.musicPlaying===true,musicVolume:Math.max(0,Math.min(100,Number(state.musicVolume??lastAudioState.musicVolume??65))),sfxVolume:Math.max(0,Math.min(100,Number(state.sfxVolume??lastAudioState.sfxVolume??70))),musicSoundtrack:state.musicSoundtrack==='alternate'?'alternate':'original'};metrics.lastAudioState={...lastAudioState};try{sessionStorage.setItem(AUDIO_CONTINUITY_KEY,JSON.stringify(lastAudioState));}catch{}if(!lastAudioState.musicPlaying||lastAudioState.masterMuted){cancelBridgeFade();bridge.volume=0;try{bridge.pause();}catch{}metrics.bridgePrimed=false;return;}if(options?.prime)ensureBridgePrimed(lastAudioState,!bridge.getAttribute('src'));}
   function showTransition(title,status,detail){transitionTitle.textContent=title||'MISSION DATA TRANSFER';transitionStatus.textContent=status||'Securing campaign state...';transitionDetail.textContent=detail||'Verified autosave \u2022 tactical memory reset \u2022 command continuity';recoveryActions.classList.remove('active');transition.setAttribute('aria-busy','true');transition.classList.add('active');}
   function hideTransition(delay=0){setTimeout(()=>{transition.setAttribute('aria-busy','false');transition.classList.remove('active');recoveryActions.classList.remove('active');},Math.max(0,delay));}
   function clearResumeWatchdog(){if(resumeWatchdog)clearTimeout(resumeWatchdog);resumeWatchdog=0;}
@@ -144,7 +165,7 @@ html[data-aegis-layout="mobile"] #aegis-host-transition-card{max-height:calc(100
   function continueFreshRuntime(){clearResumeWatchdog();try{sessionStorage.removeItem(RESUME_TOKEN_KEY);}catch{}lastVerifiedToken=null;rebooting=false;if(lastAudioState.musicPlaying)fadeBridge(0,260);hideTransition(0);}
   retryButton.addEventListener('click',retryVerifiedAutosave);
   continueButton.addEventListener('click',continueFreshRuntime);
-  window.__AEGIS_HOST_API={runtimeDisposal:'remove-and-recreate-iframe',audioBridge:'persistent-host-audio',recovery:'verified-autosave-retry-or-start-screen',syncAudio,runtimeReady,runtimeMusicStarted,runtimeResumeComplete,runtimeResumeFailed,beginPostMissionTransition,cancelPostMissionTransition,requestRuntimeReboot};
+  window.__AEGIS_HOST_API={runtimeDisposal:'remove-and-recreate-iframe',audioBridge:'persistent-host-audio',recovery:'verified-autosave-retry-or-start-screen',pwaInstall:'manifest-service-worker-install-prompt',getPwaState,requestInstall,syncAudio,runtimeReady,runtimeMusicStarted,runtimeResumeComplete,runtimeResumeFailed,beginPostMissionTransition,cancelPostMissionTransition,requestRuntimeReboot};
   window.__AEGIS_RUNTIME_REBOOT_REPORT=()=>({build:BUILD,rebooting,metrics:JSON.parse(JSON.stringify(metrics)),audio:{...lastAudioState},bridge:{paused:bridge.paused,volume:bridge.volume,src:bridge.getAttribute('src')||'',primed:metrics.bridgePrimed},recovery:{hasVerifiedToken:Boolean(lastVerifiedToken),watchdogArmed:Boolean(resumeWatchdog),actionsVisible:recoveryActions.classList.contains('active')}});
   try{const pending=JSON.parse(sessionStorage.getItem(RESUME_TOKEN_KEY)||'null');if(validResumeToken(pending)){lastVerifiedToken={...pending};rebooting=true;showTransition('RESTORING MISSION DEBRIEF','Loading the verified post-mission autosave...','After Action Report \u2022 command continuity');if(lastAudioState.musicPlaying){ensureBridgePrimed(lastAudioState,false);fadeBridge(targetBridgeVolume(lastAudioState),180);}armResumeWatchdog();}else if(pending){sessionStorage.removeItem(RESUME_TOKEN_KEY);}}catch{}
   bootRuntime();
@@ -160,5 +181,22 @@ const packaged = template
   .replaceAll("__PAYLOAD_SHA256__", payloadSha256)
   .replace("__PAYLOAD__", payload);
 
+const workerPath = path.join(root, "service-worker.js");
+const workerSource = fs.readFileSync(workerPath, "utf8");
+const cacheDeclaration = /^const (AEGIS_PWA_CACHE|AEGIS_RUNTIME_CACHE) = "[^"]+";/gm;
+if ([...workerSource.matchAll(cacheDeclaration)].length !== 2) {
+  throw new Error("Service worker must declare exactly two versioned AEGIS caches.");
+}
+const worker = workerSource.replace(cacheDeclaration, (_, name) =>
+  `const ${name} = "${name === "AEGIS_PWA_CACHE" ? "aegis-" : "aegis-runtime-"}${build}";`);
+const releaseMetadata = {
+  build,
+  save_format: manifest.saveFormat,
+  runtime_bytes: sourceBytes.length,
+  runtime_sha256: payloadSha256,
+  host_sha256: crypto.createHash("sha256").update(packaged).digest("hex"),
+};
 fs.writeFileSync(outputPath, packaged, "utf8");
+fs.writeFileSync(workerPath, worker, "utf8");
+fs.writeFileSync(path.join(root, "release-metadata.json"), JSON.stringify(releaseMetadata, null, 2) + "\n", "utf8");
 console.log(`Packaged ${path.relative(root, sourcePath)} -> ${path.relative(root, outputPath)} (${sourceBytes.length} source bytes, sha256 ${payloadSha256}).`);
