@@ -1,0 +1,27 @@
+PROJECT AEGIS — MOBILE QUARTERMASTER / INVENTORY FIELD ACCEPTANCE
+Build: v0.26.09.07.2258_MOBILE_QUARTERMASTER_INVENTORY_ADAPTIVE_LAYOUT_PATCH
+Save format: 4
+
+PHONE — TARGET REFERENCE 1080x2340 PORTRAIT CLASS
+1. Select Mobile · Adaptive and open Quartermaster. Confirm the whole command page remains fixed and does not vertically scroll.
+2. Confirm left/right command rails scroll independently without moving the Quartermaster workspace.
+3. Use the Stores / Loadout / Upgrades / Status strip. Confirm each section fits the center viewport and scrolls internally.
+4. Stores: buy/sell an ordinary market item if campaign state permits. Confirm stock/funds/storage update normally.
+5. Expand Details on several item cards. Confirm the long description is readable without forcing whole-page scrolling.
+6. If multiple bases exist, test an equipment transfer and confirm transfer choices/logistics remain reachable.
+7. Loadout: select several living soldiers stationed at the current base. Confirm weapon, armor, and Medkit state follows the selected soldier.
+8. Equip an available weapon or armor item. Confirm local stock decreases and replaced removable gear returns to local stores using the existing rules.
+9. Return weapon/armor and issue/return a Medkit. Confirm local inventory updates correctly.
+10. Upgrades: verify Weapon Upgrade Bench levels, research locks, costs, and Buy controls remain reachable.
+11. Status: verify funds, local/all-base storage, free capacity, issued quantity, and notes remain readable.
+12. Rotate portrait -> landscape -> portrait if practical. Confirm the workspace remains bounded.
+
+TABLET
+13. Repeat on a representative tablet. Stores should expand to two stock-card columns where space permits and controls should remain comfortable to touch.
+
+STANDARD PARITY
+14. Switch to Standard interface. Confirm the established desktop Quartermaster two-column layout remains unchanged.
+
+REGRESSION
+15. Return to Geoscape/Base and confirm Browser 2141 cohabitation behavior remains intact.
+16. Confirm saves remain save format 4.

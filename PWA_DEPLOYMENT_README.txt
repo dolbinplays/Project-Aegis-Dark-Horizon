@@ -1,5 +1,5 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND — PWA DEPLOYMENT
-Build: v0.26.09.07.2141_MOBILE_COMMAND_WINDOWS_AND_PLACEMENT_COHABITATION_PATCH
+Build: v0.26.09.07.2258_MOBILE_QUARTERMASTER_INVENTORY_ADAPTIVE_LAYOUT_PATCH
 
 BUILD FROM SOURCE
 1. Edit src/browser-runtime.html for game changes and tools/package-runtime-shell.cjs for host/PWA changes.
@@ -29,3 +29,5 @@ Browser 1258 note: the service-worker cache key advances for the Terminator/audi
 
 Browser 2059 note: Mobile · Adaptive Assign Objectives now owns an explicit z-index 10010 above tactical chrome; the service-worker cache key advances so installed PWAs receive the modal-layer fix.
 Browser 2141 note: Mobile Orders/Assign Objectives and strategic/base placement sheets use adaptive viewport cohabitation; the service-worker cache key advances so installed PWAs receive the new layouts.
+
+Browser 2258 note: Mobile · Adaptive Quartermaster now uses a fixed phone/tablet viewport with internally scrolling Stores, Loadout, Upgrades, and Status sections. Service-worker caches advance so installed PWAs receive the layout.

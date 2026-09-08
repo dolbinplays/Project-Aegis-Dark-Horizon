@@ -1,3 +1,29 @@
+BUILD: v0.26.09.07.2258_MOBILE_QUARTERMASTER_INVENTORY_ADAPTIVE_LAYOUT_PATCH
+TITLE: Mobile Quartermaster / Inventory Adaptive Layout
+DATE: September 7, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.07.2141_MOBILE_COMMAND_WINDOWS_AND_PLACEMENT_COHABITATION_PATCH
+
+Summary
+- Continues the systematic Mobile · Adaptive screen pass with Quartermaster / Base Stores.
+- Keeps the complete Quartermaster workflow inside the phone/tablet viewport and adds a compact soldier loadout counter without changing inventory authority.
+
+Key changes
+- Mobile Quartermaster is fixed between the existing independently scrolling command rails; the entire command page no longer vertically scrolls.
+- A four-way mobile command strip switches between Stores, Loadout, Upgrades, and Status. Each section scrolls internally.
+- Loadout reuses the existing selected-base soldier roster and authoritative equipFromInventory, removeEquipmentFromSoldier, and changeSoldierMedkit paths. Players can select a local living soldier, inspect current weapon/armor/Medkit, return equipment, and equip locally stocked weapons/armor.
+- Base Stores keeps the existing buy, sell, transfer, inbound/outbound logistics, research-lock, storage-capacity, and Workshop-order behavior.
+- Long item descriptions collapse behind a Details disclosure on phones; stock cards and controls use larger touch targets. Tablet widths expand the Stores grid to two columns.
+- Standard/Desktop Quartermaster layout is unchanged. Save format remains 4.
+
+Validation
+- Runtime executable JavaScript syntax passes.
+- Static contracts cover fixed Mobile Quartermaster viewport ownership, section switching, loadout action reuse, phone Details disclosure, tablet two-column stores, and save format 4.
+- Host/runtime payload identity, service-worker cache version, release hashes, and ZIP integrity are release gates.
+- Physical phone/tablet touch and readability remain field acceptance checks.
+
+---
+
 BUILD: v0.26.09.07.2141_MOBILE_COMMAND_WINDOWS_AND_PLACEMENT_COHABITATION_PATCH
 TITLE: Mobile Command Windows + Placement Cohabitation
 DATE: September 7, 2026

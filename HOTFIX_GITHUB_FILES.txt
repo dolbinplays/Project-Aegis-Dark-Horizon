@@ -1,4 +1,4 @@
-PROJECT AEGIS 2141 MOBILE UI PATCH — GITHUB OVERLAY FILES
+PROJECT AEGIS 2258 MOBILE QUARTERMASTER PATCH — GITHUB OVERLAY FILES
 
 Functional files to replace/upload:
 - index.html
@@ -11,10 +11,10 @@ Documentation/QA files updated in this patch:
 - CODEX_HANDOFF.md
 - PWA_DEPLOYMENT_README.txt
 - Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
-- MOBILE_COMMAND_WINDOWS_AND_PLACEMENT_FIELD_ACCEPTANCE.txt
+- MOBILE_QUARTERMASTER_FIELD_ACCEPTANCE.txt
 
-manifest.webmanifest is unchanged and is included only for deployment convenience.
+manifest.webmanifest is unchanged and is included for deployment convenience.
 Existing assets/ are unchanged.
 
 Canonical source-manifest note:
-- If your repository release checks use src/manifest.json, synchronize currentBuild, lastInspectedBuild, and gameplayParity.browserBuild to v0.26.09.07.2141_MOBILE_COMMAND_WINDOWS_AND_PLACEMENT_COHABITATION_PATCH and set the status to mobile-command-windows-and-placement-cohabitation-patch-complete.
+- If your repository release checks use src/manifest.json, synchronize currentBuild, lastInspectedBuild, and gameplayParity.browserBuild to v0.26.09.07.2258_MOBILE_QUARTERMASTER_INVENTORY_ADAPTIVE_LAYOUT_PATCH and set status to mobile-quartermaster-inventory-adaptive-layout-patch-complete.

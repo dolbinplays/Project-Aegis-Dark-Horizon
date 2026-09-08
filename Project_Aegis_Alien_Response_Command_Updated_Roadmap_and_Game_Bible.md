@@ -1,8 +1,20 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.07.2141_MOBILE_COMMAND_WINDOWS_AND_PLACEMENT_COHABITATION_PATCH`
+Current browser build: `v0.26.09.07.2258_MOBILE_QUARTERMASTER_INVENTORY_ADAPTIVE_LAYOUT_PATCH`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 2258: Mobile Quartermaster / Inventory Adaptive Layout
+
+- Continues the systematic **Mobile · Adaptive** phone/tablet pass with Quartermaster / Base Stores.
+- The Quartermaster command page is fixed to the device viewport between the established independently scrolling command rails; the whole screen no longer needs to scroll.
+- A compact mobile command strip switches between **Stores**, **Loadout**, **Upgrades**, and **Status**, each with its own bounded internal scrolling.
+- **Loadout Counter** lets the player select a living soldier stationed at the selected base, inspect current weapon/armor/Medkit state, return issued equipment, and equip locally stocked weapons/armor through the existing authoritative inventory functions.
+- **Stores** retains the existing buy/sell/transfer/logistics authority. Long phone item descriptions move behind a Details disclosure; touch targets are enlarged. Tablet layouts expand the item grid to two columns.
+- Weapon Upgrade Bench, funds, Base Stores capacity, issued quantities, transfer fees/cancellation, research locks, and base-local inventory ownership are unchanged.
+- Standard/Desktop Quartermaster retains the established two-column presentation. Save format remains **4**.
+- **Next systematic Mobile · Adaptive target:** Mainframe Database, followed by Soldiers/Barracks.
+
 
 ## Current Build Addendum — Browser 2141: Mobile Command Windows + Placement Cohabitation
 

@@ -1,3 +1,29 @@
+# CODEX HANDOFF — v0.26.09.07.2258_MOBILE_QUARTERMASTER_INVENTORY_ADAPTIVE_LAYOUT_PATCH
+
+## Patch focus
+
+Third systematic strategic-screen Mobile · Adaptive pass after Geoscape and Base: make Quartermaster / Base Stores comfortable on a tall phone while scaling cleanly to tablets and preserving Standard/Desktop.
+
+## Implemented
+
+- Mobile Quartermaster command root is fixed to the device viewport between the established scrollable rails.
+- Compact mobile section strip: **Stores / Loadout / Upgrades / Status**.
+- Each section owns bounded vertical scrolling; the command page itself does not scroll.
+- Loadout Counter selects a living soldier stationed at the selected base and reuses existing `equipFromInventory`, `removeEquipmentFromSoldier`, and `changeSoldierMedkit` authority.
+- Stores retains buy/sell/transfer/logistics behavior. Phone item cards collapse long descriptions behind Details; touch targets are enlarged.
+- Tablet Stores uses a two-column stock-card layout.
+- Standard/Desktop keeps the existing two-column Quartermaster screen.
+
+## Authority preserved
+
+No changes to inventory counts, base-local ownership, storage capacity, prices, transfer fees/timing/cancellation, research locks, Workshop manufacture rules, soldier equipment state, campaign state, or save format. Save format remains 4.
+
+## Next mobile target
+
+Mainframe Database, then Soldiers/Barracks after Quartermaster field acceptance.
+
+---
+
 # CODEX HANDOFF — v0.26.09.07.2141_MOBILE_COMMAND_WINDOWS_AND_PLACEMENT_COHABITATION_PATCH
 
 ## Patch focus
