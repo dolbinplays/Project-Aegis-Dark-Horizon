@@ -1,9 +1,9 @@
 Build: v0.26.09.08.1241_MOBILE_SOLDIERS_BARRACKS_ADAPTIVE_LAYOUT_PATCH
 Base commit: 12b5c64 (0728 Mobile Mainframe Database)
 Save format: 4
-Runtime bytes: 6699827
-Runtime SHA-256: d9cffecee655bb92eb405a931bb4fa6e82d1d844afc89a66f1e09841da806c71
-Host SHA-256: 009f5b9984e4aa1af95f3bec7c6b1c816d4fba03f8661cd23909215d7a57c231
+Runtime bytes: 6700665
+Runtime SHA-256: 35427d89163ab316cead50856b854f4be40531a29b87860f5126cd622829ee38
+Host SHA-256: c4e887c97bbd9a11f1a0c6563bf522203dd408e5fc409e7c8eda793738ad43d8
 
 Automated checks
 - Canonical packaging: PASS; source manifest, embedded runtime, release hashes, and both offline cache versions synchronized.
@@ -17,6 +17,7 @@ Automated checks
 - Compared the pre-patch Barracks overview and roster expressions with the new component inputs: identical, including every existing personnel callback.
 
 Browser verification
+- Barracks disclosure follow-up: dossier-only, stats-only, both-open, and both-closed choices persist independently when selecting another soldier. Verified at 844x390 and through Back to roster at 390x844, Base / Recruiting navigation, and changing bases. Explicitly closing either section persists on subsequent selections.
 - Real disposable campaign, 844x390 and 667x375: Mobile opens through the Soldiers rail; roster and selected dossier fit between rails with independent scrolling and no horizontal overflow. Only one full SoldierCard mounts.
 - Real campaign: Remove Weapon returned one Ballistic Rifle to local stock; Equip consumed it and restored the weapon. Specialization changed to Medic and downtime to Standby; sorting retained the selected soldier and current actions.
 - Real campaign: Base / Recruiting admitted a pending three-day recruit and updated projected personnel from 11/12 to 12/12. The panel retained downtime, stock, and recruitment information.

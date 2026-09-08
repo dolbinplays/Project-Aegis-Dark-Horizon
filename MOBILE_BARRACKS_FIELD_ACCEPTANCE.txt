@@ -6,7 +6,7 @@ Browser viewport checks are complete. These checks remain for actual phones/tabl
 1. Choose Mobile · Adaptive on the start screen, load a disposable campaign, and open Soldiers.
 2. Hold the phone landscape. Check that both command rails remain usable and that the roster and selected soldier fit between them. Scroll each pane independently with a thumb.
 3. Open a soldier's dossier and stats, then reach the bottom actions without horizontal scrolling. Check a long name/callsign and an overflow recovery patient if available.
-4. Change roster sort, choose another soldier, rotate portrait, and use Back to roster. Confirm focus/position returns to the selected row. Rotate landscape again.
+4. Open dossier only, stats only, then both, changing soldiers after each choice. Each section should retain its choice until explicitly toggled. Repeat through Base / Recruiting and base changes. Change roster sort, choose another soldier, rotate portrait, and use Back to roster. Confirm focus/position returns to the selected row. Rotate landscape again.
 5. Use the Base selector with a second base, including an empty base. Confirm only that base's Barracks soldiers appear and the previous soldier's actions close.
 6. Exercise equipment issue/return, specialization, downtime, callsign, and squad controls in the disposable campaign. Verify local stock and soldier changes agree with Quartermaster/Squads.
 7. Open Base / Recruiting. Check recruitment, arrivals, personnel capacity, downtime status, and logistics can be scrolled into view.

@@ -8,6 +8,7 @@ Current save format: `4`
 
 - Mobile Barracks fits between the command rails with a compact local roster beside one selected soldier on landscape phones and larger tablets.
 - Narrow screens show the roster or selected soldier with a persistent Back to roster control. Roster and soldier details scroll independently.
+- Dossier and Show Stats open/closed choices carry independently across soldier selection, Back to roster, base changes, and Base / Recruiting navigation within Barracks.
 - Base and sort selectors stay above the roster. Base / Recruiting opens the existing personnel status, recruitment, downtime, stock, and logistics controls in a scrollable panel.
 - Both layouts reuse the existing soldier cards and personnel actions. Transfers, recovery changes, and base switches clear unavailable selections.
 - Standard retains its existing Barracks grid. Tactical AI, inventory ownership, personnel rules, and save format 4 are unchanged.
