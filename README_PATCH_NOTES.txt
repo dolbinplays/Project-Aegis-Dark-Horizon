@@ -1,3 +1,20 @@
+BUILD: v0.26.09.08.0728_MOBILE_MAINFRAME_DATABASE_ADAPTIVE_LAYOUT_PATCH
+TITLE: Mobile Mainframe Database Adaptive Layout
+DATE: September 8, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.07.2330_MOBILE_COMMAND_LAYOUT_REVIEW_FIX_PATCH
+
+- Mainframe uses a bounded mobile workspace between the existing command rails, with compact green CRT styling.
+- Species and Research / Materiel buttons switch between available records. Landscape phones from 600px wide and larger tablets show the index beside the selected file; narrow screens show an index or a file with a persistent Back to index control.
+- Index and file content scroll independently. Selecting a different file starts at the top; Back restores keyboard focus to the selected index entry.
+- A shared presentation index applies the existing species/autopsy, completed-research, manufactured-equipment, recovered-equipment, and observed-beacon visibility rules for both layouts.
+- A stable memoized component avoids rebuilding the database on unrelated strategic ticks. The Standard layout keeps its existing panels, cards, text, and green terminal presentation.
+- Tactical AI, inventory ownership, research progression, and save format 4 are unchanged.
+
+Validation: see VALIDATION_SUMMARY.txt. Reusable empty/populated and Standard/Mobile fixtures are available through tools/mobile-interface-qa.html?database. Physical phone/tablet field checks are listed in MOBILE_MAINFRAME_FIELD_ACCEPTANCE.txt.
+
+---
+
 BUILD: v0.26.09.07.2330_MOBILE_COMMAND_LAYOUT_REVIEW_FIX_PATCH
 TITLE: Mobile Command Layout Review Fix
 DATE: September 7, 2026

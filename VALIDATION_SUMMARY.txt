@@ -1,36 +1,41 @@
-Build: v0.26.09.07.2330_MOBILE_COMMAND_LAYOUT_REVIEW_FIX_PATCH
-Reviewed base: df100d2 (2258), including patches 2059 and 2141 since c33bc1c (1925).
+Build: v0.26.09.08.0728_MOBILE_MAINFRAME_DATABASE_ADAPTIVE_LAYOUT_PATCH
+Base commit: ee04be1 (2330 Mobile Command Layout Review Fix)
 Save format: 4
-Runtime bytes: 6677981
-Runtime SHA-256: 47264e94bd983e80d92661f73865e70f7eae09c29184a631066716b9e899a671
-Host SHA-256: fe484a01bd69a436433cf1de7dfcc37bb7052a58c51b68a0b3eab5f682fccdb4
+Runtime bytes: 6690213
+Runtime SHA-256: 851fe77dae9aa70d8a504520625b3b45b905f180681b2a64c63a5877a54a6db0
+Host SHA-256: 68f1a83dd8a37df5e3c9ef934c279ccba1acbc4b8c25acb40a9f662703d73f58
 
-Final automated checks
-- node tools/package-runtime-shell.cjs: PASS; host, embedded runtime, hashes, and both service-worker cache versions regenerated from canonical source.
-- node tools/check-embedded-js.cjs: PASS (9 non-empty script blocks across 4 HTML files).
-- node tools/check-aegis-build.cjs: PASS, including manifest identity, payload/hash parity, immutable patch history, and release seams.
-- node --test tools/test-mobile-pwa-regressions.cjs: PASS (9/9).
+Automated checks
+- Canonical packaging: PASS; source manifest, embedded runtime, release hashes, and both offline cache versions synchronized.
+- node tools/check-embedded-js.cjs: PASS (9 non-empty blocks across 4 HTML files).
+- node tools/check-aegis-build.cjs: PASS.
+- node --test tools/test-mainframe-database.cjs tools/test-mobile-pwa-regressions.cjs: PASS (15/15).
 - node tools/test-mobile-interface.cjs: PASS (9/9).
 - node tools/test-ai-playback-sequencer.cjs: PASS (16/16).
-- Both mobile-interface-qa.html and ai-stream-qa.html inline scripts compile: PASS.
+- Mobile QA harness inline JavaScript syntax: PASS.
 - git diff --check: PASS.
 
-Browser verification of the layout fixes
-- 844x390 Mobile Orders: outer dialog and header have no vertical overflow; map fits the available area; sidebar scrolls independently. A map tap issued a real order to hex 45,48; Clear Order, Pause, and Close remained visible.
-- 390x844 Mobile Orders: dialog remains within the viewport; map and scrollable sidebar remain visible; Close is reachable.
-- Eight-team objective fixture at 390x844 and 844x390: scrollable team list with persistent footer; modal layer 10010; footer hit tests reached Default, Cancel, and Apply. Selecting a beacon objective and applying reported the expected team choice; Default cleared choices and Cancel closed the fixture.
-- 390x844 facility authorization: panel scrollWidth equals clientWidth (171px), eliminating the previous sideways overflow. Full 175x175px Base grid remains visible to the left of the 187px confirmation sheet.
-- Quartermaster phone Stores/Loadout: selected-base soldier list, weapon return into stock, and re-equipping a Ballistic Rifle worked.
-- Build Health before/after the layout fixes: 803/865 both times; exactly the same 62 pre-existing failures, with no new failures. Final follow-up edits only compact the construction heading and restore historical patch notes; release and syntax checks were rerun afterward.
+Mainframe behavioral coverage
+- Empty campaigns expose no hidden species, advanced research, equipment, or beacon records.
+- Identified species retain their image/field record while autopsy-only intelligence stays locked.
+- Completed research and manufactured equipment retain their existing technology requirements.
+- Recovered alien equipment retains stock-or-research gates; ordinary starting equipment does not become an unlocked database file.
+- Beacon details require confirmed observation and do not reveal unknown defensive adaptations.
+- Building display records does not mutate campaign collections.
 
-Review findings
-- Superseded mobile Orders CSS forced a block dialog and a 65dvh map; the resulting command workspace extended below a short landscape viewport.
-- Generic mobile modal rules outranked the dedicated command, objective, and facility sheet dimensions.
-- Source manifest remained on patch 1925 after patches 2059/2141/2258, breaking canonical packaging and release checks.
-- Patch 2258 replaced the current patch-history record without retaining patch 2141. Its original record is restored from commit 8e26709, and the release checker now requires the reviewed historical entries.
+Browser verification
+- 844x390 and 667x375: index and detail remain side by side between the command rails, without outer or horizontal overflow. A long beacon file and the 39-file research/materiel index scroll independently.
+- Selecting another file resets detail scrolling to the top; the Alien Power Cell equipment file rendered correctly after scrolling the beacon file.
+- 390x844: selected-file view replaces the index and keeps Back visible. Back restores the index's scroll position and keyboard focus to the selected entry. Rotation preserves the selected record.
+- 1024x768 and 768x1024: tablet index/detail panes remain bounded with no horizontal overflow.
+- Populated fixture: four identified species, including one without an autopsy; pending intelligence stayed locked. Empty species and research/materiel states both displayed guidance.
+- Standard at 1280x800: original two-column panels remained visible; opening an autopsied species and returning to the index worked.
+- Real campaign: selected Mobile at startup, opened Mainframe through the command rail, entered Menu / Save, selected Standard, and returned to the classic CRT-86 Mainframe. Mobile workspace was removed correctly.
 
-AI stall follow-up
-Patch 2059's hidden objective-decision fix is retained. No independent AI planning/playback deadlock was reproduced. No AI, inventory, campaign, or save-format authority was changed.
+Build Health
+Final deterministic browser run: 803/865, with exactly the same 62 pre-existing failures and no added or resolved failures relative to the prior baseline.
+The grenade/beacon doctrine diagnostic was updated to follow the extracted Mainframe component and shared knowledge gate. Its tactical behavior checks were retained.
 
-Limits
-Browser viewport checks are not physical phone/tablet field acceptance. Physical touch/readability and a complete on-device mission remain untested here. The broad Build Health suite still contains the 62 existing failures listed above by count; this patch does not claim to resolve them.
+Release scope and limits
+No tactical AI, inventory ownership, research progression, campaign persistence, or save-format changes. Mainframe selection and scrolling are presentation state only.
+Browser viewport checks are complete; physical phone/tablet touch, installed-PWA behavior, and extended campaign field acceptance remain to be performed using MOBILE_MAINFRAME_FIELD_ACCEPTANCE.txt.

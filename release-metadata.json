@@ -1,7 +1,7 @@
 {
-  "build": "v0.26.09.07.2330_MOBILE_COMMAND_LAYOUT_REVIEW_FIX_PATCH",
+  "build": "v0.26.09.08.0728_MOBILE_MAINFRAME_DATABASE_ADAPTIVE_LAYOUT_PATCH",
   "save_format": 4,
-  "runtime_bytes": 6677981,
-  "runtime_sha256": "47264e94bd983e80d92661f73865e70f7eae09c29184a631066716b9e899a671",
-  "host_sha256": "fe484a01bd69a436433cf1de7dfcc37bb7052a58c51b68a0b3eab5f682fccdb4"
+  "runtime_bytes": 6690213,
+  "runtime_sha256": "851fe77dae9aa70d8a504520625b3b45b905f180681b2a64c63a5877a54a6db0",
+  "host_sha256": "68f1a83dd8a37df5e3c9ef934c279ccba1acbc4b8c25acb40a9f662703d73f58"
 }

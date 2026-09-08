@@ -1,8 +1,18 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.07.2330_MOBILE_COMMAND_LAYOUT_REVIEW_FIX_PATCH`
+Current browser build: `v0.26.09.08.0728_MOBILE_MAINFRAME_DATABASE_ADAPTIVE_LAYOUT_PATCH`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 0728 (September 8): Mobile Mainframe Database
+
+- Mainframe uses a bounded mobile workspace between the existing command rails, with compact green CRT styling.
+- Species and Research / Materiel buttons switch between available records. Landscape phones from 600px wide and larger tablets show the index beside the selected file; narrow screens show an index or a file with a persistent Back to index control.
+- Index and file content scroll independently. Selecting a different file starts at the top; Back restores keyboard focus to the selected index entry.
+- A shared presentation index applies the existing species/autopsy, completed-research, manufactured-equipment, recovered-equipment, and observed-beacon visibility rules for both layouts.
+- A stable memoized component avoids rebuilding the database on unrelated strategic ticks. The Standard layout keeps its existing panels, cards, text, and green terminal presentation.
+- Tactical AI, inventory ownership, research progression, and save format 4 are unchanged.
+- Next systematic mobile target is Soldiers/Barracks. Physical-device acceptance remains a separate check.
 
 ## Current Build Addendum — Browser 2330: Mobile Command Layout Review Fix
 

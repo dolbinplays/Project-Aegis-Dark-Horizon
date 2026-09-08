@@ -1,9 +1,8 @@
-PROJECT AEGIS 2330 MOBILE COMMAND REVIEW FIX — CHANGED FILES
+PROJECT AEGIS 0728 MOBILE MAINFRAME DATABASE — CHANGED FILES
 
 Functional release files (keep together):
 - src/browser-runtime.html
 - src/manifest.json
-- tools/check-aegis-build.cjs
 - index.html
 - service-worker.js
 - release-metadata.json
@@ -15,7 +14,9 @@ Documentation and QA:
 - Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
 - VALIDATION_SUMMARY.txt
 - HOTFIX_GITHUB_FILES.txt
+- MOBILE_MAINFRAME_FIELD_ACCEPTANCE.txt
 - tools/mobile-interface-qa.html
+- tools/test-mainframe-database.cjs
 
-Build with the existing tools/package-runtime-shell.cjs, then run tools/check-embedded-js.cjs, tools/check-aegis-build.cjs, and the focused mobile/PWA/playback tests. src/manifest.json is a required part of this release; it is already synchronized to v0.26.09.07.2330_MOBILE_COMMAND_LAYOUT_REVIEW_FIX_PATCH.
-Existing assets and manifest.webmanifest are unchanged.
+Use the existing tools/package-runtime-shell.cjs and run the build, syntax, Mainframe, mobile, PWA/audio, and playback checks. Source manifest is synchronized to v0.26.09.08.0728_MOBILE_MAINFRAME_DATABASE_ADAPTIVE_LAYOUT_PATCH.
+Existing assets, manifest.webmanifest, and packaging tool are unchanged.

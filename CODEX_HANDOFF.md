@@ -1,3 +1,22 @@
+# CODEX HANDOFF — v0.26.09.08.0728_MOBILE_MAINFRAME_DATABASE_ADAPTIVE_LAYOUT_PATCH
+
+Completed the next systematic Mobile · Adaptive screen: Mainframe Database.
+
+- Mainframe uses a bounded mobile workspace between the existing command rails, with compact green CRT styling.
+- Species and Research / Materiel buttons switch between available records. Landscape phones from 600px wide and larger tablets show the index beside the selected file; narrow screens show an index or a file with a persistent Back to index control.
+- Index and file content scroll independently. Selecting a different file starts at the top; Back restores keyboard focus to the selected index entry.
+- A shared presentation index applies the existing species/autopsy, completed-research, manufactured-equipment, recovered-equipment, and observed-beacon visibility rules for both layouts.
+- A stable memoized component avoids rebuilding the database on unrelated strategic ticks. The Standard layout keeps its existing panels, cards, text, and green terminal presentation.
+- Tactical AI, inventory ownership, research progression, and save format 4 are unchanged.
+
+Implementation: MainframeDatabaseScreen and mainframeDatabaseIndex are module-scope runtime functions. The campaign renders MemoizedMainframeDatabaseScreen with existing state and selection callbacks. No new campaign or device-persistence fields were added.
+
+Test commands: node --test tools/test-mainframe-database.cjs; node --test tools/test-mobile-pwa-regressions.cjs; node tools/test-mobile-interface.cjs; node tools/test-ai-playback-sequencer.cjs; node tools/check-embedded-js.cjs; node tools/check-aegis-build.cjs. Package only through node tools/package-runtime-shell.cjs after synchronizing src/manifest.json.
+
+See VALIDATION_SUMMARY.txt for browser checks and the existing Build Health baseline. Next mobile target: Soldiers/Barracks, after field acceptance of Mainframe.
+
+---
+
 # CODEX HANDOFF — v0.26.09.07.2330_MOBILE_COMMAND_LAYOUT_REVIEW_FIX_PATCH
 
 Reviewed browser patches 2059, 2141, and 2258 against patch 1925. Fixed Orders clipping on short landscape phones, generic mobile modal CSS overriding dedicated sheets, construction-sheet horizontal overflow, and a stale src/manifest.json that broke the canonical release checks.

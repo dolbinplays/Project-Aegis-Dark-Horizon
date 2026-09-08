@@ -1,0 +1,14 @@
+PROJECT AEGIS — MOBILE MAINFRAME FIELD ACCEPTANCE
+Build: v0.26.09.08.0728_MOBILE_MAINFRAME_DATABASE_ADAPTIVE_LAYOUT_PATCH
+
+1. Select Mobile · Adaptive and open Mainframe Database in a real campaign.
+2. With the phone held in landscape, switch between Species and Research / Materiel. The index and selected file should fit between the side controls and scroll independently.
+3. Open enough records to reach the bottom of the index. Read a long file, choose another, and verify the new file starts at the top. Back to index should remain reachable.
+4. Rotate to portrait. The list should give way to the selected file; Back should restore the list. Rotate back without losing the selected record.
+5. Verify an identified species without an autopsy shows only the recovered image and pending-research notice. Its detailed intelligence should appear only after that autopsy is complete.
+6. Verify research/equipment records and Alien Field Beacon information match campaign knowledge; no unknown species or unfinished research details should appear.
+7. Try a new campaign with empty species and research records, then a late campaign with many files.
+8. Open Menu / Save and switch to Standard. Verify the existing two-panel desktop Database remains usable. Save and load the campaign normally.
+9. Repeat on a tablet, checking both orientations and browser/home-screen app modes.
+
+Developer fixtures: tools/mobile-interface-qa.html?database; add &empty or &layout=standard. Fixture browsing does not write campaign saves.
