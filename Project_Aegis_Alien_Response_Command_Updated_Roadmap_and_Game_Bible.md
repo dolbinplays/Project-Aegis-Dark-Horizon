@@ -1,8 +1,17 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.07.2258_MOBILE_QUARTERMASTER_INVENTORY_ADAPTIVE_LAYOUT_PATCH`
+Current browser build: `v0.26.09.07.2330_MOBILE_COMMAND_LAYOUT_REVIEW_FIX_PATCH`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 2330: Mobile Command Layout Review Fix
+
+- Orders now fits landscape phone screens with a bounded map, scrolling sidebar, and visible action controls; superseded mobile sizing rules no longer override the command workspace.
+- Dedicated Orders, Assign Objectives, and facility authorization sheets take precedence over generic mobile modal styles. Objective decisions retain their explicit modal layer and persistent footer.
+- Construction confirmation wraps long text within its reserved width while keeping the Base grid visible.
+- Canonical source manifest, packaged host/runtime, release hashes, and PWA cache versions are synchronized. Inventory authority, tactical AI, Standard/Desktop layout, and save format 4 are unchanged.
+- Restored the missing in-game patch 2141 history entry and added a release check for the reviewed history.
+- Detailed verification and the pre-existing Build Health failures are recorded in VALIDATION_SUMMARY.txt.
 
 ## Current Build Addendum — Browser 2258: Mobile Quartermaster / Inventory Adaptive Layout
 

@@ -1,20 +1,21 @@
-PROJECT AEGIS 2258 MOBILE QUARTERMASTER PATCH — GITHUB OVERLAY FILES
+PROJECT AEGIS 2330 MOBILE COMMAND REVIEW FIX — CHANGED FILES
 
-Functional files to replace/upload:
-- index.html
+Functional release files (keep together):
 - src/browser-runtime.html
+- src/manifest.json
+- tools/check-aegis-build.cjs
+- index.html
 - service-worker.js
 - release-metadata.json
 
-Documentation/QA files updated in this patch:
+Documentation and QA:
 - README_PATCH_NOTES.txt
 - CODEX_HANDOFF.md
 - PWA_DEPLOYMENT_README.txt
 - Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
-- MOBILE_QUARTERMASTER_FIELD_ACCEPTANCE.txt
+- VALIDATION_SUMMARY.txt
+- HOTFIX_GITHUB_FILES.txt
+- tools/mobile-interface-qa.html
 
-manifest.webmanifest is unchanged and is included for deployment convenience.
-Existing assets/ are unchanged.
-
-Canonical source-manifest note:
-- If your repository release checks use src/manifest.json, synchronize currentBuild, lastInspectedBuild, and gameplayParity.browserBuild to v0.26.09.07.2258_MOBILE_QUARTERMASTER_INVENTORY_ADAPTIVE_LAYOUT_PATCH and set status to mobile-quartermaster-inventory-adaptive-layout-patch-complete.
+Build with the existing tools/package-runtime-shell.cjs, then run tools/check-embedded-js.cjs, tools/check-aegis-build.cjs, and the focused mobile/PWA/playback tests. src/manifest.json is a required part of this release; it is already synchronized to v0.26.09.07.2330_MOBILE_COMMAND_LAYOUT_REVIEW_FIX_PATCH.
+Existing assets and manifest.webmanifest are unchanged.

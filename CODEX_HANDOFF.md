@@ -1,3 +1,19 @@
+# CODEX HANDOFF — v0.26.09.07.2330_MOBILE_COMMAND_LAYOUT_REVIEW_FIX_PATCH
+
+Reviewed browser patches 2059, 2141, and 2258 against patch 1925. Fixed Orders clipping on short landscape phones, generic mobile modal CSS overriding dedicated sheets, construction-sheet horizontal overflow, and a stale src/manifest.json that broke the canonical release checks.
+
+Restored the missing in-game patch 2141 record from its original commit and extended the release checker to retain the 2059/2141/2258 records.
+
+Orders now has a bounded flex dialog, a map that fits its allocated space, and a separately scrollable sidebar. At short landscape heights the header hides explanatory prose and keeps selectors and action buttons in one row. Objective decisions retain their explicit 10010 layer and persistent footer. Facility authorization retains the visible 6x6 board and its portrait/tablet widths.
+
+The prior report of an entire AI turn apparently stopping has a documented cause in patch 2059: a required objective decision opened under mobile chrome. That fix is retained. No independent AI planning/playback deadlock was reproduced during this review, so no speculative AI authority changes were made.
+
+Release source of truth: update CURRENT_GAME_BUILD and all three src/manifest.json browser build fields together, then run node tools/package-runtime-shell.cjs. Do not treat the source manifest as an optional manual deployment step. See VALIDATION_SUMMARY.txt for the exact checks and known Build Health baseline.
+
+Next systematic mobile target remains Mainframe Database, then Soldiers/Barracks after field acceptance.
+
+---
+
 # CODEX HANDOFF — v0.26.09.07.2258_MOBILE_QUARTERMASTER_INVENTORY_ADAPTIVE_LAYOUT_PATCH
 
 ## Patch focus

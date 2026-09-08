@@ -1,16 +1,36 @@
-Build: v0.26.09.07.2258_MOBILE_QUARTERMASTER_INVENTORY_ADAPTIVE_LAYOUT_PATCH
+Build: v0.26.09.07.2330_MOBILE_COMMAND_LAYOUT_REVIEW_FIX_PATCH
+Reviewed base: df100d2 (2258), including patches 2059 and 2141 since c33bc1c (1925).
 Save format: 4
-Runtime bytes: 6675034
-Runtime SHA-256: cf979398e03453d8f0b0becb2db806ec3ca6eb16c6cbdbde610a042d1a8ce66c
-Host SHA-256: ebe9c63c15c2bd2f5ef28c10a72b2ef40ccd377b08af3e01d58744c7a9a2d1ec
-Runtime executable scripts syntax: PASS (5/5)
-Host executable scripts syntax: PASS (1/1)
-Service worker syntax: PASS
-Manifest JSON parse: PASS
-Embedded runtime payload identity: PASS
-Mobile Quartermaster fixed viewport: PASS (static seam)
-Stores / Loadout / Upgrades / Status sections: PASS (static seam)
-Authoritative equip/return/Medkit reuse: PASS (static seam)
-Phone Details disclosure + tablet two-column Stores: PASS (static seam)
-Current mutable patch-history entry: PASS (1)
-Physical phone/tablet field acceptance: NOT RUN in this environment
+Runtime bytes: 6677981
+Runtime SHA-256: 47264e94bd983e80d92661f73865e70f7eae09c29184a631066716b9e899a671
+Host SHA-256: fe484a01bd69a436433cf1de7dfcc37bb7052a58c51b68a0b3eab5f682fccdb4
+
+Final automated checks
+- node tools/package-runtime-shell.cjs: PASS; host, embedded runtime, hashes, and both service-worker cache versions regenerated from canonical source.
+- node tools/check-embedded-js.cjs: PASS (9 non-empty script blocks across 4 HTML files).
+- node tools/check-aegis-build.cjs: PASS, including manifest identity, payload/hash parity, immutable patch history, and release seams.
+- node --test tools/test-mobile-pwa-regressions.cjs: PASS (9/9).
+- node tools/test-mobile-interface.cjs: PASS (9/9).
+- node tools/test-ai-playback-sequencer.cjs: PASS (16/16).
+- Both mobile-interface-qa.html and ai-stream-qa.html inline scripts compile: PASS.
+- git diff --check: PASS.
+
+Browser verification of the layout fixes
+- 844x390 Mobile Orders: outer dialog and header have no vertical overflow; map fits the available area; sidebar scrolls independently. A map tap issued a real order to hex 45,48; Clear Order, Pause, and Close remained visible.
+- 390x844 Mobile Orders: dialog remains within the viewport; map and scrollable sidebar remain visible; Close is reachable.
+- Eight-team objective fixture at 390x844 and 844x390: scrollable team list with persistent footer; modal layer 10010; footer hit tests reached Default, Cancel, and Apply. Selecting a beacon objective and applying reported the expected team choice; Default cleared choices and Cancel closed the fixture.
+- 390x844 facility authorization: panel scrollWidth equals clientWidth (171px), eliminating the previous sideways overflow. Full 175x175px Base grid remains visible to the left of the 187px confirmation sheet.
+- Quartermaster phone Stores/Loadout: selected-base soldier list, weapon return into stock, and re-equipping a Ballistic Rifle worked.
+- Build Health before/after the layout fixes: 803/865 both times; exactly the same 62 pre-existing failures, with no new failures. Final follow-up edits only compact the construction heading and restore historical patch notes; release and syntax checks were rerun afterward.
+
+Review findings
+- Superseded mobile Orders CSS forced a block dialog and a 65dvh map; the resulting command workspace extended below a short landscape viewport.
+- Generic mobile modal rules outranked the dedicated command, objective, and facility sheet dimensions.
+- Source manifest remained on patch 1925 after patches 2059/2141/2258, breaking canonical packaging and release checks.
+- Patch 2258 replaced the current patch-history record without retaining patch 2141. Its original record is restored from commit 8e26709, and the release checker now requires the reviewed historical entries.
+
+AI stall follow-up
+Patch 2059's hidden objective-decision fix is retained. No independent AI planning/playback deadlock was reproduced. No AI, inventory, campaign, or save-format authority was changed.
+
+Limits
+Browser viewport checks are not physical phone/tablet field acceptance. Physical touch/readability and a complete on-device mission remain untested here. The broad Build Health suite still contains the 62 existing failures listed above by count; this patch does not claim to resolve them.

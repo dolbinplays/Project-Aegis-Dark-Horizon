@@ -1,3 +1,22 @@
+BUILD: v0.26.09.07.2330_MOBILE_COMMAND_LAYOUT_REVIEW_FIX_PATCH
+TITLE: Mobile Command Layout Review Fix
+DATE: September 7, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.07.2258_MOBILE_QUARTERMASTER_INVENTORY_ADAPTIVE_LAYOUT_PATCH
+
+Review scope: patches 2059, 2141, and 2258 since patch 1925.
+- Removed superseded command-map sizing rules that made the Orders dialog a block layout and clipped its map below a landscape phone viewport.
+- Dedicated command, objective, and construction sheets now outrank the generic mobile modal fallback. Orders keeps a bounded map and independently scrolling sidebar. Short landscape headers keep order controls and Close/Pause visible.
+- Construction authorization uses its reserved sheet width and wraps long text without horizontal overflow; the 6x6 Base grid remains visible.
+- Restored the source manifest to the current build and regenerated the host payload, release hashes, and both offline cache versions with the canonical packager.
+- Restored patch 2141 to the in-game version history after patch 2258 replaced its record; the release checker now requires the reviewed historical entries.
+- Added an eight-team objective-sheet fixture to tools/mobile-interface-qa.html?objectives for scrolling, layering, and button checks.
+- Standard/Desktop layout, inventory actions, tactical AI rules, and save format 4 are unchanged.
+
+Validation results are recorded in VALIDATION_SUMMARY.txt. Physical-device field acceptance remains outstanding.
+
+---
+
 BUILD: v0.26.09.07.2258_MOBILE_QUARTERMASTER_INVENTORY_ADAPTIVE_LAYOUT_PATCH
 TITLE: Mobile Quartermaster / Inventory Adaptive Layout
 DATE: September 7, 2026

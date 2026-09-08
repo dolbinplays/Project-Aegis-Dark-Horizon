@@ -1,7 +1,7 @@
 {
-  "build": "v0.26.09.07.2258_MOBILE_QUARTERMASTER_INVENTORY_ADAPTIVE_LAYOUT_PATCH",
+  "build": "v0.26.09.07.2330_MOBILE_COMMAND_LAYOUT_REVIEW_FIX_PATCH",
   "save_format": 4,
-  "runtime_bytes": 6675034,
-  "runtime_sha256": "cf979398e03453d8f0b0becb2db806ec3ca6eb16c6cbdbde610a042d1a8ce66c",
-  "host_sha256": "ebe9c63c15c2bd2f5ef28c10a72b2ef40ccd377b08af3e01d58744c7a9a2d1ec"
+  "runtime_bytes": 6677981,
+  "runtime_sha256": "47264e94bd983e80d92661f73865e70f7eae09c29184a631066716b9e899a671",
+  "host_sha256": "fe484a01bd69a436433cf1de7dfcc37bb7052a58c51b68a0b3eab5f682fccdb4"
 }
