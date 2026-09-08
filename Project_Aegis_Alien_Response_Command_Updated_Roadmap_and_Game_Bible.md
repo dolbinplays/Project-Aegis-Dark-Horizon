@@ -1,8 +1,18 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.08.0728_MOBILE_MAINFRAME_DATABASE_ADAPTIVE_LAYOUT_PATCH`
+Current browser build: `v0.26.09.08.1241_MOBILE_SOLDIERS_BARRACKS_ADAPTIVE_LAYOUT_PATCH`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 1241 (September 8): Mobile Soldiers / Barracks
+
+- Mobile Barracks fits between the command rails with a compact local roster beside one selected soldier on landscape phones and larger tablets.
+- Narrow screens show the roster or selected soldier with a persistent Back to roster control. Roster and soldier details scroll independently.
+- Base and sort selectors stay above the roster. Base / Recruiting opens the existing personnel status, recruitment, downtime, stock, and logistics controls in a scrollable panel.
+- Both layouts reuse the existing soldier cards and personnel actions. Transfers, recovery changes, and base switches clear unavailable selections.
+- Standard retains its existing Barracks grid. Tactical AI, inventory ownership, personnel rules, and save format 4 are unchanged.
+
+Only the selected full SoldierCard mounts in Mobile; compact roster entries avoid rendering every dossier and action panel. Selection and scroll state are presentation-only. Browser QA includes landscape phones, portrait fallback, tablets, base isolation, recovery removal, and transfer-dialog reachability. Physical-device acceptance remains pending.
 
 ## Current Build Addendum — Browser 0728 (September 8): Mobile Mainframe Database
 

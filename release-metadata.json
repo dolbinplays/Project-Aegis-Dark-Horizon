@@ -1,7 +1,7 @@
 {
-  "build": "v0.26.09.08.0728_MOBILE_MAINFRAME_DATABASE_ADAPTIVE_LAYOUT_PATCH",
+  "build": "v0.26.09.08.1241_MOBILE_SOLDIERS_BARRACKS_ADAPTIVE_LAYOUT_PATCH",
   "save_format": 4,
-  "runtime_bytes": 6690213,
-  "runtime_sha256": "851fe77dae9aa70d8a504520625b3b45b905f180681b2a64c63a5877a54a6db0",
-  "host_sha256": "68f1a83dd8a37df5e3c9ef934c279ccba1acbc4b8c25acb40a9f662703d73f58"
+  "runtime_bytes": 6699827,
+  "runtime_sha256": "d9cffecee655bb92eb405a931bb4fa6e82d1d844afc89a66f1e09841da806c71",
+  "host_sha256": "009f5b9984e4aa1af95f3bec7c6b1c816d4fba03f8661cd23909215d7a57c231"
 }

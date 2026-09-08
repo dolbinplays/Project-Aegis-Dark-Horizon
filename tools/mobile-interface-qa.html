@@ -6,6 +6,7 @@
 // Default: two-soldier tactical fixture. ?health: deterministic Build Health.
 // ?objectives: a many-team decision sheet for viewport, layering, and action checks.
 // ?database[&empty][&layout=standard]: real Mainframe component with known/locked fixture records.
+// ?barracks[&empty][&layout=standard]: long local roster, recovery patient, and transfer dialog.
 // ?health&baseline: compare an earlier packaged host copied to /__mobile_baseline.html.
 const params=new URLSearchParams(location.search), frame=document.querySelector('#game'), result=document.querySelector('#result');
 frame.src=params.has('baseline')?'../__mobile_baseline.html':'../index.html?qa='+Date.now();
@@ -36,6 +37,24 @@ const ready=setInterval(()=>{
           w.React.createElement('div',{className:'mx-auto'},w.React.createElement(w.MainframeDatabaseScreen,{identifiedAliens:empty?[]:species,tech,gearInventory,alienFieldBeaconKnowledge:empty?'unknown':'confirmed',selectedDatabaseAlien:selected,setSelectedDatabaseAlien:setSelected})));
       }
       w.ReactDOM.createRoot(mount).render(w.React.createElement(DatabaseFixture));result.style.display='none';
+    }else if(params.has('barracks')){
+      w.writeAegisInterfaceLayout(params.get('layout')==='standard'?'standard':'mobile');
+      const game=w.makeNewGameData({openingIncidentSeed:12345}),origin={...game.bases[0],name:'QA Headquarters'},destination=w.initialBase({name:'QA Remote Base',region:'Europe'}),emptyBase=w.initialBase({name:'QA Empty Base',region:'Africa'}),bases=[origin,destination,emptyBase];
+      const initial=params.has('empty')?[]:Array.from({length:24},(_,i)=>({...game.soldiers[i%game.soldiers.length],id:'qa-soldier-'+i,name:i===0?'Alexandria Longname Montgomery':`QA Soldier ${String(i).padStart(2,'0')}`,callsign:'',baseId:i===23?destination.id:origin.id,status:i===22?'Overflow 5d':'Ready'}));
+      w.document.getElementById('root').style.display='none';
+      const mount=w.document.createElement('div');w.document.body.appendChild(mount);
+      function BarracksFixture(){
+        const [soldiers,setSoldiers]=w.React.useState(initial),[baseId,setBaseId]=w.React.useState(origin.id),[sortKey,setSort]=w.React.useState('name'),[lastAction,setLastAction]=w.React.useState(null),layout=w.useAegisInterfaceLayout(),noop=()=>{};
+        const selectedBase=bases.find(base=>base.id===baseId),local=w.sortBarracksSoldiers(soldiers.filter(s=>s.baseId===baseId),sortKey,game.tech);
+        const transfer=(soldierId,toBase)=>{setLastAction({type:'transfer',soldierId,toBase});setSoldiers(rows=>rows.filter(s=>s.id!==soldierId));};
+        const admit=soldierId=>{setLastAction({type:'admit',soldierId});setSoldiers(rows=>rows.filter(s=>s.id!==soldierId));};
+        result.textContent=JSON.stringify({baseId,sortKey,local:local.length,lastAction,layout});
+        const cards=local.map(soldier=>w.React.createElement(w.SoldierCard,{key:soldier.id,soldier,compact:true,showCombatPower:true,tech:game.tech,roster:soldiers,actions:String(soldier.status).startsWith('Overflow')?w.React.createElement('button',{onClick:()=>admit(soldier.id)},'Admit to Sickbay Bed'):w.React.createElement(w.SoldierTransferControls,{soldier,origin:selectedBase,bases,funds:2200,onConfirm:transfer})}));
+        return w.React.createElement('div',{'data-aegis-command-root':'true','data-aegis-active-tab':'soldiers'},
+          layout==='mobile'&&w.React.createElement(w.AegisMobileCommandRails,{tabs:[['geoscape',null,'Geoscape'],['base',null,'Base'],['inventory',null,'Quartermaster'],['database',null,'Mainframe Database'],['soldiers',null,'Soldiers']],tab:'soldiers',onTab:noop,onMenu:noop,onCommand:noop,onIncidents:noop,onUfos:noop,onPause:noop,onMute:noop}),
+          w.React.createElement('div',{className:'mx-auto'},w.React.createElement(w.BarracksScreen,{bases,selectedBase,onSelectBase:setBaseId,sortKey,onSort:setSort,overview:w.React.createElement('div',null,'Base personnel fixture'),roster:w.React.createElement('div',{className:'grid gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'},cards.length?cards:w.React.createElement('p',null,'No soldiers'))})));
+      }
+      w.ReactDOM.createRoot(mount).render(w.React.createElement(BarracksFixture));result.style.display='none';
     }else if(params.has('objectives')){
       w.writeAegisInterfaceLayout(params.get('layout')==='standard'?'standard':'mobile');
       const game=w.makeNewGameData({openingIncidentSeed:12345});

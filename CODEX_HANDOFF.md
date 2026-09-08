@@ -1,3 +1,21 @@
+# CODEX HANDOFF — v0.26.09.08.1241_MOBILE_SOLDIERS_BARRACKS_ADAPTIVE_LAYOUT_PATCH
+
+Completed the next Mobile · Adaptive screen: Soldiers / Barracks.
+
+- Mobile Barracks fits between the command rails with a compact local roster beside one selected soldier on landscape phones and larger tablets.
+- Narrow screens show the roster or selected soldier with a persistent Back to roster control. Roster and soldier details scroll independently.
+- Base and sort selectors stay above the roster. Base / Recruiting opens the existing personnel status, recruitment, downtime, stock, and logistics controls in a scrollable panel.
+- Both layouts reuse the existing soldier cards and personnel actions. Transfers, recovery changes, and base switches clear unavailable selections.
+- Standard retains its existing Barracks grid. Tactical AI, inventory ownership, personnel rules, and save format 4 are unchanged.
+
+Implementation: module-scope BarracksScreen receives the original overview and roster React elements from the campaign. Standard returns the original layout; Mobile renders lightweight roster buttons and only the selected existing SoldierCard. No personnel callbacks were copied or rewritten. Selection is temporary component state scoped to the selected base and currently supplied local cards.
+
+QA: tools/mobile-interface-qa.html?barracks[&empty][&layout=standard] supplies a long roster and multiple bases. The fixture's transfer/admission callbacks remove a row to exercise selection invalidation; it does not simulate campaign transfer authority. Real-campaign equipment, specialization, downtime, recruitment, and layout switching were checked separately.
+
+See VALIDATION_SUMMARY.txt for checks and the existing Build Health baseline. Package through node tools/package-runtime-shell.cjs after synchronizing src/manifest.json. Next mobile candidate: Research / Workshop, after field acceptance of Barracks.
+
+---
+
 # CODEX HANDOFF — v0.26.09.08.0728_MOBILE_MAINFRAME_DATABASE_ADAPTIVE_LAYOUT_PATCH
 
 Completed the next systematic Mobile · Adaptive screen: Mainframe Database.

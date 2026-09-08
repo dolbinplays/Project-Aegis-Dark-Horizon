@@ -1,9 +1,9 @@
-Build: v0.26.09.08.0728_MOBILE_MAINFRAME_DATABASE_ADAPTIVE_LAYOUT_PATCH
-Base commit: ee04be1 (2330 Mobile Command Layout Review Fix)
+Build: v0.26.09.08.1241_MOBILE_SOLDIERS_BARRACKS_ADAPTIVE_LAYOUT_PATCH
+Base commit: 12b5c64 (0728 Mobile Mainframe Database)
 Save format: 4
-Runtime bytes: 6690213
-Runtime SHA-256: 851fe77dae9aa70d8a504520625b3b45b905f180681b2a64c63a5877a54a6db0
-Host SHA-256: 68f1a83dd8a37df5e3c9ef934c279ccba1acbc4b8c25acb40a9f662703d73f58
+Runtime bytes: 6699827
+Runtime SHA-256: d9cffecee655bb92eb405a931bb4fa6e82d1d844afc89a66f1e09841da806c71
+Host SHA-256: 009f5b9984e4aa1af95f3bec7c6b1c816d4fba03f8661cd23909215d7a57c231
 
 Automated checks
 - Canonical packaging: PASS; source manifest, embedded runtime, release hashes, and both offline cache versions synchronized.
@@ -14,28 +14,23 @@ Automated checks
 - node tools/test-ai-playback-sequencer.cjs: PASS (16/16).
 - Mobile QA harness inline JavaScript syntax: PASS.
 - git diff --check: PASS.
-
-Mainframe behavioral coverage
-- Empty campaigns expose no hidden species, advanced research, equipment, or beacon records.
-- Identified species retain their image/field record while autopsy-only intelligence stays locked.
-- Completed research and manufactured equipment retain their existing technology requirements.
-- Recovered alien equipment retains stock-or-research gates; ordinary starting equipment does not become an unlocked database file.
-- Beacon details require confirmed observation and do not reveal unknown defensive adaptations.
-- Building display records does not mutate campaign collections.
+- Compared the pre-patch Barracks overview and roster expressions with the new component inputs: identical, including every existing personnel callback.
 
 Browser verification
-- 844x390 and 667x375: index and detail remain side by side between the command rails, without outer or horizontal overflow. A long beacon file and the 39-file research/materiel index scroll independently.
-- Selecting another file resets detail scrolling to the top; the Alien Power Cell equipment file rendered correctly after scrolling the beacon file.
-- 390x844: selected-file view replaces the index and keeps Back visible. Back restores the index's scroll position and keyboard focus to the selected entry. Rotation preserves the selected record.
-- 1024x768 and 768x1024: tablet index/detail panes remain bounded with no horizontal overflow.
-- Populated fixture: four identified species, including one without an autopsy; pending intelligence stayed locked. Empty species and research/materiel states both displayed guidance.
-- Standard at 1280x800: original two-column panels remained visible; opening an autopsied species and returning to the index worked.
-- Real campaign: selected Mobile at startup, opened Mainframe through the command rail, entered Menu / Save, selected Standard, and returned to the classic CRT-86 Mainframe. Mobile workspace was removed correctly.
+- Real disposable campaign, 844x390 and 667x375: Mobile opens through the Soldiers rail; roster and selected dossier fit between rails with independent scrolling and no horizontal overflow. Only one full SoldierCard mounts.
+- Real campaign: Remove Weapon returned one Ballistic Rifle to local stock; Equip consumed it and restored the weapon. Specialization changed to Medic and downtime to Standby; sorting retained the selected soldier and current actions.
+- Real campaign: Base / Recruiting admitted a pending three-day recruit and updated projected personnel from 11/12 to 12/12. The panel retained downtime, stock, and recruitment information.
+- Real campaign: Menu / Save switched back to Standard at 1280x800; all six cards rendered in the existing three-column roster and the mobile workspace was absent.
+- Long-roster fixture: 23 local soldiers, a remote soldier, and an empty base. Base selection showed only the supplied local roster and cleared the previous selected card. Empty-base guidance displayed correctly.
+- Long-name transfer dialog at 667x375: full viewport overlay at layer 12000, scrollable inner content, no horizontal overflow; Confirm Transfer remained reachable. The real SoldierTransferControls called the fixture callback with the correct soldier and destination IDs; row removal closed selected actions.
+- Recovery fixture: selecting the overflow patient and invoking admission removed the row and cleared its selected controls. Transfer and admission fixture callbacks model removal only; they do not exercise campaign transfer/recovery authority.
+- 390x844: selected dossier replaced the roster, Back remained visible, and Back restored focus and scroll position to the selected row. Expanded dossier and stats fit without horizontal overflow; measured buttons/selects/summaries were at least 44px high.
+- 1024x768, 768x1024, and 844x390: roster/detail panes remained visible, bounded, and free of horizontal overflow after rotation.
+- No browser error logs during fixture checks.
 
 Build Health
-Final deterministic browser run: 803/865, with exactly the same 62 pre-existing failures and no added or resolved failures relative to the prior baseline.
-The grenade/beacon doctrine diagnostic was updated to follow the extracted Mainframe component and shared knowledge gate. Its tactical behavior checks were retained.
+Deterministic browser run: 803/865, with exactly the same 62 pre-existing failures and no added or resolved failures relative to the established baseline. No Build Health diagnostics were changed.
 
 Release scope and limits
-No tactical AI, inventory ownership, research progression, campaign persistence, or save-format changes. Mainframe selection and scrolling are presentation state only.
-Browser viewport checks are complete; physical phone/tablet touch, installed-PWA behavior, and extended campaign field acceptance remain to be performed using MOBILE_MAINFRAME_FIELD_ACCEPTANCE.txt.
+Barracks presentation only. Existing personnel, inventory, recovery, and transfer authority, tactical AI, and save format 4 are unchanged. No persisted campaign fields were added.
+Physical phone/tablet touch, installed-PWA behavior, and extended campaign field acceptance remain to be performed using MOBILE_BARRACKS_FIELD_ACCEPTANCE.txt.
