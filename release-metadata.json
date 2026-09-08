@@ -1,7 +1,7 @@
 {
-  "build": "v0.26.09.07.2059_MOBILE_OBJECTIVE_ASSIGNMENT_MODAL_LAYERING_HOTFIX",
+  "build": "v0.26.09.07.2141_MOBILE_COMMAND_WINDOWS_AND_PLACEMENT_COHABITATION_PATCH",
   "save_format": 4,
-  "runtime_bytes": 6645208,
-  "runtime_sha256": "d51c7e5495b980757c427e7e51dfb715fcd93c61dfa8f1ae19c46cf784253ab7",
-  "host_sha256": "46caaf9cd8fbdbc3b2500b7a056ee29e3500c4a07daeac2d2a888a1fc53308aa"
+  "runtime_bytes": 6660603,
+  "runtime_sha256": "793c93ae64a53a75504af246b5824a224dcd7f15525ab6222fa58f2943aa4a3e",
+  "host_sha256": "46c23e26d4f3371f1a6ed5e311bc6d67d795d35eda46fd99a76d48b135d5529b"
 }

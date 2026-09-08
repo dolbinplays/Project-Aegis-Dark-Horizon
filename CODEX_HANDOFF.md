@@ -1,3 +1,28 @@
+# CODEX HANDOFF — v0.26.09.07.2141_MOBILE_COMMAND_WINDOWS_AND_PLACEMENT_COHABITATION_PATCH
+
+## Patch focus
+
+Continue the systematic Mobile · Adaptive interface pass without changing tactical or strategic authority. This release gives the tactical **Orders** and **Assign Objectives** workflows deliberate phone/tablet layouts and applies the established workspace-cohabitation rule to **New Base placement** and **facility construction confirmation**.
+
+## Implemented
+
+- **Orders / Hybrid Fire-Team Command Map:** map-first mobile command workspace with compact controls, bounded internal scrolling, phone roster reduction, and tablet map/sidebar split.
+- **Assign Objectives:** full-height mobile decision sheet with a compact header, horizontal known-objective strip, vertically scrolling fire-team assignments, and persistent action controls.
+- Browser 2059 modal layering remains authoritative: Assign Objectives stays above Mobile tactical chrome and below the higher-priority escort-support decision.
+- **New Base:** the placement drawer owns reserved right-side width; Globe/Terminator stays mounted, shifts left, and scales into the remaining selectable strategic workspace.
+- **Facility Build Confirmation:** confirmation becomes a right-side sheet over the Build region rather than a full-screen blocker. The 6x6 base board reserves the same width and remains visible/tappable for location verification.
+- Narrow portrait phone layouts may temporarily hide command rails while placement/authorization sheets are active; tablets keep more simultaneous chrome.
+
+## Authority preserved
+
+No changes to objective discovery semantics, Hybrid order semantics, Simulation AI, pathfinding, TU, LOS, fog, damage, facility costs/footprints, base-site coordinates, campaign state, or save data. Save format remains 4. Standard/Desktop presentation is unchanged.
+
+## Field gate
+
+Test at a 390x844-class portrait viewport and a representative tablet: Orders map interaction; Assign Objectives scrolling and Apply/Cancel; New Base selection at far planet edges with the drawer open; and facility confirmation while verifying the selected far-left/far-right/top/bottom tile remains visible on the 6x6 board. Repeat the Browser 2059 new-objective discovery flow under Mobile · Adaptive.
+
+---
+
 # CODEX HANDOFF — v0.26.09.07.2059_MOBILE_OBJECTIVE_ASSIGNMENT_MODAL_LAYERING_HOTFIX
 
 ## Patch focus

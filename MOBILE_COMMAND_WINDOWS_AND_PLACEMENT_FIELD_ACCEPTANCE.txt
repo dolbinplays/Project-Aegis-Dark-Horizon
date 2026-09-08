@@ -1,0 +1,21 @@
+PROJECT AEGIS — MOBILE COMMAND WINDOWS + PLACEMENT FIELD ACCEPTANCE
+Build: v0.26.09.07.2141_MOBILE_COMMAND_WINDOWS_AND_PLACEMENT_COHABITATION_PATCH
+Save format: 4
+
+PHONE — 390x844 / 1080x2340-CLASS PORTRAIT
+1. Select Mobile · Adaptive and enter a tactical mission. Open Orders. Confirm the command map is the primary workspace, all team/target/Pause/Close controls remain reachable, and the window does not require whole-page scrolling.
+2. Issue a leader waypoint near several map edges. Confirm taps correspond to the intended map hex and the active-order marker remains visible.
+3. Open Assign Objectives. Confirm known objectives scroll horizontally, fire-team assignment rows scroll vertically, and Default Logic / Cancel / Apply remain reachable at the bottom without the whole page escaping the viewport.
+4. Reproduce a newly discovered objective while Simulation AI is active. Confirm the Browser 2059 layering fix remains intact and the assignment board appears immediately.
+5. Return to Geoscape, open New Base, and confirm the complete Globe shifts/scales left rather than being hidden by the placement sheet. Select candidate sites near the left, right, top, and bottom of the visible globe.
+6. Repeat New Base placement on Terminator Map and confirm the complete map remains visible/tappable beside the sheet. Close/cancel placement and confirm the planet returns to normal size.
+7. Open Base > Build, select a facility, then tap a legal tile. Confirm the construction authorization occupies only the right-side Build region and the entire 6x6 board remains visible for location verification.
+8. Cancel, then repeat and Confirm Build on far-left, far-right, top, and bottom legal tiles where practical. Confirm the intended square is used.
+
+TABLET
+9. Repeat Orders and Assign Objectives. Orders should present the command map and side information simultaneously where width permits; objective rows/cards should use the extra space without becoming phone-sized islands.
+10. Repeat New Base and facility confirmation. The drawer/sheet should widen while preserving a useful primary planet/base-board workspace.
+
+STANDARD PARITY
+11. Switch to Standard controls and confirm Orders, Assign Objectives, New Base, and facility confirmation retain their existing desktop presentation.
+12. Confirm saves remain format 4 and existing campaign/tactical authority is unchanged.

@@ -1,5 +1,5 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND — PWA DEPLOYMENT
-Build: v0.26.09.07.2059_MOBILE_OBJECTIVE_ASSIGNMENT_MODAL_LAYERING_HOTFIX
+Build: v0.26.09.07.2141_MOBILE_COMMAND_WINDOWS_AND_PLACEMENT_COHABITATION_PATCH
 
 BUILD FROM SOURCE
 1. Edit src/browser-runtime.html for game changes and tools/package-runtime-shell.cjs for host/PWA changes.
@@ -28,3 +28,4 @@ Mobile Geoscape note (Browser 1231): the manifest now allows any orientation so 
 Browser 1258 note: the service-worker cache key advances for the Terminator/audio/time-resume mobile follow-up. Manifest orientation remains `any`.
 
 Browser 2059 note: Mobile · Adaptive Assign Objectives now owns an explicit z-index 10010 above tactical chrome; the service-worker cache key advances so installed PWAs receive the modal-layer fix.
+Browser 2141 note: Mobile Orders/Assign Objectives and strategic/base placement sheets use adaptive viewport cohabitation; the service-worker cache key advances so installed PWAs receive the new layouts.

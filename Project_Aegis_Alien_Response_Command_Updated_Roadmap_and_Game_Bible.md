@@ -1,136 +1,20 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.07.1925_MOBILE_PWA_AUDIO_REGRESSION_FIX_PATCH`
+Current browser build: `v0.26.09.07.2141_MOBILE_COMMAND_WINDOWS_AND_PLACEMENT_COHABITATION_PATCH`
 
 Current save format: `4`
 
+## Current Build Addendum — Browser 2141: Mobile Command Windows + Placement Cohabitation
+
+- Mobile · Adaptive **Orders** is now a map-first tactical command workspace with compact phone controls, bounded internal scrolling, and a tablet map/sidebar split.
+- **Assign Objectives** now uses a full-height mobile sheet with a horizontal known-objective strip, vertically scrolling fire-team assignments, and persistent decision buttons while retaining Browser 2059 layering authority.
+- **New Base** placement now reserves the right-side sheet width and shifts/scales the Globe or Terminator Map into the remaining workspace so the complete planet stays visible and selectable.
+- **Facility construction authorization** now occupies only the right-side Build region on Mobile · Adaptive. The 6x6 facility board reserves that width and remains visible for verifying the selected construction tile.
+- Standard/Desktop presentation, tactical/strategic rules, base-site coordinates, facility construction rules, and save format 4 are unchanged.
+- Next mobile work should continue screen-by-screen after field acceptance of these command/placement workflows.
+
+
 Authoritative playable artifact: `index.html`
-
-## Current Build Addendum — Browser 1925: Mobile, PWA, and Audio Regression Fixes
-
-- Geoscape drawers keep their own bounded width on narrow phones.
-- Mobile Geoscape and Base drawers remain below confirmation windows without changing board placement.
-- Master Mute remains authoritative through music crossfades, delayed dialogue callbacks, and the post-mission audio bridge.
-- Only game-shell navigation can update the offline game launch page; editor and tool pages remain separate.
-- The canonical packager retains PWA installation support and regenerates release hashes and service-worker cache versions.
-- Release identity is synchronized with the authoritative source manifest; Standard layout and save format 4 are preserved.
-
-## Current Build Addendum — Browser 1428: Mobile Base Drawer Board Visibility Hotfix
-
-- Fixes the field-reported Mobile · Adaptive Base case where an open Base Info / Activity / Defense / Facility / Build drawer overlaid the 6×6 facility board and made covered squares unavailable for facility placement.
-- The drawer width is now reserved as real workspace whenever a Base management drawer is open. The primary Base workspace shifts left and the facility board scales uniformly to fit the unobstructed area.
-- All six rows and six columns remain visible and retain their existing tile-button interaction authority while the drawer stays independently scrollable.
-- The right command rail remains accessible so drawers can be switched or closed without leaving Base management.
-- Standard/Desktop Base layout, facility construction rules/costs, hangar and aircraft behavior, defense systems, campaign state, and save format **4** are unchanged.
-- This is a focused usability hotfix to Browser 1404; Quartermaster / Inventory remains the next screen in the systematic Mobile · Adaptive optimization sequence after field acceptance.
-
-### Field Acceptance
-- Open **Build**, select a facility, and verify every legal empty square on the complete 6×6 board remains visible and tappable without closing the Build drawer.
-- Repeat with **Facility**, **Base Info**, **Activity**, and **Defense** open.
-- Verify the board returns smoothly to its normal centered size when the drawer closes.
-- Check both a phone-class viewport and a tablet-class viewport.
-
-
-## Current Build Addendum — Browser 1404: Mobile Base Command Adaptive Layout
-
-- Continues the systematic Mobile · Adaptive screen conversion after the accepted Geoscape work. The **Base command screen is now the second optimized strategic screen**.
-- On Mobile · Adaptive, Base uses a fixed full-screen workspace between the independently scrollable left and right command rails. The complete 6×6 base facility grid remains mounted and visible rather than being pushed down a vertically scrolling page.
-- The persistent center keeps only the information needed while manipulating the grid: selected base identity/region, local storage usage, the base selector, facility artwork, selection state, and live activity markers.
-- Secondary management is moved behind right-rail buttons: **Base Info**, **Activity**, **Defense**, **Facility**, and **Build**. Each opens its own independently scrolling drawer and can be closed by tapping the active rail button again.
-- Base Info preserves the existing explanation of Geoscape base placement, base-defense hallway geometry, entry points, stores, containment, and downtime relevance.
-- Activity preserves the live/static Base Activity layer and soldier destination information.
-- Defense preserves readiness score, invasion entry summary, arms lockers, defender starts, air-defense strength, Sickbay note, and containment note.
-- Facility preserves selected-facility inspection, Hangar aircraft assignment/ferry/rebase/order controls, and specialized facility controls such as V.A.L.A.N.T. Mental Health Center staffing.
-- Build preserves the existing facility selector, costs/upkeep, facility description, and empty-tile placement authority.
-- Portrait phone presentation hides cramped facility-name ribbons over the grid artwork so the six-column facility board remains readable and touchable. Tablet widths expand both the board and drawers and can retain more grid labeling.
-- Standard/Desktop Base remains unchanged. Facility rules, costs, hangar footprint logic, aircraft state, activity state, base-defense calculations, save data, and save format **4** remain authoritative.
-
-### Mobile Optimization Roadmap Status
-- **Geoscape — completed and physically accepted**, including Browser 1345's Terminator compositor correction.
-- **Base command screen — implemented in Browser 1404; physical phone/tablet acceptance is the current gate.**
-- **Quartermaster / Inventory — next systematic screen after Base acceptance.**
-
-### Browser 1404 Field Acceptance
-- On a tall phone near the 1080×2340 target, open Base and confirm the entire command page itself does not vertically scroll.
-- Confirm the selected-base header and complete 6×6 facility grid fit between the command rails without requiring page scrolling.
-- Scroll each side rail independently when more buttons exist than fit vertically.
-- Open Base Info, Activity, Defense, Facility, and Build. Confirm each drawer scrolls independently and the base grid remains behind it.
-- Select built facilities and confirm Facility shows the matching details. Select Build, choose a facility, close the drawer, and confirm an empty grid tile can still be used to begin the normal construction flow.
-- Inspect a Hangar and exercise aircraft destination/rebase/order controls where available.
-- Repeat on a tablet-sized viewport and confirm the grid/drawers scale upward rather than becoming a narrow phone column.
-- Switch to Standard interface and confirm the desktop Base screen remains unchanged.
-
-
-## Current Build Addendum — Browser 1345: Mobile Terminator Compositor Scale Hotfix
-
-- Physical-device/screenshot verification showed that Browser 1258 still rendered the Terminator background only in the upper-left portion of the full Mobile · Adaptive viewport, with a broad blank-looking area along the right and bottom.
-- This was **not** a border contained in the world-map artwork. The strategic map is generated at runtime on a 720×360 canvas.
-- Root cause was a mobile CSS selector intended as a compact presentation adjustment: `[data-aegis-terminator-map-root] > div.pointer-events-none { transform: scale(.82); ... }`. The day/night solar compositor itself is a direct `pointer-events-none` child, so the rule shrank the complete map surface to 82% while the map root and marker overlay remained full-size.
-- Browser 1345 removes that compositor scale. The base ocean/land canvas, day/night terminator mask, marker overlay, labels, and input surface now use the same complete Terminator viewport.
-- Browser 1258 master audio Mute/Unmute and last-speed Pause/Resume behavior remain authoritative.
-- Standard/Desktop presentation, strategic simulation, map coordinates, campaign data, and save format **4** remain unchanged.
-
-
-## Current Build Addendum — Browser 1258: Mobile Geoscape Terminator + Audio + Resume Hotfix
-
-- Physical-phone feedback showed the Terminator Map retaining a shallow desktop-style 2:1 strip inside the new tall mobile Geoscape, leaving most of the central strategic viewport blank. Mobile · Adaptive now allows the existing Terminator compositor and marker canvas to scale across the complete center pane while Standard/Desktop keeps its normal 2:1 map.
-- Map interaction remains normalized against the rendered element bounds, so incident selection, base-site selection, overlays, craft markers, and latitude/longitude targeting continue to use the same authoritative 720x360 world coordinates even when the mobile display is stretched to the phone/tablet viewport.
-- The right mobile command rail now includes a persistent **Mute / Unmute** control. This is a master mute over music, SFX, and recorded voice, while the individual enabled states and volume settings remain untouched and return when audio is restored. The mute preference is device-local and outside campaign saves.
-- **Pause Time / Resume** now remembers the player's latest nonzero Geoscape compression setting. If the player pauses at 30m, 1h, 6h, etc., Resume returns to that exact rate and displays it on the button. The preferred resume rate is device-local so pausing/saving does not require a save-format change.
-- Strategic time advancement, event prompts, day/night authority, incidents, UFO movement/interception, aircraft routing, base placement, desktop UI, campaign data, and save format **4** remain unchanged.
-
-### Mobile Optimization Roadmap Status
-- Geoscape is the completed/accepted first systematic mobile screen; Browser 1345 corrected the final Terminator compositor scaling issue found during physical-device review.
-- Base command is now implemented as the second optimized screen in Browser 1404.
-- Quartermaster / Inventory is next after Base physical-device acceptance.
-
-## Current Build Addendum — Browser 1231: Adaptive Mobile Geoscape — Phone + Tablet
-
-- Mobile Geoscape now uses a fixed full-screen strategic viewport rather than a vertically scrolling command page.
-- The Globe / Terminator Map remains the persistent center surface. Left and right side rails scroll independently and remain available at all times.
-- The right rail opens Time / Status, Routes, Operational Overlays, and New Base controls as independent scrollable drawers, while Incidents and UFOs retain their existing dedicated boards.
-- Desktop-only Geoscape header/actions, the region-button grid, help block, and inline travel card are removed from the persistent mobile center so the planet can fit a tall 1080×2340-class phone display.
-- Portrait phone sizing uses adaptive rail widths and a bounded planet stage; tablet widths scale rails and drawers upward without changing strategic logic. Landscape remains supported.
-- Base placement keeps the planet visible and provides a mobile-only Cancel Base Placement control.
-- Installed PWA orientation is now `any`, allowing portrait Geoscape instead of forcing landscape. Other screens retain the previous mobile treatment until their own systematic optimization pass.
-- Save format remains **4**.
-
-## Mobile Optimization Roadmap — Systematic Screen Pass
-
-**Current status:** Geoscape accepted; Base command implemented second in Browser 1404.
-
-1. **Geoscape — implemented and physically accepted.** Fixed planet-first phone/tablet viewport, scrollable command rails, side drawers, no whole-page Geoscape scrolling; Terminator fill corrected in Browser 1345.
-2. **Base command screen — implemented in Browser 1404; physical phone/tablet acceptance pending.** Fixed 6×6 facility board plus Base Info / Activity / Defense / Facility / Build drawers.
-3. **Quartermaster / inventory — next systematic pass after Base acceptance.**
-4. Mainframe Database.
-5. Soldiers / Barracks.
-6. Research.
-7. Workshop.
-8. Squads.
-9. Sickbay.
-10. Missions / tactical launch and mission management.
-11. Reports / council review.
-12. Memorial.
-13. Tactical battle UI follow-up for portrait/tablet parity after strategic command screens.
-
-Target reference viewport: **1080×2340 portrait-class smartphone**, scaling upward to tablet sizes. The mobile command page should avoid whole-screen vertical scrolling wherever a persistent primary workspace (planet, map, board, or battlefield) benefits from remaining visible; secondary controls should prefer independently scrolling rails, drawers, sheets, or dialogs.
-
-
-## Current Build Addendum — Browser 1127: Installable PWA App Shell
-
-- Adds an installable Progressive Web App shell around the existing persistent browser host. Installed launches request fullscreen first where supported and otherwise use standalone mode, removing the normal address/navigation bar while keeping the OS/browser fallback behavior.
-- The manifest requests landscape orientation, AEGIS theme/background colors, and 192x192 / 512x512 maskable-capable icons. Relative `./` scope/start paths are retained for GitHub Pages project-site deployment.
-- The persistent host captures `beforeinstallprompt` when available and exposes installation state to the embedded game runtime. Start screen and Menu / Save now show an Install Aegis control; iPhone/iPad and browsers without the programmable prompt receive Add to Home Screen guidance.
-- A versioned service worker registers only in a secure/localhost context. It precaches the host shell/manifest/icons, uses network-first navigation with a cached `index.html` fallback, and opportunistically caches same-origin static GET resources without intercepting Range requests.
-- Normal browser play and local `file://` play remain supported. Local files simply report that PWA installation requires HTTPS/localhost; no campaign feature is disabled.
-- PWA installation/cache state is device/browser state and never enters campaign saves. Save format remains **4**. Strategic/tactical rules, Mobile · Landscape selection, and post-mission runtime reboot behavior are unchanged.
-
-### Browser 1127 Validation
-- Host/runtime build IDs and embedded-runtime byte count/SHA-256 are synchronized.
-- Manifest JSON parses and declares `display: standalone`, fullscreen-first `display_override`, `orientation: landscape`, relative scope/start URL, and both required icons.
-- Service-worker JavaScript and every executable runtime/host JavaScript block pass syntax validation.
-- Static contracts verify install UI wiring, standalone/fullscreen/iOS installed detection, local-file fallback messaging, service-worker secure-context gating, and unchanged save format 4.
-
 
 ## Current Build Addendum — Browser 1110: Geoscape Interface Cleanup
 

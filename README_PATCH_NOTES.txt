@@ -1,3 +1,32 @@
+BUILD: v0.26.09.07.2141_MOBILE_COMMAND_WINDOWS_AND_PLACEMENT_COHABITATION_PATCH
+TITLE: Mobile Command Windows + Placement Cohabitation
+DATE: September 7, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.07.2059_MOBILE_OBJECTIVE_ASSIGNMENT_MODAL_LAYERING_HOTFIX
+
+Summary
+- Continues the Mobile · Adaptive pass with purpose-built phone/tablet layouts for tactical Orders and Assign Objectives.
+- Keeps the strategic planet visible and tappable while selecting a New Base location.
+- Keeps the complete 6x6 Base facility board visible while construction authorization is reviewed.
+
+Key changes
+- Orders / Hybrid Fire-Team Command Map becomes map-first on phones: compact header/controls, a flexing command map, bounded scroll regions, and a compact status/sidebar area. Tablet widths restore a simultaneous map + side panel.
+- Assign Objectives becomes a full-height mobile decision sheet with compact title area, horizontally scrollable known-objective cards, independently scrolling fire-team rows, and persistent Default/Cancel/Apply actions.
+- Browser 2059's explicit objective-modal z-index authority remains intact so discovery decisions cannot disappear under Mobile tactical chrome.
+- New Base placement reserves the right-side drawer width. Globe and Terminator Map shrink/shift left into the remaining workspace instead of being covered by the placement sheet.
+- On narrow portrait phones, the strategic command rails temporarily yield while New Base placement is open so the planet and placement sheet can share nearly the full viewport.
+- Facility construction confirmation is now a right-side Mobile sheet occupying the same region as the Build drawer. The base primary workspace reserves that width even if drawer state changes, so the full 6x6 board remains visible for location verification.
+- Standard/Desktop layouts and gameplay authority are unchanged. Save format remains 4.
+
+Validation
+- Runtime and host executable JavaScript syntax checks pass.
+- Static mobile contracts verify Orders map/sidebar hooks, Assign Objectives objective/team/action regions, New Base planet-width reservation, facility-confirmation right-sheet ownership, and save format 4.
+- Embedded runtime byte count/SHA-256 and host payload identity are regenerated and verified.
+- Service-worker caches advance to Browser 2141 so installed PWAs can receive the new presentation.
+- ZIP integrity passes. Physical phone/tablet touch and readability remain field acceptance checks.
+
+---
+
 BUILD: v0.26.09.07.2059_MOBILE_OBJECTIVE_ASSIGNMENT_MODAL_LAYERING_HOTFIX
 TITLE: Mobile Objective Assignment Modal Layering Hotfix
 DATE: September 7, 2026
