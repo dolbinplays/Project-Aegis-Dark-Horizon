@@ -1,5 +1,5 @@
 PROJECT AEGIS — MOBILE BASE COMMAND FIELD ACCEPTANCE
-Build: v0.26.09.07.1404_MOBILE_BASE_COMMAND_ADAPTIVE_LAYOUT_PATCH
+Build: v0.26.09.07.1428_MOBILE_BASE_DRAWER_BOARD_VISIBILITY_HOTFIX
 
 PHONE — TARGET REFERENCE 1080x2340 PORTRAIT CLASS
 1. Select Mobile · Adaptive and open Base.
@@ -9,7 +9,7 @@ PHONE — TARGET REFERENCE 1080x2340 PORTRAIT CLASS
 5. Open Base Info, Activity, Defense, Facility, and Build from the right rail.
 6. Confirm each drawer scrolls independently and tapping its active rail button closes it.
 7. Select several built facility tiles and verify Facility shows the matching facility details.
-8. Open Build, choose a facility, close the drawer, select an empty tile, and confirm the existing construction confirmation flow works.
+8. Open Build, choose a facility, keep the drawer open, select empty tiles across the full visible board, and confirm the existing construction flow works.
 9. Inspect a Hangar and verify aircraft assignment/order/rebase/ferry controls remain usable.
 10. Confirm soldier activity markers remain visible on the base grid.
 11. Confirm portrait grid tiles remain readable/touchable even though name ribbons are hidden.
@@ -25,3 +25,14 @@ STANDARD PARITY
 REGRESSION
 16. Return to Geoscape and confirm Globe/Terminator behavior from Browser 1345 is unchanged.
 17. Confirm saves still report save format 4.
+
+BROWSER 1428 DRAWER / BOARD VISIBILITY HOTFIX
+----------------------------------------------
+1. On Mobile · Adaptive Base, open Build and select Living Quarters (or another 1x1 facility).
+2. Confirm the complete 6x6 facility map moves left/resizes so no column is hidden behind the Build drawer.
+3. Tap legal empty squares at the far-right, far-left, top, and bottom of the board while Build remains open. Confirm the intended tile is selected/built using the existing rules.
+4. Repeat with Facility, Base Info, Activity, and Defense open. The full board must remain visible and tappable.
+5. Close the drawer and confirm the facility board returns to its normal centered size.
+6. Repeat on a phone-class portrait viewport and a representative tablet viewport.
+7. Confirm desktop/Standard Base presentation is unchanged.
+

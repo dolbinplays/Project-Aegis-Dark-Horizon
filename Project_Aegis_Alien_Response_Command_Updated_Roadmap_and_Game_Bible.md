@@ -1,10 +1,26 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.07.1404_MOBILE_BASE_COMMAND_ADAPTIVE_LAYOUT_PATCH`
+Current browser build: `v0.26.09.07.1428_MOBILE_BASE_DRAWER_BOARD_VISIBILITY_HOTFIX`
 
 Current save format: `4`
 
 Authoritative playable artifact: `index.html`
+
+## Current Build Addendum — Browser 1428: Mobile Base Drawer Board Visibility Hotfix
+
+- Fixes the field-reported Mobile · Adaptive Base case where an open Base Info / Activity / Defense / Facility / Build drawer overlaid the 6×6 facility board and made covered squares unavailable for facility placement.
+- The drawer width is now reserved as real workspace whenever a Base management drawer is open. The primary Base workspace shifts left and the facility board scales uniformly to fit the unobstructed area.
+- All six rows and six columns remain visible and retain their existing tile-button interaction authority while the drawer stays independently scrollable.
+- The right command rail remains accessible so drawers can be switched or closed without leaving Base management.
+- Standard/Desktop Base layout, facility construction rules/costs, hangar and aircraft behavior, defense systems, campaign state, and save format **4** are unchanged.
+- This is a focused usability hotfix to Browser 1404; Quartermaster / Inventory remains the next screen in the systematic Mobile · Adaptive optimization sequence after field acceptance.
+
+### Field Acceptance
+- Open **Build**, select a facility, and verify every legal empty square on the complete 6×6 board remains visible and tappable without closing the Build drawer.
+- Repeat with **Facility**, **Base Info**, **Activity**, and **Defense** open.
+- Verify the board returns smoothly to its normal centered size when the drawer closes.
+- Check both a phone-class viewport and a tablet-class viewport.
+
 
 ## Current Build Addendum — Browser 1404: Mobile Base Command Adaptive Layout
 

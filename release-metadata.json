@@ -1,7 +1,7 @@
 {
-  "build": "v0.26.09.07.1404_MOBILE_BASE_COMMAND_ADAPTIVE_LAYOUT_PATCH",
+  "build": "v0.26.09.07.1428_MOBILE_BASE_DRAWER_BOARD_VISIBILITY_HOTFIX",
   "save_format": 4,
-  "runtime_bytes": 6638939,
-  "runtime_sha256": "de42a74a400b2feac2b12e62094a7cbbc1d82b624ee435091a62d3b682991bf3",
-  "host_sha256": "4b2a301d38418e2b8c93e409fb5e42ed73ea44d64d72174ea66a3462f0fc320f"
+  "runtime_bytes": 6642006,
+  "runtime_sha256": "8bc369b531eba7f43bded7d9857ed201357bce5c244a06d211b8a8bd03e97fdb",
+  "host_sha256": "72133ea513219f7e50c5e6d2fcd576b7561362c160639cc67b79f9147ed14850"
 }

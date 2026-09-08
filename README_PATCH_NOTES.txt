@@ -1,3 +1,29 @@
+BUILD: v0.26.09.07.1428_MOBILE_BASE_DRAWER_BOARD_VISIBILITY_HOTFIX
+TITLE: Mobile Base Drawer Board Visibility Hotfix
+DATE: September 7, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.07.1404_MOBILE_BASE_COMMAND_ADAPTIVE_LAYOUT_PATCH
+
+Summary
+- Fixes the Mobile · Adaptive Base management drawer covering much of the 6x6 facility board and preventing the player from selecting covered build squares.
+
+Key changes
+- Opening Base Info, Activity, Defense, Facility, or Build now reserves the drawer width inside the Base workspace instead of laying the drawer over the facility board.
+- The Base primary workspace smoothly shifts left into the remaining unobstructed area.
+- The 6x6 facility board remains square and scales down uniformly when needed so all rows and columns stay visible and tappable while a drawer is open.
+- The drawer remains independently scrollable and the right command rail remains accessible for switching/closing panels.
+- Facility placement still uses the existing authoritative tile buttons and build logic; no construction, cost, hangar, defense, or campaign rules change.
+- Standard/Desktop Base layout is unchanged. Save format remains 4.
+
+Validation
+- All executable runtime JavaScript blocks pass syntax validation.
+- Mobile Base source checks verify the open-drawer state still owns the same 6x6 board and facility tile buttons.
+- CSS/package checks verify one authoritative drawer-width variable is used by both the drawer and the reserved Base workspace.
+- Service-worker syntax, manifest JSON, embedded runtime byte identity/SHA-256, build synchronization, and ZIP integrity are verified.
+- Physical phone/tablet acceptance should confirm every facility square remains visible and selectable with Build, Facility, and other Base drawers open.
+
+---
+
 BUILD: v0.26.09.07.1404_MOBILE_BASE_COMMAND_ADAPTIVE_LAYOUT_PATCH
 TITLE: Mobile Base Command Adaptive Layout
 DATE: September 7, 2026
