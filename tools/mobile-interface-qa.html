@@ -3,12 +3,13 @@
 <iframe id="game" title="Game preview"></iframe><output id="result">Loading test harness…</output>
 <script>
 // Developer-only harness. Open through a dedicated local HTTP origin.
-// Component fixtures never write campaign saves; ?production uses the actual campaign UI.
+// Component fixtures never write campaign saves; ?production and ?squads use the actual campaign UI.
 // Default: two-soldier tactical fixture. ?health: deterministic Build Health.
 // ?objectives: a many-team decision sheet for viewport, layering, and action checks.
 // ?database[&empty][&layout=standard]: real Mainframe component with known/locked fixture records.
 // ?barracks[&empty][&layout=standard]: long local roster, recovery patient, and transfer dialog.
 // ?production=research|workshop[&empty][&funding][&layout=standard]: seeded new-campaign setup.
+// ?squads[&empty][&layout=standard]: local/remote squad assignments with wounded and transit exclusions.
 // ?health&baseline: compare an earlier packaged host copied to /__mobile_baseline.html.
 const params=new URLSearchParams(location.search), frame=document.querySelector('#game'), result=document.querySelector('#result');
 frame.src=params.has('baseline')?'../__mobile_baseline.html':'../index.html?qa='+Date.now();
@@ -39,6 +40,22 @@ const ready=setInterval(()=>{
           w.React.createElement('div',{className:'mx-auto'},w.React.createElement(w.MainframeDatabaseScreen,{identifiedAliens:empty?[]:species,tech,gearInventory,alienFieldBeaconKnowledge:empty?'unknown':'confirmed',selectedDatabaseAlien:selected,setSelectedDatabaseAlien:setSelected})));
       }
       w.ReactDOM.createRoot(mount).render(w.React.createElement(DatabaseFixture));result.style.display='none';
+    }else if(params.has('squads')){
+      w.writeAegisInterfaceLayout(params.get('layout')==='standard'?'standard':'mobile');
+      const originalNewGame=w.makeNewGameData;
+      w.makeNewGameData=setup=>{
+        const game=originalNewGame(setup),origin=game.bases[0],remote=w.initialBase({name:'QA Remote Garrison',region:'Europe'});
+        origin.grid[1][2]='quarters';game.bases=[origin,remote];game.funds=10000;
+        game.soldiers=params.has('empty')?[]:Array.from({length:24},(_,i)=>({...w.makeSoldier('Rookie',i>=20?remote.id:origin.id),id:'qa-squad-soldier-'+i,name:i===2?'Alexandria Longname Montgomery':`QA Trooper ${String(i).padStart(2,'0')}`,status:i===17?'Wounded 5d':i===18?'Overflow 4d':i===19?'KIA':'Ready'}));
+        if(game.soldiers[16])game.soldiers[16].transfer={id:'qa-transit',originBaseId:origin.id,destinationBaseId:remote.id,status:'In Transit',remainingMinutes:600,totalMinutes:600,costK:50};
+        game.squads=params.has('empty')?[]:[
+          {...w.makeSquad(1,[]),id:'qa-squad-local',name:'QA Home Squad',baseId:origin.id,soldierIds:[game.soldiers[0].id,game.soldiers[1].id],capacity:6},
+          {...w.makeSquad(2,[]),id:'qa-squad-remote',name:'QA Remote Squad',baseId:remote.id,soldierIds:[game.soldiers[20].id],capacity:6}
+        ];
+        game.activeSquadId=game.squads[0]?.id||null;game.tab='squads';game.geoscapeClockRunning=false;
+        return game;
+      };
+      result.style.display='none';
     }else if(params.has('production')){
       w.writeAegisInterfaceLayout(params.get('layout')==='standard'?'standard':'mobile');
       const originalNewGame=w.makeNewGameData;

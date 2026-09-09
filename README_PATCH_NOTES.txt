@@ -1,3 +1,21 @@
+BUILD: v0.26.09.08.2242_MOBILE_SQUADS_ADAPTIVE_LAYOUT_PATCH
+TITLE: Mobile Squads Adaptive Layout
+DATE: September 8, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.08.1739_MOBILE_RESEARCH_WORKSHOP_ADAPTIVE_LAYOUT_PATCH (70ae3c9)
+
+- Mobile Squads uses Members, Assign, and Command views with a persistent squad selector, station label, and capacity count.
+- Landscape phones and larger tablets show compact soldier lists beside one selected dossier. Narrow screens use a list or dossier with Back to list; both panes stay within the viewport and scroll independently.
+- Direct Add and Remove buttons use the existing squad actions. Dossier and Show Stats choices carry independently across soldiers; unavailable selections clear when assignments, squads, or bases change.
+- Command retains capacity upgrades, squad power, chain of command, legacy, recruitment, and base selection. Assign retains the existing soldier sort options and displays the selected comparison stat.
+- Corrects the other-base soldier count to include all eligible unassigned personnel outside the selected squad’s station, independently of the command header’s selected base.
+- Layout subscribers now synchronize when they mount, preventing a missed preference change from leaving mobile panels without command rails.
+- Standard retains its original squad panels and cards. Assignment eligibility, squad capacity rules, stationing, recruitment costs, tactical AI, and save format 4 are unchanged.
+
+Validation: see VALIDATION_SUMMARY.txt. Use tools/mobile-interface-qa.html?squads on a dedicated local origin to test the actual campaign UI with multiple bases, eligible soldiers, and wounded/transit exclusions. Physical-device checks are in MOBILE_SQUADS_FIELD_ACCEPTANCE.txt.
+
+---
+
 BUILD: v0.26.09.08.1739_MOBILE_RESEARCH_WORKSHOP_ADAPTIVE_LAYOUT_PATCH
 TITLE: Mobile Research / Workshop Adaptive Layout
 DATE: September 8, 2026

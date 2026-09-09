@@ -1,39 +1,44 @@
-Build: v0.26.09.08.1739_MOBILE_RESEARCH_WORKSHOP_ADAPTIVE_LAYOUT_PATCH
-Base commit: b5697fe (1241 Barracks disclosure persistence; verified on origin/main)
+Build: v0.26.09.08.2242_MOBILE_SQUADS_ADAPTIVE_LAYOUT_PATCH
+Base commit: 70ae3c9 (1739 Mobile Research / Workshop)
 Save format: 4
-Runtime bytes: 6709608
-Runtime SHA-256: 8d6138d0b8b8454900adfbe03931d72ece721ebe630692e195ea63a68c2e7155
-Host SHA-256: 8a771f82838583c1541863fce45d07dbea225a652023cfe45befce8f80ce572a
+Runtime bytes: 6722783
+Runtime SHA-256: 800062607edc55645fe326be2067482926cedfaf0077a57916442f299a027412
+Host SHA-256: c4f447766eef39040f60ddf9397747d0ce1c01f59510d40501b5fd9119de076b
 
 Automated checks
 - Canonical packaging: PASS; source manifest, embedded runtime, release hashes, and both offline cache versions synchronized.
 - node tools/check-embedded-js.cjs: PASS (9 non-empty blocks across 4 HTML files).
 - node tools/check-aegis-build.cjs: PASS.
 - node --test tools/test-mainframe-database.cjs tools/test-mobile-pwa-regressions.cjs: PASS (15/15).
-- node tools/test-mobile-interface.cjs: PASS (9/9).
+- node tools/test-mobile-interface.cjs: PASS (10/10).
 - node tools/test-ai-playback-sequencer.cjs: PASS (16/16).
-- Mobile QA harness inline JavaScript syntax: PASS.
+- QA harness inline JavaScript syntax: PASS.
 - git diff --check: PASS.
-- Compared all 12 research/hiring/production/funding/sale action functions with the prior commit: unchanged.
+- Compared original Squads overview/detail expressions and six assignment/stationing/capacity/recruitment functions with the prior commit: unchanged.
+
+New layout regression coverage
+A preference change between a component's initial render and its effect subscription previously left its local layout stale. This was reproduced as missing command rails while the newly mounted Squads workspace was mobile. The hook now synchronizes immediately after subscribing. The new test covers that missed event, subsequent preference changes, and listener cleanup; the actual command rails appeared correctly after the fix.
 
 Browser verification
-The production fixture uses the real campaign UI and callbacks, initialized through normal new-game setup on a dedicated local origin.
-- Research: all three sections opened. Decreasing scientists changed daily progress and ETA; zero and available maximum were respected and the corresponding step button disabled. Starting Battlefield Medicine opened Project with the correct topic.
-- Hiring a scientist created a three-day pending arrival. Completing research advanced 11 campaign days, unlocked the topic, advanced workshop work, and processed the arrival. The final implementation kept focus on Skip to Project Completion when the next automatic topic began.
-- Workshop: the six-order fixture scrolled inside its bounded Orders panel. Adjusting quantity changed total work and funded/requested counts without funding the added item. Engineer steppers stopped at the capacity still available across other orders.
-- A blocked build with all engineers assigned left Build selected. After releasing one engineer, creating a new order opened Orders and reset that pane to the top.
-- Production-base selection showed three Laser Carbines at the origin and no manufactured stock at the remote base. A newly created remote order retained the remote destination while earlier queues kept their origin.
-- Research completion produced one local Laser Carbine and paused its second requested item for funding. Keep Queue Paused retained the pause; reopening approval and approving 160k changed funded count to 2/2 and resumed the queue. Selling the delivered stock changed the selected base's Laser Carbine count from four to three.
-- At 667x375 the funding overlay fit the viewport and both buttons were reachable above the mobile rails.
-- Orders restored an observed scroll position of 4356px after switching to Build and back. At 390x844 all visible order controls were at least 44px high, and the pane had no horizontal overflow.
-- 844x390, 667x375, 390x844, 768x1024, and 1024x768 checks covered bounded workspaces and section controls. Taller content scrolled; panes and controls stayed within the central workspace.
-- Empty project and empty order states displayed their existing guidance. An empty production-base stock panel displayed its existing message.
-- Standard at 1280x800 retained the Research overview, Active Project, Available Research, Workshop overview, Construct Items, and Build Orders panels. Original native range controls rendered without mobile stepper wrappers.
-- No browser error logs in the final production smoke check.
+The Squads fixture initializes the actual campaign UI through normal first-base setup on a dedicated local origin.
+- Home squad: two members and fourteen eligible unassigned local soldiers. Wounded, overflow, KIA, transit, assigned, and other-base soldiers stayed excluded from Assign. Remote squad: one member and three eligible local soldiers.
+- Opened dossier and stats on one member, selected another, and verified both remained open. Closed dossier in portrait and selected another soldier; stats stayed open and dossier stayed closed. Choices also carried from Members to Assign.
+- Quick removal updated the member/available counts, cleared the removed soldier's selected card, and focused a neighboring action. Five quick assignments filled the home squad; the next assignment was blocked at six seats with the existing squad-full notice.
+- Capacity upgrade changed 6/6 to 6/7; recruitment created a pending three-day arrival. Command retained power, leadership, legacy, base selection, and squad overview controls.
+- Changing the active squad cleared stale selected controls and changed the available list to the correct station. Corrected other-base counts were verified as three outside the home squad's station and fourteen outside the remote station. The remote count remained fourteen after changing the command's selected base.
+- 844x390 and 667x375: list/detail panes stayed side by side, scrolled independently, and had no horizontal overflow. Only the selected full SoldierCard mounted.
+- 390x844: the dossier replaced the list, Back remained visible, and Back restored focus to the selected row. Expanded record/stats content fit the pane without horizontal overflow.
+- 768x1024 and 1024x768: both panes stayed bounded after rotation. Visible buttons, selects, and summaries measured at least 44px high.
+- Standard at 1280x800: the original overview, chain of command, legacy, and member/available card lists returned; no mobile workspace remained. The remote squad rendered its original four full cards.
+- Empty fixture: No squad available / No squad selected, No soldiers assigned, and the empty available-roster guidance rendered correctly. Command and recruitment remained accessible.
 
 Build Health
-Final deterministic browser run: 803/865, with exactly the same 62 pre-existing failures and no added or resolved failures relative to the established baseline. No Build Health diagnostics were changed.
+Final deterministic browser run: 803/865, with the same 62 pre-existing failures and no added or resolved failures relative to the established baseline. No Build Health diagnostics were changed.
 
 Release scope and limits
-Presentation and input accessibility only. Existing research eligibility, personnel capacity, campaign-day advancement, funding approval, production ownership, sales, tactical AI, and save format 4 remain unchanged. No persisted campaign fields were added.
-Physical-device touch, installed-PWA behavior, and extended campaign acceptance remain pending using MOBILE_PRODUCTION_FIELD_ACCEPTANCE.txt.
+Squads presentation, the other-base display count, and layout-subscription synchronization only. Existing personnel authority, tactical AI, and save format 4 are unchanged; no persisted campaign fields were added.
+One browser log reported a MutationObserver error during nested-frame navigation, with no in-game runtime error overlay; no MutationObserver code exists in the runtime, host, or loaded asset scripts. A later independent-tab navigation timed out in the browser automation. Completed gameplay and viewport checks above were unaffected.
+Physical-device touch, installed-PWA behavior, and extended campaign acceptance remain pending using MOBILE_SQUADS_FIELD_ACCEPTANCE.txt.
+
+Recovery verification
+Restored after an accidental overwrite. The recovered runtime is byte-for-byte identical to the completed patch (SHA-256 800062607edc55645fe326be2067482926cedfaf0077a57916442f299a027412). Regenerated the host and offline cache files, reran build/syntax checks and all 41 focused tests, and restored missing tracked release and acceptance files. Browser results above are retained from the original patch validation.

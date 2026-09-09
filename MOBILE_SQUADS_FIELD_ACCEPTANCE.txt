@@ -1,0 +1,15 @@
+MOBILE SQUADS — PHYSICAL DEVICE ACCEPTANCE
+Build: v0.26.09.08.2242_MOBILE_SQUADS_ADAPTIVE_LAYOUT_PATCH
+
+Use a disposable campaign on actual phones/tablets and in an installed PWA.
+
+1. Choose Mobile · Adaptive, open Squads, and confirm both command rails remain visible. Hold the phone landscape and switch among Members, Assign, and Command.
+2. Select soldiers and scroll the compact list and dossier independently. Open dossier only, stats only, and both; each choice should carry to another soldier until explicitly changed.
+3. Use direct Add/Remove buttons. The soldier should move between the correct lists, counts should update, and a selected soldier's stale actions should close. Fill a squad and confirm another assignment is blocked by the existing capacity rule.
+4. Upgrade capacity in Command, then assign the newly permitted member. Check chain of command, squad power, legacy, recruitment, and the selected-base control remain reachable by scrolling.
+5. With squads at two bases, switch the squad selector. Assign should show only eligible, unassigned soldiers at that squad's station. Wounded, overflow, KIA, in-transit, and other-base personnel must stay excluded. The other-base count should remain accurate if the command base selector changes.
+6. Try each soldier sort option and confirm comparison values and order agree. Use a long name/callsign and a large available roster.
+7. Rotate portrait, open a soldier, and use Back to list. The list should replace the dossier and return focus to that soldier. Rotate landscape again and confirm both panes fit.
+8. Check empty squads/rosters and recruitment arrival information. If available, inspect an existing force-assigned wounded member without changing the Sickbay override rules.
+9. Switch to Standard through Menu / Save. Confirm the original squad overview, leadership/legacy, and full member/available card lists return; switch back to Mobile.
+10. Repeat with browser chrome expanded/collapsed and on a tablet. Record device, OS, browser/PWA mode, orientation, and any clipped controls, horizontal scrolling, or touch/focus problems.

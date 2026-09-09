@@ -39,6 +39,26 @@ test('Cross-origin embedding does not prevent selecting Mobile',()=>{
   const t=setup();Object.defineProperty(t.parent,'document',{get(){throw Error('Cross origin');}});
   assert.equal(t.context.writeAegisInterfaceLayout('mobile'),'mobile');
 });
+
+test('A layout change between rendering and subscribing is reflected when the component mounts',()=>{
+  const t=setup('standard'),listeners=new Set();let mountedLayout,effect;
+  t.context.React={
+    useState(initial){mountedLayout=initial();return [mountedLayout,value=>{mountedLayout=value;}];},
+    useEffect(run){effect=run;},
+  };
+  Object.assign(t.context.window,{
+    addEventListener(type,listener){assert.equal(type,'aegis-interface-layout-change');listeners.add(listener);},
+    removeEventListener(type,listener){listeners.delete(listener);},
+    dispatchEvent(){for(const listener of listeners)listener();},
+  });
+  assert.equal(t.context.useAegisInterfaceLayout(),'standard');
+  t.context.writeAegisInterfaceLayout('mobile'); // The component has rendered but is not subscribed yet.
+  const cleanup=effect();
+  assert.equal(mountedLayout,'mobile');
+  t.context.writeAegisInterfaceLayout('standard');assert.equal(mountedLayout,'standard');
+  cleanup();assert.equal(listeners.size,0);
+  t.context.writeAegisInterfaceLayout('mobile');assert.equal(mountedLayout,'standard');
+});
 test('Small mobile canvases use their actual size; Standard keeps its established minimum',()=>{
   const f=setup().context.aegisTacticalViewportDimensions;
   for(const [width,height] of [[668,390],[491,375],[392,320],[262,844]]){

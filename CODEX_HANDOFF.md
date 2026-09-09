@@ -1,3 +1,25 @@
+# CODEX HANDOFF — v0.26.09.08.2242_MOBILE_SQUADS_ADAPTIVE_LAYOUT_PATCH
+
+Completed the next Mobile · Adaptive screen: Squads.
+
+- Mobile Squads uses Members, Assign, and Command views with a persistent squad selector, station label, and capacity count.
+- Landscape phones and larger tablets show compact soldier lists beside one selected dossier. Narrow screens use a list or dossier with Back to list; both panes stay within the viewport and scroll independently.
+- Direct Add and Remove buttons use the existing squad actions. Dossier and Show Stats choices carry independently across soldiers; unavailable selections clear when assignments, squads, or bases change.
+- Command retains capacity upgrades, squad power, chain of command, legacy, recruitment, and base selection. Assign retains the existing soldier sort options and displays the selected comparison stat.
+- Corrects the other-base soldier count to include all eligible unassigned personnel outside the selected squad’s station, independently of the command header’s selected base.
+- Layout subscribers now synchronize when they mount, preventing a missed preference change from leaving mobile panels without command rails.
+- Standard retains its original squad panels and cards. Assignment eligibility, squad capacity rules, stationing, recruitment costs, tactical AI, and save format 4 are unchanged.
+
+Implementation: module-scope SquadsScreen receives the original overview and detail elements, extracting their member and available SoldierCards for mobile presentation. The original assignment callbacks are forwarded by compact actions and retained in the full card. Standard returns the original overview/detail layout. Disclosure choices and selected soldiers are temporary presentation state.
+
+The shared useAegisInterfaceLayout hook now reads the current preference after subscribing. A new behavioral test covers a layout change between initial render and subscription, subsequent changes, and listener cleanup.
+
+QA: tools/mobile-interface-qa.html?squads[&empty][&layout=standard] customizes new-game fixture data; use the normal Start New Game and first-base confirmation on a dedicated local origin. This runs actual campaign assignment, capacity, and recruitment actions.
+
+See VALIDATION_SUMMARY.txt for results. Package through node tools/package-runtime-shell.cjs after synchronizing src/manifest.json. Next mobile candidate: Sickbay, after field acceptance of Squads.
+
+---
+
 # CODEX HANDOFF — v0.26.09.08.1739_MOBILE_RESEARCH_WORKSHOP_ADAPTIVE_LAYOUT_PATCH
 
 Completed the next Mobile · Adaptive screens: Research and Workshop. The preceding Barracks disclosure fix is committed and pushed as b5697fe.

@@ -1,4 +1,4 @@
-PROJECT AEGIS 1739 MOBILE RESEARCH / WORKSHOP — CHANGED FILES
+PROJECT AEGIS 2242 MOBILE SQUADS — CHANGED FILES
 
 Functional release files (keep together):
 - src/browser-runtime.html
@@ -14,8 +14,9 @@ Documentation and QA:
 - Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
 - VALIDATION_SUMMARY.txt
 - HOTFIX_GITHUB_FILES.txt
-- MOBILE_PRODUCTION_FIELD_ACCEPTANCE.txt
+- MOBILE_SQUADS_FIELD_ACCEPTANCE.txt
 - tools/mobile-interface-qa.html
+- tools/test-mobile-interface.cjs
 
-Build through tools/package-runtime-shell.cjs and run the build, syntax, Mainframe, mobile, PWA/audio, and playback checks. Source manifest is synchronized to v0.26.09.08.1739_MOBILE_RESEARCH_WORKSHOP_ADAPTIVE_LAYOUT_PATCH.
+Build with tools/package-runtime-shell.cjs and run build, syntax, Mainframe, mobile, PWA/audio, and playback checks. Source manifest is synchronized to v0.26.09.08.2242_MOBILE_SQUADS_ADAPTIVE_LAYOUT_PATCH.
 Existing assets, manifest.webmanifest, and packaging tool are unchanged.

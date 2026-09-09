@@ -1,8 +1,20 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.08.1739_MOBILE_RESEARCH_WORKSHOP_ADAPTIVE_LAYOUT_PATCH`
+Current browser build: `v0.26.09.08.2242_MOBILE_SQUADS_ADAPTIVE_LAYOUT_PATCH`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 2242 (September 8): Mobile Squads
+
+- Mobile Squads uses Members, Assign, and Command views with a persistent squad selector, station label, and capacity count.
+- Landscape phones and larger tablets show compact soldier lists beside one selected dossier. Narrow screens use a list or dossier with Back to list; both panes stay within the viewport and scroll independently.
+- Direct Add and Remove buttons use the existing squad actions. Dossier and Show Stats choices carry independently across soldiers; unavailable selections clear when assignments, squads, or bases change.
+- Command retains capacity upgrades, squad power, chain of command, legacy, recruitment, and base selection. Assign retains the existing soldier sort options and displays the selected comparison stat.
+- Corrects the other-base soldier count to include all eligible unassigned personnel outside the selected squad’s station, independently of the command header’s selected base.
+- Layout subscribers now synchronize when they mount, preventing a missed preference change from leaving mobile panels without command rails.
+- Standard retains its original squad panels and cards. Assignment eligibility, squad capacity rules, stationing, recruitment costs, tactical AI, and save format 4 are unchanged.
+
+The mobile roster mounts one full SoldierCard at a time. Quick actions preserve existing assignment authority and return keyboard focus to a neighboring action after a row moves. Browser checks cover real campaign actions, layout switching, and phone/tablet viewport sizes; physical-device acceptance remains pending.
 
 ## Current Build Addendum — Browser 1739 (September 8): Mobile Research / Workshop
 
