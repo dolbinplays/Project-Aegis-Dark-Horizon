@@ -1,5 +1,5 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND — PWA DEPLOYMENT
-Build: v0.26.09.09.0707_MOBILE_SICKBAY_ADAPTIVE_LAYOUT_PATCH
+Build: v0.26.09.09.1058_FINAL_VIP_TERMINAL_VICTORY_SURVIVOR_COMMIT_HOTFIX
 
 BUILD FROM SOURCE
 1. Edit src/browser-runtime.html for game changes and tools/package-runtime-shell.cjs for host/PWA changes.
@@ -35,3 +35,5 @@ Browser 2258 note: Mobile · Adaptive Quartermaster now uses a fixed phone/table
 Browser 2330 note: command-window review fixes and the synchronized source manifest are packaged through tools/package-runtime-shell.cjs; both offline cache versions advance together.
 
 Browser 0728 (September 8): the Mainframe mobile layout and source manifest are packaged through the canonical tool; both offline cache versions advance together.
+
+Browser 1058 note: service-worker cache identities advance for the final-VIP terminal victory survivor hotfix so installed PWAs cannot retain the faulty 0707 runtime. Save format remains 4.

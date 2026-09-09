@@ -1,3 +1,52 @@
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
+BUILD: v0.26.09.09.1058_FINAL_VIP_TERMINAL_VICTORY_SURVIVOR_COMMIT_HOTFIX
+TITLE: Final VIP Terminal Victory Survivor Commit Hotfix
+DATE: September 9, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.09.0707_MOBILE_SICKBAY_ADAPTIVE_LAYOUT_PATCH
+
+SUMMARY
+-------
+Fixes a severe final-VIP mission-ending regression where the tactical timeline correctly committed victory, but the terminal victory frame could subsequently reinterpret surviving AEGIS soldiers as dead, display Squad Lost, and write a failure report with the entire surviving force marked KIA.
+
+CONFIRMED ROOT CAUSE
+--------------------
+- Terminal mission authority treats positive-HP units as alive unless `alive` is explicitly false.
+- Some live TacticalMission soldiers legitimately carried positive HP while the optional `alive` field was omitted.
+- The playback hydrator instead used truthiness for `unit.alive`. Reapplying the synthetic final `Mission success` frame therefore treated an omitted flag as false and assigned HP 0 to otherwise living soldiers.
+- The battle-outcome UI then checked zero living humans before the already committed victory, exposed `Squad Lost`, and the loss confirmation faithfully finalized that corrupted live battlefield as a failed report with all soldiers KIA.
+
+HOTFIX
+------
+- Adds one shared playback liveness rule: positive HP remains living unless `alive === false`.
+- Human, alien, and civilian playback hydration now writes explicit life state rather than carrying an omitted/stale value forward.
+- Fresh TacticalMission actors receive explicit `alive:true` when deployed.
+- Final-VIP terminal victory normalizes surviving human records before constructing the terminal frame.
+- Reapplying a committed `Mission success` frame restores only frame-confirmed positive-HP AEGIS survivors and clears stale fall markers.
+- Once Tactical Victory is committed, victory takes precedence over a transient zero-human presentation state; it cannot be downgraded to Squad Lost.
+- Successful AI completion and return-to-base finalization reconcile medical/KIA data from the committed final battlefield before the Mission Report is written.
+- Genuine explicit deaths and real zero-survivor squad wipes remain losses.
+
+VALIDATION
+----------
+- All five executable runtime JavaScript blocks pass `node --check`.
+- Host JavaScript and service worker pass `node --check`; manifest JSON parses.
+- Static regression checks cover omitted-alive positive-HP survivors, explicit `alive:false`, survivor restoration, result reconciliation, victory-first terminal presentation, and save format 4.
+- Packaged host payload is byte-for-byte identical to canonical `src/browser-runtime.html`; byte count and SHA-256 are recorded in release-metadata.json.
+- Physical mission reproduction remains the final field-acceptance gate.
+
+FIELD ACCEPTANCE
+----------------
+1. Reproduce a mandatory VIP mission with all aliens/contact/reinforcement obligations cleared and one final VIP still boarding.
+2. Let the final VIP enter the Skyranger and confirm the timeline reports Tactical Victory.
+3. Confirm surviving soldiers keep their actual HP and remain in the victory presentation; `Squad Lost` must not appear.
+4. Return to base and confirm the Mission Report is Success and lists only genuine KIA/wounds.
+5. Separately perform a genuine total squad wipe and confirm Squad Lost/failure still works.
+
+---
+
 BUILD: v0.26.09.09.0707_MOBILE_SICKBAY_ADAPTIVE_LAYOUT_PATCH
 TITLE: Mobile Sickbay Adaptive Layout
 DATE: September 9, 2026

@@ -3,7 +3,7 @@
 <iframe id="game" title="Game preview"></iframe><output id="result">Loading test harness…</output>
 <script>
 // Developer-only harness. Open through a dedicated local HTTP origin.
-// Component fixtures never write campaign saves; ?production, ?squads, and ?sickbay use the actual campaign UI.
+// Component fixtures never write campaign saves; ?production, ?squads, ?sickbay, and ?missions use the actual campaign UI.
 // Default: two-soldier tactical fixture. ?health: deterministic Build Health.
 // ?objectives: a many-team decision sheet for viewport, layering, and action checks.
 // ?database[&empty][&layout=standard]: real Mainframe component with known/locked fixture records.
@@ -11,6 +11,7 @@
 // ?production=research|workshop[&empty][&funding][&layout=standard]: seeded new-campaign setup.
 // ?squads[&empty][&layout=standard]: local/remote squad assignments with wounded and transit exclusions.
 // ?sickbay[&empty][&layout=standard]: full beds, Barracks recovery, local/remote gear, and a base without beds.
+// ?missions[&empty][&unassigned][&no-selection][&far][&layout=standard]: incident planning, squads, and actual launch confirmation.
 // ?health&baseline: compare an earlier packaged host copied to /__mobile_baseline.html.
 const params=new URLSearchParams(location.search), frame=document.querySelector('#game'), result=document.querySelector('#result');
 frame.src=params.has('baseline')?'../__mobile_baseline.html':'../index.html?qa='+Date.now();
@@ -41,6 +42,27 @@ const ready=setInterval(()=>{
           w.React.createElement('div',{className:'mx-auto'},w.React.createElement(w.MainframeDatabaseScreen,{identifiedAliens:empty?[]:species,tech,gearInventory,alienFieldBeaconKnowledge:empty?'unknown':'confirmed',selectedDatabaseAlien:selected,setSelectedDatabaseAlien:setSelected})));
       }
       w.ReactDOM.createRoot(mount).render(w.React.createElement(DatabaseFixture));result.style.display='none';
+    }else if(params.has('missions')){
+      w.writeAegisInterfaceLayout(params.get('layout')==='standard'?'standard':'mobile');
+      const originalNewGame=w.makeNewGameData;
+      w.makeNewGameData=setup=>{
+        const game=originalNewGame(setup),origin=game.bases[0],remote=w.initialBase({name:'QA Remote Garrison',region:'Europe'});
+        origin.grid[1][2]='quarters';game.bases=[origin,remote];game.funds=10000;
+        game.soldiers=Array.from({length:22},(_,i)=>({...w.makeSoldier('Rookie',i>=18?remote.id:origin.id),id:'qa-response-'+i,name:i===0?'Alexandria Longname Montgomery':`QA Responder ${String(i).padStart(2,'0')}`,status:i===0?'Wounded 2d':'Ready',moraleStress:i%3*30}));
+        game.squads=[
+          {...w.makeSquad(1,[]),id:'qa-primary',name:'QA Primary',baseId:origin.id,soldierIds:params.has('unassigned')?[]:game.soldiers.slice(0,6).map(s=>s.id),capacity:6},
+          {...w.makeSquad(2,[]),id:'qa-support',name:'QA Support',baseId:origin.id,soldierIds:params.has('unassigned')?[]:game.soldiers.slice(6,12).map(s=>s.id),capacity:6},
+          {...w.makeSquad(3,[]),id:'qa-remote',name:'QA Remote',baseId:remote.id,soldierIds:game.soldiers.slice(18,21).map(s=>s.id),capacity:6},
+          {...w.makeSquad(4,[]),id:'qa-empty',name:'QA Empty',baseId:origin.id,soldierIds:[],capacity:6}
+        ];
+        game.hangarAircraft={...w.startingBaseHangarAssignments(origin),...w.startingBaseHangarAssignments(remote)};
+        Object.keys(game.hangarAircraft).filter(key=>key.startsWith(origin.id)).forEach(key=>game.hangarAircraft[key]='skyranger');
+        game.aircraftFleet=w.normalizeAircraftFleet([],game.bases,game.hangarAircraft,1,game.aircraftUpgrades);
+        game.missions=params.has('empty')?[]:Array.from({length:12},(_,i)=>({...w.makeMission(1),id:'qa-incident-'+i,kind:i===0?'QA Long-Range Civilian Rescue and Alien Incursion Response':`QA Incident ${String(i).padStart(2,'0')}`,region:origin.region,threat:i===0?5:1+i%4,location:params.has('far')?{lat:-origin.location.lat,lon:origin.location.lon+180}:{lat:origin.location.lat+0.02+i*0.01,lon:origin.location.lon+0.02},expires:3}));
+        game.activeSquadId=game.squads[0].id;game.activeMission=params.has('no-selection')?null:game.missions[0]||null;game.tab='missions';game.geoscapeClockRunning=false;
+        return game;
+      };
+      result.style.display='none';
     }else if(params.has('sickbay')){
       w.writeAegisInterfaceLayout(params.get('layout')==='standard'?'standard':'mobile');
       const originalNewGame=w.makeNewGameData;

@@ -1,7 +1,7 @@
 {
-  "build": "v0.26.09.09.0707_MOBILE_SICKBAY_ADAPTIVE_LAYOUT_PATCH",
+  "build": "v0.26.09.09.1058_FINAL_VIP_TERMINAL_VICTORY_SURVIVOR_COMMIT_HOTFIX",
   "save_format": 4,
-  "runtime_bytes": 6735588,
-  "runtime_sha256": "2e55d7d688b80ba41953b8bbcbaffaad893a7dbb8555321bb087a75681da1dac",
-  "host_sha256": "310c3b1d57d41909a43188d49545a5ac6d022defedda42a35b11b524b465a1b7"
+  "runtime_bytes": 6757579,
+  "runtime_sha256": "6b03dcae83af2a7d1c2df047f66da4b1f6f0df5a0675a7e792f36cc7583a8cbd",
+  "host_sha256": "085c334f13d0bfef715c12c19b85d5fd2dad992aa44dd40ad87513134a572a69"
 }

@@ -1,0 +1,16 @@
+PROJECT AEGIS — FINAL VIP TERMINAL VICTORY SURVIVOR FIELD ACCEPTANCE
+Build: v0.26.09.09.1058_FINAL_VIP_TERMINAL_VICTORY_SURVIVOR_COMMIT_HOTFIX
+
+1. Start/load a mandatory VIP mission with multiple living AEGIS soldiers.
+2. Eliminate all aliens and clear Last Known Contact, Beacon/reinforcement-source, UFO-bay, and pending reinforcement obligations.
+3. Leave one final required VIP outside the Skyranger, then let that VIP complete boarding.
+4. Confirm the timeline reports that final VIP extraction committed Tactical Victory.
+5. Confirm every previously living AEGIS soldier retains the same positive HP immediately after the terminal frame.
+6. Confirm surviving soldiers remain standing/victory-dancing as appropriate; they must not all collapse.
+7. Confirm the result control remains Tactical Victory / return-to-base success and never changes to Squad Lost.
+8. Return to base. Confirm Mission Report result is Success.
+9. Confirm the casualty list contains only genuine battlefield KIA and wounded soldiers retain their real final HP.
+10. Confirm rescued/lost VIP totals match the played mission.
+11. Repeat under Simulation AI/Hybrid if practical.
+12. Run a genuine total squad wipe and confirm Squad Lost/failure is still produced.
+13. Confirm save format remains 4.

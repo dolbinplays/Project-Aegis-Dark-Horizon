@@ -1,8 +1,22 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.09.0707_MOBILE_SICKBAY_ADAPTIVE_LAYOUT_PATCH`
+Current browser build: `v0.26.09.09.1058_FINAL_VIP_TERMINAL_VICTORY_SURVIVOR_COMMIT_HOTFIX`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 1058 (September 9): Final VIP Terminal Victory Survivor Commit Hotfix
+
+- Fixes the live-observed contradiction where the final VIP extraction correctly committed Tactical Victory, then all surviving soldiers immediately fell to HP 0 and the operation became Squad Lost.
+- Root cause was a life-state contract mismatch: terminal logic correctly treated positive HP plus an omitted `alive` field as living, while playback hydration treated omitted `alive` as false. Reapplying the synthetic `Mission success` frame could therefore zero every survivor.
+- Tactical playback now uses one authoritative rule: a positive-HP actor is alive unless `alive === false`; hydrated actors receive explicit life state and fresh TacticalMission actors start with `alive:true`.
+- Final-VIP victory snapshots explicitly normalize surviving AEGIS actors, and terminal victory reapplication can restore only frame-confirmed positive-HP survivors while clearing stale fall markers.
+- A committed Tactical Victory now outranks a transient presentation-side zero-human count, so it cannot flip into Squad Lost after success authority has already been established.
+- Successful AI and manual return-to-base paths reconcile tactical medical outcome, casualty/KIA records, and report success from the committed final battlefield before campaign aftermath consumes the result.
+- Real explicit deaths, genuine squad wipes, mandatory-objective failures, reinforcement gates, rescue counts, tactical AI, and save format **4** remain authoritative.
+
+### Field gate
+Reproduce the exact final-VIP boarding case: no live aliens, unresolved contacts, active source, pending arrival, or other mandatory objective. After the final VIP boards, surviving soldiers must keep HP and victory pose; the report must remain Success with only genuine casualties. Then verify a true zero-survivor mission still reports Squad Lost.
+
 
 ## Current Build Addendum — Browser 0707 (September 9): Mobile Sickbay
 
