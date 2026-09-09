@@ -1,7 +1,7 @@
 {
-  "build": "v0.26.09.09.1453_MOBILE_MEMORIAL_ADAPTIVE_LAYOUT_PATCH",
+  "build": "v0.26.09.09.1517_CLASSIC_CRASH_SITE_TERMINAL_REINFORCEMENT_COMMIT_HOTFIX",
   "save_format": 4,
-  "runtime_bytes": 6793978,
-  "runtime_sha256": "d9814fa961c9caee419fde59d8db71cfde5af2f997c96a1b3fe1997e655b1a60",
-  "host_sha256": "a9a45a62efed609230cbfc58793f7656f7361e3b2fefd881b39f47dbdf73e1ee"
+  "runtime_bytes": 6798472,
+  "runtime_sha256": "ac26fede6ab31a748dd55c3baecae58e90548234577daabf61517f509f5e730a",
+  "host_sha256": "d821a79f12c384a98481e8181f762c1bd14e262c6e04cb616dd21007a4979fee"
 }

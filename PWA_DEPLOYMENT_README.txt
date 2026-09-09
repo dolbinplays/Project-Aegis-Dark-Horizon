@@ -1,5 +1,5 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND — PWA DEPLOYMENT
-Build: v0.26.09.09.1453_MOBILE_MEMORIAL_ADAPTIVE_LAYOUT_PATCH
+Build: v0.26.09.09.1517_CLASSIC_CRASH_SITE_TERMINAL_REINFORCEMENT_COMMIT_HOTFIX
 
 BUILD FROM SOURCE
 1. Edit src/browser-runtime.html for game changes and tools/package-runtime-shell.cjs for host/PWA changes.
@@ -45,3 +45,5 @@ Browser 1244 note: Mobile · Adaptive Mission Control and mission-launch review 
 Browser 1324 note: Mobile Command Reports now uses a viewport-bounded index/detail layout with portrait back navigation, landscape/tablet split panes, and direct selectedMissionReportId restore after mission recovery. Service-worker caches advance to Browser 1324. Save format remains 4.
 
 Browser 1453 note: Mobile Memorial now uses a viewport-bounded Remembrance Wall index and selected service-record layout with portrait Back to wall navigation and landscape/tablet split panes. Service-worker caches advance to Browser 1453. Save format remains 4.
+
+Browser 1517 note: Classic/one-shot crash-site mission resolution now retires an incorporated reinforcement-arrival presentation commit gate before final terminal evaluation. Streamed AI presentation gates and save format 4 remain unchanged. Service-worker caches advance to Browser 1517.

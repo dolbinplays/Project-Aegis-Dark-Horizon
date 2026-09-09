@@ -1,6 +1,51 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.09.1517_CLASSIC_CRASH_SITE_TERMINAL_REINFORCEMENT_COMMIT_HOTFIX
+TITLE: Classic Crash-Site Terminal Reinforcement Commit Hotfix
+DATE: September 9, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.09.1453_MOBILE_MEMORIAL_ADAPTIVE_LAYOUT_PATCH
+
+SUMMARY
+-------
+Fixes a Classic Lineup UFO crash-site mission resolving as failure/incomplete after the playback showed every alien dead.
+
+ROOT CAUSE
+----------
+- Reinforcement arrival sets `arrivalCommitPending:true`. This is intentionally a presentation gate for live/streamed tactical play so victory cannot be committed before an arriving wave is visibly incorporated.
+- Classic Lineup uses the one-shot `resolveMission(...)` simulation path.
+- If AEGIS killed the complete newly arrived reinforcement group in the same simulated round, the zero-living-alien branch could stop the simulation before that presentation-only flag was retired.
+- Final terminal authority therefore saw zero living aliens but `reinforcementArrivalCommitPending:true`, so `success` remained false and campaign aftermath received a failure/incomplete result.
+
+HOTFIX
+------
+- Adds `tacticalOfflineSimulationCommitReinforcementArrival(...)`.
+- Before one-shot/offline final mission resolution, the helper clears `arrivalCommitPending` only when every recorded `arrivalUnitId` exists in the authoritative simulated unit roster.
+- This proves the arriving force was actually incorporated into simulation before the presentation gate is retired.
+- Missing arrival identities remain blocked. Truly inbound reinforcements remain blocked.
+- Streamed Simulation AI keeps its existing arrival-presentation commit behavior because `simulationChunkOnly` bypasses this offline repair.
+- Crash-site UFO-bay elimination authority, Last Known Contact, Beacon/reinforcement-source duties, mandatory VIP quotas, squad-wipe rules, Browser 1242 casualty authority, and save format 4 are unchanged.
+
+VALIDATION
+----------
+- Focused contract reproduces a crash-site terminal state with zero living aliens and a stale incorporated reinforcement presentation gate: blocked before repair, victory after repair.
+- A missing reinforcement ID remains pending and does not get falsely committed.
+- Runtime/host/service-worker syntax and package identity are release-checked.
+
+FIELD ACCEPTANCE
+----------------
+1. Run Classic Lineup on a UFO crash site and allow a reinforcement wave to arrive.
+2. Kill every alien, including the final reinforcement group.
+3. Confirm the final playback state shows zero living aliens and the mission resolves Success when no separate mandatory objective remains.
+4. Confirm the Mission Report is Success and survivor/KIA state remains accurate.
+5. Verify a genuinely inbound reinforcement wave still blocks victory until it actually arrives/resolves.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.09.1453_MOBILE_MEMORIAL_ADAPTIVE_LAYOUT_PATCH
 TITLE: Mobile Memorial Adaptive Layout
 DATE: September 9, 2026

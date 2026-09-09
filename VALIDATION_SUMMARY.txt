@@ -1,4 +1,27 @@
 PROJECT AEGIS — VALIDATION SUMMARY
+Build: v0.26.09.09.1517_CLASSIC_CRASH_SITE_TERMINAL_REINFORCEMENT_COMMIT_HOTFIX
+Save format: 4
+Base build: v0.26.09.09.1453_MOBILE_MEMORIAL_ADAPTIVE_LAYOUT_PATCH
+
+FOCUSED TERMINAL REGRESSION
+- CHECK - stale incorporated reinforcement arrival gate blocks victory before repair.
+- CHECK - `tacticalOfflineSimulationCommitReinforcementArrival` clears only when every arrival unit ID exists in the authoritative simulation roster.
+- CHECK - terminal crash-site state resolves victory after the incorporated presentation gate is retired and living alien count is zero.
+- CHECK - missing arrival identity leaves `arrivalCommitPending` true (fail closed).
+- CHECK - `resolveMission` applies the repair only outside `simulationChunkOnly`, preserving streamed AI arrival-presentation authority.
+- CHECK - save format remains 4 and Browser 1242 final casualty authority remains present.
+
+RELEASE IDENTITY
+Runtime bytes: 6798472
+Runtime SHA-256: ac26fede6ab31a748dd55c3baecae58e90548234577daabf61517f509f5e730a
+Host SHA-256: d821a79f12c384a98481e8181f762c1bd14e262c6e04cb616dd21007a4979fee
+
+FIELD ACCEPTANCE STILL REQUIRED
+Reproduce a Classic UFO crash-site run with a reinforcement arrival and kill the complete wave. Final zero-alien state must resolve Success when no other explicit mission gate remains. See TACTICAL_CLASSIC_CRASH_SITE_TERMINAL_FIELD_ACCEPTANCE.txt.
+
+--- PREVIOUS VALIDATION HISTORY ---
+
+PROJECT AEGIS — VALIDATION SUMMARY
 Build: v0.26.09.09.1453_MOBILE_MEMORIAL_ADAPTIVE_LAYOUT_PATCH
 Save format: 4
 Base build: v0.26.09.09.1324_MOBILE_REPORTS_ADAPTIVE_LAYOUT_PATCH

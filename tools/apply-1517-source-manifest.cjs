@@ -1,0 +1,10 @@
+const fs=require("fs");
+const path=require("path");
+const manifestPath=path.resolve(__dirname,"..","src","manifest.json");
+const manifest=JSON.parse(fs.readFileSync(manifestPath,"utf8"));
+manifest.currentBuild="v0.26.09.09.1517_CLASSIC_CRASH_SITE_TERMINAL_REINFORCEMENT_COMMIT_HOTFIX";
+manifest.lastInspectedBuild="v0.26.09.09.1517_CLASSIC_CRASH_SITE_TERMINAL_REINFORCEMENT_COMMIT_HOTFIX";
+manifest.status="classic-crash-site-terminal-reinforcement-commit-hotfix-complete";
+manifest.gameplayParity={...(manifest.gameplayParity||{}),browserBuild:"v0.26.09.09.1517_CLASSIC_CRASH_SITE_TERMINAL_REINFORCEMENT_COMMIT_HOTFIX"};
+fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2)+"\n","utf8");
+console.log("Updated src/manifest.json to v0.26.09.09.1517_CLASSIC_CRASH_SITE_TERMINAL_REINFORCEMENT_COMMIT_HOTFIX without replacing unrelated manifest content.");

@@ -1,0 +1,13 @@
+PROJECT AEGIS — CLASSIC CRASH-SITE TERMINAL FIELD ACCEPTANCE
+Build: v0.26.09.09.1517_CLASSIC_CRASH_SITE_TERMINAL_REINFORCEMENT_COMMIT_HOTFIX
+
+1. Launch a UFO Crash Site using Classic Lineup View.
+2. Prefer a run in which an alien reinforcement wave is called and visibly arrives.
+3. Let the simulation continue until every alien in the initial force and reinforcement wave is dead.
+4. Confirm the final Classic frame reports Alien survivors: 0.
+5. With no unresolved Last Known Contact, active Beacon/UFO-bay source duty, genuinely inbound reinforcement wave, or mandatory rescue failure, confirm the mission resolves Success.
+6. Return to base and confirm Mission Report says Success.
+7. Confirm surviving soldiers retain correct HP/status and genuine KIA remain KIA (Browser 1242 authority).
+8. Repeat with a reinforcement wave that is still genuinely inbound/not yet incorporated. Victory must remain blocked until it arrives or is legitimately cancelled.
+9. Repeat an ordinary crash site with no reinforcement call; elimination victory must remain unchanged.
+10. Confirm save format remains 4.

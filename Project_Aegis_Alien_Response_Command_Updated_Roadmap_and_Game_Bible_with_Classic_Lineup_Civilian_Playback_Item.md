@@ -1,21 +1,8 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.09.1517_CLASSIC_CRASH_SITE_TERMINAL_REINFORCEMENT_COMMIT_HOTFIX`
+Current browser build: `v0.26.09.09.1453_MOBILE_MEMORIAL_ADAPTIVE_LAYOUT_PATCH`
 
 Current save format: `4`
-
-## Current Build Addendum — Browser 1517 (September 9): Classic Crash-Site Terminal Reinforcement Commit Hotfix
-
-- Fixes a false mission failure observed in **Classic Lineup Mission Playback** on a UFO crash site after AEGIS visibly eliminated every alien.
-- Root cause was not Classic combat odds or the crash-site UFO-bay rule. Alien reinforcement arrival deliberately marks `arrivalCommitPending:true` so streamed/live tactical play cannot declare victory before the arrival presentation is committed.
-- Classic Lineup and instant simulation use the one-shot `resolveMission(...)` path. If the full just-arrived reinforcement group was killed in that same simulated round, the zero-alien branch could stop before the presentation-only arrival flag was retired. Final mission authority then saw **0 living aliens** but still rejected victory because `reinforcementArrivalCommitPending` remained true.
-- Offline/one-shot finalization now retires that presentation gate only when every `arrivalUnitId` is present in the authoritative simulated unit roster, proving the arrival was incorporated into the battlefield. A missing/uncommitted arrival identity remains blocking.
-- Streamed Simulation AI retains its existing arrival-presentation authority. A reinforcement wave that is still truly inbound continues to block victory. Genuine mandatory-objective failures, squad wipes, live aliens, unresolved Last Known Contact, and active reinforcement sources remain authoritative.
-- Browser 1242 survivor/KIA report authority and Browsers 1244/1324/1453 Mobile command-screen work remain intact. The approved Mobile upper-right tactical HUD and Classic Lineup civilian/VIP playback roadmap items remain queued. Save format remains **4**.
-
-### Field gate
-Run a UFO crash-site Classic Lineup mission that receives at least one reinforcement wave. Kill the final reinforcement(s), confirm the last playback state shows zero living aliens, and verify the operation resolves as **Success** unless a separate explicit mandatory objective is still unresolved. Repeat with a genuinely inbound/not-yet-incorporated reinforcement wave and confirm victory remains blocked.
-
 
 
 ## Current Build Addendum — Browser 1453 (September 9): Mobile Memorial Adaptive Layout
