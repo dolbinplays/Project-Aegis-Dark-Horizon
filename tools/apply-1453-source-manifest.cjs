@@ -1,0 +1,10 @@
+const fs=require("fs");
+const path=require("path");
+const manifestPath=path.resolve(__dirname,"..","src","manifest.json");
+const manifest=JSON.parse(fs.readFileSync(manifestPath,"utf8"));
+manifest.currentBuild="v0.26.09.09.1453_MOBILE_MEMORIAL_ADAPTIVE_LAYOUT_PATCH";
+manifest.lastInspectedBuild="v0.26.09.09.1453_MOBILE_MEMORIAL_ADAPTIVE_LAYOUT_PATCH";
+manifest.status="mobile-memorial-adaptive-layout-patch-complete";
+manifest.gameplayParity={...(manifest.gameplayParity||{}),browserBuild:"v0.26.09.09.1453_MOBILE_MEMORIAL_ADAPTIVE_LAYOUT_PATCH"};
+fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2)+"\n","utf8");
+console.log("Updated src/manifest.json to v0.26.09.09.1453_MOBILE_MEMORIAL_ADAPTIVE_LAYOUT_PATCH without replacing unrelated manifest content.");

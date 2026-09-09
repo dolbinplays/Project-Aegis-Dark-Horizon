@@ -1,6 +1,56 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.09.1453_MOBILE_MEMORIAL_ADAPTIVE_LAYOUT_PATCH
+TITLE: Mobile Memorial Adaptive Layout
+DATE: September 9, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.09.1324_MOBILE_REPORTS_ADAPTIVE_LAYOUT_PATCH
+
+SUMMARY
+-------
+Completes the current systematic Mobile · Adaptive command-screen pass with a purpose-built Hall of the Fallen layout while preserving existing KIA, retired-squad, tribute, mission-report, and tactical casualty authority.
+
+MOBILE MEMORIAL
+---------------
+- Memorial is fixed to the phone/tablet viewport between the established command rails; the command page no longer needs to vertically scroll the Standard wall plus full soldier dossier.
+- Portrait phones use Remembrance Wall index -> selected service record -> Back to wall.
+- Landscape phones and tablets display the compact fallen index beside the selected record, with each pane independently scrollable.
+- Fallen entries reuse `sortedMemorialSoldiers`, `memorialSortKey`, and `setSelectedMemorialSoldierId`; Name, Rank / Level, Missions, Kills, and Final Squad sorting remains authoritative.
+- Retired Squad Names remain in the index with retirement month, total-loss mission, and region.
+- Selected records reuse SoldierCard, memorialServiceSummary, MemorialTributeList, missions/kills/XP, squad history, final squad, and recovered-equipment presentation.
+- Empty KIA / retired-squad states remain explicit and readable.
+- Standard/Desktop Memorial remains unchanged.
+
+AUTHORITY PRESERVED
+-------------------
+- Browser 1242 terminal final-frame survivor/KIA authority and committed Tactical Victory precedence remain unchanged.
+- Browser 1244 Mobile Missions and Browser 1324 Mobile Reports remain intact.
+- The approved Mobile tactical upper-right soldier / fire-team / objective HUD remains a roadmap item and is not silently folded into this command-screen patch.
+- Save format remains 4.
+
+VALIDATION
+----------
+- Mobile Memorial patch flag, fixed command-root CSS, index/detail/back flow, retired-squad presentation, shared selection/sort authority, SoldierCard tribute detail, Standard separation, and save-format contracts are checked.
+- Runtime, host, service worker, source-manifest updater, embedded payload identity, build/cache synchronization, and ZIP integrity are release gates.
+- Physical phone/tablet acceptance remains required.
+
+FIELD ACCEPTANCE
+----------------
+1. Open Memorial on a portrait phone with several KIA; select a soldier and verify the selected service record opens with Back to wall.
+2. Change every sort mode and verify the same authoritative KIA set is reordered, not duplicated.
+3. Verify Retired Squad Names and their loss details remain reachable.
+4. Rotate to landscape / test tablet and verify index + selected record are visible simultaneously and scroll independently.
+5. Inspect service summary, honors, notes, missions/kills/XP, squad history, final squad, recovered equipment, and tributes.
+6. Switch to Standard and verify the original Hall of the Fallen wall/dossier remains unchanged.
+7. After a real mission with a genuine KIA, confirm the soldier appears once in Memorial while surviving soldiers remain absent.
+8. Confirm save format remains 4.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.09.1324_MOBILE_REPORTS_ADAPTIVE_LAYOUT_PATCH
 TITLE: Mobile Reports Adaptive Layout
 DATE: September 9, 2026

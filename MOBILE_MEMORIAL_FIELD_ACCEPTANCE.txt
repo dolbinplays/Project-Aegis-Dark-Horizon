@@ -1,0 +1,15 @@
+PROJECT AEGIS — MOBILE MEMORIAL FIELD ACCEPTANCE
+Build: v0.26.09.09.1453_MOBILE_MEMORIAL_ADAPTIVE_LAYOUT_PATCH
+
+1. Select Mobile · Adaptive and open Memorial on a portrait phone. Confirm the command page itself does not vertically scroll behind the rails.
+2. With no KIA, confirm the empty Remembrance Wall guidance is readable and Retired Squad Names has an explicit empty state.
+3. With several KIA, verify every fallen soldier appears once with grayscale portrait, name, missions, kills, and final squad.
+4. Test Name, Rank / Level, Missions, Kills, and Final Squad sorting. The authoritative KIA set must not change.
+5. Tap a fallen soldier. Confirm the selected service record replaces the index and Back to wall remains reachable.
+6. Verify Service Summary, Honors, Final Notes, Missions, Kills, XP, Served With, Final Squad, Recovered Equipment, and tribute entries remain reachable.
+7. Tap Back to wall and confirm focus/selection returns to the selected soldier entry where practical.
+8. Verify Retired Squad Names shows the squad name, retirement month, total-loss mission, and region.
+9. Rotate to landscape and test a tablet. Confirm Remembrance Wall + selected record appear side-by-side and scroll independently.
+10. Switch to Standard. Confirm the original Hall of the Fallen wall, offerings, retired-squad panel, sorting, and full SoldierCard remain unchanged.
+11. Complete a real mission with one genuine KIA and surviving soldiers. Confirm only the genuine KIA is added to Memorial and survivors remain in Barracks/Sickbay as appropriate.
+12. Confirm Browser 1242 survivor/KIA Mission Report behavior remains correct and save format remains 4.

@@ -1,0 +1,25 @@
+PROJECT AEGIS — v0.26.09.09.1453_MOBILE_MEMORIAL_ADAPTIVE_LAYOUT_PATCH
+
+Overlay/replace these release files in the existing repository:
+- index.html
+- src/browser-runtime.html
+- service-worker.js
+- release-metadata.json
+- README_PATCH_NOTES.txt
+- Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+- PWA_DEPLOYMENT_README.txt
+- MOBILE_MEMORIAL_FIELD_ACCEPTANCE.txt
+- CODEX_HANDOFF_MOBILE_MEMORIAL_ADAPTIVE_LAYOUT_PATCH.md
+- CODEX_HANDOFF.md
+- VALIDATION_SUMMARY.txt
+- tools/apply-1453-source-manifest.cjs
+- APPLY_1453_SOURCE_MANIFEST.bat
+- src/manifest.1453.merge.json
+
+SOURCE MANIFEST — REQUIRED
+After overlaying, run from repository root:
+  node tools/apply-1453-source-manifest.cjs
+
+This changes only currentBuild, lastInspectedBuild, gameplayParity.browserBuild, and status while preserving the repository's full parity/history manifest.
+
+Retain the existing assets/ tree and manifest.webmanifest. Do not delete unrelated QA/tools files.

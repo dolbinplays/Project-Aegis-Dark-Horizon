@@ -1,22 +1,8 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.09.1453_MOBILE_MEMORIAL_ADAPTIVE_LAYOUT_PATCH`
+Current browser build: `v0.26.09.09.1324_MOBILE_REPORTS_ADAPTIVE_LAYOUT_PATCH`
 
 Current save format: `4`
-
-
-## Current Build Addendum — Browser 1453 (September 9): Mobile Memorial Adaptive Layout
-
-- Completes the current systematic **Mobile · Adaptive** command-screen sequence after Browser 1324 Reports with a dedicated Hall of the Fallen phone/tablet workspace.
-- Mobile Memorial is viewport-bounded between the existing command rails. Portrait phones use a **Remembrance Wall index → selected service record → Back to wall** flow; landscape phones and tablets show the index beside the selected record. Both panes scroll independently.
-- The Mobile remembrance index consumes the existing `sortedMemorialSoldiers`, `memorialSortKey`, and `setSelectedMemorialSoldierId` authority. Name, Rank / Level, Missions, Kills, and Final Squad sorting therefore remain shared with Standard rather than being reimplemented.
-- Compact fallen-soldier rows retain grayscale portrait, name, missions, kills, and final squad. **Retired Squad Names** remain visible with retirement month, total-loss mission, and region. Empty states are explicit for campaigns without KIA or retired squads.
-- The selected record reuses the existing `SoldierCard`, `memorialServiceSummary`, `MemorialTributeList`, missions/kills/XP, squad-history, final-squad, and recovered-equipment presentation.
-- Browser 1242 terminal survivor/KIA and Mission Report authority, Browser 1244 Mobile Missions, and Browser 1324 Mobile Reports remain intact. Standard/Desktop Memorial is unchanged. Save format remains **4**.
-- The approved **Mobile Tactical Upper-Right Unit / Fire-Team / Objective HUD** item remains queued as the next focused tactical-mobile presentation patch after this systematic command-screen sequence.
-
-### Field gate
-Test Memorial with no KIA, one KIA, a long fallen roster, retired squads, every sort mode, portrait index/detail/back behavior, landscape/tablet split view, tribute inspection, Mobile→Standard parity, and a newly generated KIA after a real mission.
 
 ## Current Build Addendum — Browser 1324 (September 9): Mobile Reports Adaptive Layout
 
@@ -31,7 +17,7 @@ Test Memorial with no KIA, one KIA, a long fallen roster, retired squads, every 
 
 QA focus: portrait index/detail/back flow; monthly summary; mission report/action log; long archived tactical timeline; post-mission direct report restore; landscape/tablet split; Council slide replay; Mobile→Standard parity. See `MOBILE_REPORTS_FIELD_ACCEPTANCE.txt`.
 
-Systematic Mobile command-screen pass through Memorial is complete in Browser 1453. Next focused Mobile tactical presentation item: **upper-right unit / fire-team / objective HUD**.
+Next systematic mobile target: **Memorial**.
 
 ## Roadmap Addition — Mobile Tactical Upper-Right Unit / Fire-Team / Objective HUD
 
