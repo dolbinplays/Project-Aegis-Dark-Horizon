@@ -1,9 +1,9 @@
-Build: v0.26.09.08.1241_MOBILE_SOLDIERS_BARRACKS_ADAPTIVE_LAYOUT_PATCH
-Base commit: 12b5c64 (0728 Mobile Mainframe Database)
+Build: v0.26.09.08.1739_MOBILE_RESEARCH_WORKSHOP_ADAPTIVE_LAYOUT_PATCH
+Base commit: b5697fe (1241 Barracks disclosure persistence; verified on origin/main)
 Save format: 4
-Runtime bytes: 6700665
-Runtime SHA-256: 35427d89163ab316cead50856b854f4be40531a29b87860f5126cd622829ee38
-Host SHA-256: c4e887c97bbd9a11f1a0c6563bf522203dd408e5fc409e7c8eda793738ad43d8
+Runtime bytes: 6709608
+Runtime SHA-256: 8d6138d0b8b8454900adfbe03931d72ece721ebe630692e195ea63a68c2e7155
+Host SHA-256: 8a771f82838583c1541863fce45d07dbea225a652023cfe45befce8f80ce572a
 
 Automated checks
 - Canonical packaging: PASS; source manifest, embedded runtime, release hashes, and both offline cache versions synchronized.
@@ -14,24 +14,26 @@ Automated checks
 - node tools/test-ai-playback-sequencer.cjs: PASS (16/16).
 - Mobile QA harness inline JavaScript syntax: PASS.
 - git diff --check: PASS.
-- Compared the pre-patch Barracks overview and roster expressions with the new component inputs: identical, including every existing personnel callback.
+- Compared all 12 research/hiring/production/funding/sale action functions with the prior commit: unchanged.
 
 Browser verification
-- Barracks disclosure follow-up: dossier-only, stats-only, both-open, and both-closed choices persist independently when selecting another soldier. Verified at 844x390 and through Back to roster at 390x844, Base / Recruiting navigation, and changing bases. Explicitly closing either section persists on subsequent selections.
-- Real disposable campaign, 844x390 and 667x375: Mobile opens through the Soldiers rail; roster and selected dossier fit between rails with independent scrolling and no horizontal overflow. Only one full SoldierCard mounts.
-- Real campaign: Remove Weapon returned one Ballistic Rifle to local stock; Equip consumed it and restored the weapon. Specialization changed to Medic and downtime to Standby; sorting retained the selected soldier and current actions.
-- Real campaign: Base / Recruiting admitted a pending three-day recruit and updated projected personnel from 11/12 to 12/12. The panel retained downtime, stock, and recruitment information.
-- Real campaign: Menu / Save switched back to Standard at 1280x800; all six cards rendered in the existing three-column roster and the mobile workspace was absent.
-- Long-roster fixture: 23 local soldiers, a remote soldier, and an empty base. Base selection showed only the supplied local roster and cleared the previous selected card. Empty-base guidance displayed correctly.
-- Long-name transfer dialog at 667x375: full viewport overlay at layer 12000, scrollable inner content, no horizontal overflow; Confirm Transfer remained reachable. The real SoldierTransferControls called the fixture callback with the correct soldier and destination IDs; row removal closed selected actions.
-- Recovery fixture: selecting the overflow patient and invoking admission removed the row and cleared its selected controls. Transfer and admission fixture callbacks model removal only; they do not exercise campaign transfer/recovery authority.
-- 390x844: selected dossier replaced the roster, Back remained visible, and Back restored focus and scroll position to the selected row. Expanded dossier and stats fit without horizontal overflow; measured buttons/selects/summaries were at least 44px high.
-- 1024x768, 768x1024, and 844x390: roster/detail panes remained visible, bounded, and free of horizontal overflow after rotation.
-- No browser error logs during fixture checks.
+The production fixture uses the real campaign UI and callbacks, initialized through normal new-game setup on a dedicated local origin.
+- Research: all three sections opened. Decreasing scientists changed daily progress and ETA; zero and available maximum were respected and the corresponding step button disabled. Starting Battlefield Medicine opened Project with the correct topic.
+- Hiring a scientist created a three-day pending arrival. Completing research advanced 11 campaign days, unlocked the topic, advanced workshop work, and processed the arrival. The final implementation kept focus on Skip to Project Completion when the next automatic topic began.
+- Workshop: the six-order fixture scrolled inside its bounded Orders panel. Adjusting quantity changed total work and funded/requested counts without funding the added item. Engineer steppers stopped at the capacity still available across other orders.
+- A blocked build with all engineers assigned left Build selected. After releasing one engineer, creating a new order opened Orders and reset that pane to the top.
+- Production-base selection showed three Laser Carbines at the origin and no manufactured stock at the remote base. A newly created remote order retained the remote destination while earlier queues kept their origin.
+- Research completion produced one local Laser Carbine and paused its second requested item for funding. Keep Queue Paused retained the pause; reopening approval and approving 160k changed funded count to 2/2 and resumed the queue. Selling the delivered stock changed the selected base's Laser Carbine count from four to three.
+- At 667x375 the funding overlay fit the viewport and both buttons were reachable above the mobile rails.
+- Orders restored an observed scroll position of 4356px after switching to Build and back. At 390x844 all visible order controls were at least 44px high, and the pane had no horizontal overflow.
+- 844x390, 667x375, 390x844, 768x1024, and 1024x768 checks covered bounded workspaces and section controls. Taller content scrolled; panes and controls stayed within the central workspace.
+- Empty project and empty order states displayed their existing guidance. An empty production-base stock panel displayed its existing message.
+- Standard at 1280x800 retained the Research overview, Active Project, Available Research, Workshop overview, Construct Items, and Build Orders panels. Original native range controls rendered without mobile stepper wrappers.
+- No browser error logs in the final production smoke check.
 
 Build Health
-Deterministic browser run: 803/865, with exactly the same 62 pre-existing failures and no added or resolved failures relative to the established baseline. No Build Health diagnostics were changed.
+Final deterministic browser run: 803/865, with exactly the same 62 pre-existing failures and no added or resolved failures relative to the established baseline. No Build Health diagnostics were changed.
 
 Release scope and limits
-Barracks presentation only. Existing personnel, inventory, recovery, and transfer authority, tactical AI, and save format 4 are unchanged. No persisted campaign fields were added.
-Physical phone/tablet touch, installed-PWA behavior, and extended campaign field acceptance remain to be performed using MOBILE_BARRACKS_FIELD_ACCEPTANCE.txt.
+Presentation and input accessibility only. Existing research eligibility, personnel capacity, campaign-day advancement, funding approval, production ownership, sales, tactical AI, and save format 4 remain unchanged. No persisted campaign fields were added.
+Physical-device touch, installed-PWA behavior, and extended campaign acceptance remain pending using MOBILE_PRODUCTION_FIELD_ACCEPTANCE.txt.

@@ -1,3 +1,22 @@
+# CODEX HANDOFF — v0.26.09.08.1739_MOBILE_RESEARCH_WORKSHOP_ADAPTIVE_LAYOUT_PATCH
+
+Completed the next Mobile · Adaptive screens: Research and Workshop. The preceding Barracks disclosure fix is committed and pushed as b5697fe.
+
+- Mobile Research uses Project, Topics, and Staff / Tech sections. Mobile Workshop uses Orders, Build, and Staff / Stock sections.
+- Both workspaces fit between the command rails with bounded, independently retained section scrolling and compact cards. Available topics and items use two columns when screen space permits.
+- Mobile scientist, engineer, and order-quantity sliders include one-step minus and plus buttons. Engineer controls reflect staff still available across active orders.
+- The Workshop production-base selector controls the destination of new orders and the stock shown in Staff / Stock. Existing orders retain their original destination.
+- Successfully starting work from a catalog opens the active project or orders. Background progress does not change the selected section or move keyboard focus.
+- Existing research eligibility, hiring capacity, project completion, item funding, local stock, and sales callbacks are retained. Standard keeps its existing panels and native sliders; save format 4 and tactical AI are unchanged.
+
+Implementation: module-scope ProductionScreen receives each campaign screen's existing overview and work elements. Their work children remain the existing heading/content pairs; Mobile places those pairs into separate scrollable panels. Standard returns the original two-column layout. ProductionRangeControl adds mobile steppers around the same range input and passes values to the existing assignment/quantity callbacks. No new persisted campaign fields or transaction rules were introduced.
+
+QA: tools/mobile-interface-qa.html?production=research|workshop[&empty][&funding][&layout=standard] customizes only new-game fixture data. Use a dedicated local origin and the normal Start New Game / first-base confirmation flow. Unlike the component-only fixtures, this runs the actual campaign UI and its actions.
+
+See VALIDATION_SUMMARY.txt for results. Package through node tools/package-runtime-shell.cjs after synchronizing src/manifest.json. Next mobile candidate: Squads, then Sickbay, after field acceptance of Research / Workshop.
+
+---
+
 # CODEX HANDOFF — v0.26.09.08.1241_MOBILE_SOLDIERS_BARRACKS_ADAPTIVE_LAYOUT_PATCH
 
 Completed the next Mobile · Adaptive screen: Soldiers / Barracks.

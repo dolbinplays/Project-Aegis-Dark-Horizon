@@ -2,11 +2,13 @@
 <style>html,body{margin:0;height:100%;overflow:hidden;background:#081724;color:white;font:14px sans-serif}iframe{display:block;width:100%;height:100%;border:0}#result{position:fixed;bottom:0;left:0;max-height:45vh;overflow:auto;background:#081724;z-index:999;white-space:pre-wrap}</style>
 <iframe id="game" title="Game preview"></iframe><output id="result">Loading test harness…</output>
 <script>
-// Developer-only harness. Open through a local HTTP server; it never writes campaign saves.
+// Developer-only harness. Open through a dedicated local HTTP origin.
+// Component fixtures never write campaign saves; ?production uses the actual campaign UI.
 // Default: two-soldier tactical fixture. ?health: deterministic Build Health.
 // ?objectives: a many-team decision sheet for viewport, layering, and action checks.
 // ?database[&empty][&layout=standard]: real Mainframe component with known/locked fixture records.
 // ?barracks[&empty][&layout=standard]: long local roster, recovery patient, and transfer dialog.
+// ?production=research|workshop[&empty][&funding][&layout=standard]: seeded new-campaign setup.
 // ?health&baseline: compare an earlier packaged host copied to /__mobile_baseline.html.
 const params=new URLSearchParams(location.search), frame=document.querySelector('#game'), result=document.querySelector('#result');
 frame.src=params.has('baseline')?'../__mobile_baseline.html':'../index.html?qa='+Date.now();
@@ -37,6 +39,24 @@ const ready=setInterval(()=>{
           w.React.createElement('div',{className:'mx-auto'},w.React.createElement(w.MainframeDatabaseScreen,{identifiedAliens:empty?[]:species,tech,gearInventory,alienFieldBeaconKnowledge:empty?'unknown':'confirmed',selectedDatabaseAlien:selected,setSelectedDatabaseAlien:setSelected})));
       }
       w.ReactDOM.createRoot(mount).render(w.React.createElement(DatabaseFixture));result.style.display='none';
+    }else if(params.has('production')){
+      w.writeAegisInterfaceLayout(params.get('layout')==='standard'?'standard':'mobile');
+      const originalNewGame=w.makeNewGameData;
+      w.makeNewGameData=setup=>{
+        const game=originalNewGame(setup),origin=game.bases[0],remote=w.initialBase({name:'QA Remote Production',region:'Europe'});
+        origin.grid[1][2]='workshop';origin.grid[1][3]='quarters';
+        game.bases=[origin,remote];game.funds=10000;game.engineers=10;game.tech=['Ballistic Weapons','Laser Weapons','Alien Alloys'];
+        const names=w.availableWorkshopItems(game.tech),catalog=w.eval('WORKSHOP_ITEMS');
+        game.baseInventories={[origin.id]:{...game.gearInventory,[names[0]]:3},[remote.id]:{...game.gearInventory}};
+        game.workshopOrders=params.has('empty')?[]:Array.from({length:6},(_,i)=>{
+          const name=names[i%names.length],item=catalog[name],paused=i===0&&params.has('funding');
+          return {id:'qa-order-'+i,itemName:name,quantity:paused?3:1,paidItems:1,completed:paused?1:0,progress:paused?item.work:0,pausedForFunding:paused,assignedEngineers:1,destinationBaseId:origin.id,destinationBaseName:origin.name};
+        });
+        game.research=params.has('empty')?{topic:null,progress:0,assignedScientists:0}:{topic:w.availableResearchTopics(game.tech,null,game.gearInventory)[0],progress:0,assignedScientists:5};
+        game.tab=params.get('production')==='workshop'?'workshop':'research';game.geoscapeClockRunning=false;
+        return game;
+      };
+      result.style.display='none';
     }else if(params.has('barracks')){
       w.writeAegisInterfaceLayout(params.get('layout')==='standard'?'standard':'mobile');
       const game=w.makeNewGameData({openingIncidentSeed:12345}),origin={...game.bases[0],name:'QA Headquarters'},destination=w.initialBase({name:'QA Remote Base',region:'Europe'}),emptyBase=w.initialBase({name:'QA Empty Base',region:'Africa'}),bases=[origin,destination,emptyBase];

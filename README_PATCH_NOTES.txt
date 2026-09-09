@@ -1,3 +1,20 @@
+BUILD: v0.26.09.08.1739_MOBILE_RESEARCH_WORKSHOP_ADAPTIVE_LAYOUT_PATCH
+TITLE: Mobile Research / Workshop Adaptive Layout
+DATE: September 8, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.08.1241_MOBILE_SOLDIERS_BARRACKS_ADAPTIVE_LAYOUT_PATCH (b5697fe, including Barracks disclosure persistence)
+
+- Mobile Research uses Project, Topics, and Staff / Tech sections. Mobile Workshop uses Orders, Build, and Staff / Stock sections.
+- Both workspaces fit between the command rails with bounded, independently retained section scrolling and compact cards. Available topics and items use two columns when screen space permits.
+- Mobile scientist, engineer, and order-quantity sliders include one-step minus and plus buttons. Engineer controls reflect staff still available across active orders.
+- The Workshop production-base selector controls the destination of new orders and the stock shown in Staff / Stock. Existing orders retain their original destination.
+- Successfully starting work from a catalog opens the active project or orders. Background progress does not change the selected section or move keyboard focus.
+- Existing research eligibility, hiring capacity, project completion, item funding, local stock, and sales callbacks are retained. Standard keeps its existing panels and native sliders; save format 4 and tactical AI are unchanged.
+
+Validation: see VALIDATION_SUMMARY.txt. The local QA harness supports ?production=research or ?production=workshop and seeds an actual disposable campaign through the normal new-game setup. See MOBILE_PRODUCTION_FIELD_ACCEPTANCE.txt for physical-device checks.
+
+---
+
 BUILD: v0.26.09.08.1241_MOBILE_SOLDIERS_BARRACKS_ADAPTIVE_LAYOUT_PATCH
 TITLE: Mobile Soldiers / Barracks Adaptive Layout
 DATE: September 8, 2026

@@ -1,0 +1,17 @@
+MOBILE RESEARCH / WORKSHOP — PHYSICAL DEVICE ACCEPTANCE
+Build: v0.26.09.08.1739_MOBILE_RESEARCH_WORKSHOP_ADAPTIVE_LAYOUT_PATCH
+
+Use a disposable campaign on physical phones/tablets and in the installed PWA.
+
+1. Choose Mobile · Adaptive. In landscape, open Research and switch among Project, Topics, and Staff / Tech. Both command rails and section buttons should remain reachable while content scrolls.
+2. Start an eligible topic. Confirm Project opens with the correct topic. Use minus/plus and the slider to assign scientists, including zero and the available maximum; progress and ETA should match.
+3. Hire a scientist when capacity permits. Confirm the pending arrival and cost. Complete research in the disposable campaign and verify its technology unlock and ordinary campaign-day effects.
+4. In Workshop, switch among Orders, Build, and Staff / Stock. Check all controls on a long order queue and confirm each section remembers its scroll position when switching away and back.
+5. Adjust requested quantity and engineers using both steppers and sliders. Quantity cannot fall below completed items plus the current item. Engineers cannot exceed the staff available across orders.
+6. Select a second production base, add an eligible order, and check its destination. Existing orders must retain their destination; stored items should follow the base selector in Staff / Stock.
+7. Increase a queue beyond its funded quantity and advance days until the next item needs funding. Keep Queue Paused should leave it paused; approval should deduct one item's cost and resume it. Both choices must remain reachable above mobile controls.
+8. Check an empty research project, empty build queue, and a base with no manufactured stock. Check selling one item updates only that base's stock.
+9. Rotate portrait and landscape, expand/collapse browser chrome, and repeat on a tablet. No controls should extend horizontally beyond the central workspace; taller content should scroll.
+10. Use Menu / Save to select Standard. Verify the original Research and Workshop panels and native sliders return, then switch back to Mobile.
+
+Record device, OS, browser/PWA mode, viewport/orientation, and any touch, clipping, scrolling, or focus problems.
