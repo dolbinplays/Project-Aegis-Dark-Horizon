@@ -1,8 +1,38 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.09.1058_FINAL_VIP_TERMINAL_VICTORY_SURVIVOR_COMMIT_HOTFIX`
+Current browser build: `v0.26.09.09.1244_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 1244 (September 9): Mobile Missions Adaptive Layout
+
+- Formalizes the partially staged Mobile Missions adapter that was present in the Browser 0707 source lineage but had not yet been promoted to its own synchronized release.
+- Mobile Mission Control now owns a bounded phone/tablet viewport between the established command rails with **Briefing / Squads / Launch** preparation sections.
+- Briefing keeps incident facts, current response-force summary, squad power, threat estimate, and survivability readable inside one independently scrolling pane.
+- Squads retains the existing primary-squad and support-squad authority while adding a mobile primary selector, Barracks-base selector, and a separate response-force / ready-soldier pane. Portrait phones stack the panes; landscape phones and tablets use a two-column split.
+- Launch keeps the selected response-force summary and AI leader orders beside the existing four launch modes without duplicating launch callbacks or campaign rules.
+- Mobile mission-launch confirmation uses a fixed-height dialog with a scrollable review body and persistent Cancel / Confirm controls so transport, local-loadout, and roster details cannot push the actions below the viewport.
+- Mobile launch confirmation also restores focus after closing and traps Tab navigation while open.
+- The adapter now validates the desktop element structure before rearranging it and falls back to the unchanged Standard Mission Control if that structure no longer matches, preventing a future desktop refactor from becoming a Mobile-only crash.
+- Browser 1242 final-VIP committed-frame survivor/KIA authority remains unchanged. Save format remains **4**.
+
+### Field gate
+Test no-incident, selected-incident, primary/support squad changes, Barracks-base changes, leader orders, all four launch modes, and the launch confirmation on portrait phone, landscape phone, and tablet. Then switch to Standard and confirm the original desktop preparation screen is unchanged. **Reports** is the next systematic Mobile · Adaptive target, followed by **Memorial**.
+
+
+## Current Build Addendum — Browser 1242 (September 9): Final VIP Playback Completion + Casualty Authority Hotfix
+
+- Follow-up review of Browser 1058 found that a second later `finishAiPlayback()` declaration overrode the hotfix-aware handler. TacticalMission now has one consolidated playback-completion owner for Hybrid continuation and terminal Simulation results.
+- Terminal completion uses the final buffered `Mission success` frame as the authoritative battlefield snapshot even when the currently rendered frame is earlier or playback is finished at a boundary.
+- Permanent casualty authority now distinguishes simulation state from presentation state: omitted `alive` plus positive HP remains a living survivor, while explicit `alive:false` remains a genuine casualty even if a death animation temporarily carries positive display HP.
+- Final committed-frame reconciliation normalizes human/alien casualties, survivors, and rescued/extracted civilians before Mission Report growth/medical/KIA data is generated.
+- Once Tactical Victory has been committed, a transient zero-human presentation count cannot replace it with Squad Lost. Genuine wipes and explicit deaths remain authoritative.
+- Source-manifest synchronization is now an explicit release step through the included non-destructive updater so the repository's full parity manifest is preserved while its four build/status fields advance together.
+- Save format remains **4**.
+
+### Field gate
+Repeat a final-VIP victory with survivors and, if practical, at least one genuine KIA. Verify the report records Success, preserves survivor HP, keeps explicit casualties KIA, preserves civilian rescue totals, and never allows a committed victory to downgrade into Squad Lost.
+
 
 ## Current Build Addendum — Browser 1058 (September 9): Final VIP Terminal Victory Survivor Commit Hotfix
 

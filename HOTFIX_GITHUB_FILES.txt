@@ -1,4 +1,4 @@
-PROJECT AEGIS — v0.26.09.09.1058_FINAL_VIP_TERMINAL_VICTORY_SURVIVOR_COMMIT_HOTFIX
+PROJECT AEGIS — v0.26.09.09.1242_FINAL_VIP_PLAYBACK_COMPLETION_AND_CASUALTY_AUTHORITY_HOTFIX
 
 Overlay/replace these release files in the existing repository:
 - index.html
@@ -8,18 +8,27 @@ Overlay/replace these release files in the existing repository:
 - README_PATCH_NOTES.txt
 - Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
 - PWA_DEPLOYMENT_README.txt
-- TACTICAL_FINAL_VIP_TERMINAL_VICTORY_FIELD_ACCEPTANCE.txt
-- CODEX_HANDOFF_FINAL_VIP_TERMINAL_VICTORY_SURVIVOR_COMMIT_HOTFIX.md
+- TACTICAL_FINAL_VIP_PLAYBACK_COMPLETION_FIELD_ACCEPTANCE.txt
+- CODEX_HANDOFF_FINAL_VIP_PLAYBACK_COMPLETION_AND_CASUALTY_AUTHORITY_HOTFIX.md
 - VALIDATION_SUMMARY.txt
+- tools/apply-1242-source-manifest.cjs
+- APPLY_1242_SOURCE_MANIFEST.bat
+- src/manifest.1242.merge.json
 
-Retain the repository's existing assets/ tree and manifest.webmanifest/icons. manifest.webmanifest is included in this ZIP for completeness but its content is unchanged.
+SOURCE MANIFEST — REQUIRED
+Browser 1058 left the repository's full src/manifest.json on Browser 0707. This package avoids replacing that large parity/history manifest with a partial reconstruction. After overlaying, run from the repository root:
 
-SOURCE MANIFEST SYNC (src/manifest.json)
-The complete repository source manifest is intentionally not replaced by a partial reconstruction in this overlay ZIP. Update only these existing fields in the repository copy before/with deployment:
-- currentBuild = v0.26.09.09.1058_FINAL_VIP_TERMINAL_VICTORY_SURVIVOR_COMMIT_HOTFIX
-- lastInspectedBuild = v0.26.09.09.1058_FINAL_VIP_TERMINAL_VICTORY_SURVIVOR_COMMIT_HOTFIX
-- gameplayParity.browserBuild = v0.26.09.09.1058_FINAL_VIP_TERMINAL_VICTORY_SURVIVOR_COMMIT_HOTFIX
-- status = final-vip-terminal-victory-survivor-commit-hotfix-complete
+  node tools/apply-1242-source-manifest.cjs
+
+The updater preserves the complete existing manifest and changes ONLY:
+- currentBuild = v0.26.09.09.1242_FINAL_VIP_PLAYBACK_COMPLETION_AND_CASUALTY_AUTHORITY_HOTFIX
+- lastInspectedBuild = v0.26.09.09.1242_FINAL_VIP_PLAYBACK_COMPLETION_AND_CASUALTY_AUTHORITY_HOTFIX
+- gameplayParity.browserBuild = v0.26.09.09.1242_FINAL_VIP_PLAYBACK_COMPLETION_AND_CASUALTY_AUTHORITY_HOTFIX
+- status = final-vip-playback-completion-and-casualty-authority-hotfix-complete
+
+Then run the normal repository release checks/package tooling.
+
+Retain the repository's existing assets/ tree and icons. manifest.webmanifest is included unchanged for completeness.
 
 CODEX
-Prepend the contents of CODEX_HANDOFF_FINAL_VIP_TERMINAL_VICTORY_SURVIVOR_COMMIT_HOTFIX.md to the repository's existing CODEX_HANDOFF.md rather than replacing its accumulated history.
+Prepend CODEX_HANDOFF_FINAL_VIP_PLAYBACK_COMPLETION_AND_CASUALTY_AUTHORITY_HOTFIX.md to the repository's accumulated CODEX_HANDOFF.md rather than replacing its history.

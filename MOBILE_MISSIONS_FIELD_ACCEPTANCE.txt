@@ -1,0 +1,30 @@
+PROJECT AEGIS — MOBILE MISSIONS FIELD ACCEPTANCE
+Build: v0.26.09.09.1244_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH
+Save format: 4
+
+PHONE — NO INCIDENT
+1. Select Mobile · Adaptive and open Missions before choosing an incident.
+2. Confirm the command screen stays between the side rails and does not whole-page scroll.
+3. Confirm Open Incident List and Use Highest Threat Incident are reachable.
+
+PHONE — SELECTED INCIDENT
+4. Select an active incident. Confirm Briefing / Squads / Launch are all visible as large touch targets.
+5. Briefing: inspect region/threat/alien, selected response force, power, threat estimate, and survivability. Scroll only the pane.
+6. Squads: change the primary squad and optional support squad. Confirm the displayed response-force state updates.
+7. Change Barracks base and verify ready-soldier information remains usable.
+8. On portrait, confirm squad-selection and roster panes stack vertically and each can scroll.
+9. On landscape/tablet, confirm the two panes sit side-by-side and remain independently scrollable.
+
+LAUNCH
+10. Edit Orders for AI team leader, switch away from Launch, return, and confirm the campaign-owned text remains.
+11. Open Play Tactical Mission, Watch AI Team Leader, Simulate Encounter, and Classic Lineup View one at a time.
+12. In each confirmation, verify the body scrolls while Cancel / Confirm remain visible.
+13. Verify incident, region, threat, response force, launch base/transport, local loadout, and roster are readable.
+14. Cancel and confirm keyboard/touch focus returns to a sensible control.
+
+AUTHORITY / REGRESSION
+15. Switch from Mobile to Standard mid-preparation. Confirm the same selected incident, squads, support squad, leader orders, and base state are present.
+16. Launch a tactical mission and complete it if practical. Confirm Browser 1242 final-VIP survivor/KIA behavior remains correct.
+17. Standard/Desktop Mission Control should retain its original two-column presentation.
+
+Report any clipping, inaccessible action, unexpected whole-page scrolling, stale squad selection, launch mismatch, or mobile-only runtime error with the viewport/orientation and exact section.

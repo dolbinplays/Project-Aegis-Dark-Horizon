@@ -59,7 +59,7 @@ const ready=setInterval(()=>{
         Object.keys(game.hangarAircraft).filter(key=>key.startsWith(origin.id)).forEach(key=>game.hangarAircraft[key]='skyranger');
         game.aircraftFleet=w.normalizeAircraftFleet([],game.bases,game.hangarAircraft,1,game.aircraftUpgrades);
         game.missions=params.has('empty')?[]:Array.from({length:12},(_,i)=>({...w.makeMission(1),id:'qa-incident-'+i,kind:i===0?'QA Long-Range Civilian Rescue and Alien Incursion Response':`QA Incident ${String(i).padStart(2,'0')}`,region:origin.region,threat:i===0?5:1+i%4,location:params.has('far')?{lat:-origin.location.lat,lon:origin.location.lon+180}:{lat:origin.location.lat+0.02+i*0.01,lon:origin.location.lon+0.02},expires:3}));
-        game.activeSquadId=game.squads[0].id;game.activeMission=params.has('no-selection')?null:game.missions[0]||null;game.tab='missions';game.geoscapeClockRunning=false;
+        game.activeSquadId=game.squads[0].id;game.activeMission=null;game.tab='missions';game.geoscapeClockRunning=false;
         return game;
       };
       result.style.display='none';

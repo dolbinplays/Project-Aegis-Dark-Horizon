@@ -1,195 +1,61 @@
-# CODEX HANDOFF — v0.26.09.09.0707_MOBILE_SICKBAY_ADAPTIVE_LAYOUT_PATCH
+# CODEX HANDOFF — v0.26.09.09.1244_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH
 
-Completed the next Mobile · Adaptive screen: Sickbay. The preceding Squads patch is committed as 36182d1.
+Completed the next systematic Mobile · Adaptive command screen: **Missions / Mission Control**. This release builds on Browser 1242 and retains its final-VIP playback/casualty authority fixes.
 
-- Mobile Sickbay uses Beds, Barracks, and Care / Gear sections with a persistent base selector and local bed occupancy.
-- Landscape phones and larger tablets show a compact patient list beside one selected SoldierCard. Narrow screens show the list or record with Back to list; both panes remain bounded and scroll independently.
-- Patient rows show recovery remaining, full- or half-speed healing, and time spent in their current care setting. Existing recovery and stay-duration sorting is retained, with Barracks-specific labels for overflow patients.
-- Direct Move to Barracks and Admit to bed actions retain the existing recovery rules and full-bed guard. Moving a selected patient clears stale details and returns focus to a neighboring action or the empty list.
-- Dossier and Show Stats choices carry independently across patients, recovery sections, and base changes. The selected card retains gear, Medkit, and squad controls; Care / Gear retains the selected base’s bulk gear recovery action.
-- Empty patient lists and bases without Sickbay beds have explicit guidance. Standard returns the original complete Sickbay panel. Recovery timing, inventory ownership, assignment authority, tactical AI, and save format 4 are unchanged.
+- The Browser 0707 source lineage already contained a partially staged Mobile Missions adapter; Browser 1244 formally promotes, hardens, versions, documents, and validates it.
+- Mobile Mission Control uses **Briefing / Squads / Launch** sections inside a fixed viewport between the command rails. Each work area owns its own scrolling; the command page itself remains bounded.
+- Squads reuses the existing primary-squad buttons, support-squad selector, selected Barracks base, response-force roster, and ready-soldier callbacks. Portrait stacks the two work panes; landscape/tablet uses a split view.
+- Launch reuses the existing `requestMissionLaunch` authority and leader-instruction state. No launch, squad, inventory, aircraft, or campaign rule was copied into a second mobile implementation.
+- `MissionLaunchReviewFrame` makes the launch confirmation viewport-bounded on Mobile, with scrollable review content, persistent Cancel / Confirm actions, focus entry/restore, and Tab containment.
+- `MissionControlScreen` now has shape guards. If a future Standard Mission Control refactor changes the element structure it expects, the Mobile adapter returns the original content rather than crashing.
+- Standard/Desktop returns the original Mission Control and launch confirmation unchanged. Save format remains 4.
 
-Implementation: module-scope SickbayScreen receives the original complete Sickbay element and base-selection props. Its raw children provide the header, sort controls, optional overflow notice, patient cards, and optional overflow cards. Standard returns that element unchanged. Mobile mounts one full SoldierCard and compact roster buttons. Both quick and full-card bed moves forward the existing callback and restore focus after the patient leaves the active list. Selection and disclosure choices are temporary presentation state.
+QA focus: no-incident state; Briefing; primary/support squad changes; Barracks-base changes; leader orders; all four launch modes; portrait stack; landscape/tablet split; launch confirmation scrolling/actions; Mobile→Standard state parity. See `MOBILE_MISSIONS_FIELD_ACCEPTANCE.txt`.
 
-QA: tools/mobile-interface-qa.html?sickbay[&empty][&layout=standard] customizes only new-campaign fixture data. Use normal Start New Game / first-base confirmation on a dedicated local origin. Fixtures cover full beds, half-speed Barracks recovery, transit and KIA exclusions, equipment, multiple bases, and an outpost without beds.
-
-See VALIDATION_SUMMARY.txt for results and existing Build Health failures. Package through node tools/package-runtime-shell.cjs after synchronizing src/manifest.json. Remaining mobile command candidates include Missions, Reports, and Memorial; Missions is the next suggested target after Sickbay field acceptance.
-
----
-
-# CODEX HANDOFF — v0.26.09.08.2242_MOBILE_SQUADS_ADAPTIVE_LAYOUT_PATCH
-
-Completed the next Mobile · Adaptive screen: Squads.
-
-- Mobile Squads uses Members, Assign, and Command views with a persistent squad selector, station label, and capacity count.
-- Landscape phones and larger tablets show compact soldier lists beside one selected dossier. Narrow screens use a list or dossier with Back to list; both panes stay within the viewport and scroll independently.
-- Direct Add and Remove buttons use the existing squad actions. Dossier and Show Stats choices carry independently across soldiers; unavailable selections clear when assignments, squads, or bases change.
-- Command retains capacity upgrades, squad power, chain of command, legacy, recruitment, and base selection. Assign retains the existing soldier sort options and displays the selected comparison stat.
-- Corrects the other-base soldier count to include all eligible unassigned personnel outside the selected squad’s station, independently of the command header’s selected base.
-- Layout subscribers now synchronize when they mount, preventing a missed preference change from leaving mobile panels without command rails.
-- Standard retains its original squad panels and cards. Assignment eligibility, squad capacity rules, stationing, recruitment costs, tactical AI, and save format 4 are unchanged.
-
-Implementation: module-scope SquadsScreen receives the original overview and detail elements, extracting their member and available SoldierCards for mobile presentation. The original assignment callbacks are forwarded by compact actions and retained in the full card. Standard returns the original overview/detail layout. Disclosure choices and selected soldiers are temporary presentation state.
-
-The shared useAegisInterfaceLayout hook now reads the current preference after subscribing. A new behavioral test covers a layout change between initial render and subscription, subsequent changes, and listener cleanup.
-
-QA: tools/mobile-interface-qa.html?squads[&empty][&layout=standard] customizes new-game fixture data; use the normal Start New Game and first-base confirmation on a dedicated local origin. This runs actual campaign assignment, capacity, and recruitment actions.
-
-See VALIDATION_SUMMARY.txt for results. Package through node tools/package-runtime-shell.cjs after synchronizing src/manifest.json. Next mobile candidate: Sickbay, after field acceptance of Squads.
+Next systematic mobile target: **Reports**, then **Memorial** after field acceptance.
 
 ---
 
-# CODEX HANDOFF — v0.26.09.08.1739_MOBILE_RESEARCH_WORKSHOP_ADAPTIVE_LAYOUT_PATCH
+# CODEX HANDOFF — v0.26.09.09.1242_FINAL_VIP_PLAYBACK_COMPLETION_AND_CASUALTY_AUTHORITY_HOTFIX
 
-Completed the next Mobile · Adaptive screens: Research and Workshop. The preceding Barracks disclosure fix is committed and pushed as b5697fe.
+Follow-up to Browser 1058 after review identified three concrete release/authority defects.
 
-- Mobile Research uses Project, Topics, and Staff / Tech sections. Mobile Workshop uses Orders, Build, and Staff / Stock sections.
-- Both workspaces fit between the command rails with bounded, independently retained section scrolling and compact cards. Available topics and items use two columns when screen space permits.
-- Mobile scientist, engineer, and order-quantity sliders include one-step minus and plus buttons. Engineer controls reflect staff still available across active orders.
-- The Workshop production-base selector controls the destination of new orders and the stock shown in Staff / Stock. Existing orders retain their original destination.
-- Successfully starting work from a catalog opens the active project or orders. Background progress does not change the selected section or move keyboard focus.
-- Existing research eligibility, hiring capacity, project completion, item funding, local stock, and sales callbacks are retained. Standard keeps its existing panels and native sliders; save format 4 and tactical AI are unchanged.
+1. **Duplicate playback completion owner:** TacticalMission contained two same-scope `finishAiPlayback()` declarations. The later declaration overrode the earlier Browser 1058 repair. Browser 1242 removes the shadowed version and consolidates Hybrid continuation plus Simulation terminal completion into one handler.
+2. **Death-animation display HP is not casualty authority:** an actor may temporarily show positive presentation HP while `alive:false` is already authoritative. `tacticalCommittedPlaybackFrameUnits(...)` now uses the explicit death flag first for permanent human/alien outcome state; omitted `alive` with positive HP still remains living.
+3. **Source manifest synchronization:** do not replace the full repository manifest with a partial reconstruction. Run `node tools/apply-1242-source-manifest.cjs` after overlaying this package; it edits only currentBuild, lastInspectedBuild, gameplayParity.browserBuild, and status, preserving every other manifest field.
 
-Implementation: module-scope ProductionScreen receives each campaign screen's existing overview and work elements. Their work children remain the existing heading/content pairs; Mobile places those pairs into separate scrollable panels. Standard returns the original two-column layout. ProductionRangeControl adds mobile steppers around the same range input and passes values to the existing assignment/quantity callbacks. No new persisted campaign fields or transaction rules were introduced.
+Terminal success now uses the last buffered playback frame, reconciles survivors, genuine casualties, and rescued civilians, then rebuilds medical/growth/KIA report data from that committed battlefield before `finishTacticalMission`. `aiTerminalVictoryCommitRef` participates in battle-outcome precedence so a committed Tactical Victory cannot later become Squad Lost because of transient presentation state.
 
-QA: tools/mobile-interface-qa.html?production=research|workshop[&empty][&funding][&layout=standard] customizes only new-game fixture data. Use a dedicated local origin and the normal Start New Game / first-base confirmation flow. Unlike the component-only fixtures, this runs the actual campaign UI and its actions.
+Regression coverage checks one active finish handler, positive-HP/omitted-alive survivor preservation, explicit-death/positive-display-HP casualty preservation, rescued civilian state, final-frame completion, victory precedence, and save format 4.
 
-See VALIDATION_SUMMARY.txt for results. Package through node tools/package-runtime-shell.cjs after synchronizing src/manifest.json. Next mobile candidate: Squads, then Sickbay, after field acceptance of Research / Workshop.
+No tactical decision, damage, TU, pathfinding, LOS, rescue quota, reinforcement, or save-format rules were intentionally changed. Physical field acceptance is still required for the exact live final-VIP sequence.
+
 
 ---
 
-# CODEX HANDOFF — v0.26.09.08.1241_MOBILE_SOLDIERS_BARRACKS_ADAPTIVE_LAYOUT_PATCH
+# CODEX HANDOFF — v0.26.09.09.1058_FINAL_VIP_TERMINAL_VICTORY_SURVIVOR_COMMIT_HOTFIX
 
-Completed the next Mobile · Adaptive screen: Soldiers / Barracks.
+Severe tactical terminal-state hotfix on top of Browser 0707.
 
-- Mobile Barracks fits between the command rails with a compact local roster beside one selected soldier on landscape phones and larger tablets.
-- Narrow screens show the roster or selected soldier with a persistent Back to roster control. Roster and soldier details scroll independently.
-- Dossier and Show Stats open/closed choices carry independently across soldier selection, Back to roster, base changes, and Base / Recruiting navigation within Barracks.
-- Base and sort selectors stay above the roster. Base / Recruiting opens the existing personnel status, recruitment, downtime, stock, and logistics controls in a scrollable panel.
-- Both layouts reuse the existing soldier cards and personnel actions. Transfers, recovery changes, and base switches clear unavailable selections.
-- Standard retains its existing Barracks grid. Tactical AI, inventory ownership, personnel rules, and save format 4 are unchanged.
+## Reproduction
+A mandatory VIP mission reached final extraction with no live aliens, unresolved contacts, active reinforcement source, pending arrival, or other mandatory objective. The timeline correctly logged that Tactical Victory was committed. Immediately afterward every surviving soldier fell to HP 0, the UI changed to Squad Lost, and confirming the loss produced a failed Mission Report with every soldier KIA.
 
-Implementation: module-scope BarracksScreen receives the original overview and roster React elements from the campaign. Standard returns the original layout; Mobile renders lightweight roster buttons and only the selected existing SoldierCard. No personnel callbacks were copied or rewritten. Selection is temporary component state scoped to the selected base and currently supplied local cards.
+## Root cause
+`tacticalMissionTerminalState` correctly defines a positive-HP unit as living unless `alive === false`. Some TacticalMission actors had positive HP with `alive` omitted. `applyAiFrameToMap` used truthiness for `unit.alive`, so a second application of the synthetic `Mission success` terminal frame interpreted omitted `alive` as dead and wrote HP 0. The loss-first battle-outcome expression then overrode the committed victory, and campaign aftermath consumed the corrupted battlefield.
 
-QA: tools/mobile-interface-qa.html?barracks[&empty][&layout=standard] supplies a long roster and multiple bases. The fixture's transfer/admission callbacks remove a row to exercise selection invalidation; it does not simulate campaign transfer authority. Real-campaign equipment, specialization, downtime, recruitment, and layout switching were checked separately.
-
-See VALIDATION_SUMMARY.txt for checks and the existing Build Health baseline. Package through node tools/package-runtime-shell.cjs after synchronizing src/manifest.json. Next mobile candidate: Research / Workshop, after field acceptance of Barracks.
-
----
-
-# CODEX HANDOFF — v0.26.09.08.0728_MOBILE_MAINFRAME_DATABASE_ADAPTIVE_LAYOUT_PATCH
-
-Completed the next systematic Mobile · Adaptive screen: Mainframe Database.
-
-- Mainframe uses a bounded mobile workspace between the existing command rails, with compact green CRT styling.
-- Species and Research / Materiel buttons switch between available records. Landscape phones from 600px wide and larger tablets show the index beside the selected file; narrow screens show an index or a file with a persistent Back to index control.
-- Index and file content scroll independently. Selecting a different file starts at the top; Back restores keyboard focus to the selected index entry.
-- A shared presentation index applies the existing species/autopsy, completed-research, manufactured-equipment, recovered-equipment, and observed-beacon visibility rules for both layouts.
-- A stable memoized component avoids rebuilding the database on unrelated strategic ticks. The Standard layout keeps its existing panels, cards, text, and green terminal presentation.
-- Tactical AI, inventory ownership, research progression, and save format 4 are unchanged.
-
-Implementation: MainframeDatabaseScreen and mainframeDatabaseIndex are module-scope runtime functions. The campaign renders MemoizedMainframeDatabaseScreen with existing state and selection callbacks. No new campaign or device-persistence fields were added.
-
-Test commands: node --test tools/test-mainframe-database.cjs; node --test tools/test-mobile-pwa-regressions.cjs; node tools/test-mobile-interface.cjs; node tools/test-ai-playback-sequencer.cjs; node tools/check-embedded-js.cjs; node tools/check-aegis-build.cjs. Package only through node tools/package-runtime-shell.cjs after synchronizing src/manifest.json.
-
-See VALIDATION_SUMMARY.txt for browser checks and the existing Build Health baseline. Next mobile target: Soldiers/Barracks, after field acceptance of Mainframe.
-
----
-
-# CODEX HANDOFF — v0.26.09.07.2330_MOBILE_COMMAND_LAYOUT_REVIEW_FIX_PATCH
-
-Reviewed browser patches 2059, 2141, and 2258 against patch 1925. Fixed Orders clipping on short landscape phones, generic mobile modal CSS overriding dedicated sheets, construction-sheet horizontal overflow, and a stale src/manifest.json that broke the canonical release checks.
-
-Restored the missing in-game patch 2141 record from its original commit and extended the release checker to retain the 2059/2141/2258 records.
-
-Orders now has a bounded flex dialog, a map that fits its allocated space, and a separately scrollable sidebar. At short landscape heights the header hides explanatory prose and keeps selectors and action buttons in one row. Objective decisions retain their explicit 10010 layer and persistent footer. Facility authorization retains the visible 6x6 board and its portrait/tablet widths.
-
-The prior report of an entire AI turn apparently stopping has a documented cause in patch 2059: a required objective decision opened under mobile chrome. That fix is retained. No independent AI planning/playback deadlock was reproduced during this review, so no speculative AI authority changes were made.
-
-Release source of truth: update CURRENT_GAME_BUILD and all three src/manifest.json browser build fields together, then run node tools/package-runtime-shell.cjs. Do not treat the source manifest as an optional manual deployment step. See VALIDATION_SUMMARY.txt for the exact checks and known Build Health baseline.
-
-Next systematic mobile target remains Mainframe Database, then Soldiers/Barracks after field acceptance.
-
----
-
-# CODEX HANDOFF — v0.26.09.07.2258_MOBILE_QUARTERMASTER_INVENTORY_ADAPTIVE_LAYOUT_PATCH
-
-## Patch focus
-
-Third systematic strategic-screen Mobile · Adaptive pass after Geoscape and Base: make Quartermaster / Base Stores comfortable on a tall phone while scaling cleanly to tablets and preserving Standard/Desktop.
-
-## Implemented
-
-- Mobile Quartermaster command root is fixed to the device viewport between the established scrollable rails.
-- Compact mobile section strip: **Stores / Loadout / Upgrades / Status**.
-- Each section owns bounded vertical scrolling; the command page itself does not scroll.
-- Loadout Counter selects a living soldier stationed at the selected base and reuses existing `equipFromInventory`, `removeEquipmentFromSoldier`, and `changeSoldierMedkit` authority.
-- Stores retains buy/sell/transfer/logistics behavior. Phone item cards collapse long descriptions behind Details; touch targets are enlarged.
-- Tablet Stores uses a two-column stock-card layout.
-- Standard/Desktop keeps the existing two-column Quartermaster screen.
-
-## Authority preserved
-
-No changes to inventory counts, base-local ownership, storage capacity, prices, transfer fees/timing/cancellation, research locks, Workshop manufacture rules, soldier equipment state, campaign state, or save format. Save format remains 4.
-
-## Next mobile target
-
-Mainframe Database, then Soldiers/Barracks after Quartermaster field acceptance.
-
----
-
-# CODEX HANDOFF — v0.26.09.07.2141_MOBILE_COMMAND_WINDOWS_AND_PLACEMENT_COHABITATION_PATCH
-
-## Patch focus
-
-Continue the systematic Mobile · Adaptive interface pass without changing tactical or strategic authority. This release gives the tactical **Orders** and **Assign Objectives** workflows deliberate phone/tablet layouts and applies the established workspace-cohabitation rule to **New Base placement** and **facility construction confirmation**.
-
-## Implemented
-
-- **Orders / Hybrid Fire-Team Command Map:** map-first mobile command workspace with compact controls, bounded internal scrolling, phone roster reduction, and tablet map/sidebar split.
-- **Assign Objectives:** full-height mobile decision sheet with a compact header, horizontal known-objective strip, vertically scrolling fire-team assignments, and persistent action controls.
-- Browser 2059 modal layering remains authoritative: Assign Objectives stays above Mobile tactical chrome and below the higher-priority escort-support decision.
-- **New Base:** the placement drawer owns reserved right-side width; Globe/Terminator stays mounted, shifts left, and scales into the remaining selectable strategic workspace.
-- **Facility Build Confirmation:** confirmation becomes a right-side sheet over the Build region rather than a full-screen blocker. The 6x6 base board reserves the same width and remains visible/tappable for location verification.
-- Narrow portrait phone layouts may temporarily hide command rails while placement/authorization sheets are active; tablets keep more simultaneous chrome.
-
-## Authority preserved
-
-No changes to objective discovery semantics, Hybrid order semantics, Simulation AI, pathfinding, TU, LOS, fog, damage, facility costs/footprints, base-site coordinates, campaign state, or save data. Save format remains 4. Standard/Desktop presentation is unchanged.
+## Fix
+- Shared `tacticalPlaybackFrameUnitAuthoritativeAlive` matches terminal-state semantics.
+- Frame hydration writes explicit `alive` and `fellThisFrame` values for humans/aliens/civilians.
+- Fresh tactical actors initialize with `alive:true`.
+- Final-VIP victory normalizes committed human survivors.
+- Terminal success reapplication restores frame-confirmed survivors before hydration.
+- Battle outcome gives committed victory precedence.
+- `finishAiPlayback` and manual `finish` reconcile successful casualty/medical result data from the committed battlefield.
+- Save format remains 4.
 
 ## Field gate
+Repeat the final-VIP boarding scenario, verify no survivor HP changes after the terminal frame, verify Tactical Victory remains visible, and verify the permanent Mission Report remains a success with only genuine KIA. Also verify a genuine wipe still reports Squad Lost.
 
-Test at a 390x844-class portrait viewport and a representative tablet: Orders map interaction; Assign Objectives scrolling and Apply/Cancel; New Base selection at far planet edges with the drawer open; and facility confirmation while verifying the selected far-left/far-right/top/bottom tile remains visible on the 6x6 board. Repeat the Browser 2059 new-objective discovery flow under Mobile · Adaptive.
-
----
-
-# CODEX HANDOFF — v0.26.09.07.2059_MOBILE_OBJECTIVE_ASSIGNMENT_MODAL_LAYERING_HOTFIX
-
-## Patch focus
-
-Mobile · Adaptive tactical objective-assignment layering hotfix. Simulation AI could appear to stall when a newly discovered objective opened the fire-team assignment board because the modal requested an uncompiled `z-[10010]` Tailwind utility and therefore rendered beneath the mobile tactical layer. Switching to Standard controls exposed the already-pending decision, confirming that AI was waiting rather than deadlocked.
-
-## Implementation
-
-- `FireTeamObjectiveAssignmentOverlay` remains portaled to `document.body`.
-- The overlay now sets inline `zIndex: 10010`, making modal authority independent of Tailwind compilation.
-- The precompiled stylesheet also includes `.z-[10010]{z-index:10010}` as a secondary guard.
-- Mobile tactical chrome and rails remain below the command modal.
-- Escort-support contact assignment remains at z-index 10020 and therefore still supersedes objective assignment when that higher-priority tactical decision is active.
-- Existing objective-assignment viewport bounding, internal scrolling, transactional Cancel/Apply behavior, and focus restoration are preserved.
-
-## Authority preserved
-
-No AI decision-making, round scheduling, pathfinding, movement, TU, LOS, fog, damage, objective discovery, fire-team assignment semantics, save data, or save-format changes. Save format remains 4.
-
-## Field reproduction / acceptance
-
-1. Select Mobile · Adaptive, start a tactical mission, and hand control to Simulation AI.
-2. Reach a point where a new mission objective is discovered.
-3. Confirm **New Mission Objective Identified / Assign fire teams to known goals** appears immediately above the battlefield and mobile rails.
-4. Apply or cancel the assignment and confirm Simulation AI continues normally.
-5. Repeat on PC while Mobile · Adaptive is selected, then on an actual phone.
-6. Confirm switching to Standard controls is no longer necessary to reveal the pending decision.
 
 ---
 

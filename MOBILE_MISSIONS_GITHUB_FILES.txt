@@ -1,0 +1,32 @@
+PROJECT AEGIS — v0.26.09.09.1244_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH
+
+Overlay/replace these release files in the existing repository:
+- index.html
+- src/browser-runtime.html
+- service-worker.js
+- release-metadata.json
+- README_PATCH_NOTES.txt
+- Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+- CODEX_HANDOFF.md
+- CODEX_HANDOFF_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH.md
+- MOBILE_MISSIONS_FIELD_ACCEPTANCE.txt
+- PWA_DEPLOYMENT_README.txt
+- VALIDATION_SUMMARY.txt
+- tools/apply-1244-source-manifest.cjs
+- APPLY_1244_SOURCE_MANIFEST.bat
+- src/manifest.1244.merge.json
+
+SOURCE MANIFEST — REQUIRED
+The release overlay does not replace the repository's accumulated src/manifest.json. After overlaying, run from the repository root:
+
+  node tools/apply-1244-source-manifest.cjs
+
+The updater preserves the complete existing manifest and changes ONLY:
+- currentBuild = v0.26.09.09.1244_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH
+- lastInspectedBuild = v0.26.09.09.1244_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH
+- gameplayParity.browserBuild = v0.26.09.09.1244_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH
+- status = mobile-missions-adaptive-layout-patch-complete
+
+Then run the repository's normal release checks/package tooling.
+
+Retain the repository's existing assets/ tree and icons. manifest.webmanifest is included unchanged for completeness.

@@ -1,5 +1,5 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND — PWA DEPLOYMENT
-Build: v0.26.09.09.1058_FINAL_VIP_TERMINAL_VICTORY_SURVIVOR_COMMIT_HOTFIX
+Build: v0.26.09.09.1244_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH
 
 BUILD FROM SOURCE
 1. Edit src/browser-runtime.html for game changes and tools/package-runtime-shell.cjs for host/PWA changes.
@@ -37,3 +37,7 @@ Browser 2330 note: command-window review fixes and the synchronized source manif
 Browser 0728 (September 8): the Mainframe mobile layout and source manifest are packaged through the canonical tool; both offline cache versions advance together.
 
 Browser 1058 note: service-worker cache identities advance for the final-VIP terminal victory survivor hotfix so installed PWAs cannot retain the faulty 0707 runtime. Save format remains 4.
+
+Browser 1242 note: consolidates the single active AI-playback completion handler, commits terminal casualty state from the final buffered frame, honors explicit death flags over temporary death-animation display HP, and gives an already committed Tactical Victory precedence over transient Squad Lost presentation. Service-worker caches advance to Browser 1242. Save format remains 4.
+
+Browser 1244 note: Mobile · Adaptive Mission Control and mission-launch review are now bounded phone/tablet workspaces; service-worker caches advance so installed PWAs receive the layout. Browser 1242 terminal-victory casualty authority is retained.

@@ -1,0 +1,18 @@
+PROJECT AEGIS — FINAL VIP PLAYBACK COMPLETION + CASUALTY AUTHORITY FIELD ACCEPTANCE
+Build: v0.26.09.09.1242_FINAL_VIP_PLAYBACK_COMPLETION_AND_CASUALTY_AUTHORITY_HOTFIX
+
+1. Start/load a VIP mission with multiple living AEGIS soldiers.
+2. If practical, allow one soldier to become a genuine KIA before mission end; note the casualty and surviving soldiers' HP.
+3. Clear all living aliens, Last Known Contact, active Beacon/reinforcement-source, pending reinforcement, UFO-bay, and other mandatory objective obligations.
+4. Leave one final required VIP outside the Skyranger and allow that VIP to finish boarding.
+5. Confirm the timeline says Tactical Victory was committed.
+6. Confirm the UI NEVER changes that committed victory to Squad Lost.
+7. Confirm every true survivor retains positive final HP.
+8. Confirm any explicit KIA remains dead even if its collapse/death animation briefly presented positive HP.
+9. Finish playback normally. Repeat once by using Finish mission at the earliest legal terminal point; both paths must consume the last buffered terminal battlefield.
+10. Return to base. Mission Report must say Success.
+11. Confirm only genuine KIA are KIA and surviving/wounded soldiers retain correct final HP.
+12. Confirm rescued/lost civilian totals match the mission.
+13. Repeat under Simulation AI/Hybrid if practical.
+14. Run a genuine total squad wipe and confirm Squad Lost/failure still works.
+15. Confirm save format remains 4.

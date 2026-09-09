@@ -1,6 +1,101 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.09.1244_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH
+TITLE: Mobile Missions Adaptive Layout
+DATE: September 9, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.09.1242_FINAL_VIP_PLAYBACK_COMPLETION_AND_CASUALTY_AUTHORITY_HOTFIX
+
+SUMMARY
+-------
+Completes the next systematic Mobile · Adaptive command-screen pass by formalizing and hardening the Mission Control phone/tablet layout that was already partially staged in the Browser 0707 source lineage. Mission preparation now stays inside the device viewport with bounded sections for Briefing, Squads, and Launch, and mission-launch confirmation uses a dedicated mobile review sheet.
+
+MOBILE MISSION CONTROL
+----------------------
+- Mobile Mission Control owns a fixed command viewport between the established side rails; the whole page no longer needs to scroll.
+- Briefing shows the current incident, selected response force, squad power, threat estimate, and survivability in one internally scrolling pane.
+- Squads provides the primary-squad selector and support-squad controls alongside a separately scrollable response-force / ready-Barracks pane. Portrait phones stack these panes; landscape phones and tablets show them side-by-side.
+- Launch keeps the current response-force summary and AI-team-leader orders beside the existing Play Tactical Mission, Watch AI Team Leader, Simulate Encounter, and Classic Lineup View actions.
+- Existing incident, squad, support-squad, Barracks-base, leader-instruction, and launch callbacks remain authoritative; no second mobile mission system was introduced.
+
+MISSION LAUNCH REVIEW
+---------------------
+- Mobile launch confirmation is bounded to the viewport with a persistent header and persistent Cancel / Confirm footer.
+- Incident, region, threat, transport, local-loadout warning, and response-force details scroll inside the center body instead of pushing the buttons off-screen.
+- Focus enters the dialog on Mobile and Tab / Shift+Tab are contained within the launch review. Standard/Desktop keeps the original dialog.
+
+HARDENING
+---------
+- The mobile adapter validates the expected desktop Mission Control element shape before rearranging it. If later desktop markup changes invalidate that contract, Mobile falls back to the original Standard content instead of throwing a mission-screen runtime error.
+- Portrait rail width and tablet rail/padding behavior now follow the same adaptive sizing pattern used by Geoscape, Base, Quartermaster, Barracks, Squads, and Sickbay.
+- Browser 1242 final-VIP survivor/casualty authority remains intact.
+- Save format remains 4.
+
+NEXT MOBILE TARGET
+------------------
+Reports is the next systematic Mobile · Adaptive command-screen target, followed by Memorial after Mission Control field acceptance.
+
+FIELD ACCEPTANCE
+----------------
+1. On a tall portrait phone, open Missions with no incident selected and confirm Highest Threat / Incident List actions remain reachable without whole-page scrolling.
+2. Select an incident and exercise Briefing, Squads, and Launch.
+3. Change primary and support squads, switch the Barracks base, edit leader orders, and verify the same campaign state appears after switching back to Standard.
+4. Confirm Squads panes stack on portrait and become a two-column split on landscape/tablet.
+5. Open each launch mode and verify the confirmation review scrolls while Cancel / Confirm remain visible.
+6. Launch a real tactical mission and verify Browser 1242 victory/casualty authority is unchanged.
+7. Switch to Standard controls and verify the original desktop Mission Control presentation is unchanged.
+
+---
+
+BUILD: v0.26.09.09.1242_FINAL_VIP_PLAYBACK_COMPLETION_AND_CASUALTY_AUTHORITY_HOTFIX
+TITLE: Final VIP Playback Completion + Casualty Authority Hotfix
+DATE: September 9, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.09.1058_FINAL_VIP_TERMINAL_VICTORY_SURVIVOR_COMMIT_HOTFIX
+
+SUMMARY
+-------
+Follow-up to Browser 1058 after code review found two release-critical gaps: the source manifest was still on Browser 0707, and a later duplicate `finishAiPlayback` declaration overrode the hotfix-aware completion handler. This patch consolidates playback completion and makes final casualty authority use the final committed battlefield rather than temporary presentation HP.
+
+ROOT CAUSE / REVIEW FINDINGS
+----------------------------
+- Two same-scope `finishAiPlayback()` function declarations existed in TacticalMission. JavaScript declaration hoisting made the later function authoritative, so Browser 1058's survivor/result repair in the earlier declaration could never own ordinary playback completion.
+- Death animation presentation can temporarily retain positive display HP after an authoritative `alive:false` casualty flag. Permanent casualty/report logic therefore cannot use HP alone.
+- The Browser 1058 overlay intentionally did not replace the repository's complete source manifest, leaving `src/manifest.json` on Browser 0707 until manually synchronized.
+
+HOTFIX
+------
+- TacticalMission now contains exactly one `finishAiPlayback()` implementation. It retains Hybrid continuation behavior while also owning terminal Simulation completion.
+- Terminal completion reads the LAST buffered playback frame, not whichever frame happens to be visible when Finish is requested.
+- `tacticalCommittedPlaybackFrameUnits(...)` reconciles humans, aliens, and civilians from that final frame. Positive HP plus omitted `alive` remains a survivor; explicit `alive:false` forces a human/alien casualty to HP 0 even if a death animation still shows positive display HP.
+- Rescued/extracted civilians retain their rescue state and presentation HP without being treated as living combatants.
+- Successful mission growth/medical/KIA records are rebuilt from the committed terminal battlefield before the report is finalized.
+- An AI Tactical Victory commit now remains authoritative over a transient zero-human presentation state; Squad Lost cannot supersede an already committed victory.
+- A non-destructive source-manifest updater is included. It edits only currentBuild, lastInspectedBuild, gameplayParity.browserBuild, and status in the repository's existing full manifest, preserving all parity/history content.
+- Save format remains 4.
+
+VALIDATION
+----------
+- Exactly one `finishAiPlayback()` declaration remains.
+- Focused executable test: omitted-alive positive-HP survivor remains alive.
+- Focused executable test: explicit `alive:false` casualty with positive display HP commits to HP 0.
+- Focused executable test: rescued/extracted civilian state survives terminal reconciliation.
+- All executable runtime JavaScript blocks pass `node --check`; host and service-worker scripts also pass.
+- Embedded runtime/source byte identity, build/cache synchronization, release hashes, and ZIP integrity are verified.
+- Full live mission reproduction remains a field acceptance gate.
+
+FIELD ACCEPTANCE
+----------------
+1. Reproduce the final-VIP terminal victory case with at least one genuine survivor. Confirm Tactical Victory remains victory and no Squad Lost prompt appears.
+2. Include at least one genuine KIA if practical. Confirm that soldier remains KIA even if a death transition briefly showed positive HP.
+3. Confirm surviving soldiers retain their actual final HP and only true casualties are listed in the Mission Report.
+4. Confirm rescued/lost civilian totals remain accurate.
+5. If playback is finished early/at the end, confirm the report uses the final buffered battlefield state.
+6. Verify a genuine full squad wipe still produces Squad Lost/failure.
+
+---
+
 BUILD: v0.26.09.09.1058_FINAL_VIP_TERMINAL_VICTORY_SURVIVOR_COMMIT_HOTFIX
 TITLE: Final VIP Terminal Victory Survivor Commit Hotfix
 DATE: September 9, 2026

@@ -1,40 +1,63 @@
 PROJECT AEGIS — VALIDATION SUMMARY
-Build: v0.26.09.09.1058_FINAL_VIP_TERMINAL_VICTORY_SURVIVOR_COMMIT_HOTFIX
+Build: v0.26.09.09.1244_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH
 Save format: 4
-Base build: v0.26.09.09.0707_MOBILE_SICKBAY_ADAPTIVE_LAYOUT_PATCH
+Base build: v0.26.09.09.1242_FINAL_VIP_PLAYBACK_COMPLETION_AND_CASUALTY_AUTHORITY_HOTFIX
+Underlying mobile sequence: Sickbay -> Missions
 
-ROOT CAUSE REPRODUCED IN SOURCE
-- Terminal-state authority accepted positive HP with an omitted `alive` field as living.
-- AI frame hydration previously used truthiness for `unit.alive`, allowing a synthetic Mission success frame with positive HP and omitted `alive` to hydrate as HP 0.
-- Zero living humans then outranked the committed victory in the UI and the loss-confirmation path finalized the corrupted battlefield into permanent KIA/report data.
+PATCH SCOPE
+- Promotes and hardens the partially staged Mobile · Adaptive Mission Control layout already present in the 0707/1242 source lineage.
+- Mobile Mission Control uses Briefing / Squads / Launch sections inside a fixed viewport between the command rails.
+- Portrait phones stack the paired work panes; landscape phones/tablets use a split view.
+- Existing incident, squad, support-squad, Barracks-base, leader-order, roster, and requestMissionLaunch callbacks remain authoritative.
+- Mobile mission-launch confirmation uses a bounded scrollable review body with persistent actions and keyboard focus containment.
+- Defensive element-shape guards fall back to the original Standard content if future desktop markup no longer matches the mobile adapter contract.
+- Standard/Desktop Mission Control remains unchanged.
 
-HOTFIX VALIDATION
-PASS - all 5 executable browser-runtime JavaScript blocks pass node --check.
-PASS - persistent host executable JavaScript passes node --check.
-PASS - service-worker.js passes node --check.
-PASS - manifest.webmanifest parses as JSON.
-PASS - focused survivor test: positive HP + omitted alive remains living.
-PASS - focused survivor test: explicit alive:false remains dead.
-PASS - focused survivor test: a frame-confirmed survivor is restored to positive HP/alive and stale fellThisFrame is cleared.
-PASS - focused survivor test: a true zero-HP explicit KIA is not revived.
-PASS - fresh TacticalMission human/alien/civilian actors initialize explicit alive:true.
-PASS - frame hydration writes explicit authoritative life state.
-PASS - committed Tactical Victory has presentation precedence over transient zero-human state.
-PASS - final-VIP victory uses survivor restoration and successful result reconciliation.
-PASS - Simulation-AI completion reconciles successful casualty/medical data from committed final battlefield.
-PASS - manual return-to-base finalizer treats an already committed AI victory as success and reconciles final units.
-PASS - Browser 0707 history is retained and only the 1058 entry owns CURRENT_GAME_BUILD.
+BROWSER 1242 AUTHORITY RETAINED
+PASS - FINAL_VIP_PLAYBACK_COMPLETION_AND_CASUALTY_AUTHORITY_HOTFIX remains enabled.
+PASS - exactly one function finishAiPlayback() declaration exists.
+PASS - terminal completion retains last-buffered-frame authority.
 PASS - save format remains 4.
-PASS - embedded runtime payload is byte-for-byte identical to src/browser-runtime.html.
-PASS - host/runtime build IDs and service-worker cache IDs are synchronized to Browser 1058.
+PASS - Browser 1242 is frozen as a historical patch entry; Browser 1244 owns the single mutable CURRENT_GAME_BUILD patch entry.
+
+MOBILE MISSIONS STATIC CONTRACT
+PASS - MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH flag is present.
+PASS - MissionControlScreen and MissionLaunchReviewFrame are present and wired into AlienResponseCommand / MissionLaunchConfirmModal.
+PASS - Briefing / Squads / Launch section controls are present.
+PASS - Mission panes own bounded internal scrolling.
+PASS - primary squad selection forwards the existing button callback; base selection forwards the existing onSelectBase callback.
+PASS - existing requestMissionLaunch manual/auto authority remains in the campaign controller.
+PASS - launch review contains a scrollable body and persistent footer.
+PASS - launch dialog focus entry/restore and Tab containment are present on Mobile.
+PASS - Standard returns the original Mission Control element.
+PASS - adapter shape guards return original content rather than throwing if expected desktop element structure changes.
+
+SYNTAX / PACKAGE VALIDATION
+PASS - runtime: 7 script blocks, 5 executable; all 5 executable blocks pass node --check.
+PASS - host: 2 script blocks, 1 executable; host block passes node --check.
+PASS - service-worker.js passes node --check.
+PASS - tools/apply-1244-source-manifest.cjs passes node --check.
+PASS - manifest.webmanifest parses as JSON.
+PASS - src/manifest.1244.merge.json parses as JSON.
+PASS - release-metadata.json parses as JSON.
+PASS - embedded host runtime is byte-for-byte identical to src/browser-runtime.html.
+PASS - host build, runtime CURRENT_GAME_BUILD, service-worker cache identities, and release metadata are synchronized to Browser 1244.
+PASS - source-manifest updater preservation fixture retains unrelated nested/native/parity data and changes only the intended four build/status fields.
 
 RELEASE IDENTITY
-Runtime bytes: 6757579
-Runtime SHA-256: 6b03dcae83af2a7d1c2df047f66da4b1f6f0df5a0675a7e792f36cc7583a8cbd
-Host SHA-256: 085c334f13d0bfef715c12c19b85d5fd2dad992aa44dd40ad87513134a572a69
+Runtime bytes: 6768549
+Runtime SHA-256: 1f63d45ae1a7548ae0c452c57e079db836338c6842bc2d5caeecc2dc9699edaa
+Host SHA-256: 73700624fbb294c12008570ff4367e505fffe2b30ae50b7af0654369a723374a
+
+SOURCE MANIFEST RELEASE STEP
+This overlay intentionally does not replace the repository's accumulated src/manifest.json with a partial reconstruction. After copying the patch over the repository, run either:
+  APPLY_1244_SOURCE_MANIFEST.bat
+or:
+  node tools/apply-1244-source-manifest.cjs
+Then run the repository's normal check/package tooling.
 
 FIELD ACCEPTANCE STILL REQUIRED
-The exact live mission should be repeated because this environment did not play through the full Three.js/Simulation mission to final VIP boarding. See TACTICAL_FINAL_VIP_TERMINAL_VICTORY_FIELD_ACCEPTANCE.txt.
+This environment did not perform a complete physical-phone mission-preparation/launch flow. Test the no-incident screen, Briefing, squad/support selection, Barracks base changes, leader orders, all launch modes, portrait/landscape/tablet layout, and Mobile -> Standard state parity. Also complete a tactical mission if practical to confirm Browser 1242 survivor/KIA authority remains intact. See MOBILE_MISSIONS_FIELD_ACCEPTANCE.txt.
 
-DEPLOYMENT NOTE
-This is an overlay package. Keep the repository's existing assets/ tree and icons. The complete repository src/manifest.json and accumulated CODEX_HANDOFF.md are not replaced by partial reconstructions; HOTFIX_GITHUB_FILES.txt lists the exact source-manifest field edits and Codex prepend step.
+NEXT SYSTEMATIC MOBILE TARGET
+Reports, followed by Memorial.

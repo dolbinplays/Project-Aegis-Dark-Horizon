@@ -1,7 +1,7 @@
 {
-  "build": "v0.26.09.09.1058_FINAL_VIP_TERMINAL_VICTORY_SURVIVOR_COMMIT_HOTFIX",
+  "build": "v0.26.09.09.1244_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH",
   "save_format": 4,
-  "runtime_bytes": 6757579,
-  "runtime_sha256": "6b03dcae83af2a7d1c2df047f66da4b1f6f0df5a0675a7e792f36cc7583a8cbd",
-  "host_sha256": "085c334f13d0bfef715c12c19b85d5fd2dad992aa44dd40ad87513134a572a69"
+  "runtime_bytes": 6768549,
+  "runtime_sha256": "1f63d45ae1a7548ae0c452c57e079db836338c6842bc2d5caeecc2dc9699edaa",
+  "host_sha256": "73700624fbb294c12008570ff4367e505fffe2b30ae50b7af0654369a723374a"
 }
