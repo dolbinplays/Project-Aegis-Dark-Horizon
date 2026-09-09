@@ -1,3 +1,20 @@
+BUILD: v0.26.09.09.0707_MOBILE_SICKBAY_ADAPTIVE_LAYOUT_PATCH
+TITLE: Mobile Sickbay Adaptive Layout
+DATE: September 9, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.08.2242_MOBILE_SQUADS_ADAPTIVE_LAYOUT_PATCH (36182d1)
+
+- Mobile Sickbay uses Beds, Barracks, and Care / Gear sections with a persistent base selector and local bed occupancy.
+- Landscape phones and larger tablets show a compact patient list beside one selected SoldierCard. Narrow screens show the list or record with Back to list; both panes remain bounded and scroll independently.
+- Patient rows show recovery remaining, full- or half-speed healing, and time spent in their current care setting. Existing recovery and stay-duration sorting is retained, with Barracks-specific labels for overflow patients.
+- Direct Move to Barracks and Admit to bed actions retain the existing recovery rules and full-bed guard. Moving a selected patient clears stale details and returns focus to a neighboring action or the empty list.
+- Dossier and Show Stats choices carry independently across patients, recovery sections, and base changes. The selected card retains gear, Medkit, and squad controls; Care / Gear retains the selected base’s bulk gear recovery action.
+- Empty patient lists and bases without Sickbay beds have explicit guidance. Standard returns the original complete Sickbay panel. Recovery timing, inventory ownership, assignment authority, tactical AI, and save format 4 are unchanged.
+
+Validation: see VALIDATION_SUMMARY.txt. Use tools/mobile-interface-qa.html?sickbay on a dedicated local origin to exercise the actual campaign with full beds, overflow patients, multiple bases, and local equipment. Physical-device checks are in MOBILE_SICKBAY_FIELD_ACCEPTANCE.txt.
+
+---
+
 BUILD: v0.26.09.08.2242_MOBILE_SQUADS_ADAPTIVE_LAYOUT_PATCH
 TITLE: Mobile Squads Adaptive Layout
 DATE: September 8, 2026

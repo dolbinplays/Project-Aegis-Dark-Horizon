@@ -3,13 +3,14 @@
 <iframe id="game" title="Game preview"></iframe><output id="result">Loading test harness…</output>
 <script>
 // Developer-only harness. Open through a dedicated local HTTP origin.
-// Component fixtures never write campaign saves; ?production and ?squads use the actual campaign UI.
+// Component fixtures never write campaign saves; ?production, ?squads, and ?sickbay use the actual campaign UI.
 // Default: two-soldier tactical fixture. ?health: deterministic Build Health.
 // ?objectives: a many-team decision sheet for viewport, layering, and action checks.
 // ?database[&empty][&layout=standard]: real Mainframe component with known/locked fixture records.
 // ?barracks[&empty][&layout=standard]: long local roster, recovery patient, and transfer dialog.
 // ?production=research|workshop[&empty][&funding][&layout=standard]: seeded new-campaign setup.
 // ?squads[&empty][&layout=standard]: local/remote squad assignments with wounded and transit exclusions.
+// ?sickbay[&empty][&layout=standard]: full beds, Barracks recovery, local/remote gear, and a base without beds.
 // ?health&baseline: compare an earlier packaged host copied to /__mobile_baseline.html.
 const params=new URLSearchParams(location.search), frame=document.querySelector('#game'), result=document.querySelector('#result');
 frame.src=params.has('baseline')?'../__mobile_baseline.html':'../index.html?qa='+Date.now();
@@ -40,6 +41,23 @@ const ready=setInterval(()=>{
           w.React.createElement('div',{className:'mx-auto'},w.React.createElement(w.MainframeDatabaseScreen,{identifiedAliens:empty?[]:species,tech,gearInventory,alienFieldBeaconKnowledge:empty?'unknown':'confirmed',selectedDatabaseAlien:selected,setSelectedDatabaseAlien:setSelected})));
       }
       w.ReactDOM.createRoot(mount).render(w.React.createElement(DatabaseFixture));result.style.display='none';
+    }else if(params.has('sickbay')){
+      w.writeAegisInterfaceLayout(params.get('layout')==='standard'?'standard':'mobile');
+      const originalNewGame=w.makeNewGameData;
+      w.makeNewGameData=setup=>{
+        const game=originalNewGame(setup),origin=game.bases[0],remote=w.initialBase({name:'QA Remote Hospital',region:'Europe'}),outpost=w.makeNewBase({name:'QA Outpost Without Beds',region:'Africa'});
+        origin.grid[1][2]='sickbay';origin.grid[1][3]='quarters';game.bases=[origin,remote,outpost];game.funds=10000;
+        game.soldiers=params.has('empty')?[]:Array.from({length:24},(_,i)=>({...w.makeSoldier('Rookie',i>=20?remote.id:origin.id),id:'qa-patient-'+i,name:i===0?'Alexandria Longname Montgomery':`QA Patient ${String(i).padStart(2,'0')}`,status:i<8?`Wounded ${i+1}d`:i<16?`Overflow ${i-4}d`:i===16?'Wounded 3d':i===18?'KIA':i===20||i===21?'Wounded 5d':i===22?'Overflow 9d':'Ready',sickbayDays:Math.max(0,9-i),barracksRecoveryDays:Math.max(0,i-7),medkit:i%2===0}));
+        if(game.soldiers[16])game.soldiers[16].transfer={id:'qa-patient-transit',originBaseId:origin.id,destinationBaseId:remote.id,status:'In Transit',remainingMinutes:600,totalMinutes:600,costK:50};
+        game.squads=params.has('empty')?[]:[
+          {...w.makeSquad(1,[]),id:'qa-patient-home-squad',name:'QA Hospital Squad',baseId:origin.id,soldierIds:[game.soldiers[1].id,game.soldiers[17].id],capacity:6},
+          {...w.makeSquad(2,[]),id:'qa-patient-remote-squad',name:'QA Remote Squad',baseId:remote.id,soldierIds:[game.soldiers[20].id],capacity:6}
+        ];
+        game.baseInventories=Object.fromEntries(game.bases.map(base=>[base.id,{...game.gearInventory,Medkit:10}]));
+        game.activeSquadId=game.squads[0]?.id||null;game.tab='sickbay';game.geoscapeClockRunning=false;
+        return game;
+      };
+      result.style.display='none';
     }else if(params.has('squads')){
       w.writeAegisInterfaceLayout(params.get('layout')==='standard'?'standard':'mobile');
       const originalNewGame=w.makeNewGameData;

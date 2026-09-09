@@ -1,3 +1,22 @@
+# CODEX HANDOFF — v0.26.09.09.0707_MOBILE_SICKBAY_ADAPTIVE_LAYOUT_PATCH
+
+Completed the next Mobile · Adaptive screen: Sickbay. The preceding Squads patch is committed as 36182d1.
+
+- Mobile Sickbay uses Beds, Barracks, and Care / Gear sections with a persistent base selector and local bed occupancy.
+- Landscape phones and larger tablets show a compact patient list beside one selected SoldierCard. Narrow screens show the list or record with Back to list; both panes remain bounded and scroll independently.
+- Patient rows show recovery remaining, full- or half-speed healing, and time spent in their current care setting. Existing recovery and stay-duration sorting is retained, with Barracks-specific labels for overflow patients.
+- Direct Move to Barracks and Admit to bed actions retain the existing recovery rules and full-bed guard. Moving a selected patient clears stale details and returns focus to a neighboring action or the empty list.
+- Dossier and Show Stats choices carry independently across patients, recovery sections, and base changes. The selected card retains gear, Medkit, and squad controls; Care / Gear retains the selected base’s bulk gear recovery action.
+- Empty patient lists and bases without Sickbay beds have explicit guidance. Standard returns the original complete Sickbay panel. Recovery timing, inventory ownership, assignment authority, tactical AI, and save format 4 are unchanged.
+
+Implementation: module-scope SickbayScreen receives the original complete Sickbay element and base-selection props. Its raw children provide the header, sort controls, optional overflow notice, patient cards, and optional overflow cards. Standard returns that element unchanged. Mobile mounts one full SoldierCard and compact roster buttons. Both quick and full-card bed moves forward the existing callback and restore focus after the patient leaves the active list. Selection and disclosure choices are temporary presentation state.
+
+QA: tools/mobile-interface-qa.html?sickbay[&empty][&layout=standard] customizes only new-campaign fixture data. Use normal Start New Game / first-base confirmation on a dedicated local origin. Fixtures cover full beds, half-speed Barracks recovery, transit and KIA exclusions, equipment, multiple bases, and an outpost without beds.
+
+See VALIDATION_SUMMARY.txt for results and existing Build Health failures. Package through node tools/package-runtime-shell.cjs after synchronizing src/manifest.json. Remaining mobile command candidates include Missions, Reports, and Memorial; Missions is the next suggested target after Sickbay field acceptance.
+
+---
+
 # CODEX HANDOFF — v0.26.09.08.2242_MOBILE_SQUADS_ADAPTIVE_LAYOUT_PATCH
 
 Completed the next Mobile · Adaptive screen: Squads.

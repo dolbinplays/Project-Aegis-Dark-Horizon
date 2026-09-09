@@ -1,7 +1,7 @@
 {
-  "build": "v0.26.09.08.2242_MOBILE_SQUADS_ADAPTIVE_LAYOUT_PATCH",
+  "build": "v0.26.09.09.0707_MOBILE_SICKBAY_ADAPTIVE_LAYOUT_PATCH",
   "save_format": 4,
-  "runtime_bytes": 6722783,
-  "runtime_sha256": "800062607edc55645fe326be2067482926cedfaf0077a57916442f299a027412",
-  "host_sha256": "c4f447766eef39040f60ddf9397747d0ce1c01f59510d40501b5fd9119de076b"
+  "runtime_bytes": 6735588,
+  "runtime_sha256": "2e55d7d688b80ba41953b8bbcbaffaad893a7dbb8555321bb087a75681da1dac",
+  "host_sha256": "310c3b1d57d41909a43188d49545a5ac6d022defedda42a35b11b524b465a1b7"
 }

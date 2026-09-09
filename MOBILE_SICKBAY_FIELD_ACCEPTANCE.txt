@@ -1,0 +1,40 @@
+MOBILE SICKBAY — PHONE / TABLET FIELD ACCEPTANCE
+Build: v0.26.09.09.0707_MOBILE_SICKBAY_ADAPTIVE_LAYOUT_PATCH
+
+Use a disposable campaign and choose Mobile · Adaptive on the start screen.
+Developer fixture: serve the project on a dedicated local origin, open
+tools/mobile-interface-qa.html?sickbay, and use normal first-base setup.
+Add &empty for no patients or &layout=standard for the original layout.
+
+1. Landscape phone: open Sickbay. Keep the command rails accessible while the
+   Beds/Barracks list and selected patient scroll separately. Confirm that
+   long names, dossiers, stats, and equipment actions have no horizontal clipping.
+2. Open Dossier and Show Stats, select another patient, and confirm both stay
+   open. Close only one and change patients, care section, or base; the other
+   choice should remain open. Back to list should return focus to that row.
+3. Move a patient to Barracks. Bed occupancy must decrease, overflow count must
+   increase, and stale selected controls must clear. Admit an overflow patient
+   to the free bed. At capacity, another admission must show the existing
+   no-beds notice without moving the patient or changing recovery days.
+4. Compare recovery and stay-duration sorts. Barracks labels must refer to time
+   in Barracks. Rows must distinguish full-speed and half-speed recovery.
+5. Return and issue a Medkit, remove weapon/armor, and exercise squad controls.
+   Check the selected base's inventory. Under Care / Gear, strip recovering
+   equipment and confirm personnel at other bases retain their equipment.
+6. Change bases with a patient selected; the previous record must close.
+   Verify bases with no patients and no Sickbay facilities show useful guidance.
+7. Rotate to portrait: selected details replace the list and Back stays visible.
+   Rotate a tablet both ways: both panes should fit without horizontal scrolling.
+   Use real touch scrolling and browser chrome expansion/collapse on the phone.
+8. Switch to Standard in Menu / Save and return. Confirm the original full
+   Sickbay cards, patient count, sorting, overflow notice, and actions return.
+   Switch back to Mobile and confirm the compact workspace and command rails.
+9. Advance recovery in a disposable campaign and reload a save. Confirm recovered
+   soldiers leave the patient list, personnel remain at the correct base, and
+   equipment and recovery state match the existing campaign rules.
+10. On the installed PWA, confirm the new build is served after updating, safe
+    areas remain usable, and offline launch retains the selected layout.
+
+Record device/OS/browser, viewport/orientation, build, result, and reproduction
+steps for any issue. Physical-device/PWA acceptance is separate from desktop
+browser viewport emulation.

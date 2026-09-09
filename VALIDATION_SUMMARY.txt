@@ -1,44 +1,41 @@
-Build: v0.26.09.08.2242_MOBILE_SQUADS_ADAPTIVE_LAYOUT_PATCH
-Base commit: 70ae3c9 (1739 Mobile Research / Workshop)
+Build: v0.26.09.09.0707_MOBILE_SICKBAY_ADAPTIVE_LAYOUT_PATCH
+Base commit: 36182d1 (2242 Mobile Squads)
 Save format: 4
-Runtime bytes: 6722783
-Runtime SHA-256: 800062607edc55645fe326be2067482926cedfaf0077a57916442f299a027412
-Host SHA-256: c4f447766eef39040f60ddf9397747d0ce1c01f59510d40501b5fd9119de076b
+Runtime bytes: 6735588
+Runtime SHA-256: 2e55d7d688b80ba41953b8bbcbaffaad893a7dbb8555321bb087a75681da1dac
+Host SHA-256: 310c3b1d57d41909a43188d49545a5ac6d022defedda42a35b11b524b465a1b7
 
 Automated checks
 - Canonical packaging: PASS; source manifest, embedded runtime, release hashes, and both offline cache versions synchronized.
 - node tools/check-embedded-js.cjs: PASS (9 non-empty blocks across 4 HTML files).
+- node tools/check-embedded-js.cjs tools/mobile-interface-qa.html: PASS.
 - node tools/check-aegis-build.cjs: PASS.
 - node --test tools/test-mainframe-database.cjs tools/test-mobile-pwa-regressions.cjs: PASS (15/15).
 - node tools/test-mobile-interface.cjs: PASS (10/10).
 - node tools/test-ai-playback-sequencer.cjs: PASS (16/16).
-- QA harness inline JavaScript syntax: PASS.
 - git diff --check: PASS.
-- Compared original Squads overview/detail expressions and six assignment/stationing/capacity/recruitment functions with the prior commit: unchanged.
-
-New layout regression coverage
-A preference change between a component's initial render and its effect subscription previously left its local layout stale. This was reproduced as missing command rails while the newly mounted Squads workspace was mobile. The hook now synchronizes immediately after subscribing. The new test covers that missed event, subsequent preference changes, and listener cleanup; the actual command rails appeared correctly after the fix.
+- Compared the complete original Sickbay React element with the prior commit: unchanged inside the new presentation wrapper.
+- Compared nine existing functions for bed moves, bulk gear recovery, equipment removal, Medkits, squad assignment/removal, and patient sorting with the prior commit: unchanged.
 
 Browser verification
-The Squads fixture initializes the actual campaign UI through normal first-base setup on a dedicated local origin.
-- Home squad: two members and fourteen eligible unassigned local soldiers. Wounded, overflow, KIA, transit, assigned, and other-base soldiers stayed excluded from Assign. Remote squad: one member and three eligible local soldiers.
-- Opened dossier and stats on one member, selected another, and verified both remained open. Closed dossier in portrait and selected another soldier; stats stayed open and dossier stayed closed. Choices also carried from Members to Assign.
-- Quick removal updated the member/available counts, cleared the removed soldier's selected card, and focused a neighboring action. Five quick assignments filled the home squad; the next assignment was blocked at six seats with the existing squad-full notice.
-- Capacity upgrade changed 6/6 to 6/7; recruitment created a pending three-day arrival. Command retained power, leadership, legacy, base selection, and squad overview controls.
-- Changing the active squad cleared stale selected controls and changed the available list to the correct station. Corrected other-base counts were verified as three outside the home squad's station and fourteen outside the remote station. The remote count remained fourteen after changing the command's selected base.
-- 844x390 and 667x375: list/detail panes stayed side by side, scrolled independently, and had no horizontal overflow. Only the selected full SoldierCard mounted.
-- 390x844: the dossier replaced the list, Back remained visible, and Back restored focus to the selected row. Expanded record/stats content fit the pane without horizontal overflow.
-- 768x1024 and 1024x768: both panes stayed bounded after rotation. Visible buttons, selects, and summaries measured at least 44px high.
-- Standard at 1280x800: the original overview, chain of command, legacy, and member/available card lists returned; no mobile workspace remained. The remote squad rendered its original four full cards.
-- Empty fixture: No squad available / No squad selected, No soldiers assigned, and the empty available-roster guidance rendered correctly. Command and recruitment remained accessible.
+Used the actual campaign UI through tools/mobile-interface-qa.html?sickbay on a dedicated local HTTP origin, with normal first-base setup.
+- Home hospital rendered 8/8 beds and 8 Barracks patients; ready, KIA, transit, and remote personnel stayed excluded. Remote hospital rendered 2/4 beds and one Barracks patient. A third base had no Sickbay facilities or patients.
+- Selected one patient, opened Dossier and Show Stats, and selected another; both stayed open. Those choices carried to Barracks recovery. Closed only Dossier in portrait, returned to the list, and selected another patient; Dossier stayed closed and Stats stayed open.
+- Moving the selected patient to Barracks updated the counts to 7/8 beds and 9 overflow patients, removed the selected card, and focused the next Move action. Quick admission restored 8/8 and 8 overflow; another admission showed the existing full-bed notice and left the counts unchanged.
+- Sorting by longest Barracks stay produced descending stay durations and used Barracks-specific labels. Recovery days, current-care duration, and full-/half-speed labels remained visible on the compact rows.
+- Base changes cleared the prior patient record and supplied the correct local rosters. Admitting the final remote overflow patient left a clear empty list and focused that list region.
+- Returning a Medkit changed the remote action to Issue Medkit (11 at QA Remote Hospital); issuing it restored the Medkit. Weapon and armor removal rendered Unarmed and Underclothes. Force to QA Remote Squad changed to Remove from Squad through the existing callback.
+- Care / Gear stripped remote recovering personnel. A remote patient then showed Unarmed / Underclothes while a home patient retained Ballistic Rifle / Field Suit. The no-bed outpost displayed construction guidance and disabled bulk stripping.
+- 844x390 and 667x375: compact list and selected dossier stayed side by side, with independent pane scroll positions and no horizontal overflow. Only one full SoldierCard was mounted.
+- 390x844: the selected dossier replaced the list, Back stayed visible, and returning to the list restored the roster view. Independently chosen disclosure states survived selection.
+- 768x1024 and 1024x768: Care and the patient workspace remained bounded after rotation. Measured visible buttons, selects, and summaries were at least 44px high.
+- Standard at 1280x800 restored the original Sickbay overview, sort control, overflow notice, and all 16 local SoldierCards; no mobile workspace remained.
+- Final packaged build 0707 loaded successfully. The empty-campaign fixture rendered Beds (0/8), Barracks (0), and the no-patients guidance with command rails intact.
+- No browser console warnings or errors were reported during the exercised populated-campaign workflow.
 
 Build Health
-Final deterministic browser run: 803/865, with the same 62 pre-existing failures and no added or resolved failures relative to the established baseline. No Build Health diagnostics were changed.
+Before and after: 803/865. The final deterministic run had the same 62 pre-existing failures, with no added or resolved failures. No Build Health diagnostics were changed.
 
-Release scope and limits
-Squads presentation, the other-base display count, and layout-subscription synchronization only. Existing personnel authority, tactical AI, and save format 4 are unchanged; no persisted campaign fields were added.
-One browser log reported a MutationObserver error during nested-frame navigation, with no in-game runtime error overlay; no MutationObserver code exists in the runtime, host, or loaded asset scripts. A later independent-tab navigation timed out in the browser automation. Completed gameplay and viewport checks above were unaffected.
-Physical-device touch, installed-PWA behavior, and extended campaign acceptance remain pending using MOBILE_SQUADS_FIELD_ACCEPTANCE.txt.
-
-Recovery verification
-Restored after an accidental overwrite. The recovered runtime is byte-for-byte identical to the completed patch (SHA-256 800062607edc55645fe326be2067482926cedfaf0077a57916442f299a027412). Regenerated the host and offline cache files, reran build/syntax checks and all 41 focused tests, and restored missing tracked release and acceptance files. Browser results above are retained from the original patch validation.
+Scope and limits
+Sickbay presentation and its development fixture only. The original screen elements and personnel actions are retained. No new persisted campaign fields; save format 4, recovery rules, inventory ownership, and tactical AI remain unchanged.
+Physical-device touch, browser chrome resizing, installed-PWA behavior, save/reload, and extended recovery acceptance remain pending using MOBILE_SICKBAY_FIELD_ACCEPTANCE.txt.

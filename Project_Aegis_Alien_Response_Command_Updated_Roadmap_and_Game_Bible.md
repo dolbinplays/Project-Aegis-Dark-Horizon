@@ -1,8 +1,19 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.08.2242_MOBILE_SQUADS_ADAPTIVE_LAYOUT_PATCH`
+Current browser build: `v0.26.09.09.0707_MOBILE_SICKBAY_ADAPTIVE_LAYOUT_PATCH`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 0707 (September 9): Mobile Sickbay
+
+- Mobile Sickbay uses Beds, Barracks, and Care / Gear sections with a persistent base selector and local bed occupancy.
+- Landscape phones and larger tablets show a compact patient list beside one selected SoldierCard. Narrow screens show the list or record with Back to list; both panes remain bounded and scroll independently.
+- Patient rows show recovery remaining, full- or half-speed healing, and time spent in their current care setting. Existing recovery and stay-duration sorting is retained, with Barracks-specific labels for overflow patients.
+- Direct Move to Barracks and Admit to bed actions retain the existing recovery rules and full-bed guard. Moving a selected patient clears stale details and returns focus to a neighboring action or the empty list.
+- Dossier and Show Stats choices carry independently across patients, recovery sections, and base changes. The selected card retains gear, Medkit, and squad controls; Care / Gear retains the selected base’s bulk gear recovery action.
+- Empty patient lists and bases without Sickbay beds have explicit guidance. Standard returns the original complete Sickbay panel. Recovery timing, inventory ownership, assignment authority, tactical AI, and save format 4 are unchanged.
+
+This is a presentation patch for current recovery management. It does not implement the future trauma, XRM, or casualty-care progression designs. Physical-device acceptance remains pending using MOBILE_SICKBAY_FIELD_ACCEPTANCE.txt.
 
 ## Current Build Addendum — Browser 2242 (September 8): Mobile Squads
 
