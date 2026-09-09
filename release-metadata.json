@@ -1,7 +1,7 @@
 {
-  "build": "v0.26.09.09.1244_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH",
+  "build": "v0.26.09.09.1324_MOBILE_REPORTS_ADAPTIVE_LAYOUT_PATCH",
   "save_format": 4,
-  "runtime_bytes": 6768549,
-  "runtime_sha256": "1f63d45ae1a7548ae0c452c57e079db836338c6842bc2d5caeecc2dc9699edaa",
-  "host_sha256": "73700624fbb294c12008570ff4367e505fffe2b30ae50b7af0654369a723374a"
+  "runtime_bytes": 6778113,
+  "runtime_sha256": "bd50a33a8db4a61153b7d3c050009dc20bb2c346c646eb5e00f2a5c62eb002e6",
+  "host_sha256": "79b09151bd4e73e07ed34ddd387e20cf6c092e49adba708e713b6a9eb487011a"
 }

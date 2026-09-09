@@ -1,8 +1,25 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.09.1244_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH`
+Current browser build: `v0.26.09.09.1324_MOBILE_REPORTS_ADAPTIVE_LAYOUT_PATCH`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 1324 (September 9): Mobile Reports Adaptive Layout
+
+- Continues the systematic **Mobile · Adaptive** command-screen pass after Browser 1244 Mission Control.
+- Mobile Command Reports now owns a bounded viewport between the command rails instead of stacking the desktop index and detail panels into a whole-page phone scroll.
+- Portrait phones use an **index → detail → Back to index** workflow. Selecting a monthly Council summary or mission result opens the existing detail content without replacing report state or callbacks.
+- Landscape phones and tablets show the compact report index beside the selected detail, with independent pane scrolling.
+- Monthly Council Reviews preserve mission totals, KIA, funding/upkeep/net, regional funding changes, research/recovery, and Council-slide replay. Mission Results preserve the Mission Action Log and Archived Tactical Timeline.
+- Long tactical timelines use the report detail pane as their primary scroll region on Mobile instead of a nested fixed-height timeline.
+- Post-mission runtime recovery continues to use `selectedMissionReportId`, so a newly completed operation opens its exact report detail immediately after the runtime reboot/reload sequence.
+- Browser 1242 final-VIP survivor/KIA authority and Browser 1244 Mobile Missions remain intact. Standard/Desktop Reports is unchanged. Save format remains **4**.
+
+QA focus: portrait index/detail/back flow; monthly summary; mission report/action log; long archived tactical timeline; post-mission direct report restore; landscape/tablet split; Council slide replay; Mobile→Standard parity. See `MOBILE_REPORTS_FIELD_ACCEPTANCE.txt`.
+
+Next systematic mobile target: **Memorial**.
+
+---
 
 ## Current Build Addendum — Browser 1244 (September 9): Mobile Missions Adaptive Layout
 

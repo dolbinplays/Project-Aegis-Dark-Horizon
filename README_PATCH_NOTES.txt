@@ -1,6 +1,53 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.09.1324_MOBILE_REPORTS_ADAPTIVE_LAYOUT_PATCH
+TITLE: Mobile Reports Adaptive Layout
+DATE: September 9, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.09.1244_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH
+
+SUMMARY
+-------
+Continues the systematic Mobile · Adaptive command-screen pass with Command Reports. Reports now uses a bounded phone/tablet index-and-detail workspace instead of stacking the desktop report list and report body into a long whole-page scroll.
+
+MOBILE COMMAND REPORTS
+----------------------
+- Mobile Reports owns the device viewport between the existing command rails. The whole command page does not scroll.
+- Portrait phones show either the report index or the selected report detail. Selecting a Monthly Council Summary or Mission Result opens the detail pane; Back to index returns to the preserved list position.
+- Landscape phones and tablets show the report index and selected detail side-by-side. Both panes scroll independently.
+- Monthly Council Summaries, Mission Results, General Reports, and Replay Selected Month Slides remain the same existing report data/actions.
+- Selected monthly reviews retain mission counts, successes/failures, KIA, funding, mission-performance rolls, mission activity, government funding changes, research, and recovery.
+- Selected mission reports retain the Mission Action Log and Archived Tactical Timeline. On Mobile the detail pane owns the long scroll so the tactical timeline no longer needs a nested fixed-height scroller.
+
+POST-MISSION CONTINUITY
+-----------------------
+- Post-mission runtime restore still uses selectedMissionReportId as the authoritative destination. A freshly completed operation therefore opens directly into its selected report detail on Mobile instead of landing at the report index.
+- Browser 1242 survivor/KIA/casualty authority and Browser 1244 Mobile Missions behavior are unchanged.
+
+HARDENING
+---------
+- MobileReportsScreen verifies the original Reports element shape before rearranging it. If future Standard report markup no longer matches, Mobile falls back to the original content rather than throwing a command-screen runtime error.
+- Standard/Desktop Reports is returned unchanged.
+- Save format remains 4.
+
+NEXT MOBILE TARGET
+------------------
+Memorial is the next systematic Mobile · Adaptive command-screen target after Reports field acceptance.
+
+FIELD ACCEPTANCE
+----------------
+1. On a portrait phone, open Reports and confirm the index fits between the command rails without whole-page scrolling.
+2. Select a Monthly Council Summary and verify its detail opens; use Back to index and confirm the report list remains usable.
+3. Select a Mission Result and verify Mission Action Log and Archived Tactical Timeline are readable and scroll inside the detail pane.
+4. Complete a mission and verify post-mission recovery opens directly to that mission's report detail on Mobile.
+5. In landscape/tablet, confirm index and detail remain visible together and scroll independently.
+6. Replay a selected monthly Council slide deck and confirm the existing action still works.
+7. Switch to Standard and confirm the original two-column Reports presentation is unchanged.
+8. Confirm save format remains 4 and Browser 1242 casualty authority remains intact.
+
+---
+
 BUILD: v0.26.09.09.1244_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH
 TITLE: Mobile Missions Adaptive Layout
 DATE: September 9, 2026

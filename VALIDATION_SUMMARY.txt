@@ -1,4 +1,34 @@
 PROJECT AEGIS — VALIDATION SUMMARY
+Build: v0.26.09.09.1324_MOBILE_REPORTS_ADAPTIVE_LAYOUT_PATCH
+Save format: 4
+Base build: v0.26.09.09.1244_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH
+
+MOBILE REPORTS ADAPTER
+- PASS - dedicated `MobileReportsScreen` exists and Standard returns the original report element unchanged.
+- PASS - Mobile Reports command root is fixed to the phone/tablet viewport between command rails.
+- PASS - portrait has bounded index/detail switching plus Back to index.
+- PASS - landscape/tablet CSS exposes both index and detail panes together.
+- PASS - existing monthly-summary and mission-report selection callbacks remain in AlienResponseCommand.
+- PASS - post-mission selectedMissionReportId authority remains in the runtime restore path.
+- PASS - Browser 1242 terminal survivor/KIA contract remains present; save format remains 4.
+
+SYNTAX / PACKAGE VALIDATION
+- Runtime executable JavaScript blocks pass `node --check`.
+- Host and service-worker syntax are release-checked after packaging.
+- PASS - embedded runtime is byte-for-byte identical to canonical `src/browser-runtime.html`.
+- PASS - runtime bytes: 6778113.
+- PASS - runtime SHA-256: bd50a33a8db4a61153b7d3c050009dc20bb2c346c646eb5e00f2a5c62eb002e6.
+- PASS - host SHA-256: 79b09151bd4e73e07ed34ddd387e20cf6c092e49adba708e713b6a9eb487011a.
+- PASS - host build, runtime build, service-worker cache identity, and release metadata are synchronized.
+- PASS - source-manifest updater preservation fixture retains unrelated nested/native/parity data while advancing only the four intended fields.
+- ZIP integrity is checked after final packaging.
+
+FIELD ACCEPTANCE STILL REQUIRED
+Physical phone/tablet rendering and touch behavior were not exercised in this environment. Use MOBILE_REPORTS_FIELD_ACCEPTANCE.txt, especially post-mission direct report restore and long tactical-timeline scrolling.
+
+--- PREVIOUS VALIDATION HISTORY ---
+
+PROJECT AEGIS — VALIDATION SUMMARY
 Build: v0.26.09.09.1244_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH
 Save format: 4
 Base build: v0.26.09.09.1242_FINAL_VIP_PLAYBACK_COMPLETION_AND_CASUALTY_AUTHORITY_HOTFIX

@@ -1,5 +1,5 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND — PWA DEPLOYMENT
-Build: v0.26.09.09.1244_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH
+Build: v0.26.09.09.1324_MOBILE_REPORTS_ADAPTIVE_LAYOUT_PATCH
 
 BUILD FROM SOURCE
 1. Edit src/browser-runtime.html for game changes and tools/package-runtime-shell.cjs for host/PWA changes.
@@ -41,3 +41,5 @@ Browser 1058 note: service-worker cache identities advance for the final-VIP ter
 Browser 1242 note: consolidates the single active AI-playback completion handler, commits terminal casualty state from the final buffered frame, honors explicit death flags over temporary death-animation display HP, and gives an already committed Tactical Victory precedence over transient Squad Lost presentation. Service-worker caches advance to Browser 1242. Save format remains 4.
 
 Browser 1244 note: Mobile · Adaptive Mission Control and mission-launch review are now bounded phone/tablet workspaces; service-worker caches advance so installed PWAs receive the layout. Browser 1242 terminal-victory casualty authority is retained.
+
+Browser 1324 note: Mobile Command Reports now uses a viewport-bounded index/detail layout with portrait back navigation, landscape/tablet split panes, and direct selectedMissionReportId restore after mission recovery. Service-worker caches advance to Browser 1324. Save format remains 4.

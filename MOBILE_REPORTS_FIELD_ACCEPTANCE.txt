@@ -1,0 +1,19 @@
+PROJECT AEGIS — MOBILE REPORTS FIELD ACCEPTANCE
+Build: v0.26.09.09.1324_MOBILE_REPORTS_ADAPTIVE_LAYOUT_PATCH
+Save format: 4
+
+1. Set interface to Mobile · Adaptive and open Reports on a tall portrait phone.
+2. Confirm the complete command page stays fixed to the viewport; only the report index pane scrolls.
+3. Scroll through Monthly Council Summaries, Mission Results, and General Reports.
+4. Select a monthly Council summary. Confirm the detail replaces the index in portrait and Back to index is reachable.
+5. Verify mission totals, success/failure/KIA, funding/upkeep/net, mission activity, funding lines, and research/recovery are all readable.
+6. If available, tap Replay Selected Month Slides and confirm the existing Council review slides open and close normally.
+7. Return to the index and select a Mission Result. Verify Selected Mission Result, Mission Action Log, outcome coloring, and Archived Tactical Timeline.
+8. Use a report with a long tactical timeline. Confirm the detail pane scrolls smoothly without a second fixed-height timeline scroller trapping touch movement.
+9. Complete a real mission. After the post-mission runtime recovery/reload, confirm Mobile Reports opens directly to that exact selected Mission Result rather than stopping at the index.
+10. Confirm report Success/Failure, KIA/survivor information, and civilian totals still match the authoritative mission outcome.
+11. Rotate to landscape or use a tablet. Confirm index and detail are visible together and scroll independently.
+12. Switch back to portrait; selected detail remains reachable and Back returns to the index.
+13. Switch to Standard controls. Confirm the original desktop Reports two-column layout is unchanged.
+14. Confirm Browser 1244 Mission Control remains unchanged.
+15. Confirm save format remains 4.
