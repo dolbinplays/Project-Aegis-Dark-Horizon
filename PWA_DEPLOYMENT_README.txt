@@ -1,5 +1,5 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND — PWA DEPLOYMENT
-Build: v0.26.09.09.1945_MOBILE_TACTICAL_STATUS_HUD_PATCH
+Build: v0.26.09.09.2018_CLASSIC_LINEUP_VIP_CIVILIAN_AND_VICTORY_PLAYBACK_PATCH
 
 BUILD FROM SOURCE
 1. Edit src/browser-runtime.html for game changes and tools/package-runtime-shell.cjs for host/PWA changes.
@@ -53,3 +53,5 @@ Browser 1628 note: fresh alien reinforcement actors now carry explicit living-st
 Browser 1712 note: Classic one-shot terminal contact sanitation and report diagnostics are runtime changes only; PWA install behavior is unchanged.
 
 Browser 1945 note: Mobile · Adaptive 3D tactical play restores the shared Standard upper-right soldier / Fire Team Assignment / Current Objective HUD with compact phone styling. Service-worker caches advance to Browser 1945. Save format remains 4.
+
+Browser 2018 note: Classic Lineup now carries civilian/VIP paper dolls through proximity, escort, extraction/death presentation and archives a lightweight Classic event timeline. Successful lineups visibly celebrate. Service-worker caches advance to Browser 2018. Save format remains 4.

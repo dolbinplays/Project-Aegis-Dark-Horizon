@@ -1,6 +1,62 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.09.2018_CLASSIC_LINEUP_VIP_CIVILIAN_AND_VICTORY_PLAYBACK_PATCH
+TITLE: Classic Lineup VIP/Civilian + Victory Playback
+DATE: September 9, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.09.1945_MOBILE_TACTICAL_STATUS_HUD_PATCH
+
+SUMMARY
+-------
+Enhances Classic Lineup so rescue missions visibly include civilians/VIPs from contact through escort, extraction, or death; successful lineups end with a clear survivor celebration; and Classic now archives a lightweight structured event stream derived from the frames it actually depicts.
+
+CLASSIC PLAYBACK
+----------------
+- One-shot mission resolution now seeds the authoritative `tacticalDeployment(...).civilianPositions` roster instead of dropping civilians/VIPs before Classic/instant simulation. This keeps Classic, leader simulation, and instant simulation on one shared one-shot battlefield authority.
+- Classic Lineup renders one stable paper doll per civilian/VIP. VIPs use a gold identity treatment; ordinary civilians use cyan. Stable unit IDs prevent identity swapping.
+- Before escort contact, a civilian's horizontal position between AEGIS and aliens is driven by the relative tactical distance to the nearest living AEGIS and alien unit.
+- Once `escortId` is authoritative, the civilian moves immediately to the left of the escorting soldier's paper doll. Multiple followers use deterministic vertical staggering.
+- As the tactical civilian/escort approaches a real Skyranger ramp footprint, the paper doll migrates progressively toward the left edge of Classic playback. During `rampBoardingPresentation` it remains visible; once `rescued/extracted` commits it leaves the screen.
+- If alien fire kills a civilian/VIP, `toId` now resolves to that civilian's displayed paper doll. The lethal frame keeps the paper doll present long enough for the tracer/impact marker to visibly land on it; later frames remove it.
+- The existing success-only paper-doll victory animation is strengthened with a sway/rotation layered over its bounce. KIA and failed missions never celebrate.
+
+CLASSIC REPORT TIMELINE
+-----------------------
+- Classic Lineup now derives a bounded structured timeline from the playback frames it actually shows.
+- Retained event types include hits/kills, civilian/VIP escort contact, extraction, civilian death, reinforcement-labeled frames, and terminal success/failure.
+- This is intentionally lightweight. It does not claim full TacticalMission event-stream parity or invent hidden actions that Classic did not depict.
+- New Classic reports should therefore normally contain archived events instead of always showing `0 events retained`.
+
+UNCHANGED
+---------
+- Browser 1945 Mobile Tactical Status HUD.
+- Browser 1712 Classic crash-site Last Known Contact terminal victory fix.
+- Browser 1628 reinforcement liveness and Browser 1517 offline arrival-commit fixes.
+- Browser 1242 final-VIP casualty/survivor authority.
+- Standard/Desktop tactical presentation and save format 4.
+
+VALIDATION
+----------
+- All five executable runtime JavaScript blocks pass `node --check`.
+- Static contracts cover deployment civilian seeding, proximity wandering, escort positioning, extraction-edge progression, lethal civilian-frame retention, survivor-only victory animation, and Classic timeline archival wiring.
+- Host/runtime/service-worker build IDs, embedded runtime byte identity, hashes, source-manifest updater, and ZIP integrity are release gates.
+- Physical/playback acceptance remains required on a civilian/VIP mission.
+
+FIELD ACCEPTANCE
+----------------
+1. Run a successful Classic mission without civilians. Surviving AEGIS paper dolls must visibly celebrate; KIA must not.
+2. Run a VIP/civilian mission. Confirm each rescue subject has a stable paper doll throughout playback.
+3. Before escort contact, watch civilians drift toward the tactically nearer side rather than teleport between fixed rows.
+4. Once escorted, confirm each civilian sits left of the escorting soldier and multiple followers remain visually distinct.
+5. As the escort nears the Skyranger, confirm the civilian moves progressively toward the left edge. During boarding it must remain visible until extraction commits, then disappear.
+6. Let an alien kill a civilian/VIP if practical. The visible shot must terminate on that paper doll before it is removed.
+7. Confirm the final rescued/lost counts and mission result match the Mission Report.
+8. Open Reports and confirm the new Classic mission retains meaningful archived events rather than an unconditional zero-event fallback.
+9. Confirm Browser 1712 crash-site victories and save format 4 remain correct.
+
+---
+
 BUILD: v0.26.09.09.1945_MOBILE_TACTICAL_STATUS_HUD_PATCH
 TITLE: Mobile Tactical Status HUD
 DATE: September 9, 2026

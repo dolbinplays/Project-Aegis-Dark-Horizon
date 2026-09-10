@@ -1,0 +1,15 @@
+PROJECT AEGIS — CLASSIC LINEUP VIP/CIVILIAN + VICTORY FIELD ACCEPTANCE
+Build: v0.26.09.09.2018_CLASSIC_LINEUP_VIP_CIVILIAN_AND_VICTORY_PLAYBACK_PATCH
+
+1. Run successful Classic mission with no civilians; all living AEGIS paper dolls celebrate, KIA do not.
+2. Run a mission containing civilians/VIPs and confirm every rescue subject appears with stable identity.
+3. Before escort contact, confirm paper dolls shift toward the tactically nearer side/unit.
+4. After escort contact, confirm the civilian/VIP moves immediately left of its escort soldier; multiple followers stagger cleanly.
+5. Approach extraction; confirm the civilian/VIP progresses toward the left edge as tactical ramp distance closes.
+6. During boarding, the actor remains visible until rescued/extracted commits, then disappears.
+7. If an alien kills a civilian/VIP, the tracer/impact marker visibly terminates on the target before it is removed on a later frame.
+8. Final rescued/lost counts, reward, panic/outcome, survivors/KIA and Mission Report must match authoritative result.
+9. Reports > selected mission should retain meaningful Classic timeline events (combat/rescue/terminal) when such events were depicted.
+10. Recheck a UFO crash site and confirm Browser 1712 success authority is unchanged.
+11. Confirm Mobile Tactical Status HUD remains correct if switching into a manual mission afterward.
+12. Save format remains 4.

@@ -1,0 +1,20 @@
+PROJECT AEGIS — v0.26.09.09.2018_CLASSIC_LINEUP_VIP_CIVILIAN_AND_VICTORY_PLAYBACK_PATCH
+
+Overlay/replace:
+- index.html
+- src/browser-runtime.html
+- service-worker.js
+- release-metadata.json
+- README_PATCH_NOTES.txt
+- Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+- PWA_DEPLOYMENT_README.txt
+- CODEX_HANDOFF.md
+- CODEX_HANDOFF_CLASSIC_LINEUP_VIP_CIVILIAN_AND_VICTORY_PLAYBACK_PATCH.md
+- CLASSIC_LINEUP_VIP_CIVILIAN_AND_VICTORY_FIELD_ACCEPTANCE.txt
+- VALIDATION_SUMMARY.txt
+- tools/apply-2018-source-manifest.cjs
+- APPLY_2018_SOURCE_MANIFEST.bat
+- src/manifest.2018.merge.json
+
+Then run: node tools/apply-2018-source-manifest.cjs
+Retain the repository assets tree and complete existing src/manifest.json.

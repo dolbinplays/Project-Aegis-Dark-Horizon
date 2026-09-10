@@ -1,40 +1,55 @@
 PROJECT AEGIS — VALIDATION SUMMARY
-Build: v0.26.09.09.1945_MOBILE_TACTICAL_STATUS_HUD_PATCH
+Build: v0.26.09.09.2018_CLASSIC_LINEUP_VIP_CIVILIAN_AND_VICTORY_PLAYBACK_PATCH
 Save format: 4
-Base build: v0.26.09.09.1712_CLASSIC_CRASH_SITE_LAST_KNOWN_CONTACT_TERMINAL_HOTFIX
+Base build: v0.26.09.09.1945_MOBILE_TACTICAL_STATUS_HUD_PATCH
 
-SCOPE
-- Restores the existing Standard TacticalUnifiedThreeStatusPanel to Mobile · Adaptive 3D tactical play.
-- Keeps the required phone core visible: soldier name, Fire Team Assignment, Current Objective / Order.
-- Portrait/short-landscape layouts compact secondary detail first.
-- No tactical gameplay authority or Standard/Desktop presentation intentionally changed.
+PATCH CONTRACT
+- PASS: Classic/one-shot resolver seeds deployment civilianPositions and runs them through tacticalAssignVipTrackers.
+- PASS: Classic renderer includes stable civilian/VIP paper dolls and authoritative civilian frame state.
+- PASS: Proximity model positions an unescorted VIP between the AEGIS and alien sides from actual tactical distance.
+- PASS: Escort ownership positions the VIP left of the escorting AEGIS paper doll.
+- PASS: Reduced distance to a real skyranger-ramp footprint moves the escort presentation farther toward the left/extraction edge.
+- PASS: A lethal civilian target remains visible on the lethal frame through fellThisFrame / lethal-shot authority so the visible shot can land before later removal.
+- PASS: rescued/extracted civilian state removes the actor after boarding commit.
+- PASS: successful living AEGIS paper dolls retain success-only bounce and gain a nested sway/rotation; KIA/failure remain excluded by battlePlaybackVictoryDance.
+- PASS: Classic launch builds a bounded structured tacticalTimeline from depicted frames before mission aftermath/report creation.
+- PASS: Browser 1945 Mobile Tactical Status HUD remains a frozen historical patch entry; Browser 2018 owns one mutable CURRENT_GAME_BUILD history entry.
+- PASS: exactly one finishAiPlayback() declaration remains.
+- PASS: save format remains 4.
 
-STATIC / CONTRACT VALIDATION
-PASS - MOBILE_TACTICAL_STATUS_HUD_PATCH flag present.
-PASS - the shared TacticalUnifiedThreeStatusPanel remains TacticalMission's status render authority.
-PASS - Mobile CSS explicitly restores [data-aegis-unified-three-status-panel] after the older mobile decluttering hide.
-PASS - explicit data hooks identify status name, fire-team label, objective/order, and secondary content.
-PASS - portrait compaction targets secondary rank/weapon/vitals/status/AI-plan/role-detail elements without hiding the required core.
-PASS - panel remains pointer-transparent and upper-right in source authority.
-PASS - tacticalFirstPersonCurrentObjectiveOrder remains the shared objective resolver.
-PASS - Browser 1712 patch history is frozen and exactly one mutable CURRENT_GAME_BUILD entry remains.
-PASS - save format remains 4.
+EXECUTABLE FOCUSED REGRESSION
+PASS - extracted Browser 2018 Classic helper implementation executed under Node with production-equivalent stubs.
+  Unescorted proximity X: 320 (between AEGIS and alien sides).
+  Escort X: 32.33 (left of the soldier doll).
+  Near-ramp / boarding X: 18.33 (further toward extraction edge).
+  Lethal-frame civilian remains visible.
+  Extracted civilian is removed.
+  Structured Classic timeline produced rescue + terminal success events.
 
 SYNTAX / PACKAGE VALIDATION
-PASS - runtime: 7 script blocks, 5 executable; all 5 executable blocks pass node --check.
-PASS - host: 2 script blocks, 1 executable; host script passes node --check.
+PASS - runtime: all 5 executable JavaScript blocks pass node --check.
+PASS - host executable JavaScript passes node --check.
 PASS - service-worker.js passes node --check.
-PASS - tools/apply-1945-source-manifest.cjs passes node --check.
-PASS - manifest.webmanifest, src/manifest.1945.merge.json, and release-metadata.json parse as JSON.
-PASS - non-destructive manifest updater preservation fixture retains unrelated native/parity/history/nested fields while changing only currentBuild, lastInspectedBuild, gameplayParity.browserBuild, and status.
+PASS - tools/apply-2018-source-manifest.cjs passes node --check.
+PASS - manifest.webmanifest parses as JSON.
+PASS - src/manifest.2018.merge.json parses as JSON.
+PASS - release-metadata.json parses as JSON.
 PASS - embedded host runtime is byte-for-byte identical to src/browser-runtime.html.
-PASS - host body build, host BUILD constant, runtime CURRENT_GAME_BUILD, service-worker caches, and release metadata are synchronized to Browser 1945.
-PASS - Roadmap/Game Bible current-build header and Mobile tactical HUD status are synchronized.
+PASS - declared runtime byte count and SHA-256 match the embedded/source payload.
+PASS - host build, runtime CURRENT_GAME_BUILD, service-worker cache IDs, and release metadata are synchronized.
+PASS - non-destructive source-manifest updater preservation fixture retains unrelated nativeBuild, requiredSystems, history, gameplayParity.nativeBuild, and exceptions while changing only the four intended build/status values.
 
 RELEASE IDENTITY
-Runtime bytes: 6819627
-Runtime SHA-256: 46387ac6f5939e067495db945e9f3eb907a81f79f352c968a5e15787df37e67b
-Host SHA-256: e0637130a6588a8d92c0b698b0ba11950ad4fcc7abb764edeac43c8f6150eacd
+Runtime bytes: 6834026
+Runtime SHA-256: b8d232b3dc262df8f4c261a34820ec5418c1bdfe1fc0dd7dc208464995e1beae
+Host SHA-256: 8da0aec06c72e0bb29a7e48118973e8ed3a571418c9efc6cade31e7ff74c81bc
+
+SOURCE MANIFEST RELEASE STEP
+After overlaying this package into the repository, run:
+  APPLY_2018_SOURCE_MANIFEST.bat
+or:
+  node tools/apply-2018-source-manifest.cjs
+Then run the repository's normal package/check tooling.
 
 FIELD ACCEPTANCE STILL REQUIRED
-This environment did not perform a physical Android/iOS touch test. Test manual selection and AI observer changes in 3D Iso/FPV/TPV at portrait phone, short-landscape phone, and tablet sizes; verify the core name/fire-team/objective data remains readable and synchronized, the overlay does not steal battlefield input, and Standard styling remains unchanged. See MOBILE_TACTICAL_STATUS_HUD_FIELD_ACCEPTANCE.txt.
+This environment did not complete a full live browser VIP/civilian mission from launch through Classic playback and campaign aftermath. Physical/browser acceptance should verify stable civilian identities, proximity wandering, escort-left positioning, extraction-edge progression, boarding removal timing, lethal civilian tracer impact, success celebration, authoritative rescue counts/rewards, and archived Classic events. See CLASSIC_LINEUP_VIP_CIVILIAN_AND_VICTORY_FIELD_ACCEPTANCE.txt.

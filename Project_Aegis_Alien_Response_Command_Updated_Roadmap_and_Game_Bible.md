@@ -1,8 +1,23 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.09.1945_MOBILE_TACTICAL_STATUS_HUD_PATCH`
+Current browser build: `v0.26.09.09.2018_CLASSIC_LINEUP_VIP_CIVILIAN_AND_VICTORY_PLAYBACK_PATCH`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 2018 (September 9): Classic Lineup VIP/Civilian + Victory Playback
+
+- Classic one-shot mission resolution now retains the authoritative tactical deployment's civilian/VIP roster instead of dropping rescue subjects before playback. Classic, Watch Leader, and instant one-shot resolution continue to share the same battlefield authority.
+- Classic Lineup gives every civilian/VIP a stable paper doll. Before contact the doll moves between AEGIS and alien sides according to actual tactical proximity; after escort ownership it stays immediately left of the escorting AEGIS soldier.
+- Escort progress toward a real Skyranger ramp drives movement toward the left edge. Boarding actors remain visible until rescued/extracted state commits, then leave playback.
+- Alien shots resolve civilian/VIP `toId` endpoints directly to those paper dolls. A lethal target remains present for the lethal frame so the visible shot lands before later removal.
+- Multiple rescue subjects use stable IDs and deterministic vertical staggering rather than swapping identities or stacking directly.
+- Successful Classic missions visibly animate every surviving AEGIS paper doll with a bounce-and-sway celebration. KIA and failed missions do not celebrate.
+- Classic Lineup now archives a lightweight structured event stream from depicted frames: combat hits/kills, escort contact, extraction, civilian death, reinforcement labels, and terminal result. It does not claim full TacticalMission timeline parity.
+- Browser 1945 Mobile Tactical Status HUD, Browser 1712 crash-site victory authority, reinforcement/casualty hotfixes, Standard/Desktop presentation, and save format **4** remain intact.
+
+### Field gate
+Run a Classic VIP/civilian mission through contact, escort, boarding, and success; if practical also observe a civilian death. Confirm stable identities, proximity wandering, escort-left positioning, progressive extraction-edge movement, shot-to-civilian impact, extraction removal timing, survivor celebration, accurate final rescue counts, and a nonempty archived Classic timeline.
+
 
 ## Current Build Addendum — Browser 1945 (September 9): Mobile Tactical Status HUD
 
@@ -84,7 +99,7 @@ Test Memorial with no KIA, one KIA, a long fallen roster, retired squads, every 
 
 QA focus: portrait index/detail/back flow; monthly summary; mission report/action log; long archived tactical timeline; post-mission direct report restore; landscape/tablet split; Council slide replay; Mobile→Standard parity. See `MOBILE_REPORTS_FIELD_ACCEPTANCE.txt`.
 
-Systematic Mobile command-screen pass through Memorial is complete in Browser 1453. Browser 1945 implements the first focused Mobile tactical presentation follow-up: **upper-right unit / fire-team / objective HUD**. The approved Classic Lineup civilian/VIP/victory playback enhancement remains queued.
+Systematic Mobile command-screen pass through Memorial is complete in Browser 1453. Browser 1945 implements the upper-right unit / fire-team / objective HUD, and Browser 2018 implements the approved Classic Lineup civilian/VIP/victory playback enhancement.
 
 ## Roadmap Addition — Mobile Tactical Upper-Right Unit / Fire-Team / Objective HUD
 

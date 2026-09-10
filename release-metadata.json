@@ -1,7 +1,7 @@
 {
-  "build": "v0.26.09.09.1945_MOBILE_TACTICAL_STATUS_HUD_PATCH",
+  "build": "v0.26.09.09.2018_CLASSIC_LINEUP_VIP_CIVILIAN_AND_VICTORY_PLAYBACK_PATCH",
   "save_format": 4,
-  "runtime_bytes": 6819627,
-  "runtime_sha256": "46387ac6f5939e067495db945e9f3eb907a81f79f352c968a5e15787df37e67b",
-  "host_sha256": "e0637130a6588a8d92c0b698b0ba11950ad4fcc7abb764edeac43c8f6150eacd"
+  "runtime_bytes": 6834026,
+  "runtime_sha256": "b8d232b3dc262df8f4c261a34820ec5418c1bdfe1fc0dd7dc208464995e1beae",
+  "host_sha256": "8da0aec06c72e0bb29a7e48118973e8ed3a571418c9efc6cade31e7ff74c81bc"
 }
