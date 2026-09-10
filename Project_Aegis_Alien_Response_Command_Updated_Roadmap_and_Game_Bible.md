@@ -1,8 +1,23 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.09.2018_CLASSIC_LINEUP_VIP_CIVILIAN_AND_VICTORY_PLAYBACK_PATCH`
+Current browser build: `v0.26.09.09.2054_CLASSIC_LINEUP_ATTRITION_REFLOW_AND_VICTORY_PARITY_PATCH`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 2054 (September 9): Classic Lineup Attrition, Reflow & Victory Parity
+
+- Classic Lineup now keeps a stable alien presentation order based on first battlefield appearance. Original aliens retain their initial identity order; later reinforcement actors append to the bottom rather than reshuffling the existing force.
+- An alien killed during playback remains visible for the lethal impact frame, then becomes a brief fade ghost before leaving the lineup. Dead aliens no longer occupy permanent slots.
+- As casualties leave the active lineup, surviving alien paper dolls smoothly redistribute upward across the alien-force lane and spread evenly through the available vertical space. The animation changes only Classic presentation; tactical coordinates, initiative, LOS, targeting, AI, and damage remain authoritative and untouched.
+- Newly incorporated alien reinforcements enter at the bottom of the alien lineup with a short reinforcement label, then participate normally in later reflow.
+- Classic's rescue status now derives mandatory-versus-optional wording from the same `tacticalCivilianObjectiveForMission(...)` / `tacticalMissionTerminalState(...)` authority used by Tactical. Classic does not gain a second success/failure resolver. Where Tactical marks rescue mandatory, it remains mandatory; where Tactical marks civilian assistance optional, leaving those civilians behind does not create a Classic-only failure.
+- `simulateMission(...)` continues to use `resolveMission(...)`, and `finishSimPlayback()` continues to pass `playback.result` unchanged into campaign aftermath. Reward, casualty, recovered-material, reinforcement-source, Last Known Contact, Beacon, UFO-bay, rescue, and Squad Lost rules therefore remain shared.
+- The lightweight Classic archive now records alien actors that newly enter the lineup as reinforcements even when the enclosing frame label is generic.
+- Browser 2018 civilian/VIP playback and victory celebration, Browser 1945 Mobile Tactical Status HUD, Browser 1712 crash-site terminal victory, Browser 1628/1517 reinforcement safeguards, Browser 1242 casualty authority, and save format **4** remain intact.
+
+### Field gate
+Run Classic missions that include several aliens, reinforcement arrival, and both optional and mandatory rescue rules. Confirm a top/middle casualty visibly fades before removal; survivors glide upward and evenly refill the alien side; reinforcement actors enter at the bottom; mandatory rescue blocks success exactly where Tactical would block it; optional civilian assistance does not invent a failure; the victory dance remains success-only; and Mission Report outcome/reward/casualties plus archived reinforcement events match the authoritative one-shot result.
+
 
 ## Current Build Addendum — Browser 2018 (September 9): Classic Lineup VIP/Civilian + Victory Playback
 
@@ -2028,6 +2043,28 @@ Historical patch status at this archived handoff: **Browser 1739 reverses the ob
 - Twelve deterministic Build Health contracts cover map-size-aware bounds, authoritative-edge sampling, presentation-only state, no tactical mutation, no picking registration, cached lifecycle, feature continuation, instancing, map-sized backdrop radii, persistent edge readability, Iso/FPV/TPV compatibility, and save format 4.
 - Repeated fresh-campaign browser runs report **513-514/560** passing. All twelve new contracts pass consistently; one pre-existing randomized failed-mission fixture accounts for the 46/47-failure variation, while the remaining debt is unrelated geoscape, AI, visibility, mission-result, and presentation coverage.
 - Embedded JavaScript syntax and whitespace validation pass. Save format remains **4**, and no files under `assets/` changed.
+
+## Approved Roadmap — Distant Building / Horizon Skyline Visual Continuity + Cheap Window Lighting
+
+**Status:** Planned presentation-only follow-up to Browser 1938 Tactical World Continuation Terrain Skirt + Horizon Scenery.
+
+- Make the two existing classes of non-interactive background architecture read as one coherent distant city/settlement system: **world-fixed extension buildings between the tactical map edge and the atmosphere/skybox**, and the **far skyline / horizon building silhouettes**. The current mismatch can make a nearer extension building become ghostly with distance while a farther horizon building behind it remains visually solid, producing an obvious layered-cutout effect.
+- Give both background layers one shared **distance/atmosphere fade language**. Near extension buildings and far skyline buildings should converge toward the same haze color, contrast, saturation, and apparent opacity as distance increases, so a farther skyline mass never looks more optically solid than a nearer building seen through the same atmosphere.
+- Prefer a **fog/dither/contrast fade** over deep conventional alpha transparency wherever possible. Avoid making whole buildings increasingly see-through in a way that exposes a perfectly opaque building directly behind them. If transparency is still needed, clamp it to a restrained range and coordinate the skyline layer so foreground and horizon structures fade consistently.
+- Preserve useful depth cues: the nearest extension buildings may retain stronger edges/parallax, middle-distance structures should lose contrast and detail first, and horizon structures should become flatter, hazier silhouettes. The transition should feel gradual rather than like two separately rendered scenery systems.
+- Add **performance-cheap windows** to both extension buildings and skyline structures. Use a deterministic procedural/atlas/window-mask treatment or a small instanced emissive layer rather than individual modeled window geometry. Window spacing, scale, and density should respect building size and broad regional profile without creating thousands of meshes.
+- Add inexpensive **lit-window variation** for dusk/night scenes. A seeded subset of windows may emit a restrained warm/cool glow, with different occupancy patterns per building, while daylight largely suppresses emissive intensity. The same visual vocabulary should be shared by near extension buildings and far skyline buildings so the horizon does not look like a separate art set.
+- Window glow is primarily **emissive/material presentation**, not real illumination. Do **not** create a point/spot light per window, do not cast dynamic shadows from background windows, and do not add background-building LOS, collision, cover, AI, hazards, occupancy, or save authority. If a small number of skyline beacons/sign lights are ever used, drive them from one shared low-frequency presentation clock rather than per-building timers.
+- Keep the Browser 1938 performance boundary intact. Background architecture remains cached/persistent; camera pan/rotation/zoom, unit movement, fog-of-war changes, targeting, and AI playback must not rebuild window layouts or scenery materials every frame. Prefer zero or near-zero additional draw calls through texture masks, material reuse, instancing, or batching.
+- Ensure FPV and TPV receive the strongest benefit because the horizon mismatch is most visible from low camera angles, while 3D Iso should retain a clean readable background without adding distracting high-frequency window noise. Respect night lighting, biome/region palette, atmospheric haze, reduced-motion/photosensitivity settings, and existing sky/terminator lighting authority.
+- Keep tactical readability intact. Background windows/lights should never be bright enough to compete with target markers, objective markers, muzzle flashes, Skyranger lighting, street lamps, flashlights, Beacons, or other gameplay-relevant light sources.
+- Add deterministic Build Health/presentation coverage for: shared near/far atmospheric fade parameters; no farther skyline building appearing optically more solid than a nearer faded extension building under the same camera conditions; stable seeded window masks; day/night emissive suppression/activation; no per-window dynamic lights or shadows; cached lifecycle/no per-frame rebuild; FPV/TPV/3D-Iso compatibility; and unchanged tactical/save authority and save format **4**.
+
+### Visual acceptance target
+- From FPV/TPV, a player looking past a middle-distance extension building toward the skyline should see **one continuous atmospheric depth stack**: nearby background architecture remains readable, middle distance softens into haze, and the skyline is the most distant/least contrasty layer.
+- A ghostly near building should no longer reveal a strangely solid horizon building through it. If the near layer becomes visibly translucent, the horizon layer behind it must already be at least as haze-softened.
+- At night, both near and far background buildings should show sparse, believable window activity without obvious repeated grids, large frame-time spikes, or the appearance that every window is a real light source.
+
 
 ### Implemented in Browser 1036 — remove the 3D Iso battlefield support slab
 
@@ -12434,6 +12471,56 @@ The Classic Lineup simulation view should read as a simplified visual retelling 
 6. Repeat with multiple simultaneous escorts and multiple boarding events; verify identities and ordering remain stable without overlap or teleporting.
 7. Compare the Classic playback's rescued/lost totals, soldier casualties, and final success/failure against the Mission Report; they must match exactly.
 8. Verify failure/withdrawal/Squad Lost never triggers the victory dance and save format remains 4.
+
+### Implemented — Browser 2054: Classic Lineup Attrition Reflow, Reinforcement Ordering & Tactical Victory Parity
+
+**Status:** Planned refinement on top of Browser 2018. Requested September 9, 2026.
+
+Classic Lineup should continue to behave as a simplified visual retelling of the same authoritative tactical battle. Its lineup composition, rescue obligations, reinforcement presentation, and terminal mission result must stay synchronized with the tactical mission rather than using separate Classic-only win conditions.
+
+#### Alien casualty fade and lineup reflow
+- When an alien is killed, keep the paper doll present through the lethal hit/impact frame, then **fade that alien out** rather than removing it instantly.
+- Once the death fade completes, the surviving alien paper dolls should **reflow upward and spread out evenly across the alien-force side** so the remaining force continues to fill its side of the screen cleanly instead of leaving permanent holes.
+- Reflow should preserve stable alien identities and use a short interpolation rather than teleporting surviving dolls to their new slots.
+- The topmost surviving alien occupies the highest available alien slot; remaining survivors distribute downward with consistent spacing based on current alien count and available height.
+- The reflow is presentation-only. It must not change tactical positions, targeting, turn order, LOS, damage, AI decisions, or mission authority.
+
+#### Reinforcement arrival ordering
+- Newly arrived alien reinforcements should be **added at the bottom of the alien lineup** when their authoritative arrival becomes present in the simulated battlefield.
+- Reinforcements retain stable identity and arrival order. If several arrive in one wave, preserve the authoritative wave/order where available and append that wave below the aliens already present.
+- Existing aliens should not reshuffle purely because a reinforcement wave appears; append the new arrivals first, then allow ordinary casualty/reflow rules to redistribute the active lineup as later aliens die.
+- Reinforcement dolls must not appear before the authoritative reinforcement arrival/commit point, and genuinely pending/inbound reinforcements must continue to block victory exactly as they do in tactical missions.
+
+#### VIP and civilian mission obligations
+- **VIPs remain mandatory mission objectives exactly as in the tactical battle.** AEGIS must locate/contact the required VIPs, establish escort as the tactical rules require, and deliver them to the extraction/Skyranger authority before the mission may succeed unless the authoritative tactical rules explicitly resolve that VIP as dead/failed.
+- **Ordinary civilians remain optional unless the specific tactical mission says otherwise.** AEGIS may rescue them and their survival/loss should affect the same reports, rewards, penalties, panic, or narrative consequences already used by the tactical mission, but optional civilians must not become a Classic-only victory gate.
+- Classic playback should visually represent the same distinction: mandatory VIPs remain active rescue objectives until resolved, while ordinary civilians may remain unrescued when tactical authority still permits mission success.
+- If a civilian/VIP is killed, the existing Classic lethal-shot presentation remains authoritative: show the hit, then remove/fade the victim after the impact frame.
+
+#### Exact tactical win-condition parity
+- Classic Lineup must use the **same terminal mission authority as the tactical map**. Do not create a separate Classic success/failure resolver.
+- Any condition that blocks tactical victory must also block Classic victory, including where applicable:
+  - living aliens;
+  - unresolved Last Known Contact/search obligations;
+  - active Alien Field Beacons or other confirmed reinforcement sources;
+  - reinforcement arrivals that are genuinely still pending/inbound;
+  - required UFO-bay/alien-craft clearance state;
+  - mandatory VIP/rescue objectives;
+  - mission-specific mandatory objectives;
+  - genuine squad wipe / Squad Lost conditions.
+- Conversely, when tactical authority says those mandatory conditions are resolved, Classic must not invent an extra failure condition.
+- The final Classic lineup status, Mission Action Log, archived lightweight Classic timeline, reward, panic consequences, rescue totals, KIA/wounded state, loot, and Mission Report result must all agree with the same authoritative mission result.
+- Victory dance remains success-only and begins only after this shared terminal authority commits Success.
+
+#### Validation / field gate
+1. Kill an alien in Classic and confirm the lethal hit is shown, the alien fades away, and surviving aliens smoothly reflow upward to evenly fill the alien side.
+2. Trigger a reinforcement wave and confirm new aliens appear at the bottom of the lineup in stable arrival order without appearing before their authoritative arrival.
+3. Kill older and newer aliens in mixed order and confirm identities remain stable while the active alien lineup compacts/rebalances cleanly.
+4. Run a mission with mandatory VIPs and confirm Classic cannot succeed until the same VIP locate/escort/extract requirements that govern the tactical map are satisfied.
+5. Run a mission with ordinary optional civilians and confirm leaving some civilians unrescued does not create a Classic-only failure when tactical authority would still allow Success.
+6. Test a crash site with all aliens dead but a real unresolved tactical blocker (for example a genuinely pending reinforcement or required active Beacon) and confirm Classic still blocks victory.
+7. Resolve that blocker and confirm Classic commits the same Success, reward, casualty state, loot, and Mission Report as tactical authority.
+8. Verify the success victory dance begins only after shared terminal authority commits Success, and failure/withdrawal/Squad Lost never celebrates.
 
 ---
 

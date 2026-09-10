@@ -1,6 +1,58 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.09.2054_CLASSIC_LINEUP_ATTRITION_REFLOW_AND_VICTORY_PARITY_PATCH
+TITLE: Classic Lineup Attrition, Reflow & Victory Parity
+DATE: September 9, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.09.2018_CLASSIC_LINEUP_VIP_CIVILIAN_AND_VICTORY_PLAYBACK_PATCH
+
+SUMMARY
+-------
+Finishes the next Classic Lineup presentation/parity pass: killed aliens fade away after their lethal impact, surviving alien paper dolls smoothly compact upward and redistribute through the alien-force lane, newly arriving reinforcements append at the bottom, and Classic explicitly mirrors Tactical rescue/terminal authority instead of inventing separate win conditions.
+
+CLASSIC ALIEN ATTRITION / REFLOW
+--------------------------------
+- Alien lineup identity order is canonical by first appearance across the playback frames. Initial aliens keep their first-frame ordering. A reinforcement's first appearance appends that identity after the existing alien force.
+- The lethal frame retains the killed alien so the visible shot and impact still have a target. The following frame keeps a low-opacity fade ghost while living aliens have already reflowed; later frames remove the dead paper doll.
+- Living alien cards redistribute over a fixed vertical lane and use a short SVG translation interpolation from their previous slot. This removes permanent holes without teleport-like paper-doll swaps.
+- Reinforcement actors enter from the lower edge into the current bottom slot and receive a REINFORCEMENT/REINF presentation tag. After arrival they behave like any other lineup identity.
+- These changes are presentation-only. Tactical coordinates, turns, LOS, targeting, AI, damage, reinforcement creation, and mission state are not modified by the lineup layout.
+
+TACTICAL VICTORY / RESCUE PARITY
+---------------------------------
+- Classic's rescue status uses the same tactical civilian objective policy that drives Tactical mission-terminal resolution.
+- Mandatory rescue remains blocking wherever Tactical marks it mandatory; optional civilian assistance remains optional wherever Tactical marks it optional.
+- `simulateMission(...)` still calls the shared `resolveMission(...)` authority, and `finishSimPlayback()` still hands `playback.result` directly to campaign aftermath. No Classic-only success/failure shortcut was added.
+- Existing alien, Last Known Contact, reinforcement source/arrival, Field Beacon, UFO-bay, rescue, and Squad Lost terminal rules remain authoritative.
+
+CLASSIC REPORT TIMELINE
+-----------------------
+- The lightweight Classic archive now records newly appearing alien identities as reinforcement-arrival events even when the frame's text label is generic.
+- Browser 2018 combat/rescue/terminal Classic timeline events remain intact.
+
+UNCHANGED
+---------
+- Browser 2018 civilian/VIP paper dolls, escort/extraction/death presentation, and success-only victory dance.
+- Browser 1945 Mobile Tactical Status HUD.
+- Browser 1712 crash-site Last Known Contact terminal fix.
+- Browser 1628/1517 reinforcement and Browser 1242 casualty authority safeguards.
+- Standard/Desktop presentation and save format 4.
+
+FIELD ACCEPTANCE
+----------------
+1. In Classic, kill an alien near the top or middle of a multi-alien lineup. It should survive the lethal impact frame, fade, then disappear.
+2. Confirm surviving alien identities glide upward and redistribute evenly without swapping identities.
+3. Trigger alien reinforcements. New identities should appear at the bottom with the reinforcement treatment, then join later reflow normally.
+4. Run a mission where Tactical marks rescue mandatory. Classic must not report success until the same Tactical rescue authority permits it.
+5. Run a mission where Tactical marks civilian assistance optional. Leaving an ordinary civilian behind must not cause a Classic-only failure.
+6. Confirm authoritative blockers such as a living alien, Last Known Contact, Field Beacon/reinforcement source, pending reinforcement arrival, UFO-bay obligation, or Squad Lost still behave exactly as Tactical does.
+7. Confirm a successful Classic mission still performs the survivor victory celebration and a failed mission does not.
+8. Open Reports and verify the Mission Result/reward/casualties match the one-shot result and reinforcement arrivals appear in the lightweight Archived Tactical Timeline.
+9. Confirm Browser 1945 Mobile Tactical Status HUD and save format 4 remain correct.
+
+---
+
 BUILD: v0.26.09.09.2018_CLASSIC_LINEUP_VIP_CIVILIAN_AND_VICTORY_PLAYBACK_PATCH
 TITLE: Classic Lineup VIP/Civilian + Victory Playback
 DATE: September 9, 2026

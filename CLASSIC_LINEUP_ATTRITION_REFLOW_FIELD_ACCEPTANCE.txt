@@ -1,0 +1,13 @@
+PROJECT AEGIS — BROWSER 2054 FIELD ACCEPTANCE
+Classic Lineup Attrition, Reflow & Victory Parity
+
+1. Multi-alien attrition: kill a top/middle alien. Its lethal shot must land while the paper doll is still visible; the alien should then fade and disappear.
+2. Reflow: surviving alien identities should move smoothly upward and redistribute evenly. No permanent dead-unit holes and no identity swapping.
+3. Reinforcement ordering: newly arrived alien identities should enter at the bottom of the alien lineup with a reinforcement tag.
+4. Reflow after reinforcement: kill additional aliens after a reinforcement arrives; the reinforcement may move upward normally while retaining identity.
+5. Mandatory rescue: in a mission Tactical marks mandatory, Classic must not award success until the same rescue quota/terminal authority is satisfied.
+6. Optional civilian assistance: in a mission Tactical marks optional, an unrescued ordinary civilian must not create a Classic-only failure.
+7. Terminal blockers: living aliens, Last Known Contacts, Beacons/reinforcement sources, pending arrivals, UFO-bay obligations, and Squad Lost must still block/resolve exactly as Tactical specifies.
+8. Victory presentation: successful surviving AEGIS dolls still celebrate; failures and KIA do not.
+9. Reports: reward, casualties, recovered materials, and Success/Failure match the authoritative one-shot result. Reinforcement arrivals should appear in the lightweight Archived Tactical Timeline.
+10. Regression: Browser 1945 Mobile Tactical Status HUD remains correct and save format remains 4.

@@ -1,55 +1,32 @@
-PROJECT AEGIS — VALIDATION SUMMARY
-Build: v0.26.09.09.2018_CLASSIC_LINEUP_VIP_CIVILIAN_AND_VICTORY_PLAYBACK_PATCH
+PROJECT AEGIS — BROWSER 2054 VALIDATION SUMMARY
+Build: v0.26.09.09.2054_CLASSIC_LINEUP_ATTRITION_REFLOW_AND_VICTORY_PARITY_PATCH
 Save format: 4
-Base build: v0.26.09.09.1945_MOBILE_TACTICAL_STATUS_HUD_PATCH
 
-PATCH CONTRACT
-- PASS: Classic/one-shot resolver seeds deployment civilianPositions and runs them through tacticalAssignVipTrackers.
-- PASS: Classic renderer includes stable civilian/VIP paper dolls and authoritative civilian frame state.
-- PASS: Proximity model positions an unescorted VIP between the AEGIS and alien sides from actual tactical distance.
-- PASS: Escort ownership positions the VIP left of the escorting AEGIS paper doll.
-- PASS: Reduced distance to a real skyranger-ramp footprint moves the escort presentation farther toward the left/extraction edge.
-- PASS: A lethal civilian target remains visible on the lethal frame through fellThisFrame / lethal-shot authority so the visible shot can land before later removal.
-- PASS: rescued/extracted civilian state removes the actor after boarding commit.
-- PASS: successful living AEGIS paper dolls retain success-only bounce and gain a nested sway/rotation; KIA/failure remain excluded by battlePlaybackVictoryDance.
-- PASS: Classic launch builds a bounded structured tacticalTimeline from depicted frames before mission aftermath/report creation.
-- PASS: Browser 1945 Mobile Tactical Status HUD remains a frozen historical patch entry; Browser 2018 owns one mutable CURRENT_GAME_BUILD history entry.
-- PASS: exactly one finishAiPlayback() declaration remains.
-- PASS: save format remains 4.
+PASSED STATIC / PACKAGE GATES
+- browser-runtime.html: 7 script tags, 5 non-empty executable JavaScript blocks; every executable block passes node --check.
+- index.html: 2 script tags, 1 non-empty executable host block; host block passes node --check.
+- service-worker.js passes node --check.
+- tools/apply-2054-source-manifest.cjs passes node --check.
+- manifest.webmanifest, release-metadata.json, and src/manifest.2054.merge.json parse successfully.
+- Embedded runtime payload decodes byte-for-byte to src/browser-runtime.html.
+- Embedded runtime byte count/SHA-256 match release-metadata.json.
+- Host SHA-256 matches release-metadata.json.
+- Runtime CURRENT_GAME_BUILD, host data-aegis-host-build/BUILD, release metadata, and both service-worker cache IDs are synchronized to Browser 2054.
+- Save format remains 4.
+- Exactly one function finishAiPlayback() remains.
+- Browser 2018 patch-history entry is frozen to its literal build ID; Browser 2054 is the single current mutable patch-history entry.
+- Classic attrition/reflow flag, canonical alien ordering, lifecycle display model, animated reflow marker, Tactical-authority wording, shared resolveMission/beginSkyrangerReturn wiring, and Build Health contract are present.
+- Non-destructive source-manifest updater preservation fixture passed; unrelated top-level and nested gameplayParity data were retained.
 
-EXECUTABLE FOCUSED REGRESSION
-PASS - extracted Browser 2018 Classic helper implementation executed under Node with production-equivalent stubs.
-  Unescorted proximity X: 320 (between AEGIS and alien sides).
-  Escort X: 32.33 (left of the soldier doll).
-  Near-ramp / boarding X: 18.33 (further toward extraction edge).
-  Lethal-frame civilian remains visible.
-  Extracted civilian is removed.
-  Structured Classic timeline produced rescue + terminal success events.
+FOCUSED EXECUTABLE MODEL FIXTURE
+- Lethal alien state on impact frame: dying.
+- Following-frame state: fading.
+- Surviving Alien B moved from y=292 to y=112 with previousY=292, proving upward reflow input.
+- New reinforcement first appeared at y=472, equal to the bottom-most active alien slot.
+- Stable canonical identity order remained [a, b, c, d].
 
-SYNTAX / PACKAGE VALIDATION
-PASS - runtime: all 5 executable JavaScript blocks pass node --check.
-PASS - host executable JavaScript passes node --check.
-PASS - service-worker.js passes node --check.
-PASS - tools/apply-2018-source-manifest.cjs passes node --check.
-PASS - manifest.webmanifest parses as JSON.
-PASS - src/manifest.2018.merge.json parses as JSON.
-PASS - release-metadata.json parses as JSON.
-PASS - embedded host runtime is byte-for-byte identical to src/browser-runtime.html.
-PASS - declared runtime byte count and SHA-256 match the embedded/source payload.
-PASS - host build, runtime CURRENT_GAME_BUILD, service-worker cache IDs, and release metadata are synchronized.
-PASS - non-destructive source-manifest updater preservation fixture retains unrelated nativeBuild, requiredSystems, history, gameplayParity.nativeBuild, and exceptions while changing only the four intended build/status values.
-
-RELEASE IDENTITY
-Runtime bytes: 6834026
-Runtime SHA-256: b8d232b3dc262df8f4c261a34820ec5418c1bdfe1fc0dd7dc208464995e1beae
-Host SHA-256: 8da0aec06c72e0bb29a7e48118973e8ed3a571418c9efc6cade31e7ff74c81bc
-
-SOURCE MANIFEST RELEASE STEP
-After overlaying this package into the repository, run:
-  APPLY_2018_SOURCE_MANIFEST.bat
-or:
-  node tools/apply-2018-source-manifest.cjs
-Then run the repository's normal package/check tooling.
-
-FIELD ACCEPTANCE STILL REQUIRED
-This environment did not complete a full live browser VIP/civilian mission from launch through Classic playback and campaign aftermath. Physical/browser acceptance should verify stable civilian identities, proximity wandering, escort-left positioning, extraction-edge progression, boarding removal timing, lethal civilian tracer impact, success celebration, authoritative rescue counts/rewards, and archived Classic events. See CLASSIC_LINEUP_VIP_CIVILIAN_AND_VICTORY_FIELD_ACCEPTANCE.txt.
+FIELD GATE STILL REQUIRED
+- Physical/browser playback remains required to judge the visual quality and timing of SVG fade/reflow interpolation.
+- Verify a real reinforcement appears at the bottom without an identity swap.
+- Verify mandatory/optional rescue outcomes against real mission types and Mission Reports.
+- Verify success-only victory dance and Browser 1945 Mobile Tactical Status HUD remain correct.

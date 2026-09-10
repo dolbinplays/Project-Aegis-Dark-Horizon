@@ -1,7 +1,7 @@
 {
-  "build": "v0.26.09.09.2018_CLASSIC_LINEUP_VIP_CIVILIAN_AND_VICTORY_PLAYBACK_PATCH",
+  "build": "v0.26.09.09.2054_CLASSIC_LINEUP_ATTRITION_REFLOW_AND_VICTORY_PARITY_PATCH",
   "save_format": 4,
-  "runtime_bytes": 6834026,
-  "runtime_sha256": "b8d232b3dc262df8f4c261a34820ec5418c1bdfe1fc0dd7dc208464995e1beae",
-  "host_sha256": "8da0aec06c72e0bb29a7e48118973e8ed3a571418c9efc6cade31e7ff74c81bc"
+  "runtime_bytes": 6847062,
+  "runtime_sha256": "c3103d4f137f1c4948f46a3f461973dfb3fcf62d9f4b25adf3072fde9c112e99",
+  "host_sha256": "e3f0802d6c6be7d2dbcc2323bd17d16dd85d1874e6469e03b531ca37f696bbf0"
 }

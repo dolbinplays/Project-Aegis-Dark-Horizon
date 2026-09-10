@@ -1,0 +1,8 @@
+{
+  "currentBuild": "v0.26.09.09.2054_CLASSIC_LINEUP_ATTRITION_REFLOW_AND_VICTORY_PARITY_PATCH",
+  "lastInspectedBuild": "v0.26.09.09.2054_CLASSIC_LINEUP_ATTRITION_REFLOW_AND_VICTORY_PARITY_PATCH",
+  "status": "classic-lineup-attrition-reflow-and-victory-parity-complete",
+  "gameplayParity": {
+    "browserBuild": "v0.26.09.09.2054_CLASSIC_LINEUP_ATTRITION_REFLOW_AND_VICTORY_PARITY_PATCH"
+  }
+}

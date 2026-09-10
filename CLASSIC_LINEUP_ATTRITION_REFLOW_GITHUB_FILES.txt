@@ -1,0 +1,26 @@
+PROJECT AEGIS — BROWSER 2054 GITHUB OVERLAY FILES
+
+Overlay this release onto the repository, then update the existing full source manifest non-destructively before running the canonical packaging/release checks.
+
+Primary files:
+- index.html
+- src/browser-runtime.html
+- service-worker.js
+- README_PATCH_NOTES.txt
+- Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+- CODEX_HANDOFF.md
+- CODEX_HANDOFF_CLASSIC_LINEUP_ATTRITION_REFLOW_AND_VICTORY_PARITY_PATCH.md
+- CLASSIC_LINEUP_ATTRITION_REFLOW_FIELD_ACCEPTANCE.txt
+- release-metadata.json
+
+Manifest helper:
+- src/manifest.2054.merge.json
+- tools/apply-2054-source-manifest.cjs
+- APPLY_2054_SOURCE_MANIFEST.bat
+
+From repository root after overlay:
+  APPLY_2054_SOURCE_MANIFEST.bat
+OR
+  node tools/apply-2054-source-manifest.cjs
+
+The helper changes only currentBuild, lastInspectedBuild, gameplayParity.browserBuild, and status. It must not replace unrelated manifest content.
