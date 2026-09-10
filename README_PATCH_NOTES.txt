@@ -1,3 +1,62 @@
+BUILD: v0.26.09.10.0810_CLASSIC_LINEUP_STREAMED_ROLLING_BATTLE_PLANNING_AND_REINFORCEMENT_UFO_BEAM_PATCH
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
+TITLE: Classic Lineup Streamed Rolling Battle Planning & Reinforcement UFO Beam
+DATE: September 10, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.09.2154_CLASSIC_LINEUP_VIP_RESCUE_PRIORITY_AND_SUPPORT_STANDOFF_PATCH
+
+SUMMARY
+-------
+Classic Lineup no longer resolves an essentially complete battle before playback begins. It now starts from a bounded one-round opening buffer, continues the existing shared resolver from preserved tactical continuation snapshots while playback runs, and displays a lightweight reinforcement UFO/beam-down presentation when authoritative alien reinforcement frames arrive.
+
+STREAMED / ROLLING CLASSIC PLANNING
+------------------------------------
+- Classic opens after one bounded combat round instead of waiting for the whole operation to resolve.
+- Further planning is performed in one-round continuation chunks and normally stays no more than about two planned rounds ahead of the currently displayed frame.
+- Every continuation calls the existing `resolveMission(..., mode:"classic")` path with `initialBattleState`; there is no second Classic-only resolver and no alternate victory authority.
+- The inherited continuation seam frame is removed before append so resumed chunks do not replay or duplicate the prior round/action.
+- Existing continuation state preserves stable actor IDs, HP, TU, ammunition, positions, civilians/VIPs, escorts, explored cells, Last Known Contacts, Beacon state, reinforcement state, Skyranger state, and fire-team state between chunks.
+- Planning yields between chunks. If playback reaches the planner, the Classic display shows `TACTICAL COMPUTATION…` and resumes automatically when another bounded chunk is ready instead of resolving the remaining battle in one browser-blocking task.
+
+TERMINAL / CAMPAIGN AUTHORITY
+-----------------------------
+- Rewards, casualties, XP/growth, permanent soldier state, rescue outcome, Mission Report final timeline, campaign aftermath, and Skyranger return are not committed until `tacticalMissionResultHasTerminalOutcome(...)` accepts the shared Tactical result.
+- Mandatory VIPs remain blocking until Tactical rescue authority permits resolution. Optional civilian assistance remains non-blocking where Tactical defines it as optional.
+- Living aliens, valid Last Known Contacts, confirmed Field Beacons/reinforcement sources, pending reinforcement transit, reinforcement-arrival presentation commit, UFO-bay requirements, playback-pending state, and Squad Lost remain shared Tactical terminal gates.
+- Browser 1712 dead-alien Last Known Contact sanitation and Browser 1242 survivor/KIA authority remain intact.
+
+CLASSIC REINFORCEMENT UFO / BEAM
+--------------------------------
+- An authoritative reinforcement-arrival frame triggers a small presentation-only UFO at the top of the alien-force lane.
+- The UFO flies in, hovers, and projects a pulsing conical beam using inexpensive SVG primitives.
+- Newly arrived alien paper dolls materialize through the beam, enter from the bottom of the alien lineup as established in Browser 2054, then become ordinary lineup actors and participate in casualty reflow.
+- The effect does not create aliens, change timing, alter HP/AI/LOS/positions, or add a Three.js scene/light system. Tactical reinforcement state remains authoritative.
+
+PRESERVED CLASSIC FUNCTIONALITY
+-------------------------------
+- Browser 2154 mandatory VIP rescue priority, nearest-suitable responder assignment, building/ramp access, and support standoff behavior.
+- Browser 2054 alien casualty fade/reflow and bottom-entry reinforcement ordering.
+- Browser 2018 VIP/civilian paper dolls, extraction/death presentation, success celebration, and lightweight Mission Report timeline.
+- Browser 1945 Mobile Tactical Status HUD and Browser 1712 crash-site terminal repair.
+- Save format 4.
+
+FIELD ACCEPTANCE
+----------------
+1. Start a Classic mission and confirm playback begins after only a short opening computation rather than after the whole mission has been resolved.
+2. Let a longer mission play and confirm planning continues while frames are being shown. If playback catches up, `TACTICAL COMPUTATION…` should appear temporarily and playback should resume.
+3. Confirm no round/action repeats at chunk boundaries and actor identities/positions do not jump or reset.
+4. Verify mandatory VIP rescue still blocks victory until extracted and optional civilians do not create a hidden victory requirement.
+5. Exercise living-alien, Last Known Contact, Beacon/reinforcement source, pending reinforcement, UFO-bay, and Squad Lost terminal cases and confirm Classic matches Tactical authority.
+6. Trigger alien reinforcements. Confirm a small UFO/beam presentation appears only for the authoritative arrival, incoming aliens materialize through it, and the new actors enter at the bottom of the alien lineup.
+7. Kill/reflow aliens after reinforcements and confirm Browser 2054 stable identity/casualty reflow remains intact.
+8. Confirm Browser 1712 crash-site stale-contact victory remains fixed and Browser 1242 survivor/KIA outcome remains correct.
+9. Open the Mission Report and confirm final outcome, reward, casualties, rescue counts, and Classic timeline are committed only after authoritative completion.
+10. Confirm Standard/manual Tactical behavior and save format 4 are unchanged.
+
+---
+
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 

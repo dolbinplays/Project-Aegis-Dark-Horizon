@@ -1,0 +1,23 @@
+PROJECT AEGIS — BROWSER 0810 FIELD ACCEPTANCE
+
+Build: v0.26.09.10.0810_CLASSIC_LINEUP_STREAMED_ROLLING_BATTLE_PLANNING_AND_REINFORCEMENT_UFO_BEAM_PATCH
+Save format: 4
+
+1. Classic startup: playback appears after the bounded opening round rather than waiting for the entire mission to resolve.
+2. Rolling planner: on a longer operation, playback continues while subsequent one-round chunks are calculated.
+3. Catch-up: if playback reaches the available buffer, TACTICAL COMPUTATION… appears temporarily; the browser remains responsive and playback resumes when frames append.
+4. Continuation seam: no combat round, shot, movement, rescue action, or terminal frame repeats at a chunk boundary.
+5. Identity continuity: soldiers, aliens, VIPs/civilians, escorts, Beacons, Last Known Contacts, reinforcement actors, and Skyranger state do not reset/jump between chunks.
+6. Mandatory VIP: victory remains blocked until Tactical rescue authority permits success/exhausted failure. Browser 2154 nearest-responder and support-standoff behavior still works.
+7. Optional civilians: ordinary optional assistance does not become a hidden Classic victory requirement.
+8. Terminal blockers: living aliens, valid Last Known Contacts, confirmed Beacon/reinforcement source, pending reinforcement transit, uncommitted reinforcement arrival, required UFO-bay clearance, playback pending, and Squad Lost match Tactical terminal authority.
+9. Reinforcement presentation: authoritative alien reinforcement arrival triggers the small UFO, hover, conical beam, and materialization treatment. No UFO is shown merely because Classic wants reinforcements.
+10. Reinforcement lineup: new alien identities enter at the bottom and later participate in Browser 2054 casualty fade/reflow without identity swaps.
+11. Presentation isolation: the UFO/beam does not alter alien count, IDs, HP, positions, timing, AI, LOS, or damage.
+12. Browser 1712: dead aliens cannot leave stale Last Known Contact markers that falsely block crash-site victory.
+13. Browser 1242: survivor/KIA authority and final permanent soldier state remain correct.
+14. Mission completion: rewards, casualties, XP/growth, rescue outcome, Mission Report timeline, campaign aftermath, and Skyranger return occur only after authoritative terminal completion.
+15. Regression: Browser 2018 civilian/VIP paper dolls, extraction/death presentation, victory celebration, and Classic timeline remain correct.
+16. Regression: Browser 1945 Mobile Tactical Status HUD remains correct.
+17. Standard/manual Tactical behavior is unchanged.
+18. Save/load remains format 4.

@@ -1,8 +1,26 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.09.2154_CLASSIC_LINEUP_VIP_RESCUE_PRIORITY_AND_SUPPORT_STANDOFF_PATCH`
+Current browser build: `v0.26.09.10.0810_CLASSIC_LINEUP_STREAMED_ROLLING_BATTLE_PLANNING_AND_REINFORCEMENT_UFO_BEAM_PATCH`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 0810 (September 10): Classic Lineup Streamed Rolling Battle Planning & Reinforcement UFO Beam
+
+- Classic Lineup now begins playback from a bounded **one-round opening buffer** instead of resolving nearly the entire operation before the Skyranger deployment presentation can start. Further work is planned as one-round continuation chunks while existing frames play, with a target of roughly two planned rounds ahead of the current displayed round.
+- Streaming reuses the existing resumable `resolveMission(...)` authority with `mode:"classic"`, `initialBattleState`, `maxRoundsOverride`, and `simulationChunkOnly`. It does **not** add a Classic-only battle resolver or alternate mission-completion rules.
+- Continuation snapshots preserve stable tactical actor IDs and state across chunks: soldiers, aliens, civilians/VIPs, escorts, HP/TU/ammunition, positions, fire-team state, explored cells, Last Known Contacts, Field Beacons, reinforcement state, Skyranger placement, and other existing resolver authority. The inherited seam frame is discarded on append so prior actions are not replayed.
+- If Classic playback reaches the available planner edge, the battle display shows **TACTICAL COMPUTATION…** while the next bounded chunk is yielded/calculated; playback resumes automatically after frames append. This replaces the old whole-battle startup pause with short, interruptible planning work.
+- Campaign outcome is gated behind the shared Tactical terminal result. Rewards, casualties, XP/growth, rescue resolution, permanent soldier state, final Classic Mission Report timeline, campaign aftermath, and Skyranger return remain uncommitted until `tacticalMissionResultHasTerminalOutcome(...)` confirms authoritative completion.
+- Shared terminal gates remain authoritative: mandatory VIP rescue, living aliens, valid Last Known Contacts, confirmed Field Beacons/reinforcement sources, pending reinforcement transit/arrival commit, UFO-bay obligations, playback-pending state, and Squad Lost. Optional civilian assistance remains non-blocking wherever Tactical defines it as optional.
+- Authoritative reinforcement-arrival frames now drive a **presentation-only Classic UFO beam-down**. A small UFO enters above the alien-force lane, hovers, and projects a glowing conical SVG beam; incoming alien paper dolls materialize through the cone, retain Browser 2054 bottom-of-lineup insertion, then participate normally in later casualty reflow. The effect creates no tactical actors and changes no reinforcement timing, HP, AI, LOS, coordinates, or Three.js lighting.
+- Browser 2154 VIP rescue priority/support standoff, Browser 2054 casualty reflow, Browser 2018 civilian/VIP/victory/timeline presentation, Browser 1945 Mobile Tactical Status HUD, Browser 1712 stale-contact repair, Browser 1242 survivor/KIA authority, and save format **4** remain intact.
+
+### Field gate
+Run a long Classic mission, a mandatory-VIP mission, an optional-civilian mission, a reinforcement mission, and a crash-site/Beacon/UFO-bay blocker case. Confirm early playback, seamless chunk continuation without repeated actions, temporary `TACTICAL COMPUTATION…` only when the planner is caught, stable actor identity/state, reinforcement UFO/beam presentation without tactical mutation, bottom-entry/reflow behavior, and final campaign/Report commit only after shared Tactical terminal authority resolves the operation.
+
+### Retained follow-up after this patch
+- Continue polishing Classic Lineup if field testing exposes additional rescue, reinforcement, buffering, or playback issues.
+- Retain the approved **Distant Building / Horizon Skyline Visual Continuity + Cheap Window Lighting** roadmap item below: near/intermediate extension buildings and far skyline buildings must share one atmospheric depth language, with deterministic atlas/procedural windows and seeded night emissive windows, no point light per window, cached/persistent presentation, and zero or near-zero additional draw calls.
 
 ## Current Build Addendum — Browser 2154 (September 9): Classic Lineup VIP Rescue Priority & Support Standoff
 
