@@ -1,8 +1,35 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.09.1517_CLASSIC_CRASH_SITE_TERMINAL_REINFORCEMENT_COMMIT_HOTFIX`
+Current browser build: `v0.26.09.09.1712_CLASSIC_CRASH_SITE_LAST_KNOWN_CONTACT_TERMINAL_HOTFIX`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 1712 (September 9): Classic Crash-Site Last Known Contact Terminal Hotfix
+
+- Follow-up field testing disproved Browser 1628 as a complete fix: the same East Asia / Threat 2 / Tide Horror crash site could still end as FAILURE after Classic showed zero surviving aliens.
+- Remaining cause: a dead alien could retain an active **Last Known Contact** marker. Terminal mission authority treated that marker as an unresolved hostile contact even though the alien itself was already dead, so `primarySecured` remained false and Classic could finalize an unresolved operation.
+- Last Known Contact ownership now requires a genuinely living alien: positive HP and not explicitly dead. Death clears observed/marker state even if no soldier currently sees the corpse. Same-round zero-alien and final one-shot terminal checks both sanitize stale contact state before evaluating victory.
+- Classic one-shot resolution now also receives the campaign's actual Field Beacon knowledge, keeping reinforcement-source objectives aligned with live TacticalMission authority.
+- Mission Reports retain explicit incomplete/safety explanations and list remaining terminal blockers rather than overwriting unresolved states with the generic "alien force scattered" failure sentence.
+- Classic's current one-shot path still does not emit the live TacticalMission structured timeline. New reports therefore identify that honestly instead of saying a newly created report predates timeline archiving. A future Classic playback enhancement may generate a richer structured archive alongside the already-approved civilian/VIP paper dolls and success victory dance.
+- Browser 1517 reinforcement commit, Browser 1628 reinforcement liveness, Browser 1242 casualty authority, completed Mobile command-screen layouts, Mobile tactical upper-right soldier/fire-team/objective HUD roadmap item, and Classic civilian/VIP/victory playback roadmap item remain intact. Save format remains **4**.
+
+### Field gate
+Replay the exact failing East Asia Tide Horror crash site with the same response force. A dead alien's former Last Known Contact must disappear from terminal authority, and zero living aliens must produce Success unless the new `Terminal resolution blockers:` diagnostic names a real remaining objective. A genuinely living hidden alien must still keep its Last Known Contact and block victory.
+
+
+## Current Build Addendum — Browser 1628 (September 9): Reinforcement Liveness Authority Hotfix
+
+- Reproduces the user-supplied **East Asia / Threat 2 / Tide Horror Medium UFO Crash Site** directly through Browser 1517's actual one-shot resolver and identifies the remaining false-failure cause.
+- Fresh alien reinforcements could enter with positive HP but no explicit `alive:true`. Terminal mission authority treated positive HP plus omitted `alive` as living, while Classic Lineup and several Simulation loops used truthiness and therefore treated the same units as absent/dead.
+- In the exact failing save, the contradictory final battlefield contained a **Pale Commander** and **Needle Drone**, each at **34 HP** with omitted `alive`, while the Classic terminal summary reported **Alien survivors: 0**. This created an unwinnable ghost-reinforcement state rather than a legitimate unresolved objective.
+- Beacon and dropship reinforcement constructors now emit explicit `alive:true`; arrival normalization retains explicit liveness; Classic survivor presentation uses the shared authoritative liveness helper. Explicit `alive:false` remains death authority even if a presentation HP value is positive.
+- Executing the same mission/save fixture after the repair changes the resolver from `success:false / Mission unresolved` to **`success:true / Mission success`**, with both reinforcement actors participating normally and ending dead.
+- Browser 1517 arrival-commit reconciliation, Browser 1242 survivor/KIA authority, Mobile Missions/Reports/Memorial, the queued Mobile upper-right HUD, and Classic civilian/VIP playback roadmap item remain intact. Save format remains **4**.
+
+### Field gate
+Reload the supplied save and replay the exact East Asia Tide Horror crash site in Classic Lineup. Living reinforcements must remain visible/actionable, and after all aliens are genuinely dead the mission must resolve Success. A real surviving/inbound reinforcement must continue to block victory.
+
 
 ## Current Build Addendum — Browser 1517 (September 9): Classic Crash-Site Terminal Reinforcement Commit Hotfix
 

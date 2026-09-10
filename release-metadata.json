@@ -1,7 +1,7 @@
 {
-  "build": "v0.26.09.09.1517_CLASSIC_CRASH_SITE_TERMINAL_REINFORCEMENT_COMMIT_HOTFIX",
+  "build": "v0.26.09.09.1712_CLASSIC_CRASH_SITE_LAST_KNOWN_CONTACT_TERMINAL_HOTFIX",
   "save_format": 4,
-  "runtime_bytes": 6798472,
-  "runtime_sha256": "ac26fede6ab31a748dd55c3baecae58e90548234577daabf61517f509f5e730a",
-  "host_sha256": "d821a79f12c384a98481e8181f762c1bd14e262c6e04cb616dd21007a4979fee"
+  "runtime_bytes": 6810083,
+  "runtime_sha256": "eb261a96049ddbde23bc6d9cd2ceada3ca7a5b7e7778d2b3995cff7c36407d71",
+  "host_sha256": "5d195faad1ac7240256f64f2cfe9a0d36f85e10bb0baad9d3b6992cab1d2bc6d"
 }

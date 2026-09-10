@@ -1,0 +1,16 @@
+PROJECT AEGIS — CLASSIC CRASH-SITE LAST KNOWN CONTACT TERMINAL FIELD ACCEPTANCE
+Build: v0.26.09.09.1712_CLASSIC_CRASH_SITE_LAST_KNOWN_CONTACT_TERMINAL_HOTFIX
+
+1. Load Project-Aegis-Campaign_slot_2_v0_26_09_09_1517_2026-09-09T23-02-49.project-aegis-save.json.
+2. Select the East Asia Medium UFO Crash Site, Threat 2, Tide Horror, $360k operation.
+3. Recreate the same Classic Lineup response force used in the failing field replay (including support squad if selected).
+4. Let Classic resolve through the final alien kill.
+5. Confirm every genuinely living reinforcement remains visible/actionable until killed.
+6. When Alien survivors reaches 0, confirm a dead alien cannot retain a Last Known Contact terminal blocker.
+7. If no other mandatory objective remains, the operation must report Success.
+8. If it remains unresolved/failure, the Mission Action Log must include `Terminal resolution blockers:` naming the exact remaining authority; capture that line for diagnosis.
+9. Confirm an explicit `Mission incomplete.` explanation is not replaced by `Survivors extracted under pressure while the alien force scattered.`
+10. Confirm a genuinely living hidden alien may still own Last Known Contact and must still block victory.
+11. Confirm a truly inbound reinforcement, active confirmed Beacon, occupied/unverified UFO bay, mandatory VIP failure, or genuine squad wipe remains blocking/failure as appropriate.
+12. Open the new Classic Mission Report. With no structured tactical timeline, it should say Classic Lineup used one-shot simulation rather than claiming the report predates timeline archiving.
+13. Save format remains 4.

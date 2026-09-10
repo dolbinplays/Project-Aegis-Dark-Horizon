@@ -1,0 +1,8 @@
+{
+  "currentBuild": "v0.26.09.09.1712_CLASSIC_CRASH_SITE_LAST_KNOWN_CONTACT_TERMINAL_HOTFIX",
+  "lastInspectedBuild": "v0.26.09.09.1712_CLASSIC_CRASH_SITE_LAST_KNOWN_CONTACT_TERMINAL_HOTFIX",
+  "status": "classic-crash-site-last-known-contact-terminal-hotfix-complete",
+  "gameplayParity": {
+    "browserBuild": "v0.26.09.09.1712_CLASSIC_CRASH_SITE_LAST_KNOWN_CONTACT_TERMINAL_HOTFIX"
+  }
+}

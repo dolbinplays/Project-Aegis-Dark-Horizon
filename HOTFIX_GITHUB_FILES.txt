@@ -1,4 +1,4 @@
-PROJECT AEGIS — v0.26.09.09.1517_CLASSIC_CRASH_SITE_TERMINAL_REINFORCEMENT_COMMIT_HOTFIX
+PROJECT AEGIS — v0.26.09.09.1712_CLASSIC_CRASH_SITE_LAST_KNOWN_CONTACT_TERMINAL_HOTFIX
 
 Overlay/replace these release files in the existing repository:
 - index.html
@@ -8,14 +8,17 @@ Overlay/replace these release files in the existing repository:
 - README_PATCH_NOTES.txt
 - Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
 - PWA_DEPLOYMENT_README.txt
-- TACTICAL_CLASSIC_CRASH_SITE_TERMINAL_FIELD_ACCEPTANCE.txt
-- CODEX_HANDOFF_CLASSIC_CRASH_SITE_TERMINAL_REINFORCEMENT_COMMIT_HOTFIX.md
-- CODEX_HANDOFF.md
+- TACTICAL_CLASSIC_LAST_KNOWN_CONTACT_FIELD_ACCEPTANCE.txt
+- CODEX_HANDOFF_CLASSIC_CRASH_SITE_LAST_KNOWN_CONTACT_TERMINAL_HOTFIX.md
+- CODEX_HANDOFF.md (or prepend the dedicated handoff to the accumulated repository handoff)
 - VALIDATION_SUMMARY.txt
-- tools/apply-1517-source-manifest.cjs
-- APPLY_1517_SOURCE_MANIFEST.bat
-- src/manifest.1517.merge.json
+- tools/apply-1712-source-manifest.cjs
+- APPLY_1712_SOURCE_MANIFEST.bat
+- src/manifest.1712.merge.json
 
-After overlaying, run:
-  node tools/apply-1517-source-manifest.cjs
-Then run the repository's normal package/release checks. Retain the existing full assets/ tree and manifest.webmanifest.
+SOURCE MANIFEST — REQUIRED
+After overlaying, run from repository root:
+  node tools/apply-1712-source-manifest.cjs
+This edits only currentBuild, lastInspectedBuild, gameplayParity.browserBuild, and status while preserving the repository's full manifest history/parity data.
+
+Retain the repository's existing assets/ tree and icons. manifest.webmanifest is unchanged.

@@ -1,5 +1,5 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND — PWA DEPLOYMENT
-Build: v0.26.09.09.1517_CLASSIC_CRASH_SITE_TERMINAL_REINFORCEMENT_COMMIT_HOTFIX
+Build: v0.26.09.09.1712_CLASSIC_CRASH_SITE_LAST_KNOWN_CONTACT_TERMINAL_HOTFIX
 
 BUILD FROM SOURCE
 1. Edit src/browser-runtime.html for game changes and tools/package-runtime-shell.cjs for host/PWA changes.
@@ -47,3 +47,7 @@ Browser 1324 note: Mobile Command Reports now uses a viewport-bounded index/deta
 Browser 1453 note: Mobile Memorial now uses a viewport-bounded Remembrance Wall index and selected service-record layout with portrait Back to wall navigation and landscape/tablet split panes. Service-worker caches advance to Browser 1453. Save format remains 4.
 
 Browser 1517 note: Classic/one-shot crash-site mission resolution now retires an incorporated reinforcement-arrival presentation commit gate before final terminal evaluation. Streamed AI presentation gates and save format 4 remain unchanged. Service-worker caches advance to Browser 1517.
+
+Browser 1628 note: fresh alien reinforcement actors now carry explicit living-state authority and Classic survivor presentation uses the shared terminal liveness contract. Service-worker caches advance to Browser 1628. Save format remains 4.
+
+Browser 1712 note: Classic one-shot terminal contact sanitation and report diagnostics are runtime changes only; PWA install behavior is unchanged.

@@ -1,6 +1,105 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.09.1712_CLASSIC_CRASH_SITE_LAST_KNOWN_CONTACT_TERMINAL_HOTFIX
+TITLE: Classic Crash-Site Last Known Contact Terminal Hotfix
+DATE: September 9, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.09.1628_REINFORCEMENT_LIVENESS_AUTHORITY_HOTFIX
+
+SUMMARY
+-------
+Follow-up to the user field test that still produced FAILURE after Browser 1628. The new evidence shows that Classic Lineup could reach zero living aliens but retain an obsolete Last Known Contact marker owned by an alien that was already dead. That stale contact prevented `primarySecured`, so the one-shot resolver returned an unresolved operation and the Mission Report then masked the real reason with the generic "alien force scattered" failure sentence.
+
+CONFIRMED CODE PATH
+-------------------
+- `tacticalLastKnownAlienContactMarkers(...)` previously accepted any alien with `aegisLastSeenMarkerActive:true`, without checking whether that alien was still alive.
+- `tacticalUpdateAlienContactMemory(...)` could convert an observed contact into an active marker after the alien had died if no living AEGIS observer currently had LOS to the corpse.
+- The zero-alien Classic/one-shot terminal branch could then break because no civilian rescue phase remained, even though `tacticalMissionTerminalState(...)` still reported `unresolvedLastKnownContact:true`.
+- Final mission authority therefore returned success=false despite a visible Alien survivors: 0 state.
+- `buildMissionReportEntries(...)` recognized only lines beginning `Mission success.` or `Mission failed.` as terminal lines. A legitimate internal `Mission incomplete.` explanation was consequently followed/replaced in the report slice by the generic "Survivors extracted under pressure while the alien force scattered" line.
+- Classic Lineup does not currently use the live TacticalMission structured timeline wrapper, explaining the new report's `0 events retained`; labeling it as a report that "predates" timeline archiving was inaccurate.
+
+HOTFIX
+------
+- Adds one authoritative Last Known Contact ownership rule: only an alien with positive HP and `alive !== false` may own an unresolved contact marker.
+- Dead/zero-HP alien contact state is retired immediately even when no soldier can currently see the corpse.
+- The immediate zero-alien branch sanitizes stale contact state before its terminal check.
+- One-shot finalization performs the same sanitation again before campaign result authority is calculated.
+- The zero-alien path will not early-break while a genuinely valid unresolved contact remains.
+- Classic/one-shot mission launch now passes the campaign's actual Alien Field Beacon knowledge into `resolveMission(...)`, matching live tactical reinforcement-source knowledge authority.
+- Mission reports now preserve explicit `Mission incomplete.` / AI safety terminal lines instead of masking them with the generic alien-force-scattered text. When a nonterminal result remains, a `Terminal resolution blockers:` line identifies living aliens, Last Known Contact, reinforcement, Beacon, UFO-bay, or mandatory rescue blockers.
+- New Classic reports with no structured timeline now say that Classic Lineup used one-shot simulation, instead of falsely claiming the report predates timeline archiving.
+- Browser 1517 reinforcement-arrival commit repair, Browser 1628 reinforcement liveness authority, Browser 1242 survivor/KIA authority, all completed Mobile Adaptive command layouts, and save format 4 remain intact.
+
+VALIDATION
+----------
+- Static executable source validation confirms dead aliens cannot qualify for Last Known Contact ownership while living positive-HP aliens still can.
+- Immediate and final one-shot terminal seams both call stale-contact sanitation.
+- Critical resolveMission liveness gates use the shared positive-HP/unless-explicitly-dead helper.
+- Classic launch supplies `alienFieldBeaconKnowledge`.
+- Report entry extraction recognizes `Mission incomplete.` and AI safety terminal lines.
+- Browser 1517/1628 regression contracts have been moved back inside the executable runtime script; in 1628 they were accidentally appended as inert text after `</script>`.
+- All five executable runtime script blocks pass JavaScript syntax validation.
+- Save format remains 4.
+
+FIELD ACCEPTANCE
+----------------
+1. Load the same pre-mission save and launch the East Asia / Threat 2 / Tide Horror Medium UFO Crash Site in Classic Lineup with the same response force used in the failing field test.
+2. Allow the battle to reach the final alien kill. Confirm Alien survivors reaches 0 and the operation resolves Success unless a separate real objective is identified.
+3. If the operation does not resolve, inspect the Mission Action Log. It must now contain a `Terminal resolution blockers:` line naming the actual blocker; it must not substitute the generic alien-force-scattered sentence for an unresolved state.
+4. Confirm a living hidden alien with a genuine Last Known Contact still blocks victory until that contact is resolved.
+5. Confirm a dead alien cannot leave a Last Known Contact marker on the HUD or block mission completion.
+6. Confirm truly inbound reinforcements, an active confirmed Beacon, an uncleared occupied UFO bay, mandatory VIP failure, or a genuine squad wipe still behave normally.
+7. Confirm Classic reports with no structured timeline identify themselves as one-shot simulation rather than "predates tactical-timeline archiving."
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
+BUILD: v0.26.09.09.1628_REINFORCEMENT_LIVENESS_AUTHORITY_HOTFIX
+TITLE: Reinforcement Liveness Authority Hotfix
+DATE: September 9, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.09.1517_CLASSIC_CRASH_SITE_TERMINAL_REINFORCEMENT_COMMIT_HOTFIX
+
+SUMMARY
+-------
+Fixes the reproduced East Asia Tide Horror Medium UFO Crash Site false failure in Classic Lineup. Fresh reinforcement actors could have positive HP but omit `alive:true`, making terminal authority count them as living while Classic/combat loops treated them as absent/dead.
+
+CONFIRMED ROOT CAUSE FROM USER SAVE
+-----------------------------------
+- The exact uploaded mission reproducibly ended with 12 living AEGIS soldiers, zero *displayed* alien survivors, no failed objective, and a final `Mission unresolved` result.
+- The final battlefield still contained two reinforcement actors with HP 34: a Pale Commander and a Needle Drone. Both omitted the `alive` field.
+- `tacticalMissionTerminalState(...)` correctly uses positive HP unless `alive === false`, so those actors blocked victory.
+- Classic Lineup and several Simulation action filters used `unit.alive` truthiness, so the omitted flag made those same actors disappear from living-alien presentation/behavior and they could not be resolved normally.
+
+HOTFIX
+------
+- Both Beacon and alien-dropship reinforcement constructors now create fresh alien actors with explicit `alive:true`.
+- Reinforcement reveal/arrival normalization writes explicit liveness from HP while preserving `alive:false` as authoritative death.
+- Classic Lineup paper-doll presentation and final survivor summaries use the same `tacticalPlaybackFrameUnitAuthoritativeAlive(...)` contract as terminal/result authority.
+- Browser 1517's offline arrival-commit repair remains intact; this patch fixes the earlier actor-state defect that 1517 could not address.
+- Genuine dead aliens, truly inbound reinforcements, UFO-bay/Beacon objectives, squad wipes, VIP obligations, and save format 4 remain unchanged.
+
+EXACT SAVE REGRESSION
+---------------------
+The actual Browser 1517 resolver was executed against the supplied campaign save and exact East Asia / Threat 2 / Tide Horror / $360k incident. Before this hotfix it returned `success:false`, `Mission unresolved`, while two positive-HP omitted-alive reinforcements remained. With this hotfix the same resolver/save returns `success:true`; both reinforcement actors participate in combat and finish dead, and the UFO Bay is secured by alien elimination.
+
+FIELD ACCEPTANCE
+----------------
+1. Load the supplied pre-mission save and launch the East Asia Medium UFO Crash Site in Classic Lineup.
+2. Allow the battle to resolve normally. Reinforcement Pale Commander/Needle Drone actors must be visible/actionable when alive rather than silently disappearing.
+3. After every alien is killed, confirm Alien survivors is 0 and the mission resolves Success.
+4. Confirm the $360k base reward and normal recovery/report flow occur.
+5. Confirm a truly surviving or inbound alien/reinforcement still blocks victory.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.09.1517_CLASSIC_CRASH_SITE_TERMINAL_REINFORCEMENT_COMMIT_HOTFIX
 TITLE: Classic Crash-Site Terminal Reinforcement Commit Hotfix
 DATE: September 9, 2026

@@ -1,151 +1,60 @@
 PROJECT AEGIS — VALIDATION SUMMARY
-Build: v0.26.09.09.1517_CLASSIC_CRASH_SITE_TERMINAL_REINFORCEMENT_COMMIT_HOTFIX
+Build: v0.26.09.09.1712_CLASSIC_CRASH_SITE_LAST_KNOWN_CONTACT_TERMINAL_HOTFIX
 Save format: 4
-Base build: v0.26.09.09.1453_MOBILE_MEMORIAL_ADAPTIVE_LAYOUT_PATCH
+Base build: v0.26.09.09.1628_REINFORCEMENT_LIVENESS_AUTHORITY_HOTFIX
 
-FOCUSED TERMINAL REGRESSION
-- CHECK - stale incorporated reinforcement arrival gate blocks victory before repair.
-- CHECK - `tacticalOfflineSimulationCommitReinforcementArrival` clears only when every arrival unit ID exists in the authoritative simulation roster.
-- CHECK - terminal crash-site state resolves victory after the incorporated presentation gate is retired and living alien count is zero.
-- CHECK - missing arrival identity leaves `arrivalCommitPending` true (fail closed).
-- CHECK - `resolveMission` applies the repair only outside `simulationChunkOnly`, preserving streamed AI arrival-presentation authority.
-- CHECK - save format remains 4 and Browser 1242 final casualty authority remains present.
+FIELD FOLLOW-UP THAT INVALIDATED 1628 AS COMPLETE FIX
+- User replayed the same East Asia / Threat 2 / Tide Horror Medium UFO Crash Site in Browser 1628 and still received FAILURE after killing all aliens.
+- Report duration was 1h 50m / 16 rounds with one genuine KIA and several wounded survivors.
+- New Classic report also showed `Archived Tactical Timeline: 0 events retained` and incorrectly claimed the report predated timeline archiving.
+- Because the exported pre-mission save does not by itself guarantee the same transient response-force selection/random combat path, the prior 1628 single resolver fixture was not a sufficient field reproduction gate.
 
-RELEASE IDENTITY
-Runtime bytes: 6798472
-Runtime SHA-256: ac26fede6ab31a748dd55c3baecae58e90548234577daabf61517f509f5e730a
-Host SHA-256: d821a79f12c384a98481e8181f762c1bd14e262c6e04cb616dd21007a4979fee
+FOCUSED TERMINAL REPRODUCTION
+PASS - Browser 1628 helper fixture: dead alien (hp=0, alive=false) with aegisLastSeenMarkerActive=true still produces 1 Last Known Contact marker.
+PASS - Browser 1628 terminal fixture: zero living aliens + that dead marker => primarySecured=false, unresolvedLastKnownContact=true, victory=false.
+PASS - Browser 1628 purge fixture: dead valid-coordinate contact marker is not purged (0 markers removed).
+PASS - Browser 1628 report fixture: explicit `Mission incomplete.` is followed by generic `Mission failed. Survivors extracted under pressure while the alien force scattered.`
 
-FIELD ACCEPTANCE STILL REQUIRED
-Reproduce a Classic UFO crash-site run with a reinforcement arrival and kill the complete wave. Final zero-alien state must resolve Success when no other explicit mission gate remains. See TACTICAL_CLASSIC_CRASH_SITE_TERMINAL_FIELD_ACCEPTANCE.txt.
+PATCHED 1712 RESULT
+PASS - dead alien produces 0 Last Known Contact markers.
+PASS - living positive-HP alien with the same marker still produces 1 marker.
+PASS - stale dead-alien marker is purged (1 marker removed).
+PASS - zero living aliens after dead-contact retirement => primarySecured=true, unresolvedLastKnownContact=false, victory=true in the focused terminal fixture.
+PASS - an explicit `Mission incomplete.` report line remains intact and the generic alien-force-scattered fallback is not appended.
 
---- PREVIOUS VALIDATION HISTORY ---
-
-PROJECT AEGIS — VALIDATION SUMMARY
-Build: v0.26.09.09.1453_MOBILE_MEMORIAL_ADAPTIVE_LAYOUT_PATCH
-Save format: 4
-Base build: v0.26.09.09.1324_MOBILE_REPORTS_ADAPTIVE_LAYOUT_PATCH
-
-MOBILE MEMORIAL ADAPTER
-- PASS - `MOBILE_MEMORIAL_ADAPTIVE_LAYOUT_PATCH` and dedicated `MobileMemorialScreen` are present.
-- PASS - Mobile Memorial command root is fixed to the phone/tablet viewport between command rails.
-- PASS - portrait uses bounded Remembrance Wall / selected-record switching plus Back to wall.
-- PASS - landscape/tablet CSS exposes index and selected record together with independent scrolling.
-- PASS - sortedMemorialSoldiers, memorialSortKey, and setSelectedMemorialSoldierId remain the roster/sort/selection authority.
-- PASS - Retired Squad Names, SoldierCard, memorialServiceSummary, MemorialTributeList, and recovered-equipment presentation remain available.
-- PASS - Standard Memorial is rendered separately outside Mobile.
-- PASS - Browser 1242 terminal casualty authority remains enabled and save format remains 4.
-
-RELEASE IDENTITY
-Runtime bytes: 6793978
-Runtime SHA-256: d9814fa961c9caee419fde59d8db71cfde5af2f997c96a1b3fe1997e655b1a60
-Host SHA-256: a9a45a62efed609230cbfc58793f7656f7361e3b2fefd881b39f47dbdf73e1ee
+CODE CONTRACTS
+PASS - `tacticalAlienCanOwnUnresolvedLastKnownContact` requires alien + hp>0 + alive!==false.
+PASS - marker enumeration uses that living-contact authority.
+PASS - tacticalUpdateAlienContactMemory clears dead alien contact state before observer/marker promotion logic.
+PASS - same-round zero-alien branch calls terminalContactPurge before tacticalMissionTerminalState.
+PASS - final one-shot resolution calls finalContactPurge before tacticalAiMissionResolution.
+PASS - zero-alien branch cannot early-break while a legitimate unresolved Last Known Contact remains.
+PASS - Classic critical liveness gates use tacticalPlaybackFrameUnitAuthoritativeAlive.
+PASS - simulateMission passes campaign alienFieldBeaconKnowledge into resolveMission and tags simulationMode.
+PASS - Mission Reports store optional simulationMode; new Classic no-timeline note is truthful rather than claiming a new report predates archiving.
+PASS - buildMissionReportEntries recognizes Mission incomplete / AI safety terminal lines and does not overwrite them with generic failure prose.
+PASS - nonterminal failure diagnostics can emit `Terminal resolution blockers:` with explicit remaining authority.
+PASS - Browser 1517 and 1628 regression contracts were moved inside the executable runtime; they are no longer inert text after </script>.
+PASS - Browser 1242 single active finishAiPlayback requirement retained.
+PASS - exactly one mutable CURRENT_GAME_BUILD patch-history entry remains.
+PASS - save format 4.
 
 SYNTAX / PACKAGE VALIDATION
-- PASS - runtime: 7 script blocks, 5 executable; all 5 executable blocks pass `node --check`.
-- PASS - host: 2 script blocks, 1 executable; host block passes `node --check`.
-- PASS - service-worker.js and tools/apply-1453-source-manifest.cjs pass `node --check`.
-- PASS - manifest.webmanifest, src/manifest.1453.merge.json, and release-metadata.json parse as JSON.
-- PASS - embedded host runtime is byte-for-byte identical to src/browser-runtime.html.
-- PASS - host build, runtime build, service-worker cache identities, and release metadata are synchronized to Browser 1453.
-- PASS - exactly one active `finishAiPlayback()` declaration remains and Browser 1242 casualty authority flag remains enabled.
-- PASS - source-manifest updater preservation fixture retained unrelated nested/native/parity data while advancing only the four intended fields.
-
-FIELD ACCEPTANCE STILL REQUIRED
-Physical phone/tablet rendering and touch behavior were not exercised in this environment. Use MOBILE_MEMORIAL_FIELD_ACCEPTANCE.txt, including a genuine mission KIA and Mobile→Standard parity.
-
---- PREVIOUS VALIDATION HISTORY ---
-
-PROJECT AEGIS — VALIDATION SUMMARY
-Build: v0.26.09.09.1324_MOBILE_REPORTS_ADAPTIVE_LAYOUT_PATCH
-Save format: 4
-Base build: v0.26.09.09.1244_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH
-
-MOBILE REPORTS ADAPTER
-- PASS - dedicated `MobileReportsScreen` exists and Standard returns the original report element unchanged.
-- PASS - Mobile Reports command root is fixed to the phone/tablet viewport between command rails.
-- PASS - portrait has bounded index/detail switching plus Back to index.
-- PASS - landscape/tablet CSS exposes both index and detail panes together.
-- PASS - existing monthly-summary and mission-report selection callbacks remain in AlienResponseCommand.
-- PASS - post-mission selectedMissionReportId authority remains in the runtime restore path.
-- PASS - Browser 1242 terminal survivor/KIA contract remains present; save format remains 4.
-
-SYNTAX / PACKAGE VALIDATION
-- Runtime executable JavaScript blocks pass `node --check`.
-- Host and service-worker syntax are release-checked after packaging.
-- PASS - embedded runtime is byte-for-byte identical to canonical `src/browser-runtime.html`.
-- PASS - runtime bytes: 6778113.
-- PASS - runtime SHA-256: bd50a33a8db4a61153b7d3c050009dc20bb2c346c646eb5e00f2a5c62eb002e6.
-- PASS - host SHA-256: 79b09151bd4e73e07ed34ddd387e20cf6c092e49adba708e713b6a9eb487011a.
-- PASS - host build, runtime build, service-worker cache identity, and release metadata are synchronized.
-- PASS - source-manifest updater preservation fixture retains unrelated nested/native/parity data while advancing only the four intended fields.
-- ZIP integrity is checked after final packaging.
-
-FIELD ACCEPTANCE STILL REQUIRED
-Physical phone/tablet rendering and touch behavior were not exercised in this environment. Use MOBILE_REPORTS_FIELD_ACCEPTANCE.txt, especially post-mission direct report restore and long tactical-timeline scrolling.
-
---- PREVIOUS VALIDATION HISTORY ---
-
-PROJECT AEGIS — VALIDATION SUMMARY
-Build: v0.26.09.09.1244_MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH
-Save format: 4
-Base build: v0.26.09.09.1242_FINAL_VIP_PLAYBACK_COMPLETION_AND_CASUALTY_AUTHORITY_HOTFIX
-Underlying mobile sequence: Sickbay -> Missions
-
-PATCH SCOPE
-- Promotes and hardens the partially staged Mobile · Adaptive Mission Control layout already present in the 0707/1242 source lineage.
-- Mobile Mission Control uses Briefing / Squads / Launch sections inside a fixed viewport between the command rails.
-- Portrait phones stack the paired work panes; landscape phones/tablets use a split view.
-- Existing incident, squad, support-squad, Barracks-base, leader-order, roster, and requestMissionLaunch callbacks remain authoritative.
-- Mobile mission-launch confirmation uses a bounded scrollable review body with persistent actions and keyboard focus containment.
-- Defensive element-shape guards fall back to the original Standard content if future desktop markup no longer matches the mobile adapter contract.
-- Standard/Desktop Mission Control remains unchanged.
-
-BROWSER 1242 AUTHORITY RETAINED
-PASS - FINAL_VIP_PLAYBACK_COMPLETION_AND_CASUALTY_AUTHORITY_HOTFIX remains enabled.
-PASS - exactly one function finishAiPlayback() declaration exists.
-PASS - terminal completion retains last-buffered-frame authority.
-PASS - save format remains 4.
-PASS - Browser 1242 is frozen as a historical patch entry; Browser 1244 owns the single mutable CURRENT_GAME_BUILD patch entry.
-
-MOBILE MISSIONS STATIC CONTRACT
-PASS - MOBILE_MISSIONS_ADAPTIVE_LAYOUT_PATCH flag is present.
-PASS - MissionControlScreen and MissionLaunchReviewFrame are present and wired into AlienResponseCommand / MissionLaunchConfirmModal.
-PASS - Briefing / Squads / Launch section controls are present.
-PASS - Mission panes own bounded internal scrolling.
-PASS - primary squad selection forwards the existing button callback; base selection forwards the existing onSelectBase callback.
-PASS - existing requestMissionLaunch manual/auto authority remains in the campaign controller.
-PASS - launch review contains a scrollable body and persistent footer.
-PASS - launch dialog focus entry/restore and Tab containment are present on Mobile.
-PASS - Standard returns the original Mission Control element.
-PASS - adapter shape guards return original content rather than throwing if expected desktop element structure changes.
-
-SYNTAX / PACKAGE VALIDATION
-PASS - runtime: 7 script blocks, 5 executable; all 5 executable blocks pass node --check.
-PASS - host: 2 script blocks, 1 executable; host block passes node --check.
+PASS - runtime: 5 executable inline script blocks pass JavaScript syntax validation.
+PASS - host: 1 executable host script passes JavaScript syntax validation.
 PASS - service-worker.js passes node --check.
-PASS - tools/apply-1244-source-manifest.cjs passes node --check.
+PASS - tools/apply-1712-source-manifest.cjs passes node --check.
 PASS - manifest.webmanifest parses as JSON.
-PASS - src/manifest.1244.merge.json parses as JSON.
+PASS - src/manifest.1712.merge.json parses as JSON.
 PASS - release-metadata.json parses as JSON.
-PASS - embedded host runtime is byte-for-byte identical to src/browser-runtime.html.
-PASS - host build, runtime CURRENT_GAME_BUILD, service-worker cache identities, and release metadata are synchronized to Browser 1244.
-PASS - source-manifest updater preservation fixture retains unrelated nested/native/parity data and changes only the intended four build/status fields.
+PASS - embedded runtime payload is byte-for-byte identical to src/browser-runtime.html.
+PASS - embedded runtime byte count and SHA-256 match release metadata.
+PASS - host build, runtime CURRENT_GAME_BUILD, service-worker cache IDs, and release metadata are synchronized.
 
 RELEASE IDENTITY
-Runtime bytes: 6768549
-Runtime SHA-256: 1f63d45ae1a7548ae0c452c57e079db836338c6842bc2d5caeecc2dc9699edaa
-Host SHA-256: 73700624fbb294c12008570ff4367e505fffe2b30ae50b7af0654369a723374a
-
-SOURCE MANIFEST RELEASE STEP
-This overlay intentionally does not replace the repository's accumulated src/manifest.json with a partial reconstruction. After copying the patch over the repository, run either:
-  APPLY_1244_SOURCE_MANIFEST.bat
-or:
-  node tools/apply-1244-source-manifest.cjs
-Then run the repository's normal check/package tooling.
+Runtime bytes: 6810083
+Runtime SHA-256: eb261a96049ddbde23bc6d9cd2ceada3ca7a5b7e7778d2b3995cff7c36407d71
+Host SHA-256: 5d195faad1ac7240256f64f2cfe9a0d36f85e10bb0baad9d3b6992cab1d2bc6d
 
 FIELD ACCEPTANCE STILL REQUIRED
-This environment did not perform a complete physical-phone mission-preparation/launch flow. Test the no-incident screen, Briefing, squad/support selection, Barracks base changes, leader orders, all launch modes, portrait/landscape/tablet layout, and Mobile -> Standard state parity. Also complete a tactical mission if practical to confirm Browser 1242 survivor/KIA authority remains intact. See MOBILE_MISSIONS_FIELD_ACCEPTANCE.txt.
-
-NEXT SYSTEMATIC MOBILE TARGET
-Reports, followed by Memorial.
+The full random Classic mission interaction was not reproduced byte-for-byte in this environment. Replay the exact failing mission/response force. If it still does not resolve, Browser 1712 must expose the actual remaining terminal authority in `Terminal resolution blockers:` rather than masking it. See TACTICAL_CLASSIC_LAST_KNOWN_CONTACT_FIELD_ACCEPTANCE.txt.

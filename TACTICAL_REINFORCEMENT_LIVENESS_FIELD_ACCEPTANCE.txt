@@ -1,0 +1,13 @@
+PROJECT AEGIS — REINFORCEMENT LIVENESS AUTHORITY FIELD ACCEPTANCE
+Build: v0.26.09.09.1628_REINFORCEMENT_LIVENESS_AUTHORITY_HOTFIX
+
+1. Load Project-Aegis-Campaign_slot_2...1517 save supplied with the bug report.
+2. Select Medium UFO Crash Site — East Asia — Threat 2 — Tide Horror — Reward $360k.
+3. Launch Classic Lineup.
+4. When reinforcements arrive, living reinforcement paper dolls must remain present/actionable rather than disappearing because `alive` is omitted.
+5. Kill/resolve every alien.
+6. Final summary must say Alien survivors: 0 only when terminal authority also has zero living aliens.
+7. Mission result must be Success when no other mandatory objective remains.
+8. Verify Mission Report Success, reward/recovery flow, survivor/KIA state.
+9. Repeat with a genuinely living or inbound reinforcement and verify victory remains blocked.
+10. Save format remains 4.
