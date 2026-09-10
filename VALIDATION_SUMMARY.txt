@@ -1,73 +1,104 @@
-PROJECT AEGIS — BROWSER 2154 VALIDATION SUMMARY
+PROJECT AEGIS — BROWSER 1223 VALIDATION SUMMARY
 
-Build: v0.26.09.09.2154_CLASSIC_LINEUP_VIP_RESCUE_PRIORITY_AND_SUPPORT_STANDOFF_PATCH
-Base: v0.26.09.09.2054_CLASSIC_LINEUP_ATTRITION_REFLOW_AND_VICTORY_PARITY_PATCH
-Save format: 4
-Runtime bytes: 6872399
-Runtime SHA-256: 7149c2680ebe339932a36000d9de34caa54c9e25add997f054e505668632ca81
-Host SHA-256: e5ef7008a24c1b850dc0fad7866505a642ebf8070c3a8cc114278f7a837d616a
+Build: v0.26.09.10.1223_CLASSIC_LINEUP_VISIBLE_TARGET_AND_OUTCOME_PRESERVING_FAST_PACING_HOTFIX
+Base: v0.26.09.10.0810_CLASSIC_LINEUP_STREAMED_ROLLING_BATTLE_PLANNING_AND_REINFORCEMENT_UFO_BEAM_PATCH
+Save format: 4 (unchanged)
+Runtime bytes: 6904323
+Runtime SHA-256: b8c573b6b0886089a446fefa46aa4767b0962add3fecb4d4d4a816fe0873fdff
+Host SHA-256: 06539ee824fa607937faff12f1f74a14834b9d74551210e1525554ffe41850dc
 
-Release checks are executed after packaging. See final section appended by validation script.
+PURPOSE
+-------
+1. Fix Classic Lineup shots whose authoritative target exists in the resolved tactical frame but is missing from the sequential presentation roster at the moment the tracer is drawn.
+2. Shorten long Classic Lineup playback without changing combat simulation, RNG, tactical rules, win probability, or VIP survival authority.
 
-FINAL RELEASE CHECKS
+CONFIRMED INVISIBLE-TARGET ROOT CAUSE
+-------------------------------------
+`tacticalAiSequentialPlaybackFrames(...)` starts each sequential action group from the prior presentation frame's actor roster. A newly revealed/newly encountered alien can already be a valid target in the new authoritative target frame while still being absent from that prior presentation roster. Updating the existing working array with `.map(...)` cannot insert the missing identity, so the shot could carry a valid `toId` while no corresponding alien paper doll was rendered.
+
+REPAIR
+------
+- Sequential playback now upserts a missing actor from the authoritative target frame before that actor's action is presented.
+- An observable AEGIS shot upserts its target before the shot frame and marks that target presentation-visible for that frame.
+- Contact-interrupt/replan presentation likewise upserts newly revealed alien identities before displaying the contact.
+- Lethal staging remains intact: the target is still present for the shot, then the established impact/death transition commits afterward.
+- The repair changes presentation construction only; it does not spawn a second tactical actor or modify resolver authority.
+
+OUTCOME-PRESERVING FAST CLASSIC PACING
+--------------------------------------
+- Automatic Classic playback can skip redundant quiet per-actor movement/presentation frames and advance to the next consequential frame.
+- Every phase-complete frame remains retained, so round state is never skipped from the underlying playback record.
+- Observable shots, impacts, contact/replans, reinforcement arrivals, rescue/escort/extraction changes, deaths, Beacon/UFO-bay events, and terminal states remain consequential presentation frames.
+- Consequential events receive longer display delays than quiet state transitions.
+- Manual `Next` remains exact one-frame stepping. The complete frame array remains available for manual inspection/report timeline use.
+- The speed-up is presentation-only. `resolveMission(...)` is byte-for-byte identical to Browser 0810.
+
+OUTCOME PARITY PROOF
 --------------------
-PASS - Runtime has five executable script blocks
-PASS - Runtime script 2 node --check
-PASS - Runtime script 3 node --check
-PASS - Runtime script 4 node --check
-PASS - Runtime script 5 node --check
-PASS - Runtime script 7 node --check
-PASS - Host script 2 node --check
-PASS - Host has one executable control script
-PASS - service-worker.js node --check
-PASS - tools/apply-2154-source-manifest.cjs node --check
-PASS - manifest.webmanifest JSON parses
-PASS - release-metadata.json JSON parses
-PASS - src/manifest.2154.merge.json JSON parses
-PASS - Embedded runtime payload found
-PASS - Embedded runtime byte-for-byte equals src/browser-runtime.html
-PASS - Embedded runtime byte count matches
-PASS - Embedded runtime SHA matches
-PASS - Release runtime bytes match
-PASS - Release runtime SHA matches
-PASS - Release host SHA matches
-PASS - Runtime CURRENT_GAME_BUILD synced
-PASS - Host body build synced
-PASS - Host BUILD synced
-PASS - Service worker shell cache synced
-PASS - Service worker runtime cache synced
-PASS - Roadmap current build synced
-PASS - Patch notes current build synced
-PASS - 2054 patch history frozen literal
-PASS - Exactly one current mutable patch-history entry
-PASS - 2154 current mutable history title present
-PASS - 2154 patch flag present
-PASS - classicLineupUnresolvedRescueTargets helper present
-PASS - classicLineupRescuePriorityPlan helper present
-PASS - classicLineupSupportStandoffPlan helper present
-PASS - classicLineupVipRescuePriorityTurn helper present
-PASS - Initial Classic rescue no longer requires continuation
-PASS - Mandatory priority can outrank observed combat
-PASS - Responder/support role snapshot authority
-PASS - Classic renderer exposes VIP RESCUE
-PASS - Classic renderer exposes SUPPORT/COVER
-PASS - Five-hex support doctrine constant
-PASS - Save format remains 4
-PASS - Preserves CLASSIC_LINEUP_ATTRITION_REFLOW_AND_VICTORY_PARITY_PATCH
-PASS - Preserves CLASSIC_LINEUP_VIP_CIVILIAN_AND_VICTORY_PLAYBACK_PATCH
-PASS - Preserves MOBILE_TACTICAL_STATUS_HUD_PATCH
-PASS - Preserves FINAL_VIP_PLAYBACK_COMPLETION_AND_CASUALTY_AUTHORITY_HOTFIX
-PASS - Only one literal finishAiPlayback declaration
-PASS - Manifest updater exits successfully
-PASS - Manifest updater changes currentBuild
-PASS - Manifest updater changes gameplayParity.browserBuild
-PASS - Manifest updater preserves unrelated top-level data
-PASS - Manifest updater preserves unrelated gameplayParity data
-PASS - CODEX_HANDOFF_CLASSIC_LINEUP_VIP_RESCUE_PRIORITY_AND_SUPPORT_STANDOFF_PATCH.md present
-PASS - CLASSIC_LINEUP_VIP_RESCUE_PRIORITY_SUPPORT_STANDOFF_FIELD_ACCEPTANCE.txt present
-PASS - CLASSIC_LINEUP_VIP_RESCUE_PRIORITY_SUPPORT_STANDOFF_GITHUB_FILES.txt present
-PASS - APPLY_2154_SOURCE_MANIFEST.bat present
-PASS - Old 2054 manifest updater removed
+Browser 0810 `resolveMission(...)` block:
+  Characters: 167140
+  SHA-256: 03d42521a34234aeaa36fdf965efa36c696ed90b5fe0c9cbd40e08effbc97964
+Browser 1223 `resolveMission(...)` block:
+  Characters: 167140
+  SHA-256: 03d42521a34234aeaa36fdf965efa36c696ed90b5fe0c9cbd40e08effbc97964
+Result: exact byte-for-byte match.
 
-Passed: 57/57
-Failed: 0
+Because the battle resolver itself is unchanged, this patch preserves the existing win/VIP-survival probability distribution exactly for the same resolved inputs and RNG sequence; it does not merely target 90% statistical similarity.
+
+REGRESSION FIXTURE
+------------------
+PASS - Browser 0810 reproduces the defect in the minimal new-contact fixture: the AEGIS shot frame contains a valid alien target ID while that target is absent from the shot frame's rendered alien roster.
+PASS - Browser 1223 repairs the same fixture: that alien identity is present in the shot frame and is marked revealed/visible before the tracer is presented.
+PASS - The target remains staged through the shot and the later phase-complete state still owns authoritative post-action state.
+
+FAST-PACING FIXTURE
+-------------------
+PASS - Automatic Classic advance skips a quiet intermediate movement-only frame and stops at the next consequential/phase-complete frame.
+PASS - Manual Next advances exactly one frame.
+PASS - Shot presentation delay remains longer than quiet/phase progression so combat remains readable.
+PASS - Full playback frames remain retained rather than deleted.
+
+PATCH-SPECIFIC STATIC CONTRACTS
+-------------------------------
+PASS - 19/19 checks in tools/check-classic-lineup-visible-target-fast-pacing.cjs.
+PASS - Current Browser 1223 build synchronized in runtime.
+PASS - Visible-target upsert/shot-visibility/contact-interrupt seams present.
+PASS - Quiet-action auto compaction enabled.
+PASS - Timer playback opts into compaction; manual Next does not.
+PASS - Browser 0810 streamed planning remains enabled.
+PASS - TACTICAL COMPUTATION catch-up indicator remains present.
+PASS - Reinforcement UFO/beam presentation remains present.
+PASS - Exactly one finishAiPlayback declaration remains.
+PASS - Browser 0810 patch-history entry is frozen; exactly one current mutable patch-history entry remains.
+PASS - Browser 1223 Build Health contracts are registered.
+PASS - Save format remains 4.
+
+SYNTAX / PACKAGE CHECKS
+-----------------------
+PASS - src/browser-runtime.html contains 5 executable script blocks; all 5 pass node --check.
+PASS - index.html contains 1 executable host control script; it passes node --check.
+PASS - service-worker.js passes node --check.
+PASS - tools/apply-1223-source-manifest.cjs passes node --check.
+PASS - tools/check-classic-lineup-visible-target-fast-pacing.cjs passes node --check.
+PASS - Embedded runtime payload is byte-for-byte equal to src/browser-runtime.html.
+PASS - Embedded data-source-bytes equals 6904323.
+PASS - Embedded runtime SHA-256 equals b8c573b6b0886089a446fefa46aa4767b0962add3fecb4d4d4a816fe0873fdff.
+PASS - release-metadata runtime bytes/SHA match canonical runtime.
+PASS - release-metadata host SHA matches packaged index.html.
+PASS - Service-worker shell/runtime cache IDs are synchronized to Browser 1223.
+
+SOURCE MANIFEST UPDATER
+-----------------------
+PASS - Updater exits successfully against a representative full manifest.
+PASS - Updates currentBuild, lastInspectedBuild, status, and gameplayParity.browserBuild.
+PASS - Preserves unrelated top-level manifest content.
+PASS - Preserves unrelated gameplayParity content.
+The small overlay intentionally does not replace the repository's richer src/manifest.json. Run APPLY_1223_SOURCE_MANIFEST.bat after extracting the overlay into the repository root.
+
+FIELD ACCEPTANCE STILL REQUESTED
+--------------------------------
+- Observe an AEGIS shot at a newly revealed alien and confirm the target paper doll exists before/during tracer presentation.
+- Observe a reinforcement/new-contact sequence and confirm first-action alien identities render before they shoot/are shot.
+- Run a long search-heavy and/or VIP Classic mission and confirm automatic playback wraps up noticeably faster without hiding important combat/rescue events.
+- Use manual Next to confirm full frame-by-frame inspection still works.
+- Confirm Browser 0810 streamed planning, TACTICAL COMPUTATION catch-up, reinforcement UFO beam, report outcome/reward/casualty parity, and save/load format 4 remain correct.

@@ -1,8 +1,20 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.10.0810_CLASSIC_LINEUP_STREAMED_ROLLING_BATTLE_PLANNING_AND_REINFORCEMENT_UFO_BEAM_PATCH`
+Current browser build: `v0.26.09.10.1223_CLASSIC_LINEUP_VISIBLE_TARGET_AND_OUTCOME_PRESERVING_FAST_PACING_HOTFIX`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 1223 (September 10): Classic Lineup Visible Target + Outcome-Preserving Fast Pacing Hotfix
+
+- Fixes a Classic sequential-playback presentation seam where an observable shot could reference a newly revealed alien before that alien had been inserted into the working paper-doll roster. Shot targets, first-frame shooters, and contact-reveal actors are now upserted before their action frame renders.
+- Automatic Classic playback now compacts presentation-only quiet per-actor movement frames and advances to the next consequential event or phase-complete snapshot. Manual **Next** remains single-frame for inspection.
+- Consequential presentation is never skipped: shots, impact results, contact/replanning, alien arrival/death, reinforcement UFO/beam events, VIP/civilian escort/rescue/death changes, Beacon/UFO-bay events, and terminal results remain visible.
+- Quiet end-of-round and impact dwell times are shortened while shots, contacts, reinforcement arrivals, and terminal results remain readable.
+- `resolveMission(...)` is byte-for-byte identical to Browser 0810 (SHA-256 `03d42521a34234aeaa36fdf965efa36c696ed90b5fe0c9cbd40e08effbc97964`). The acceleration therefore changes presentation duration only, not win probability or VIP survival probability.
+- Browser 0810 streaming, Browser 2154 rescue priority, Browser 2054 reflow, Browser 1712 Last Known Contact repair, Browser 1242 casualty authority, and save format **4** remain intact.
+
+### Field gate
+Run a long Classic mission with hidden-contact search, at least one new-contact shot, and preferably reinforcements plus VIPs. Confirm every shot target is already visible when fired upon, quiet search movement compresses automatically, all consequential events remain visible, manual Next still steps through individual frames, and Mission Report outcome/rescue/casualties match shared Tactical authority.
 
 ## Current Build Addendum — Browser 0810 (September 10): Classic Lineup Streamed Rolling Battle Planning & Reinforcement UFO Beam
 

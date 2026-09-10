@@ -1,0 +1,8 @@
+{
+  "currentBuild": "v0.26.09.10.1223_CLASSIC_LINEUP_VISIBLE_TARGET_AND_OUTCOME_PRESERVING_FAST_PACING_HOTFIX",
+  "lastInspectedBuild": "v0.26.09.10.1223_CLASSIC_LINEUP_VISIBLE_TARGET_AND_OUTCOME_PRESERVING_FAST_PACING_HOTFIX",
+  "status": "classic-lineup-visible-target-outcome-preserving-fast-pacing-hotfix-complete",
+  "gameplayParity": {
+    "browserBuild": "v0.26.09.10.1223_CLASSIC_LINEUP_VISIBLE_TARGET_AND_OUTCOME_PRESERVING_FAST_PACING_HOTFIX"
+  }
+}

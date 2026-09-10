@@ -1,3 +1,60 @@
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
+BUILD: v0.26.09.10.1223_CLASSIC_LINEUP_VISIBLE_TARGET_AND_OUTCOME_PRESERVING_FAST_PACING_HOTFIX
+TITLE: Classic Lineup Visible Target + Outcome-Preserving Fast Pacing Hotfix
+DATE: September 10, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.10.0810_CLASSIC_LINEUP_STREAMED_ROLLING_BATTLE_PLANNING_AND_REINFORCEMENT_UFO_BEAM_PATCH
+
+SUMMARY
+-------
+Fixes Classic Lineup shots that could visibly fire at an alien before that alien paper doll was inserted into the sequential playback frame, and shortens long Classic battles by compacting presentation-only quiet action frames without changing the authoritative tactical simulation.
+
+VISIBLE SHOT TARGET HOTFIX
+---------------------------
+- Sequential playback previously initialized each action frame from the prior frame's actor roster.
+- When a soldier's shot revealed or first encountered an alien that was absent from the prior roster, the shot record could already reference the correct alien ID while Classic had no paper doll to draw until the later phase-complete frame.
+- Sequential playback now upserts newly revealed shot targets into the working actor roster before emitting the shot frame.
+- Newly appearing shooters are also inserted before their action frame, covering reinforcement actors that fire during their first presented phase.
+- Contact-reveal frames use the same upsert rule. The alien appears at the contact/shot boundary rather than after the shot.
+- Observable AEGIS shots force the authoritative target presentation visible for that shot frame; this is presentation-only and does not reveal aliens that were not already valid shot targets.
+
+OUTCOME-PRESERVING FAST PACING
+-------------------------------
+- Automatic Classic playback now compacts only quiet per-actor movement frames. It advances to the next consequential event or phase-complete snapshot.
+- Consequential events are retained: observable shots, impact frames, new contact/replanning, reinforcement arrivals, VIP/civilian escort/rescue/death transitions, alien appearance/death transitions, Beacon/UFO-bay events, and terminal mission results.
+- Each tactical phase still retains its phase-complete battlefield snapshot, so movement/search progress remains visible round by round.
+- Manual Next remains single-frame, allowing detailed inspection of every generated frame.
+- Quiet phase-complete and impact frames use shorter display dwell times; shots, contacts, reinforcements, and terminal outcomes retain longer readable timing.
+
+OUTCOME PARITY
+--------------
+- The entire resolveMission(...) implementation is byte-for-byte unchanged from Browser 0810 (SHA-256: 03d42521a34234aeaa36fdf965efa36c696ed90b5fe0c9cbd40e08effbc97964).
+- No hit chance, damage, movement/pathing, AI choice, RNG draw, reinforcement timing, VIP rescue/death state, Beacon/Last Known Contact rule, terminal authority, reward, casualty, or save state is changed.
+- Therefore the faster Classic presentation preserves the resolver's win and VIP-survival outcomes exactly rather than merely targeting 90% statistical parity.
+
+PRESERVED
+---------
+- Browser 0810 streamed rolling Classic planning, TACTICAL COMPUTATION catch-up, and reinforcement UFO beam.
+- Browser 2154 VIP rescue priority/support standoff.
+- Browser 2054 alien casualty fade/reflow and bottom reinforcement insertion.
+- Browser 1712 stale Last Known Contact sanitation.
+- Browser 1242 final survivor/KIA authority.
+- Save format 4.
+
+FIELD ACCEPTANCE
+----------------
+1. Observe a Classic battle where an AEGIS soldier acquires a newly revealed alien and immediately shoots. The alien paper doll must appear before/with the tracer; no shot may terminate at an empty alien-side position.
+2. Trigger a reinforcement actor that can act soon after arrival; if it fires on its first sequential action, its paper doll must already be visible.
+3. Let a long hidden-contact/search phase run automatically. Quiet per-soldier movement should compress, while at least the phase-complete state remains visible each round.
+4. Confirm all shots, hits/kills, contact interruptions, reinforcement UFO/beam arrivals, VIP escort/extraction/death transitions, Beacon events, and terminal outcomes still display.
+5. Use manual Next and confirm it still advances one generated frame at a time.
+6. Compare Mission Report outcome, casualties, VIP rescue/loss counts, rewards, and tactical timeline with Browser 0810 authority.
+7. Save/load remains format 4.
+
+---
+
 BUILD: v0.26.09.10.0810_CLASSIC_LINEUP_STREAMED_ROLLING_BATTLE_PLANNING_AND_REINFORCEMENT_UFO_BEAM_PATCH
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES

@@ -1,0 +1,33 @@
+PROJECT AEGIS — BROWSER 1223 REQUIRED GITHUB OVERLAY
+
+Build: v0.26.09.10.1223_CLASSIC_LINEUP_VISIBLE_TARGET_AND_OUTCOME_PRESERVING_FAST_PACING_HOTFIX
+Save format: 4
+
+Extract/copy this overlay into the existing Project Aegis repository root, preserving the src/ and tools/ folders and allowing matching files to overwrite.
+
+Required files in this overlay:
+- index.html
+- src/browser-runtime.html
+- service-worker.js
+- README_PATCH_NOTES.txt
+- Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+- CODEX_HANDOFF.md
+- CODEX_HANDOFF_CLASSIC_LINEUP_VISIBLE_TARGET_AND_OUTCOME_PRESERVING_FAST_PACING_HOTFIX.md
+- release-metadata.json
+- src/manifest.1223.merge.json
+- tools/apply-1223-source-manifest.cjs
+- APPLY_1223_SOURCE_MANIFEST.bat
+- tools/check-classic-lineup-visible-target-fast-pacing.cjs
+- CLASSIC_LINEUP_VISIBLE_TARGET_AND_OUTCOME_PRESERVING_FAST_PACING_FIELD_ACCEPTANCE.txt
+- CLASSIC_LINEUP_VISIBLE_TARGET_AND_OUTCOME_PRESERVING_FAST_PACING_GITHUB_FILES.txt
+- VALIDATION_SUMMARY.txt
+
+After extraction, from the repository root run:
+  APPLY_1223_SOURCE_MANIFEST.bat
+
+Equivalent command:
+  node tools/apply-1223-source-manifest.cjs
+
+The updater intentionally changes only currentBuild, lastInspectedBuild, status, and gameplayParity.browserBuild inside the repository's existing complete src/manifest.json. Do not replace the richer repository manifest with src/manifest.1223.merge.json.
+
+No new art/audio asset files are required by Browser 1223.
