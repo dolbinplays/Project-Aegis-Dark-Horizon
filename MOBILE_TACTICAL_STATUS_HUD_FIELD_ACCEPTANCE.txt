@@ -1,0 +1,16 @@
+PROJECT AEGIS — MOBILE TACTICAL STATUS HUD FIELD ACCEPTANCE
+Build: v0.26.09.09.1945_MOBILE_TACTICAL_STATUS_HUD_PATCH
+
+1. Start/load an active tactical mission and choose Mobile · Adaptive.
+2. Use 3D Iso and select several living AEGIS soldiers. The upper-right HUD must update to each selected soldier.
+3. Confirm the core always shows the soldier name, Fire Team Assignment, and Current Objective / Order.
+4. Assign a Command Map/player order and confirm Current Objective / Order changes to the player/fire-team order.
+5. Trigger VIP rescue/escort, Last Known Contact search, Beacon work, or alien-hunt state if practical and confirm the order text follows authoritative state.
+6. Hand control to Simulation AI. In 3D Iso, FPV, and TPV confirm the HUD follows the acting/observed AEGIS soldier and does not retain a stale previous soldier.
+7. Portrait phone: confirm secondary rank/weapon/vitals/status/AI-plan detail compacts before the name/team/order core.
+8. Short landscape phone: confirm the HUD remains upper-right and readable without covering the central crosshair or persistent command rails.
+9. Tablet/large landscape: confirm more secondary detail is retained while the panel remains bounded.
+10. Tap/click battlefield cells underneath/around the HUD edge and confirm the pointer-transparent overlay does not steal tactical input.
+11. Switch Mobile → Standard during the same battle. Confirm Standard keeps its existing full upper-right panel and shows the same underlying selected/observed soldier, fire team, and current objective.
+12. Recheck a UFO crash site if practical; Browser 1712 success authority must remain unchanged.
+13. Confirm save format remains 4.

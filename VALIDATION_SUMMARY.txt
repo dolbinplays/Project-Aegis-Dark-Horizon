@@ -1,60 +1,40 @@
 PROJECT AEGIS — VALIDATION SUMMARY
-Build: v0.26.09.09.1712_CLASSIC_CRASH_SITE_LAST_KNOWN_CONTACT_TERMINAL_HOTFIX
+Build: v0.26.09.09.1945_MOBILE_TACTICAL_STATUS_HUD_PATCH
 Save format: 4
-Base build: v0.26.09.09.1628_REINFORCEMENT_LIVENESS_AUTHORITY_HOTFIX
+Base build: v0.26.09.09.1712_CLASSIC_CRASH_SITE_LAST_KNOWN_CONTACT_TERMINAL_HOTFIX
 
-FIELD FOLLOW-UP THAT INVALIDATED 1628 AS COMPLETE FIX
-- User replayed the same East Asia / Threat 2 / Tide Horror Medium UFO Crash Site in Browser 1628 and still received FAILURE after killing all aliens.
-- Report duration was 1h 50m / 16 rounds with one genuine KIA and several wounded survivors.
-- New Classic report also showed `Archived Tactical Timeline: 0 events retained` and incorrectly claimed the report predated timeline archiving.
-- Because the exported pre-mission save does not by itself guarantee the same transient response-force selection/random combat path, the prior 1628 single resolver fixture was not a sufficient field reproduction gate.
+SCOPE
+- Restores the existing Standard TacticalUnifiedThreeStatusPanel to Mobile · Adaptive 3D tactical play.
+- Keeps the required phone core visible: soldier name, Fire Team Assignment, Current Objective / Order.
+- Portrait/short-landscape layouts compact secondary detail first.
+- No tactical gameplay authority or Standard/Desktop presentation intentionally changed.
 
-FOCUSED TERMINAL REPRODUCTION
-PASS - Browser 1628 helper fixture: dead alien (hp=0, alive=false) with aegisLastSeenMarkerActive=true still produces 1 Last Known Contact marker.
-PASS - Browser 1628 terminal fixture: zero living aliens + that dead marker => primarySecured=false, unresolvedLastKnownContact=true, victory=false.
-PASS - Browser 1628 purge fixture: dead valid-coordinate contact marker is not purged (0 markers removed).
-PASS - Browser 1628 report fixture: explicit `Mission incomplete.` is followed by generic `Mission failed. Survivors extracted under pressure while the alien force scattered.`
-
-PATCHED 1712 RESULT
-PASS - dead alien produces 0 Last Known Contact markers.
-PASS - living positive-HP alien with the same marker still produces 1 marker.
-PASS - stale dead-alien marker is purged (1 marker removed).
-PASS - zero living aliens after dead-contact retirement => primarySecured=true, unresolvedLastKnownContact=false, victory=true in the focused terminal fixture.
-PASS - an explicit `Mission incomplete.` report line remains intact and the generic alien-force-scattered fallback is not appended.
-
-CODE CONTRACTS
-PASS - `tacticalAlienCanOwnUnresolvedLastKnownContact` requires alien + hp>0 + alive!==false.
-PASS - marker enumeration uses that living-contact authority.
-PASS - tacticalUpdateAlienContactMemory clears dead alien contact state before observer/marker promotion logic.
-PASS - same-round zero-alien branch calls terminalContactPurge before tacticalMissionTerminalState.
-PASS - final one-shot resolution calls finalContactPurge before tacticalAiMissionResolution.
-PASS - zero-alien branch cannot early-break while a legitimate unresolved Last Known Contact remains.
-PASS - Classic critical liveness gates use tacticalPlaybackFrameUnitAuthoritativeAlive.
-PASS - simulateMission passes campaign alienFieldBeaconKnowledge into resolveMission and tags simulationMode.
-PASS - Mission Reports store optional simulationMode; new Classic no-timeline note is truthful rather than claiming a new report predates archiving.
-PASS - buildMissionReportEntries recognizes Mission incomplete / AI safety terminal lines and does not overwrite them with generic failure prose.
-PASS - nonterminal failure diagnostics can emit `Terminal resolution blockers:` with explicit remaining authority.
-PASS - Browser 1517 and 1628 regression contracts were moved inside the executable runtime; they are no longer inert text after </script>.
-PASS - Browser 1242 single active finishAiPlayback requirement retained.
-PASS - exactly one mutable CURRENT_GAME_BUILD patch-history entry remains.
-PASS - save format 4.
+STATIC / CONTRACT VALIDATION
+PASS - MOBILE_TACTICAL_STATUS_HUD_PATCH flag present.
+PASS - the shared TacticalUnifiedThreeStatusPanel remains TacticalMission's status render authority.
+PASS - Mobile CSS explicitly restores [data-aegis-unified-three-status-panel] after the older mobile decluttering hide.
+PASS - explicit data hooks identify status name, fire-team label, objective/order, and secondary content.
+PASS - portrait compaction targets secondary rank/weapon/vitals/status/AI-plan/role-detail elements without hiding the required core.
+PASS - panel remains pointer-transparent and upper-right in source authority.
+PASS - tacticalFirstPersonCurrentObjectiveOrder remains the shared objective resolver.
+PASS - Browser 1712 patch history is frozen and exactly one mutable CURRENT_GAME_BUILD entry remains.
+PASS - save format remains 4.
 
 SYNTAX / PACKAGE VALIDATION
-PASS - runtime: 5 executable inline script blocks pass JavaScript syntax validation.
-PASS - host: 1 executable host script passes JavaScript syntax validation.
+PASS - runtime: 7 script blocks, 5 executable; all 5 executable blocks pass node --check.
+PASS - host: 2 script blocks, 1 executable; host script passes node --check.
 PASS - service-worker.js passes node --check.
-PASS - tools/apply-1712-source-manifest.cjs passes node --check.
-PASS - manifest.webmanifest parses as JSON.
-PASS - src/manifest.1712.merge.json parses as JSON.
-PASS - release-metadata.json parses as JSON.
-PASS - embedded runtime payload is byte-for-byte identical to src/browser-runtime.html.
-PASS - embedded runtime byte count and SHA-256 match release metadata.
-PASS - host build, runtime CURRENT_GAME_BUILD, service-worker cache IDs, and release metadata are synchronized.
+PASS - tools/apply-1945-source-manifest.cjs passes node --check.
+PASS - manifest.webmanifest, src/manifest.1945.merge.json, and release-metadata.json parse as JSON.
+PASS - non-destructive manifest updater preservation fixture retains unrelated native/parity/history/nested fields while changing only currentBuild, lastInspectedBuild, gameplayParity.browserBuild, and status.
+PASS - embedded host runtime is byte-for-byte identical to src/browser-runtime.html.
+PASS - host body build, host BUILD constant, runtime CURRENT_GAME_BUILD, service-worker caches, and release metadata are synchronized to Browser 1945.
+PASS - Roadmap/Game Bible current-build header and Mobile tactical HUD status are synchronized.
 
 RELEASE IDENTITY
-Runtime bytes: 6810083
-Runtime SHA-256: eb261a96049ddbde23bc6d9cd2ceada3ca7a5b7e7778d2b3995cff7c36407d71
-Host SHA-256: 5d195faad1ac7240256f64f2cfe9a0d36f85e10bb0baad9d3b6992cab1d2bc6d
+Runtime bytes: 6819627
+Runtime SHA-256: 46387ac6f5939e067495db945e9f3eb907a81f79f352c968a5e15787df37e67b
+Host SHA-256: e0637130a6588a8d92c0b698b0ba11950ad4fcc7abb764edeac43c8f6150eacd
 
 FIELD ACCEPTANCE STILL REQUIRED
-The full random Classic mission interaction was not reproduced byte-for-byte in this environment. Replay the exact failing mission/response force. If it still does not resolve, Browser 1712 must expose the actual remaining terminal authority in `Terminal resolution blockers:` rather than masking it. See TACTICAL_CLASSIC_LAST_KNOWN_CONTACT_FIELD_ACCEPTANCE.txt.
+This environment did not perform a physical Android/iOS touch test. Test manual selection and AI observer changes in 3D Iso/FPV/TPV at portrait phone, short-landscape phone, and tablet sizes; verify the core name/fire-team/objective data remains readable and synchronized, the overlay does not steal battlefield input, and Standard styling remains unchanged. See MOBILE_TACTICAL_STATUS_HUD_FIELD_ACCEPTANCE.txt.

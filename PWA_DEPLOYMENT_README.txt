@@ -1,5 +1,5 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND — PWA DEPLOYMENT
-Build: v0.26.09.09.1712_CLASSIC_CRASH_SITE_LAST_KNOWN_CONTACT_TERMINAL_HOTFIX
+Build: v0.26.09.09.1945_MOBILE_TACTICAL_STATUS_HUD_PATCH
 
 BUILD FROM SOURCE
 1. Edit src/browser-runtime.html for game changes and tools/package-runtime-shell.cjs for host/PWA changes.
@@ -51,3 +51,5 @@ Browser 1517 note: Classic/one-shot crash-site mission resolution now retires an
 Browser 1628 note: fresh alien reinforcement actors now carry explicit living-state authority and Classic survivor presentation uses the shared terminal liveness contract. Service-worker caches advance to Browser 1628. Save format remains 4.
 
 Browser 1712 note: Classic one-shot terminal contact sanitation and report diagnostics are runtime changes only; PWA install behavior is unchanged.
+
+Browser 1945 note: Mobile · Adaptive 3D tactical play restores the shared Standard upper-right soldier / Fire Team Assignment / Current Objective HUD with compact phone styling. Service-worker caches advance to Browser 1945. Save format remains 4.

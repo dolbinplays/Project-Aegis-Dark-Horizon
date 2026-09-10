@@ -1,6 +1,57 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.09.1945_MOBILE_TACTICAL_STATUS_HUD_PATCH
+TITLE: Mobile Tactical Status HUD
+DATE: September 9, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.09.1712_CLASSIC_CRASH_SITE_LAST_KNOWN_CONTACT_TERMINAL_HOTFIX
+
+SUMMARY
+-------
+Implements the approved Mobile · Adaptive tactical HUD roadmap item by restoring the existing Standard upper-right selected/observed soldier status panel inside the Mobile battle viewport. The panel reuses the same soldier, fire-team, and objective authority as Standard rather than introducing a separate mobile tactical-status model.
+
+MOBILE HUD
+----------
+- Mobile · Adaptive no longer hides `TacticalUnifiedThreeStatusPanel` during 3D tactical play.
+- The panel remains anchored at the upper-right of the battlefield viewport and remains pointer-transparent so it does not steal taps/clicks from the tactical canvas.
+- The requested core remains visible: selected/observed soldier name, Fire Team Assignment, and Current Objective / Order.
+- The objective continues to come from `tacticalFirstPersonCurrentObjectiveOrder(...)`, preserving player command-map orders, VIP rescue/escort, extraction guard, Last Known Contact search, Beacon work, fog/grid sweep, visible-contact engagement, leadership/fear overrides, and ordinary formation support.
+- Portrait phones compact secondary rank/weapon, HP/TU/ammo, condition chips, detailed command-role text, formal-leader notes, player-order coordinate duplication, and AI-turn diagnostics before removing any of the requested core.
+- Short landscape phones keep the core visible while suppressing the larger AI-plan block; tablets and roomier landscape layouts retain more Standard secondary detail.
+- The panel stays inside the center battlefield between the existing Mobile command rails rather than consuming rail space or shrinking the Three.js canvas.
+
+UNCHANGED
+---------
+- Standard/Desktop tactical status presentation.
+- Selected/observed soldier authority and AI playback actor/camera authority.
+- Fire-team assignment and objective logic.
+- Tactical AI, pathfinding, LOS/fog, TU, damage, reinforcement, rescue, mission-terminal rules, and save data.
+- Browser 1712 crash-site Last Known Contact terminal fix and earlier casualty/reinforcement hotfixes.
+- Save format remains 4.
+
+VALIDATION
+----------
+- All five executable runtime JavaScript blocks pass `node --check`.
+- Mobile HUD contract verifies the unified Standard panel remains the render authority, the old mobile hide is overridden, and name/fire-team/objective remain explicit core data.
+- Contract verifies portrait compaction targets secondary fields instead of the required core.
+- Current build history freezes Browser 1712 and leaves exactly one mutable `CURRENT_GAME_BUILD` history entry.
+- Embedded runtime/source byte identity, synchronized host/runtime/service-worker build IDs, release hashes, non-destructive source-manifest updater, save format 4, and ZIP integrity are release gates.
+- Physical Android/iOS phone/tablet acceptance remains required.
+
+FIELD ACCEPTANCE
+----------------
+1. Start/load a tactical mission using Mobile · Adaptive and switch to 3D Iso.
+2. Select different AEGIS soldiers. Confirm the upper-right box follows selection and always shows the correct name, Fire Team Assignment, and Current Objective / Order.
+3. Give a fire team a player order and confirm the objective/order text updates without stale data.
+4. Enter FPV and TPV during AI playback and confirm the box follows the observed/acting soldier exactly as Standard does.
+5. Test portrait phone, short landscape phone, and tablet widths. The requested core must remain visible while secondary detail compacts first.
+6. Confirm the box does not intercept battlefield taps/clicks or cover essential crosshair/command actions.
+7. Switch Mobile → Standard during the same battle and confirm the same soldier/team/objective authority is shown; Standard styling remains unchanged.
+8. Confirm Browser 1712 crash-site victory and save format 4 remain intact.
+
+---
+
 BUILD: v0.26.09.09.1712_CLASSIC_CRASH_SITE_LAST_KNOWN_CONTACT_TERMINAL_HOTFIX
 TITLE: Classic Crash-Site Last Known Contact Terminal Hotfix
 DATE: September 9, 2026

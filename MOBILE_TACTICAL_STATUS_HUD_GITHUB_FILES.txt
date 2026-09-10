@@ -1,0 +1,24 @@
+PROJECT AEGIS — v0.26.09.09.1945_MOBILE_TACTICAL_STATUS_HUD_PATCH
+
+Overlay/replace these release files in the existing repository:
+- index.html
+- src/browser-runtime.html
+- service-worker.js
+- release-metadata.json
+- README_PATCH_NOTES.txt
+- Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+- PWA_DEPLOYMENT_README.txt
+- CODEX_HANDOFF.md (or prepend CODEX_HANDOFF_MOBILE_TACTICAL_STATUS_HUD_PATCH.md to the accumulated repo handoff)
+- CODEX_HANDOFF_MOBILE_TACTICAL_STATUS_HUD_PATCH.md
+- MOBILE_TACTICAL_STATUS_HUD_FIELD_ACCEPTANCE.txt
+- VALIDATION_SUMMARY.txt
+- tools/apply-1945-source-manifest.cjs
+- APPLY_1945_SOURCE_MANIFEST.bat
+- src/manifest.1945.merge.json
+
+SOURCE MANIFEST — REQUIRED
+After overlaying, run from the repository root:
+  node tools/apply-1945-source-manifest.cjs
+The updater preserves the complete existing manifest and changes only currentBuild, lastInspectedBuild, gameplayParity.browserBuild, and status.
+
+Retain the repository's existing assets/ tree and full source manifest history.
