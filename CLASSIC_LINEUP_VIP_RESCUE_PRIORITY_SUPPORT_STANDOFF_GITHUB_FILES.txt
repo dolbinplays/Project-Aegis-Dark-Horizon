@@ -1,0 +1,23 @@
+BROWSER 2154 GITHUB OVERLAY
+
+Overlay this package onto the repository, preserving repo-only assets/source files not present in the patch package.
+
+Current build: v0.26.09.09.2154_CLASSIC_LINEUP_VIP_RESCUE_PRIORITY_AND_SUPPORT_STANDOFF_PATCH
+Save format: 4
+
+Important files:
+- index.html
+- src/browser-runtime.html
+- service-worker.js
+- README_PATCH_NOTES.txt
+- Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+- CODEX_HANDOFF.md
+- CODEX_HANDOFF_CLASSIC_LINEUP_VIP_RESCUE_PRIORITY_AND_SUPPORT_STANDOFF_PATCH.md
+- release-metadata.json
+- src/manifest.2154.merge.json
+- tools/apply-2154-source-manifest.cjs
+- APPLY_2154_SOURCE_MANIFEST.bat
+
+After overlay, run APPLY_2154_SOURCE_MANIFEST.bat (or node tools/apply-2154-source-manifest.cjs) from the repository root. It updates only currentBuild, lastInspectedBuild, status, and gameplayParity.browserBuild in the existing full src/manifest.json.
+
+Then run the canonical packaging/release checks before any push. Do not replace a richer repository src/manifest.json with the merge descriptor.

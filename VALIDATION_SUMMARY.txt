@@ -1,32 +1,73 @@
-PROJECT AEGIS — BROWSER 2054 VALIDATION SUMMARY
-Build: v0.26.09.09.2054_CLASSIC_LINEUP_ATTRITION_REFLOW_AND_VICTORY_PARITY_PATCH
+PROJECT AEGIS — BROWSER 2154 VALIDATION SUMMARY
+
+Build: v0.26.09.09.2154_CLASSIC_LINEUP_VIP_RESCUE_PRIORITY_AND_SUPPORT_STANDOFF_PATCH
+Base: v0.26.09.09.2054_CLASSIC_LINEUP_ATTRITION_REFLOW_AND_VICTORY_PARITY_PATCH
 Save format: 4
+Runtime bytes: 6872399
+Runtime SHA-256: 7149c2680ebe339932a36000d9de34caa54c9e25add997f054e505668632ca81
+Host SHA-256: e5ef7008a24c1b850dc0fad7866505a642ebf8070c3a8cc114278f7a837d616a
 
-PASSED STATIC / PACKAGE GATES
-- browser-runtime.html: 7 script tags, 5 non-empty executable JavaScript blocks; every executable block passes node --check.
-- index.html: 2 script tags, 1 non-empty executable host block; host block passes node --check.
-- service-worker.js passes node --check.
-- tools/apply-2054-source-manifest.cjs passes node --check.
-- manifest.webmanifest, release-metadata.json, and src/manifest.2054.merge.json parse successfully.
-- Embedded runtime payload decodes byte-for-byte to src/browser-runtime.html.
-- Embedded runtime byte count/SHA-256 match release-metadata.json.
-- Host SHA-256 matches release-metadata.json.
-- Runtime CURRENT_GAME_BUILD, host data-aegis-host-build/BUILD, release metadata, and both service-worker cache IDs are synchronized to Browser 2054.
-- Save format remains 4.
-- Exactly one function finishAiPlayback() remains.
-- Browser 2018 patch-history entry is frozen to its literal build ID; Browser 2054 is the single current mutable patch-history entry.
-- Classic attrition/reflow flag, canonical alien ordering, lifecycle display model, animated reflow marker, Tactical-authority wording, shared resolveMission/beginSkyrangerReturn wiring, and Build Health contract are present.
-- Non-destructive source-manifest updater preservation fixture passed; unrelated top-level and nested gameplayParity data were retained.
+Release checks are executed after packaging. See final section appended by validation script.
 
-FOCUSED EXECUTABLE MODEL FIXTURE
-- Lethal alien state on impact frame: dying.
-- Following-frame state: fading.
-- Surviving Alien B moved from y=292 to y=112 with previousY=292, proving upward reflow input.
-- New reinforcement first appeared at y=472, equal to the bottom-most active alien slot.
-- Stable canonical identity order remained [a, b, c, d].
+FINAL RELEASE CHECKS
+--------------------
+PASS - Runtime has five executable script blocks
+PASS - Runtime script 2 node --check
+PASS - Runtime script 3 node --check
+PASS - Runtime script 4 node --check
+PASS - Runtime script 5 node --check
+PASS - Runtime script 7 node --check
+PASS - Host script 2 node --check
+PASS - Host has one executable control script
+PASS - service-worker.js node --check
+PASS - tools/apply-2154-source-manifest.cjs node --check
+PASS - manifest.webmanifest JSON parses
+PASS - release-metadata.json JSON parses
+PASS - src/manifest.2154.merge.json JSON parses
+PASS - Embedded runtime payload found
+PASS - Embedded runtime byte-for-byte equals src/browser-runtime.html
+PASS - Embedded runtime byte count matches
+PASS - Embedded runtime SHA matches
+PASS - Release runtime bytes match
+PASS - Release runtime SHA matches
+PASS - Release host SHA matches
+PASS - Runtime CURRENT_GAME_BUILD synced
+PASS - Host body build synced
+PASS - Host BUILD synced
+PASS - Service worker shell cache synced
+PASS - Service worker runtime cache synced
+PASS - Roadmap current build synced
+PASS - Patch notes current build synced
+PASS - 2054 patch history frozen literal
+PASS - Exactly one current mutable patch-history entry
+PASS - 2154 current mutable history title present
+PASS - 2154 patch flag present
+PASS - classicLineupUnresolvedRescueTargets helper present
+PASS - classicLineupRescuePriorityPlan helper present
+PASS - classicLineupSupportStandoffPlan helper present
+PASS - classicLineupVipRescuePriorityTurn helper present
+PASS - Initial Classic rescue no longer requires continuation
+PASS - Mandatory priority can outrank observed combat
+PASS - Responder/support role snapshot authority
+PASS - Classic renderer exposes VIP RESCUE
+PASS - Classic renderer exposes SUPPORT/COVER
+PASS - Five-hex support doctrine constant
+PASS - Save format remains 4
+PASS - Preserves CLASSIC_LINEUP_ATTRITION_REFLOW_AND_VICTORY_PARITY_PATCH
+PASS - Preserves CLASSIC_LINEUP_VIP_CIVILIAN_AND_VICTORY_PLAYBACK_PATCH
+PASS - Preserves MOBILE_TACTICAL_STATUS_HUD_PATCH
+PASS - Preserves FINAL_VIP_PLAYBACK_COMPLETION_AND_CASUALTY_AUTHORITY_HOTFIX
+PASS - Only one literal finishAiPlayback declaration
+PASS - Manifest updater exits successfully
+PASS - Manifest updater changes currentBuild
+PASS - Manifest updater changes gameplayParity.browserBuild
+PASS - Manifest updater preserves unrelated top-level data
+PASS - Manifest updater preserves unrelated gameplayParity data
+PASS - CODEX_HANDOFF_CLASSIC_LINEUP_VIP_RESCUE_PRIORITY_AND_SUPPORT_STANDOFF_PATCH.md present
+PASS - CLASSIC_LINEUP_VIP_RESCUE_PRIORITY_SUPPORT_STANDOFF_FIELD_ACCEPTANCE.txt present
+PASS - CLASSIC_LINEUP_VIP_RESCUE_PRIORITY_SUPPORT_STANDOFF_GITHUB_FILES.txt present
+PASS - APPLY_2154_SOURCE_MANIFEST.bat present
+PASS - Old 2054 manifest updater removed
 
-FIELD GATE STILL REQUIRED
-- Physical/browser playback remains required to judge the visual quality and timing of SVG fade/reflow interpolation.
-- Verify a real reinforcement appears at the bottom without an identity swap.
-- Verify mandatory/optional rescue outcomes against real mission types and Mission Reports.
-- Verify success-only victory dance and Browser 1945 Mobile Tactical Status HUD remain correct.
+Passed: 57/57
+Failed: 0

@@ -1,0 +1,16 @@
+PROJECT AEGIS — BROWSER 2154 FIELD ACCEPTANCE
+
+1. Mandatory VIP: nearest suitable soldier commits from opening Classic rounds, even if not a fire-team leader.
+2. VIP in building: responder may enter; supports remain outside.
+3. Skyranger: responder may use ramp/extraction lane; supports do not clog ramp/footprint.
+4. Normal support doctrine: exterior and >=5 hexes from buildings/Skyranger, roughly 3–8 hexes from responder.
+5. Threat exception: closer support position only when visible alien threat exists and the exterior cell provides real cover.
+6. Support can still fight after repositioning if TU remains.
+7. Multiple VIPs distribute responders instead of stacking one target.
+8. Optional civilians do not override an active observed-alien firefight and do not become a Classic-only win condition.
+9. Browser 2054 alien fade/reflow and reinforcement-bottom insertion still work.
+10. Browser 2018 civilian/VIP paper dolls, extraction presentation, Classic timeline, and victory dance still work.
+11. Browser 1712 crash-site all-aliens-dead success regression remains fixed.
+12. Mission Report outcome/reward/casualties/rescue counts match shared Tactical authority.
+13. Standard/manual Tactical behavior remains unchanged.
+14. Save/load remains format 4.

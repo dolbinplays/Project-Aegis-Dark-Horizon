@@ -1,23 +1,8 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.09.2154_CLASSIC_LINEUP_VIP_RESCUE_PRIORITY_AND_SUPPORT_STANDOFF_PATCH`
+Current browser build: `v0.26.09.09.2054_CLASSIC_LINEUP_ATTRITION_REFLOW_AND_VICTORY_PARITY_PATCH`
 
 Current save format: `4`
-
-## Current Build Addendum — Browser 2154 (September 9): Classic Lineup VIP Rescue Priority & Support Standoff
-
-- Mandatory VIP recovery is now the first Classic Lineup rescue objective from the initial one-shot battlefield. The doctrine no longer waits for a continuation pass before assigning rescue movement.
-- Each unresolved mandatory VIP is assigned to the nearest suitable living AEGIS soldier by tactical route distance. The responder does not need to be a fire-team leader and may enter buildings, move into the Skyranger ramp/contact lane, establish escort, and complete extraction.
-- Nearby uncommitted soldiers become support rather than following the responder into the objective. Support normally seeks exterior positions 3–8 hexes from the responder and at least 5 hexes from buildings and the player Skyranger footprint.
-- Support pathing avoids building interiors and Skyranger footprint/ramp cells so doors, ramps, and extraction routes stay open. When active alien fire makes the normal perimeter unsafe, support may use a closer exterior cell only if it provides real tactical cover.
-- Support movement is independent of the responder and retains remaining TU, allowing supporting soldiers to fight after taking position instead of becoming passive rescue followers.
-- Optional civilian assistance does not supersede an observed-alien firefight. Mandatory-versus-optional rescue remains defined by the same Tactical mission policy, and success/failure remains entirely under shared Tactical terminal authority.
-- Classic playback exposes `VIP RESCUE`, `SUPPORT`, and `SUPPORT/COVER` role cues so the player can understand why soldiers are separating during the rescue.
-- Browser 2054 alien fade/reflow, Browser 2018 civilian/VIP playback and victory celebration, Browser 1945 Mobile Tactical Status HUD, Browser 1712 crash-site victory repair, Browser 1242 casualty authority, and save format **4** remain intact.
-
-### Field gate
-Run mandatory single- and multi-VIP Classic missions, including a VIP inside a building. Confirm nearest-soldier responder selection, direct building/ramp access for the responder, exterior 5-hex support spacing, threat-cover exceptions only under real danger, clear door/ramp lanes, independent support combat, optional-civilian non-blocking behavior, and exact mission-result parity with Tactical authority.
-
 
 ## Current Build Addendum — Browser 2054 (September 9): Classic Lineup Attrition, Reflow & Victory Parity
 

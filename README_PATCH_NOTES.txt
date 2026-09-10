@@ -1,6 +1,71 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.09.2154_CLASSIC_LINEUP_VIP_RESCUE_PRIORITY_AND_SUPPORT_STANDOFF_PATCH
+TITLE: Classic Lineup VIP Rescue Priority & Support Standoff
+DATE: September 9, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.09.2054_CLASSIC_LINEUP_ATTRITION_REFLOW_AND_VICTORY_PARITY_PATCH
+
+SUMMARY
+-------
+Makes mandatory VIP recovery the first Classic Lineup tactical objective, sends the nearest suitable soldier directly to each unresolved VIP, and positions nearby support personnel outside structures and away from Skyrangers unless actual alien fire makes closer cover necessary.
+
+VIP RESCUE PRIORITY
+-------------------
+- Classic one-shot simulation can begin rescue behavior from the initial battlefield instead of waiting for a continuation chunk.
+- Mandatory VIP tracker targets outrank visible combat for their assigned direct responder.
+- Each unresolved mandatory VIP is assigned to the nearest available living AEGIS soldier by tactical route distance rather than rank, paper-doll order, or fire-team leadership.
+- The direct responder may be a non-leader and may enter buildings, approach the Skyranger, use the ramp/contact lane, establish escort, and complete extraction.
+- Multiple unresolved VIPs distribute responders instead of stacking every available soldier on one rescue subject.
+
+SUPPORT STANDOFF
+----------------
+- Up to two nearby uncommitted soldiers can support each direct responder.
+- Support seeks a useful position roughly 3–8 hexes from the responder while normally remaining outside buildings and at least 5 hexes from buildings and the player Skyranger footprint.
+- Support paths avoid building interiors and Skyranger footprint/ramp cells, keeping doors, ramps, and the responder's direct rescue lane clear.
+- The 5-hex standoff is a doctrine preference rather than a suicide rule: under active alien threat, a support soldier may take a closer exterior cell only when the cell supplies real tactical cover.
+- Support moves independently of the responder and retains remaining TU so it can still engage aliens after repositioning.
+
+OPTIONAL CIVILIANS / TERMINAL AUTHORITY
+---------------------------------------
+- Optional civilian assistance does not displace an active observed-alien firefight. The Classic priority doctrine activates for optional civilians only when no alien is currently observed.
+- Mandatory-versus-optional rescue remains defined by existing Tactical mission policy.
+- Success/failure remains under tacticalAiMissionResolution / tacticalMissionTerminalState. This patch changes one-shot behavior, not victory authority.
+
+CLASSIC PLAYBACK
+----------------
+- Active direct responders are labeled VIP RESCUE.
+- Nearby support cards are labeled SUPPORT, or SUPPORT/COVER when the threat-cover exception is being used.
+- Browser 2054 alien fade/reflow, Browser 2018 civilian/VIP paper dolls and victory dance, and the lightweight Classic timeline remain intact.
+
+UNCHANGED
+---------
+- Browser 1945 Mobile Tactical Status HUD.
+- Browser 1712 crash-site Last Known Contact victory repair.
+- Browser 1628/1517 reinforcement safeguards and Browser 1242 casualty authority.
+- Standard/manual Tactical behavior.
+- Save format 4.
+
+FIELD ACCEPTANCE
+----------------
+1. Run a mandatory VIP mission in Classic. From the opening rounds, the nearest suitable soldier should commit toward the VIP even if that soldier is not a fire-team leader.
+2. Verify the direct responder may enter a building to reach the VIP and can use the Skyranger ramp/extraction lane.
+3. Verify nearby support does not pile into the building, doorway, ramp, or Skyranger footprint.
+4. In ordinary conditions, support should stay at least 5 hexes from buildings and the Skyranger while remaining near enough to cover the responder.
+5. Under visible alien fire, verify a support soldier may break the 5-hex perimeter only for an actual exterior cover cell.
+6. Verify support can still fire/act after repositioning when TU remains.
+7. On a multi-VIP map, confirm responders distribute rather than all chasing the same VIP.
+8. On an optional-civilian mission with an active firefight, verify civilians do not override combat priority or become a hidden win condition.
+9. Confirm Browser 2054 alien fade/reflow and Browser 2018 civilian paper dolls/victory celebration remain correct.
+10. Confirm mission outcome, reward, casualties, rescue counts, and terminal blockers remain identical to Tactical authority.
+11. Confirm Browser 1712 crash-site success regression remains fixed and save format remains 4.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.09.2054_CLASSIC_LINEUP_ATTRITION_REFLOW_AND_VICTORY_PARITY_PATCH
 TITLE: Classic Lineup Attrition, Reflow & Victory Parity
 DATE: September 9, 2026
