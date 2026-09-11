@@ -1,0 +1,17 @@
+PROJECT AEGIS — BROWSER 1046 FIELD ACCEPTANCE
+
+Build: v0.26.09.11.1046_TACTICAL_HORIZON_DEPTH_AND_DISTANT_BUILDING_CONTINUITY_PATCH
+Save format: 4
+
+1. FPV/TPV city/town: look from a map-edge extension building toward the far skyline. Near -> intermediate -> far contrast should soften progressively into the same atmospheric color.
+2. No farther skyline mass should look more optically solid than a nearer hazed background building in the same view.
+3. Night city/town: confirm sparse warm/cool lit windows appear on both map-edge extension buildings and horizon buildings.
+4. Twilight: confirm fewer/dimmer-looking window instances than a full night scene while the same vocabulary remains.
+5. Day: confirm no bright decorative window-light batch is allocated for wilderness/day scenes.
+6. Rotate/pan FPV/TPV and confirm the horizon remains stable, distant, and free of obvious flat map-edge cutouts.
+7. Check Performance / Auto / Quality: scenery density may vary, but no mode should lose the horizon entirely.
+8. Confirm target markers, muzzle flashes, flashlights, street lamps, Skyranger lights, Beacons, and other gameplay-relevant effects remain more prominent than distant windows.
+9. Confirm 3D Iso remains clean and does not gain distracting high-frequency horizon-window noise.
+10. Confirm scenery cannot be selected, block shots/LOS, supply cover, block movement, affect AI, or alter objectives.
+11. Run at least one VIP/rescue mission and confirm VIP survival/result authority is unchanged.
+12. Confirm mission result, casualties, rewards, reports, save/load, and save format 4 remain unchanged.

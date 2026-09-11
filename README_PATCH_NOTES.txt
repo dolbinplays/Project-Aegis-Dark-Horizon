@@ -1,6 +1,56 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.11.1046_TACTICAL_HORIZON_DEPTH_AND_DISTANT_BUILDING_CONTINUITY_PATCH
+TITLE: Tactical Horizon Depth + Distant Building Continuity
+DATE: September 11, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.11.0915_CLASSIC_LINEUP_MOBILE_LANDSCAPE_READABILITY_AND_COMPACT_LAYOUT_PATCH
+
+SUMMARY
+-------
+Makes FPV/TPV tactical environments read as continuous places beyond the playable map edge. The existing map-edge continuation buildings and far skyline now share one atmospheric depth language, while city/town night scenes gain deterministic lightweight window activity without adding gameplay geometry or per-window lights.
+
+ATMOSPHERIC DEPTH CONTINUITY
+----------------------------
+- The existing perspective horizon is extended into three deterministic depth bands: near, intermediate, and far.
+- Structure color is progressively blended toward the active atmospheric/sky-bottom color as distance increases, so farther skyline masses cannot remain optically stronger than nearer background architecture.
+- The map-edge world-continuation building batch receives the same near-distance atmospheric treatment, tying the extension buildings and skyline into one visual stack.
+- Skyline radius still derives from tactical map size and remains capped inside the established sky dome.
+
+CHEAP NIGHT WINDOWS
+-------------------
+- City and town twilight/night missions receive seeded warm/cool lit-window variation.
+- Window placement covers both map-edge extension buildings and the far horizon structures.
+- Both sources are combined into one instanced, unlit window batch in perspective views.
+- No window creates a PointLight, SpotLight, dynamic shadow, collision object, LOS blocker, cover record, pathing record, hazard, or save state.
+- Daytime wilderness scenes allocate no decorative window instances.
+
+PERFORMANCE / AUTHORITY
+-----------------------
+- Performance / Auto / Quality use independent bounded structure and window caps.
+- The perspective horizon uses existing structure/silhouette batches, one optional combined window batch, and consolidated haze.
+- Camera motion and AI playback do not regenerate tactical state. Horizon content remains presentation-only and outside pickables.
+- resolveMission(...), tacticalMissionTerminalState(...), and tacticalAiMissionResolution(...) are byte-identical to Browser 0915.
+- Browser 0915 mobile Classic layout and Browser 0745 Classic streaming stabilization remain intact.
+- Save format remains 4.
+
+FIELD ACCEPTANCE
+----------------
+1. In FPV/TPV on a city/town map, look past map-edge extension buildings toward the skyline. Nearer background buildings should remain stronger while intermediate/far structures progressively soften into the same haze color.
+2. At twilight/night, confirm sparse warm/cool windows appear on both extension and skyline buildings without looking like every window is illuminated.
+3. At day, confirm the distant architecture remains readable but no bright decorative window lights are visible.
+4. Rotate/pan FPV/TPV and confirm the horizon remains distant and stable with no map-edge wall/cutout effect.
+5. Verify target markers, muzzle flashes, street lamps, flashlights, Beacon effects, and other gameplay lights remain visually dominant.
+6. Compare Performance / Auto / Quality and confirm the horizon remains present while density scales reasonably.
+7. Confirm 3D Iso remains clean and is not filled with high-frequency night-window noise.
+8. Confirm movement, LOS, cover, targeting, mission outcome, VIP survival, rewards, saves, and reports are unchanged.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.11.0915_CLASSIC_LINEUP_MOBILE_LANDSCAPE_READABILITY_AND_COMPACT_LAYOUT_PATCH
 TITLE: Classic Lineup Mobile Landscape Readability & Compact Layout
 DATE: September 11, 2026

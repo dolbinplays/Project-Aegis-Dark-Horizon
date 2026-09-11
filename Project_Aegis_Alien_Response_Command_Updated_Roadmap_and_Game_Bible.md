@@ -1,8 +1,25 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.11.0915_CLASSIC_LINEUP_MOBILE_LANDSCAPE_READABILITY_AND_COMPACT_LAYOUT_PATCH`
+Current browser build: `v0.26.09.11.1046_TACTICAL_HORIZON_DEPTH_AND_DISTANT_BUILDING_CONTINUITY_PATCH`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 1046 (September 11): Tactical Horizon Depth & Distant Building Continuity
+
+- Implements the approved distant-building / horizon visual-continuity follow-up using the existing persistent world-continuation and perspective-backdrop systems rather than adding a second tactical scenery renderer.
+- FPV/TPV urban/town horizons now use deterministic **near / intermediate / far** structure bands. Distance progressively blends structure color toward the active atmospheric horizon color, so background depth reads as one continuous stack rather than separate cutout layers.
+- The map-edge extension-building batch receives the same near-layer atmospheric color treatment used by the perspective skyline.
+- Twilight/night city and town missions generate seeded warm/cool window activity for both map-edge extension buildings and horizon buildings. Both sources are combined into **one instanced unlit window batch** in perspective views.
+- Window glow is material presentation only: **zero per-window point/spot lights**, zero dynamic shadows, zero collision/cover/LOS/pathing/AI/save authority.
+- Performance / Auto / Quality bound structure density and decorative window instances independently. Daytime wilderness scenes allocate no decorative windows.
+- Perspective geometry remains outside tactical pickables and the far radius remains capped inside the established sky dome.
+- `resolveMission(...)`, `tacticalMissionTerminalState(...)`, and `tacticalAiMissionResolution(...)` are byte-identical to Browser 0915. Save format remains **4**.
+- Browser 0915 mobile Classic layout and Browser 0745 streaming/visibility stabilization remain intact.
+
+### Field gate
+From FPV/TPV, inspect city/town missions in day, twilight, and night. Verify extension buildings and skyline share a gradual haze/depth language; night windows appear sparsely across both layers; no far structure appears more optically solid than a nearer hazed structure; no decorative light competes with gameplay markers/effects; Performance/Auto/Quality remain responsive; and tactical authority/results remain unchanged.
+
+---
 
 ## Current Build Addendum — Browser 0915 (September 11): Classic Lineup Mobile Landscape Readability & Compact Layout
 
@@ -70,7 +87,7 @@ Run a long Classic mission, a mandatory-VIP mission, an optional-civilian missio
 
 ### Retained follow-up after this patch
 - Continue polishing Classic Lineup if field testing exposes additional rescue, reinforcement, buffering, or playback issues.
-- Retain the approved **Distant Building / Horizon Skyline Visual Continuity + Cheap Window Lighting** roadmap item below: near/intermediate extension buildings and far skyline buildings must share one atmospheric depth language, with deterministic atlas/procedural windows and seeded night emissive windows, no point light per window, cached/persistent presentation, and zero or near-zero additional draw calls.
+- **Implemented in Browser 1046:** Distant Building / Horizon Skyline Visual Continuity + Cheap Window Lighting. Near/intermediate extension buildings and far skyline buildings now share atmospheric depth treatment with deterministic seeded night windows and no per-window dynamic lights.
 
 ## Current Build Addendum — Browser 2154 (September 9): Classic Lineup VIP Rescue Priority & Support Standoff
 
@@ -2129,7 +2146,7 @@ Historical patch status at this archived handoff: **Browser 1739 reverses the ob
 
 ## Approved Roadmap — Distant Building / Horizon Skyline Visual Continuity + Cheap Window Lighting
 
-**Status:** Planned presentation-only follow-up to Browser 1938 Tactical World Continuation Terrain Skirt + Horizon Scenery.
+**Status:** Implemented in Browser 1046 Tactical Horizon Depth + Distant Building Continuity.
 
 - Make the two existing classes of non-interactive background architecture read as one coherent distant city/settlement system: **world-fixed extension buildings between the tactical map edge and the atmosphere/skybox**, and the **far skyline / horizon building silhouettes**. The current mismatch can make a nearer extension building become ghostly with distance while a farther horizon building behind it remains visually solid, producing an obvious layered-cutout effect.
 - Give both background layers one shared **distance/atmosphere fade language**. Near extension buildings and far skyline buildings should converge toward the same haze color, contrast, saturation, and apparent opacity as distance increases, so a farther skyline mass never looks more optically solid than a nearer building seen through the same atmosphere.

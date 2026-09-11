@@ -1,52 +1,53 @@
-PROJECT AEGIS — BROWSER 0915 VALIDATION SUMMARY
+PROJECT AEGIS — BROWSER 1046 VALIDATION SUMMARY
 
-Build: v0.26.09.11.0915_CLASSIC_LINEUP_MOBILE_LANDSCAPE_READABILITY_AND_COMPACT_LAYOUT_PATCH
-Base: v0.26.09.11.0745_CLASSIC_LINEUP_STREAMING_VISIBILITY_AND_BATTLE_TEMPO_STABILIZATION_PATCH
+Build: v0.26.09.11.1046_TACTICAL_HORIZON_DEPTH_AND_DISTANT_BUILDING_CONTINUITY_PATCH
+Base: v0.26.09.11.0915_CLASSIC_LINEUP_MOBILE_LANDSCAPE_READABILITY_AND_COMPACT_LAYOUT_PATCH
 Save format: 4
-Runtime bytes: 6930296
-Runtime SHA-256: 5b031ac5b211f7233ec03bce423b1a22b5804f07458de9883557956f24e9de8f
-Host SHA-256: cac07aab764eee170117ba9919f9bb7d8ce5bf2a8d41190eb3c7ae3d51954080
 
-PATCH-SPECIFIC CHECKS
----------------------
-PASS - 24/24 Classic Lineup mobile-landscape readability/static release contracts.
-PASS - Dedicated short-height landscape gates exist at <=520px and extra-short <=420px.
-PASS - Compact header, speed control, ellipsized frame status, battle-stage hooks, compact result chips, optional rules disclosure, and compact primary action are present.
-PASS - Full Desktop/larger-layout mission title, survivor/rescue summaries, and full presentation-authority wording remain present.
-PASS - Browser 0745 stabilization, Browser 1223 visible-target pacing, and Browser 0810 streamed rolling planner flags remain enabled.
+PATCH-SPECIFIC CONTRACTS
+------------------------
+PASS - 30/30 Tactical Horizon Depth + Distant Building Continuity checks.
+PASS - Near / intermediate / far deterministic urban depth bands.
+PASS - Far geometry remains inside the tactical sky-dome cap.
+PASS - Map-edge extension and horizon buildings share atmospheric depth treatment.
+PASS - Night/twilight city/town windows are deterministic and bounded by rendering quality.
+PASS - Extension-building and skyline windows are combined into one perspective InstancedMesh batch.
+PASS - No per-window PointLight/SpotLight path exists in the Browser 1046 horizon renderer.
+PASS - Perspective horizon is four draw calls or fewer: structure batch, optional silhouette batch, optional combined window batch, consolidated haze.
+PASS - Day wilderness fixture allocates no decorative window instances.
+PASS - Horizon renderer does not register scenery in tactical pickables, cover, LOS, or pathing authority.
+
+BASELINE / AUTHORITY PRESERVATION
+---------------------------------
+PASS - Browser 0915 mobile Classic Lineup responsive contracts: 24/24.
 PASS - Exactly one finishAiPlayback() owner remains.
+PASS - resolveMission(...) byte-identical to Browser 0915.
+PASS - tacticalMissionTerminalState(...) byte-identical to Browser 0915.
+PASS - tacticalAiMissionResolution(...) byte-identical to Browser 0915.
+PASS - Browser 0915 Mobile Classic flag remains enabled.
+PASS - Browser 0745 Classic streaming/visibility stabilization remains enabled.
 PASS - Save format remains 4.
 
-OUTCOME-AUTHORITY DIFFERENTIAL
-------------------------------
-The following functions are byte-for-byte unchanged from Browser 0745:
-PASS - resolveMission(...)
-       SHA-256: 60363040b40de491c28dd4ee7819fe291489fe48a16effae14b23966ad12f456
-PASS - tacticalMissionTerminalState(...)
-       SHA-256: 7789262fc140b640d81eb443b91d24bdf9daacfdbdbe2bbac7af5358a84a160c
-PASS - tacticalAiMissionResolution(...)
-       SHA-256: 3ef3c32a49421c2f353d95d6e18f9f46954ead16505df535cb66cd5e618cd702
-
-BROADER REGRESSION CHECKS
+SYNTAX / PACKAGE IDENTITY
 -------------------------
-PASS - Embedded JavaScript syntax: 11 non-empty executable blocks across runtime + host.
-PASS - Mobile interface behavioral suite: 10/10.
-PASS - Mobile/PWA/audio regression suite: 9/9 when run with the full repository manifest/packager context.
-BASELINE-LIMITATION - Legacy playback extractor: 12/16. The same four standalone harness cases fail because the extractor omits tacticalPlaybackFrameUnitAuthoritativeAlive; this is the known pre-existing harness limitation from the Browser 0745 line, not a new compact-layout behavior failure.
+PASS - Five executable runtime JavaScript blocks pass node --check.
+PASS - Packaged host executable script passes node --check.
+PASS - service-worker.js passes node --check.
+PASS - tools/apply-1046-source-manifest.cjs passes node --check.
+PASS - tools/check-tactical-horizon-depth-continuity.cjs passes node --check.
+PASS - Embedded host runtime is byte-for-byte identical to src/browser-runtime.html.
+PASS - Embedded byte count and SHA-256 match release-metadata.json.
+PASS - Host SHA-256 matches release-metadata.json.
+PASS - Host body build, host BUILD, runtime CURRENT_GAME_BUILD, and both service-worker cache IDs are synchronized.
+PASS - Roadmap, patch notes, Codex handoff, manifest merge descriptor, and package filename are synchronized.
+PASS - Manifest updater changes only the four intended build/status fields and preserves unrelated manifest/gameplayParity data in smoke testing.
 
-PACKAGE / RELEASE INTEGRITY
----------------------------
-PASS - Canonical packager regenerates index.html from src/browser-runtime.html.
-PASS - Embedded runtime payload is byte-for-byte identical to src/browser-runtime.html.
-PASS - Embedded runtime declared byte count matches 6930296.
-PASS - Embedded runtime SHA matches release metadata.
-PASS - Host SHA matches release metadata.
-PASS - Host/runtime build ID synchronized to Browser 0915.
-PASS - Service-worker shell/runtime cache IDs synchronized to Browser 0915.
-PASS - Patch notes, Roadmap/Game Bible, CODEX handoff, merge manifest, and release metadata contain Browser 0915 identity.
-PASS - Browser 0745 patch-history entry is frozen and exactly one mutable CURRENT_GAME_BUILD history entry remains.
-PASS - Non-destructive manifest updater preserves unrelated top-level and gameplayParity fields.
+RELEASE HASHES
+--------------
+Runtime bytes: 6949388
+Runtime SHA-256: 8466925c7f5002d35fd698e2129022d26fffa81834825334c9587f6f234b98da
+Host SHA-256: 2d31d39c6204648c58a2163039279e1cd02f7627c4a50c34991d25cba8251742
 
 FIELD ACCEPTANCE STILL REQUIRED
 -------------------------------
-Physical-device acceptance remains required using CLASSIC_LINEUP_MOBILE_LANDSCAPE_READABILITY_AND_COMPACT_LAYOUT_FIELD_ACCEPTANCE.txt, especially at approximately 844x390 and other short landscape phone sizes. Verify the compact chrome does not overlap the lineup, the primary action remains reachable, the rules disclosure behaves naturally, and larger/desktop layouts retain their established presentation.
+Automated validation proves deterministic planning, bounded presentation cost, authority isolation, and package identity. It does not substitute for visually inspecting the result in a real WebGL tactical mission. Field-test FPV/TPV city/town missions in day, twilight, and night; compare map-edge extension buildings against the far skyline; verify sparse window activity and gameplay-light readability; and confirm Performance / Auto / Quality remain visually acceptable.

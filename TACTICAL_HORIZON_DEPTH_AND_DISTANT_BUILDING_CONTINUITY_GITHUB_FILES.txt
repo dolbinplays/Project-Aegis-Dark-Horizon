@@ -1,0 +1,25 @@
+BROWSER 1046 GITHUB OVERLAY
+
+Overlay these files onto the existing repository. Preserve repo-only assets/source files not present in this patch.
+
+Current build: v0.26.09.11.1046_TACTICAL_HORIZON_DEPTH_AND_DISTANT_BUILDING_CONTINUITY_PATCH
+Save format: 4
+
+Required files:
+- index.html
+- src/browser-runtime.html
+- service-worker.js
+- README_PATCH_NOTES.txt
+- Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+- CODEX_HANDOFF.md
+- CODEX_HANDOFF_TACTICAL_HORIZON_DEPTH_AND_DISTANT_BUILDING_CONTINUITY_PATCH.md
+- release-metadata.json
+- src/manifest.1046.merge.json
+- tools/apply-1046-source-manifest.cjs
+- APPLY_1046_SOURCE_MANIFEST.bat
+- tools/check-tactical-horizon-depth-continuity.cjs
+- TACTICAL_HORIZON_DEPTH_AND_DISTANT_BUILDING_CONTINUITY_FIELD_ACCEPTANCE.txt
+- TACTICAL_HORIZON_DEPTH_AND_DISTANT_BUILDING_CONTINUITY_GITHUB_FILES.txt
+- VALIDATION_SUMMARY.txt
+
+After overlay, run APPLY_1046_SOURCE_MANIFEST.bat (or node tools/apply-1046-source-manifest.cjs) from the repository root. It updates only currentBuild, lastInspectedBuild, status, and gameplayParity.browserBuild in the existing full src/manifest.json.
