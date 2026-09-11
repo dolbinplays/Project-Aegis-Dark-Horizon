@@ -1,0 +1,8 @@
+{
+  "currentBuild": "v0.26.09.11.0745_CLASSIC_LINEUP_STREAMING_VISIBILITY_AND_BATTLE_TEMPO_STABILIZATION_PATCH",
+  "lastInspectedBuild": "v0.26.09.11.0745_CLASSIC_LINEUP_STREAMING_VISIBILITY_AND_BATTLE_TEMPO_STABILIZATION_PATCH",
+  "status": "classic-lineup-streaming-visibility-battle-tempo-stabilization-complete",
+  "gameplayParity": {
+    "browserBuild": "v0.26.09.11.0745_CLASSIC_LINEUP_STREAMING_VISIBILITY_AND_BATTLE_TEMPO_STABILIZATION_PATCH"
+  }
+}

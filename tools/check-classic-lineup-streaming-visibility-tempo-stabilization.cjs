@@ -1,0 +1,67 @@
+const fs=require('fs');
+const path=require('path');
+const runtimePath=path.resolve(__dirname,'../src/browser-runtime.html');
+const src=fs.readFileSync(runtimePath,'utf8');
+const build='v0.26.09.11.0745_CLASSIC_LINEUP_STREAMING_VISIBILITY_AND_BATTLE_TEMPO_STABILIZATION_PATCH';
+function extractFunction(name){
+  const needle=`function ${name}(`; const start=src.indexOf(needle); if(start<0)throw new Error(`missing ${name}`);
+  const candidates=[src.indexOf("\nfunction ",start+needle.length),src.indexOf("}function ",start+needle.length)].filter(i=>i>=0);
+  const next=candidates.length?Math.min(...candidates):src.length;
+  const end=src[next]==='}'?next+1:next;
+  return src.slice(start,end).trim();
+}
+const checks=[]; const check=(name,pass)=>checks.push([name,Boolean(pass)]);
+check('Current build synchronized in runtime',src.includes(`const CURRENT_GAME_BUILD="${build}"`));
+check('Stabilization patch flag present',src.includes('const CLASSIC_LINEUP_STREAMING_VISIBILITY_AND_BATTLE_TEMPO_STABILIZATION_PATCH=true;'));
+check('Quiet checkpoint cap is two',src.includes('const CLASSIC_LINEUP_AUTO_MAX_QUIET_ROUND_SKIP=2;'));
+check('Stream append recognizes explicit inherited seam',extractFunction('classicLineupStreamAppendFrames').includes('classicLineupStreamInheritedSeamFrame'));
+check('Prefetch uses two-round watermark inclusively',extractFunction('classicLineupStreamShouldPrefetch').includes('<=CLASSIC_LINEUP_STREAM_TARGET_ROUND_BUFFER'));
+check('Critical transition protects Last Known Contact',extractFunction('classicLineupFrameHasCriticalTransition').includes('aegisLastSeenMarkerActive')&&extractFunction('classicLineupFrameHasCriticalTransition').includes('aegisLastSeenResolvedRound'));
+check('Critical transition protects VIP escort/boarding',extractFunction('classicLineupFrameHasCriticalTransition').includes('escortJoined')&&extractFunction('classicLineupFrameHasCriticalTransition').includes('rampBoardingPresentation'));
+check('Critical transition protects objectives',extractFunction('classicLineupFrameHasCriticalTransition').includes('classicLineupObjectivePresentationChanged'));
+check('Sequential playback contains reinforcement materialization hold',extractFunction('tacticalAiSequentialPlaybackFrames').includes('reinforcementPresentationHold')&&extractFunction('tacticalAiSequentialPlaybackFrames').includes('Alien reinforcement materialization'));
+check('Death index waits for impact when it follows a lethal tracer',extractFunction('classicLineupAlienDeathFrameIndex').includes('impactFollows'));
+check('Auto pacing keeps manual Next separate',src.includes('function advanceSimPlayback(autoCompact=false)')&&src.includes('advanceSimPlayback(true)'));
+check('Save format remains 4',/const CURRENT_SAVE_FORMAT_VERSION\s*=\s*4\s*;/.test(src));
+check('Exactly one finishAiPlayback owner',(src.match(/function finishAiPlayback\(\)\{/g)||[]).length===1);
+check('1735 history entry frozen',src.includes('build:"v0.26.09.10.1735_CLASSIC_LINEUP_PATCH_HISTORY_INITIALIZATION_HOTFIX"'));
+check('Exactly one mutable current history entry',(src.match(/^PATCH_NOTES_HISTORY\.unshift\(\{build:CURRENT_GAME_BUILD/gm)||[]).length===1);
+const historyDecl=src.indexOf('const PATCH_NOTES_HISTORY='), historyCurrent=src.indexOf('PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD'), historySort=src.indexOf('PATCH_NOTES_HISTORY.sort',historyDecl);
+check('Current history mutation stays inside the established initialization sequence',historyDecl>=0&&historyCurrent>historyDecl&&historySort>historyCurrent);
+check('Current stabilization history title present',src.includes('title:"Classic Lineup Streaming Visibility + Battle Tempo Stabilization"'));
+check('New Build Health contract registered',src.includes('classicLineupStreamingVisibilityAndBattleTempoStabilizationContractChecks'));
+
+// Isolated behavioral checks for the modified presentation helpers.
+global.clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+global.tacticalPlaybackFrameUnitAuthoritativeAlive=u=>Boolean(u&&Number(u.hp)>0&&u.alive!==false);
+global.CLASSIC_LINEUP_AUTO_COMPACT_QUIET_ACTIONS=true;
+global.CLASSIC_LINEUP_AUTO_MAX_QUIET_ROUND_SKIP=2;
+global.CLASSIC_LINEUP_STREAM_TARGET_ROUND_BUFFER=2;
+for(const fn of ['tacticalShotPresentationFrame','tacticalAiSequentialPlaybackFrames','classicLineupAlienDeathFrameIndex','classicLineupObjectivePresentationChanged','classicLineupFrameHasCriticalTransition','classicLineupFrameHasConsequentialPresentation','classicLineupQuietPhaseCheckpoint','classicLineupAutoAdvanceTargetIndex','classicLineupStreamFrameRound','classicLineupStreamPlannedRoundLead','classicLineupStreamShouldPrefetch','classicLineupStreamInheritedSeamFrame','classicLineupStreamAppendFrames']) eval(extractFunction(fn));
+const human={id:'h',name:'Rook',team:'human',hp:40,alive:true,x:2,y:2};
+const alien={id:'a',name:'Wraith',team:'alien',hp:22,maxHp:22,alive:true,x:7,y:2,revealed:true,visible:true};
+const base={round:1,label:'Exchange 1 complete',soldiers:[human],aliens:[alien],civilians:[],shots:[],sequentialAction:true,phaseComplete:true};
+const inherited={round:2,label:'AI inherited round 2',soldiers:[human],aliens:[alien],civilians:[],shots:[]};
+const landing={...base,round:2,label:'Alien craft overhead pass',reinforcementLanding:{kind:'beacon',count:1,observed:true}};
+check('Behavior: inherited seam removed',classicLineupStreamAppendFrames([base],[inherited,landing]).length===1&&classicLineupStreamAppendFrames([base],[inherited,landing])[0]===landing);
+check('Behavior: meaningful first chunk frame preserved',classicLineupStreamAppendFrames([base],[landing]).length===1);
+const reinf={...alien,id:'r',isReinforcement:true,reinforcementLandingVisible:true,revealed:false,visible:false};
+const combat={round:2,label:'Exchange 2A',soldiers:[human],aliens:[reinf],civilians:[],shots:[{fromId:'h',toId:'r',fromX:2,fromY:2,toX:7,toY:2,side:'human',observable:true,targetVisibilityVerified:true,targetRenderRequired:true,hit:true,killed:false}]};
+const seq=tacticalAiSequentialPlaybackFrames([{...base,aliens:[]},combat]);
+const hold=seq.findIndex(f=>f.reinforcementPresentationHold), shot=seq.findIndex(f=>(f.shots||[]).some(s=>s.toId==='r'));
+check('Behavior: reinforcement hold precedes shot',hold>=0&&shot>hold&&!(seq[hold].shots||[]).length);
+const dead={...alien,hp:0,alive:false,fellThisFrame:true};
+const lethal={round:2,label:'Exchange 2A',soldiers:[human],aliens:[dead],civilians:[],shots:[{fromId:'h',toId:'a',fromX:2,fromY:2,toX:7,toY:2,side:'human',observable:true,targetVisibilityVerified:true,targetRenderRequired:true,hit:true,killed:true}]};
+const lseq=tacticalAiSequentialPlaybackFrames([base,lethal]);
+const sidx=lseq.findIndex(f=>(f.shots||[]).some(s=>s.killed)), iidx=lseq.findIndex(f=>f.impactResult);
+check('Behavior: death authority begins on impact',sidx>=0&&iidx===sidx+1&&classicLineupAlienDeathFrameIndex(lseq,'a')===iidx&&tacticalPlaybackFrameUnitAuthoritativeAlive(lseq[sidx].aliens.find(u=>u.id==='a'))&&!tacticalPlaybackFrameUnitAuthoritativeAlive(lseq[iidx].aliens.find(u=>u.id==='a')));
+const q=r=>({...base,round:r,label:`Exchange ${r} complete`});
+check('Behavior: quiet search compacts two checkpoints',classicLineupAutoAdvanceTargetIndex({view:'classic',frameIndex:0,frames:[q(1),q(2),q(3),q(4),q(5)]})===3);
+const contact={...q(3),contactReplanHold:true,label:'Contact - replanning remaining fire teams'};
+check('Behavior: first contact interrupts compaction',classicLineupAutoAdvanceTargetIndex({view:'classic',frameIndex:0,frames:[q(1),q(2),contact,q(4)]})===2);
+check('Behavior: prefetch begins at two-round lead',classicLineupStreamShouldPrefetch({streamedClassic:true,streamComplete:false,streamFailed:false,streamPending:false,streamContinuation:{round:4},frameIndex:0,frames:[q(1),q(2),q(3)]}));
+
+for(const [name,pass] of checks)console.log(`${pass?'PASS':'FAIL'} - ${name}`);
+const failed=checks.filter(([,p])=>!p);
+console.log(`\nPassed: ${checks.length-failed.length}/${checks.length}`); console.log(`Failed: ${failed.length}`);
+process.exit(failed.length?1:0);

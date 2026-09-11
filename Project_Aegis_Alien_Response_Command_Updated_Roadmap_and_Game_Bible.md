@@ -1,8 +1,22 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.10.1735_CLASSIC_LINEUP_PATCH_HISTORY_INITIALIZATION_HOTFIX`
+Current browser build: `v0.26.09.11.0745_CLASSIC_LINEUP_STREAMING_VISIBILITY_AND_BATTLE_TEMPO_STABILIZATION_PATCH`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 0745 (September 11): Classic Lineup Streaming Visibility & Battle Tempo Stabilization
+
+- Hardens the streamed Classic Lineup presentation introduced in Browser 0810 and accelerated in Browser 1223 without changing the shared tactical resolver, combat math, RNG, VIP survival authority, rewards, casualties, or save format **4**.
+- Continuation chunks now discard only an explicit `AI inherited round N` seam frame. A meaningful first contact, reinforcement, rescue, or combat frame at the front of a chunk is retained instead of being blindly removed.
+- Classic explicitly protects first-contact/reveal state, Last Known Contact creation/resolution, reinforcement arrival/materialization, VIP/civilian approach/escort/boarding/extraction/death, rescue-role changes, Beacon/UFO-bay state, shots, impacts, casualties, and terminal mission results from automatic frame compaction.
+- If a reinforcement actor would otherwise first appear in a combat frame, a presentation-only reinforcement materialization hold is inserted first. The Classic UFO/beam presentation therefore occurs before that alien can visibly fire or be fired upon.
+- Lethal sequential shots keep the target fully visible through the tracer. Death begins on the following impact frame, then the established Browser 2054 fade/reflow sequence proceeds.
+- Automatic playback may compact up to two entirely quiet round checkpoints at a time and uses a shorter quiet heartbeat delay. Manual **Next** still advances exactly one generated frame.
+- Stream prefetch begins while the current presentation still has a two-round planned lead, giving the one-round continuation planner more time to stay ahead of faster playback and reducing unnecessary `TACTICAL COMPUTATION…` pauses.
+- `resolveMission(...)`, `tacticalMissionTerminalState(...)`, and `tacticalAiMissionResolution(...)` remain byte-for-byte identical to Browser 1735 for this patch.
+
+### Field gate
+Run long Classic missions with hidden-contact searching, first-contact shots, at least one reinforcement wave, and preferably mandatory VIPs. Confirm contact/reinforcement/rescue events never disappear across chunk boundaries, reinforcements materialize before combat participation, lethal tracer → impact → fade/reflow ordering is clear, quiet searches finish faster, `TACTICAL COMPUTATION…` is uncommon, manual Next remains single-frame, and the final Mission Report exactly matches shared Tactical authority.
 
 ## Current Build Addendum — Browser 1735 (September 10): Classic Lineup Patch History Initialization Hotfix
 

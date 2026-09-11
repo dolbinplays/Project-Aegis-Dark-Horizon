@@ -1,6 +1,48 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.11.0745_CLASSIC_LINEUP_STREAMING_VISIBILITY_AND_BATTLE_TEMPO_STABILIZATION_PATCH
+TITLE: Classic Lineup Streaming Visibility & Battle Tempo Stabilization
+DATE: September 11, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.10.1735_CLASSIC_LINEUP_PATCH_HISTORY_INITIALIZATION_HOTFIX
+
+SUMMARY
+-------
+Stabilizes Browser 0810/1223 Classic streaming around chunk seams, first contact, reinforcements, rescue transitions, Last Known Contact state, and lethal-hit presentation while making long quiet searches wrap up faster. Tactical resolution and outcome authority are unchanged.
+
+STREAM / VISIBILITY HARDENING
+-----------------------------
+- Continuation append now removes only an explicit `AI inherited round N` seam. A meaningful first frame is preserved.
+- First-contact/reveal, Last Known Contact creation/resolution, reinforcement arrival, rescue transitions, objective changes, shots, impacts, deaths, and terminal results are protected from automatic skipping.
+- If a reinforcement first appears in a frame that also contains an observable shot, Classic inserts a presentation-only materialization hold before the shot. The UFO/beam arrival is therefore visible before the new alien participates in combat.
+- Newly visible shot targets remain inserted before their tracer frame, preserving Browser 1223's invisible-target hotfix.
+
+CASUALTY PRESENTATION ORDER
+---------------------------
+- A lethal tracer frame keeps the alien alive and fully visible for the shot.
+- The following impact frame commits the death presentation.
+- The subsequent frame provides the existing fade ghost while survivors reflow.
+- No HP, damage, casualty, reward, or mission-result authority is changed.
+
+FASTER QUIET BATTLES
+--------------------
+- Automatic Classic playback can compact up to two entirely quiet round checkpoints before showing a heartbeat snapshot.
+- Quiet heartbeat dwell is shorter.
+- Manual Next remains one generated frame per click.
+- Planning now begins while a two-round buffer is still available, helping the streamed one-round planner stay ahead of the faster presentation.
+
+OUTCOME PARITY
+--------------
+- `resolveMission(...)`, `tacticalMissionTerminalState(...)`, and `tacticalAiMissionResolution(...)` are byte-for-byte unchanged from Browser 1735.
+- Win/loss probability, VIP survival, reinforcement timing, AI choices, combat RNG, Beacon/LKC rules, casualties, rewards, and save data therefore remain under the same shared authority.
+- Save format remains 4.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.10.1735_CLASSIC_LINEUP_PATCH_HISTORY_INITIALIZATION_HOTFIX
 TITLE: Classic Lineup Patch History Initialization Hotfix
 DATE: September 10, 2026

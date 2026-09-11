@@ -1,38 +1,59 @@
-PROJECT AEGIS — BROWSER 1735 VALIDATION SUMMARY
+PROJECT AEGIS — BROWSER 0745 VALIDATION SUMMARY
 
-Build: v0.26.09.10.1735_CLASSIC_LINEUP_PATCH_HISTORY_INITIALIZATION_HOTFIX
-Base: v0.26.09.10.1223_CLASSIC_LINEUP_VISIBLE_TARGET_AND_OUTCOME_PRESERVING_FAST_PACING_HOTFIX
-Save format: 4
-Runtime bytes: 6906800
-Runtime SHA-256: 4eb5b1d516f9c8f9c8b50d6083b23b06ddcffd6894418bc870bbb6e527f91e59
-Host SHA-256: f502c9824c6ed5acdc6a0318d1f2c60677da978a33f880c36475b3853c8b0456
+Build: v0.26.09.11.0745_CLASSIC_LINEUP_STREAMING_VISIBILITY_AND_BATTLE_TEMPO_STABILIZATION_PATCH
+Base: v0.26.09.10.1735_CLASSIC_LINEUP_PATCH_HISTORY_INITIALIZATION_HOTFIX
+Save format: 4 (unchanged)
+Runtime bytes: 6919456
+Runtime SHA-256: 00757dfd50e7cd655a407f98f2935748e6d6696283b80e83037bcf7e65cd66ef
+Host SHA-256: 379827024e4ef2838047dc7310835f8b713af75fa6da7dc9b9042af32e8b22dc
 
-ROOT CAUSE
-----------
-Browser 1223 placed its current PATCH_NOTES_HISTORY.unshift(...) after AlienResponseCommand() had closed. PATCH_NOTES_HISTORY is initialized inside AlienResponseCommand, so the out-of-scope mutation caused an immediate startup ReferenceError.
+PATCH SCOPE
+-----------
+- Hardens streamed Classic chunk seams so only an explicit inherited seam frame is discarded. A meaningful first contact, reinforcement, rescue, or combat frame at a chunk boundary is retained.
+- Protects consequential Classic presentation transitions from automatic quiet-frame compaction, including Last Known Contact changes, VIP/civilian escort and boarding state, rescue/extraction, objective transitions, actor reveal/liveness changes, and reinforcement staging.
+- Guarantees a presentation-only alien reinforcement materialization hold before a newly arrived reinforcement may visually fire or be fired upon in Classic Lineup.
+- Moves lethal alien presentation authority to the impact frame when a lethal tracer is immediately followed by an impact frame: target remains present for tracer -> dying/death on impact -> fade/reflow afterward.
+- Compacts at most two genuinely quiet phase checkpoints during automatic Classic playback while retaining a heartbeat frame. Manual Next remains exactly one frame at a time.
+- Begins streamed prefetch when the planner lead reaches the two-round watermark, reducing avoidable TACTICAL COMPUTATION catch-up pauses without changing one-round continuation authority.
 
-REPAIR
-------
-- Removed the out-of-scope Browser 1223 history mutation.
-- Reinserted Browser 1223 as a frozen literal history record inside the established AlienResponseCommand history block.
-- Added Browser 1735's current mutable history entry in that same scope before sorting.
-- Added a release checker that rejects real patch-history mutations after AlienResponseCommand closes.
-- Browser 1223 gameplay code remains intact; save format remains 4.
+OUTCOME / AUTHORITY PARITY
+--------------------------
+The following outcome-critical functions are byte-for-byte identical to Browser 1735:
+- resolveMission(...): 2c787f0af257aeb59770488c9a8a7f655dec927470cbc3b989cd716537c00650
+- tacticalMissionTerminalState(...): 98c152ebddb459b61e6a66216baf04947a63bc4a3920f055a09413d3edd79e63
+- tacticalAiMissionResolution(...): 3ef3c32a49421c2f353d95d6e18f9f46954ead16505df535cb66cd5e618cd702
 
-FINAL RELEASE CHECKS
+Therefore this patch does not intentionally alter combat odds, AI tactical decisions, RNG authority, VIP survival authority, casualties, rewards, reinforcement existence/timing, or mission terminal rules. The speed change is presentation-side.
+
+AUTOMATED CHECKS
+----------------
+PASS - Stabilization-specific release/behavior suite: 25/25
+PASS - Embedded JavaScript syntax: 11 non-empty executable blocks across src/browser-runtime.html and index.html
+PASS - Mobile interface behavioral suite: 10/10
+PASS - Mobile/PWA/audio regression suite: 9/9
+PASS - Exactly one finishAiPlayback() implementation
+PASS - Save format remains 4
+PASS - Browser 1735 patch-history entry is frozen
+PASS - Exactly one mutable current PATCH_NOTES_HISTORY entry
+PASS - Mutable current history entry remains inside the established PATCH_NOTES_HISTORY initialization sequence
+PASS - Non-destructive source-manifest updater changes only currentBuild, lastInspectedBuild, status, and gameplayParity.browserBuild
+PASS - Embedded packaged runtime matches canonical src/browser-runtime.html by bytes/SHA-256
+PASS - Host/runtime/service-worker/release metadata build identities synchronized
+
+LEGACY PLAYBACK HARNESS DIFFERENTIAL
+------------------------------------
+The older standalone AI playback extractor reports 12/16 on BOTH untouched Browser 1735 and Browser 0745. The same four test names fail in both builds because that isolated extractor omits tacticalPlaybackFrameUnitAuthoritativeAlive, producing a ReferenceError before those assertions execute:
+1. Shipped movement callback preserves destination, TU, ammo, damage, and final hydration
+2. Shipped final-VIP cutoff commits extraction and cancels the unplayed soldier route
+3. Shipped boarding continues remaining movement when mission is not terminal
+4. Shipped Take Back Control retains current authoritative frame and cancels later callbacks
+
+No new playback-harness failure name was introduced by Browser 0745. These baseline-identical harness dependency errors are recorded rather than hidden or treated as gameplay failures.
+
+REPOSITORY-SIDE GATE
 --------------------
-See tools/check-classic-lineup-patch-history-initialization.cjs and final packaging verification.
+The canonical full-repository tools/check-aegis-build.cjs was not run from this small overlay staging tree because that checker requires repo-only Godot/content/editor/audio assets that are intentionally not duplicated in the patch overlay. Run the canonical repository checker after overlaying these files into the complete Git project.
 
-VERIFIED CHECKS
----------------
-PASS - All executable runtime inline script blocks pass node --check.
-PASS - Host executable control script passes node --check.
-PASS - service-worker.js and source-manifest updater pass node --check.
-PASS - Hotfix scope checker passes 10/10.
-PASS - No real PATCH_NOTES_HISTORY mutation remains after AlienResponseCommand closes.
-PASS - Exactly one mutable CURRENT_GAME_BUILD patch-history entry remains.
-PASS - Embedded host runtime is byte-for-byte identical to src/browser-runtime.html and declared byte/SHA metadata match.
-PASS - resolveMission is byte-for-byte unchanged from Browser 1223.
-PASS - tacticalAiSequentialPlaybackFrames is byte-for-byte unchanged from Browser 1223.
-PASS - Classic automatic pacing implementation is byte-for-byte unchanged from Browser 1223.
-PASS - Save format remains 4.
+FIELD ACCEPTANCE
+----------------
+Physical/playback field acceptance remains required. Prioritize a long Classic battle with hidden contacts, mandatory VIPs, multiple alien reinforcements, and at least one lethal shot near a streamed chunk boundary. Verify first-contact visibility, reinforcement beam-before-combat ordering, tracer -> impact -> fade/reflow, uninterrupted VIP/LKC presentation, faster quiet search pacing, and exact Mission Report parity.

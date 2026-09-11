@@ -1,0 +1,20 @@
+PROJECT AEGIS — BROWSER 0745 FIELD ACCEPTANCE
+
+Build: v0.26.09.11.0745_CLASSIC_LINEUP_STREAMING_VISIBILITY_AND_BATTLE_TEMPO_STABILIZATION_PATCH
+Save format: 4
+
+1. Run a long Classic mission with several quiet search rounds. Automatic playback should move through empty search noticeably faster while still showing periodic round heartbeat snapshots.
+2. Use Manual Next during the same kind of sequence. It must still advance exactly one generated frame per click.
+3. Trigger first contact after hidden searching. The alien/contact presentation must appear before any resulting tracer; first contact must never be skipped by fast pacing.
+4. Observe an AEGIS shot at a newly discovered alien. The target paper doll must already be rendered when the tracer appears.
+5. Trigger alien reinforcements. The UFO/beam/materialization presentation must occur before a newly arriving alien can visibly fire or be fired upon.
+6. Confirm reinforcement paper dolls still enter at the bottom and later participate in normal Browser 2054 reflow.
+7. Kill an alien. Verify ordering: live target during tracer -> impact/death -> brief fade -> survivor reflow.
+8. Create and then resolve a Last Known Contact. Marker-state transitions must remain visible and must not be swallowed by quiet-round compaction.
+9. On a mandatory VIP mission, verify approach/contact, escort assignment, boarding, extraction, and VIP death (if encountered) are never skipped.
+10. Confirm VIP rescue-role labels (VIP RESCUE / SUPPORT / SUPPORT-COVER) do not disappear because of frame compaction.
+11. Exercise a Beacon or crashed-UFO-bay mission if practical; objective state changes must remain visible.
+12. Watch streamed chunk boundaries during contact/reinforcement-heavy play. No duplicate action, missing first frame, actor disappearance, or repeated round should occur.
+13. `TACTICAL COMPUTATION…` may still appear if planning genuinely falls behind, but should be less frequent during ordinary Classic playback.
+14. Confirm final outcome, VIP rescue/loss counts, casualties, rewards, and Mission Report remain identical to shared Tactical authority.
+15. Save/load remains format 4.
