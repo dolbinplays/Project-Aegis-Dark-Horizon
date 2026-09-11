@@ -1,6 +1,55 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.11.1532_PROCEDURAL_BUILDING_FULL_DISCOVERED_PERIMETER_RENDER_HOTFIX
+TITLE: Procedural Building Full Discovered Perimeter Render Hotfix
+DATE: September 11, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.11.1448_PROCEDURAL_BUILDING_FACADE_CONNECTOR_INFILL_HOTFIX
+
+SUMMARY
+-------
+Fixes the field-reproduced procedural-building wall gaps that remained after Browsers 1410 and 1448. Once a building is legitimately discovered, its exterior presentation shell now renders as a complete perimeter even when individual far-side facade hexes are outside the current LOS set.
+
+EXACT SAVE / MISSION REGRESSION
+-------------------------------
+- The supplied campaign save contains the reported Urban Scout Raid: North America, Threat 2, Glass Wraith, $520k reward, +16 panic, mission id 4ab9770a-ce83-471b-8cf3-53ca0fcb1765.
+- Under the current deterministic generator that mission produces three structures: Municipal Records Office, Corner Market, and Vehicle Workshop.
+- The release regression discovers each structure through only one exterior facade hex, then requires every wall/window cell on that discovered structure to remain renderer-eligible. This reproduces the field condition that previous generic tests missed.
+
+ROOT CAUSE / REPAIR
+-------------------
+- Browser 1410 created pristine presentation-shell facade records for undiscovered sides of a legitimately discovered building. Browser 1448 added opaque connector infill between neighboring facade cells.
+- However, both Three.js cover renderers still rejected facade cells outside the current visible-set. A roof could therefore remain visible while the far-side wall/window segments and their connectors were never instantiated at all.
+- `tacticalThreeBuildingPresentationCoverShouldRender(...)` now lets discovered-building exterior wall/window presentation records render across the full discovered perimeter, even outside current per-cell LOS.
+- Both the persistent renderer and fallback Three.js renderer use this shared rule for the facade cell and its connector neighbor.
+
+FOG / DOORS / BREACHES
+-----------------------
+- Interior partitions, furnishings, and power controls remain current-visibility gated and are not exposed by building discovery.
+- Intentional doors remain open because no exterior structural cover record exists in a door cell.
+- An unseen destroyed wall still receives the pristine presentation shell, preventing hidden-damage information leaks. Once the breach is revealed, that shell is withheld and the real open breach remains visible/traversable.
+
+AUTHORITY PRESERVED
+-------------------
+- `tacticalBuildingPlans(...)`, `tacticalBuildingCovers(...)`, `makeBattlefield(...)`, `resolveMission(...)`, `tacticalMissionTerminalState(...)`, and `tacticalAiMissionResolution(...)` are byte-for-byte unchanged from Browser 1448.
+- No cover, LOS, pathfinding, collision, AI, targeting, damage, structural HP, mission-result, or save authority changes.
+- Browser 1448 facade infill, Browser 1410 shell proxies, Browser 1254 field-accepted horizon presentation, and save format 4 remain intact.
+
+FIELD ACCEPTANCE
+----------------
+1. Load the supplied save and launch the North America Threat 2 Glass Wraith Urban Scout Raid ($520k / +16 panic).
+2. Inspect the Municipal Records Office, Corner Market, and Vehicle Workshop in 3D Iso, FPV, and TPV as each becomes discovered.
+3. Confirm the complete exterior reads as continuous wall/window facade even when the far side is not individually in current LOS.
+4. Confirm windows keep their aperture, doors remain open, and revealed breaches remain open.
+5. Confirm hidden interiors and unseen breach damage are not revealed early.
+6. Confirm Browser 1254 horizon presentation remains unchanged and save format remains 4.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.11.1448_PROCEDURAL_BUILDING_FACADE_CONNECTOR_INFILL_HOTFIX
 TITLE: Procedural Building Facade Connector Infill Hotfix
 DATE: September 11, 2026

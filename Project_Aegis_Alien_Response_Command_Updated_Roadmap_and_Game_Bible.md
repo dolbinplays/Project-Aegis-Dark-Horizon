@@ -1,8 +1,22 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.11.1448_PROCEDURAL_BUILDING_FACADE_CONNECTOR_INFILL_HOTFIX`
+Current browser build: `v0.26.09.11.1532_PROCEDURAL_BUILDING_FULL_DISCOVERED_PERIMETER_RENDER_HOTFIX`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 1532 (September 11): Procedural Building Full Discovered Perimeter Render Hotfix
+
+- Fixes the remaining field-reproduced facade gaps after Browsers 1410 and 1448. Those patches created the missing facade records and connector infill, but individual exterior facade cells were still discarded whenever their hex was outside the current Three.js visible-set.
+- Uses the supplied saved **Urban Scout Raid / North America / Threat 2 / Glass Wraith / $520k / +16 panic** as a deterministic regression fixture. Mission id `4ab9770a-ce83-471b-8cf3-53ca0fcb1765` currently generates a **Municipal Records Office**, **Corner Market**, and **Vehicle Workshop**.
+- Once one of those buildings is legitimately discovered, `tacticalThreeBuildingPresentationCoverShouldRender(...)` allows its renderer-only exterior wall/window presentation envelope to remain visible across the complete perimeter even when individual far-side facade cells are not in current LOS.
+- The same eligibility rule controls connector neighbors in both the persistent and fallback Three.js tactical renderers, so Browser 1448's facade infill can actually bridge the full discovered envelope.
+- Interior partitions, furnishings, and power controls remain visibility-gated. Intentional doors remain open. Hidden breaches remain visually pristine until revealed; revealed breaches remove the proxy and stay open/traversable.
+- Tactical building generation, cover arrays, LOS, movement, pathfinding, collision, structural HP, breaching, AI, targeting, mission results, and save format remain unchanged from Browser 1448.
+- Browser 1254's field-accepted horizon treatment remains intact.
+
+### Field gate
+Replay the exact supplied Urban Scout Raid. Discover each generated structure from one side and inspect the far exterior in 3D Iso, FPV, and TPV. The complete building envelope should read as continuous architecture without exposing hidden interiors or closing intentional doors/revealed breaches.
+
 
 ## Current Build Addendum — Browser 1448 (September 11): Procedural Building Facade Connector Infill Hotfix
 

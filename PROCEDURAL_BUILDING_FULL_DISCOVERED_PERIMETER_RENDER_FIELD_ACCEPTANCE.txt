@@ -1,0 +1,16 @@
+PROJECT AEGIS — BROWSER 1532 FIELD ACCEPTANCE
+
+Build: v0.26.09.11.1532_PROCEDURAL_BUILDING_FULL_DISCOVERED_PERIMETER_RENDER_HOTFIX
+Save format: 4
+
+EXACT REPRODUCTION
+1. Load the supplied campaign save and launch Urban Scout Raid — North America — Threat 2 — Glass Wraith — Reward $520k — Panic +16.
+2. The mission id is 4ab9770a-ce83-471b-8cf3-53ca0fcb1765. Current deterministic generation should include Municipal Records Office, Corner Market, and Vehicle Workshop.
+3. Approach/discover each building from one side in 3D Iso. Confirm far-side exterior wall/window presentation remains complete rather than becoming isolated posts under the roof.
+4. Repeat inspection in FPV and TPV.
+5. Confirm actual window apertures remain open/transparent.
+6. Confirm intentional door openings remain open/traversable.
+7. Create/reveal a breach and confirm it remains open rather than being refilled.
+8. Confirm an unseen breach does not leak hidden structural-damage information before reveal.
+9. Confirm interior partitions/furnishings are not globally exposed by building discovery.
+10. Confirm Browser 1254 horizon treatment remains accepted and save/load remains format 4.

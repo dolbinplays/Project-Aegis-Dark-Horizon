@@ -1,60 +1,76 @@
-PROJECT AEGIS — BROWSER 1448 VALIDATION SUMMARY
+PROJECT AEGIS — BROWSER 1532 VALIDATION SUMMARY
 
-Build: v0.26.09.11.1448_PROCEDURAL_BUILDING_FACADE_CONNECTOR_INFILL_HOTFIX
-Base: v0.26.09.11.1410_PROCEDURAL_BUILDING_DISCOVERED_WALL_SHELL_CLOSURE_PATCH
+Build: v0.26.09.11.1532_PROCEDURAL_BUILDING_FULL_DISCOVERED_PERIMETER_RENDER_HOTFIX
+Base: v0.26.09.11.1448_PROCEDURAL_BUILDING_FACADE_CONNECTOR_INFILL_HOTFIX
 Save format: 4
-Runtime bytes: 6978463
-Runtime SHA-256: f45b3b3ffebfd24ee19c1869bfa9a153710ed66e990da89fac2dc76e402f99bd
-Host SHA-256: 806d2b085b396716e1291737c9797a11459bf897c6c890aac1e5837a6c0f1b06
+Runtime bytes: 6987134
+Runtime SHA-256: 2561d4c98a060a3e369cc493a4e2ed434f35a01ab0b713f0a4f5f8769e4c459a
+Host SHA-256: 8480db6600f2c2d64e510cb8073cce77c8739c2265a8f15a17dec94d4db41ae8
+
+FIELD-REPRODUCED ROOT CAUSE
+---------------------------
+Browser 1410 generated pristine exterior facade presentation-shell records and Browser 1448 generated opaque connector infill, but the Three.js cover render loops still rejected facade cells outside the current per-cell visible-set. A legitimately discovered roof/building could therefore remain visible while far-side exterior wall/window records and their connector meshes were never instantiated.
+
+EXACT SAVED-MISSION REGRESSION
+------------------------------
+PASS - The supplied campaign save's Urban Scout Raid fixture is encoded using mission id 4ab9770a-ce83-471b-8cf3-53ca0fcb1765: North America / Threat 2 / Glass Wraith / reward 520 / panic +16.
+PASS - Current deterministic generation for that exact mission is asserted as Municipal Records Office (19,32 12x9), Corner Market (49,32 10x8), and Vehicle Workshop (19,46 12x8).
+PASS - Each building is discovered using only one exterior facade hex in the live regression fixture.
+PASS - After discovery, every exterior wall/window presentation record for each building is renderer-eligible even when its cell is outside current LOS.
+PASS - Records Office: all 36 exterior facade records become renderer-eligible under the partial-LOS fixture.
+PASS - Corner Market: all 31 exterior facade records become renderer-eligible under the partial-LOS fixture.
+PASS - Vehicle Workshop: all 34 exterior facade records become renderer-eligible under the partial-LOS fixture.
+PASS - Intentional door cells remain absent/open.
+PASS - Hidden partitions, furnishings, and power-control records remain current-visibility gated.
+PASS - An unseen destroyed wall retains a pristine presentation proxy so hidden damage is not leaked.
+PASS - Revealing that breach removes the proxy and preserves the real opening.
+PASS - Persistent and fallback Three.js renderers use the same discovered-envelope eligibility helper for both facade cells and connector neighbors.
 
 FOCUSED PATCH CHECKS
 --------------------
-PASS - 30/30 Browser 1448 facade-connector release contracts.
-PASS - Window↔wall and window↔window joins retain sill/lintel presentation and add a narrow full-height opaque facade infill across only the center-to-center mesh gap.
-PASS - Horizontal and diagonal tactical-neighbor spacings both produce positive bounded infill widths; the generated mesh width equals the calculated uncovered gap.
-PASS - Actual window aperture meshes and transparent window panes remain present.
-PASS - Door cells remain excluded from structural facade covers/connectors.
+PASS - 43/43 Browser 1532 release contracts.
+PASS - Browser 1448 facade-infill connectors remain enabled.
 PASS - Browser 1410 discovered-building presentation shell remains enabled.
-PASS - Browser 1254 fog-integrated horizon treatment remains present.
+PASS - Browser 1254 field-accepted horizon fog treatment remains enabled.
+PASS - Exactly one active finishAiPlayback() declaration remains.
+PASS - Installed PWA Single-Launch Update Handoff roadmap item remains present.
+PASS - Mobile Tactical Status HUD Collapse / Expand roadmap item remains present.
 
-TACTICAL AUTHORITY DIFFERENTIAL
--------------------------------
-PASS - tacticalBuildingPlans(...) byte-for-byte matches Browser 1410 — SHA-256 f77087d6dba9a04008e36784ad3181dfbd1f4e50b417aaaea25117a50014a473
-PASS - tacticalBuildingCovers(...) byte-for-byte matches Browser 1410 — SHA-256 c3070bf9b0414f2e48c62aff7646352d66a408b058537bc3f97257e75815b6b0
-PASS - makeBattlefield(...) byte-for-byte matches Browser 1410 — SHA-256 a0512bda277a92c8ce8d244b46f79dbc1a3efd9024e98c9fe6202437f5355df2
-PASS - resolveMission(...) byte-for-byte matches Browser 1410 — SHA-256 60363040b40de491c28dd4ee7819fe291489fe48a16effae14b23966ad12f456
-PASS - tacticalMissionTerminalState(...) byte-for-byte matches Browser 1410 — SHA-256 7789262fc140b640d81eb443b91d24bdf9daacfdbdbe2bbac7af5358a84a160c
-PASS - tacticalAiMissionResolution(...) byte-for-byte matches Browser 1410 — SHA-256 3ef3c32a49421c2f353d95d6e18f9f46954ead16505df535cb66cd5e618cd702
+TACTICAL AUTHORITY DIFFERENTIAL VS BROWSER 1448
+-----------------------------------------------
+PASS - tacticalBuildingPlans(...) byte-for-byte unchanged — SHA-256 b31115ecd3ac7abb35246e67734e665b61c5c629cd58f44ad169228af7750816
+PASS - tacticalBuildingCovers(...) byte-for-byte unchanged — SHA-256 48e06f8d09672fb2332c55e96c117bef6cd80268f47a54e545a41aee3f3cb778
+PASS - makeBattlefield(...) byte-for-byte unchanged — SHA-256 cc4207374bb7d4c60aedddfa0b555b50873c33e1af9bb36a17900addfd073ebf
+PASS - resolveMission(...) byte-for-byte unchanged — SHA-256 2c787f0af257aeb59770488c9a8a7f655dec927470cbc3b989cd716537c00650
+PASS - tacticalMissionTerminalState(...) byte-for-byte unchanged — SHA-256 98c152ebddb459b61e6a66216baf04947a63bc4a3920f055a09413d3edd79e63
+PASS - tacticalAiMissionResolution(...) byte-for-byte unchanged — SHA-256 3ef3c32a49421c2f353d95d6e18f9f46954ead16505df535cb66cd5e618cd702
 
 SYNTAX / PACKAGE
 ----------------
 PASS - Five executable runtime JavaScript blocks pass node --check.
 PASS - One executable host JavaScript block passes node --check.
 PASS - service-worker.js passes node --check.
-PASS - apply-1448-source-manifest.cjs passes node --check.
-PASS - check-procedural-building-facade-connector-infill.cjs passes node --check.
-PASS - Embedded host runtime is byte-for-byte identical to src/browser-runtime.html.
+PASS - tools/apply-1532-source-manifest.cjs passes node --check.
+PASS - tools/check-procedural-building-full-discovered-perimeter-render.cjs passes node --check.
+PASS - Embedded runtime payload is byte-for-byte identical to src/browser-runtime.html.
 PASS - Embedded runtime byte count and SHA-256 match release-metadata.json.
 PASS - Host SHA-256 matches release-metadata.json.
-PASS - Service-worker shell/runtime cache IDs use Browser 1448.
+PASS - Service-worker shell/runtime cache IDs use Browser 1532.
 PASS - Save format remains 4.
 
 MANIFEST UPDATE SAFETY
 ----------------------
-PASS - Non-destructive updater smoke test advances currentBuild, lastInspectedBuild, status and gameplayParity.browserBuild.
+PASS - Non-destructive updater smoke test advances currentBuild, lastInspectedBuild, status, and gameplayParity.browserBuild.
 PASS - Unrelated top-level manifest data remains unchanged.
 PASS - Unrelated gameplayParity data remains unchanged.
 
-LIVE STARTUP SMOKE
-------------------
-PASS - Browser 1448 reaches the Project Aegis start screen in a fresh Chromium realm with the correct VERSION/BUILD and no runtime-error overlay.
-NOTE - The injected QA realm blocks normal browser localStorage on about:blank, so the smoke copy used a QA-only in-memory storage shim. The release runtime is unmodified.
-
-ROADMAP PRESERVATION
---------------------
-PASS - Installed PWA Single-Launch Update Handoff remains planned.
-PASS - Mobile Tactical Status HUD Collapse / Expand remains planned with Full↔Condensed behavior, current-battle persistence, unified status authority, pointer/accessibility constraints, and short-landscape-phone acceptance.
+LIVE STARTUP / CONTRACT SMOKE
+-----------------------------
+PASS - Browser 1532 reaches the Project Aegis start screen in a fresh Chromium realm with the correct VERSION/BUILD.
+PASS - tacticalThreeDiscoveredBuildingPerimeterRegressionFixture() returns true in that fresh runtime realm.
+PASS - Zero runtime exceptions were observed during the smoke.
+NOTE - The injected QA realm used a QA-only in-memory local/session storage shim because about:blank blocks ordinary storage. The release runtime is unmodified.
 
 FIELD GATE
 ----------
-Physical/gameplay visual acceptance remains required for the exact field case: inspect the previously circled seam between adjacent exterior facade segments in 3D Iso, FPV and TPV. The narrow seam should be closed while real window apertures, doors and revealed breaches remain open.
+Physical/gameplay visual acceptance is still required on the supplied Urban Scout Raid. Inspect all three generated buildings in 3D Iso, FPV, and TPV while only one side has been directly observed. Exterior wall/window seams should now remain continuous around the discovered building, while actual window apertures, doors, revealed breaches, hidden interiors, and hidden structural damage retain their established authority.
