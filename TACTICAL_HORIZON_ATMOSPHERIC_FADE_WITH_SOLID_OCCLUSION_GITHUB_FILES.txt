@@ -1,0 +1,24 @@
+BROWSER 1230 GITHUB OVERLAY
+
+Overlay this ZIP onto the existing repository.
+Current build: v0.26.09.11.1230_TACTICAL_HORIZON_ATMOSPHERIC_FADE_WITH_SOLID_OCCLUSION_HOTFIX
+Save format: 4
+
+Required files:
+- index.html
+- src/browser-runtime.html
+- service-worker.js
+- README_PATCH_NOTES.txt
+- Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+- CODEX_HANDOFF.md
+- CODEX_HANDOFF_TACTICAL_HORIZON_ATMOSPHERIC_FADE_WITH_SOLID_OCCLUSION_HOTFIX.md
+- release-metadata.json
+- src/manifest.1230.merge.json
+- tools/apply-1230-source-manifest.cjs
+- APPLY_1230_SOURCE_MANIFEST.bat
+- tools/check-tactical-horizon-atmospheric-fade-solid-occlusion.cjs
+- TACTICAL_HORIZON_ATMOSPHERIC_FADE_WITH_SOLID_OCCLUSION_FIELD_ACCEPTANCE.txt
+- TACTICAL_HORIZON_ATMOSPHERIC_FADE_WITH_SOLID_OCCLUSION_GITHUB_FILES.txt
+- VALIDATION_SUMMARY.txt
+
+After overlay, run APPLY_1230_SOURCE_MANIFEST.bat from the repository root. It updates only the build/status fields of the existing full src/manifest.json.

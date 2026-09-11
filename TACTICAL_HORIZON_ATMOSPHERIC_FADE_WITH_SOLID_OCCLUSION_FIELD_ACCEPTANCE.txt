@@ -1,0 +1,13 @@
+PROJECT AEGIS — BROWSER 1230 FIELD ACCEPTANCE
+
+Build: v0.26.09.11.1230_TACTICAL_HORIZON_ATMOSPHERIC_FADE_WITH_SOLID_OCCLUSION_HOTFIX
+Save format: 4
+
+1. Daytime city/town FPV/TPV: near/mid/far buildings progressively fade toward the current horizon color instead of appearing as black cutouts.
+2. Occlusion: line up multiple background buildings; the front building must fully hide rear architecture/windows where they overlap.
+3. Map-edge continuity: extension buildings should visually transition into the same near atmospheric language as the skyline.
+4. Twilight: preserve a moderate fade with readable silhouettes.
+5. Night: preserve a subtler fade so seeded windows remain readable and the skyline is not washed out.
+6. Pan/rotate: no transparency seams, z-fighting, color popping, or rear-building bleed-through.
+7. Performance/Auto/Quality: no new point lights or extra draw-call layer.
+8. Tactical movement, LOS, cover, targeting, AI, mission outcome, VIP survival, rewards, reports, and save format 4 remain unchanged.

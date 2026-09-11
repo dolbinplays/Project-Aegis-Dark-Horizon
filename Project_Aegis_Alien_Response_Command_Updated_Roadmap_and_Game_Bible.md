@@ -1,8 +1,22 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.11.1110_TACTICAL_HORIZON_SOLID_BUILDING_DEPTH_OCCLUSION_HOTFIX`
+Current browser build: `v0.26.09.11.1230_TACTICAL_HORIZON_ATMOSPHERIC_FADE_WITH_SOLID_OCCLUSION_HOTFIX`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 1230 (September 11): Tactical Horizon Atmospheric Fade With Solid Occlusion Hotfix
+
+- Restores the softer distance-fade appearance requested after field testing Browser 1110, while retaining Browser 1110's solid depth occlusion.
+- Near / intermediate / far horizon buildings remain **opaque, depth-tested, and depth-writing**; foreground buildings still completely hide rear buildings and their windows where they overlap.
+- Distance is now conveyed with phase-aware color/contrast blending toward the active atmospheric horizon color rather than transparency. Daylight uses the strongest blend, twilight a moderate blend, and night a subtler blend.
+- The map-edge world-continuation building batch uses the same atmospheric target with a near/extension blend, reducing the visual seam between playable-map scenery and skyline.
+- The separate haze shell remains transparent and the seeded night windows remain one depth-tested instanced batch. No new draw calls, point lights, dynamic shadows, tactical geometry, or gameplay authority are introduced.
+- `resolveMission(...)`, `tacticalMissionTerminalState(...)`, and `tacticalAiMissionResolution(...)` are byte-identical to Browser 1110. Save format remains **4**.
+
+### Field gate
+In bright daytime FPV/TPV, exposed near/mid/far buildings should progressively approach the sky/horizon palette instead of reading as black silhouettes, while overlapping buildings remain fully opaque. Repeat at twilight/night and confirm the fade remains natural without washing out window contrast or reintroducing see-through overlap.
+
+---
 
 ## Current Build Addendum — Browser 1110 (September 11): Tactical Horizon Solid Building Depth Occlusion Hotfix
 

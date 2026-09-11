@@ -1,50 +1,48 @@
-PROJECT AEGIS — BROWSER 1110 VALIDATION SUMMARY
+PROJECT AEGIS — BROWSER 1230 VALIDATION SUMMARY
 
-Build: v0.26.09.11.1110_TACTICAL_HORIZON_SOLID_BUILDING_DEPTH_OCCLUSION_HOTFIX
-Base: v0.26.09.11.1046_TACTICAL_HORIZON_DEPTH_AND_DISTANT_BUILDING_CONTINUITY_PATCH
+Build: v0.26.09.11.1230_TACTICAL_HORIZON_ATMOSPHERIC_FADE_WITH_SOLID_OCCLUSION_HOTFIX
+Base: v0.26.09.11.1110_TACTICAL_HORIZON_SOLID_BUILDING_DEPTH_OCCLUSION_HOTFIX
 Save format: 4
+Scope: perspective-horizon renderer hotfix only
 
-PATCH-SPECIFIC CONTRACTS
+FOCUSED CONTRACTS
+-----------------
+PASS - tools/check-tactical-horizon-atmospheric-fade-solid-occlusion.cjs: 26/26.
+PASS - phase-aware extension/near/mid/far fade constants present.
+PASS - representative daylight near/mid/far colors progressively brighten toward the horizon palette.
+PASS - day fade > twilight fade > night fade.
+PASS - map-edge continuation scenery uses the same phase-aware atmospheric target.
+PASS - horizon building/silhouette batches remain transparent:false / opacity:1 / depthWrite:true / depthTest:true.
+PASS - seeded window batch remains one depth-tested, non-depth-writing instanced batch.
+PASS - consolidated haze remains separate and transparent.
+PASS - horizon renderer creates no PointLight and adds no tactical pickable/cover/LOS authority.
+
+GAMEPLAY AUTHORITY DIFFERENTIAL
+-------------------------------
+PASS - resolveMission(...) byte-identical to Browser 1110.
+PASS - tacticalMissionTerminalState(...) byte-identical to Browser 1110.
+PASS - tacticalAiMissionResolution(...) byte-identical to Browser 1110.
+PASS - exactly one literal finishAiPlayback() remains.
+PASS - save format remains 4.
+
+PACKAGE / RELEASE CHECKS
 ------------------------
-PASS - 22/22 Tactical Horizon Solid Building Depth Occlusion checks.
-PASS - Horizon building/silhouette batches are fully opaque rather than alpha blended.
-PASS - Horizon building/silhouette batches use depthTest=true and depthWrite=true.
-PASS - Foreground horizon architecture can therefore occlude rear architecture using the normal GPU depth buffer.
-PASS - Atmospheric distance remains in per-instance color blending plus the separate consolidated haze shell.
-PASS - Seeded facade-window batch remains depth-tested and non-depth-writing, so solid foreground building depth can hide rear windows.
-PASS - Existing map-edge continuation scenery remains opaque/depth-writing.
-PASS - Browser 1046 horizon planning helper is byte-for-byte unchanged; density, placement, seed, and window caps are unchanged.
-PASS - No PointLight, pickable, cover, LOS, pathing, collision, or tactical-authority seam was added.
-
-AUTHORITY PRESERVATION
-----------------------
-PASS - resolveMission(...) byte-identical to Browser 1046/0915 authority.
-PASS - tacticalMissionTerminalState(...) byte-identical to Browser 1046/0915 authority.
-PASS - tacticalAiMissionResolution(...) byte-identical to Browser 1046/0915 authority.
-PASS - Exactly one finishAiPlayback() owner remains.
-PASS - Browser 1046 horizon-depth flag remains enabled.
-PASS - Save format remains 4.
-
-SYNTAX / PACKAGE IDENTITY
--------------------------
-PASS - Five executable runtime JavaScript blocks pass node --check.
-PASS - Packaged host executable script passes node --check.
+PASS - all 5 executable src/browser-runtime.html script blocks pass node --check.
+PASS - packaged host control script passes node --check.
 PASS - service-worker.js passes node --check.
-PASS - tools/apply-1110-source-manifest.cjs passes node --check.
-PASS - tools/check-tactical-horizon-solid-depth-occlusion.cjs passes node --check.
-PASS - Embedded host runtime is byte-for-byte identical to src/browser-runtime.html.
-PASS - Embedded byte count and SHA-256 match release-metadata.json.
-PASS - Host SHA-256 matches release-metadata.json.
-PASS - Host body build, host BUILD, runtime CURRENT_GAME_BUILD, and both service-worker cache IDs are synchronized.
-PASS - Roadmap, patch notes, Codex handoff, manifest merge descriptor, and package filename are synchronized.
-PASS - Manifest updater changes only the intended build/status fields and preserves unrelated manifest/gameplayParity data in smoke testing.
-
-RELEASE HASHES
---------------
-Runtime bytes: 6953929
-Runtime SHA-256: 29e61e1e07eb8b43bb9c843e72a9b410a59bc3dd1ca2897a841e2c2119c92b1c
-Host SHA-256: a8e3a942aa0641eae97124539d0e12e9591ccfe652b378b11a336211340e2064
+PASS - tools/apply-1230-source-manifest.cjs passes node --check.
+PASS - embedded runtime payload is byte-for-byte equal to src/browser-runtime.html.
+PASS - embedded runtime byte count and SHA-256 match release metadata.
+PASS - release metadata host SHA-256 matches index.html.
+PASS - runtime / host / service-worker build IDs are synchronized to Browser 1230.
+PASS - README patch notes, Roadmap/Game Bible, and Codex handoff identify Browser 1230.
+PASS - non-destructive source-manifest updater changes only intended build/status fields in smoke test and preserves unrelated data.
+PASS - Browser 1110 is frozen as the previous patch-history literal and exactly one mutable CURRENT_GAME_BUILD history entry remains.
 
 FIELD ACCEPTANCE STILL REQUIRED
 -------------------------------
-Automated validation proves the material/depth configuration and unchanged tactical authority, but visual confirmation still requires a real FPV/TPV mission. Align multiple horizon buildings and verify the nearest solidly occludes farther buildings/windows throughout camera motion while atmospheric color/haze depth remains convincing.
+1. Bright daytime FPV/TPV city/town: exposed near/mid/far buildings should progressively approach the sky/horizon palette and no longer read as black cardboard silhouettes.
+2. Deliberately overlap several background buildings: the nearest building must still fully occlude buildings/windows behind it.
+3. Twilight and night: the fade should remain present but subtler so dark skyline/window contrast is preserved.
+4. Pan/rotate: watch for color popping, z-fighting, transparent edges, or rear-building bleed-through.
+5. Confirm no tactical behavior/result/save changes during normal play.

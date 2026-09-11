@@ -1,0 +1,8 @@
+{
+  "currentBuild": "v0.26.09.11.1230_TACTICAL_HORIZON_ATMOSPHERIC_FADE_WITH_SOLID_OCCLUSION_HOTFIX",
+  "lastInspectedBuild": "v0.26.09.11.1230_TACTICAL_HORIZON_ATMOSPHERIC_FADE_WITH_SOLID_OCCLUSION_HOTFIX",
+  "status": "tactical-horizon-atmospheric-fade-with-solid-occlusion-hotfix-complete",
+  "gameplayParity": {
+    "browserBuild": "v0.26.09.11.1230_TACTICAL_HORIZON_ATMOSPHERIC_FADE_WITH_SOLID_OCCLUSION_HOTFIX"
+  }
+}

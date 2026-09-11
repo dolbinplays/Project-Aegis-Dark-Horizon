@@ -1,6 +1,45 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.11.1230_TACTICAL_HORIZON_ATMOSPHERIC_FADE_WITH_SOLID_OCCLUSION_HOTFIX
+TITLE: Tactical Horizon Atmospheric Fade With Solid Occlusion Hotfix
+DATE: September 11, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.11.1110_TACTICAL_HORIZON_SOLID_BUILDING_DEPTH_OCCLUSION_HOTFIX
+
+SUMMARY
+-------
+Restores the softer atmospheric distance fade to the Browser 1110 solid horizon architecture without making buildings transparent again. Foreground buildings remain true depth occluders; distance is conveyed by phase-aware color and contrast blending toward the current sky/horizon palette.
+
+OPAQUE ATMOSPHERIC PERSPECTIVE
+------------------------------
+- Horizon buildings remain fully opaque, depth-tested, and depth-writing. A nearer building still blocks farther buildings and their windows wherever the silhouettes overlap.
+- Near, intermediate, and far skyline colors now progressively approach the active atmospheric horizon color instead of remaining dark silhouettes.
+- Daylight uses the strongest atmospheric color blend to avoid black-cardboard skyline shapes against bright ground/sky. Twilight uses a moderate blend; night uses a subtler blend so lit windows and dark skyline contrast remain readable.
+- Existing map-edge continuation buildings use the same phase-aware horizon target, improving the transition from playable-map scenery to distant skyline.
+- The separate consolidated haze shell remains transparent; the architecture itself does not use alpha transparency.
+
+PERFORMANCE / AUTHORITY
+-----------------------
+- No new geometry batches, point lights, shadows, or draw calls are added.
+- Seeded night windows remain one depth-tested instanced batch.
+- No cover, LOS, pathing, collision, targeting, AI, objective, mission-result, or save authority is added.
+- resolveMission(...), tacticalMissionTerminalState(...), and tacticalAiMissionResolution(...) are byte-identical to Browser 1110.
+- Save format remains 4.
+
+FIELD ACCEPTANCE
+----------------
+1. In a bright daytime FPV/TPV city/town mission, confirm near/mid/far background buildings progressively fade toward the horizon color rather than reading as black cutouts.
+2. Align multiple distant buildings and confirm the front building still completely hides rear geometry/windows in overlap regions.
+3. Check twilight/night: distance should still soften progressively, but the skyline should retain enough dark contrast for seeded windows to read naturally.
+4. Pan/rotate and confirm no see-through overlap, transparent edges, z-fighting, or obvious color popping.
+5. Confirm tactical movement, LOS, cover, targeting, outcomes, VIP survival, rewards, reports, and saves remain unchanged.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.11.1110_TACTICAL_HORIZON_SOLID_BUILDING_DEPTH_OCCLUSION_HOTFIX
 TITLE: Tactical Horizon Solid Building Depth Occlusion Hotfix
 DATE: September 11, 2026
