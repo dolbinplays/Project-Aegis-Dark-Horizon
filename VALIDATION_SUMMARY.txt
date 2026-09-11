@@ -1,48 +1,31 @@
-PROJECT AEGIS — BROWSER 1230 VALIDATION SUMMARY
+PROJECT AEGIS — BROWSER 1254 VALIDATION SUMMARY
 
-Build: v0.26.09.11.1230_TACTICAL_HORIZON_ATMOSPHERIC_FADE_WITH_SOLID_OCCLUSION_HOTFIX
-Base: v0.26.09.11.1110_TACTICAL_HORIZON_SOLID_BUILDING_DEPTH_OCCLUSION_HOTFIX
+Build: v0.26.09.11.1254_TACTICAL_HORIZON_FOG_INTEGRATED_SOLID_DEPTH_FADE_HOTFIX
+Base: v0.26.09.11.1230_TACTICAL_HORIZON_ATMOSPHERIC_FADE_WITH_SOLID_OCCLUSION_HOTFIX
 Save format: 4
-Scope: perspective-horizon renderer hotfix only
+Runtime bytes: 6965848
+Runtime SHA-256: 7d72090ec1fe32f64d1ac3630a23aa0883861f2f22e4710b74bdd666f3f7222d
+Host SHA-256: 44071373ebec51e24800d92b2044ad377e83c230b8e06426eae1173c80b51050
 
-FOCUSED CONTRACTS
------------------
-PASS - tools/check-tactical-horizon-atmospheric-fade-solid-occlusion.cjs: 26/26.
-PASS - phase-aware extension/near/mid/far fade constants present.
-PASS - representative daylight near/mid/far colors progressively brighten toward the horizon palette.
-PASS - day fade > twilight fade > night fade.
-PASS - map-edge continuation scenery uses the same phase-aware atmospheric target.
-PASS - horizon building/silhouette batches remain transparent:false / opacity:1 / depthWrite:true / depthTest:true.
-PASS - seeded window batch remains one depth-tested, non-depth-writing instanced batch.
-PASS - consolidated haze remains separate and transparent.
-PASS - horizon renderer creates no PointLight and adds no tactical pickable/cover/LOS authority.
-
-GAMEPLAY AUTHORITY DIFFERENTIAL
--------------------------------
-PASS - resolveMission(...) byte-identical to Browser 1110.
-PASS - tacticalMissionTerminalState(...) byte-identical to Browser 1110.
-PASS - tacticalAiMissionResolution(...) byte-identical to Browser 1110.
-PASS - exactly one literal finishAiPlayback() remains.
-PASS - save format remains 4.
-
-PACKAGE / RELEASE CHECKS
+AUTOMATED RELEASE CHECKS
 ------------------------
-PASS - all 5 executable src/browser-runtime.html script blocks pass node --check.
-PASS - packaged host control script passes node --check.
-PASS - service-worker.js passes node --check.
-PASS - tools/apply-1230-source-manifest.cjs passes node --check.
-PASS - embedded runtime payload is byte-for-byte equal to src/browser-runtime.html.
-PASS - embedded runtime byte count and SHA-256 match release metadata.
-PASS - release metadata host SHA-256 matches index.html.
-PASS - runtime / host / service-worker build IDs are synchronized to Browser 1230.
-PASS - README patch notes, Roadmap/Game Bible, and Codex handoff identify Browser 1230.
-PASS - non-destructive source-manifest updater changes only intended build/status fields in smoke test and preserves unrelated data.
-PASS - Browser 1110 is frozen as the previous patch-history literal and exactly one mutable CURRENT_GAME_BUILD history entry remains.
+PASS - 28/28 focused fog-integrated solid-depth horizon contracts
+PASS - Five executable runtime JavaScript blocks pass node --check
+PASS - Host control script passes node --check
+PASS - service-worker.js passes node --check
+PASS - tools/apply-1254-source-manifest.cjs passes node --check
+PASS - Embedded host runtime is byte-for-byte identical to src/browser-runtime.html
+PASS - Embedded runtime byte count and SHA-256 match release metadata
+PASS - Host SHA-256 matches release metadata
+PASS - Host/runtime/service-worker build IDs synchronized
+PASS - Browser 1230 history frozen; exactly one mutable current history record remains
+PASS - Save format remains 4
+PASS - Exactly one literal finishAiPlayback() declaration remains
+PASS - resolveMission(...) byte-identical to Browser 1230 authority
+PASS - tacticalMissionTerminalState(...) byte-identical to Browser 1230 authority
+PASS - tacticalAiMissionResolution(...) byte-identical to Browser 1230 authority
+PASS - Manifest updater changes only release identity fields in disposable preservation fixture
 
-FIELD ACCEPTANCE STILL REQUIRED
--------------------------------
-1. Bright daytime FPV/TPV city/town: exposed near/mid/far buildings should progressively approach the sky/horizon palette and no longer read as black cardboard silhouettes.
-2. Deliberately overlap several background buildings: the nearest building must still fully occlude buildings/windows behind it.
-3. Twilight and night: the fade should remain present but subtler so dark skyline/window contrast is preserved.
-4. Pan/rotate: watch for color popping, z-fighting, transparent edges, or rear-building bleed-through.
-5. Confirm no tactical behavior/result/save changes during normal play.
+VISUAL FIELD GATE
+-----------------
+Pending physical/live FPV/TPV acceptance. Reproduce the bright daytime city/town view that showed black skyline cutouts. Browser 1254 should render opaque, depth-writing foreground/background architecture while daylight skyline fragments participate in the actual scene fog and progressively approach the live atmosphere with distance. Confirm twilight/night seeded windows remain attached to readable building massing.

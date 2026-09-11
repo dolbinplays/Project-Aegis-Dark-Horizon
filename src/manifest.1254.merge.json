@@ -1,0 +1,8 @@
+{
+  "currentBuild": "v0.26.09.11.1254_TACTICAL_HORIZON_FOG_INTEGRATED_SOLID_DEPTH_FADE_HOTFIX",
+  "lastInspectedBuild": "v0.26.09.11.1254_TACTICAL_HORIZON_FOG_INTEGRATED_SOLID_DEPTH_FADE_HOTFIX",
+  "status": "tactical-horizon-fog-integrated-solid-depth-fade-hotfix-complete",
+  "gameplayParity": {
+    "browserBuild": "v0.26.09.11.1254_TACTICAL_HORIZON_FOG_INTEGRATED_SOLID_DEPTH_FADE_HOTFIX"
+  }
+}

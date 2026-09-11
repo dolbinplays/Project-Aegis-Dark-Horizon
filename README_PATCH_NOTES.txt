@@ -1,6 +1,43 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.11.1254_TACTICAL_HORIZON_FOG_INTEGRATED_SOLID_DEPTH_FADE_HOTFIX
+TITLE: Tactical Horizon Fog-Integrated Solid Depth Fade Hotfix
+DATE: September 11, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.11.1230_TACTICAL_HORIZON_ATMOSPHERIC_FADE_WITH_SOLID_OCCLUSION_HOTFIX
+
+SUMMARY
+-------
+Replaces the remaining harsh black-cutout daytime skyline with true scene-fog atmospheric perspective while preserving fully opaque depth-writing buildings and foreground occlusion.
+
+FOG-INTEGRATED SOLID DEPTH
+--------------------------
+- Near/intermediate/far horizon buildings remain fully opaque, depth-tested, and depth-writing. Foreground buildings still completely hide rear buildings and windows where they overlap.
+- In daylight, the horizon batches now participate in the same Three.js scene fog used by FPV/TPV. Scene fog blends solid fragments toward the live mission atmosphere by distance without using alpha transparency.
+- Daylight base colors are also lifted closer to the active horizon palette before fogging, so exposed skyline masses no longer begin as near-black silhouettes.
+- Twilight and night retain phase-aware color fading without forcing the far skyline through the much shorter night fog range, preserving useful dark massing behind seeded windows.
+- Map-edge world-continuation buildings remain solid, fog-aware, and aligned to the same atmospheric target.
+
+PERFORMANCE / AUTHORITY
+-----------------------
+- No new draw calls, point lights, dynamic shadows, meshes, gameplay geometry, cover, LOS, pathing, collision, targeting, AI, objectives, result authority, or save data are introduced.
+- resolveMission(...), tacticalMissionTerminalState(...), and tacticalAiMissionResolution(...) remain byte-identical to Browser 1230.
+- Browser 1230/1110 solid occlusion, Browser 1046 horizon continuity, Browser 0915 mobile Classic layout, and save format 4 remain intact.
+
+FIELD ACCEPTANCE
+----------------
+1. Recheck a bright daytime FPV/TPV city/town view like the reported screenshot. Horizon buildings should read as blue-gray atmospheric architecture rather than black cutouts.
+2. Pan so several background buildings overlap. The foreground building must still fully occlude rear geometry/windows.
+3. Compare near/mid/far layers; farther structures should merge more strongly into the live sky/fog palette.
+4. Check twilight/night and confirm the skyline retains enough dark structure for seeded windows to look attached to buildings rather than floating.
+5. Confirm movement, LOS, cover, targeting, outcomes, VIP survival, rewards, reports, and saves remain unchanged.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.11.1230_TACTICAL_HORIZON_ATMOSPHERIC_FADE_WITH_SOLID_OCCLUSION_HOTFIX
 TITLE: Tactical Horizon Atmospheric Fade With Solid Occlusion Hotfix
 DATE: September 11, 2026

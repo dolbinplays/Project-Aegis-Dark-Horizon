@@ -1,8 +1,21 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.11.1230_TACTICAL_HORIZON_ATMOSPHERIC_FADE_WITH_SOLID_OCCLUSION_HOTFIX`
+Current browser build: `v0.26.09.11.1254_TACTICAL_HORIZON_FOG_INTEGRATED_SOLID_DEPTH_FADE_HOTFIX`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 1254 (September 11): Tactical Horizon Fog-Integrated Solid Depth Fade Hotfix
+
+- Follow-up to the Browser 1230 field test: the skyline remained visually harsh because static color blending alone did not guarantee that distant solid geometry participated in the live tactical fog.
+- Daylight near/mid/far horizon architecture now uses **opaque scene-fog rendering** (`depthTest:true`, `depthWrite:true`, no building alpha). Scene fog softens the solid fragments toward the actual tactical atmosphere according to camera distance, so occlusion remains correct while distant contrast falls naturally.
+- The daylight base palette is lifted further toward the horizon color before fogging. Near/mid/far layers therefore begin in a blue-gray atmospheric range instead of near-black and then receive additional camera-distance fog.
+- Twilight/night keep the existing phase-aware opaque color fade instead of inheriting the much shorter night scene-fog range, avoiding floating window lights on fully fogged-away building massing.
+- Map-edge world-continuation buildings remain solid, fog-aware, and tied to the same atmospheric target. No new draw calls, point lights, dynamic shadows, tactical authority, or save state are added.
+- `resolveMission(...)`, `tacticalMissionTerminalState(...)`, and `tacticalAiMissionResolution(...)` are byte-identical to Browser 1230. Save format remains **4**.
+
+### Field gate
+Repeat the bright daytime FPV/TPV view that showed black skyline blocks. The distant city should now recede through the same live fog palette as the rest of the scene while overlapping buildings remain fully opaque. Then verify twilight/night windows stay visually attached to readable building massing.
+
 
 ## Current Build Addendum — Browser 1230 (September 11): Tactical Horizon Atmospheric Fade With Solid Occlusion Hotfix
 

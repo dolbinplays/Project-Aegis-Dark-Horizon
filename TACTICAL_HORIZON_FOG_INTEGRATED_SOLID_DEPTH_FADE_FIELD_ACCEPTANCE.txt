@@ -1,0 +1,13 @@
+PROJECT AEGIS — BROWSER 1254 FIELD ACCEPTANCE
+
+Build: v0.26.09.11.1254_TACTICAL_HORIZON_FOG_INTEGRATED_SOLID_DEPTH_FADE_HOTFIX
+Save format: 4
+
+1. Bright daytime FPV/TPV city/town: distant buildings should no longer read as black cutouts.
+2. Near/mid/far skyline layers should progressively blend toward the live sky/fog palette.
+3. Overlapping buildings must remain solid: foreground architecture completely hides rear buildings/windows.
+4. Pan/rotate and check for no alpha seams, see-through overlap, popping, or z-fighting.
+5. Twilight/night: seeded windows must remain attached to readable dark building massing rather than floating.
+6. Map-edge continuation buildings and far skyline should read as one atmospheric stack.
+7. Confirm FPV/TPV performance remains comparable and no new light/shadow load appears.
+8. Confirm movement, LOS, cover, targeting, outcomes, VIP survival, rewards, reports, and saves are unchanged.

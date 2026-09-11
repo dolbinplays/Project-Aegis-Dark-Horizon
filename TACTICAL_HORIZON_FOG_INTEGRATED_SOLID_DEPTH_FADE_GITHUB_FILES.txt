@@ -1,0 +1,24 @@
+BROWSER 1254 GITHUB OVERLAY
+
+Overlay this package onto the existing repository.
+Current build: v0.26.09.11.1254_TACTICAL_HORIZON_FOG_INTEGRATED_SOLID_DEPTH_FADE_HOTFIX
+Save format: 4
+
+Required files:
+- index.html
+- src/browser-runtime.html
+- service-worker.js
+- README_PATCH_NOTES.txt
+- Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+- CODEX_HANDOFF.md
+- CODEX_HANDOFF_TACTICAL_HORIZON_FOG_INTEGRATED_SOLID_DEPTH_FADE_HOTFIX.md
+- release-metadata.json
+- src/manifest.1254.merge.json
+- tools/apply-1254-source-manifest.cjs
+- APPLY_1254_SOURCE_MANIFEST.bat
+- tools/check-tactical-horizon-fog-integrated-solid-depth-fade.cjs
+- TACTICAL_HORIZON_FOG_INTEGRATED_SOLID_DEPTH_FADE_FIELD_ACCEPTANCE.txt
+- TACTICAL_HORIZON_FOG_INTEGRATED_SOLID_DEPTH_FADE_GITHUB_FILES.txt
+- VALIDATION_SUMMARY.txt
+
+After overlay, run APPLY_1254_SOURCE_MANIFEST.bat from the repository root. Do not replace the full src/manifest.json with the merge descriptor.
