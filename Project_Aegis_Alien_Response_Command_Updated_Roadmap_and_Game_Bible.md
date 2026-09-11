@@ -1,8 +1,24 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.11.0745_CLASSIC_LINEUP_STREAMING_VISIBILITY_AND_BATTLE_TEMPO_STABILIZATION_PATCH`
+Current browser build: `v0.26.09.11.0915_CLASSIC_LINEUP_MOBILE_LANDSCAPE_READABILITY_AND_COMPACT_LAYOUT_PATCH`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 0915 (September 11): Classic Lineup Mobile Landscape Readability & Compact Layout
+
+- Implements the phone-landscape Classic Lineup cleanup requested from the September 11 field screenshots. This is presentation-only; shared tactical result authority and save format **4** are unchanged.
+- Short-height landscape devices use a compact one-line mission identity, smaller playback-speed control, and ellipsized frame/status pill. The full mission heading remains on larger layouts.
+- The central Classic lineup receives the vertical space recovered from smaller panel padding/header/footer chrome.
+- Large survivor/rescue summary cards collapse to compact **AEGIS / ALIENS / VIP-or-CIV** chips on short landscape phones.
+- The permanent Classic authority explanation becomes an optional **ⓘ Classic rules** disclosure on the constrained phone layout; the full explanatory wording remains visible on larger layouts.
+- Next / Continue / TACTICAL COMPUTATION controls remain reachable in the compact footer and retain the established callbacks/gating.
+- Browser 0745 stream/visibility stabilization, Browser 1223 shot-target visibility, Browser 0810 rolling planner/reinforcement UFO presentation, Browser 2154 rescue priority/support standoff, Browser 2054 fade/reflow, Browser 1712 Last Known Contact sanitation, and Browser 1242 casualty authority remain intact.
+- `resolveMission(...)`, `tacticalMissionTerminalState(...)`, and `tacticalAiMissionResolution(...)` are unchanged from Browser 0745.
+
+### Field gate
+Test approximately 844×390 and other short landscape phone viewports: battle arena must remain the dominant element; title/controls must fit without wrapping over the stage; compact result chips and primary action must stay visible; Classic rules must be collapsed by default but readable when intentionally expanded; and larger/desktop layouts must retain the full presentation.
+
+---
 
 ## Current Build Addendum — Browser 0745 (September 11): Classic Lineup Streaming Visibility & Battle Tempo Stabilization
 

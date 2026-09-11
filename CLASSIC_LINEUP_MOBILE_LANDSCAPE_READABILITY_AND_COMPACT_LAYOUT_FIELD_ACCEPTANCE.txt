@@ -1,0 +1,16 @@
+PROJECT AEGIS — BROWSER 0915 FIELD ACCEPTANCE
+
+Build: v0.26.09.11.0915_CLASSIC_LINEUP_MOBILE_LANDSCAPE_READABILITY_AND_COMPACT_LAYOUT_PATCH
+Save format: 4
+
+1. On a short landscape phone (target ~844x390), Classic Lineup opens fully inside the viewport with no whole-screen vertical scroll.
+2. The compact mission title, speed selector, and frame/status pill fit in one short header; long frame labels ellipsize rather than overlapping the battle.
+3. The Classic lineup/battle SVG is visibly taller and remains the dominant screen element.
+4. Large desktop survivor/rescue banners are replaced by compact AEGIS / ALIENS / VIP-or-CIV chips on short landscape phones.
+5. The long Classic authority explanation is not permanently covering the battle. `ⓘ Classic rules` is collapsed by default and exposes the explanation only when intentionally opened.
+6. Next / Continue remains visible and tappable. TACTICAL COMPUTATION and interrupted states also fit the compact footer when encountered.
+7. Run a busy battle with eight soldiers, several aliens, civilians/VIPs, shots, reinforcement presentation, and casualty reflow; compact chrome must not cover actors or shot lines.
+8. Rotate/use a taller tablet or Standard/Desktop viewport and confirm the established full mission title, full survivor/rescue cards, and full rules paragraph return.
+9. Browser 0745 first-contact/reinforcement/LKC/rescue no-skip behavior and lethal tracer → impact/death → fade/reflow ordering remain intact.
+10. Mission outcome, VIP survival/loss, casualties, rewards, reinforcement timing, and report data remain unchanged.
+11. Save/load remains format 4.

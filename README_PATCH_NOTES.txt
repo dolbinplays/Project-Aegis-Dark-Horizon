@@ -1,6 +1,51 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.11.0915_CLASSIC_LINEUP_MOBILE_LANDSCAPE_READABILITY_AND_COMPACT_LAYOUT_PATCH
+TITLE: Classic Lineup Mobile Landscape Readability & Compact Layout
+DATE: September 11, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.11.0745_CLASSIC_LINEUP_STREAMING_VISIBILITY_AND_BATTLE_TEMPO_STABILIZATION_PATCH
+
+SUMMARY
+-------
+Reworks Classic Lineup specifically for short landscape phone screens so the battle presentation remains readable instead of being crowded by desktop-sized mission headers, survivor banners, and the always-visible rules paragraph. This is a presentation-only patch.
+
+COMPACT PHONE-LANDSCAPE HEADER
+------------------------------
+- Short-height landscape screens use a dedicated compact title row rather than the full three-line desktop mission heading.
+- Mission kind remains visible, with region/threat retained where height permits.
+- Playback speed and frame/status remain authoritative; their controls are smaller and the long frame label ellipsizes instead of widening or wrapping over the battle area.
+- Larger landscape/tablet and Standard/Desktop layouts keep the established full header.
+
+BATTLE AREA PRIORITY
+--------------------
+- Outer padding, border radius, header gap, and stage padding shrink only inside the short-height landscape media gate.
+- The Classic SVG receives the reclaimed vertical space so the AEGIS/alien lineup occupies more of the phone screen.
+- The patch does not change SVG tactical actor coordinates, lineup ordering, shot endpoints, reinforcement materialization, casualty reflow, or streamed frame content.
+
+COMPACT RESULT / RULES UI
+-------------------------
+- Large Soldier survivors / Alien survivors / rescue result cards remain on larger layouts.
+- Short landscape phones show compact AEGIS, ALIENS, and VIP/CIV chips instead.
+- The long presentation-authority paragraph is no longer permanently overlaid across the phone battle. It becomes an optional `ⓘ Classic rules` disclosure.
+- Next, Continue, and TACTICAL COMPUTATION controls use smaller short-height phone sizing while retaining their existing callbacks and gates.
+
+AUTHORITY / PRESERVATION
+------------------------
+- `resolveMission(...)`, `tacticalMissionTerminalState(...)`, and `tacticalAiMissionResolution(...)` are byte-for-byte unchanged from Browser 0745.
+- Browser 0745 protected-event pacing/chunk hardening, Browser 1223 visible-target repair, Browser 0810 rolling Classic planning/UFO beam, Browser 2154 rescue priority, Browser 2054 fade/reflow, Browser 1712 LKC repair, and Browser 1242 casualty authority remain intact.
+- Save format remains 4.
+
+FIELD ACCEPTANCE
+----------------
+Use a landscape phone similar to the supplied screenshots. Verify the compact header/footer do not cover the battle, the center lineup is visibly taller, result chips remain readable, Classic rules stay collapsed unless opened, Next/Continue remain reachable, and switching to a larger/desktop layout restores the full established presentation.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.11.0745_CLASSIC_LINEUP_STREAMING_VISIBILITY_AND_BATTLE_TEMPO_STABILIZATION_PATCH
 TITLE: Classic Lineup Streaming Visibility & Battle Tempo Stabilization
 DATE: September 11, 2026

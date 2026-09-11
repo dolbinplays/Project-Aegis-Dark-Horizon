@@ -1,0 +1,25 @@
+BROWSER 0915 GITHUB OVERLAY
+
+Overlay these files onto the existing Project Aegis repository. Preserve repo-only assets and historical files.
+
+Current build: v0.26.09.11.0915_CLASSIC_LINEUP_MOBILE_LANDSCAPE_READABILITY_AND_COMPACT_LAYOUT_PATCH
+Save format: 4
+
+Required files:
+- index.html
+- src/browser-runtime.html
+- service-worker.js
+- README_PATCH_NOTES.txt
+- Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+- CODEX_HANDOFF.md
+- CODEX_HANDOFF_CLASSIC_LINEUP_MOBILE_LANDSCAPE_READABILITY_AND_COMPACT_LAYOUT_PATCH.md
+- release-metadata.json
+- src/manifest.0915.merge.json
+- tools/apply-0915-source-manifest.cjs
+- APPLY_0915_SOURCE_MANIFEST.bat
+- tools/check-classic-lineup-mobile-landscape-readability.cjs
+- CLASSIC_LINEUP_MOBILE_LANDSCAPE_READABILITY_AND_COMPACT_LAYOUT_FIELD_ACCEPTANCE.txt
+- CLASSIC_LINEUP_MOBILE_LANDSCAPE_READABILITY_AND_COMPACT_LAYOUT_GITHUB_FILES.txt
+- VALIDATION_SUMMARY.txt
+
+After overlay, run APPLY_0915_SOURCE_MANIFEST.bat from the repository root. It updates only currentBuild, lastInspectedBuild, status, and gameplayParity.browserBuild in the existing full src/manifest.json. Do not replace the richer repository manifest with the merge descriptor.

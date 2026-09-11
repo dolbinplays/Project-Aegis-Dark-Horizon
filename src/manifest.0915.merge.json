@@ -1,0 +1,8 @@
+{
+  "currentBuild": "v0.26.09.11.0915_CLASSIC_LINEUP_MOBILE_LANDSCAPE_READABILITY_AND_COMPACT_LAYOUT_PATCH",
+  "lastInspectedBuild": "v0.26.09.11.0915_CLASSIC_LINEUP_MOBILE_LANDSCAPE_READABILITY_AND_COMPACT_LAYOUT_PATCH",
+  "status": "classic-lineup-mobile-landscape-readability-compact-layout-complete",
+  "gameplayParity": {
+    "browserBuild": "v0.26.09.11.0915_CLASSIC_LINEUP_MOBILE_LANDSCAPE_READABILITY_AND_COMPACT_LAYOUT_PATCH"
+  }
+}
