@@ -1,6 +1,51 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.11.1410_PROCEDURAL_BUILDING_DISCOVERED_WALL_SHELL_CLOSURE_PATCH
+TITLE: Procedural Building Discovered Wall Shell Closure
+DATE: September 11, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.11.1254_TACTICAL_HORIZON_FOG_INTEGRATED_SOLID_DEPTH_FADE_HOTFIX
+
+SUMMARY
+-------
+Closes the remaining "pillars with a roof" presentation gap on discovered enterable procedural buildings without changing tactical wall authority.
+
+DISCOVERED BUILDING SHELL
+-------------------------
+- A building becomes presentation-discovered when a building record is legitimately revealed in the active view or a living AEGIS soldier enters it.
+- Unrevealed exterior wall/window cells in that discovered building receive renderer-only pristine shell proxies so Browser 1855's wall connector system can draw continuous spans around the facade.
+- These proxies are not added to the tactical cover array and cannot affect LOS, movement, pathfinding, cover, damage, breaching, targeting, or AI.
+
+FOG / DAMAGE AUTHORITY
+----------------------
+- Hidden damage stays hidden. An unrevealed destroyed wall is represented by the expected intact facade until the damage becomes observed.
+- Once a breach/rubble record is revealed, the pristine proxy is withheld and the real opening is rendered.
+- Door cells remain open because they do not have required structural wall records.
+- Interior partitions and furnishings are never synthesized by the discovered facade shell.
+
+PRESERVED
+---------
+- Browser 1855 structural connector ownership/door/breach rules.
+- Browser 2251 player-aware roof cutaway.
+- Browser 1254 fog-integrated solid horizon treatment.
+- Save format 4.
+
+FIELD ACCEPTANCE
+----------------
+1. Approach and enter multiple procedural buildings in 3D Iso, FPV, and TPV.
+2. Once discovered, perimeter walls/windows should form continuous facades instead of isolated posts beneath a roof.
+3. Verify intentional doorways remain open.
+4. Verify interior partitions are not exposed before ordinary visibility reveals them.
+5. If practical, create or encounter a hidden breach: it must not be visually spoiled early.
+6. Reveal that breach and confirm the opening/rubble replaces the pristine shell and remains traversable.
+7. Confirm Browser 1254 horizon appearance remains correct and save format remains 4.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.11.1254_TACTICAL_HORIZON_FOG_INTEGRATED_SOLID_DEPTH_FADE_HOTFIX
 TITLE: Tactical Horizon Fog-Integrated Solid Depth Fade Hotfix
 DATE: September 11, 2026

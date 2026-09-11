@@ -1,8 +1,8 @@
 {
-  "build": "v0.26.09.11.1254_TACTICAL_HORIZON_FOG_INTEGRATED_SOLID_DEPTH_FADE_HOTFIX",
-  "package_filename": "Project_Aegis_v0.26.09.11.1254_TACTICAL_HORIZON_FOG_INTEGRATED_SOLID_DEPTH_FADE_HOTFIX.zip",
+  "build": "v0.26.09.11.1410_PROCEDURAL_BUILDING_DISCOVERED_WALL_SHELL_CLOSURE_PATCH",
+  "package_filename": "Project_Aegis_v0.26.09.11.1410_PROCEDURAL_BUILDING_DISCOVERED_WALL_SHELL_CLOSURE_PATCH.zip",
   "save_format": 4,
-  "runtime_bytes": 6965848,
-  "runtime_sha256": "7d72090ec1fe32f64d1ac3630a23aa0883861f2f22e4710b74bdd666f3f7222d",
-  "host_sha256": "44071373ebec51e24800d92b2044ad377e83c230b8e06426eae1173c80b51050"
+  "runtime_bytes": 6975427,
+  "runtime_sha256": "2ffdf9ee2aaf63395f4d9e31fd854ab80cfb6ec481d302e66647ec43beed9c21",
+  "host_sha256": "87cf933b9ef6d9b0ea2abc3d7d70df30e3aaf4cfc5226dacf5f725d193526a0e"
 }

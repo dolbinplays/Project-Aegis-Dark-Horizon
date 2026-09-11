@@ -1,0 +1,24 @@
+BROWSER 1410 GITHUB OVERLAY
+
+Overlay this package onto the existing repository.
+Current build: v0.26.09.11.1410_PROCEDURAL_BUILDING_DISCOVERED_WALL_SHELL_CLOSURE_PATCH
+Save format: 4
+
+Required overlay files:
+- index.html
+- src/browser-runtime.html
+- service-worker.js
+- README_PATCH_NOTES.txt
+- Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+- CODEX_HANDOFF.md
+- CODEX_HANDOFF_PROCEDURAL_BUILDING_DISCOVERED_WALL_SHELL_CLOSURE_PATCH.md
+- release-metadata.json
+- src/manifest.1410.merge.json
+- tools/apply-1410-source-manifest.cjs
+- APPLY_1410_SOURCE_MANIFEST.bat
+- tools/check-procedural-building-discovered-wall-shell-closure.cjs
+- PROCEDURAL_BUILDING_DISCOVERED_WALL_SHELL_CLOSURE_FIELD_ACCEPTANCE.txt
+- PROCEDURAL_BUILDING_DISCOVERED_WALL_SHELL_CLOSURE_GITHUB_FILES.txt
+- VALIDATION_SUMMARY.txt
+
+After overlay, run APPLY_1410_SOURCE_MANIFEST.bat from the repository root. It updates only currentBuild, lastInspectedBuild, status, and gameplayParity.browserBuild in the existing full src/manifest.json. Do not replace a richer repository src/manifest.json with the small merge descriptor.

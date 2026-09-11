@@ -1,8 +1,21 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.11.1254_TACTICAL_HORIZON_FOG_INTEGRATED_SOLID_DEPTH_FADE_HOTFIX`
+Current browser build: `v0.26.09.11.1410_PROCEDURAL_BUILDING_DISCOVERED_WALL_SHELL_CLOSURE_PATCH`
 
 Current save format: `4`
+
+
+## Current Build Addendum — Browser 1410 (September 11): Procedural Building Discovered Wall Shell Closure
+
+- Fixes the field-observed case where some enterable procedural buildings could show a complete roof over disconnected wall posts because Browser 1855 intentionally required both adjacent structural cells to be revealed before drawing the span between them.
+- Once a building is legitimately discovered—either a building record is revealed in the active view or a living AEGIS soldier enters the structure—the Three.js renderer may create **presentation-only pristine wall/window proxies** for still-unrevealed exterior perimeter cells. The existing connector renderer can then close the visible facade instead of leaving pillar gaps.
+- Hidden structural damage remains hidden. If an unseen wall has already been breached, the renderer continues showing the expected intact facade until that breach is actually revealed; once revealed, the proxy disappears and the real opening/rubble state is shown.
+- Intentional doors remain open because the procedural plan never creates exterior shell proxies in door cells. Interior partitions and furnishings are not proxied, so the patch does not reveal hidden interior layout.
+- The proxy shell never enters the tactical cover array. `tacticalBuildingPlans(...)`, `tacticalBuildingCovers(...)`, `makeBattlefield(...)`, pathfinding, LOS, cover HP, breaching, targeting, AI, and mission-result authority remain unchanged.
+- Browser 1254's field-accepted horizon fog treatment remains intact. Save format remains **4**.
+
+### Field gate
+Enter or approach several generated buildings in 3D Iso, FPV, and TPV. After a structure is discovered, its exterior should read as continuous walls/windows plus intentional doors—not isolated pillars under a roof. Test a building with an unseen breach if practical: the breach should not be spoiled early, but once observed the real opening must replace the pristine shell and remain traversable.
 
 ## Current Build Addendum — Browser 1254 (September 11): Tactical Horizon Fog-Integrated Solid Depth Fade Hotfix
 

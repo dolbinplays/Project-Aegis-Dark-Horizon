@@ -1,0 +1,13 @@
+PROJECT AEGIS — BROWSER 1410 FIELD ACCEPTANCE
+
+Build: v0.26.09.11.1410_PROCEDURAL_BUILDING_DISCOVERED_WALL_SHELL_CLOSURE_PATCH
+Save format: 4
+
+1. Approach several procedural buildings in 3D Iso. Once a building is discovered, its perimeter should read as continuous wall/window runs plus intentional doors, not pillars under a roof.
+2. Enter a building. Far-side perimeter walls that are not individually revealed should still complete the exterior shell presentation.
+3. Switch FPV and TPV and verify the same facade closure.
+4. Verify every authored doorway remains open and walkable.
+5. Verify interior partitions/furnishings are not synthesized by the facade shell.
+6. If practical, breach a wall while the damage is not yet observed from the active view. The facade should not disclose the hidden breach early.
+7. Reveal the damaged cell. The pristine proxy must disappear and the real breach/rubble opening must be visible and traversable.
+8. Confirm no change to cover behavior, LOS, pathfinding, AI, mission results, Browser 1254 horizon presentation, or save format 4.
