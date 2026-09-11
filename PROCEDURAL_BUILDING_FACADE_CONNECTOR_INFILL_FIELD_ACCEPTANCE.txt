@@ -1,0 +1,15 @@
+PROJECT AEGIS — BROWSER 1448 FIELD ACCEPTANCE
+
+Build: v0.26.09.11.1448_PROCEDURAL_BUILDING_FACADE_CONNECTOR_INFILL_HOTFIX
+Save format: 4
+
+1. Load/generated mission with long enterable-building facades and inspect them in 3D Iso.
+2. Verify narrow vertical seams between adjacent exterior wall/window cells are filled continuously.
+3. Repeat in FPV and TPV from shallow angles where the gaps were easiest to see.
+4. Verify window apertures themselves remain visible/transparent and are not filled by the connector infill.
+5. Verify intentional doorways remain open and traversable.
+6. Reveal or create a destroyed-wall breach; the revealed breach must remain open and traversable.
+7. Verify an unrevealed damaged exterior span still follows Browser 1410 hidden-damage presentation until observed.
+8. Confirm Browser 1254 horizon presentation remains correct.
+9. Confirm tactical LOS, movement, pathfinding, cover, damage, AI, mission result and save/load behavior are unchanged.
+10. Save format remains 4.

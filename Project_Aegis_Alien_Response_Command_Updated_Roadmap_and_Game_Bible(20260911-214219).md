@@ -1,21 +1,8 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.11.1448_PROCEDURAL_BUILDING_FACADE_CONNECTOR_INFILL_HOTFIX`
+Current browser build: `v0.26.09.11.1410_PROCEDURAL_BUILDING_DISCOVERED_WALL_SHELL_CLOSURE_PATCH`
 
 Current save format: `4`
-
-## Current Build Addendum — Browser 1448 (September 11): Procedural Building Facade Connector Infill Hotfix
-
-- Fixes the remaining field-observed narrow vertical seams between adjacent procedural exterior facade cells after Browser 1410. Browser 1410 restored missing perimeter records, but the existing connector between any pair containing a window still consisted only of a sill and lintel.
-- Tactical hex centers are wider apart than an individual rendered facade cell. Browser 1448 measures the unused center-to-center span and adds a **narrow full-height opaque infill/jamb only across that seam** for window↔wall and window↔window joins.
-- The actual window aperture remains within the window cell and is not filled. Transparent/shattered-window presentation and existing shot/LOS authority remain unchanged.
-- Door cells never participate in the connector because they have no structural wall record. Revealed breached/destroyed wall records likewise do not qualify as live structural connectors, so real openings remain open.
-- The infill is renderer-only. `tacticalBuildingPlans(...)`, `tacticalBuildingCovers(...)`, `makeBattlefield(...)`, cover/LOS/pathfinding, structural HP, damage, AI, targeting, mission results, and save format remain unchanged.
-- Browser 1410 discovered-building pristine shell closure and Browser 1254 field-accepted horizon treatment remain intact.
-
-### Field gate
-Inspect a long generated facade like the field screenshot in 3D Iso, FPV, and TPV. The narrow vertical gap between adjacent wall/window facade cells should be filled continuously, while actual window openings, doors, and revealed breaches remain open and visually distinct.
-
 
 
 ## Current Build Addendum — Browser 1410 (September 11): Procedural Building Discovered Wall Shell Closure
@@ -29,23 +16,6 @@ Inspect a long generated facade like the field screenshot in 3D Iso, FPV, and TP
 
 ### Field gate
 Enter or approach several generated buildings in 3D Iso, FPV, and TPV. After a structure is discovered, its exterior should read as continuous walls/windows plus intentional doors—not isolated pillars under a roof. Test a building with an unseen breach if practical: the breach should not be spoiled early, but once observed the real opening must replace the pristine shell and remain traversable.
-
-
-## Roadmap Addition — Mobile Tactical Status HUD Collapse / Expand
-
-**Status:** Planned. Requested September 11, 2026.
-
-- On **Mobile · Adaptive**, tapping the existing upper-right soldier / fire-team / objective panel toggles between **Full** and **Condensed** states. Standard/Desktop remains unchanged.
-- **Full** preserves the current `TacticalUnifiedThreeStatusPanel`: soldier identity/status, Fire Team Assignment, Current Objective / Order, and supporting tactical/AI detail.
-- **Condensed** keeps only the upper soldier-status portion: soldier name, HP, TU, ammo/charge state where applicable, and the highest-priority current condition/status indicators. Fire-team/objective/AI-plan detail collapses away.
-- Reuse the existing unified status authority; do not create a second Mobile-only data model. Manual selection and Simulation/Hybrid observer changes must update either state identically.
-- Add a small chevron/expand-collapse affordance. Limit pointer interaction to the panel toggle surface so the rest of the overlay remains non-blocking for battlefield taps/clicks.
-- Support keyboard Enter/Space and accessible expanded/collapsed state.
-- Remember the player's expanded/condensed preference for the **current tactical battle**, including switches among 3D Iso, FPV, TPV, reaction TPV, Manual, Hybrid, and Simulation observation. Do not require a save-format change.
-- Short landscape phones are the primary acceptance target: the condensed state should materially free battlefield space while retaining enough soldier status to identify the currently selected/observed actor.
-
-### Field gate
-On a short landscape phone, toggle the panel repeatedly in 3D Iso/FPV/TPV, change selected/observed soldiers, allow AI observer changes, and confirm status data stays current. Verify the condensed panel does not block targeting/command controls and Standard/Desktop is unchanged.
 
 ## Roadmap Addition — Installed PWA Single-Launch Update Handoff
 

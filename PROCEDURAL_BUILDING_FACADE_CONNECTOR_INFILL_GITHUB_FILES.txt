@@ -1,0 +1,25 @@
+BROWSER 1448 GITHUB OVERLAY
+
+Overlay this package onto the repository, preserving repo-only assets/source files not present in the patch package.
+
+Current build: v0.26.09.11.1448_PROCEDURAL_BUILDING_FACADE_CONNECTOR_INFILL_HOTFIX
+Save format: 4
+
+Required files:
+- index.html
+- src/browser-runtime.html
+- service-worker.js
+- README_PATCH_NOTES.txt
+- Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+- CODEX_HANDOFF.md
+- CODEX_HANDOFF_PROCEDURAL_BUILDING_FACADE_CONNECTOR_INFILL_HOTFIX.md
+- release-metadata.json
+- src/manifest.1448.merge.json
+- tools/apply-1448-source-manifest.cjs
+- APPLY_1448_SOURCE_MANIFEST.bat
+- tools/check-procedural-building-facade-connector-infill.cjs
+- PROCEDURAL_BUILDING_FACADE_CONNECTOR_INFILL_FIELD_ACCEPTANCE.txt
+- PROCEDURAL_BUILDING_FACADE_CONNECTOR_INFILL_GITHUB_FILES.txt
+- VALIDATION_SUMMARY.txt
+
+After overlay, run APPLY_1448_SOURCE_MANIFEST.bat (or node tools/apply-1448-source-manifest.cjs) from the repository root. It updates only currentBuild, lastInspectedBuild, status, and gameplayParity.browserBuild in the existing full src/manifest.json. Do not replace a richer repository src/manifest.json with the merge descriptor.

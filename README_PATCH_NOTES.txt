@@ -1,6 +1,51 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.11.1448_PROCEDURAL_BUILDING_FACADE_CONNECTOR_INFILL_HOTFIX
+TITLE: Procedural Building Facade Connector Infill Hotfix
+DATE: September 11, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.11.1410_PROCEDURAL_BUILDING_DISCOVERED_WALL_SHELL_CLOSURE_PATCH
+
+SUMMARY
+-------
+Closes the remaining narrow exterior facade seams between neighboring procedural wall/window cells. These were the field-observed gaps that could remain even after Browser 1410 restored a complete discovered-building shell.
+
+FACADE CONNECTOR INFILL
+-----------------------
+- Browser 1410 correctly restores missing unrevealed exterior wall/window records for a discovered building, but the existing Browser 1855 window connector still used only a low sill and upper lintel between neighboring facade cells.
+- Because tactical hex centers are farther apart than the rendered facade cell meshes are wide, the unused center-to-center span could remain visibly open between two otherwise intact wall/window segments.
+- Window-to-wall and window-to-window joins now add a narrow, full-height opaque facade infill only across that geometric seam.
+- The actual window aperture remains inside its own facade cell and stays transparent/shootable according to existing window authority.
+
+DOORS / BREACHES / AUTHORITY
+-----------------------------
+- Intentional door cells remain open because they have no structural facade cover record and do not participate in structural connectors.
+- Revealed destroyed walls/breaches remain open because breached records are not eligible structural connector neighbors.
+- Hidden damage keeps Browser 1410's presentation-only pristine-shell behavior until observed.
+- The new infill exists only in the Three.js renderer. It does not enter cover, LOS, movement, pathfinding, AI, targeting, damage, structural HP, or save authority.
+
+PRESERVED
+---------
+- Browser 1410 discovered-building shell closure.
+- Browser 1254 field-accepted fog-integrated horizon treatment.
+- Existing transparent window aperture behavior and Browser 1855 sill/lintel connectors.
+- Save format 4.
+
+FIELD ACCEPTANCE
+----------------
+1. Inspect long exterior facades in 3D Iso, FPV, and TPV. Narrow vertical gaps like the field-circled seam between neighboring wall/window cells should be closed.
+2. Confirm window glass openings remain visible and are not filled by the new connector.
+3. Confirm intentional doors remain open and traversable.
+4. Reveal or create a wall breach and confirm it remains an opening rather than receiving connector infill.
+5. Confirm Browser 1410's discovered-building shell behavior still closes unrevealed exterior spans.
+6. Confirm Browser 1254 horizon presentation remains unchanged and save format remains 4.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.11.1410_PROCEDURAL_BUILDING_DISCOVERED_WALL_SHELL_CLOSURE_PATCH
 TITLE: Procedural Building Discovered Wall Shell Closure
 DATE: September 11, 2026

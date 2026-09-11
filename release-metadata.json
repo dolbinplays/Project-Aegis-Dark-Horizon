@@ -1,8 +1,8 @@
 {
-  "build": "v0.26.09.11.1410_PROCEDURAL_BUILDING_DISCOVERED_WALL_SHELL_CLOSURE_PATCH",
-  "package_filename": "Project_Aegis_v0.26.09.11.1410_PROCEDURAL_BUILDING_DISCOVERED_WALL_SHELL_CLOSURE_PATCH.zip",
+  "build": "v0.26.09.11.1448_PROCEDURAL_BUILDING_FACADE_CONNECTOR_INFILL_HOTFIX",
+  "package_filename": "Project_Aegis_v0.26.09.11.1448_PROCEDURAL_BUILDING_FACADE_CONNECTOR_INFILL_HOTFIX.zip",
   "save_format": 4,
-  "runtime_bytes": 6975427,
-  "runtime_sha256": "2ffdf9ee2aaf63395f4d9e31fd854ab80cfb6ec481d302e66647ec43beed9c21",
-  "host_sha256": "87cf933b9ef6d9b0ea2abc3d7d70df30e3aaf4cfc5226dacf5f725d193526a0e"
+  "runtime_bytes": 6978463,
+  "runtime_sha256": "f45b3b3ffebfd24ee19c1869bfa9a153710ed66e990da89fac2dc76e402f99bd",
+  "host_sha256": "806d2b085b396716e1291737c9797a11459bf897c6c890aac1e5837a6c0f1b06"
 }

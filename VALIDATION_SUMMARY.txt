@@ -1,57 +1,60 @@
-PROJECT AEGIS — BROWSER 1410 VALIDATION SUMMARY
+PROJECT AEGIS — BROWSER 1448 VALIDATION SUMMARY
 
-Build: v0.26.09.11.1410_PROCEDURAL_BUILDING_DISCOVERED_WALL_SHELL_CLOSURE_PATCH
-Base: v0.26.09.11.1254_TACTICAL_HORIZON_FOG_INTEGRATED_SOLID_DEPTH_FADE_HOTFIX
-Save format: 4 (unchanged)
-Runtime bytes: 6975427
-Runtime SHA-256: 2ffdf9ee2aaf63395f4d9e31fd854ab80cfb6ec481d302e66647ec43beed9c21
-Host SHA-256: 87cf933b9ef6d9b0ea2abc3d7d70df30e3aaf4cfc5226dacf5f725d193526a0e
+Build: v0.26.09.11.1448_PROCEDURAL_BUILDING_FACADE_CONNECTOR_INFILL_HOTFIX
+Base: v0.26.09.11.1410_PROCEDURAL_BUILDING_DISCOVERED_WALL_SHELL_CLOSURE_PATCH
+Save format: 4
+Runtime bytes: 6978463
+Runtime SHA-256: f45b3b3ffebfd24ee19c1869bfa9a153710ed66e990da89fac2dc76e402f99bd
+Host SHA-256: 806d2b085b396716e1291737c9797a11459bf897c6c890aac1e5837a6c0f1b06
 
-PATCH-SPECIFIC CONTRACTS
-------------------------
-PASS — 34/34 checks in tools/check-procedural-building-discovered-wall-shell-closure.cjs.
-PASS — Discovered buildings can synthesize renderer-only pristine exterior wall/window proxies.
-PASS — Intentional doors remain open; partitions/furnishings are not synthesized.
-PASS — Hidden damage remains visually pristine until the authoritative damaged/breached record is revealed.
-PASS — Revealed damage wins and removes the pristine proxy.
-PASS — Both legacy and persistent Three.js cover render paths consume the presentation-cover helper.
-PASS — Existing Browser 1855 wall-connector ownership and Browser 2251 roof cutaway remain present.
-PASS — Exactly one finishAiPlayback() declaration and one mutable current patch-history record remain.
+FOCUSED PATCH CHECKS
+--------------------
+PASS - 30/30 Browser 1448 facade-connector release contracts.
+PASS - Window↔wall and window↔window joins retain sill/lintel presentation and add a narrow full-height opaque facade infill across only the center-to-center mesh gap.
+PASS - Horizontal and diagonal tactical-neighbor spacings both produce positive bounded infill widths; the generated mesh width equals the calculated uncovered gap.
+PASS - Actual window aperture meshes and transparent window panes remain present.
+PASS - Door cells remain excluded from structural facade covers/connectors.
+PASS - Browser 1410 discovered-building presentation shell remains enabled.
+PASS - Browser 1254 fog-integrated horizon treatment remains present.
 
-AUTHORITY PARITY WITH BROWSER 1254
-----------------------------------
-PASS — resolveMission(...) byte-identical to Browser 1254.
-PASS — tacticalMissionTerminalState(...) byte-identical to Browser 1254.
-PASS — tacticalAiMissionResolution(...) byte-identical to Browser 1254.
-PASS — tacticalBuildingPlans(...) byte-identical to Browser 1254.
-PASS — tacticalBuildingCovers(...) byte-identical to Browser 1254.
-PASS — makeBattlefield(...) byte-identical to Browser 1254.
+TACTICAL AUTHORITY DIFFERENTIAL
+-------------------------------
+PASS - tacticalBuildingPlans(...) byte-for-byte matches Browser 1410 — SHA-256 f77087d6dba9a04008e36784ad3181dfbd1f4e50b417aaaea25117a50014a473
+PASS - tacticalBuildingCovers(...) byte-for-byte matches Browser 1410 — SHA-256 c3070bf9b0414f2e48c62aff7646352d66a408b058537bc3f97257e75815b6b0
+PASS - makeBattlefield(...) byte-for-byte matches Browser 1410 — SHA-256 a0512bda277a92c8ce8d244b46f79dbc1a3efd9024e98c9fe6202437f5355df2
+PASS - resolveMission(...) byte-for-byte matches Browser 1410 — SHA-256 60363040b40de491c28dd4ee7819fe291489fe48a16effae14b23966ad12f456
+PASS - tacticalMissionTerminalState(...) byte-for-byte matches Browser 1410 — SHA-256 7789262fc140b640d81eb443b91d24bdf9daacfdbdbe2bbac7af5358a84a160c
+PASS - tacticalAiMissionResolution(...) byte-for-byte matches Browser 1410 — SHA-256 3ef3c32a49421c2f353d95d6e18f9f46954ead16505df535cb66cd5e618cd702
 
-PRESERVATION / SYNTAX
----------------------
-PASS — All 5 executable src/browser-runtime.html JavaScript blocks pass node --check.
-PASS — Packaged host control script passes node --check.
-PASS — service-worker.js passes node --check.
-PASS — manifest updater and Browser 1410 checker pass node --check.
-PASS — Browser 1254 horizon checker retains all 26 non-build-identity checks; its only two expected failures are the superseded current-build/current-history identity assertions.
-PASS — Save format remains 4.
-
-PACKAGE IDENTITY
+SYNTAX / PACKAGE
 ----------------
-PASS — Embedded host runtime payload is byte-for-byte identical to src/browser-runtime.html.
-PASS — Embedded runtime byte count and SHA-256 match release-metadata.json.
-PASS — release-metadata.json host SHA-256 matches packaged index.html.
-PASS — Host build ID, runtime CURRENT_GAME_BUILD, and both service-worker cache IDs are Browser 1410.
-PASS — package_filename is Project_Aegis_v0.26.09.11.1410_PROCEDURAL_BUILDING_DISCOVERED_WALL_SHELL_CLOSURE_PATCH.zip.
-PASS — Non-destructive source-manifest updater preserves unrelated top-level and gameplayParity fields in a smoke fixture.
+PASS - Five executable runtime JavaScript blocks pass node --check.
+PASS - One executable host JavaScript block passes node --check.
+PASS - service-worker.js passes node --check.
+PASS - apply-1448-source-manifest.cjs passes node --check.
+PASS - check-procedural-building-facade-connector-infill.cjs passes node --check.
+PASS - Embedded host runtime is byte-for-byte identical to src/browser-runtime.html.
+PASS - Embedded runtime byte count and SHA-256 match release-metadata.json.
+PASS - Host SHA-256 matches release-metadata.json.
+PASS - Service-worker shell/runtime cache IDs use Browser 1448.
+PASS - Save format remains 4.
+
+MANIFEST UPDATE SAFETY
+----------------------
+PASS - Non-destructive updater smoke test advances currentBuild, lastInspectedBuild, status and gameplayParity.browserBuild.
+PASS - Unrelated top-level manifest data remains unchanged.
+PASS - Unrelated gameplayParity data remains unchanged.
 
 LIVE STARTUP SMOKE
 ------------------
-PASS — A QA-instrumented Browser 1410 runtime reached the start screen in headless Chromium.
-PASS — Start screen displayed VERSION V0.26.09.11.1410 and the full Browser 1410 build string.
-PASS — No runtime exceptions were observed during the startup smoke.
-NOTE — The patch-specific building-shell regression is scoped inside the legacy runSelfTests body and is therefore validated by the 34/34 source/behavior contract suite rather than directly queried as a global browser symbol.
+PASS - Browser 1448 reaches the Project Aegis start screen in a fresh Chromium realm with the correct VERSION/BUILD and no runtime-error overlay.
+NOTE - The injected QA realm blocks normal browser localStorage on about:blank, so the smoke copy used a QA-only in-memory storage shim. The release runtime is unmodified.
 
-FIELD ACCEPTANCE STILL REQUIRED
--------------------------------
-Use a real tactical mission with procedural enterable buildings. Verify the complete discovered exterior facade in Iso/FPV/TPV, intentional door openings, far-side wall closure, and an unseen-to-revealed breach transition. Confirm that revealed breaches remain traversable and Browser 1254 horizon presentation is unchanged.
+ROADMAP PRESERVATION
+--------------------
+PASS - Installed PWA Single-Launch Update Handoff remains planned.
+PASS - Mobile Tactical Status HUD Collapse / Expand remains planned with Full↔Condensed behavior, current-battle persistence, unified status authority, pointer/accessibility constraints, and short-landscape-phone acceptance.
+
+FIELD GATE
+----------
+Physical/gameplay visual acceptance remains required for the exact field case: inspect the previously circled seam between adjacent exterior facade segments in 3D Iso, FPV and TPV. The narrow seam should be closed while real window apertures, doors and revealed breaches remain open.
