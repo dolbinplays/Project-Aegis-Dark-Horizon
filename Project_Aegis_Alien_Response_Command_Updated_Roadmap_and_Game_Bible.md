@@ -1,8 +1,23 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.11.1046_TACTICAL_HORIZON_DEPTH_AND_DISTANT_BUILDING_CONTINUITY_PATCH`
+Current browser build: `v0.26.09.11.1110_TACTICAL_HORIZON_SOLID_BUILDING_DEPTH_OCCLUSION_HOTFIX`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 1110 (September 11): Tactical Horizon Solid Building Depth Occlusion Hotfix
+
+- Corrects the Browser 1046 horizon-depth presentation where semi-transparent distant building batches could allow farther structures to remain visible through a nearer building.
+- Near / intermediate / far architecture and silhouette batches now use **opaque, depth-tested, depth-writing** materials. Camera-space overlap therefore behaves like solid architecture: the front building hides the rear building wherever their silhouettes overlap.
+- Distance still reads through the existing per-instance atmospheric color blend and consolidated horizon haze. Building alpha transparency is no longer used as the depth cue.
+- Seeded twilight/night windows remain one depth-tested instanced batch; the solid building depth buffer can now occlude rear windows as well as rear architecture.
+- Existing map-edge continuation scenery was already opaque/depth-writing and is preserved.
+- The fix adds no draw calls, point lights, dynamic shadows, pickables, collision, cover, LOS, pathing, AI, target authority, objective state, or save data. Save format remains **4**.
+- Browser 1046 horizon generation/window density, Browser 0915 mobile Classic layout, and Browser 0745 Classic stabilization remain intact.
+
+### Field gate
+In FPV/TPV, deliberately align several background buildings. The closest building must completely hide farther buildings/windows in the overlap region while near/mid/far color/haze depth remains visible on exposed portions. Check day and night and pan the camera for transparent edges or z-fighting.
+
+---
 
 ## Current Build Addendum — Browser 1046 (September 11): Tactical Horizon Depth & Distant Building Continuity
 

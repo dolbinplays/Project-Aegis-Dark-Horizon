@@ -1,31 +1,28 @@
-PROJECT AEGIS — BROWSER 1046 VALIDATION SUMMARY
+PROJECT AEGIS — BROWSER 1110 VALIDATION SUMMARY
 
-Build: v0.26.09.11.1046_TACTICAL_HORIZON_DEPTH_AND_DISTANT_BUILDING_CONTINUITY_PATCH
-Base: v0.26.09.11.0915_CLASSIC_LINEUP_MOBILE_LANDSCAPE_READABILITY_AND_COMPACT_LAYOUT_PATCH
+Build: v0.26.09.11.1110_TACTICAL_HORIZON_SOLID_BUILDING_DEPTH_OCCLUSION_HOTFIX
+Base: v0.26.09.11.1046_TACTICAL_HORIZON_DEPTH_AND_DISTANT_BUILDING_CONTINUITY_PATCH
 Save format: 4
 
 PATCH-SPECIFIC CONTRACTS
 ------------------------
-PASS - 30/30 Tactical Horizon Depth + Distant Building Continuity checks.
-PASS - Near / intermediate / far deterministic urban depth bands.
-PASS - Far geometry remains inside the tactical sky-dome cap.
-PASS - Map-edge extension and horizon buildings share atmospheric depth treatment.
-PASS - Night/twilight city/town windows are deterministic and bounded by rendering quality.
-PASS - Extension-building and skyline windows are combined into one perspective InstancedMesh batch.
-PASS - No per-window PointLight/SpotLight path exists in the Browser 1046 horizon renderer.
-PASS - Perspective horizon is four draw calls or fewer: structure batch, optional silhouette batch, optional combined window batch, consolidated haze.
-PASS - Day wilderness fixture allocates no decorative window instances.
-PASS - Horizon renderer does not register scenery in tactical pickables, cover, LOS, or pathing authority.
+PASS - 22/22 Tactical Horizon Solid Building Depth Occlusion checks.
+PASS - Horizon building/silhouette batches are fully opaque rather than alpha blended.
+PASS - Horizon building/silhouette batches use depthTest=true and depthWrite=true.
+PASS - Foreground horizon architecture can therefore occlude rear architecture using the normal GPU depth buffer.
+PASS - Atmospheric distance remains in per-instance color blending plus the separate consolidated haze shell.
+PASS - Seeded facade-window batch remains depth-tested and non-depth-writing, so solid foreground building depth can hide rear windows.
+PASS - Existing map-edge continuation scenery remains opaque/depth-writing.
+PASS - Browser 1046 horizon planning helper is byte-for-byte unchanged; density, placement, seed, and window caps are unchanged.
+PASS - No PointLight, pickable, cover, LOS, pathing, collision, or tactical-authority seam was added.
 
-BASELINE / AUTHORITY PRESERVATION
----------------------------------
-PASS - Browser 0915 mobile Classic Lineup responsive contracts: 24/24.
+AUTHORITY PRESERVATION
+----------------------
+PASS - resolveMission(...) byte-identical to Browser 1046/0915 authority.
+PASS - tacticalMissionTerminalState(...) byte-identical to Browser 1046/0915 authority.
+PASS - tacticalAiMissionResolution(...) byte-identical to Browser 1046/0915 authority.
 PASS - Exactly one finishAiPlayback() owner remains.
-PASS - resolveMission(...) byte-identical to Browser 0915.
-PASS - tacticalMissionTerminalState(...) byte-identical to Browser 0915.
-PASS - tacticalAiMissionResolution(...) byte-identical to Browser 0915.
-PASS - Browser 0915 Mobile Classic flag remains enabled.
-PASS - Browser 0745 Classic streaming/visibility stabilization remains enabled.
+PASS - Browser 1046 horizon-depth flag remains enabled.
 PASS - Save format remains 4.
 
 SYNTAX / PACKAGE IDENTITY
@@ -33,21 +30,21 @@ SYNTAX / PACKAGE IDENTITY
 PASS - Five executable runtime JavaScript blocks pass node --check.
 PASS - Packaged host executable script passes node --check.
 PASS - service-worker.js passes node --check.
-PASS - tools/apply-1046-source-manifest.cjs passes node --check.
-PASS - tools/check-tactical-horizon-depth-continuity.cjs passes node --check.
+PASS - tools/apply-1110-source-manifest.cjs passes node --check.
+PASS - tools/check-tactical-horizon-solid-depth-occlusion.cjs passes node --check.
 PASS - Embedded host runtime is byte-for-byte identical to src/browser-runtime.html.
 PASS - Embedded byte count and SHA-256 match release-metadata.json.
 PASS - Host SHA-256 matches release-metadata.json.
 PASS - Host body build, host BUILD, runtime CURRENT_GAME_BUILD, and both service-worker cache IDs are synchronized.
 PASS - Roadmap, patch notes, Codex handoff, manifest merge descriptor, and package filename are synchronized.
-PASS - Manifest updater changes only the four intended build/status fields and preserves unrelated manifest/gameplayParity data in smoke testing.
+PASS - Manifest updater changes only the intended build/status fields and preserves unrelated manifest/gameplayParity data in smoke testing.
 
 RELEASE HASHES
 --------------
-Runtime bytes: 6949388
-Runtime SHA-256: 8466925c7f5002d35fd698e2129022d26fffa81834825334c9587f6f234b98da
-Host SHA-256: 2d31d39c6204648c58a2163039279e1cd02f7627c4a50c34991d25cba8251742
+Runtime bytes: 6953929
+Runtime SHA-256: 29e61e1e07eb8b43bb9c843e72a9b410a59bc3dd1ca2897a841e2c2119c92b1c
+Host SHA-256: a8e3a942aa0641eae97124539d0e12e9591ccfe652b378b11a336211340e2064
 
 FIELD ACCEPTANCE STILL REQUIRED
 -------------------------------
-Automated validation proves deterministic planning, bounded presentation cost, authority isolation, and package identity. It does not substitute for visually inspecting the result in a real WebGL tactical mission. Field-test FPV/TPV city/town missions in day, twilight, and night; compare map-edge extension buildings against the far skyline; verify sparse window activity and gameplay-light readability; and confirm Performance / Auto / Quality remain visually acceptable.
+Automated validation proves the material/depth configuration and unchanged tactical authority, but visual confirmation still requires a real FPV/TPV mission. Align multiple horizon buildings and verify the nearest solidly occludes farther buildings/windows throughout camera motion while atmospheric color/haze depth remains convincing.

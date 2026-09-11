@@ -1,6 +1,43 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.11.1110_TACTICAL_HORIZON_SOLID_BUILDING_DEPTH_OCCLUSION_HOTFIX
+TITLE: Tactical Horizon Solid Building Depth Occlusion Hotfix
+DATE: September 11, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.11.1046_TACTICAL_HORIZON_DEPTH_AND_DISTANT_BUILDING_CONTINUITY_PATCH
+
+SUMMARY
+-------
+Fixes the Browser 1046 FPV/TPV horizon case where overlapping distant buildings could appear partially see-through because the horizon structure batches used alpha transparency for atmospheric depth.
+
+SOLID DEPTH OCCLUSION
+---------------------
+- Near/intermediate/far horizon building and silhouette batches are now fully opaque, depth-tested, and depth-writing.
+- When two distant buildings overlap in the camera view, the nearer building now blocks the farther building in the overlap area like solid architecture.
+- Atmospheric distance is preserved through the existing seeded color blend toward the horizon palette plus the separate consolidated haze shell, not by making building geometry transparent.
+- Map-edge continuation buildings were already opaque/depth-writing and remain unchanged.
+- The seeded window batch remains depth-tested and non-depth-writing, allowing foreground building depth to hide windows and buildings behind it.
+
+AUTHORITY / PERFORMANCE
+-----------------------
+- No additional meshes, draw calls, point lights, shadows, tactical geometry, cover, LOS, pathing, targeting, collision, AI, objectives, or save state are introduced.
+- Browser 1046 structure/window density and horizon generation are retained.
+- Combat/result authority is unchanged; save format remains 4.
+
+FIELD ACCEPTANCE
+----------------
+1. In FPV/TPV, line up two or more horizon buildings so their screen silhouettes overlap. The nearer building should completely occlude the farther building where they overlap.
+2. Verify distant layers still become progressively more atmospheric through color/haze rather than transparency.
+3. At night, confirm windows behind a foreground building are hidden while windows on visible facades remain readable.
+4. Confirm no new popping, z-fighting, or obvious transparent edges while panning/rotating.
+5. Confirm movement, LOS, cover, targeting, mission outcome, VIP survival, rewards, saves, and reports remain unchanged.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.11.1046_TACTICAL_HORIZON_DEPTH_AND_DISTANT_BUILDING_CONTINUITY_PATCH
 TITLE: Tactical Horizon Depth + Distant Building Continuity
 DATE: September 11, 2026

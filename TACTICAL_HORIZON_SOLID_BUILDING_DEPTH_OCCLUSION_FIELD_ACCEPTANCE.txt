@@ -1,0 +1,14 @@
+PROJECT AEGIS — BROWSER 1110 FIELD ACCEPTANCE
+
+Build: v0.26.09.11.1110_TACTICAL_HORIZON_SOLID_BUILDING_DEPTH_OCCLUSION_HOTFIX
+Save format: 4
+
+1. FPV/TPV: align at least two horizon buildings so their silhouettes overlap. The nearer building must fully hide the farther building within the overlap.
+2. Repeat with three depth layers (near/mid/far) and confirm depth ordering remains correct.
+3. Pan/rotate the camera and confirm occlusion is stable without see-through blending, transparent edges, or obvious z-fighting.
+4. Verify exposed portions of farther buildings still look more atmospheric through color/haze.
+5. Night/twilight: windows behind foreground buildings must be hidden by building depth; visible facade windows should remain readable.
+6. Confirm map-edge continuation buildings remain solid and visually compatible with the horizon.
+7. Check Performance / Auto / Quality; no mode should restore translucent building overlap.
+8. Confirm the backdrop remains non-pickable and does not affect cover, LOS, movement, targeting, AI, or objectives.
+9. Confirm mission outcome, VIP survival, casualties, rewards, reports, save/load, and save format 4 remain unchanged.

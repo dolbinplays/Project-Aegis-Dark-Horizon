@@ -1,0 +1,8 @@
+{
+  "currentBuild": "v0.26.09.11.1110_TACTICAL_HORIZON_SOLID_BUILDING_DEPTH_OCCLUSION_HOTFIX",
+  "lastInspectedBuild": "v0.26.09.11.1110_TACTICAL_HORIZON_SOLID_BUILDING_DEPTH_OCCLUSION_HOTFIX",
+  "status": "tactical-horizon-solid-building-depth-occlusion-hotfix-complete",
+  "gameplayParity": {
+    "browserBuild": "v0.26.09.11.1110_TACTICAL_HORIZON_SOLID_BUILDING_DEPTH_OCCLUSION_HOTFIX"
+  }
+}
