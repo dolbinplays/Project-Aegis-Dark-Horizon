@@ -1,8 +1,16 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.10.1223_CLASSIC_LINEUP_VISIBLE_TARGET_AND_OUTCOME_PRESERVING_FAST_PACING_HOTFIX`
+Current browser build: `v0.26.09.10.1735_CLASSIC_LINEUP_PATCH_HISTORY_INITIALIZATION_HOTFIX`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 1735 (September 10): Classic Lineup Patch History Initialization Hotfix
+
+- Fixes the Browser 1223 startup `ReferenceError: PATCH_NOTES_HISTORY is not defined`.
+- Root cause was release-history placement only: Browser 1223 inserted its history record after `AlienResponseCommand()` had closed even though `PATCH_NOTES_HISTORY` is initialized inside that controller.
+- The Browser 1223 record is now frozen inside the established history initialization block, and Browser 1735's current record is inserted there before sorting.
+- Browser 1223 visible-target rendering and outcome-preserving fast pacing are unchanged. Browser 0810 streaming/UFO presentation and save format **4** remain intact.
+
 
 ## Current Build Addendum — Browser 1223 (September 10): Classic Lineup Visible Target + Outcome-Preserving Fast Pacing Hotfix
 

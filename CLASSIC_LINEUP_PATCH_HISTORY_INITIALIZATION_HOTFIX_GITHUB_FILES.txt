@@ -1,0 +1,23 @@
+BROWSER 1735 GITHUB OVERLAY
+
+Current build: v0.26.09.10.1735_CLASSIC_LINEUP_PATCH_HISTORY_INITIALIZATION_HOTFIX
+Save format: 4
+
+Overlay these files onto the existing repository:
+- index.html
+- src/browser-runtime.html
+- service-worker.js
+- README_PATCH_NOTES.txt
+- Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+- CODEX_HANDOFF.md
+- CODEX_HANDOFF_CLASSIC_LINEUP_PATCH_HISTORY_INITIALIZATION_HOTFIX.md
+- release-metadata.json
+- VALIDATION_SUMMARY.txt
+- src/manifest.1735.merge.json
+- tools/apply-1735-source-manifest.cjs
+- APPLY_1735_SOURCE_MANIFEST.bat
+- tools/check-classic-lineup-patch-history-initialization.cjs
+- CLASSIC_LINEUP_PATCH_HISTORY_INITIALIZATION_HOTFIX_FIELD_ACCEPTANCE.txt
+- CLASSIC_LINEUP_PATCH_HISTORY_INITIALIZATION_HOTFIX_GITHUB_FILES.txt
+
+Then run APPLY_1735_SOURCE_MANIFEST.bat from the repository root. Do not replace the richer repository src/manifest.json with the merge descriptor.

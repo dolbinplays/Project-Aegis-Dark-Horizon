@@ -1,0 +1,8 @@
+PROJECT AEGIS — BROWSER 1735 FIELD ACCEPTANCE
+Build: v0.26.09.10.1735_CLASSIC_LINEUP_PATCH_HISTORY_INITIALIZATION_HOTFIX
+
+1. Launch the game. No PATCH_NOTES_HISTORY ReferenceError should appear.
+2. Confirm the start screen shows Browser 1735.
+3. Open Patch Notes / Version History and confirm Browser 1735 is latest and Browser 1223 remains present as the prior entry.
+4. Start a Classic Lineup mission and confirm Browser 1223 target visibility and faster automatic pacing still operate.
+5. Confirm save/load remains format 4.

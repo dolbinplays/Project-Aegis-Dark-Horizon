@@ -1,0 +1,22 @@
+const fs=require('fs');
+const path=require('path');
+const root=process.cwd();
+const src=fs.readFileSync(path.join(root,'src','browser-runtime.html'),'utf8');
+const BUILD='v0.26.09.10.1735_CLASSIC_LINEUP_PATCH_HISTORY_INITIALIZATION_HOTFIX';
+function pass(n,o){console.log(`${o?'PASS':'FAIL'} - ${n}`);return o?0:1;}
+let f=0;
+f+=pass('Current build synchronized',src.includes(`const CURRENT_GAME_BUILD="${BUILD}";`));
+f+=pass('Hotfix flag enabled',src.includes('const CLASSIC_LINEUP_PATCH_HISTORY_INITIALIZATION_HOTFIX=true;'));
+const appStart=src.indexOf('function AlienResponseCommand()');
+const appEnd=src.indexOf('const TACTICAL_SINGLE_OWNER_MISSION_VICTORY_DIALOGUE_PATCH=true;',appStart);
+const app=src.slice(appStart,appEnd);
+const tail=src.slice(appEnd);
+f+=pass('Browser 1223 history frozen inside controller',app.includes('build:"v0.26.09.10.1223_CLASSIC_LINEUP_VISIBLE_TARGET_AND_OUTCOME_PRESERVING_FAST_PACING_HOTFIX"')&&app.includes('Classic Lineup Visible Target + Outcome-Preserving Fast Pacing Hotfix'));
+f+=pass('Current history insertion inside controller',app.includes('PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD')&&app.includes('Classic Lineup Patch History Initialization Hotfix'));
+f+=pass('No PATCH_NOTES_HISTORY mutation after controller closes',!/^PATCH_NOTES_HISTORY\.unshift\(/m.test(tail));
+f+=pass('Exactly one mutable current history record',(src.match(/^PATCH_NOTES_HISTORY\.unshift\(\{build:CURRENT_GAME_BUILD/gm)||[]).length===1);
+f+=pass('Browser 1223 visible-target patch retained',src.includes('const CLASSIC_LINEUP_VISIBLE_TARGET_AND_OUTCOME_PRESERVING_FAST_PACING_HOTFIX=true;'));
+f+=pass('Browser 0810 streaming retained',src.includes('const CLASSIC_LINEUP_STREAMED_ROLLING_BATTLE_PLANNING_AND_REINFORCEMENT_UFO_BEAM_PATCH=true;'));
+f+=pass('Save format remains 4',src.includes('const CURRENT_SAVE_FORMAT_VERSION=4'));
+f+=pass('Exactly one finishAiPlayback declaration',(src.match(/function finishAiPlayback\(\)\{/g)||[]).length===1);
+console.log(`\nFailed: ${f}`);process.exit(f?1:0);

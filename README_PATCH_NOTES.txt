@@ -1,6 +1,28 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.10.1735_CLASSIC_LINEUP_PATCH_HISTORY_INITIALIZATION_HOTFIX
+TITLE: Classic Lineup Patch History Initialization Hotfix
+DATE: September 10, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.10.1223_CLASSIC_LINEUP_VISIBLE_TARGET_AND_OUTCOME_PRESERVING_FAST_PACING_HOTFIX
+
+SUMMARY
+-------
+Fixes the Browser 1223 startup crash caused by its patch-note history insertion being outside the scope where PATCH_NOTES_HISTORY is initialized. Gameplay behavior from Browser 1223 is preserved unchanged.
+
+FIX
+---
+- Freeze the Browser 1223 history record inside AlienResponseCommand's existing PATCH_NOTES_HISTORY initialization sequence.
+- Add Browser 1735's current history record in the same scope before sorting.
+- Remove the out-of-scope top-level PATCH_NOTES_HISTORY mutation that caused the ReferenceError.
+- Preserve visible-target rendering, fast Classic presentation pacing, Browser 0810 streamed planning/UFO beam, resolver authority, and save format 4.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.10.1223_CLASSIC_LINEUP_VISIBLE_TARGET_AND_OUTCOME_PRESERVING_FAST_PACING_HOTFIX
 TITLE: Classic Lineup Visible Target + Outcome-Preserving Fast Pacing Hotfix
 DATE: September 10, 2026
