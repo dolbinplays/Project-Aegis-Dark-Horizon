@@ -1,8 +1,22 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH`
+Current browser build: `v0.26.09.11.1740_MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH`
 
 Current save format: `4`
+
+
+## Current Build Addendum — Browser 1740 (September 11): Mobile Tactical Status HUD Collapse / Expand
+
+- Implements the queued Mobile Adaptive upper-right tactical HUD toggle while retaining `TacticalUnifiedThreeStatusPanel` as the single data authority.
+- Tapping the panel on Mobile toggles **Full ↔ Condensed**. Condensed mode retains soldier name, rank/weapon identity, HP, TU, ammo/energy state, and authoritative status-condition chips; fire-team/objective/AI-plan detail is hidden until expanded.
+- A small chevron makes the affordance discoverable. Enter/Space provide equivalent keyboard activation and `aria-expanded` reflects state. Status-condition chips remain independently interactive.
+- Collapse state is battle-local. It persists across soldier selection/observation changes, 3D Iso, FPV, TPV, reaction TPV, and Manual/Hybrid/Simulation observation, then resets to expanded for a new tactical battle.
+- Standard/Desktop remains unchanged and pointer-transparent. No campaign or save preference is introduced.
+- Browser 1708 PWA single-launch update handoff remains intact; Browser 1740 is the first intended field test of a **1708 → later build** one-tap installed update.
+- Combat/tactical authority, Browser 1610 field-accepted building seams, and save format **4** remain unchanged.
+
+### Field gate
+On a small landscape phone, collapse/expand the panel repeatedly while switching soldiers and 3D Iso/FPV/TPV. Verify core vitals/status remain readable in condensed mode, full fire-team/objective detail returns when expanded, Standard remains unchanged, and an installed Browser 1708 can adopt Browser 1740 from one manual app launch.
 
 
 ## Current Build Addendum — Browser 1708 (September 11): Installed PWA Single-Launch Update Handoff

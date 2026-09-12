@@ -1,6 +1,57 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.11.1740_MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH
+TITLE: Mobile Tactical Status HUD Collapse / Expand
+DATE: September 11, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH
+
+SUMMARY
+-------
+Adds an optional compact state to the upper-right Mobile Adaptive tactical soldier status HUD. The same shared TacticalUnifiedThreeStatusPanel can now be tapped to collapse down to the current soldier's core status, then tapped again to restore the full fire-team/objective presentation.
+
+MOBILE HUD TOGGLE
+-----------------
+- On Mobile Adaptive tactical play, tapping the upper-right Tactical Unit Status / AEGIS Combat Visor panel toggles Full <-> Condensed.
+- Condensed mode retains soldier name, rank/weapon identity, HP, TU, ammo/energy state, and authoritative condition/status chips.
+- Condensed mode hides AI Turn Plan, Fire Team Assignment detail, temporary/formal leader detail, player-order coordinates, and Current Objective / Order until expanded again.
+- A small chevron communicates the collapse/expand affordance.
+- Enter and Space activate the same toggle for keyboard/accessibility use; status-condition chips remain independently interactive and do not collapse the panel.
+
+BATTLE-LOCAL STATE
+------------------
+- Collapse state lives inside the current TacticalMission rather than campaign/save data.
+- The chosen state persists while switching selected/observed soldiers, 3D Iso, FPV, TPV, reaction TPV, and Manual/Hybrid/Simulation observation during the same battle.
+- A newly mounted tactical battle starts expanded.
+- Standard/Desktop does not receive the toggle callback and keeps the existing presentation.
+
+PRESERVED
+---------
+- TacticalUnifiedThreeStatusPanel remains the one soldier/fire-team/objective data authority.
+- Browser 1708 PWA single-launch update bootstrap/service-worker behavior is unchanged.
+- Browser 1610 procedural-building seam geometry remains field accepted and unchanged.
+- Combat AI, TU, LOS, pathfinding, fire-team orders, objective resolution, casualty/result authority, and save data are unchanged.
+- Save format remains 4.
+
+FIELD ACCEPTANCE
+----------------
+1. On Mobile Adaptive in 3D Iso, tap the upper-right status panel and confirm it collapses to name + identity/vitals/status only.
+2. Tap the condensed panel and confirm the full Fire Team Assignment / Current Objective presentation returns.
+3. Collapse it, switch soldiers, enter FPV and TPV, and let Simulation/Hybrid change the observed actor. Confirm it stays collapsed and follows the current soldier.
+4. Confirm HP/TU/ammo-energy/status chips remain live while condensed.
+5. Tap/focus a status-condition chip and confirm it does not accidentally toggle the whole panel.
+6. Confirm Enter/Space toggles the panel when the panel itself has focus.
+7. Start a new tactical battle and confirm the panel begins expanded.
+8. Switch to Standard/Desktop and confirm the existing panel remains non-toggle/pointer-transparent.
+9. From an installed Browser 1708 PWA, publish Browser 1740 and launch the app once. Confirm the 1708 update architecture can adopt this build without a second manual launch.
+10. Confirm save/load remains format 4 and Browser 1610 building seams remain correct.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH
 TITLE: Installed PWA Single-Launch Update Handoff
 DATE: September 11, 2026

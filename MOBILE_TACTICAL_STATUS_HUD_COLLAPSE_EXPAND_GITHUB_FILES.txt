@@ -1,0 +1,23 @@
+BROWSER 1740 GITHUB OVERLAY
+
+Current build: v0.26.09.11.1740_MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH
+Save format: 4
+
+Overlay this package onto the existing repository. Required files:
+- index.html
+- src/browser-runtime.html
+- service-worker.js
+- README_PATCH_NOTES.txt
+- Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+- CODEX_HANDOFF.md
+- CODEX_HANDOFF_MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH.md
+- release-metadata.json
+- src/manifest.1740.merge.json
+- tools/apply-1740-source-manifest.cjs
+- APPLY_1740_SOURCE_MANIFEST.bat
+- tools/check-mobile-tactical-status-hud-collapse-expand.cjs
+- MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_FIELD_ACCEPTANCE.txt
+- MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_GITHUB_FILES.txt
+- VALIDATION_SUMMARY.txt
+
+After overlay, run APPLY_1740_SOURCE_MANIFEST.bat from the repository root. It updates only currentBuild, lastInspectedBuild, status, and gameplayParity.browserBuild in the existing full src/manifest.json.

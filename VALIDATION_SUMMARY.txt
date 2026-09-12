@@ -1,72 +1,28 @@
-PROJECT AEGIS — BROWSER 1708 VALIDATION SUMMARY
+PROJECT AEGIS — BROWSER 1740 VALIDATION SUMMARY
 
-Build: v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH
-Base: v0.26.09.11.1610_PROCEDURAL_BUILDING_EXPLICIT_PERIMETER_SEAM_GEOMETRY_HOTFIX
+Build: v0.26.09.11.1740_MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH
+Base: v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH
 Save format: 4
-Runtime bytes: 7001445
-Runtime SHA-256: 8117878db39a2a0d55495dbb44693ae97a671da9eca3ff599ad930724730ab32
-Host SHA-256: 80369af2a7365ca420e1cfdc1cfa6a8943bcd7d4c5d5d02c504658e5b7d0b956
 
-SCOPE
------
-Installed PWA update/bootstrap reliability only. Browser 1610 procedural-building perimeter geometry is field accepted and gameplay authority is unchanged.
+PASS - 37/37 Mobile Tactical Status HUD collapse/expand focused contracts
+PASS - 10/10 Mobile interface behavioral tests
+PASS - 9/9 Mobile/PWA/audio regression tests
+PASS - 11 executable JavaScript blocks across runtime/host syntax-check
+PASS - service-worker.js syntax-check
+PASS - apply-1740-source-manifest.cjs syntax-check
+PASS - host/runtime embedded payload and release SHA synchronization
+PASS - service-worker shell/runtime cache IDs synchronized to Browser 1740
+PASS - manifest updater changes only current build/status parity fields and preserves unrelated manifest data
+PASS - tacticalBuildingPlans unchanged from Browser 1708
+PASS - tacticalBuildingCovers unchanged from Browser 1708
+PASS - makeBattlefield unchanged from Browser 1708
+PASS - resolveMission unchanged from Browser 1708
+PASS - tacticalMissionTerminalState unchanged from Browser 1708
+PASS - tacticalAiMissionResolution unchanged from Browser 1708
+PASS - Browser 1708 PWA single-launch update architecture preserved
+PASS - Browser 1610 field-accepted procedural building seam geometry preserved
 
-FOCUSED UPDATE CONTRACTS
-------------------------
-PASS - 45/45 tools/check-pwa-single-launch-update-handoff.cjs
-The suite includes an executed mocked service-worker lifecycle and verifies:
-- service-worker script registration uses updateViaCache:none;
-- host registration/update runs before embedded runtime boot;
-- installed/controller startup gating and controllerchange handoff;
-- updatefound/installing/waiting and controller-race detection;
-- bounded 2.6s discovery and 12s activation waits;
-- one-reload per-build session guard;
-- update transition and automatic internal reload path;
-- listener removal before normal gameplay;
-- offline/failure fail-open startup;
-- first-time browser installs avoid forced reload;
-- post-mission restore overlay survives update timeout;
-- worker install requests shell files with cache:reload;
-- navigation uses cache:no-store;
-- static refresh uses no-cache;
-- AEGIS_SKIP_WAITING message and clients.claim remain active;
-- canonical package-runtime-shell.cjs preserves the new bootstrap;
-- runtime/host/cache/build/release metadata synchronization.
-
-MOCKED SERVICE-WORKER EXECUTION
--------------------------------
-PASS - install fetched all four shell entries with reload cache mode
-PASS - install cached all four shell resources
-PASS - install invoked skipWaiting
-PASS - navigation used no-store network request
-PASS - activation claimed clients
-PASS - explicit skip-waiting message invoked skipWaiting
-
-BROADER REGRESSIONS
--------------------
-PASS - node tools/check-embedded-js.cjs src/browser-runtime.html index.html
-       11 non-empty executable JavaScript blocks across 2 HTML files
-PASS - node tools/test-mobile-interface.cjs: 10/10
-PASS - node --test tools/test-mobile-pwa-regressions.cjs: 9/9
-PASS - service-worker.js node --check
-PASS - tools/package-runtime-shell.cjs node --check
-PASS - tools/apply-1708-source-manifest.cjs node --check
-PASS - non-destructive source-manifest updater preservation smoke
-
-BROWSER 1610 AUTHORITY PARITY
------------------------------
-All six functions are byte-for-byte identical to Browser 1610:
-- tacticalBuildingPlans: b31115ecd3ac7abb35246e67734e665b61c5c629cd58f44ad169228af7750816
-- tacticalBuildingCovers: 48e06f8d09672fb2332c55e96c117bef6cd80268f47a54e545a41aee3f3cb778
-- makeBattlefield: cc4207374bb7d4c60aedddfa0b555b50873c33e1af9bb36a17900addfd073ebf
-- resolveMission: 2c787f0af257aeb59770488c9a8a7f655dec927470cbc3b989cd716537c00650
-- tacticalMissionTerminalState: 98c152ebddb459b61e6a66216baf04947a63bc4a3920f055a09413d3edd79e63
-- tacticalAiMissionResolution: 3ef3c32a49421c2f353d95d6e18f9f46954ead16505df535cb66cd5e618cd702
-
-TRANSITION CAVEAT
------------------
-An already-installed Browser 1610 worker cannot use Browser 1708 bootstrap/service-worker code before Browser 1708 has been obtained. Some devices may therefore still need the historical second launch once when moving from 1610 to 1708. Browser 1708 is the baseline intended to make subsequent patches single-tap updates.
-
-FIELD ACCEPTANCE OUTSTANDING
-----------------------------
-Install Browser 1708, publish a later build to the same origin, and tap the installed app exactly once. The host may show Updating AEGIS Command Network and internally reload once; the player should land in the later build without manually closing/reopening the app. Repeat offline, verify loop prevention, and verify no worker update can reload an already-running campaign/tactical session.
+FIELD GATES
+-----------
+1. Mobile Adaptive: full <-> condensed tap behavior on a phone, including 3D Iso / FPV / TPV and actor changes.
+2. Browser 1708 installed PWA -> Browser 1740 published: launch the installed app once and verify the new single-launch update handoff eliminates a second manual launch.

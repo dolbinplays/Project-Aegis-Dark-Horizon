@@ -1,0 +1,16 @@
+PROJECT AEGIS — BROWSER 1740 FIELD ACCEPTANCE
+
+Build: v0.26.09.11.1740_MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH
+Save format: 4
+
+1. Mobile Adaptive / 3D Iso: tap the upper-right Tactical Unit Status panel. It should collapse to soldier identity + HP/TU/ammo-energy + current status chips.
+2. Tap the condensed panel. Fire Team Assignment and Current Objective / Order should return.
+3. Collapse it, change selected soldier, and confirm the condensed contents follow the selected soldier without expanding.
+4. During AI playback, enter FPV and TPV and allow observed actors to change. The collapsed/expanded preference should persist for the battle and the displayed soldier should remain authoritative.
+5. Verify reaction TPV does not reset the preference.
+6. Tap/focus a condition chip such as kneeling/wounded/acting leader when available. It must not accidentally toggle the whole panel.
+7. Keyboard: focus the panel and use Enter/Space to toggle; aria-expanded should track the state.
+8. Start a different tactical battle. The panel should begin expanded.
+9. Standard/Desktop: panel behavior and pointer transparency remain unchanged.
+10. PWA update field gate: with Browser 1708 installed, publish Browser 1740, tap the installed app once, and verify it lands in 1740 without a second manual app launch.
+11. Confirm Browser 1610 building seams remain fixed and save format remains 4.

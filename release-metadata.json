@@ -1,8 +1,8 @@
 {
-  "build": "v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH",
-  "package_filename": "Project_Aegis_v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH.zip",
+  "build": "v0.26.09.11.1740_MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH",
+  "package_filename": "Project_Aegis_v0.26.09.11.1740_MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH.zip",
   "save_format": 4,
-  "runtime_bytes": 7001445,
-  "runtime_sha256": "8117878db39a2a0d55495dbb44693ae97a671da9eca3ff599ad930724730ab32",
-  "host_sha256": "80369af2a7365ca420e1cfdc1cfa6a8943bcd7d4c5d5d02c504658e5b7d0b956"
+  "runtime_bytes": 7008919,
+  "runtime_sha256": "ab8cd1b05099f6e3e8cda74016578b5d10b90816a906cc520f0794a32315bc48",
+  "host_sha256": "0ac9d84827b900db2ec07b526d6a33834ae2153f2b6b00e0628aefd48f22378c"
 }
