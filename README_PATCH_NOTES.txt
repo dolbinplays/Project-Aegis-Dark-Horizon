@@ -1,5 +1,32 @@
-PROJECT AEGIS / ALIEN RESPONSE COMMAND
-PATCH NOTES
+BUILD: v0.26.09.12.1300_BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH
+TITLE: Build Audit + Terminal Playback Integrity
+DATE: September 12, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.12.1226_TACTICAL_CASUALTY_CARE_PHASE_2_BLEEDING_STABILIZATION_AND_TRIAGE_PATCH
+
+SUMMARY
+-------
+Audits every patch added since Browser 1058, fixes terminal Hybrid completion and fallback multi-hex vehicle placement, repairs release/test drift, and removes one-use patch delivery artifacts after their changes were merged.
+
+FIXES
+-----
+- Terminal Hybrid victory now takes precedence over a stale continuation snapshot and commits the authoritative final playback frame immediately.
+- Full Simulation and Hybrid completion preserve final survivors, genuine KIA, alien/civilian outcomes, cover, explored cells, XP, and stat gains.
+- The fallback 3D renderer centers multi-hex land vehicles on their complete authoritative footprint.
+- The release checker ignores quoted test strings when locating patch-history mutations and recognizes the shared footprint visibility helper.
+- Playback tests load the current liveness/commit helper boundaries and cover terminal Hybrid precedence.
+
+REPOSITORY CLEANUP
+------------------
+- Removed merged one-use manifest wrappers/updaters, partial merge manifests, upload lists, superseded patch-specific checks and handoffs, and stale duplicate Game Bible snapshots.
+- Canonical source, current release files, stable test/smoke tools, field-acceptance plans, the current handoff, and the full current Game Bible remain.
+- Removed material remains recoverable from Git history.
+
+VALIDATION
+----------
+See VALIDATION_SUMMARY.txt for executable checks and remaining physical-device field acceptance.
+
+---
 
 BUILD: v0.26.09.12.1226_TACTICAL_CASUALTY_CARE_PHASE_2_BLEEDING_STABILIZATION_AND_TRIAGE_PATCH
 TITLE: Tactical Casualty Care Phase 2 — Bleeding, Stabilization + Triage

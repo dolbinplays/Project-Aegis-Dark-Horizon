@@ -1,4 +1,30 @@
-# CODEX HANDOFF — v0.26.09.12.1226_TACTICAL_CASUALTY_CARE_PHASE_2_BLEEDING_STABILIZATION_AND_TRIAGE_PATCH
+# CODEX HANDOFF — v0.26.09.12.1300_BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH
+
+Browser 1226 is the gameplay baseline. Browser 1300 audits the patches added since Browser 1058, fixes terminal Hybrid completion, aligns fallback 3D land-vehicle placement with footprint authority, repairs generic checks, and removes merged one-use patch-delivery files. Save format remains 4.
+
+## Fixed authority boundaries
+
+- `finishAiPlayback()` must evaluate a terminal Hybrid result before consuming `hybridContinuation`. A successful final frame is reconciled through `tacticalCommittedPlaybackFrameUnits(...)` and `tacticalTerminalVictoryResultFromCommittedBattlefield(...)` for both Simulation and Hybrid playback.
+- Completion must continue to wait while the playback sequencer owns pending presentation actions. Interrupted, pending, and operation-incomplete streams must not finalize.
+- `tacticalThreeCoverWorldAnchor(...)` owns the center of multi-hex land-vehicle presentation in both fallback and persistent Three.js renderers. `tacticalThreeBuildingPresentationCoverShouldRender(...)` owns footprint-cell visibility.
+- `check-aegis-build.cjs` locates actual patch-history mutation statements; quoted contract-test strings are not mutations.
+
+## Repository layout
+
+- Keep `src/browser-runtime.html` as canonical game source and generate `index.html`, `service-worker.js`, and `release-metadata.json` with `node tools/package-runtime-shell.cjs`.
+- Keep `src/manifest.json`, this handoff, `README_PATCH_NOTES.txt`, `VALIDATION_SUMMARY.txt`, the canonical Game Bible, PWA documentation, stable test/smoke tools, and field-acceptance plans.
+- One-use `APPLY_*` wrappers, `manifest.*.merge.json` fragments, `tools/apply-*` updaters, upload lists, per-patch checker snapshots, superseded handoffs, and duplicate Game Bible snapshots were removed after merge. Retrieve an old copy from Git history if needed for archaeology.
+
+## Field gates
+
+1. Finish a Hybrid mission whose playback still contains a continuation snapshot; it must open the terminal report without returning to another player round.
+2. Confirm survivor/KIA/civilian counts in that report match the final playback frame.
+3. Spot-check a bus or other multi-hex road vehicle in the fallback 3D renderer for centered placement and footprint-cell reveal.
+4. Repeat the existing Casualty Care Phase 2 bleeding/stabilization/triage field acceptance and one installed-PWA cold launch.
+
+---
+
+# Previous handoff — v0.26.09.12.1226_TACTICAL_CASUALTY_CARE_PHASE_2_BLEEDING_STABILIZATION_AND_TRIAGE_PATCH
 
 Browser 2248 is the gameplay baseline. Browser 1226 adds Tactical Casualty Care Phase 2: bleeding/deterioration, stabilization, targeted adjacent first aid, multi-charge Field Medkits, and bounded shared AI triage. Save format remains 4.
 

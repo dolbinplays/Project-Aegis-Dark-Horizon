@@ -992,7 +992,8 @@ for (const lineageMarker of [
 const patchHistoryOwnerStart = html.indexOf("function AlienResponseCommand");
 const patchHistoryOwnerEnd = html.indexOf("}const AEGIS_RUN_SELF_TESTS_BEFORE_2355_PATCH=runSelfTests;", patchHistoryOwnerStart);
 const patchHistoryDeclaration = html.indexOf("const PATCH_NOTES_HISTORY=", patchHistoryOwnerStart);
-const patchHistoryLastMutation = html.lastIndexOf("PATCH_NOTES_HISTORY.unshift");
+const patchHistoryMutations = [...html.matchAll(/(?:^|[;\r\n}])PATCH_NOTES_HISTORY\.unshift\(\{build:/g)];
+const patchHistoryLastMutation = patchHistoryMutations.at(-1)?.index ?? -1;
 if (patchHistoryOwnerStart < 0 || patchHistoryOwnerEnd < 0 || patchHistoryDeclaration < patchHistoryOwnerStart || patchHistoryDeclaration > patchHistoryOwnerEnd || patchHistoryLastMutation > patchHistoryOwnerEnd) {
   missing.push("all PATCH_NOTES_HISTORY mutations must remain inside AlienResponseCommand lexical scope");
 }
@@ -1203,7 +1204,7 @@ if (!html.includes('cover?.hp>0&&cover.kind==="hard"&&cover.solidVehicleFootprin
 if (!html.includes('let commitState=tacticalMovementCommitCellState(leader,nextCell,covers,workingUnits,{requireAdjacent:true})') || !html.includes('const commitState=tacticalMovementCommitCellState(human,plan.cell,covers,allUnits(),{requireAdjacent:false})') || !html.includes('const commitState=tacticalMovementCommitCellState(alien,step,covers,allUnits(),{requireAdjacent:true})')) {
   missing.push("manual/escort, human AI, and alien movement must recheck blockers at final commit time");
 }
-if (!html.includes('const base=tacticalThreeCoverWorldAnchor(runtime.worldFor,c)') || !html.includes('tacticalCoverFootprintCells(c).some(cell=>runtime.visibleSet.has(tacticalKey(cell.x,cell.y)))')) {
+if (!html.includes('const base=tacticalThreeCoverWorldAnchor(runtime.worldFor,c)') || !html.includes('tacticalCoverFootprintCells(cover).some(cell => visible.has(tacticalKey(cell.x, cell.y)))')) {
   missing.push("persistent 3D land vehicles must center and reveal from their authoritative footprint cells");
 }
 if (!html.includes('tacticalThreePersistentApplyIsoNightMaterialLift(runtime,profile)') || !html.includes('runtime?.scene?.traverse?.(object=>') || !html.includes('material.userData.aegisIsoNightBaseEmissive=material.emissive.getHex()') || !html.includes('material.emissive.setHex(baseHex)') || !html.includes('aegisIsoLiftedMaterialCount')) {

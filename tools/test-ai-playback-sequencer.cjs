@@ -182,7 +182,7 @@ function missionFixture({ terminal = false, speed = 100 } = {}) {
   const human = { id: 'lead', name: 'Lead', team: 'human', alive: true, hp: 40, maxHp: 40, tu: 48, maxTu: 48, acc: 60, ammo: 12, weaponKind: 'ballistic', x: 5, y: 5 };
   const vip = { id: 'vip', name: 'VIP', team: 'civilian', alive: true, hp: 18, x: 5, y: 6, rescued: false, extracted: false };
   const scope = {
-    mission: { id: 'fixture' }, squad: [human], initialDeployment: { skyranger: {} }, weaponUpgrades: {}, alienFieldBeaconKnowledge: 'confirmed',
+    mission: { id: 'fixture' }, squad: [human], tacticalRound: 1, initialDeployment: { skyranger: {} }, weaponUpgrades: {}, alienFieldBeaconKnowledge: 'confirmed',
     unitsRef: { current: [human, vip] }, coversRef: { current: [] }, TACTICAL_REINFORCEMENT_STATE_CACHE: new Map(), TACTICAL_FEAR_STATES: { steady: 'steady' },
     aiPlayback: null, aiPlaybackTimelineRef: { current: q },
     aiDelay: ms => Math.max(60, Math.round(ms / (speed / 100))),
@@ -202,6 +202,7 @@ function missionFixture({ terminal = false, speed = 100 } = {}) {
     tacticalPlaybackMovementPath: (frame, id) => frame.movementTrails[id] || [],
     tacticalMergeAlienContactPlaybackMemory: unit => unit,
     tacticalFinalVipBoardingTerminalVictoryCheckpoint: () => ({ eligible: terminal, cutoffSteps: 2, boardingIds: ['vip'] }),
+    tacticalTerminalVictoryResultFromCommittedBattlefield: result => result,
     tacticalCameraFocusDescriptor: () => null,
     tacticalPlaybackPlanStep: (plan, index) => plan?.path[Math.min(index, plan.path.length - 1)],
     tacticalAiMissionResolution: () => ({ success: terminal }),
@@ -209,9 +210,11 @@ function missionFixture({ terminal = false, speed = 100 } = {}) {
     updateFacing: () => 'E',
     setAiRoundPreparation: () => {}, setCommandMapPaused: () => {}, setCommandMapPauseRequested: () => {}, setTurn: () => {}, setTargetingMode: () => {}, setSelected: () => {}, onDialogue: () => {},
   };
+  const h = source.indexOf('function tacticalPlaybackFrameUnitAuthoritativeAlive(');
+  const i = source.indexOf('function tacticalCommittedPlaybackFrameUnits(', h);
   const a = source.indexOf('function applyAiFrameToMap('), b = source.indexOf('function estimateAiFrameMovementDelay', a);
   const d = source.indexOf('function takeBackAiCommand()'), e = source.indexOf('function finishAiPlayback()', d);
-  vm.runInContext(source.slice(a, b) + '\n' + source.slice(d, e), vm.createContext(scope));
+  vm.runInContext(source.slice(h, i) + '\n' + source.slice(a, b) + '\n' + source.slice(d, e), vm.createContext(scope));
   return { c, q, scope, states, human, vip };
 }
 

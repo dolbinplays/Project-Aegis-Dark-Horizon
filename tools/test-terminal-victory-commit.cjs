@@ -33,7 +33,7 @@ function setup({hybrid=false,pending=false,success=true,continuation=null}={}) {
     invalidateAiStream:()=>{},cancelAiPlaybackTimers:()=>observed.cancelled++,
     applyAiFrameToMap:()=>observed.applied++,finishTacticalMission:r=>observed.finished.push(r),
   });
-  for(const name of ['tacticalMissionResultHasTerminalOutcome','tacticalAiPlaybackTerminalState','tacticalPlaybackFrameUnitAuthoritativeAlive','tacticalRestoreCommittedVictorySurvivors','tacticalCommittedVictoryFrameUnits','tacticalTerminalVictoryResultFromCommittedBattlefield','tacticalMedkitWoundDays','applyTacticalMedicalGrowth','tacticalCivilianObjectiveForMission','tacticalCivilianOutcomeForMission','finishAiPlaybackResult','finishAiPlayback']) {
+  for(const name of ['tacticalMissionResultHasTerminalOutcome','tacticalAiPlaybackTerminalState','tacticalPlaybackFrameUnitAuthoritativeAlive','tacticalCommittedPlaybackFrameUnits','tacticalRestoreCommittedVictorySurvivors','tacticalTerminalVictoryResultFromCommittedBattlefield','tacticalMedkitWoundDays','applyTacticalMedicalGrowth','tacticalCivilianObjectiveForMission','tacticalCivilianOutcomeForMission','finishAiPlayback']) {
     for(const declaration of declarations(name)) vm.runInContext(declaration,context);
   }
   return {context,observed,playback,frame,result,squad};

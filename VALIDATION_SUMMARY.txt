@@ -1,52 +1,56 @@
-PROJECT AEGIS — BROWSER 1226 VALIDATION SUMMARY
-Build: v0.26.09.12.1226_TACTICAL_CASUALTY_CARE_PHASE_2_BLEEDING_STABILIZATION_AND_TRIAGE_PATCH
+PROJECT AEGIS — BROWSER 1300 VALIDATION SUMMARY
+Build: v0.26.09.12.1300_BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH
 Save format: 4
-Base: Browser 2248 Tactical Casualty Care Phase 1
+Base: Browser 1226 Tactical Casualty Care Phase 2
 
-FOCUSED CASUALTY QA
-- Phase 2 contract checker: 31/31 PASS.
-- Phase 2 executable medical smoke: PASS.
-- Phase 1 contract checker: 41/41 PASS.
-- Phase 1 executable drag/downing smoke: PASS.
-- All-down terminal-state smoke: PASS.
+CONFIRMED FIXES
+- Hybrid terminal completion now checks terminal result authority before consuming a continuation snapshot.
+- Full Simulation and Hybrid terminal victory reconcile units and report outcomes from the final playback frame.
+- Fallback Three.js cover rendering uses the full-footprint world anchor for multi-hex land vehicles.
+- The generic build check identifies executable patch-history mutations without matching quoted test text.
+- The build check validates footprint reveal through the shared render-eligibility helper.
+- README patch notes and PWA deployment metadata now identify the active build.
 
-INHERITED REGRESSION QA
-- Observed Beacon arrival cinematic: 34/34 PASS + executable cinematic smoke PASS.
-- Alien Beacon materialization: 36/36 PASS + executable materialization smoke PASS.
-- Mobile Tactical Status HUD collapse/expand: 37/37 PASS.
-- Android PWA cold-start/release-beacon architecture: 50/50 PASS.
-- Existing Mobile/PWA/audio regression suite: 9/9 PASS.
+AUTOMATED VALIDATION
+- Embedded runtime/host/QA JavaScript: PASS, 11 non-empty blocks parsed.
+- Generic build/release seam: PASS for Browser 1300.
+- Node test suite: 26/26 PASS.
+- Mobile interface behavior: 10/10 PASS.
+- Tactical playback sequencer: 16/16 PASS.
+- Executable tactical smoke scripts: 5/5 PASS.
+- All retained .cjs tools: 14/14 syntax PASS.
+- Git whitespace check: PASS.
+- Exactly one finishAiPlayback() declaration and one mutable current patch-history record remain.
 
-AUTHORITY DIFFERENTIAL VS BROWSER 2248
-Byte-for-byte unchanged:
-- tacticalAlienReinforcementArrival(...)
-- tacticalBuildingPlans(...)
-- tacticalBuildingCovers(...)
-- makeBattlefield(...)
-- tacticalAiMissionResolution(...)
-- tacticalThreePersistentStartBeaconReinforcementArrivalCinematic(...)
-- tacticalThreePersistentCreateAlienTransitMaterializationEffect(...)
-- tacticalMissionTerminalState(...)
-Intentional difference:
-- resolveMission(...) — Phase 2 applies bleeding deterioration and shared AI medical triage.
+FOCUSED TERMINAL COVERAGE
+- Full AI and Hybrid finalization preserve frame-confirmed survivors and genuine KIA.
+- Civilian rescued/lost outcomes, remaining aliens, XP, and stat gains are retained.
+- A committed Hybrid victory outranks a stale continuation snapshot.
+- Pending playback actions, interrupted streams, and incomplete operations cannot finalize.
+- Explicit death remains authoritative even if a presentation frame carries positive HP.
+- Genuine defeat passes through without survivor restoration.
 
 RELEASE INTEGRITY
-- Packaged runtime bytes: 7,068,717.
-- Runtime SHA-256 matches release-metadata.json: c655645ac05e5d0dbb2d6b4576fb5c88b0c134842f1b7ae79fa11379a6ff9ca5.
-- Host SHA-256 matches release-metadata.json: 5cf4c4899403d4f8843870e1222a4064b0965914558894dd875b25e2250bc887.
-- All executable inline runtime/host JavaScript blocks parse with node --check.
-- service-worker.js and all shipped .cjs tools parse with node --check.
-- Canonical package/runtime-shell regression passes through the 9/9 PWA/audio suite.
-- Exactly one mutable current PATCH_NOTES_HISTORY entry inside AlienResponseCommand().
-- Exactly one finishAiPlayback() function definition.
-- APPLY_1226 updater synthetic-manifest smoke: PASS; unrelated top-level/nested fields preserved.
-- Save format remains 4.
+- Packaged runtime bytes: 7,070,368.
+- Runtime SHA-256: 3af03e4cc5c0344baaec3ab431ad9f5c44a9ba803ba6585cca346368606003ce.
+- Host SHA-256: 7f0f8c961aff8e4ec932c3f589110ec1ba99af3ce0ea9511977a9a6863e50f67.
+- index.html embeds a byte-for-byte copy of src/browser-runtime.html.
+- Both service-worker caches, host build constants, manifest fields, and release metadata use Browser 1300.
+
+REPOSITORY CLEANUP
+- Removed 30 merged APPLY_*.bat wrappers.
+- Removed 30 partial src/manifest.*.merge.json files.
+- Removed 30 one-use tools/apply-*-source-manifest.cjs updaters.
+- Removed 27 obsolete GitHub upload lists.
+- Removed 20 superseded patch-specific checkers that intentionally compared against old exact build IDs or unavailable temporary baselines.
+- Removed 34 superseded per-patch handoff copies; CODEX_HANDOFF.md remains authoritative.
+- Removed 9 stale duplicate Game Bible/roadmap snapshots; the current canonical Game Bible retains their incorporated content.
+- All 180 removed files remain recoverable from Git history.
 
 FIELD ACCEPTANCE STILL REQUIRED
-- Bleeding countdown 3 -> 2 -> 1 -> KIA when untreated.
-- Stabilization stops deterioration without reviving the casualty.
-- Adjacent teammate first aid and self-treatment spend one Field Medkit charge at documented TU/heal values.
-- Ordinary kit 4 charges; Medic kit 10 charges.
-- Simulation AI triage and Medic preference.
-- Save/reload active bleeding + stabilized states.
-- Phase 1 drag/all-down, Beacon, PWA, Mobile HUD, building seam and horizon regression spot checks.
+- The local background browser controller timed out attaching to the large packaged page twice; no visual browser boot result is claimed.
+- Finish a terminal Hybrid mission with a continuation snapshot and confirm it opens the Mission Report immediately.
+- Confirm final survivor, KIA, alien, and civilian report counts match the last playback frame.
+- Spot-check a multi-hex road vehicle in the fallback 3D renderer for centered placement and footprint-cell reveal.
+- Repeat Casualty Care Phase 2 bleeding/stabilization/triage field acceptance and one installed-PWA cold launch.
+- Godot CLI was unavailable, so the native prototype was not executed; no Godot files changed.

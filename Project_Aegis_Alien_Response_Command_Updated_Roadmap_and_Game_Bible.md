@@ -1,8 +1,22 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.12.1226_TACTICAL_CASUALTY_CARE_PHASE_2_BLEEDING_STABILIZATION_AND_TRIAGE_PATCH`
+Current browser build: `v0.26.09.12.1300_BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 1300 (September 12): Build Audit + Terminal Playback Integrity
+
+- Fixes Hybrid playback finalization so a terminal mission result is committed before any stale continuation snapshot can return control to another round.
+- Reconciles terminal survivors, genuine casualties, aliens, civilians, cover, and explored cells from the final authoritative playback frame in both full Simulation and Hybrid completion paths.
+- Centers multi-hex land vehicles on their full authoritative footprint in the fallback 3D renderer, matching the persistent renderer and collision authority.
+- Repairs the release checker so quoted regression-test text cannot be mistaken for an out-of-scope patch-history mutation, and so shared footprint visibility authority is recognized directly.
+- Updates the terminal-playback and movement harnesses for the current helper boundaries and retains the 1226 bleeding, stabilization, Field Medkit, AI triage, PWA, Beacon, mobile, building, and horizon behavior.
+- Removes merged patch-delivery wrappers, partial merge manifests, superseded upload lists/checkers/handoffs, and stale duplicate Game Bible snapshots. Git history retains every removed revision; canonical source, release, handoff, validation, field-acceptance, and roadmap files remain.
+- Save format remains **4**.
+
+### Field gate
+
+Complete one terminal Hybrid mission that still carries a continuation snapshot and verify the Mission Report appears immediately. Spot-check a multi-hex road vehicle in the fallback 3D view, then repeat the existing Casualty Care Phase 2 field acceptance.
 
 
 
