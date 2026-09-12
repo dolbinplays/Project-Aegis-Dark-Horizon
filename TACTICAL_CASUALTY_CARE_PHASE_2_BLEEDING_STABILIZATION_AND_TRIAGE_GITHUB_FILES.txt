@@ -1,0 +1,44 @@
+PROJECT AEGIS — BROWSER 1226 GITHUB OVERLAY FILES
+
+Extract this ZIP over the Project Aegis repository root, then run:
+  APPLY_1226_SOURCE_MANIFEST.bat
+
+Runtime / PWA
+- index.html
+- src/browser-runtime.html
+- service-worker.js
+- release-metadata.json
+
+Documentation
+- README_PATCH_NOTES.txt
+- Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+- CODEX_HANDOFF.md
+- CODEX_HANDOFF_TACTICAL_CASUALTY_CARE_PHASE_2_BLEEDING_STABILIZATION_AND_TRIAGE_PATCH.md
+- CODEX_HANDOFF_TACTICAL_CASUALTY_CARE_PHASE_1_DOWNED_RECOVERY_AND_DRAGGING_PATCH.md
+- CODEX_HANDOFF_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH.md
+- CODEX_HANDOFF_TACTICAL_ALIEN_BEACON_REINFORCEMENT_MATERIALIZATION_PRESENTATION_PATCH.md
+- TACTICAL_CASUALTY_CARE_PHASE_2_BLEEDING_STABILIZATION_AND_TRIAGE_FIELD_ACCEPTANCE.txt
+- TACTICAL_CASUALTY_CARE_PHASE_2_BLEEDING_STABILIZATION_AND_TRIAGE_GITHUB_FILES.txt
+- VALIDATION_SUMMARY.txt
+
+Non-destructive manifest update
+- src/manifest.1226.merge.json
+- tools/apply-1226-source-manifest.cjs
+- APPLY_1226_SOURCE_MANIFEST.bat
+
+Release / regression tools
+- tools/package-runtime-shell.cjs
+- tools/check-tactical-casualty-care-phase-2.cjs
+- tools/smoke-tactical-casualty-care-phase-2.cjs
+- tools/check-tactical-casualty-care-phase-1.cjs
+- tools/smoke-tactical-casualty-care-phase-1.cjs
+- tools/smoke-tactical-casualty-terminal-state.cjs
+- tools/check-observed-beacon-reinforcement-arrival-cinematic.cjs
+- tools/smoke-observed-beacon-reinforcement-arrival-cinematic.cjs
+- tools/check-tactical-alien-beacon-materialization.cjs
+- tools/smoke-tactical-alien-beacon-materialization.cjs
+- tools/check-mobile-tactical-status-hud-collapse-expand.cjs
+- tools/check-pwa-android-cold-start-release-beacon.cjs
+- tools/test-mobile-pwa-regressions.cjs
+
+Do not overwrite the repository's full src/manifest.json with a reduced release copy. The supplied updater changes only currentBuild, lastInspectedBuild, status, and gameplayParity.browserBuild.

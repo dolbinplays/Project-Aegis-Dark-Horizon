@@ -1,6 +1,69 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.12.1226_TACTICAL_CASUALTY_CARE_PHASE_2_BLEEDING_STABILIZATION_AND_TRIAGE_PATCH
+TITLE: Tactical Casualty Care Phase 2 — Bleeding, Stabilization + Triage
+DATE: September 12, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.11.2248_TACTICAL_CASUALTY_CARE_PHASE_1_DOWNED_RECOVERY_AND_DRAGGING_PATCH
+
+SUMMARY
+-------
+Extends Phase 1 casualty recovery into a bounded field-medical loop. Recoverable downed soldiers now bleed on a three-round deterioration clock until stabilized, Field Medkits carry multiple tactical charges, conscious wounded teammates can receive adjacent first aid, and Simulation AI performs visibility-safe medical triage. Stabilization stops deterioration but does not revive a downed casualty.
+
+BLEEDING / DETERIORATION
+------------------------
+- A recoverable downing begins unstable and bleeding with a 3-round bleed-out clock.
+- The clock advances once per new tactical round. `bleedLastProcessedRound` prevents double-processing during Manual/Hybrid/Simulation transitions or restored state.
+- If the clock expires before stabilization, the casualty becomes authoritative KIA.
+- Downed soldiers remain at 0 TU across round refreshes and do not contribute tactical or playback LOS.
+
+FIELD MEDICAL ACTIONS
+---------------------
+- Stabilize adjacent bleeding casualty: 16 TU, 1 Field Medkit charge. Stops bleeding/deterioration but leaves the casualty unconscious/downed.
+- Treat adjacent conscious wounded teammate: 14 TU, 1 charge, up to 10 HP restored.
+- Self-treatment: 12 TU, 1 charge, up to 12 HP restored.
+- Ordinary issued Field Medkit: 4 tactical charges per deployment.
+- Medic specialization with issued Field Medkit: 10 tactical charges per deployment.
+- Field Medkits remain reusable issued equipment in this bounded phase; strategic per-charge resupply/economics are deferred.
+
+AI TRIAGE
+---------
+- Simulation AI prioritizes the most urgent bleeding downed casualty it can legitimately respond to.
+- An adjacent Medic is preferred when available; otherwise another capable conscious soldier may stabilize.
+- If no urgent downed casualty needs stabilization, AI may treat a sufficiently wounded conscious adjacent teammate.
+- AI uses the same medical helpers and charge/TU authority as manual play. Hidden aliens do not become medical-trigger knowledge.
+
+HUD / SAVE / AUTHORITY
+----------------------
+- BLD shows an unstable casualty's remaining bleed-out rounds; STB shows a stabilized downed casualty. DWN and DRG remain from Phase 1.
+- Tactical snapshots carry bleeding/stabilization state, remaining rounds, per-round processing guard, stabilizer identity/round, and Field Medkit charges.
+- Save format remains 4; these are optional tactical fields.
+- Phase 1 drag authority and all-down terminal behavior remain intact.
+
+DEFERRED TO PHASE 3
+-------------------
+- Physical casualty boarding/extraction into the Skyranger.
+- Strategic medkit charge resupply/economics and encumbrance.
+- Permanent injuries/body-region consequences and deeper Sickbay outcomes.
+- Advanced medical formulations/treatment history and longer-term recovery effects.
+
+FIELD ACCEPTANCE
+----------------
+1. Produce a recoverable downing and confirm BLD begins at 3 rounds. Leave it untreated through new rounds and verify 2 -> 1 -> KIA.
+2. Stabilize another downed soldier for 16 TU/1 charge and confirm STB replaces active bleeding while the soldier stays downed/unconscious.
+3. Treat an adjacent conscious wounded teammate and confirm 14 TU, one charge, and up to 10 HP healing.
+4. Self-treat and confirm one charge is consumed rather than the entire Field Medkit.
+5. Verify ordinary Field Medkits begin with 4 charges and Medic Field Medkits with 10.
+6. In Simulation AI, verify urgent bleeding casualties are prioritized and an adjacent Medic is preferred when practical.
+7. Save/reload both an actively bleeding casualty and a stabilized casualty; verify clocks/charges do not reset or double-tick.
+8. Recheck Phase 1 dragging/all-down behavior, Beacon materialization/cinematic, Mobile HUD, Browser 1800 PWA update/cold-start behavior, building seams, and save format 4.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.11.2248_TACTICAL_CASUALTY_CARE_PHASE_1_DOWNED_RECOVERY_AND_DRAGGING_PATCH
 TITLE: Tactical Casualty Care Phase 1 — Downed Recovery + Dragging
 DATE: September 11, 2026

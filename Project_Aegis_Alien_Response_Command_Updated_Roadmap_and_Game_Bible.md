@@ -1,10 +1,38 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.11.2248_TACTICAL_CASUALTY_CARE_PHASE_1_DOWNED_RECOVERY_AND_DRAGGING_PATCH`
+Current browser build: `v0.26.09.12.1226_TACTICAL_CASUALTY_CARE_PHASE_2_BLEEDING_STABILIZATION_AND_TRIAGE_PATCH`
 
 Current save format: `4`
 
 
+
+## Current Build Addendum — Browser 1226 (September 12): Tactical Casualty Care Phase 2 — Bleeding, Stabilization + Triage
+
+- **Status: implemented; awaiting field acceptance.** Phase 2 extends Browser 2248's downed/dragging authority with a bounded tactical medical loop while preserving save format **4**.
+- Recoverable downed casualties begin **bleeding / unstable** with a **3-round bleed-out clock**. Deterioration advances once per new tactical round; `bleedLastProcessedRound` prevents duplicate ticks across Manual/Hybrid/Simulation transitions and restore paths. Untreated expiration becomes authoritative KIA.
+- Any adjacent conscious AEGIS soldier with a Field Medkit charge may **stabilize** a bleeding casualty for **16 TU + 1 charge**. Stabilization stops deterioration but deliberately does **not** revive or return the casualty to combat.
+- An adjacent conscious wounded teammate may receive **first aid for 14 TU + 1 charge**, restoring up to **10 HP**. Self-treatment remains **12 TU + 1 charge** and restores up to **12 HP**.
+- Issued Field Medkits now have tactical deployment capacity: **4 charges** for ordinary soldiers and **10 charges** for the **Medic** specialization. Strategic per-charge replenishment/economics remain deferred; the issued kit is still reusable equipment.
+- Simulation AI uses the same medical authority: urgent bleeding casualties are prioritized, an adjacent Medic is preferred where practical, and conscious wounded teammates may be treated when there is no more urgent stabilization target. Hidden alien knowledge is not introduced.
+- Tactical HUD conditions add **BLD** with the remaining bleed-out count and **STB** for a stabilized downed casualty; Browser 2248 **DWN / DRG** remain.
+- Downed soldiers stay at **0 TU** through round refreshes and are excluded from both live and Simulation-playback visibility authority.
+- Tactical snapshots carry bleeding/stabilization state, remaining bleed rounds, per-round processing guard, stabilizer metadata, and Field Medkit charges. Save format remains **4**.
+- Browser 2248 dragging/all-down terminal behavior, Browser 2058 Beacon cinematic, Browser 2015 materialization, Browser 1800 field-accepted Android PWA architecture, Browser 1740 Mobile HUD, Browser 1610 building seams, and Browser 1254 horizon treatment remain preserved.
+
+### Casualty Care Phase 3 — retained roadmap scope
+- Physical casualty boarding/extraction into the Skyranger and mission-aftermath consequences for recovered vs. abandoned downed personnel.
+- Strategic Field Medkit charge resupply/economics, encumbrance, advanced formulations, and treatment history.
+- Permanent injuries/body-region consequences and deeper Sickbay/recovery integration.
+- Additional triage/carry presentation only after Phase 2 bleeding/stabilization behavior is field accepted.
+
+### Field gate
+1. Leave a recoverable downed casualty untreated and verify BLD 3 -> 2 -> 1 -> KIA exactly once per new round.
+2. Stabilize another casualty and verify STB, no further deterioration, and no instant revival.
+3. Verify adjacent teammate treatment and self-treatment costs/healing/charge consumption.
+4. Confirm 4 ordinary / 10 Medic Field Medkit charges at mission start.
+5. Observe Simulation AI medical triage and Medic preference without hidden-threat omniscience.
+6. Save/reload active bleeding and stabilized states and verify no charge reset or double bleed tick.
+7. Regress dragging, all-down terminal behavior, Beacon effects/cinematic, Android PWA, Mobile HUD, building seams, and save format **4**.
 
 ## Current Build Addendum — Browser 2248 (September 11): Tactical Casualty Care Phase 1 — Downed Recovery + Dragging
 
@@ -18,10 +46,10 @@ Current save format: `4`
 - Tactical snapshots carry the minimal downed/drag relationship state and restore-time repair clears invalid links. **Save format remains 4.**
 - Browser 2058 observed Beacon arrival cinematics, Browser 2015 materialization, Browser 1800 field-accepted Android PWA release-beacon architecture, Browser 1740 Mobile Tactical Status HUD, Browser 1610 field-accepted building seams, and Browser 1254 horizon treatment remain preserved.
 
-### Casualty Care Phase 2 — retained roadmap scope
-- Add bleeding/deterioration and stabilization authority, then targeted treatment of adjacent downed soldiers.
-- Expand Medpac / Field Medkit charge rules and Medic specialization value through the same shared Manual/Hybrid/Simulation medical authority.
-- Add triage priorities, casualty extraction consequences/bonuses, deeper Sickbay/recovery outcomes, and permanent-injury hooks only after Phase 1 dragging/downed behavior is field accepted.
+### Casualty Care Phase 2 — implemented in Browser 1226
+- Bleeding/deterioration, stabilization, targeted adjacent treatment, multi-charge Field Medkits, Medic capacity, and shared AI triage are implemented in Browser 1226.
+- Phase 1 remains **awaiting direct field acceptance**; Browser 1226 extends it without treating the Phase 1 mechanics as field-proven.
+- Remaining casualty-care expansion has moved to the Phase 3 scope above.
 
 ### Field gate
 1. Produce both a recoverable downing and a catastrophic KIA and verify the distinction is obvious in presentation and outcome.

@@ -29,7 +29,8 @@ add('1740 history frozen literal',runtime.includes('build:"v0.26.09.11.1740_MOBI
 add('Browser 1800 hotfix history frozen',runtime.includes('build:"v0.26.09.11.1800_PWA_ANDROID_COLD_START_AND_RELEASE_BEACON_HOTFIX"'));
 add('Browser 2015 materialization history frozen',runtime.includes('build:"v0.26.09.11.2015_TACTICAL_ALIEN_BEACON_REINFORCEMENT_MATERIALIZATION_PRESENTATION_PATCH",date:"September 11, 2026",title:"Alien Field Beacon Reinforcement Materialization Presentation"'));
 add('Browser 2058 observed Beacon cinematic history frozen',runtime.includes('build:"v0.26.09.11.2058_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH",date:"September 11, 2026",title:"Observed Beacon Reinforcement Arrival Cinematic"'));
-add('current casualty care history entry present',runtime.includes('build:CURRENT_GAME_BUILD,date:"September 11, 2026",title:"Tactical Casualty Care Phase 1 — Downed Recovery + Dragging"'));
+add('Browser 2248 casualty care Phase 1 history frozen',runtime.includes('build:"v0.26.09.11.2248_TACTICAL_CASUALTY_CARE_PHASE_1_DOWNED_RECOVERY_AND_DRAGGING_PATCH",date:"September 11, 2026",title:"Tactical Casualty Care Phase 1 — Downed Recovery + Dragging"'));
+add('current casualty care Phase 2 history entry present',runtime.includes('build:CURRENT_GAME_BUILD,date:"September 12, 2026",title:"Tactical Casualty Care Phase 2 — Bleeding, Stabilization + Triage"'));
 const appSource=fnSource(runtime,'AlienResponseCommand')||'';
 add('exactly one mutable current patch history entry',(appSource.match(/PATCH_NOTES_HISTORY\.unshift\(\{build:CURRENT_GAME_BUILD/g)||[]).length===1);
 add('host build synchronized',host.includes(`data-aegis-host-build="${BUILD}"`)&&host.includes(`const BUILD='${BUILD}'`));
@@ -56,7 +57,7 @@ add('release runtime byte count matches',metadata.runtime_bytes===runtimeBytes.l
 add('release runtime SHA matches',metadata.runtime_sha256===crypto.createHash('sha256').update(runtimeBytes).digest('hex'));
 add('release host SHA matches',metadata.host_sha256===crypto.createHash('sha256').update(Buffer.from(host,'utf8')).digest('hex'));
 for(const name of ['tacticalBuildingPlans','tacticalBuildingCovers','makeBattlefield','tacticalAiMissionResolution']) add(`${name} unchanged from Browser 1740`,sameFn(name));
-add('resolveMission change is owned by casualty care Phase 1',!sameFn('resolveMission')&&runtime.includes('TACTICAL_CASUALTY_CARE_PHASE_1_DOWNED_RECOVERY_DRAGGING_PATCH=true'));
+add('resolveMission changes are owned by casualty care phases',!sameFn('resolveMission')&&runtime.includes('TACTICAL_CASUALTY_CARE_PHASE_1_DOWNED_RECOVERY_DRAGGING_PATCH=true')&&runtime.includes('TACTICAL_CASUALTY_CARE_PHASE_2_BLEEDING_STABILIZATION_TRIAGE_PATCH=true'));
 add('terminal-state change is owned by casualty care Phase 1',!sameFn('tacticalMissionTerminalState')&&runtime.includes('activeHumanCount')&&runtime.includes('downedHumanCount'));
 
 (async()=>{

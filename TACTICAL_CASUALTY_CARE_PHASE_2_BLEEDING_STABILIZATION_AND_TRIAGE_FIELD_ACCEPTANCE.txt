@@ -1,0 +1,13 @@
+PROJECT AEGIS — BROWSER 1226 FIELD ACCEPTANCE
+Tactical Casualty Care Phase 2 — Bleeding, Stabilization + Triage
+
+1. Recoverable downing: confirm DWN + BLD and a 3-round bleed-out clock.
+2. Untreated deterioration: advance new tactical rounds and confirm 3 -> 2 -> 1 -> KIA exactly once per round.
+3. Stabilization: adjacent conscious soldier uses 16 TU + 1 medical charge; casualty changes to STB, remains downed/unconscious, and no longer deteriorates.
+4. Adjacent first aid: treat a conscious wounded teammate for 14 TU + 1 charge; confirm up to 10 HP restored.
+5. Self first aid: 12 TU + 1 charge, up to 12 HP restored; kit remains available while charges remain.
+6. Capacity: ordinary issued Field Medkit begins with 4 charges; Medic-issued kit begins with 10.
+7. AI triage: Simulation prioritizes urgent bleeding casualties and prefers an adjacent Medic when possible.
+8. Visibility: downed/unconscious soldiers do not provide live or playback LOS and remain at 0 TU across rounds.
+9. Save/load: restore one active bleeding casualty and one stabilized casualty; verify remaining rounds/charges/stability persist without duplicate deterioration.
+10. Regression: Phase 1 dragging/all-down, Beacon materialization/cinematic, Android PWA first-launch/update behavior, Mobile HUD, building seams, and save format 4.

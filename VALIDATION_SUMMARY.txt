@@ -1,56 +1,52 @@
-PROJECT AEGIS — BROWSER 2248 VALIDATION SUMMARY
-Build: v0.26.09.11.2248_TACTICAL_CASUALTY_CARE_PHASE_1_DOWNED_RECOVERY_AND_DRAGGING_PATCH
-Base build: v0.26.09.11.2058_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH
+PROJECT AEGIS — BROWSER 1226 VALIDATION SUMMARY
+Build: v0.26.09.12.1226_TACTICAL_CASUALTY_CARE_PHASE_2_BLEEDING_STABILIZATION_AND_TRIAGE_PATCH
 Save format: 4
+Base: Browser 2248 Tactical Casualty Care Phase 1
 
-CASUALTY CARE PHASE 1 QA
-- tools/check-tactical-casualty-care-phase-1.cjs: 41/41 PASS.
-- tools/smoke-tactical-casualty-care-phase-1.cjs: PASS for recoverable downing, catastrophic KIA, manual attach/release, physical previous-hex dragging, and visibility-safe AI emergency pull.
-- tools/smoke-tactical-casualty-terminal-state.cjs: PASS; all-down resolves as tactical defeat, while one active + one downed human can still secure victory.
-- Runtime Build Health includes a Browser 2248 casualty-care contract and exactly one mutable current patch-history entry.
+FOCUSED CASUALTY QA
+- Phase 2 contract checker: 31/31 PASS.
+- Phase 2 executable medical smoke: PASS.
+- Phase 1 contract checker: 41/41 PASS.
+- Phase 1 executable drag/downing smoke: PASS.
+- All-down terminal-state smoke: PASS.
 
-INHERITED TACTICAL PRESENTATION REGRESSION
-- tools/check-observed-beacon-reinforcement-arrival-cinematic.cjs: 34/34 PASS.
-- tools/smoke-observed-beacon-reinforcement-arrival-cinematic.cjs: PASS.
-- tools/check-tactical-alien-beacon-materialization.cjs: 36/36 PASS.
-- tools/smoke-tactical-alien-beacon-materialization.cjs: PASS.
-- tools/check-mobile-tactical-status-hud-collapse-expand.cjs: 37/37 PASS. Its two resolver/terminal parity checks explicitly recognize the Browser 2248 casualty-care ownership of those changes.
+INHERITED REGRESSION QA
+- Observed Beacon arrival cinematic: 34/34 PASS + executable cinematic smoke PASS.
+- Alien Beacon materialization: 36/36 PASS + executable materialization smoke PASS.
+- Mobile Tactical Status HUD collapse/expand: 37/37 PASS.
+- Android PWA cold-start/release-beacon architecture: 50/50 PASS.
+- Existing Mobile/PWA/audio regression suite: 9/9 PASS.
 
-ANDROID PWA / AUDIO REGRESSION
-- tools/check-pwa-android-cold-start-release-beacon.cjs: 49/49 PASS.
-  * no-update launch uses only the tiny release probe + stable launch shell;
-  * a newer published shell is returned in the same navigation;
-  * offline fallback remains available;
-  * Browser 1800 release-beacon-navigation-v2 and aegis-launch-shell-v2 remain intact.
-- tools/test-mobile-pwa-regressions.cjs: 9/9 PASS.
-- Browser 1800 PWA architecture remains field accepted from the successful one-launch 1800 -> 2015 Android update.
-
-AUTHORITY COMPARISON AGAINST BROWSER 2058
-Byte-for-byte UNCHANGED:
+AUTHORITY DIFFERENTIAL VS BROWSER 2248
+Byte-for-byte unchanged:
 - tacticalAlienReinforcementArrival(...)
 - tacticalBuildingPlans(...)
 - tacticalBuildingCovers(...)
 - makeBattlefield(...)
-- tacticalAiMissionResolution(...) function source
+- tacticalAiMissionResolution(...)
 - tacticalThreePersistentStartBeaconReinforcementArrivalCinematic(...)
 - tacticalThreePersistentCreateAlienTransitMaterializationEffect(...)
-
-INTENTIONALLY CHANGED FOR CASUALTY CARE PHASE 1:
-- resolveMission(...): stops the tactical loop when no combat-active human remains.
-- tacticalMissionTerminalState(...): separates surviving / active / downed humans and resolves an all-down squad as tactically defeated.
+- tacticalMissionTerminalState(...)
+Intentional difference:
+- resolveMission(...) — Phase 2 applies bleeding deterioration and shared AI medical triage.
 
 RELEASE INTEGRITY
-- Packaged runtime: 7,052,081 bytes.
-- Runtime SHA-256: f2fb87308aac857090ec331c348ff1b6806123c5bf3325941071d3c34af5a612
-- Host SHA-256: f8b78a2154c8e4efce6ae676096dd37026b6ba8714ed8234ed3adc637fb83cb4
-- Embedded index.html payload decodes byte-for-byte to src/browser-runtime.html.
-- All 7 executable JavaScript blocks in src/browser-runtime.html pass node --check.
-- service-worker.js, package-runtime-shell.cjs, current regression tools, and apply-2248-source-manifest.cjs pass node --check where applicable.
-- Non-destructive manifest updater smoke PASS; unrelated top-level/nested data and saveFormat 4 are preserved.
-- Exactly one finishAiPlayback() function definition remains.
-- Browser 2058 patch history is frozen; exactly one real Browser 2248 mutable current history entry remains.
+- Packaged runtime bytes: 7,068,717.
+- Runtime SHA-256 matches release-metadata.json: c655645ac05e5d0dbb2d6b4576fb5c88b0c134842f1b7ae79fa11379a6ff9ca5.
+- Host SHA-256 matches release-metadata.json: 5cf4c4899403d4f8843870e1222a4064b0965914558894dd875b25e2250bc887.
+- All executable inline runtime/host JavaScript blocks parse with node --check.
+- service-worker.js and all shipped .cjs tools parse with node --check.
+- Canonical package/runtime-shell regression passes through the 9/9 PWA/audio suite.
+- Exactly one mutable current PATCH_NOTES_HISTORY entry inside AlienResponseCommand().
+- Exactly one finishAiPlayback() function definition.
+- APPLY_1226 updater synthetic-manifest smoke: PASS; unrelated top-level/nested fields preserved.
+- Save format remains 4.
 
-FIELD STATUS
-- Browser 2058 Beacon arrival cinematic: field accepted (user reported it looks good).
-- Browser 2248 Casualty Care Phase 1 automated release gates: PASS.
-- Downed/dragging gameplay and 3D Iso/FPV/TPV presentation: pending user field acceptance.
+FIELD ACCEPTANCE STILL REQUIRED
+- Bleeding countdown 3 -> 2 -> 1 -> KIA when untreated.
+- Stabilization stops deterioration without reviving the casualty.
+- Adjacent teammate first aid and self-treatment spend one Field Medkit charge at documented TU/heal values.
+- Ordinary kit 4 charges; Medic kit 10 charges.
+- Simulation AI triage and Medic preference.
+- Save/reload active bleeding + stabilized states.
+- Phase 1 drag/all-down, Beacon, PWA, Mobile HUD, building seam and horizon regression spot checks.
