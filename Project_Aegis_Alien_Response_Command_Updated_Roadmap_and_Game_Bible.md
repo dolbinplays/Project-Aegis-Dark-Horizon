@@ -1,8 +1,27 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.11.1740_MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH`
+Current browser build: `v0.26.09.11.1800_PWA_ANDROID_COLD_START_AND_RELEASE_BEACON_HOTFIX`
 
 Current save format: `4`
+
+
+## Current Build Addendum — Browser 1800 (September 11): Android PWA Cold-Start + Release Beacon Hotfix
+
+- Android field testing invalidated Browser 1708's blocking pre-runtime update handshake: 1708 → 1740 still needed two manual launches, and Browser 1740 later reproduced the same two-launch symptom even when no update had just been published.
+- Browser 1800 therefore **supersedes** the blocking startup gate. The embedded runtime boots immediately; service-worker registration/update bookkeeping is background-only and controller changes never auto-reload an active session.
+- The service worker no longer downloads the ~9 MB `index.html` during install. Install caches only small shell metadata/assets so a new worker can activate quickly.
+- Installed navigation checks a tiny cache-busted `release-metadata.json` beacon. When the build is current, the stable `aegis-launch-shell-v2` response is returned without fetching or re-writing the large shell.
+- When the release beacon reports a newer build, the controlling worker fetches cache-busted `index.html` with `no-store`, streams it to the app immediately, and caches a clone in parallel. The page can therefore run the new build on the same manual launch while worker replacement finishes in the background.
+- Offline probe failure falls back to the stable launch shell. Versioned caches are cleaned only after a valid replacement shell has been safely cached.
+- Browser 1740 Mobile Tactical Status HUD behavior, Browser 1610 field-accepted building seams, tactical/campaign authority, post-mission continuity, and save format **4** remain unchanged.
+
+### Field gate
+1. **No-update cold start:** with Browser 1800 already installed and current, fully close and launch the Android app repeatedly. Every launch should open normally on the first tap.
+2. **Next-build update:** publish the next build, then tap the Browser 1800 installed app once. It should load the new build without a second manual launch.
+3. **Offline fallback:** after one successful online Browser 1800 launch, disable connectivity and confirm the installed shell still opens.
+
+### Superseded architecture note
+Browser 1708's pre-runtime `prepareInstalledPwaStartup()` / controller-change reload design is retained only as historical documentation and must not be restored. Its 1708 → 1740 field gate failed on Android.
 
 
 ## Current Build Addendum — Browser 1740 (September 11): Mobile Tactical Status HUD Collapse / Expand
@@ -12,11 +31,11 @@ Current save format: `4`
 - A small chevron makes the affordance discoverable. Enter/Space provide equivalent keyboard activation and `aria-expanded` reflects state. Status-condition chips remain independently interactive.
 - Collapse state is battle-local. It persists across soldier selection/observation changes, 3D Iso, FPV, TPV, reaction TPV, and Manual/Hybrid/Simulation observation, then resets to expanded for a new tactical battle.
 - Standard/Desktop remains unchanged and pointer-transparent. No campaign or save preference is introduced.
-- Browser 1708 PWA single-launch update handoff remains intact; Browser 1740 is the first intended field test of a **1708 → later build** one-tap installed update.
+- Browser 1708 PWA single-launch update handoff was carried into 1740 for field testing; that Android field gate subsequently **failed** and is superseded by Browser 1800.
 - Combat/tactical authority, Browser 1610 field-accepted building seams, and save format **4** remain unchanged.
 
 ### Field gate
-On a small landscape phone, collapse/expand the panel repeatedly while switching soldiers and 3D Iso/FPV/TPV. Verify core vitals/status remain readable in condensed mode, full fire-team/objective detail returns when expanded, Standard remains unchanged, and an installed Browser 1708 can adopt Browser 1740 from one manual app launch.
+On a small landscape phone, collapse/expand the panel repeatedly while switching soldiers and 3D Iso/FPV/TPV. Verify core vitals/status remain readable in condensed mode, full fire-team/objective detail returns when expanded, and Standard remains unchanged. **PWA portion failed in Android field testing and is superseded by Browser 1800.**
 
 
 ## Current Build Addendum — Browser 1708 (September 11): Installed PWA Single-Launch Update Handoff

@@ -1,0 +1,27 @@
+BROWSER 1800 GITHUB OVERLAY
+
+Current build: v0.26.09.11.1800_PWA_ANDROID_COLD_START_AND_RELEASE_BEACON_HOTFIX
+Save format: 4
+
+Overlay this package onto the existing repository. Required files:
+- index.html
+- src/browser-runtime.html
+- service-worker.js
+- README_PATCH_NOTES.txt
+- Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+- CODEX_HANDOFF.md
+- CODEX_HANDOFF_PWA_ANDROID_COLD_START_AND_RELEASE_BEACON_HOTFIX.md
+- release-metadata.json
+- src/manifest.1800.merge.json
+- tools/apply-1800-source-manifest.cjs
+- APPLY_1800_SOURCE_MANIFEST.bat
+- tools/package-runtime-shell.cjs
+- tools/check-pwa-android-cold-start-release-beacon.cjs
+- tools/check-pwa-single-launch-update-handoff.cjs
+- tools/test-mobile-pwa-regressions.cjs
+- tools/check-mobile-tactical-status-hud-collapse-expand.cjs
+- PWA_ANDROID_COLD_START_RELEASE_BEACON_FIELD_ACCEPTANCE.txt
+- PWA_ANDROID_COLD_START_RELEASE_BEACON_GITHUB_FILES.txt
+- VALIDATION_SUMMARY.txt
+
+After overlay, run APPLY_1800_SOURCE_MANIFEST.bat from the repository root. It updates only currentBuild, lastInspectedBuild, status, and gameplayParity.browserBuild in the existing full src/manifest.json.

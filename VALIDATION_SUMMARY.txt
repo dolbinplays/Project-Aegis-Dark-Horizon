@@ -1,28 +1,36 @@
-PROJECT AEGIS — BROWSER 1740 VALIDATION SUMMARY
+PROJECT AEGIS — BROWSER 1800 VALIDATION SUMMARY
 
-Build: v0.26.09.11.1740_MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH
-Base: v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH
+Build: v0.26.09.11.1800_PWA_ANDROID_COLD_START_AND_RELEASE_BEACON_HOTFIX
+Base: v0.26.09.11.1740_MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH
 Save format: 4
 
-PASS - 37/37 Mobile Tactical Status HUD collapse/expand focused contracts
+PASS - 46/46 Android PWA cold-start/release-beacon focused contracts, including executed worker navigation simulations
+PASS - no-update simulation performs only release-metadata probe and returns stable cached shell (no index.html fetch)
+PASS - update simulation fetches cache-busted no-store index.html and returns it in the same navigation while caching in parallel
+PASS - offline simulation returns stable cached shell
+PASS - lightweight worker install fetches only four small resources and never index.html
+PASS - 15/15 superseded-1708 lineage/migration checks
 PASS - 10/10 Mobile interface behavioral tests
 PASS - 9/9 Mobile/PWA/audio regression tests
+PASS - 37/37 Mobile Tactical Status HUD regression checks
 PASS - 11 executable JavaScript blocks across runtime/host syntax-check
-PASS - service-worker.js syntax-check
-PASS - apply-1740-source-manifest.cjs syntax-check
+PASS - service-worker.js and release tooling syntax-check
 PASS - host/runtime embedded payload and release SHA synchronization
-PASS - service-worker shell/runtime cache IDs synchronized to Browser 1740
-PASS - manifest updater changes only current build/status parity fields and preserves unrelated manifest data
-PASS - tacticalBuildingPlans unchanged from Browser 1708
-PASS - tacticalBuildingCovers unchanged from Browser 1708
-PASS - makeBattlefield unchanged from Browser 1708
-PASS - resolveMission unchanged from Browser 1708
-PASS - tacticalMissionTerminalState unchanged from Browser 1708
-PASS - tacticalAiMissionResolution unchanged from Browser 1708
-PASS - Browser 1708 PWA single-launch update architecture preserved
-PASS - Browser 1610 field-accepted procedural building seam geometry preserved
+PASS - tacticalBuildingPlans unchanged from Browser 1740
+PASS - tacticalBuildingCovers unchanged from Browser 1740
+PASS - makeBattlefield unchanged from Browser 1740
+PASS - resolveMission unchanged from Browser 1740
+PASS - tacticalMissionTerminalState unchanged from Browser 1740
+PASS - tacticalAiMissionResolution unchanged from Browser 1740
+PASS - Browser 1740 Mobile Tactical Status HUD preserved
+PASS - Browser 1610 field-accepted building seam geometry preserved
+
+NOTE
+----
+Headless Chromium startup smoke was attempted in this container but Chromium did not complete the giant embedded-srcdoc page within the bounded smoke timeout. This release therefore relies on the passing executable host/worker mocks, syntax checks, package/hash checks, and field acceptance on Android for the launch-specific behavior.
 
 FIELD GATES
 -----------
-1. Mobile Adaptive: full <-> condensed tap behavior on a phone, including 3D Iso / FPV / TPV and actor changes.
-2. Browser 1708 installed PWA -> Browser 1740 published: launch the installed app once and verify the new single-launch update handoff eliminates a second manual launch.
+1. Browser 1800 already current: repeated Android installed-app cold starts should each succeed on one manual launch.
+2. Browser 1800 installed -> next build published: one manual launch should load the next build.
+3. Offline after one online Browser 1800 launch: stable cached shell should open.

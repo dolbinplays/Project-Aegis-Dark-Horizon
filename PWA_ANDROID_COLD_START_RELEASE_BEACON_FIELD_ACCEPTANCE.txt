@@ -1,0 +1,22 @@
+PROJECT AEGIS — BROWSER 1800 FIELD ACCEPTANCE
+
+Build: v0.26.09.11.1800_PWA_ANDROID_COLD_START_AND_RELEASE_BEACON_HOTFIX
+Save format: 4
+
+A. NO-UPDATE COLD START (primary regression)
+1. Publish/install Browser 1800 and complete one online launch.
+2. Confirm no newer build is published.
+3. Fully close the Android installed app, then tap its icon once. It must reach the game normally without a second manual launch.
+4. Repeat at least three cold starts. All should work on the first tap.
+
+B. NEXT-BUILD SINGLE-LAUNCH UPDATE
+5. Keep Browser 1800 installed, publish the next build to the same origin, and tap the installed app once.
+6. Confirm the app loads the new build on that same manual launch; no close/reopen should be required.
+
+C. OFFLINE
+7. Return to Browser 1800/current baseline, complete one online launch, close the app, disable connectivity, and launch once. The stable cached shell should open.
+
+D. REGRESSIONS
+8. Confirm Mobile Tactical Status HUD full/condensed toggle remains correct.
+9. Confirm Browser 1610 building seams remain closed.
+10. Confirm save/load remains format 4.

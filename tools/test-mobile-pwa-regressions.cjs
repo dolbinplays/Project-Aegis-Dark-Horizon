@@ -82,6 +82,7 @@ test('Generated install prompt works and file launches do not register a service
 
 function workerFixture(scope = 'https://example.test/game/') {
   const handlers = {}, stores = new Map();
+  const currentBuild = JSON.parse(read('src/manifest.json')).currentBuild;
   let online = true, body = 'GAME';
   const normalize = request => new URL(typeof request === 'string' ? request : request.url, scope).href;
   const caches = {
@@ -90,10 +91,24 @@ function workerFixture(scope = 'https://example.test/game/') {
       const store = stores.get(name);
       return {put: async (key, response) => { store.set(normalize(key), response.clone()); }, match: async key => store.get(normalize(key))?.clone()};
     },
+    async keys() { return [...stores.keys()]; },
+    async delete(name) { return stores.delete(name); },
+    async match(key) {
+      for (const name of stores.keys()) {
+        const response = await (await this.open(name)).match(key);
+        if (response) return response;
+      }
+      return undefined;
+    },
   };
-  vm.runInNewContext(read('service-worker.js'), {URL, Response, caches,
-    self: {location: new URL(scope), registration: {scope}, addEventListener: (key, callback) => { handlers[key] = callback; }},
-    fetch: async () => { if (!online) throw Error('Offline'); return new Response(body); },
+  vm.runInNewContext(read('service-worker.js'), {URL, Request, Response, Headers, AbortController, setTimeout, clearTimeout, Date, caches,
+    self: {location: new URL(scope), registration: {scope}, clients: {claim: async () => {}}, skipWaiting: async () => {}, addEventListener: (key, callback) => { handlers[key] = callback; }},
+    fetch: async request => {
+      if (!online) throw Error('Offline');
+      const url = new URL(typeof request === 'string' ? request : request.url, scope);
+      if (url.pathname.endsWith('/release-metadata.json')) return new Response(JSON.stringify({build: currentBuild}), {headers: {'content-type': 'application/json'}});
+      return new Response(body);
+    },
   });
   return {
     setNetwork(value, nextBody = body) { online = value; body = nextBody; },

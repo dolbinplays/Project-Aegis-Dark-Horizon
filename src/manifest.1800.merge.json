@@ -1,0 +1,8 @@
+{
+  "currentBuild": "v0.26.09.11.1800_PWA_ANDROID_COLD_START_AND_RELEASE_BEACON_HOTFIX",
+  "lastInspectedBuild": "v0.26.09.11.1800_PWA_ANDROID_COLD_START_AND_RELEASE_BEACON_HOTFIX",
+  "status": "pwa-android-cold-start-release-beacon-hotfix-complete",
+  "gameplayParity": {
+    "browserBuild": "v0.26.09.11.1800_PWA_ANDROID_COLD_START_AND_RELEASE_BEACON_HOTFIX"
+  }
+}

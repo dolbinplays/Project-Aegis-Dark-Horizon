@@ -4,8 +4,9 @@ const path=require('path');
 const crypto=require('crypto');
 const root=path.resolve(__dirname,'..');
 const runtime=fs.readFileSync(path.join(root,'src','browser-runtime.html'),'utf8');
-const base=fs.readFileSync(path.join(root,'_base_1708_runtime.html'),'utf8');
-const BUILD='v0.26.09.11.1740_MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH';
+const base=fs.readFileSync(path.join(root,'_base_1740_runtime.html'),'utf8');
+const manifest=JSON.parse(fs.readFileSync(path.join(root,'src','manifest.json'),'utf8'));
+const BUILD=manifest.currentBuild;
 const tests=[]; const add=(name,pass)=>tests.push({name,pass:Boolean(pass)});
 function fnSource(text,name){
   const needle=`function ${name}(`;const start=text.indexOf(needle);if(start<0)return null;
@@ -23,7 +24,7 @@ add('runtime build synchronized',runtime.includes(`const CURRENT_GAME_BUILD="${B
 add('collapse expand patch flag present',runtime.includes('const MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH=true;'));
 add('save format remains 4',runtime.includes('const CURRENT_SAVE_FORMAT_VERSION=4;'));
 add('1708 history frozen',runtime.includes('build:"v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH"'));
-add('current mobile HUD history present',runtime.includes('build:CURRENT_GAME_BUILD,date:"September 11, 2026",title:"Mobile Tactical Status HUD Collapse / Expand"'));
+add('1740 mobile HUD history frozen',runtime.includes('build:"v0.26.09.11.1740_MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH",date:"September 11, 2026",title:"Mobile Tactical Status HUD Collapse / Expand"'));
 add('exactly one mutable current history entry',((app.match(/PATCH_NOTES_HISTORY\.unshift\(\{build:CURRENT_GAME_BUILD/g)||[]).length===1));
 add('battle local collapse state exists',mission.includes('mobileStatusHudCollapsed')&&mission.includes('setMobileStatusHudCollapsed'));
 add('new mission resets collapsed state',mission.includes('setMobileStatusHudCollapsed(false)')&&mission.includes('[mission.id]'));
@@ -48,7 +49,7 @@ add('mobile collapsed CSS exists',styles.includes('[data-aegis-mobile-collapsed=
 add('collapsed portrait restores vitals',styles.includes('[data-aegis-status-secondary="vitals"]{display:flex!important}'));
 add('collapsed portrait restores status icons',styles.includes('[data-aegis-authoritative-status-icons]{display:flex!important}'));
 add('collapse affordance CSS exists',styles.includes('[data-aegis-status-collapse-affordance]'));
-for(const name of ['tacticalBuildingPlans','tacticalBuildingCovers','makeBattlefield','resolveMission','tacticalMissionTerminalState','tacticalAiMissionResolution']) add(`${name} unchanged from Browser 1708`,sameFn(name));
+for(const name of ['tacticalBuildingPlans','tacticalBuildingCovers','makeBattlefield','resolveMission','tacticalMissionTerminalState','tacticalAiMissionResolution']) add(`${name} unchanged from Browser 1740`,sameFn(name));
 add('PWA single launch flag preserved',runtime.includes('const PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH=true;'));
 add('Browser 1610 seam patch preserved',runtime.includes('PROCEDURAL_BUILDING_EXPLICIT_PERIMETER_SEAM_GEOMETRY_HOTFIX'));
 const passed=tests.filter(t=>t.pass).length; for(const t of tests)console.log(`${t.pass?'PASS':'FAIL'} - ${t.name}`);console.log(`\nPassed: ${passed}/${tests.length}`);console.log(`Failed: ${tests.length-passed}`);if(passed!==tests.length)process.exit(1);

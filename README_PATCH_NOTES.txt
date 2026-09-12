@@ -1,6 +1,57 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.11.1800_PWA_ANDROID_COLD_START_AND_RELEASE_BEACON_HOTFIX
+TITLE: Android PWA Cold-Start + Release Beacon Hotfix
+DATE: September 11, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.11.1740_MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH
+
+SUMMARY
+-------
+Supersedes Browser 1708's blocking installed-app update handshake after Android field testing showed both update launches and ordinary no-update cold starts could still require a second manual app launch. Normal startup is now cache-fast; update discovery is owned by a tiny release beacon in the service-worker navigation path.
+
+ANDROID COLD START
+------------------
+- The host boots the embedded game immediately. Service-worker registration/update bookkeeping runs in the background and never blocks an ordinary launch.
+- Controller changes no longer trigger an automatic page reload.
+- The worker no longer downloads/caches the ~9 MB index.html during install.
+- A stable `aegis-launch-shell-v2` cache carries the last verified launch shell across worker generations.
+
+RELEASE BEACON UPDATE PATH
+--------------------------
+- Each installed-app navigation performs a bounded cache-busted request for `release-metadata.json`.
+- If the published build matches the worker build, the worker returns the stable cached launch shell; it does not fetch or rewrite index.html.
+- If a newer build is published, the controlling worker requests `index.html?aegis_build=<build>` with `no-store`, returns that response immediately, and caches a clone in parallel.
+- This allows the new page/runtime to load on the same manual app launch even before the replacement service worker finishes background housekeeping.
+- Offline probe failure falls back to the stable cached shell.
+
+FIELD FINDING THAT TRIGGERED THIS HOTFIX
+----------------------------------------
+- Browser 1708 -> Browser 1740 still required two manual Android app launches.
+- A subsequent Browser 1740 launch with no newly published update also required two launches.
+- This proved the blocking/full-shell startup architecture itself was contributing to the problem, not merely slow update activation.
+
+PRESERVED
+---------
+- Browser 1740 Mobile Tactical Status HUD collapse/expand remains intact.
+- Browser 1610 procedural-building seam geometry remains field accepted.
+- Post-mission runtime reboot/audio continuity, campaign/tactical authority, install prompt behavior, and save format 4 remain unchanged.
+
+FIELD ACCEPTANCE
+----------------
+1. With Browser 1800 installed and no newer build published, fully close the Android installed app and launch it once. It should reach the game normally on the first tap.
+2. Repeat the no-update cold launch several times; none should require a second manual launch.
+3. Then publish the next build to the same origin and launch Browser 1800 once. The same navigation should load the new build without a second manual launch.
+4. Test offline after Browser 1800 has completed one online launch; the stable installed shell should open normally.
+5. Confirm Mobile Tactical Status HUD collapse/expand and Browser 1610 building seams remain correct.
+6. Confirm save format remains 4.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.11.1740_MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH
 TITLE: Mobile Tactical Status HUD Collapse / Expand
 DATE: September 11, 2026

@@ -1,8 +1,8 @@
 {
-  "build": "v0.26.09.11.1740_MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH",
-  "package_filename": "Project_Aegis_v0.26.09.11.1740_MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH.zip",
+  "build": "v0.26.09.11.1800_PWA_ANDROID_COLD_START_AND_RELEASE_BEACON_HOTFIX",
+  "package_filename": "Project_Aegis_v0.26.09.11.1800_PWA_ANDROID_COLD_START_AND_RELEASE_BEACON_HOTFIX.zip",
   "save_format": 4,
-  "runtime_bytes": 7008919,
-  "runtime_sha256": "ab8cd1b05099f6e3e8cda74016578b5d10b90816a906cc520f0794a32315bc48",
-  "host_sha256": "0ac9d84827b900db2ec07b526d6a33834ae2153f2b6b00e0628aefd48f22378c"
+  "runtime_bytes": 7010864,
+  "runtime_sha256": "a2dbbb5f7a19ff7ac07ca6de611e6b55f3b4bb1890088bc4652a06150561647c",
+  "host_sha256": "d03cc753e9c46d362888f04bc84d36161836629aec0ae0656de8df0037aff276"
 }
