@@ -33,7 +33,8 @@ add('Android cold-start hotfix flag present',runtime.includes('const PWA_ANDROID
 add('save format remains 4',runtime.includes('const CURRENT_SAVE_FORMAT_VERSION=4;'));
 add('1740 history frozen literal',runtime.includes('build:"v0.26.09.11.1740_MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH",date:"September 11, 2026",title:"Mobile Tactical Status HUD Collapse / Expand"'));
 add('Browser 1800 hotfix history frozen',runtime.includes('build:"v0.26.09.11.1800_PWA_ANDROID_COLD_START_AND_RELEASE_BEACON_HOTFIX"'));
-add('current Beacon materialization history entry present',runtime.includes('build:CURRENT_GAME_BUILD,date:"September 11, 2026",title:"Alien Field Beacon Reinforcement Materialization Presentation"'));
+add('Browser 2015 materialization history frozen',runtime.includes('build:"v0.26.09.11.2015_TACTICAL_ALIEN_BEACON_REINFORCEMENT_MATERIALIZATION_PRESENTATION_PATCH",date:"September 11, 2026",title:"Alien Field Beacon Reinforcement Materialization Presentation"'));
+add('current observed Beacon arrival cinematic history entry present',runtime.includes('build:CURRENT_GAME_BUILD,date:"September 11, 2026",title:"Observed Beacon Reinforcement Arrival Cinematic"'));
 const appSource=fnSource(runtime,'AlienResponseCommand')||'';
 add('exactly one mutable current patch history entry',(appSource.match(/PATCH_NOTES_HISTORY\.unshift\(\{build:CURRENT_GAME_BUILD/g)||[]).length===1);
 add('host build synchronized',host.includes(`data-aegis-host-build="${BUILD}"`)&&host.includes(`const BUILD='${BUILD}'`));

@@ -1,0 +1,8 @@
+{
+  "currentBuild": "v0.26.09.11.2058_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH",
+  "lastInspectedBuild": "v0.26.09.11.2058_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH",
+  "status": "observed-beacon-reinforcement-arrival-cinematic-complete",
+  "gameplayParity": {
+    "browserBuild": "v0.26.09.11.2058_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH"
+  }
+}

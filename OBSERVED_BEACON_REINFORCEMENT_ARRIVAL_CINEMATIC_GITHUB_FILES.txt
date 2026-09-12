@@ -1,0 +1,35 @@
+PROJECT AEGIS BROWSER 2058 — GITHUB OVERLAY FILES
+Extract this ZIP directly over the Browser 2015 repository root, then run APPLY_2058_SOURCE_MANIFEST.bat.
+
+Runtime / host
+- index.html
+- src/browser-runtime.html
+- service-worker.js
+- release-metadata.json
+
+Documentation
+- README_PATCH_NOTES.txt
+- Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+- CODEX_HANDOFF.md
+- CODEX_HANDOFF_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH.md
+- CODEX_HANDOFF_TACTICAL_ALIEN_BEACON_REINFORCEMENT_MATERIALIZATION_PRESENTATION_PATCH.md
+- OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_FIELD_ACCEPTANCE.txt
+- OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_GITHUB_FILES.txt
+- VALIDATION_SUMMARY.txt
+
+Non-destructive manifest merge
+- src/manifest.2058.merge.json
+- tools/apply-2058-source-manifest.cjs
+- APPLY_2058_SOURCE_MANIFEST.bat
+
+QA / canonical packaging
+- tools/check-observed-beacon-reinforcement-arrival-cinematic.cjs
+- tools/smoke-observed-beacon-reinforcement-arrival-cinematic.cjs
+- tools/check-tactical-alien-beacon-materialization.cjs
+- tools/smoke-tactical-alien-beacon-materialization.cjs
+- tools/check-pwa-android-cold-start-release-beacon.cjs
+- tools/check-mobile-tactical-status-hud-collapse-expand.cjs
+- tools/test-mobile-pwa-regressions.cjs
+- tools/package-runtime-shell.cjs
+
+Do NOT overwrite src/manifest.json with a partial manifest. The supplied updater changes only currentBuild, lastInspectedBuild, status, and gameplayParity.browserBuild and preserves unrelated manifest content.

@@ -1,0 +1,23 @@
+PROJECT AEGIS — BROWSER 2058 FIELD ACCEPTANCE
+Observed Beacon Reinforcement Arrival Cinematic
+
+Build: v0.26.09.11.2058_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH
+Save format: 4
+
+Primary visual gate
+1. Enter a tactical mission with an active Alien Field Beacon.
+2. Keep the Beacon itself in legitimate AEGIS visual range when a reinforcement batch arrives.
+3. In 3D Iso, confirm one short cinematic frames the visible Beacon and the current arrival group while Browser 2015's violet/magenta materialization effect resolves.
+4. Repeat in FPV and TPV. In FPV the weapon should disappear during the shot, then the exact prior tactical view should return afterward.
+5. If several aliens arrive in the same authoritative batch, confirm there is one shared cinematic rather than a separate cut for every alien.
+6. If a later overflow/new batch arrives, it may receive its own later cinematic.
+
+Knowledge-leak gate
+7. Repeat with the Alien Field Beacon outside ordinary AEGIS visibility, or with the arrival batch otherwise not legitimately observed. There must be no cinematic, camera movement, transit cue, or destination leak.
+
+Regression gate
+8. 2D Hex should retain Browser 2015's event/map focus plus lightweight paired-ring arrival pulse rather than a second camera simulation.
+9. Confirm reinforcement counts/timing, shield behavior, alien AI, LOS, pathfinding, damage, objectives, and mission results remain unchanged.
+10. Confirm Browser 1800 Android PWA cold-start/update behavior, Browser 1740 Mobile Tactical Status HUD, Browser 1610 building seams, and save/load format 4 remain correct.
+
+Status before field test: automated QA complete; visual field acceptance pending.

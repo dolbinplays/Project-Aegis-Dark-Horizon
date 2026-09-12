@@ -2,7 +2,7 @@ const fs=require('fs');
 const path=require('path');
 const root=path.resolve(__dirname,'..');
 const src=fs.readFileSync(path.join(root,'src','browser-runtime.html'),'utf8');
-const build='v0.26.09.11.2015_TACTICAL_ALIEN_BEACON_REINFORCEMENT_MATERIALIZATION_PRESENTATION_PATCH';
+const build='v0.26.09.11.2058_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH';
 const checks=[
  ['build id',src.includes(`const CURRENT_GAME_BUILD="${build}"`)],
  ['feature flag',src.includes('TACTICAL_ALIEN_BEACON_REINFORCEMENT_MATERIALIZATION_PRESENTATION_PATCH=true')],
@@ -32,7 +32,8 @@ const checks=[
  ['no damage mutation',!src.match(/function tacticalThreePersistentCreateAlienTransitMaterializationEffect[\s\S]{0,8000}\bdamage\s*=/)],
  ['no setUnits mutation',!src.match(/function tacticalThreePersistentCreateAlienTransitMaterializationEffect[\s\S]{0,8000}setUnits/)],
  ['save format 4',/const CURRENT_SAVE_FORMAT_VERSION\s*=\s*4/.test(src)],
- ['current patch history',src.includes('title:"Alien Field Beacon Reinforcement Materialization Presentation"')],
+ ['Browser 2015 materialization history frozen',src.includes('build:"v0.26.09.11.2015_TACTICAL_ALIEN_BEACON_REINFORCEMENT_MATERIALIZATION_PRESENTATION_PATCH",date:"September 11, 2026",title:"Alien Field Beacon Reinforcement Materialization Presentation"')],
+ ['current cinematic patch history',src.includes('build:CURRENT_GAME_BUILD,date:"September 11, 2026",title:"Observed Beacon Reinforcement Arrival Cinematic"')],
  ['browser 1800 history preserved',src.includes('build:"v0.26.09.11.1800_PWA_ANDROID_COLD_START_AND_RELEASE_BEACON_HOTFIX"')],
  ['pwa 1800 flag preserved',src.includes('PWA_ANDROID_COLD_START_RELEASE_BEACON_HOTFIX=true')],
  ['mobile hud flag preserved',src.includes('MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH=true')],

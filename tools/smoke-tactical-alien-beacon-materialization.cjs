@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm');
-const src=fs.readFileSync('/mnt/data/aegis_beacon_1800_work/src/browser-runtime.html','utf8');
+const path=require('path');const src=fs.readFileSync(path.join(__dirname,'..','src','browser-runtime.html'),'utf8');
 function extract(name){const start=src.indexOf('function '+name+'(');if(start<0)throw new Error('missing '+name);const paren=src.indexOf('(',start);let pd=0,q=null,esc=false,brace=-1;for(let i=paren;i<src.length;i++){const c=src[i];if(q){if(esc){esc=false;continue}if(c==='\\'){esc=true;continue}if(c===q)q=null;continue}if(c==='"'||c==="'"||c==='`'){q=c;continue}if(c==='(')pd++;else if(c===')'){pd--;if(pd===0){brace=src.indexOf('{',i);break}}}if(brace<0)throw new Error('body missing '+name);let d=0;q=null;esc=false;for(let i=brace;i<src.length;i++){const c=src[i];if(q){if(esc){esc=false;continue}if(c==='\\'){esc=true;continue}if(c===q)q=null;continue}if(c==='"'||c==="'"||c==='`'){q=c;continue}if(c==='{')d++;else if(c==='}'){d--;if(d===0)return src.slice(start,i+1)}}}
 const vec=()=>({x:0,y:0,z:0,set(x,y,z){this.x=x;this.y=y;this.z=z;},setScalar(v){this.x=this.y=this.z=v;}});
 class Group{constructor(){this.children=[];this.position=vec();this.rotation=vec();this.userData={};this.name='';}add(x){this.children.push(x)}remove(x){this.children=this.children.filter(y=>y!==x)}}

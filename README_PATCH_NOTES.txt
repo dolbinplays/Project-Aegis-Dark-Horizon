@@ -1,6 +1,51 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.11.2058_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH
+TITLE: Observed Beacon Reinforcement Arrival Cinematic
+DATE: September 11, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.11.2015_TACTICAL_ALIEN_BEACON_REINFORCEMENT_MATERIALIZATION_PRESENTATION_PATCH
+
+SUMMARY
+-------
+Adds a short cinematic camera insert when an Alien Field Beacon and its current reinforcement arrivals are legitimately visible to AEGIS. The shot frames the real Beacon and current arrival group while Browser 2015's materialization effect plays, then returns to the prior tactical view.
+
+OBSERVED ARRIVAL CINEMATIC
+--------------------------
+- Requires an active live Alien Field Beacon in ordinary AEGIS visibility plus one or more current observed reinforcement arrivals.
+- Uses the visible Beacon world coordinate and the centroid of the actual current arrival batch for camera framing.
+- Plays once per authoritative batch, not once per alien. Duplicate renderer updates are ignored; a later overflow/new batch may receive another short cinematic.
+- Shared by 3D Iso, FPV, and TPV. FPV weapon geometry is hidden while the camera owns the shot, and the prior view is restored afterward.
+- Yields to boarding, Beacon-destruction, and critical-kill cinematics so higher-priority camera authority remains intact.
+- 2D Hex keeps the existing Browser 2015 event/map focus and lightweight paired-ring materialization pulse rather than creating a second camera simulation.
+
+KNOWLEDGE / AUTHORITY BOUNDARY
+------------------------------
+- Hidden Beacon or hidden arrival state produces no cinematic, camera movement, transit cue, or destination leak.
+- The camera never changes unit coordinates, reinforcement timing/counts, TU, HP, damage, LOS, pathfinding, AI, targeting, objectives, or mission results.
+- `tacticalAlienReinforcementArrival`, `resolveMission`, terminal authority, AI mission resolution, building generation, and battlefield generation remain byte-for-byte Browser 2015.
+- Save format remains 4.
+
+PWA FIELD STATUS
+----------------
+- Browser 1800 Android no-update cold starts are field accepted.
+- Browser 1800 -> Browser 2015 updated from a single manual installed-app launch and is now field accepted.
+- The Browser 1800 release-beacon + stable launch-shell architecture is the accepted PWA baseline going forward.
+
+FIELD ACCEPTANCE
+----------------
+1. With the Alien Field Beacon and a reinforcement batch visible to AEGIS, confirm one short cinematic frames the Beacon/arrival area while the aliens materialize.
+2. Test 3D Iso, FPV, and TPV; confirm the previous view returns after the shot and the FPV weapon does not obstruct it.
+3. Confirm multiple aliens in one wave produce one cinematic rather than repeated cuts; a later overflow/new batch may produce a new shot.
+4. Repeat with the Beacon or arrival outside AEGIS visibility and confirm there is no camera/location leak.
+5. Confirm Browser 2015 materialization, Browser 1800 PWA behavior, Mobile HUD collapse/expand, Browser 1610 building seams, and save format 4 remain correct.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.11.2015_TACTICAL_ALIEN_BEACON_REINFORCEMENT_MATERIALIZATION_PRESENTATION_PATCH
 TITLE: Alien Field Beacon Reinforcement Materialization Presentation
 DATE: September 11, 2026

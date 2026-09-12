@@ -1,9 +1,28 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.11.2015_TACTICAL_ALIEN_BEACON_REINFORCEMENT_MATERIALIZATION_PRESENTATION_PATCH`
+Current browser build: `v0.26.09.11.2058_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH`
 
 Current save format: `4`
 
+
+
+## Current Build Addendum — Browser 2058 (September 11): Observed Beacon Reinforcement Arrival Cinematic
+
+- Builds directly on Browser 2015's field-visible Alien Field Beacon materialization presentation. When an active live Beacon **and** the current reinforcement batch are legitimately visible to AEGIS, the persistent 3D renderer now plays one short cinematic framing the real Beacon and the observed arrival group while materialization resolves.
+- Camera framing is calculated from the authoritative visible Beacon position and the centroid of the current observed reinforcement batch. No decorative or guessed arrival position is introduced.
+- One cinematic plays per authoritative batch rather than once per alien. Repeated render syncs are deduplicated; a later overflow/new arrival batch may receive its own shot.
+- 3D Iso, FPV, and TPV share one cinematic path. FPV weapon presentation is hidden while the camera owns the shot, then the previously active tactical view is restored.
+- The arrival camera yields to boarding, Beacon-destruction, and critical-kill cinematic authority instead of competing for the active camera.
+- Hidden Beacon/arrival state produces no cinematic, camera movement, transit cue, or destination disclosure. 2D Hex keeps Browser 2015's map focus/event presentation and paired-ring pulse without a second simulation.
+- `tacticalAlienReinforcementArrival(...)`, `resolveMission(...)`, `tacticalMissionTerminalState(...)`, `tacticalAiMissionResolution(...)`, `tacticalBuildingPlans(...)`, `tacticalBuildingCovers(...)`, and `makeBattlefield(...)` remain byte-for-byte Browser 2015. Save format remains **4**.
+- **Android PWA architecture is now fully field accepted:** Browser 1800 no-update cold starts opened on the first tap, and the user confirmed Browser **1800 → 2015 updated from a single manual installed-app launch**. The Browser 1800 release-beacon + stable launch-shell architecture is the accepted baseline going forward.
+
+### Field gate
+1. In 3D Iso, FPV, and TPV, observe a reinforcement batch while its Alien Field Beacon is in normal AEGIS visual range. One short shot should frame the Beacon and arrival group while Browser 2015's beam/materialization effect plays.
+2. Confirm the FPV weapon is hidden during the shot and the exact prior view returns afterward.
+3. Confirm a multi-alien batch produces one cinematic, not one cut per alien; a later overflow/new batch may produce a later shot.
+4. Repeat with the Beacon or arrival outside AEGIS visibility and verify **no** cinematic, camera movement, or location leak occurs.
+5. Confirm Browser 1800 PWA launch/update behavior, Browser 1740 Mobile HUD, Browser 1610 building seams, and save format **4** remain correct.
 
 
 ## Current Build Addendum — Browser 2015 (September 11): Alien Field Beacon Reinforcement Materialization Presentation
@@ -15,10 +34,10 @@ Current save format: `4`
 - 2D Hex receives a cheap paired-ring pulse around an observed arriving alien instead of a second transport simulation.
 - Transit geometry is renderer-only, non-pickable, deduplicated by authoritative alien identity, and released with the persistent renderer. It never enters cover, LOS, pathing, targeting, AI, damage, TU, reinforcement-count, objective, mission-result, or save authority.
 - `tacticalAlienReinforcementArrival(...)`, `resolveMission(...)`, `tacticalMissionTerminalState(...)`, `tacticalAiMissionResolution(...)`, `tacticalBuildingPlans(...)`, `tacticalBuildingCovers(...)`, and `makeBattlefield(...)` are byte-for-byte Browser 1800. Save format remains **4**.
-- Browser 1800 Android **no-update cold start is field accepted**: after installing 1800, the user restarted the installed Android app and it opened on the first launch without needing a second manual launch. The 1800 → 2015 update is the next field gate for the release-beacon update path.
+- Browser 1800 Android PWA architecture is **fully field accepted**: no-update cold starts open on the first launch, and the user confirmed the 1800 → 2015 release update also completed from a single manual installed-app launch.
 
 ### Field gate
-1. With Browser 1800 installed, publish Browser 2015 and launch the installed Android app once. It should open Browser 2015 without a second manual launch.
+1. **PWA update path — FIELD ACCEPTED:** Browser 1800 → Browser 2015 opened the new build from one manual Android installed-app launch with no second launch required.
 2. Trigger an **observed** Alien Field Beacon reinforcement wave and inspect 3D Iso, FPV, TPV, and 2D Hex. The alien should assemble at the already-authoritative arrival hex instead of popping in.
 3. Repeat with a landing hex outside AEGIS visibility and verify there is no glow, silhouette, pulse, or camera/location leak.
 4. Trigger repeated observed reinforcement waves and verify effects deduplicate/clean up rather than accumulating stale roots/materialization state.
@@ -36,7 +55,7 @@ Current save format: `4`
 
 ### Field gate
 1. **No-update cold start — FIELD ACCEPTED:** after Browser 1800 updated, a full Android app restart opened normally on the first launch without requiring a second manual launch. Continue spot-checking repeated cold starts.
-2. **Next-build update:** publish the next build, then tap the Browser 1800 installed app once. It should load the new build without a second manual launch.
+2. **Release-beacon update — FIELD ACCEPTED:** Browser 1800 → Browser 2015 loaded the new build from one manual installed-app launch; preserve this architecture as the accepted baseline.
 3. **Offline fallback:** after one successful online Browser 1800 launch, disable connectivity and confirm the installed shell still opens.
 
 ### Superseded architecture note
