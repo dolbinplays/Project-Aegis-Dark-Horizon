@@ -1,0 +1,23 @@
+BROWSER 1708 GITHUB OVERLAY
+
+Current build: v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH
+Save format: 4
+
+Overlay these files onto the existing repository:
+- index.html
+- src/browser-runtime.html
+- service-worker.js
+- README_PATCH_NOTES.txt
+- Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+- CODEX_HANDOFF.md
+- CODEX_HANDOFF_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH.md
+- release-metadata.json
+- src/manifest.1708.merge.json
+- tools/apply-1708-source-manifest.cjs
+- APPLY_1708_SOURCE_MANIFEST.bat
+- tools/package-runtime-shell.cjs
+- tools/check-pwa-single-launch-update-handoff.cjs
+- PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_FIELD_ACCEPTANCE.txt
+- VALIDATION_SUMMARY.txt
+
+After overlay, run APPLY_1708_SOURCE_MANIFEST.bat from the repository root. It updates only currentBuild, lastInspectedBuild, status, and gameplayParity.browserBuild in the existing full src/manifest.json. Do not replace the richer repository manifest with the merge descriptor.

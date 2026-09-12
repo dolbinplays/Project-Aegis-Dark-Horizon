@@ -1,8 +1,23 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.11.1610_PROCEDURAL_BUILDING_EXPLICIT_PERIMETER_SEAM_GEOMETRY_HOTFIX`
+Current browser build: `v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH`
 
 Current save format: `4`
+
+
+## Current Build Addendum — Browser 1708 (September 11): Installed PWA Single-Launch Update Handoff
+
+- Moves installed/secure PWA update discovery into the host bootstrap before the embedded game runtime starts. Service-worker registration no longer waits for the window `load` event.
+- Registration uses `updateViaCache: "none"` and an explicit update check. Installed standalone/fullscreen launches with an existing controller wait through a bounded startup handshake instead of immediately starting a possibly stale runtime.
+- When a replacement worker is detected, the host shows **Updating AEGIS Command Network…**, waits for controller ownership, then performs at most one guarded internal reload. The player should not need to close/relaunch the installed app manually on future patches.
+- The service worker installs shell files with `cache: "reload"` and fetches game-shell navigation with `cache: "no-store"`, preventing browser HTTP cache from masking a newly published `index.html`. Runtime/static background refreshes use `no-cache`.
+- A session-scoped per-build reload guard prevents controller-change loops. Bootstrap listeners are removed before normal game boot, so a later worker activation cannot suddenly reload an established campaign or tactical mission.
+- Offline/slow update discovery fails open after bounded timeouts and boots the already-installed build. Fresh browser-tab installs do not get an unnecessary update reload.
+- Browser 1610 procedural-building perimeter seams are now **field accepted** based on the supplied Urban Scout Raid replay. Browser 1610 building geometry, campaign authority, post-mission runtime reboot/audio continuity, install prompts, and save format **4** remain unchanged.
+- Transition caveat: Browser 1610's old worker cannot retroactively adopt this bootstrap before it loads. Some devices may still need the historical second launch once while upgrading **to** Browser 1708; Browser 1708 is the baseline intended to make subsequent patches one-tap updates.
+
+### Field gate
+Install Browser 1708 as the PWA baseline, publish a later test build, then tap the installed AEGIS icon once. The app may show the update transition and internally reload once, but should land in the newer build without a second manual launch. Repeat offline and confirm Browser 1708 still starts. Verify a worker activation after normal game boot does not reload an active campaign/tactical session.
 
 ## Current Build Addendum — Browser 1610 (September 11): Procedural Building Explicit Perimeter Seam Geometry Hotfix
 
@@ -13,8 +28,8 @@ Current save format: `4`
 - Persistent and fallback Three.js renderers share the explicit perimeter seam pass. Exterior pairs are removed from the legacy connector path to prevent coplanar duplicate geometry; partitions/non-exterior joins keep existing connector behavior.
 - Building generation, tactical covers, LOS, pathfinding, collision, structural HP, AI, mission results, and save format remain unchanged from Browser 1532.
 
-### Field gate
-Replay the exact supplied Urban Scout Raid and inspect the same long facades shown in the field screenshots. Intact neighboring wall/window cells must meet continuously with no narrow vertical slit; windows, doors, revealed breaches, hidden interiors, and hidden-damage authority must remain correct.
+### Field gate — FIELD ACCEPTED
+Field replay confirmed Browser 1610 closes the reported long-facade wall gaps in the exact supplied Urban Scout Raid while preserving intentional openings.
 
 ## Current Build Addendum — Browser 1532 (September 11): Procedural Building Full Discovered Perimeter Render Hotfix
 
@@ -75,7 +90,7 @@ On a short landscape phone, toggle the panel repeatedly in 3D Iso/FPV/TPV, chang
 
 ## Roadmap Addition — Installed PWA Single-Launch Update Handoff
 
-**Status:** Planned. Requested September 11, 2026.
+**Status:** Implemented in Browser 1708. Requested September 11, 2026.
 
 - Fix the installed/mobile PWA update path so a player can tap the installed AEGIS icon once after a new patch and arrive in the newest build without manually closing and launching the app a second time.
 - Current host behavior boots the embedded runtime immediately, while service-worker registration/update waits until the window `load` event. The worker already uses `skipWaiting()` and `clients.claim()`, but the host has no startup gate or controller-change handoff that moves the already-open app onto the newly activated worker/shell.

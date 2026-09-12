@@ -1,5 +1,5 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.11.1610_PROCEDURAL_BUILDING_EXPLICIT_PERIMETER_SEAM_GEOMETRY_HOTFIX";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.11.1610_PROCEDURAL_BUILDING_EXPLICIT_PERIMETER_SEAM_GEOMETRY_HOTFIX";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH";
 const AEGIS_SHELL = [
   "./index.html",
   "./manifest.webmanifest",
@@ -7,8 +7,26 @@ const AEGIS_SHELL = [
   "./assets/icons/aegis-512.png"
 ];
 
+function isCacheableResponse(response) {
+  return Boolean(response && response.ok && (response.type === "basic" || response.type === "default"));
+}
+
+async function cacheFreshShell(cache) {
+  for (const relative of AEGIS_SHELL) {
+    const url = new URL(relative, self.registration.scope).href;
+    const request = new Request(url, { cache: "reload", credentials: "same-origin" });
+    const response = await fetch(request);
+    if (!isCacheableResponse(response)) throw new Error(`Unable to cache fresh AEGIS shell resource: ${relative}`);
+    await cache.put(url, response.clone());
+  }
+}
+
 self.addEventListener("install", event => {
-  event.waitUntil(caches.open(AEGIS_PWA_CACHE).then(cache => cache.addAll(AEGIS_SHELL)).then(() => self.skipWaiting()));
+  event.waitUntil((async () => {
+    const cache = await caches.open(AEGIS_PWA_CACHE);
+    await cacheFreshShell(cache);
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener("activate", event => {
@@ -20,9 +38,9 @@ self.addEventListener("activate", event => {
   })());
 });
 
-function isCacheableResponse(response) {
-  return Boolean(response && response.ok && (response.type === "basic" || response.type === "default"));
-}
+self.addEventListener("message", event => {
+  if (event?.data?.type === "AEGIS_SKIP_WAITING") self.skipWaiting();
+});
 
 self.addEventListener("fetch", event => {
   const request = event.request;
@@ -39,13 +57,14 @@ self.addEventListener("fetch", event => {
     event.respondWith((async () => {
       const cache = await caches.open(AEGIS_PWA_CACHE);
       try {
-        const fresh = await fetch(request);
+        // Bypass both the service-worker cache and the browser HTTP cache so one app launch can see a newly published shell.
+        const fresh = await fetch(request, { cache: "no-store" });
         if (isCacheableResponse(fresh)) {
           await cache.put(shellUrl.href, fresh.clone()).catch(() => {});
         }
         return fresh;
       } catch {
-        return (await cache.match(shellUrl.href)) || Response.error();
+        return (await cache.match(shellUrl.href)) || (await cache.match(request)) || Response.error();
       }
     })());
     return;
@@ -54,12 +73,12 @@ self.addEventListener("fetch", event => {
   event.respondWith((async () => {
     const cached = await caches.match(request);
     if (cached) {
-      event.waitUntil(fetch(request).then(async fresh => {
+      event.waitUntil(fetch(request, { cache: "no-cache" }).then(async fresh => {
         if (isCacheableResponse(fresh)) (await caches.open(AEGIS_RUNTIME_CACHE)).put(request, fresh.clone()).catch(() => {});
       }).catch(() => {}));
       return cached;
     }
-    const fresh = await fetch(request);
+    const fresh = await fetch(request, { cache: "no-cache" });
     if (isCacheableResponse(fresh)) (await caches.open(AEGIS_RUNTIME_CACHE)).put(request, fresh.clone()).catch(() => {});
     return fresh;
   })());

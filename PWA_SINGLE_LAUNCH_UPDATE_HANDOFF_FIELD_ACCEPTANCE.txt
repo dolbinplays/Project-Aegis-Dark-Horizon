@@ -1,0 +1,16 @@
+PROJECT AEGIS — BROWSER 1708 FIELD ACCEPTANCE
+
+Build: v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH
+Save format: 4
+
+1. Install Browser 1708 as the PWA baseline and launch it normally.
+2. Publish a later build to the same origin without uninstalling the app.
+3. Tap the installed app icon exactly once. The host may display “Updating AEGIS Command Network…” and internally reload once, but should land in the newer build without the player closing/reopening the app.
+4. Repeat with the device offline. Browser 1708 must fail open and start the already-installed build.
+5. Confirm a fresh browser-tab install/first registration does not perform an unnecessary update reload.
+6. Confirm the per-build session guard prevents reload loops.
+7. Leave the app running long enough for a later worker update; once the game has booted, that late controller change must not reload an active campaign/tactical mission.
+8. Complete a mission that uses the post-mission runtime reboot and confirm its restore overlay/audio continuity still behave normally.
+9. Confirm Browser 1610 building seam fix remains field-correct and save format remains 4.
+
+Transition caveat: upgrading an already-installed Browser 1610 to Browser 1708 may still need the old two-launch behavior once because Browser 1610's worker cannot retroactively run Browser 1708 bootstrap code. Validate the one-launch behavior on the next update after 1708 is installed.

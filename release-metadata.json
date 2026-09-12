@@ -1,8 +1,8 @@
 {
-  "build": "v0.26.09.11.1610_PROCEDURAL_BUILDING_EXPLICIT_PERIMETER_SEAM_GEOMETRY_HOTFIX",
-  "package_filename": "Project_Aegis_v0.26.09.11.1610_PROCEDURAL_BUILDING_EXPLICIT_PERIMETER_SEAM_GEOMETRY_HOTFIX.zip",
+  "build": "v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH",
+  "package_filename": "Project_Aegis_v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH.zip",
   "save_format": 4,
-  "runtime_bytes": 6999794,
-  "runtime_sha256": "956be6a6fab031588b731805e493b67bd2bd9576bdbb88b2ff1d815cda800d01",
-  "host_sha256": "22427b43e6c142374ce6f100469e4734ffb635d7d383487ff133c324ec57a305"
+  "runtime_bytes": 7001445,
+  "runtime_sha256": "8117878db39a2a0d55495dbb44693ae97a671da9eca3ff599ad930724730ab32",
+  "host_sha256": "80369af2a7365ca420e1cfdc1cfa6a8943bcd7d4c5d5d02c504658e5b7d0b956"
 }

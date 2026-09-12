@@ -1,73 +1,72 @@
-PROJECT AEGIS — BROWSER 1610 VALIDATION SUMMARY
+PROJECT AEGIS — BROWSER 1708 VALIDATION SUMMARY
 
-Build: v0.26.09.11.1610_PROCEDURAL_BUILDING_EXPLICIT_PERIMETER_SEAM_GEOMETRY_HOTFIX
-Base: v0.26.09.11.1532_PROCEDURAL_BUILDING_FULL_DISCOVERED_PERIMETER_RENDER_HOTFIX
-Save format: 4 (unchanged)
+Build: v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH
+Base: v0.26.09.11.1610_PROCEDURAL_BUILDING_EXPLICIT_PERIMETER_SEAM_GEOMETRY_HOTFIX
+Save format: 4
+Runtime bytes: 7001445
+Runtime SHA-256: 8117878db39a2a0d55495dbb44693ae97a671da9eca3ff599ad930724730ab32
+Host SHA-256: 80369af2a7365ca420e1cfdc1cfa6a8943bcd7d4c5d5d02c504658e5b7d0b956
 
-PATCH PURPOSE
--------------
-Field screenshots after Browsers 1410, 1448, and 1532 still showed narrow vertical slits between intact procedural exterior facade pieces. Browser 1610 changes only presentation seam geometry: exterior joins are now built from each procedural building plan's explicit top/bottom/left/right perimeter order rather than inferred from tactical hex-neighbor connector ownership.
+SCOPE
+-----
+Installed PWA update/bootstrap reliability only. Browser 1610 procedural-building perimeter geometry is field accepted and gameplay authority is unchanged.
 
-EXACT FIELD REGRESSION
-----------------------
-Mission id: 4ab9770a-ce83-471b-8cf3-53ca0fcb1765
-Urban Scout Raid / North America / Threat 2 / Glass Wraith / $520k / +16 panic.
-Deterministic structures:
-- Municipal Records Office — (19,32), 12x9 — 34 explicit intact perimeter seams.
-- Corner Market — (49,32), 10x8 — 30 explicit intact perimeter seams.
-- Vehicle Workshop — (19,46), 12x8 — 32 explicit intact perimeter seams.
+FOCUSED UPDATE CONTRACTS
+------------------------
+PASS - 45/45 tools/check-pwa-single-launch-update-handoff.cjs
+The suite includes an executed mocked service-worker lifecycle and verifies:
+- service-worker script registration uses updateViaCache:none;
+- host registration/update runs before embedded runtime boot;
+- installed/controller startup gating and controllerchange handoff;
+- updatefound/installing/waiting and controller-race detection;
+- bounded 2.6s discovery and 12s activation waits;
+- one-reload per-build session guard;
+- update transition and automatic internal reload path;
+- listener removal before normal gameplay;
+- offline/failure fail-open startup;
+- first-time browser installs avoid forced reload;
+- post-mission restore overlay survives update timeout;
+- worker install requests shell files with cache:reload;
+- navigation uses cache:no-store;
+- static refresh uses no-cache;
+- AEGIS_SKIP_WAITING message and clients.claim remain active;
+- canonical package-runtime-shell.cjs preserves the new bootstrap;
+- runtime/host/cache/build/release metadata synchronization.
 
-LIVE RUNTIME QA
----------------
-PASS - Fresh Chromium runtime reaches VERSION V0.26.09.11.1610 with no runtime error overlay or Runtime.exceptionThrown event.
-PASS - proceduralBuildingExplicitPerimeterSeamGeometryContractChecks(): 8/8.
-PASS - tacticalThreeDiscoveredBuildingPerimeterRegressionFixture(): true.
-PASS - Mocked live Three.js seam construction creates exactly 34 / 30 / 32 meshes for the three exact saved-mission structures.
-PASS - Every constructed seam has positive finite world-space gap scale (observed range approximately 0.553–0.730), finite position/scale values, and full-height scale 3.18.
-PASS - Revealing a wall breach in the Records Office removes every seam touching that breached cell; the breach remains open.
+MOCKED SERVICE-WORKER EXECUTION
+-------------------------------
+PASS - install fetched all four shell entries with reload cache mode
+PASS - install cached all four shell resources
+PASS - install invoked skipWaiting
+PASS - navigation used no-store network request
+PASS - activation claimed clients
+PASS - explicit skip-waiting message invoked skipWaiting
 
-BUILD HEALTH DIFFERENTIAL
--------------------------
-A fresh Browser 1532 runtime and a fresh Browser 1610 runtime were each run through runCombinedFullBuildHealthTests().
-- Browser 1532 run: 935 total / 76 failed.
-- Browser 1610 run: 935 total / 73 failed.
-- New failure names introduced by Browser 1610: 0.
-Three tests that failed in this particular Browser 1532 run happened to pass in the Browser 1610 run; this is not claimed as a gameplay change because the patch does not alter those systems and Build Health contains variable/randomized coverage.
+BROADER REGRESSIONS
+-------------------
+PASS - node tools/check-embedded-js.cjs src/browser-runtime.html index.html
+       11 non-empty executable JavaScript blocks across 2 HTML files
+PASS - node tools/test-mobile-interface.cjs: 10/10
+PASS - node --test tools/test-mobile-pwa-regressions.cjs: 9/9
+PASS - service-worker.js node --check
+PASS - tools/package-runtime-shell.cjs node --check
+PASS - tools/apply-1708-source-manifest.cjs node --check
+PASS - non-destructive source-manifest updater preservation smoke
 
-AUTHORITY PARITY
-----------------
-The following live function sources are byte-for-byte identical between exact Browser 1532 and Browser 1610 runtimes:
-- tacticalBuildingPlans — SHA-256 f77087d6dba9a04008e36784ad3181dfbd1f4e50b417aaaea25117a50014a473
-- tacticalBuildingCovers — SHA-256 c3070bf9b0414f2e48c62aff7646352d66a408b058537bc3f97257e75815b6b0
-- makeBattlefield — SHA-256 1db43a888cc5a38ad4d5720bf8f29855da0870a7606dc7532eeb580860c821eb
-- resolveMission — SHA-256 60363040b40de491c28dd4ee7819fe291489fe48a16effae14b23966ad12f456
-- tacticalMissionTerminalState — SHA-256 7789262fc140b640d81eb443b91d24bdf9daacfdbdbe2bbac7af5358a84a160c
-- tacticalAiMissionResolution — SHA-256 3ef3c32a49421c2f353d95d6e18f9f46954ead16505df535cb66cd5e618cd702
+BROWSER 1610 AUTHORITY PARITY
+-----------------------------
+All six functions are byte-for-byte identical to Browser 1610:
+- tacticalBuildingPlans: b31115ecd3ac7abb35246e67734e665b61c5c629cd58f44ad169228af7750816
+- tacticalBuildingCovers: 48e06f8d09672fb2332c55e96c117bef6cd80268f47a54e545a41aee3f3cb778
+- makeBattlefield: cc4207374bb7d4c60aedddfa0b555b50873c33e1af9bb36a17900addfd073ebf
+- resolveMission: 2c787f0af257aeb59770488c9a8a7f655dec927470cbc3b989cd716537c00650
+- tacticalMissionTerminalState: 98c152ebddb459b61e6a66216baf04947a63bc4a3920f055a09413d3edd79e63
+- tacticalAiMissionResolution: 3ef3c32a49421c2f353d95d6e18f9f46954ead16505df535cb66cd5e618cd702
 
-FOCUSED RELEASE CHECKER
------------------------
-PASS - tools/check-procedural-building-explicit-perimeter-seam-geometry.cjs: 56/56.
-Checks cover build/save identity, explicit perimeter-order generation, world-space seam sizing, exact mission/building fixture and seam counts, doors/breaches, both Three.js renderers, removal of exterior pairs from the legacy connector path, prior building/horizon patches, patch history, one finishAiPlayback owner, docs/updater synchronization, and embedded runtime/hash identity.
+TRANSITION CAVEAT
+-----------------
+An already-installed Browser 1610 worker cannot use Browser 1708 bootstrap/service-worker code before Browser 1708 has been obtained. Some devices may therefore still need the historical second launch once when moving from 1610 to 1708. Browser 1708 is the baseline intended to make subsequent patches single-tap updates.
 
-SYNTAX / PACKAGE CHECKS
------------------------
-PASS - 5 non-empty executable runtime JavaScript blocks: node --check.
-PASS - 1 executable host JavaScript block: node --check.
-PASS - service-worker.js: node --check.
-PASS - tools/apply-1610-source-manifest.cjs: node --check.
-PASS - focused checker: node --check.
-PASS - Embedded runtime payload is byte-for-byte identical to src/browser-runtime.html.
-PASS - Embedded runtime byte count and SHA-256 match release-metadata.json.
-PASS - Host SHA-256 matches release-metadata.json.
-PASS - Service-worker shell/runtime cache IDs use Browser 1610.
-PASS - Non-destructive manifest updater changes only requested build/status fields in a preservation fixture and retains unrelated manifest/gameplayParity data.
-
-RELEASE METADATA
-----------------
-Runtime bytes: 6999794
-Runtime SHA-256: 956be6a6fab031588b731805e493b67bd2bd9576bdbb88b2ff1d815cda800d01
-Host SHA-256: 22427b43e6c142374ce6f100469e4734ffb635d7d383487ff133c324ec57a305
-
-FIELD GATE
-----------
-Automated geometry now directly covers the previously failing mission and physical seam creation, but the final visual gate remains the user's replay of that exact Urban Scout Raid. Inspect the same long facades shown in the screenshots. Intact wall/window joins should have no narrow vertical slit; real window apertures, doors, and revealed breaches must remain open.
+FIELD ACCEPTANCE OUTSTANDING
+----------------------------
+Install Browser 1708, publish a later build to the same origin, and tap the installed app exactly once. The host may show Updating AEGIS Command Network and internally reload once; the player should land in the later build without manually closing/reopening the app. Repeat offline, verify loop prevention, and verify no worker update can reload an already-running campaign/tactical session.

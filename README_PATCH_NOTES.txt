@@ -1,6 +1,62 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH
+TITLE: Installed PWA Single-Launch Update Handoff
+DATE: September 11, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.11.1610_PROCEDURAL_BUILDING_EXPLICIT_PERIMETER_SEAM_GEOMETRY_HOTFIX
+
+SUMMARY
+-------
+Hardens the installed mobile/PWA update path so future patches can be discovered and adopted during the same app launch instead of normally requiring the player to close and launch AEGIS a second time.
+
+STARTUP HANDOFF
+---------------
+- Service-worker registration/update runs during host bootstrap before the embedded runtime starts.
+- Installed standalone/fullscreen launches with an existing controller perform a bounded update check.
+- If a replacement worker is detected, the host displays `Updating AEGIS Command Network...`, waits for controller handoff, and performs at most one guarded internal reload.
+- The controller/update listeners are removed before normal game boot, preventing a late worker activation from reloading an active campaign or tactical mission.
+
+FRESH SHELL AUTHORITY
+---------------------
+- Worker installation fetches shell resources with `cache: reload`.
+- Game-shell navigation fetches the network with `cache: no-store`, bypassing stale browser HTTP cache entries before updating the offline cache.
+- Static/runtime background refresh uses `no-cache`.
+- Worker registration uses `updateViaCache: none`, and an explicit skip-waiting message complements the worker's existing `skipWaiting()` behavior.
+
+FAIL-SAFE BEHAVIOR
+------------------
+- A per-build session reload guard prevents update/reload loops.
+- Offline or slow update checks time out and boot the already-installed build instead of blocking play.
+- Fresh browser-tab installs do not receive an unnecessary automatic update reload.
+- A pending verified post-mission resume keeps its restore transition if an update check times out.
+
+PRESERVED
+---------
+- Browser 1610 procedural-building perimeter seam geometry is field accepted and unchanged.
+- Tactical/campaign authority functions are byte-for-byte Browser 1610.
+- Existing install prompt, offline launch, post-mission runtime reboot/audio continuity, and save format 4 remain intact.
+
+TRANSITION NOTE
+---------------
+Browser 1610's already-installed worker cannot retroactively use Browser 1708's new bootstrap before Browser 1708 itself has loaded. A device upgrading from 1610 to 1708 may therefore still show the historical two-launch behavior once. Browser 1708 is the baseline intended to make subsequent published patches single-tap updates.
+
+FIELD ACCEPTANCE
+----------------
+1. Install Browser 1708 as an app/PWA baseline.
+2. Publish a later test build to the same origin.
+3. Tap the installed AEGIS icon once. Confirm the update transition can appear and the app lands in the new build without a second manual app launch.
+4. Repeat offline and confirm the already-installed Browser 1708 opens normally.
+5. Confirm first-time browser installation does not auto-reload unnecessarily.
+6. Confirm a worker/controller change after normal game boot cannot reload an active campaign or tactical mission.
+7. Confirm post-mission runtime reboot/audio continuity and save format 4 remain correct.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.11.1610_PROCEDURAL_BUILDING_EXPLICIT_PERIMETER_SEAM_GEOMETRY_HOTFIX
 TITLE: Procedural Building Explicit Perimeter Seam Geometry Hotfix
 DATE: September 11, 2026

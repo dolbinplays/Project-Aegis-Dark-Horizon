@@ -1,0 +1,8 @@
+{
+  "currentBuild": "v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH",
+  "lastInspectedBuild": "v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH",
+  "status": "pwa-single-launch-update-handoff-patch-complete",
+  "gameplayParity": {
+    "browserBuild": "v0.26.09.11.1708_PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH"
+  }
+}
