@@ -1,6 +1,49 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.11.2015_TACTICAL_ALIEN_BEACON_REINFORCEMENT_MATERIALIZATION_PRESENTATION_PATCH
+TITLE: Alien Field Beacon Reinforcement Materialization Presentation
+DATE: September 11, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.11.1800_PWA_ANDROID_COLD_START_AND_RELEASE_BEACON_HOTFIX
+
+SUMMARY
+-------
+Observed Alien Field Beacon reinforcements now visibly assemble from violet/magenta transit energy at their already-authoritative arrival hex instead of simply popping into existence. The patch is presentation-only and preserves reinforcement, combat, mission, and save authority.
+
+OBSERVED ARRIVAL PRESENTATION
+-----------------------------
+- 3D Iso, FPV, and TPV share one persistent transit controller with containment rings, energy filaments, particles, a coarse ghost silhouette, and a final normal-model resolve.
+- Performance rendering uses a shorter presentation duration while retaining the same readable stages.
+- 2D Hex uses a lightweight paired-ring pulse around an observed arriving alien.
+- The normal alien model remains hidden through the early assembly phase, then resolves into its standard presentation.
+
+KNOWLEDGE / AUTHORITY BOUNDARY
+------------------------------
+- The effect requires both the existing `reinforcementLandingVisible` flag and ordinary AEGIS visibility at the arrival hex.
+- Hidden arrivals produce no transit effect and do not reveal their destination.
+- Transit state is runtime-only, non-pickable, deduplicated by unit ID, and cleaned up with the persistent renderer.
+- No cover, LOS, pathfinding, targeting, damage, TU, AI, reinforcement-count, objective, mission-result, or save authority is changed.
+- `tacticalAlienReinforcementArrival`, `resolveMission`, terminal authority, AI mission resolution, building generation, and battlefield generation are byte-for-byte Browser 1800.
+
+PWA FIELD STATUS
+----------------
+- Browser 1800 no-update Android cold start is field accepted: after updating to 1800 and restarting the installed app, it opened on the first launch.
+- Browser 1800 -> Browser 2015 is the next real release-beacon update-path field test.
+
+FIELD ACCEPTANCE
+----------------
+1. Publish Browser 2015 over an installed Browser 1800 PWA and launch once; confirm no second manual launch is needed.
+2. Trigger an observed Beacon reinforcement and inspect 3D Iso, FPV, TPV, and 2D Hex.
+3. Repeat with a hidden landing and confirm there is no transit/location leak.
+4. Repeat waves and confirm no stale effects accumulate.
+5. Confirm Browser 1740 Mobile HUD collapse/expand, Browser 1610 building seams, and save format 4 remain correct.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.11.1800_PWA_ANDROID_COLD_START_AND_RELEASE_BEACON_HOTFIX
 TITLE: Android PWA Cold-Start + Release Beacon Hotfix
 DATE: September 11, 2026

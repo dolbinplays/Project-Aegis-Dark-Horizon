@@ -1,0 +1,25 @@
+PROJECT AEGIS — BROWSER 2015 FIELD ACCEPTANCE
+Build: v0.26.09.11.2015_TACTICAL_ALIEN_BEACON_REINFORCEMENT_MATERIALIZATION_PRESENTATION_PATCH
+Save format: 4
+
+PWA UPDATE GATE
+1. Start with Browser 1800 confirmed installed/current on Android.
+2. Publish Browser 2015 to the same origin.
+3. Fully close the installed AEGIS app.
+4. Tap the installed app icon once.
+5. PASS: Browser 2015 loads without a second manual app launch.
+
+BEACON PRESENTATION GATE
+1. Trigger an Alien Field Beacon reinforcement wave whose arrival hex is legitimately visible to AEGIS.
+2. In 3D Iso, confirm violet/magenta containment rings/filaments/particles assemble a ghost alien and resolve into the normal alien model at the same arrival hex.
+3. Repeat in FPV and TPV.
+4. In 2D Hex, confirm the observed arriving alien receives the lightweight paired-ring pulse.
+5. Trigger or observe a reinforcement landing outside AEGIS visibility. PASS only if no transit glow, silhouette, pulse, camera cue, or arrival-position leak appears.
+6. Trigger repeated observed waves and verify completed effects disappear and do not accumulate stale roots/effects.
+
+REGRESSION GATE
+- Reinforcement timing/counts/shield behavior unchanged.
+- Alien AI/action authority unchanged.
+- Mobile Tactical Status HUD collapse/expand unchanged.
+- Browser 1610 procedural-building seams remain closed.
+- Save/load remains format 4.

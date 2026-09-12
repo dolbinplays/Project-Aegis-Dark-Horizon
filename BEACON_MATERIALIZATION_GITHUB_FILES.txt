@@ -1,0 +1,28 @@
+Project Aegis Browser 2015 Git overlay files
+
+Extract this ZIP over the Browser 1800 repository root, preserving folders, then run:
+  APPLY_2015_SOURCE_MANIFEST.bat
+
+Overlay files:
+- index.html
+- src/browser-runtime.html
+- service-worker.js
+- README_PATCH_NOTES.txt
+- Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+- CODEX_HANDOFF.md
+- CODEX_HANDOFF_TACTICAL_ALIEN_BEACON_REINFORCEMENT_MATERIALIZATION_PRESENTATION_PATCH.md
+- release-metadata.json
+- src/manifest.2015.merge.json
+- tools/apply-2015-source-manifest.cjs
+- APPLY_2015_SOURCE_MANIFEST.bat
+- tools/check-tactical-alien-beacon-materialization.cjs
+- tools/smoke-tactical-alien-beacon-materialization.cjs
+- tools/check-pwa-android-cold-start-release-beacon.cjs
+- tools/check-mobile-tactical-status-hud-collapse-expand.cjs
+- tools/test-mobile-pwa-regressions.cjs
+- tools/package-runtime-shell.cjs
+- BEACON_MATERIALIZATION_FIELD_ACCEPTANCE.txt
+- BEACON_MATERIALIZATION_GITHUB_FILES.txt
+- VALIDATION_SUMMARY.txt
+
+The manifest updater is non-destructive: it changes only currentBuild, lastInspectedBuild, status, and gameplayParity.browserBuild in the repository's existing src/manifest.json.

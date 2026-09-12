@@ -1,9 +1,28 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.11.1800_PWA_ANDROID_COLD_START_AND_RELEASE_BEACON_HOTFIX`
+Current browser build: `v0.26.09.11.2015_TACTICAL_ALIEN_BEACON_REINFORCEMENT_MATERIALIZATION_PRESENTATION_PATCH`
 
 Current save format: `4`
 
+
+
+## Current Build Addendum — Browser 2015 (September 11): Alien Field Beacon Reinforcement Materialization Presentation
+
+- Rebases the parked Beacon-transit presentation work onto Browser 1800 without replacing the field-accepted Android PWA cold-start architecture, Mobile Tactical Status HUD collapse/expand, Browser 1610 building seams, or Browser 1254 horizon treatment.
+- When an Alien Field Beacon reinforcement arrival is already legitimately observed by AEGIS, the persistent 3D renderer now assembles that alien at its authoritative arrival hex through a bounded violet/magenta transit sequence: containment rings, asymmetric energy filaments, particles, a coarse ghost silhouette, and final normal-model resolve.
+- The effect requires the existing `reinforcementLandingVisible` state **and** ordinary `visibleByHumans(...)` knowledge. Hidden arrivals create no transit root, glow, silhouette, camera cue, or destination leak.
+- 3D Iso, FPV, and TPV use the same persistent runtime transit controller. Performance mode shortens the presentation while preserving the charge / assembly / resolve sequence.
+- 2D Hex receives a cheap paired-ring pulse around an observed arriving alien instead of a second transport simulation.
+- Transit geometry is renderer-only, non-pickable, deduplicated by authoritative alien identity, and released with the persistent renderer. It never enters cover, LOS, pathing, targeting, AI, damage, TU, reinforcement-count, objective, mission-result, or save authority.
+- `tacticalAlienReinforcementArrival(...)`, `resolveMission(...)`, `tacticalMissionTerminalState(...)`, `tacticalAiMissionResolution(...)`, `tacticalBuildingPlans(...)`, `tacticalBuildingCovers(...)`, and `makeBattlefield(...)` are byte-for-byte Browser 1800. Save format remains **4**.
+- Browser 1800 Android **no-update cold start is field accepted**: after installing 1800, the user restarted the installed Android app and it opened on the first launch without needing a second manual launch. The 1800 → 2015 update is the next field gate for the release-beacon update path.
+
+### Field gate
+1. With Browser 1800 installed, publish Browser 2015 and launch the installed Android app once. It should open Browser 2015 without a second manual launch.
+2. Trigger an **observed** Alien Field Beacon reinforcement wave and inspect 3D Iso, FPV, TPV, and 2D Hex. The alien should assemble at the already-authoritative arrival hex instead of popping in.
+3. Repeat with a landing hex outside AEGIS visibility and verify there is no glow, silhouette, pulse, or camera/location leak.
+4. Trigger repeated observed reinforcement waves and verify effects deduplicate/clean up rather than accumulating stale roots/materialization state.
+5. Confirm reinforcement count/timing, shield protection, alien AI, mission results, Mobile HUD collapse/expand, Browser 1610 building seams, and save format **4** are unchanged.
 
 ## Current Build Addendum — Browser 1800 (September 11): Android PWA Cold-Start + Release Beacon Hotfix
 
@@ -16,7 +35,7 @@ Current save format: `4`
 - Browser 1740 Mobile Tactical Status HUD behavior, Browser 1610 field-accepted building seams, tactical/campaign authority, post-mission continuity, and save format **4** remain unchanged.
 
 ### Field gate
-1. **No-update cold start:** with Browser 1800 already installed and current, fully close and launch the Android app repeatedly. Every launch should open normally on the first tap.
+1. **No-update cold start — FIELD ACCEPTED:** after Browser 1800 updated, a full Android app restart opened normally on the first launch without requiring a second manual launch. Continue spot-checking repeated cold starts.
 2. **Next-build update:** publish the next build, then tap the Browser 1800 installed app once. It should load the new build without a second manual launch.
 3. **Offline fallback:** after one successful online Browser 1800 launch, disable connectivity and confirm the installed shell still opens.
 

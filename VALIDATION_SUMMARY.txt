@@ -1,36 +1,48 @@
-PROJECT AEGIS — BROWSER 1800 VALIDATION SUMMARY
+PROJECT AEGIS — BROWSER 2015 VALIDATION SUMMARY
 
-Build: v0.26.09.11.1800_PWA_ANDROID_COLD_START_AND_RELEASE_BEACON_HOTFIX
-Base: v0.26.09.11.1740_MOBILE_TACTICAL_STATUS_HUD_COLLAPSE_EXPAND_PATCH
+Build: v0.26.09.11.2015_TACTICAL_ALIEN_BEACON_REINFORCEMENT_MATERIALIZATION_PRESENTATION_PATCH
+Base: v0.26.09.11.1800_PWA_ANDROID_COLD_START_AND_RELEASE_BEACON_HOTFIX
 Save format: 4
 
-PASS - 46/46 Android PWA cold-start/release-beacon focused contracts, including executed worker navigation simulations
-PASS - no-update simulation performs only release-metadata probe and returns stable cached shell (no index.html fetch)
-PASS - update simulation fetches cache-busted no-store index.html and returns it in the same navigation while caching in parallel
-PASS - offline simulation returns stable cached shell
-PASS - lightweight worker install fetches only four small resources and never index.html
-PASS - 15/15 superseded-1708 lineage/migration checks
-PASS - 10/10 Mobile interface behavioral tests
-PASS - 9/9 Mobile/PWA/audio regression tests
-PASS - 37/37 Mobile Tactical Status HUD regression checks
-PASS - 11 executable JavaScript blocks across runtime/host syntax-check
-PASS - service-worker.js and release tooling syntax-check
-PASS - host/runtime embedded payload and release SHA synchronization
-PASS - tacticalBuildingPlans unchanged from Browser 1740
-PASS - tacticalBuildingCovers unchanged from Browser 1740
-PASS - makeBattlefield unchanged from Browser 1740
-PASS - resolveMission unchanged from Browser 1740
-PASS - tacticalMissionTerminalState unchanged from Browser 1740
-PASS - tacticalAiMissionResolution unchanged from Browser 1740
+PASS - 35/35 focused Alien Field Beacon reinforcement materialization contracts
+PASS - executed lightweight Three.js materialization smoke: hidden arrival creates no effect
+PASS - executed lightweight Three.js materialization smoke: observed arrival anchors to authoritative world hex
+PASS - executed lightweight Three.js materialization smoke: duplicate unit identity does not create duplicate transit effect
+PASS - executed lightweight Three.js materialization smoke: normal alien model resolves during final phase
+PASS - executed lightweight Three.js materialization smoke: completed effect removes transit group and restores model
+PASS - 47/47 Android PWA cold-start/release-beacon architecture checks and executed service-worker simulations
+PASS - 37/37 Mobile Tactical Status HUD collapse/expand regression checks
+PASS - 9/9 existing PWA/audio regression tests
+PASS - runtime and packaged host executable JavaScript parse successfully
+PASS - service-worker.js and all shipped .cjs tooling syntax-check
+PASS - canonical package-runtime-shell.cjs reproduces the shipped host/service worker/release metadata in memory
+PASS - host embedded runtime payload byte/hash metadata synchronized to src/browser-runtime.html
+PASS - non-destructive manifest updater preserves unrelated manifest/gameplayParity fields
+PASS - tacticalAlienReinforcementArrival unchanged from Browser 1800
+PASS - tacticalBuildingPlans unchanged from Browser 1800
+PASS - tacticalBuildingCovers unchanged from Browser 1800
+PASS - makeBattlefield unchanged from Browser 1800
+PASS - resolveMission unchanged from Browser 1800
+PASS - tacticalMissionTerminalState unchanged from Browser 1800
+PASS - tacticalAiMissionResolution unchanged from Browser 1800
+PASS - Browser 1800 Android release-beacon/cold-start architecture preserved
 PASS - Browser 1740 Mobile Tactical Status HUD preserved
 PASS - Browser 1610 field-accepted building seam geometry preserved
+PASS - Browser 1254 field-accepted horizon presentation preserved
+PASS - save format remains 4
 
-NOTE
-----
-Headless Chromium startup smoke was attempted in this container but Chromium did not complete the giant embedded-srcdoc page within the bounded smoke timeout. This release therefore relies on the passing executable host/worker mocks, syntax checks, package/hash checks, and field acceptance on Android for the launch-specific behavior.
+FIELD STATUS CARRIED FORWARD
+----------------------------
+Browser 1800 no-update Android cold start is FIELD ACCEPTED: after updating to Browser 1800, the installed Android app restarted successfully on the first manual launch without requiring a second launch.
+
+HEADLESS CHROMIUM NOTE
+----------------------
+A bounded Chromium startup smoke was attempted. As with Browser 1800, the container's headless Chromium did not finish loading/dumping the ~9 MB embedded-srcdoc host within the bounded window and produced no DOM output. The stderr output contained container/DBus startup noise rather than game/runtime exception markers. This attempt is NOT counted as a pass. Release confidence therefore comes from the executable service-worker simulations, executable Beacon materialization smoke, syntax/package/hash checks, authority diffs, and field acceptance.
 
 FIELD GATES
 -----------
-1. Browser 1800 already current: repeated Android installed-app cold starts should each succeed on one manual launch.
-2. Browser 1800 installed -> next build published: one manual launch should load the next build.
-3. Offline after one online Browser 1800 launch: stable cached shell should open.
+1. Browser 1800 installed -> Browser 2015 published: one manual Android app launch should reach Browser 2015 without a second manual launch.
+2. Observed Alien Field Beacon reinforcement: materialization effect visible in 3D Iso, FPV, TPV; lightweight pulse visible in 2D Hex.
+3. Hidden reinforcement arrival: no glow, silhouette, pulse, camera cue, or location leak.
+4. Repeated observed waves: completed materialization effects clean up/deduplicate.
+5. Reinforcement counts/timing/shield behavior, alien AI, Mobile HUD collapse/expand, Browser 1610 building seams, and save/load format 4 remain unchanged.
