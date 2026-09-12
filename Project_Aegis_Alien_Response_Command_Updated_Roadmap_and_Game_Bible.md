@@ -1,8 +1,20 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.11.1532_PROCEDURAL_BUILDING_FULL_DISCOVERED_PERIMETER_RENDER_HOTFIX`
+Current browser build: `v0.26.09.11.1610_PROCEDURAL_BUILDING_EXPLICIT_PERIMETER_SEAM_GEOMETRY_HOTFIX`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 1610 (September 11): Procedural Building Explicit Perimeter Seam Geometry Hotfix
+
+- Fixes the still-field-reproduced narrow vertical slits between intact procedural exterior wall/window pieces after Browsers 1410, 1448, and 1532. Browser 1532 proved the facade records were renderer-eligible; Browser 1610 fixes the remaining physical join geometry.
+- Exterior seam ownership now comes directly from each procedural building plan's top, bottom, left, and right perimeter order instead of tactical hex-neighbor connector inference.
+- Consecutive intact wall/window facade records receive one full-height opaque strip across only the unused world-space distance between their meshes. The exact supplied Urban Scout Raid is a deterministic regression fixture: Municipal Records Office 34 seams, Corner Market 30, Vehicle Workshop 32.
+- Intentional doors and revealed wall breaches break the seam run and remain open. Window apertures remain intact. Hidden damage remains visually pristine until revealed.
+- Persistent and fallback Three.js renderers share the explicit perimeter seam pass. Exterior pairs are removed from the legacy connector path to prevent coplanar duplicate geometry; partitions/non-exterior joins keep existing connector behavior.
+- Building generation, tactical covers, LOS, pathfinding, collision, structural HP, AI, mission results, and save format remain unchanged from Browser 1532.
+
+### Field gate
+Replay the exact supplied Urban Scout Raid and inspect the same long facades shown in the field screenshots. Intact neighboring wall/window cells must meet continuously with no narrow vertical slit; windows, doors, revealed breaches, hidden interiors, and hidden-damage authority must remain correct.
 
 ## Current Build Addendum — Browser 1532 (September 11): Procedural Building Full Discovered Perimeter Render Hotfix
 

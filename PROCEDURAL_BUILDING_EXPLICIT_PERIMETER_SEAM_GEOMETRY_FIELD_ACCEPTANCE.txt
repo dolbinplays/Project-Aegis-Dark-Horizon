@@ -1,0 +1,15 @@
+PROJECT AEGIS — BROWSER 1610 FIELD ACCEPTANCE
+
+Build: v0.26.09.11.1610_PROCEDURAL_BUILDING_EXPLICIT_PERIMETER_SEAM_GEOMETRY_HOTFIX
+Save format: 4
+
+1. Load the supplied campaign save and launch Urban Scout Raid / North America / Threat 2 / Glass Wraith / $520k / +16 panic.
+2. Inspect Municipal Records Office, Corner Market, and Vehicle Workshop in 3D Iso using the same camera angles that exposed narrow vertical facade slits.
+3. Confirm intact adjacent wall/window facade pieces meet continuously: no dark vertical gap between cells.
+4. Confirm the real opening inside each window remains visible.
+5. Confirm intentional doors remain open and traversable.
+6. Reveal or create a destroyed wall if practical; the revealed breach must remain open and must not receive an explicit seam strip.
+7. Confirm hidden breach damage and hidden interior partitions/furnishings are not revealed early.
+8. Check FPV and TPV for the same facade continuity.
+9. Confirm Browser 1254 horizon behavior remains correct.
+10. Confirm save/load remains format 4 and tactical outcomes are unchanged.

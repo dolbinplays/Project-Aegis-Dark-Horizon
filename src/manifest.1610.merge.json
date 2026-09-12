@@ -1,0 +1,8 @@
+{
+  "currentBuild": "v0.26.09.11.1610_PROCEDURAL_BUILDING_EXPLICIT_PERIMETER_SEAM_GEOMETRY_HOTFIX",
+  "lastInspectedBuild": "v0.26.09.11.1610_PROCEDURAL_BUILDING_EXPLICIT_PERIMETER_SEAM_GEOMETRY_HOTFIX",
+  "status": "procedural-building-explicit-perimeter-seam-geometry-hotfix-complete",
+  "gameplayParity": {
+    "browserBuild": "v0.26.09.11.1610_PROCEDURAL_BUILDING_EXPLICIT_PERIMETER_SEAM_GEOMETRY_HOTFIX"
+  }
+}

@@ -1,6 +1,64 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.11.1610_PROCEDURAL_BUILDING_EXPLICIT_PERIMETER_SEAM_GEOMETRY_HOTFIX
+TITLE: Procedural Building Explicit Perimeter Seam Geometry Hotfix
+DATE: September 11, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.11.1532_PROCEDURAL_BUILDING_FULL_DISCOVERED_PERIMETER_RENDER_HOTFIX
+
+SUMMARY
+-------
+Fixes the field-confirmed narrow vertical gaps that remained after Browsers 1410, 1448, and 1532. The remaining defect was geometric: exterior facade joins were still inferred through tactical hex-neighbor connector ownership. Browser 1610 instead walks each discovered procedural building's authoritative rectangular perimeter and creates a presentation-only seam strip between every consecutive intact wall/window segment.
+
+EXACT SAVE / MISSION REGRESSION
+-------------------------------
+- Uses the supplied Urban Scout Raid: North America, Threat 2, Glass Wraith, $520k reward, +16 panic, mission id 4ab9770a-ce83-471b-8cf3-53ca0fcb1765.
+- The deterministic layout is Municipal Records Office (19,32 / 12x9), Corner Market (49,32 / 10x8), and Vehicle Workshop (19,46 / 12x8).
+- Under partial discovery, the explicit perimeter pass requires 34 / 30 / 32 intact exterior seam strips respectively.
+- This fixture directly represents the two buildings repeatedly shown with vertical slits in field screenshots.
+
+ROOT CAUSE
+----------
+- Browser 1532 correctly made the whole discovered exterior facade renderer-eligible, proving missing LOS eligibility was no longer the remaining cause.
+- The old structural connector system still determined facade joins from tactical hex-neighbor relationships and connector ownership. That abstraction is useful for tactical structural cells but is not reliable enough to guarantee a visually continuous rectangular procedural facade.
+- The wall/window cell meshes are narrower than the world-space distance between adjacent facade cell centers. If a join is not produced, a narrow vertical slit remains even though both facade cells themselves are present.
+
+REPAIR
+------
+- `tacticalThreeBuildingPerimeterSeamPairs(...)` walks top, bottom, left, and right perimeter runs directly from `tacticalBuildingPlans(...)`.
+- Consecutive intact wall/window presentation records on the same discovered building receive one full-height opaque seam mesh across only the unused world-space gap between their facade meshes.
+- Both persistent Three.js and fallback 3D renderers run the same explicit perimeter seam pass.
+- Exterior wall/window pairs are excluded from the older structural connector path so duplicate coplanar joins cannot z-fight. The older connector remains available for partitions and non-exterior structural joins.
+
+DOORS / WINDOWS / BREACHES
+--------------------------
+- Intentional door cells remain open because they have no wall/window facade record and therefore break the perimeter seam run.
+- Window apertures remain inside their own window facade cells; the new strip fills only the narrow gap between adjacent cells.
+- Revealed destroyed walls/breaches remain open because the missing wall/window record breaks the seam run.
+- Hidden breach damage continues to use Browser 1410's pristine presentation shell until legitimately observed, preventing information leaks.
+
+AUTHORITY PRESERVED
+-------------------
+- `tacticalBuildingPlans(...)`, `tacticalBuildingCovers(...)`, `makeBattlefield(...)`, `resolveMission(...)`, `tacticalMissionTerminalState(...)`, and `tacticalAiMissionResolution(...)` are byte-for-byte unchanged from Browser 1532.
+- The new seam geometry never enters tactical covers, pickables, LOS, pathfinding, collision, AI, damage, targeting, structural HP, mission results, or save data.
+- Browser 1532 discovered-perimeter rendering, Browser 1448 facade infill, Browser 1410 shell proxies, Browser 1254 field-accepted horizon treatment, and save format 4 remain intact.
+
+FIELD ACCEPTANCE
+----------------
+1. Load the supplied save and launch the North America Threat 2 Glass Wraith Urban Scout Raid ($520k / +16 panic).
+2. Inspect the Municipal Records Office, Corner Market, and Vehicle Workshop in 3D Iso; use the same camera angles that exposed the vertical slits in the field screenshots.
+3. Confirm adjacent intact exterior wall/window segments meet continuously with no narrow dark vertical gaps.
+4. Confirm actual window apertures remain visible and intentional doors remain open.
+5. Reveal/create a wall breach if practical and confirm it remains open rather than receiving a seam strip.
+6. Confirm hidden interiors and unseen breach damage are not exposed early.
+7. Confirm FPV/TPV and Browser 1254 horizon presentation remain normal and save format remains 4.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.11.1532_PROCEDURAL_BUILDING_FULL_DISCOVERED_PERIMETER_RENDER_HOTFIX
 TITLE: Procedural Building Full Discovered Perimeter Render Hotfix
 DATE: September 11, 2026
