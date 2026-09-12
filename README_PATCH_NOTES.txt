@@ -1,6 +1,75 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND
 PATCH NOTES
 
+BUILD: v0.26.09.11.2248_TACTICAL_CASUALTY_CARE_PHASE_1_DOWNED_RECOVERY_AND_DRAGGING_PATCH
+TITLE: Tactical Casualty Care Phase 1 — Downed Recovery + Dragging
+DATE: September 11, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.11.2058_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH
+
+SUMMARY
+-------
+Adds the first tactical casualty-recovery layer. Non-catastrophic lethal wounds can leave an AEGIS soldier downed/unconscious but medically alive, and adjacent conscious soldiers can physically drag that casualty toward safer ground. Catastrophic overkill remains KIA.
+
+DOWNED / UNCONSCIOUS AUTHORITY
+------------------------------
+- A recoverable lethal wound leaves the human at 1 HP, alive, prone, unconscious/downed, and 0 TU.
+- Catastrophic overkill still sets HP to 0 and alive false; this patch does not turn every lethal hit into a rescue opportunity.
+- Downed soldiers cannot act, fire, self-treat, lead fire teams, satisfy rescue/action ordering, or provide tactical LOS.
+- The unified tactical HUD shows DWN for the casualty and DRG for a soldier currently dragging one.
+
+DRAGGING
+--------
+- Select an adjacent conscious AEGIS soldier and then the downed casualty to secure/release the drag.
+- Securing costs 8 TU; each movement hex while dragging costs 8 TU.
+- The casualty follows into the rescuer's previous hex, keeping movement spatial and visible instead of teleporting.
+- The casualty remains prone and follows the same authoritative hex movement in 3D Iso, FPV, and TPV.
+
+AI RECOVERY
+-----------
+- Simulation AI can perform one bounded emergency pull when a downed friendly is close to an alien already visible to the surviving AEGIS team.
+- The AI never uses hidden alien coordinates to trigger casualty recovery.
+- Available medics are preferred where practical, but this phase does not yet add full triage/stabilization logic.
+
+MISSION / SAVE AUTHORITY
+------------------------
+- Terminal state now distinguishes medically surviving humans from combat-active humans.
+- An all-downed squad resolves as a tactical defeat instead of hanging indefinitely.
+- A mission can continue when at least one conscious combat-active soldier remains, preserving downed survivors for aftermath handling.
+- Downed/dragging fields are included in tactical snapshots and invalid drag links are repaired safely on restore.
+- Save format remains 4.
+
+DEFERRED TO LATER CASUALTY CARE PHASES
+--------------------------------------
+- Bleeding/deterioration timers.
+- Stabilization and targeted field treatment of another soldier.
+- Expanded Medpac / Field Medkit charge rules and Medic bonuses.
+- Triage priorities, casualty extraction bonuses, permanent injuries, and deeper Sickbay integration.
+
+PRESERVED BASELINES
+-------------------
+- Browser 2058 observed Beacon reinforcement arrival cinematic.
+- Browser 2015 Beacon materialization presentation.
+- Browser 1800 field-accepted Android PWA cold-start/update architecture.
+- Browser 1740 Mobile Tactical Status HUD collapse/expand.
+- Browser 1610 field-accepted procedural-building perimeter seams.
+- Browser 1254 tactical horizon treatment.
+
+FIELD ACCEPTANCE
+----------------
+1. Let a soldier take a non-catastrophic lethal wound and confirm they become visibly downed/unconscious rather than KIA.
+2. Confirm a sufficiently catastrophic hit still produces immediate KIA.
+3. With an adjacent conscious soldier, secure the casualty and move several hexes; confirm the casualty follows into the rescuer's previous hex and TU falls at the drag rate.
+4. Check 3D Iso, FPV, and TPV for prone/follow presentation and DWN/DRG status chips.
+5. In Simulation AI, observe an exposed downed friendly with a visible nearby alien and confirm a bounded emergency pull can occur; hidden threats must not trigger omniscient rescue behavior.
+6. Confirm an all-downed squad resolves instead of hanging, and that at least one active soldier allows the mission to continue.
+7. Confirm Browser 2058 Beacon cinematics/materialization, Browser 1800 Android PWA behavior, Mobile HUD collapse/expand, building seams, and save/load format 4 remain correct.
+
+---
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
 BUILD: v0.26.09.11.2058_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH
 TITLE: Observed Beacon Reinforcement Arrival Cinematic
 DATE: September 11, 2026

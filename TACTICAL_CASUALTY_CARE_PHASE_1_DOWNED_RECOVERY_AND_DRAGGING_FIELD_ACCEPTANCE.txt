@@ -1,0 +1,33 @@
+PROJECT AEGIS — BROWSER 2248 FIELD ACCEPTANCE
+Tactical Casualty Care Phase 1 — Downed Recovery + Dragging
+
+Build: v0.26.09.11.2248_TACTICAL_CASUALTY_CARE_PHASE_1_DOWNED_RECOVERY_AND_DRAGGING_PATCH
+Save format: 4
+
+DOWNED / KIA GATE
+1. Allow an AEGIS soldier to take a lethal but not extreme hit. Confirm they remain on the battlefield prone/downed/unconscious at 1 HP rather than becoming KIA.
+2. Produce a sufficiently catastrophic overkill and confirm it still produces immediate KIA.
+3. Confirm a downed soldier cannot move, fire, self-treat, lead a fire team, or reveal terrain/aliens through LOS.
+
+MANUAL DRAG GATE
+4. Select a conscious soldier adjacent to the downed casualty, then select the casualty to secure the drag. Confirm 8 TU is spent.
+5. Move several legal hexes. Confirm the casualty physically moves into the rescuer's previous hex each step and drag movement costs 8 TU per hex.
+6. Release the casualty and confirm the reciprocal dragging state clears.
+7. Check 3D Iso, FPV, and TPV. The casualty should remain prone and follow the same authoritative hex trail. Confirm DWN on the casualty and DRG on the rescuer.
+
+AI / KNOWLEDGE GATE
+8. In Simulation AI, place a downed soldier near a living alien that surviving AEGIS soldiers can already see. Confirm one bounded emergency pull may occur when a legal rescuer is adjacent.
+9. Repeat with the alien hidden from surviving AEGIS observers. The hidden threat must not trigger omniscient casualty recovery.
+
+TERMINAL / SAVE GATE
+10. Confirm an all-downed squad resolves as tactical defeat rather than looping or stalling indefinitely.
+11. Confirm a downed survivor does not force defeat while at least one combat-active soldier remains and the mission can still resolve normally.
+12. Save/load or continue through tactical snapshot flow with a downed/dragging state and confirm invalid links are safely repaired rather than corrupting the battle.
+
+REGRESSION GATE
+13. Recheck Browser 2058 observed Beacon reinforcement cinematics and Browser 2015 materialization.
+14. Recheck Browser 1800 Android PWA one-launch cold-start/update behavior.
+15. Recheck Browser 1740 Mobile HUD collapse/expand and Browser 1610 building seams.
+16. Confirm save format remains 4.
+
+Status before field test: automated QA complete after release packaging; gameplay/presentation field acceptance pending.

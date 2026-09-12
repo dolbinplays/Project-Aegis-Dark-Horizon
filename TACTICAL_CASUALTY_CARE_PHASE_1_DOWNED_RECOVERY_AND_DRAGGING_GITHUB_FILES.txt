@@ -1,0 +1,37 @@
+PROJECT AEGIS — BROWSER 2248 GITHUB OVERLAY FILES
+
+Extract this ZIP directly over the Project Aegis repository root, then run:
+  APPLY_2248_SOURCE_MANIFEST.bat
+
+The updater changes only currentBuild, lastInspectedBuild, status, and gameplayParity.browserBuild in the existing full src/manifest.json. It does not reconstruct or replace unrelated manifest data.
+
+Overlay files:
+APPLY_2248_SOURCE_MANIFEST.bat
+CODEX_HANDOFF.md
+CODEX_HANDOFF_TACTICAL_CASUALTY_CARE_PHASE_1_DOWNED_RECOVERY_AND_DRAGGING_PATCH.md
+CODEX_HANDOFF_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH.md
+CODEX_HANDOFF_TACTICAL_ALIEN_BEACON_REINFORCEMENT_MATERIALIZATION_PRESENTATION_PATCH.md
+TACTICAL_CASUALTY_CARE_PHASE_1_DOWNED_RECOVERY_AND_DRAGGING_FIELD_ACCEPTANCE.txt
+TACTICAL_CASUALTY_CARE_PHASE_1_DOWNED_RECOVERY_AND_DRAGGING_GITHUB_FILES.txt
+Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md
+README_PATCH_NOTES.txt
+VALIDATION_SUMMARY.txt
+index.html
+release-metadata.json
+service-worker.js
+src/browser-runtime.html
+src/manifest.2248.merge.json
+tools/apply-2248-source-manifest.cjs
+tools/check-mobile-tactical-status-hud-collapse-expand.cjs
+tools/check-observed-beacon-reinforcement-arrival-cinematic.cjs
+tools/check-pwa-android-cold-start-release-beacon.cjs
+tools/check-tactical-alien-beacon-materialization.cjs
+tools/check-tactical-casualty-care-phase-1.cjs
+tools/package-runtime-shell.cjs
+tools/smoke-observed-beacon-reinforcement-arrival-cinematic.cjs
+tools/smoke-tactical-alien-beacon-materialization.cjs
+tools/smoke-tactical-casualty-care-phase-1.cjs
+tools/smoke-tactical-casualty-terminal-state.cjs
+tools/test-mobile-pwa-regressions.cjs
+
+Do NOT overwrite the repository's full src/manifest.json with a partial manifest. The temporary full manifest used during release QA is intentionally excluded from this overlay.

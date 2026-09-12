@@ -1,7 +1,7 @@
 const fs=require('fs'),path=require('path');
 const root=path.resolve(__dirname,'..');
 const src=fs.readFileSync(path.join(root,'src','browser-runtime.html'),'utf8');
-const build='v0.26.09.11.2058_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH';
+const build='v0.26.09.11.2248_TACTICAL_CASUALTY_CARE_PHASE_1_DOWNED_RECOVERY_AND_DRAGGING_PATCH';
 const checks=[
  ['build id',src.includes(`const CURRENT_GAME_BUILD="${build}"`)],
  ['feature flag',src.includes('TACTICAL_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH=true')],

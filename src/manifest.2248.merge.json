@@ -1,0 +1,8 @@
+{
+  "currentBuild": "v0.26.09.11.2248_TACTICAL_CASUALTY_CARE_PHASE_1_DOWNED_RECOVERY_AND_DRAGGING_PATCH",
+  "lastInspectedBuild": "v0.26.09.11.2248_TACTICAL_CASUALTY_CARE_PHASE_1_DOWNED_RECOVERY_AND_DRAGGING_PATCH",
+  "status": "tactical-casualty-care-phase-1-complete",
+  "gameplayParity": {
+    "browserBuild": "v0.26.09.11.2248_TACTICAL_CASUALTY_CARE_PHASE_1_DOWNED_RECOVERY_AND_DRAGGING_PATCH"
+  }
+}

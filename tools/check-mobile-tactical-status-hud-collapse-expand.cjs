@@ -49,7 +49,9 @@ add('mobile collapsed CSS exists',styles.includes('[data-aegis-mobile-collapsed=
 add('collapsed portrait restores vitals',styles.includes('[data-aegis-status-secondary="vitals"]{display:flex!important}'));
 add('collapsed portrait restores status icons',styles.includes('[data-aegis-authoritative-status-icons]{display:flex!important}'));
 add('collapse affordance CSS exists',styles.includes('[data-aegis-status-collapse-affordance]'));
-for(const name of ['tacticalBuildingPlans','tacticalBuildingCovers','makeBattlefield','resolveMission','tacticalMissionTerminalState','tacticalAiMissionResolution']) add(`${name} unchanged from Browser 1740`,sameFn(name));
+for(const name of ['tacticalBuildingPlans','tacticalBuildingCovers','makeBattlefield','tacticalAiMissionResolution']) add(`${name} unchanged from Browser 1740`,sameFn(name));
+add('resolveMission change is owned by casualty care Phase 1',!sameFn('resolveMission')&&runtime.includes('TACTICAL_CASUALTY_CARE_PHASE_1_DOWNED_RECOVERY_DRAGGING_PATCH=true'));
+add('terminal-state change is owned by casualty care Phase 1',!sameFn('tacticalMissionTerminalState')&&runtime.includes('activeHumanCount')&&runtime.includes('downedHumanCount'));
 add('PWA single launch flag preserved',runtime.includes('const PWA_SINGLE_LAUNCH_UPDATE_HANDOFF_PATCH=true;'));
 add('Browser 1610 seam patch preserved',runtime.includes('PROCEDURAL_BUILDING_EXPLICIT_PERIMETER_SEAM_GEOMETRY_HOTFIX'));
 const passed=tests.filter(t=>t.pass).length; for(const t of tests)console.log(`${t.pass?'PASS':'FAIL'} - ${t.name}`);console.log(`\nPassed: ${passed}/${tests.length}`);console.log(`Failed: ${tests.length-passed}`);if(passed!==tests.length)process.exit(1);

@@ -1,13 +1,40 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.11.2058_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH`
+Current browser build: `v0.26.09.11.2248_TACTICAL_CASUALTY_CARE_PHASE_1_DOWNED_RECOVERY_AND_DRAGGING_PATCH`
 
 Current save format: `4`
 
 
 
+## Current Build Addendum — Browser 2248 (September 11): Tactical Casualty Care Phase 1 — Downed Recovery + Dragging
+
+- **Status: implemented; awaiting field acceptance.** This is the first bounded gameplay slice of the larger casualty-care roadmap. It introduces recoverable downed/unconscious AEGIS soldiers and physical casualty dragging without yet implementing bleeding, stabilization timers, targeted medical treatment, triage, or advanced Sickbay progression.
+- Non-catastrophic lethal human wounds may now resolve as **downed / unconscious** at 1 HP, alive, prone, and 0 TU. Catastrophic overkill remains authoritative KIA, so a lethal hit is not automatically survivable.
+- Downed soldiers cannot take actions, fire, self-treat, lead fire teams, satisfy rescue/action ordering, or provide tactical LOS. The shared Tactical Status HUD exposes **DWN** for a downed casualty.
+- An adjacent conscious AEGIS soldier may secure/release a casualty. Securing costs **8 TU**; movement while dragging costs **8 TU per hex**. The casualty physically follows into the rescuer's previous hex rather than teleporting, and the rescuer receives a **DRG** HUD condition.
+- 3D Iso, FPV, and TPV use the same authoritative hex movement and prone-alive casualty pose. No separate renderer-only casualty position is created.
+- Simulation AI may perform one bounded emergency pull when a downed friendly is exposed to an alien **already visible to surviving AEGIS observers**. Hidden threats cannot trigger recovery behavior. An available medic is preferred where practical, but Phase 1 does not yet add treatment authority.
+- Mission-terminal authority now distinguishes **medically surviving humans** from **combat-active humans**. An all-downed squad resolves as tactical defeat instead of hanging indefinitely; a mission with at least one active soldier can continue while downed survivors remain recoverable for aftermath handling.
+- Tactical snapshots carry the minimal downed/drag relationship state and restore-time repair clears invalid links. **Save format remains 4.**
+- Browser 2058 observed Beacon arrival cinematics, Browser 2015 materialization, Browser 1800 field-accepted Android PWA release-beacon architecture, Browser 1740 Mobile Tactical Status HUD, Browser 1610 field-accepted building seams, and Browser 1254 horizon treatment remain preserved.
+
+### Casualty Care Phase 2 — retained roadmap scope
+- Add bleeding/deterioration and stabilization authority, then targeted treatment of adjacent downed soldiers.
+- Expand Medpac / Field Medkit charge rules and Medic specialization value through the same shared Manual/Hybrid/Simulation medical authority.
+- Add triage priorities, casualty extraction consequences/bonuses, deeper Sickbay/recovery outcomes, and permanent-injury hooks only after Phase 1 dragging/downed behavior is field accepted.
+
+### Field gate
+1. Produce both a recoverable downing and a catastrophic KIA and verify the distinction is obvious in presentation and outcome.
+2. Secure a downed casualty with an adjacent conscious soldier, drag several hexes, and verify the casualty follows into the rescuer's previous hex at the documented TU cost.
+3. Verify DWN/DRG states and prone casualty movement in 3D Iso, FPV, and TPV.
+4. In Simulation AI, verify a visible nearby threat can provoke one emergency pull while an unseen threat cannot.
+5. Verify an all-downed squad terminates as a tactical defeat rather than stalling; verify one active soldier permits continued mission resolution.
+6. Recheck Browser 2058 Beacon cinematics, Browser 1800 Android PWA cold-start/update behavior, Mobile HUD collapse/expand, Browser 1610 building seams, and save format **4**.
+
+
 ## Current Build Addendum — Browser 2058 (September 11): Observed Beacon Reinforcement Arrival Cinematic
 
+- **Field accepted:** user reported the Browser 2058 observed reinforcement cinematic “looks good” before moving to Casualty Care Phase 1.
 - Builds directly on Browser 2015's field-visible Alien Field Beacon materialization presentation. When an active live Beacon **and** the current reinforcement batch are legitimately visible to AEGIS, the persistent 3D renderer now plays one short cinematic framing the real Beacon and the observed arrival group while materialization resolves.
 - Camera framing is calculated from the authoritative visible Beacon position and the centroid of the current observed reinforcement batch. No decorative or guessed arrival position is introduced.
 - One cinematic plays per authoritative batch rather than once per alien. Repeated render syncs are deduplicated; a later overflow/new arrival batch may receive its own shot.
