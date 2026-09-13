@@ -4,6 +4,54 @@ Current browser build: `v0.26.09.12.2346_TACTICAL_CASUALTY_CARE_PHASE_3C_MEDICAL
 
 Current save format: `4`
 
+## Roadmap Intake — September 13, 2026: Fire-Team Vitals, Streets, Landmarks, Building Shapes and Soldier Identity
+
+**Status: requested roadmap work; not yet implemented.** This planning update does not change the runtime, browser build or save format.
+
+### 1. Reflect survivor absorption in fire-team vitals
+
+- When a lone surviving soldier is absorbed into another fire team, move that soldier's vitals card into the receiving team's box when the authoritative reassignment takes effect. Remove their card from the former team's box; never duplicate or hide the survivor.
+- Preserve stable slots for members whose team has not changed. Give the incoming soldier a distinct available slot in the receiving formation without overlaying another member. Promotion within a team alone must not cause the earlier overlap bug to return.
+- Keep team boxes alphabetical and retain casualty visibility. Fallen soldiers may remain in their former team's casualty display; do not move them into the receiving team as though they transferred. Omit a former box only when it has no remaining displayed members.
+- Update the current deployment-locked vitals membership rule: a genuine team reassignment must override the cached original team while preserving injury/impact presentation timing.
+- **Acceptance:** reduce a team to one survivor, trigger absorption, and verify exactly one card for the survivor in the correct receiving box. Repeat after save/reload, Mobile hide/show, and Manual/Hybrid/Simulation transitions; check KIA cards and unique formation slots.
+
+### 2. Place land-vehicle headlights on the front short edge
+
+- Correct headlights on elongated land vehicles so the pair sits on the narrower front face, rather than along a long side. Determine front from the vehicle's orientation and longitudinal axis, not a fixed world axis.
+- Align lamp meshes, emissive surfaces and projected light direction with the same vehicle transform. Keep both lamps attached to the body across vehicle sizes and rotations.
+- **Acceptance:** inspect representative cars, buses and other elongated road vehicles at every supported heading in the persistent and fallback tactical renderers. At night, headlights must sit on the short front edge and illuminate forward.
+
+### 3. Generate stop signs and traffic lights at intersections
+
+- Use generated road connectivity to identify intersections and their approaching lanes before placing traffic-control props. Place stop signs and traffic lights at suitable intersection approaches and roadside corners, oriented toward approaching traffic.
+- Choose a coherent control arrangement for each intersection rather than scattering unrelated signs/lights or placing conflicting controls on the same approach. Reserve their placement against buildings, other props and required pedestrian/vehicle routes.
+- Support the road junction types that the generator creates, including T-junctions and crossroads. Preserve deterministic results for a fixed map seed.
+- **Acceptance:** inspect multiple seeded street maps for intersection-linked placement, readable orientation, clear travel lanes, no overlapping props and stable save/reload results.
+
+### 4. Support statues and fountains from one to seven hexes
+
+- Generate statues and fountains with varied sizes spanning **every integer footprint size from 1 through 7 occupied hexes**. The largest compact footprint may use a center hex plus its six neighbors; intermediate sizes must form deliberate connected footprints.
+- Scale the landmark's model and base together to match its declared occupied cells. Placement clearance, collision, pathfinding, cover/LOS where applicable, selection and visibility must use the same footprint rather than treating an enlarged landmark as a one-hex object.
+- Keep larger landmarks clear of reserved roads, entrances, extraction paths and neighboring structures. Retain the chosen footprint and visual scale across saves and renderer changes.
+- **Acceptance:** exercise all seven footprint sizes, verify that the model fits its footprint and that units cannot walk through occupied cells, and inspect visibility/selection at the footprint edges.
+
+### 5. Add buildings shaped like standard Tetris pieces
+
+- Extend top-down building generation beyond rectangles to all seven standard tetromino families: **I, O, T, L, J, S and Z**. Include their valid rotations; L/J and S/Z provide both handed variants. Interpret each tetromino cell as a scalable building section, rather than limiting a building to four tactical hexes.
+- Derive connected interiors, exterior walls, concave corners, doors, windows and roofs from the actual footprint. Do not fill the empty recesses of T/L/J/S/Z shapes with a rectangular bounding-box wall or roof.
+- Preserve existing perimeter seam closure, discovered-wall visibility, roof cutaways, collision/LOS and navigable entrances. Place occupants and objectives only in valid reachable interior cells; retain the footprint through save/load and all tactical presentations.
+- **Acceptance:** generate every family and orientation, inspect inside/outside corners and roof edges, walk through the connected interiors, and verify that empty recesses remain outside and traversable where appropriate.
+
+### 6. Match battle-model faces and equipment markings to soldier identity
+
+- Give tactical soldier models recognizable faces matching the same soldier's card portrait: derive skin tone, facial features and applicable hair/facial-hair details from the existing identity/appearance data rather than generating a separate battle identity.
+- Add uniform, armor and helmet markings matching those already used on the Classic Lineup paper-doll models. Share the appearance/marking definitions so equipment changes, colors, insignia and personalized details stay consistent across presentations.
+- Respect helmet coverage and armor surfaces when placing faces and markings. Preserve identity through animation, camera changes, model detail levels and save/load; keep the feature practical for Mobile and performance rendering modes.
+- **Acceptance:** compare the same named soldier in their card, Classic Lineup paper doll, 3D Iso and TPV/visible FPV teammate views. Verify face identity and marking placement with multiple outfits, armor sets, helmets and detail levels.
+
+These items should be delivered as bounded follow-up patches with their own validation. Native parity requirements should be recorded alongside each implementation.
+
 ## v0.26.09.12.2346_TACTICAL_CASUALTY_CARE_PHASE_3C_MEDICAL_RESUPPLY_AND_IMPACT_SYNCHRONIZED_VITALS_PATCH
 
 Casualty Care Phase 3C — Medical Resupply + Impact-Synchronized Vitals
