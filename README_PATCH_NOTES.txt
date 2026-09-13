@@ -1,3 +1,23 @@
+BUILD: v0.26.09.12.2346_TACTICAL_CASUALTY_CARE_PHASE_3C_MEDICAL_RESUPPLY_AND_IMPACT_SYNCHRONIZED_VITALS_PATCH
+TITLE: Casualty Care Phase 3C — Medical Resupply + Impact-Synchronized Vitals
+DATE: September 12, 2026
+SAVE FORMAT: 4
+BASE BUILD: v0.26.09.12.2122_TACTICAL_CASUALTY_CARE_PHASE_3B_SICKBAY_RECOVERY_AND_RESCUE_OUTCOMES_PATCH
+
+Medical charges now persist between missions and refill from local stores. Fire-team vitals reveal injuries after the attack impact rather than at frame hydration.
+
+- Remaining charges and reusable kit ownership survive mission return, save/load, tactical transfers and empty kits. Legacy issued kits retain their existing 4/10-charge allocation.
+- A purchased Medkit includes four charges. Medical Supplies cost 10k per charge; Medics can refill to ten and other soldiers to four. Returning a kit stores its empty shell and unused charges separately; reissue does not create charges.
+- Refill Medkit controls in Quartermaster and personnel/Sickbay loadouts consume only the soldier's local Medical Supplies. Soldiers committed to a sortie or transfer cannot alter their medical loadout.
+- Victory salvages fallen soldiers' actual remaining charges and kit shells; failed extractions do not return medical supplies. Tactical kit transfers preserve ownership.
+- Soldier cards and launch summaries display persistent charge availability and empty-kit warnings.
+- Vitals hold pre-hit health and medical state during observed attacks, then update after projectile impact and its reaction hold. Playback cancellation clears display holds; gameplay authority remains unchanged.
+- Save format remains 4; permanent injuries, advanced formulations and encumbrance remain deferred.
+
+See VALIDATION_SUMMARY.txt for validation and field gates.
+
+---
+
 BUILD: v0.26.09.12.2122_TACTICAL_CASUALTY_CARE_PHASE_3B_SICKBAY_RECOVERY_AND_RESCUE_OUTCOMES_PATCH
 TITLE: Tactical Casualty Care Phase 3B — Sickbay Recovery + Rescue Outcomes
 DATE: September 12, 2026

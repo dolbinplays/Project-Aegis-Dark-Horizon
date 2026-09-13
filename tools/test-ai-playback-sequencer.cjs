@@ -196,6 +196,7 @@ function missionFixture({ terminal = false, speed = 100 } = {}) {
     setMovingUnit: unit => { scope.moving = unit; }, setAiFrameAnimating: value => { scope.animating = value; },
     setTacticalRound: () => {}, setAiMapCameraAnchor: () => {}, setLog: () => {}, onBattleImpact: () => {},
     tacticalAiFrameCameraAnchor: () => null, hasLineOfSight: () => true,
+    tacticalPhysioFrameInjuryIds: () => [], holdPhysioVitals: () => {}, releasePhysioVitals: () => {},
     tacticalSequenceRampBoardingPlaybackPlans: plans => plans,
     tacticalAiFrameCivilianExtractionPlaybackState: (frame, target) => ({ animate: target.team === 'civilian' }),
     tacticalPlaybackUnitMayAnimate: () => true,

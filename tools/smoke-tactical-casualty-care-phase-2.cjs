@@ -7,7 +7,7 @@ const block=`const TACTICAL_MEDKIT_FIELD_CHARGES=4,TACTICAL_MEDIC_FIELD_CHARGES=
 const ctx={console,Math,Set,Map,
  tacticalDistance:(a,b)=>Math.max(Math.abs((a?.x||0)-(b?.x||0)),Math.abs((a?.y||0)-(b?.y||0))),
  tacticalKey:(x,y)=>`${x},${y}`, tacticalNeighbors:()=>[], tacticalVisibleCellSet:()=>new Set(), tacticalGridSizeFrom:()=>48,isHardCoverAt:()=>false,adjacentToCover:()=>false,updateFacing:(u)=>u.facing||'E'
-};vm.createContext(ctx);vm.runInContext(block,ctx);
+};vm.createContext(ctx);vm.runInContext(src.slice(src.indexOf("function soldierMedicalCharges("),src.indexOf("function soldierMedicalLoadoutLabel("))+block,ctx);
 const medicBase={medkit:true,specialization:'Medic'},rifleBase={medkit:true,specialization:'Rifleman'};
 assert.equal(ctx.tacticalInitialMedkitCharges(medicBase),10);assert.equal(ctx.tacticalInitialMedkitCharges(rifleBase),4);assert.equal(ctx.tacticalInitialMedkitCharges({medkit:false,specialization:'Medic'}),0);assert.equal(ctx.tacticalInitialMedkitCharges(medicBase,3),3);
 const raw={id:'c1',name:'Mira',team:'human',alive:true,hp:10,maxHp:40,tu:40,maxTu:40,x:5,y:5};
