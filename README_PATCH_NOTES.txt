@@ -1,3 +1,13 @@
+BUILD: v0.26.09.13.1249_MOBILE_ADAPTIVE_MISSION_FAILURE_NOTICE_PATCH
+
+Mobile / Adaptive Mission Failure Notice
+- Shows Mission Failed for a terminal missed VIP quota even with surviving soldiers, with an explanation and End Failed Incident and Return to Base.
+- Completed AI/Hybrid failures use the existing final result; manual failures use live finalization. Pending playback and interrupted streams cannot trigger premature failure notices.
+- VIP quota rebalancing is roadmap-only. Save format remains 4.
+- Publish index.html, service-worker.js and release-metadata.json together with the existing assets.
+
+--- Previous patch ---
+
 BUILD: v0.26.09.13.1209_FIRE_TEAM_VITALS_REASSIGNMENT_AND_VEHICLE_HEADLIGHT_ALIGNMENT_PATCH
 TITLE: Fire-Team Vitals Reassignment + Vehicle Headlight Alignment
 DATE: September 13, 2026

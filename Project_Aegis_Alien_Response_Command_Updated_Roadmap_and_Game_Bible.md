@@ -1,8 +1,59 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.13.1209_FIRE_TEAM_VITALS_REASSIGNMENT_AND_VEHICLE_HEADLIGHT_ALIGNMENT_PATCH`
+Current browser build: `v0.26.09.13.1249_MOBILE_ADAPTIVE_MISSION_FAILURE_NOTICE_PATCH`
 
 Current save format: `4`
+
+## v0.26.09.13.1249_MOBILE_ADAPTIVE_MISSION_FAILURE_NOTICE_PATCH
+
+- Added a bottom-of-battle Mission Failed notice matching the victory box, including missed VIP rescue quotas with surviving soldiers. Shows the reason and a direct End Failed Incident and Return to Base button.
+- Simulation and Hybrid finalization preserve authoritative results and partial rescue credit. Failure presentation waits for the final frame and queued animations; interrupted or incomplete streams are not treated as defeats.
+- Save format and rescue thresholds are unchanged.
+
+## Roadmap Addition — Review VIP Rescue Victory Thresholds
+
+**Planned, not implemented.** Review mandatory rescue quotas, including the reported experience of three-VIP incidents appearing to require all three rescues for victory. Verify displayed counts against the actual mission-specific quota before adjusting balance. Consider a more forgiving threshold while retaining meaningful consequences and partial rescue credit for losses. Decide the final threshold through balance testing; this patch does not change rescue requirements.
+
+## Roadmap Addition — Rescued Soldier Vitals Marker and Repeatable Medkit Achievement
+
+**Requested September 13, 2026. Status: planned, not implemented.**
+
+- Show a small **red upward-pointing arrow immediately to the right of the soldier's name indicator in their vitals card** after another soldier has stabilized them and helped them get back up using a medkit. The marker belongs to the rescued soldier; the achievement credit belongs to their rescuer.
+- Trigger the marker from a confirmed successful assisted recovery, not merely a medkit attempt, ordinary healing, self-treatment or stabilization that leaves the casualty down. Reveal it when the recovery is shown in playback, keeping it synchronized with the vitals presentation.
+- Treat the arrow as a record of assisted recovery during the current battle, separate from current health/status. Keep subsequent wounds, downed states and KIA clearly visible. Retain the marker through fire-team reassignment and tactical save/reload; reset it for a new battle. Include an accessible label or tooltip explaining its meaning without relying on color alone.
+- Add a **repeatable achievement for saving another soldier in battle with a medkit**. Credit the soldier responsible for each successful qualifying rescue, using the same confirmed assisted-recovery event as the vitals marker. Track repeat awards in the rescuer's persistent soldier record and surface them through the achievement display and mission report; the achievement name is a future presentation decision.
+- Count each distinct rescue once. Playback replay, repeated treatment of the same recovery, control-mode changes and save/reload must not duplicate credit. A later distinct downing followed by another successful rescue can earn another award, including when the same soldier is rescued again.
+- **Acceptance:** verify marker placement beside short/long names and in mobile vitals, correct recipient/rescuer attribution, multiple legitimate rescues and repeat awards, no award for failed treatment/self-treatment/ordinary healing or a still-downed casualty, and no duplicate awards after replay or save/reload. Check recovery timing, later injury/KIA, fire-team transfers and parity across Manual, Hybrid and Simulation.
+
+This is a roadmap-only update; the runtime, build identifier and save format are unchanged.
+
+## Roadmap Addition — Incident-Defined VIP Counts and Incomplete Rescue Reports
+
+**Requested September 13, 2026. Status: planned, not implemented.**
+
+- Set and persist the actual number of VIPs when an incident enters the incident list. The incident determines rescue demand; assigning, adding or removing squads must never change the VIP count. Preserve that count through deployment, tactical generation, continuation and save/reload without rerolling it.
+- Track the actual VIP count separately from whether AEGIS knows it. When confirmed, include the number in the incident description and briefing. Give eligible rescue incidents a chance to arrive with incomplete intelligence; the probability is a future tuning decision.
+- An incomplete report should clearly communicate an attack and VIPs requiring extraction, with the transmission cut off before the count could be communicated. Display **VIP count: unknown**, rather than zero or an invented estimate. Example: "Attack in progress. VIPs require immediate extraction. We have— [TRANSMISSION LOST]. Land to establish contact with their short-range trackers and confirm the count."
+- Landing establishes local contact with the VIPs' short-range trackers and reveals the already-set count. Update the mission objective and rescue counters at that point, with a clear tracker-acquisition message. The reveal must not generate extra VIPs or scale them to the deployed force.
+- Keep tracker confirmation distinct from visual contact: knowing the rescue count must not automatically reveal enemies or grant sight through walls. Any tracker location indicators should be explicitly presented as tracker information and remain subject to the eventual tracker design.
+- Ensure preparation screens, capacity warnings and other pre-landing UI do not leak an unknown count. Make the uncertainty clear before launch so choosing transport capacity and rescue strength is an informed risk; keep incident generation compatible with a feasible extraction plan.
+- Use the same incident count and knowledge state across Manual, Hybrid and Simulation, tactical views, playback and mission reports. Preserve existing rescue/casualty accounting; later VIP deaths or extractions change outcome counters, not the incident's original count.
+- **Acceptance:** deploy different squad counts to the same incident and confirm identical VIP totals. Check confirmed and interrupted-report descriptions; ensure no pre-landing count leaks; verify landing reveals the stored count exactly once. Repeat after save/reload before and after landing, and check rescue, casualty and mission-report totals across control modes.
+
+This is a roadmap-only update; the runtime, build identifier and save format are unchanged.
+
+## Roadmap Addition — Solid Building Walls Block Adjacent Vision
+
+**Requested September 13, 2026. Status: planned, not implemented.**
+
+- Remove any adjacency exception that lets a unit see through a solid building wall simply because it stands next to that wall. Apply this consistently to all units, from both inside and outside buildings.
+- Sight through a building boundary must pass through a **window, open door or breach**. Closed solid doors and intact solid wall sections block sight; an opening elsewhere on the same wall does not make the whole wall transparent.
+- Trace sight through the actual opening and surrounding geometry. Preserve normal range, lighting, smoke and other visibility restrictions; a valid opening permits a sightline but does not guarantee visibility of the entire room or everything outside.
+- Use the same authoritative rule for Manual, Hybrid and Simulation play, AI perception, fog-of-war discovery, target acquisition and playback visibility. Presentation features such as transparent walls or roof cutaways must not grant knowledge through solid geometry.
+- Update visibility when a door opens/closes or a wall is breached. Preserve previously explored terrain as memory without revealing live units or new interior information behind an intact wall.
+- **Acceptance:** place units directly adjacent to solid walls on both sides and confirm no through-wall sight. Repeat beside windows, closed/open doors and breaches, checking actual sightline alignment and blocked corners. Verify opening/closing a door and creating a breach update visibility correctly, then repeat after save/reload and across control modes and tactical views.
+
+This is a roadmap-only update; the runtime, build identifier and save format are unchanged.
 
 ## v0.26.09.13.1209_FIRE_TEAM_VITALS_REASSIGNMENT_AND_VEHICLE_HEADLIGHT_ALIGNMENT_PATCH
 

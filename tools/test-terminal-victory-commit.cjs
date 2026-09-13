@@ -63,6 +63,14 @@ test('An explicit death cannot become a medical survivor through positive animat
 test('A genuine defeat is passed through without survivor repair',()=>{
   const {context,observed,result}=setup({success:false});context.finishAiPlayback();assert.equal(observed.finished[0],result);
 });
+for(const hybrid of [false,true]) test(`${hybrid?'Hybrid':'Full AI'} VIP objective failure preserves authoritative survivor and partial rescue results`,()=>{
+  const {context,observed,result,frame}=setup({hybrid,success:false});
+  result.squadDefeated=false;result.objectiveFailed=true;result.civilianOutcome={rescued:2,required:3,rewardBonus:80};
+  frame.label='Mission failed - VIP rescue quota missed';
+  context.finishAiPlayback();assert.equal(observed.finished.length,1);assert.equal(observed.finished[0],result);
+  assert.equal(context.unitsRef.current.find(unit=>unit.id==='survivor').hp,31);
+  assert.equal(observed.finished[0].civilianOutcome.rewardBonus,80);
+});
 for(const state of ['streamPending','streamFailed','operationIncomplete']) test(`Unresolved ${state} playback cannot finalize`,()=>{
   const {context,observed,playback}=setup();if(state==='operationIncomplete')playback.result[state]=true;else playback[state]=true;
   context.finishAiPlayback();assert.equal(observed.finished.length,0);
