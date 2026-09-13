@@ -1,8 +1,30 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.12.1300_BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH`
+Current browser build: `v0.26.09.12.1403_TACTICAL_CASUALTY_CARE_PHASE_3A_EXTRACTION_AND_FIRE_TEAM_PHYSIOLOGICAL_HUD_PATCH`
 
 Current save format: `4`
+
+## Current Build Addendum — Browser 1403 (September 12): Tactical Casualty Care Phase 3A — Extraction, Aftermath + Fire-Team Physiological HUD
+
+- **Status: implemented; awaiting field acceptance.** A conscious responder can secure and drag a downed casualty through the existing TU rules, then complete recovery only from an authoritative player Skyranger ramp-touch cell.
+- Extraction clears the drag link, stops active battlefield bleeding, records the rescuer, craft, round, and stabilization state, removes the casualty from map rendering/path occupancy, and displays **EVAC** in the physiological monitor.
+- Manual play supports both attaching to a casualty while the responder already occupies the ramp and walking a linked casualty onto the ramp. Both actions add a clear evacuation entry to the tactical log.
+- Simulation and Hybrid AI can perform the same bounded extraction when an adjacent casualty and reachable ramp fit the responder's remaining TU. Medic preference is retained, panicked responders cannot execute the recovery, and hidden alien information is not consulted.
+- Mission victory recovers living downed soldiers. During defeat or withdrawal, physically extracted casualties survive while downed personnel left in the field become **KIA / unrecovered**. Manual, Simulation, Hybrid, and Classic terminal paths reconcile against the final authoritative battlefield state.
+- The roadmap physiological HUD is now active along the battle-screen bottom edge. Every fire team has a compact formation diamond with the leader above, left/right supports below, and an optional fourth member at the bottom.
+- Each member has a small heartbeat trace whose color moves from calm blue at full health toward bright red when incapacitated or dead. Trace speed responds independently to fear pressure through shaken, pinned, and panic states; KIA uses a flatline. Labels expose **OK / WND / SHAKEN / PINNED / PANIC / BLD / STB / DWN / EVAC / KIA**.
+- Standard layout keeps the row visible. Mobile Adaptive adds **Team Vitals / Hide Vitals** on the left thumb rail and caches the setting for the live mission.
+- Tactical snapshots carry optional casualty extraction/recovery metadata. Save format remains **4**.
+
+### Field gate
+
+1. Drag a downed casualty onto a player Skyranger ramp and verify EVAC, log feedback, no map occupancy, and survival after withdrawal.
+2. Attach an adjacent downed casualty while the responder is already on the ramp and verify immediate extraction.
+3. Withdraw with one extracted and one unextracted downed soldier; verify only the unextracted soldier is recorded KIA / unrecovered.
+4. Win with an unextracted living downed soldier and verify mission recovery rather than KIA.
+5. Observe AI casualty extraction and confirm attach/movement TU is spent, panicked responders do not extract, and no hidden enemy location is exposed.
+6. Check calm, wounded, fear, downed, extracted, and KIA traces in Standard and Mobile Adaptive layouts. Toggle Team Vitals closed/open and reload the live mission.
+7. Recheck Phase 1/2 casualty mechanics, terminal Hybrid completion, Beacon effects, PWA update/cold start, building/vehicle presentation, and save format **4**.
 
 ## Current Build Addendum — Browser 1300 (September 12): Build Audit + Terminal Playback Integrity
 
@@ -34,7 +56,7 @@ Complete one terminal Hybrid mission that still carries a continuation snapshot 
 - Browser 2248 dragging/all-down terminal behavior, Browser 2058 Beacon cinematic, Browser 2015 materialization, Browser 1800 field-accepted Android PWA architecture, Browser 1740 Mobile HUD, Browser 1610 building seams, and Browser 1254 horizon treatment remain preserved.
 
 ### Casualty Care Phase 3 — retained roadmap scope
-- Physical casualty boarding/extraction into the Skyranger and mission-aftermath consequences for recovered vs. abandoned downed personnel.
+- Physical casualty boarding/extraction and recovered-vs.-abandoned mission aftermath are implemented as Phase 3A in Browser 1403.
 - Strategic Field Medkit charge resupply/economics, encumbrance, advanced formulations, and treatment history.
 - Permanent injuries/body-region consequences and deeper Sickbay/recovery integration.
 - Additional triage/carry presentation only after Phase 2 bleeding/stabilization behavior is field accepted.
@@ -1440,7 +1462,7 @@ Apply both changes to Standard and Mobile layouts. Verify that overlay controls 
 - **Smooth tactical camera movement in every view:** bring 2D Hex, 3D Iso, FPV, and TPV camera motion up to the standard of smooth articulated unit movement. Pan, soldier/fire-team recentering, target tracking, camera rotation, zoom, Fit Map transitions, observer handoffs, and transitions between tactical views should ease between valid positions instead of jumping or snapping. Camera smoothing must remain interruptible and responsive, avoid lagging behind active shots or movement, honor reduced-motion and battle-speed settings, preserve the player's chosen view where existing rules require it, and never alter action timing, fog, LOS, targeting, AI knowledge, simulation state, or authoritative unit positions.
 - **Stable tactical-toolbar layout / no state-driven button shifting:** give the battle-screen toolbar deterministic named slots and row ownership so its controls remain in the same screen positions while soldiers move, selections change, rounds advance, objectives update, and Manual, Hybrid, or Simulation control hands off. The **Articulated / Classic** selector must occupy one fixed reserved slot and may not migrate between the lower-left and upper-right or push **First Person**, **Third Person**, Battle Speed, Hybrid AI, Command Map, Assign Objectives, or neighboring controls sideways. Conditional controls should retain reserved layout space or use stable disabled/visibility placeholders instead of mounting and unmounting in a way that collapses the row; variable labels and counts should use bounded widths so ordinary state changes cannot resize their control groups. Responsive viewport breakpoints may deliberately choose a different fixed arrangement or contained horizontal overflow, but the layout may not reflow repeatedly at one unchanged viewport size. Preserve logical keyboard/focus order, accessible hit targets, tooltip behavior, and all existing control availability. Add a deterministic presentation regression that compares key control bounding rectangles across representative soldier selections, movement/playback frames, round transitions, AI handoffs, model-detail changes, and FPV/TPV/3D-Iso state changes; this work is interface-only and may not alter tactical authority, timing, AI, or save data.
 - **Readable multi-shot playback:** when a soldier commits multiple shots during one tactical round, present every separately resolved shot as its own ordered firing action with a visible aim/fire/impact beat and enough bounded hold time for the player to follow the shooter, target, and result. Playback may not collapse, skip, overlap, or instantly consume later shots merely because their combat results were calculated together. Battle Speed and reduced-motion settings may shorten or simplify camera motion, but must preserve a readable minimum display window for each shot; this is presentation sequencing only and cannot reroll or alter TU, ammunition, accuracy, damage, reactions, target death, AI decisions, or action order.
-- **Fire-team physiological HUD row:** add one compact battle-screen panel per fire team along the bottom edge. Member abbreviations/icons use the formation diamond: leader centered at top, left/right support below, and optional fourth member centered at bottom. Each member receives a tiny animated heart trace whose color transitions from calm blue at full health to bright red when incapacitated or dead, while trace speed independently scales from steady at calm to extremely rapid during panic. The widget must remain cheap, readable, and synchronized with authoritative health, incapacity, and fear state.
+- **Fire-team physiological HUD row — IMPLEMENTED IN BROWSER 1403:** one compact battle-screen panel per fire team sits along the bottom edge. Member abbreviations use the formation diamond: leader centered at top, left/right support below, and optional fourth member centered at bottom. Each member receives a tiny animated heart trace whose color transitions from calm blue at full health to bright red when incapacitated or dead, while trace speed independently scales from steady at calm to extremely rapid during panic. The widget remains synchronized with authoritative health, incapacity, and fear state; Mobile Adaptive can open or close it from the thumb rail.
 - **Tactical Readability relocation:** remove the always-visible battlefield overlay and place Tactical Readability beneath the left-column Time panel behind a button/expandable control, preserving the same information without covering the tactical scene.
 - **Visible VIP death cinema:** when a VIP known and currently visible to AEGIS is killed by aliens, use the existing bounded slow-motion hit/death camera language. Do not reveal unseen VIP deaths or attacker information.
 - **Named VIP markers:** all 2D Hex, 3D Iso, FPV, and TPV VIP markers show the VIP's name beneath the VIP label while respecting existing knowledge and visibility rules.

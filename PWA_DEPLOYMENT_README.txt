@@ -1,5 +1,5 @@
 PROJECT AEGIS / ALIEN RESPONSE COMMAND — PWA DEPLOYMENT
-Build: v0.26.09.12.1300_BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH
+Build: v0.26.09.12.1403_TACTICAL_CASUALTY_CARE_PHASE_3A_EXTRACTION_AND_FIRE_TEAM_PHYSIOLOGICAL_HUD_PATCH
 
 BUILD FROM SOURCE
 1. Edit src/browser-runtime.html for game changes and tools/package-runtime-shell.cjs for host/PWA changes.
@@ -22,6 +22,8 @@ LOCAL TESTING
 
 UPDATE NOTE
 The packager updates both build-versioned caches so old Aegis caches are retired on activation. Only navigation to the game root or index.html updates the offline launch page; editor and QA pages cannot replace it.
+
+Browser 1403 note: installed PWA caches advance for Skyranger casualty extraction, recovered-versus-abandoned mission aftermath, and the fire-team physiological HUD. Mobile Adaptive exposes Team Vitals / Hide Vitals on the tactical left thumb rail. Save format remains 4.
 
 Mobile Geoscape note (Browser 1231): the manifest now allows any orientation so the adaptive Geoscape can run in portrait on tall smartphones and scale through tablets.
 

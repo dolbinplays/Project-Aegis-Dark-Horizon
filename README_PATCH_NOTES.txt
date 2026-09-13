@@ -1,3 +1,45 @@
+BUILD: v0.26.09.12.1403_TACTICAL_CASUALTY_CARE_PHASE_3A_EXTRACTION_AND_FIRE_TEAM_PHYSIOLOGICAL_HUD_PATCH
+TITLE: Tactical Casualty Care Phase 3A — Extraction, Aftermath + Fire-Team Physiological HUD
+DATE: September 12, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.12.1300_BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH
+
+SUMMARY
+-------
+Adds physical Skyranger recovery for downed soldiers, mission-aftermath consequences for personnel left behind, and the roadmap fire-team health/fear heartbeat monitor. Mobile Adaptive players can show or hide the monitor from the left thumb rail.
+
+CASUALTY EXTRACTION
+-------------------
+- A conscious responder may secure an adjacent downed teammate for the existing 8 TU attach cost and drag them for 8 TU per hex.
+- Extraction completes only when the linked responder reaches the authoritative player Skyranger ramp-touch cell with the casualty still adjacent.
+- Ramp-side attachment and movement onto the ramp both work. Extraction clears the drag link, stabilizes active bleeding, records rescuer/craft/round metadata, removes the casualty from map occupancy, and logs the evacuation.
+- Simulation and Hybrid AI may perform the same bounded action when a casualty and reachable ramp fit the responder's remaining TU. Panicked responders cannot perform this recovery action, and hidden alien information is not consulted.
+
+MISSION AFTERMATH
+-----------------
+- Mission victory recovers living downed soldiers even when they were not physically carried back to the Skyranger.
+- On defeat or withdrawal, physically extracted casualties survive; downed soldiers left in the field are recorded as KIA / unrecovered.
+- Manual, full Simulation, Hybrid, and Classic terminal paths reconcile this outcome from the final authoritative battlefield state.
+
+FIRE-TEAM PHYSIOLOGICAL HUD
+---------------------------
+- Each fire team has a compact bottom-edge formation diamond: leader at top, left/right supports below, and an optional fourth member at the bottom.
+- Tiny animated heart traces move from calm blue at full health toward bright red when downed or dead. Trace speed rises independently with fear pressure through shaken, pinned, and panic states; KIA displays a flatline.
+- Status labels include OK, WND, SHAKEN, PINNED, PANIC, BLD, STB, DWN, EVAC, and KIA.
+- Standard layout keeps the monitor visible. Mobile Adaptive adds Team Vitals / Hide Vitals on the left thumb rail and remembers the setting for the current live mission.
+
+SAVE / AUTHORITY
+----------------
+- Tactical snapshots retain extraction, recovery, rescuer, craft, stabilization, and round metadata.
+- Extracted casualties no longer render or block path occupancy.
+- Save format remains 4 because the new tactical fields are optional.
+
+VALIDATION
+----------
+See VALIDATION_SUMMARY.txt for executable checks and remaining physical-device field acceptance.
+
+---
+
 BUILD: v0.26.09.12.1300_BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH
 TITLE: Build Audit + Terminal Playback Integrity
 DATE: September 12, 2026

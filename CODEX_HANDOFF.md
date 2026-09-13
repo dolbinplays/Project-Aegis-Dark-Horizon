@@ -1,4 +1,41 @@
-# CODEX HANDOFF — v0.26.09.12.1300_BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH
+# CODEX HANDOFF — v0.26.09.12.1403_TACTICAL_CASUALTY_CARE_PHASE_3A_EXTRACTION_AND_FIRE_TEAM_PHYSIOLOGICAL_HUD_PATCH
+
+Browser 1300 is the release baseline. Browser 1403 implements Tactical Casualty Care Phase 3A: authoritative Skyranger recovery, recovered-versus-abandoned mission aftermath, and the roadmap fire-team physiological HUD with a Mobile Adaptive show/hide button. Save format remains 4.
+
+## Extraction and aftermath authority
+
+- `tacticalExtractDraggedCasualtyAtSkyranger(...)` is the boarding authority. The conscious rescuer must occupy a player Skyranger's first ramp cell, retain a valid adjacent drag link, and carry a living downed casualty.
+- A completed extraction sets `casualtyExtracted`, `casualtyRecovered`, `rescued`, rescuer/craft/round metadata, stops active bleeding, clears both drag fields, and removes the casualty from render/path occupancy.
+- Manual ramp-side attachment and manual drag movement both call the same helper. `tacticalAiCasualtyExtractionStep(...)` uses the existing attach/per-hex TU costs and hazard-aware route authority; it does not inspect hidden alien positions.
+- `tacticalApplyCasualtyExtractionAftermath(...)` owns final recovery. Victory recovers living downed soldiers. Defeat/withdrawal saves physically extracted casualties and records unextracted downed personnel as KIA/unrecovered.
+- `finishTacticalMission(...)` receives the final battlefield units. Terminal Simulation/Hybrid playback commits the last frame before aftermath; `resolveMission(...)` applies the same outcome to Classic/direct simulation.
+
+## Physiological HUD
+
+- `TacticalFireTeamPhysiologicalHud` groups all AEGIS soldiers by fire team and arranges up to four members in the roadmap diamond.
+- Trace color derives from authoritative HP/incapacity. Trace duration derives from fear pressure/state, and KIA is a flatline. Status text includes medical, fear, extraction, and death states.
+- Standard layout keeps the bottom-edge monitor visible. Mobile Adaptive uses the left-rail `Team Vitals` / `Hide Vitals` button; `mobilePhysioHudOpen` persists in the live mission cache.
+
+## Preserve
+
+- Save format 4 and optional-field loading.
+- Browser 1300 terminal Hybrid precedence/final-frame commit.
+- Phase 1/2 downing, bleeding, stabilization, Field Medkit, and triage rules.
+- Existing Beacon, mobile, PWA, building, vehicle, horizon, and renderer authority.
+- One active `finishAiPlayback()` definition and one mutable current patch-history record.
+
+## Field gates
+
+1. Extract a downed casualty by dragging onto the Skyranger ramp, then repeat by attaching while already standing on the ramp.
+2. Withdraw with one extracted and one unextracted downed casualty; verify the former survives and the latter is KIA/unrecovered.
+3. Win with a living unextracted downed soldier and verify recovery.
+4. Observe AI extraction TU spending and confirm panic/hidden information constraints.
+5. Inspect all health/fear/medical trace states in Standard and Mobile Adaptive; close/reopen Team Vitals and restore the live mission.
+6. Repeat Browser 1300 terminal Hybrid, Phase 1/2 casualty, PWA update/cold-start, and representative tactical presentation gates.
+
+---
+
+# Previous handoff — v0.26.09.12.1300_BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH
 
 Browser 1226 is the gameplay baseline. Browser 1300 audits the patches added since Browser 1058, fixes terminal Hybrid completion, aligns fallback 3D land-vehicle placement with footprint authority, repairs generic checks, and removes merged one-use patch-delivery files. Save format remains 4.
 
