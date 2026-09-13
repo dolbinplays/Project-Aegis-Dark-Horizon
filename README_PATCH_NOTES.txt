@@ -1,3 +1,21 @@
+BUILD: v0.26.09.13.1209_FIRE_TEAM_VITALS_REASSIGNMENT_AND_VEHICLE_HEADLIGHT_ALIGNMENT_PATCH
+TITLE: Fire-Team Vitals Reassignment + Vehicle Headlight Alignment
+DATE: September 13, 2026
+SAVE FORMAT: 4
+BASE BUILD: v0.26.09.12.2346_TACTICAL_CASUALTY_CARE_PHASE_3C_MEDICAL_RESUPPLY_AND_IMPACT_SYNCHRONIZED_VITALS_PATCH
+
+Vitals follow survivors absorbed into another team without losing casualty cards. Land-vehicle headlamps and forward beams align with the narrow front face in both 3D renderers.
+
+- Living soldiers who change fire teams receive a unique slot in the receiving vitals panel; unchanged teammates keep their slots and fallen soldiers stay in their former panel.
+- Panels remain alphabetical. Extra casualty cards use additional grid rows instead of hiding members beyond four. Reconciled slots persist with tactical snapshots.
+- Cars, vans, utility vehicles and buses share their detailed model and headlamp geometry across persistent and fallback renderers.
+- Headlamps sit on the short front face along local +X; forward spotlights use the same group rotation. Daytime/unpowered lenses remain attached but do not emit light.
+- Existing tactical illumination, footprints, casualty-impact display timing and save format 4 are preserved.
+
+See VALIDATION_SUMMARY.txt for checks and field acceptance.
+
+---
+
 BUILD: v0.26.09.12.2346_TACTICAL_CASUALTY_CARE_PHASE_3C_MEDICAL_RESUPPLY_AND_IMPACT_SYNCHRONIZED_VITALS_PATCH
 TITLE: Casualty Care Phase 3C — Medical Resupply + Impact-Synchronized Vitals
 DATE: September 12, 2026

@@ -1,39 +1,37 @@
-PROJECT AEGIS — BROWSER 2346 VALIDATION SUMMARY
-Build: v0.26.09.12.2346_TACTICAL_CASUALTY_CARE_PHASE_3C_MEDICAL_RESUPPLY_AND_IMPACT_SYNCHRONIZED_VITALS_PATCH
+PROJECT AEGIS — BROWSER 1209 VALIDATION SUMMARY
+Build: v0.26.09.13.1209_FIRE_TEAM_VITALS_REASSIGNMENT_AND_VEHICLE_HEADLIGHT_ALIGNMENT_PATCH
 Save format: 4
-Baseline: committed Phase 3B a346b59 / Browser 2122
 
 IMPLEMENTED
-- Persistent campaign medicalCharges, including zero, and tactical medicalKitOwned for kit transfer/drop ownership.
-- Local-base refills, reusable empty kits, conserved charges on return/reissue, and actual KIA medical salvage on victory.
-- Retail Medkit contains 4 charges (75k); Medical Supplies cost 10k each. Medic capacity 10, ordinary capacity 4. Legacy issued kits retain their existing allocation.
-- Refill controls in Quartermaster and personnel/Sickbay loadouts; committed sorties and transfers cannot alter medical equipment.
-- Charge counts on soldier cards, tactical status and launch summary; empty kits warn without blocking launch.
-- Fire-team physiological cards retain pre-hit snapshots until the observed attack's impact/reaction hold, including downed/bleeding state. Manual attacks and map AI playback use the same display hold; gameplay authority is unchanged.
-- Playback cancellation and unmount clear presentation timers; stable slots and alphabetical team ordering retained.
+- Vitals reflect actual living fire-team transfers; recipients retain stable slots and the entrant receives a unique slot.
+- Fallen members remain visible in their former panel. More than four displayed members use extra rows instead of disappearing or overlapping.
+- Reconciled slots persist after reassignment; alphabetical ordering and pre-impact vital holds remain intact.
+- Land vehicles share detailed bodies, short-front-face lamp anchors and forward beam targets across persistent/fallback renderers.
+- Night brightness scales the new spotlights; the persistent light budget and tactical lighting/LOS authority remain unchanged.
 
 AUTOMATED CHECKS
-- Node suite: 39/39 PASS, including six new supply-conservation, ownership and vitals-timing tests.
-- Playback sequencer: 16/16 PASS; fixture extended for presentation-only callbacks.
-- Mobile behavior: 10/10 PASS.
-- Tactical smoke scripts: 6/6 PASS; Phase 2 fixture loads the shared persistent-charge helper.
-- Embedded JavaScript syntax: PASS, 9 non-empty blocks.
-- Build/release seam: PASS for Browser 2346.
+- Node suite: 47/47 PASS, including 8 focused reassignment and Three.js headlight tests.
+- Tests cover actual singleton absorption, unchanged member slots, KIA retention, save/reload, repeated transfers, duplicate-slot repair and panels with five members.
+- Four vehicle types tested at six headings using actual Three.js transforms; lights are beyond the short front edge and beams point forward.
+- Headlight spotlights follow the existing night brightness control.
+- Tactical smoke scripts: 6/6 PASS.
+- Playback sequencer: 16/16 PASS; Mobile behavior: 10/10 PASS.
+- Embedded JavaScript: PASS, 9 non-empty blocks. Build/release seam: PASS.
+- Vehicle height diagnostic now inspects the shared vehicle helper after geometry extraction.
 
-BROWSER CHECKS
-- Isolated headless Edge loaded the packaged game without page errors.
-- Actual TacticalMission mobile fixture rendered its fire-team vitals at 844x390 with no page errors; cards were visually inspected.
-- Seeded Build Health: current 897/967, baseline 897/967. Exact same 70 existing failures; no new failures.
+BROWSER / VISUAL CHECKS
+- Headless Edge loaded the packaged runtime without page errors.
+- Actual shared vehicle meshes, headlamps and beams rendered at multiple headings; screenshot visually inspected.
+- Actual vitals HUD rendered with an absorbed survivor in Bravo, Alpha's retained casualty and a fifth Bravo card in a separate row. No card overlap.
+- Final full Build Health: 897/967, matching the committed baseline with exactly the same 70 existing failures. No new failures.
 
 FIELD ACCEPTANCE
-- Compare two-base issue, refill, return and transfer; remote supply must not refill a local kit.
-- Save/reload an empty kit and a partially used kit; launch Manual, Hybrid and Simulation and confirm the saved quantities.
-- Transfer/drop a kit in battle and verify only its final owner retains it after mission return.
-- Win/withdraw with fallen kit owners; confirm victory salvage versus medical field loss.
-- Observe nonfatal injury, downing and KIA at slow/normal/fast speeds. The impact must be shown before vitals change. Also test Take Back Control while an attack is pending.
-- Physical-device Mobile resupply controls and prolonged multi-shot animation timing remain hands-on checks.
-- Native Godot parity remains deferred.
+- Play a real singleton absorption in Manual, Hybrid and full Simulation; save/reload and toggle Mobile vitals afterward.
+- Verify team changes during a pending impact presentation do not reveal injury prematurely or leave stale membership afterward.
+- Inspect cars, vans, utility vehicles and buses on real maps in both renderers, by day/night and at every generated road rotation.
+- Check Mobile fit and readability when many casualty cards require additional rows.
+- Native Godot parity remains deferred and was not executed.
 
 RELEASE
-- index.html regenerated from canonical source. Service-worker cache identity and release hashes updated.
-- No commit, push or deployment performed.
+- Runtime, host, manifest, worker caches, release hashes and current documentation updated.
+- Local changes only; no commit, push or deployment.

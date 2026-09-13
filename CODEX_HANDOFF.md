@@ -1,3 +1,21 @@
+# CODEX HANDOFF — v0.26.09.13.1209_FIRE_TEAM_VITALS_REASSIGNMENT_AND_VEHICLE_HEADLIGHT_ALIGNMENT_PATCH
+
+Vitals follow survivors absorbed into another team without losing casualty cards. Land-vehicle headlamps and forward beams align with the narrow front face in both 3D renderers.
+
+- Living soldiers who change fire teams receive a unique slot in the receiving vitals panel; unchanged teammates keep their slots and fallen soldiers stay in their former panel.
+- Panels remain alphabetical. Extra casualty cards use additional grid rows instead of hiding members beyond four. Reconciled slots persist with tactical snapshots.
+- Cars, vans, utility vehicles and buses share their detailed model and headlamp geometry across persistent and fallback renderers.
+- Headlamps sit on the short front face along local +X; forward spotlights use the same group rotation. Daytime/unpowered lenses remain attached but do not emit light.
+- Existing tactical illumination, footprints, casualty-impact display timing and save format 4 are preserved.
+
+Authority: tacticalPhysioCaptureFormation updates live transfer membership and reserves valid existing slots before allocating arrivals. tacticalReconcileFireTeams captures formation again after reassignment. KIA cards retain former membership. The HUD renders all members and additional grid rows.
+
+Vehicle rendering: tacticalThreeAddLandVehicle shares the existing body dimensions; tacticalVehicleHeadlightLayout owns lamp/front/beam anchors. Positive local X is forward. tacticalThreeAddVehicleHeadlightBeam targets forward within the same rotated group; persistent rendering retains its existing light budget. Gameplay light profiles and LOS remain unchanged.
+
+Field gates: absorb a singleton; save/reload; check casualty-filled receiving panels and alphabetical order; confirm impact holds still release correctly. Inspect each vehicle type at multiple rotations by day/night in both renderers. Check Mobile panels with additional casualty rows.
+
+---
+
 # CODEX HANDOFF — v0.26.09.12.2346_TACTICAL_CASUALTY_CARE_PHASE_3C_MEDICAL_RESUPPLY_AND_IMPACT_SYNCHRONIZED_VITALS_PATCH
 
 Medical charges now persist between missions and refill from local stores. Fire-team vitals reveal injuries after the attack impact rather than at frame hydration.

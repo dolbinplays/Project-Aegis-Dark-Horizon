@@ -1,12 +1,24 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.12.2346_TACTICAL_CASUALTY_CARE_PHASE_3C_MEDICAL_RESUPPLY_AND_IMPACT_SYNCHRONIZED_VITALS_PATCH`
+Current browser build: `v0.26.09.13.1209_FIRE_TEAM_VITALS_REASSIGNMENT_AND_VEHICLE_HEADLIGHT_ALIGNMENT_PATCH`
 
 Current save format: `4`
 
+## v0.26.09.13.1209_FIRE_TEAM_VITALS_REASSIGNMENT_AND_VEHICLE_HEADLIGHT_ALIGNMENT_PATCH
+
+Fire-Team Vitals Reassignment + Vehicle Headlight Alignment
+
+- Living soldiers who change fire teams receive a unique slot in the receiving vitals panel; unchanged teammates keep their slots and fallen soldiers stay in their former panel.
+- Panels remain alphabetical. Extra casualty cards use additional grid rows instead of hiding members beyond four. Reconciled slots persist with tactical snapshots.
+- Cars, vans, utility vehicles and buses share their detailed model and headlamp geometry across persistent and fallback renderers.
+- Headlamps sit on the short front face along local +X; forward spotlights use the same group rotation. Daytime/unpowered lenses remain attached but do not emit light.
+- Existing tactical illumination, footprints, casualty-impact display timing and save format 4 are preserved.
+
+Roadmap intake items 1 and 2 are implemented in this build, pending field acceptance. Items 3–6 remain planned.
+
 ## Roadmap Intake — September 13, 2026: Fire-Team Vitals, Streets, Landmarks, Building Shapes and Soldier Identity
 
-**Status: requested roadmap work; not yet implemented.** This planning update does not change the runtime, browser build or save format.
+**Status: items 1 and 2 implemented in Browser 1209, pending field acceptance; items 3–6 remain requested roadmap work.** The original intake was planning-only. See the current build addendum above for the implemented items.
 
 ### 1. Reflect survivor absorption in fire-team vitals
 

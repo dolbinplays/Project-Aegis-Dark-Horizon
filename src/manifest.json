@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.09.12.2346_TACTICAL_CASUALTY_CARE_PHASE_3C_MEDICAL_RESUPPLY_AND_IMPACT_SYNCHRONIZED_VITALS_PATCH",
+  "currentBuild": "v0.26.09.13.1209_FIRE_TEAM_VITALS_REASSIGNMENT_AND_VEHICLE_HEADLIGHT_ALIGNMENT_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "phase-3c-medical-resupply-and-impact-synchronized-vitals-complete",
+  "status": "vitals-reassignment-and-headlight-alignment-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.09.12.2346_TACTICAL_CASUALTY_CARE_PHASE_3C_MEDICAL_RESUPPLY_AND_IMPACT_SYNCHRONIZED_VITALS_PATCH",
+  "lastInspectedBuild": "v0.26.09.13.1209_FIRE_TEAM_VITALS_REASSIGNMENT_AND_VEHICLE_HEADLIGHT_ALIGNMENT_PATCH",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -47,7 +47,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.09.12.2346_TACTICAL_CASUALTY_CARE_PHASE_3C_MEDICAL_RESUPPLY_AND_IMPACT_SYNCHRONIZED_VITALS_PATCH",
+    "browserBuild": "v0.26.09.13.1209_FIRE_TEAM_VITALS_REASSIGNMENT_AND_VEHICLE_HEADLIGHT_ALIGNMENT_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -622,6 +622,10 @@
       {
         "system": "persistent-medical-resupply-and-impact-vitals",
         "reason": "Browser persists medical charges and kit ownership, adds local refill/return economics, and delays physiological HUD injury changes until impact. Native parity remains deferred."
+      },
+      {
+        "system": "vitals-reassignment-and-land-vehicle-headlights",
+        "reason": "Browser vitals follow live team absorption while retaining casualty cards, and both 3D renderers share front-aligned vehicle headlights. Native parity remains deferred."
       }
     ]
   }
