@@ -42,3 +42,18 @@ assert.equal(ctx.tacticalPhysioHeartbeatDuration({team:'human',alive:false,hp:0,
 assert.match(src,/mobilePhysioHudOpen\?"Hide Vitals":"Team Vitals"/);assert.match(src,/\(!mobileLayout\|\|mobilePhysioHudOpen\).*TacticalFireTeamPhysiologicalHud/);assert.match(src,/AEGIS_FIRE_TEAM_PHYSIOLOGICAL_HUD_BEGIN/);
 assert.match(src,/return tacticalContinuationRequired\?terminalResult:tacticalApplyCasualtyExtractionAftermath/);
 console.log('PASS - Phase 3A Skyranger casualty extraction, withdrawal aftermath, fire-team vitals, and Mobile Adaptive toggle');
+
+// A fallen leader and their promoted replacement must retain distinct deployment slots.
+const vitalsTeam=['leader','left','right','rear'].map((role,index)=>({id:'v'+index,name:'Member '+index,team:'human',fireTeamId:'golf',fireTeamDesignation:'Golf',fireTeamRole:role,alive:true,hp:40,maxHp:40}));
+for(const size of [3,4]){
+  const initial=ctx.tacticalPhysioCaptureFormation(vitalsTeam.slice(0,size));
+  const after=ctx.tacticalPhysioCaptureFormation(JSON.parse(JSON.stringify(initial.map((u,i)=>({...u,alive:i!==0,hp:i===0?0:40,fireTeamRole:i===1?'leader':u.fireTeamRole})).reverse())));
+  const positions=after.map(u=>JSON.stringify(ctx.tacticalPhysioRoleSlot(u)));
+  assert.equal(new Set(positions).size,size,'No overlapping casualty/successor cards');
+  for(const u of after)assert.equal(JSON.stringify(u.physioFormation),JSON.stringify(initial.find(v=>v.id===u.id).physioFormation),'Slots survive promotion, reordered playback, and save/restore');
+  assert.equal(ctx.tacticalPhysioMemberState(after.find(u=>u.id==='v0')),'KIA');
+}
+const legacy=ctx.tacticalPhysioCaptureFormation(vitalsTeam.slice(0,3).map((u,i)=>({...u,fireTeamRole:i<2?'leader':'right',alive:i!==0,hp:i===0?0:40})));
+assert.equal(new Set(legacy.map(u=>JSON.stringify(ctx.tacticalPhysioRoleSlot(u)))).size,3,'Old saves with duplicate leaders get unique cells');
+assert.match(src,/physioFormation: unit.physioFormation \? \{\.\.\.unit.physioFormation\} : null/);
+console.log('PASS - stable three/four-member vitals after leader death, promotion, restore, and legacy duplicate roles');
