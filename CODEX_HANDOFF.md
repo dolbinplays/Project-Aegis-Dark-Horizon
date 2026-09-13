@@ -1,3 +1,31 @@
+# CODEX HANDOFF — v0.26.09.12.2122_TACTICAL_CASUALTY_CARE_PHASE_3B_SICKBAY_RECOVERY_AND_RESCUE_OUTCOMES_PATCH
+
+Phase 3B adds persistent medical histories, return-to-duty estimates, fractional recovery credit and explicit medical debriefs. Includes the prior stable-slot and alphabetical vitals fixes. Save format remains 4. Native parity remains deferred in the manifest.
+
+## Medical record authority
+
+- tacticalApplyCasualtyExtractionAftermath creates medicalRecords from the authoritative final battlefield after recovery/KIA reconciliation. Each record retains mission and soldier IDs, final HP, outcome, stabilization, rescuer, craft and round metadata.
+- campaignRecordMissionMedical attaches each record once per mission/soldier during the shared campaign aftermath map, before friendship processing and the existing post-mission save/reboot. Reapplying a record does not restart care.
+- Outcomes: evacuated, recovered-after-victory, wounded-returned, unrecovered, kia. Records are retained on the soldier, including after return to duty or death.
+- addMissionReport retains structured records; buildMissionReportEntries appends medical summaries after terminal log trimming.
+
+## Recovery authority
+
+- recoveryDaysRemaining stores full-speed care days, including fractional Barracks credit. Sickbay spends 1/day; Barracks spends 0.5/day.
+- soldierRecoverySummary derives remaining calendar days at the current care speed and progress from that same countdown. Bed transfers retain credit. Old saves fall back to woundDays(status).
+- recoverSoldierOneDay owns healing, countdown and completion. At zero it marks the active medical record completed, records actual care days, and uses the existing Ready/auto-squad-return path.
+- SoldierMedicalHistory renders in SoldierCard for both layouts. Mobile Sickbay list uses calendar-day ETA.
+
+## Field acceptance
+
+1. Stabilize and evacuate one casualty; win with another living casualty still in the field. Verify distinct report outcomes and rescue details in each soldier's history.
+2. Withdraw with one evacuated casualty and one casualty left behind. Verify the first survives and the second remains KIA in report, roster and reload.
+3. Move a patient between Sickbay and Barracks after a day of care. Verify changed ETA, retained fractional progress, and save/reload consistency.
+4. Finish recovery. Verify Ready status, existing squad-return behavior and completed medical history.
+5. Inspect Standard and Mobile Sickbay history, progress and ETA. Recheck stable, alphabetical vitals after leader death.
+
+---
+
 # CODEX HANDOFF — v0.26.09.12.1403_TACTICAL_CASUALTY_CARE_PHASE_3A_EXTRACTION_AND_FIRE_TEAM_PHYSIOLOGICAL_HUD_PATCH
 
 Browser 1300 is the release baseline. Browser 1403 implements Tactical Casualty Care Phase 3A: authoritative Skyranger recovery, recovered-versus-abandoned mission aftermath, and the roadmap fire-team physiological HUD with a Mobile Adaptive show/hide button. Save format remains 4.

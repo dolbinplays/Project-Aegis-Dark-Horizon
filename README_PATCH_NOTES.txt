@@ -1,3 +1,26 @@
+BUILD: v0.26.09.12.2122_TACTICAL_CASUALTY_CARE_PHASE_3B_SICKBAY_RECOVERY_AND_RESCUE_OUTCOMES_PATCH
+TITLE: Tactical Casualty Care Phase 3B — Sickbay Recovery + Rescue Outcomes
+DATE: September 12, 2026
+SAVE FORMAT: 4 (unchanged)
+BASE BUILD: v0.26.09.12.1403_TACTICAL_CASUALTY_CARE_PHASE_3A_EXTRACTION_AND_FIRE_TEAM_PHYSIOLOGICAL_HUD_PATCH
+
+SUMMARY
+-------
+Persists casualty rescue records in soldier medical histories, shows recovery progress and return-to-duty estimates, and preserves medical outcomes in debriefs. Includes stable, alphabetical fire-team vitals.
+
+- Medical history retains mission, final health, evacuation or victory recovery, stabilization, rescuer, craft and round details; KIA and personnel left behind remain distinct.
+- Soldier cards in Standard and Mobile show care location, recovery progress, estimated days to duty, and expandable medical history.
+- Barracks recovery retains half-day credits across saves and bed transfers; full-speed Sickbay and half-speed Barracks use the same countdown.
+- Mission debrief medical entries survive terminal log trimming and report saves. Completed care remains in the service history.
+- Vitals preserve original member positions after casualties and sort fire-team panels alphabetically.
+- Save format stays 4; old saves initialize optional medical and recovery fields safely.
+
+VALIDATION
+----------
+See VALIDATION_SUMMARY.txt for checks and field acceptance.
+
+---
+
 BUILD: v0.26.09.12.1403_TACTICAL_CASUALTY_CARE_PHASE_3A_EXTRACTION_AND_FIRE_TEAM_PHYSIOLOGICAL_HUD_PATCH
 TITLE: Tactical Casualty Care Phase 3A — Extraction, Aftermath + Fire-Team Physiological HUD
 DATE: September 12, 2026

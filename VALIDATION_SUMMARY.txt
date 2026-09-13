@@ -1,45 +1,39 @@
-PROJECT AEGIS — BROWSER 1403 VALIDATION SUMMARY
-Build: v0.26.09.12.1403_TACTICAL_CASUALTY_CARE_PHASE_3A_EXTRACTION_AND_FIRE_TEAM_PHYSIOLOGICAL_HUD_PATCH
+PROJECT AEGIS — BROWSER 2122 VALIDATION SUMMARY
+Build: v0.26.09.12.2122_TACTICAL_CASUALTY_CARE_PHASE_3B_SICKBAY_RECOVERY_AND_RESCUE_OUTCOMES_PATCH
 Save format: 4
-Base: Browser 1300 Build Audit and Terminal Playback Integrity
+Base: committed vitals hotfix 6a2f988 / Browser 1403
 
-CONFIRMED FEATURES AND FIXES
-- A conscious AEGIS soldier can drag a linked downed casualty onto the authoritative Skyranger ramp touch cell to extract them from the battlefield.
-- Simulation and Hybrid AI can identify a recoverable casualty, prefer a medic, secure the casualty, and carry them to the Skyranger across multiple rounds when necessary.
-- Extracted casualties are removed from tactical visibility and occupancy while retaining their medical and extraction records for the mission report.
-- Victory recovers surviving downed soldiers; withdrawal or defeat records unextracted downed soldiers as unrecovered KIA while preserving soldiers already aboard the Skyranger.
-- Live-battle continuation snapshots bypass terminal casualty aftermath, preventing an inherited ongoing battle from resolving casualties before the mission ends.
-- A bottom-edge fire-team physiological HUD presents formation, health color, heartbeat pace, bleeding, stabilization, downed, fear, evacuation, and KIA state.
-- Standard layout keeps the physiological HUD visible. Mobile Adaptive adds a Team Vitals / Hide Vitals button and retains the selection in the live tactical cache.
+IMPLEMENTED
+- Structured mission medical records retained on each soldier, including evacuation, victory recovery, wounds, KIA and abandonment.
+- Stabilizer and rescuer identities, mission, round and craft metadata retained when available.
+- Duplicate mission recording does not duplicate history or restart recovery.
+- Recovery card shows care location, progress, calendar-day estimate and expandable history in both layouts.
+- Fractional Barracks recovery survives save/reload and bed transfers; completed care stays in history.
+- Medical report entries survive terminal log trimming; structured records are retained in saved mission reports.
+- Prior stable-slot and alphabetical fire-team vitals fixes included.
 
 AUTOMATED VALIDATION
-- Embedded runtime/host/QA JavaScript: PASS, 9 non-empty blocks parsed.
-- Generic build/release seam: PASS for Browser 1403.
-- Node test suite: 28/28 PASS.
-- Mobile interface behavior: 10/10 PASS.
-- Tactical playback sequencer: 16/16 PASS.
-- Executable tactical smoke scripts: 6/6 PASS.
-- All retained .cjs tools: 15/15 syntax PASS.
-- Focused Phase 3A smoke coverage: PASS for manual extraction, one-round and multi-round AI extraction, victory/withdrawal aftermath, physiological state helpers, formation slots, and Mobile Adaptive toggle wiring.
-- Git whitespace check: PASS; reported messages are line-ending conversion notices only.
+- Node test suite: 33/33 PASS, including 5 new medical-history/recovery behavioral tests.
+- Mobile interface behavior: 10/10 PASS (within suite).
+- Tactical playback sequencer: 16/16 PASS (within suite).
+- Tactical smoke scripts: 6/6 PASS, including all three casualty-care phases.
+- Embedded runtime/host/QA JavaScript syntax: PASS, 9 non-empty blocks.
+- Build/release seam: PASS for Browser 2122.
+- Git whitespace check: PASS; line-ending notices only.
 
 BROWSER VALIDATION
-- The final packaged runtime booted successfully from the local web server.
-- The start screen displayed the full Browser 1403 build identifier.
-- Browser console warnings/errors: none.
-- Standard and Mobile Adaptive start-screen choices remained available.
-
-RELEASE INTEGRITY
-- Packaged runtime bytes: 7,097,594.
-- Runtime SHA-256: f0124187b1c68cd18540b69ef8b7fc4d9d9ada1a4bfcdab78f1c92b95934626c.
-- Host SHA-256: 52217e1fc4b2ac147ecb1e49c7a609dc4c083e54302bad7a440c45eb52e012ae.
-- index.html embeds a byte-for-byte copy of src/browser-runtime.html.
-- Both service-worker caches, host build constants, manifest fields, and release metadata use Browser 1403.
+- Packaged game loaded in headless Microsoft Edge on an isolated local HTTP origin without page errors.
+- Rendered actual SoldierCard / SoldierMedicalHistory with an evacuated patient and opened history at 1400x900 Standard and 844x390 Mobile layout viewports. Recovery, 30% progress, seven-day ETA and rescue details rendered.
+- Full seeded Build Health: 897/967 PASS; 70 failures.
+- Compared against committed HEAD 6a2f988 using the same browser harness: baseline also 897/967 with the exact same 70 failures. No new failures from this patch. These existing failures are not claimed resolved.
 
 FIELD ACCEPTANCE STILL REQUIRED
-- In Standard layout, begin a mission with multiple fire teams and confirm the bottom monitor remains readable without covering tactical controls.
-- In Mobile Adaptive landscape, open and close Team Vitals and confirm the monitor fits between the thumb rails and scrolls horizontally when needed.
-- Down and stabilize a soldier, drag them to the first Skyranger ramp cell, and confirm EVAC appears and the casualty leaves the battlefield.
-- Let Simulation AI perform a multi-round carry to the Skyranger and confirm the turn continues normally after extraction.
-- Compare victory and withdrawal mission reports with extracted and unextracted downed soldiers.
-- Godot CLI was unavailable, so the native prototype was not executed; the native parity exception remains documented.
+- Real mission-to-Sickbay transition through Manual, Hybrid, full Simulation and Classic play.
+- Physical-device Sickbay navigation, history disclosure, and bed/Barracks transfer after a half-day credit.
+- Save/reload actual wounded campaigns and complete recovery with existing automatic squad return.
+- Withdrawal with both evacuated and abandoned casualties; verify report, Memorial and reloaded history.
+- Native Godot parity remains deferred and was not executed.
+
+RELEASE
+- Canonical source packaged into index.html; service-worker cache versions and release-metadata hashes updated.
+- No Git commit, push or deployment performed.
