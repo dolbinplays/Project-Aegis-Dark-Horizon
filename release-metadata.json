@@ -1,8 +1,8 @@
 {
-  "build": "v0.26.09.14.1112_BATTLE_VISIBILITY_REUSE_PERFORMANCE_PATCH",
-  "package_filename": "Project_Aegis_v0.26.09.14.1112_BATTLE_VISIBILITY_REUSE_PERFORMANCE_PATCH.zip",
+  "build": "v0.26.09.14.1149_INTERSECTION_TRAFFIC_CONTROLS_PATCH",
+  "package_filename": "Project_Aegis_v0.26.09.14.1149_INTERSECTION_TRAFFIC_CONTROLS_PATCH.zip",
   "save_format": 4,
-  "runtime_bytes": 7138503,
-  "runtime_sha256": "cf8a51900817fd2d8e99200d7ae0282da402b5e7ef2838b0ff2440a88aafc9b5",
-  "host_sha256": "e854d3654a39f3b5d9111219662968963c67ceb6c5d29c2bc1f0989db79fcf65"
+  "runtime_bytes": 7141598,
+  "runtime_sha256": "6ef8f24e324e91e259ef58c57153b63f2524dfb290c6970815631a6ec8821698",
+  "host_sha256": "776b254fb8bff47f7a3f6b4173a1c22dbb55649433a9d259fcde3ceb6311b020"
 }

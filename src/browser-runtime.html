@@ -1512,7 +1512,7 @@ function aegisTacticalViewportDimensions(mount,fallback={},layout=AEGIS_INTERFAC
 }
 // AEGIS_MOBILE_INTERFACE_END
 
-const CURRENT_GAME_BUILD="v0.26.09.14.1112_BATTLE_VISIBILITY_REUSE_PERFORMANCE_PATCH";
+const CURRENT_GAME_BUILD="v0.26.09.14.1149_INTERSECTION_TRAFFIC_CONTROLS_PATCH";
 const BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH=true;
 const TACTICAL_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH=true;
 const TACTICAL_OBSERVED_BEACON_REINFORCEMENT_CINEMATIC_DURATION_MS=2300;
@@ -7116,9 +7116,48 @@ function tacticalThreeAddVehicleHeadlightBeam(THREE,group,cover,color=0xfff0b5,r
   const layout=tacticalVehicleHeadlightLayout(cover),light=new THREE.SpotLight(color,1.3,Math.max(4,radius*1.18),Math.PI/5,0.45,2),target=new THREE.Object3D();
   light.name="vehicle-headlight-beam";light.userData.aegisTacticalPresentationBaseIntensity=1.3;light.position.set(layout.beam.x,layout.beam.y,layout.beam.z);target.position.set(layout.target.x,layout.target.y,layout.target.z);light.target=target;light.castShadow=false;group.add(target);group.add(light);return light;
 }
+function tacticalRoadJunctions(mission={},gridSize=TACTICAL_GRID_SIZE){
+  const road=(x,y)=>x>=2&&y>=2&&x<gridSize-2&&y<gridSize-2&&["road","lane","path"].includes(tacticalFieldFeature(x,y,mission));
+  const directions=[{name:"east",dx:1,dy:0},{name:"south",dx:0,dy:1},{name:"west",dx:-1,dy:0},{name:"north",dx:0,dy:-1}];
+  const arms=(x,y)=>directions.filter(d=>[1,2,3,4,5,6].every(step=>road(x+d.dx*step,y+d.dy*step)));
+  const candidates=new Map();
+  for(let y=3;y<gridSize-3;y++)for(let x=3;x<gridSize-3;x++){if(!road(x,y))continue;const approaches=arms(x,y);if(approaches.length>=3)candidates.set(tacticalKey(x,y),{x,y,approaches});}
+  const junctions=[];
+  while(candidates.size){const first=candidates.values().next().value,cluster=[first];candidates.delete(tacticalKey(first.x,first.y));
+    for(let i=0;i<cluster.length;i++)for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const key=tacticalKey(cluster[i].x+dx,cluster[i].y+dy),cell=candidates.get(key);if(cell){cluster.push(cell);candidates.delete(key);}}
+    const cx=cluster.reduce((n,c)=>n+c.x,0)/cluster.length,cy=cluster.reduce((n,c)=>n+c.y,0)/cluster.length;
+    cluster.sort((a,b)=>Math.hypot(a.x-cx,a.y-cy)-Math.hypot(b.x-cx,b.y-cy)||b.approaches.length-a.approaches.length||a.y-b.y||a.x-b.x);
+    const center=cluster[0];junctions.push({...center,id:"junction-"+center.x+"-"+center.y});
+  }
+  return junctions;
+}
+function tacticalIntersectionControlProps(mission={},gridSize=TACTICAL_GRID_SIZE,limits={traffic:0,stop:0}){
+  const protectedKeys=tacticalBuildingIngressProtectedCellKeys(mission),reserved=new Set(),props=[];let traffic=0,stop=0;
+  for(const junction of tacticalRoadJunctions(mission,gridSize)){
+    const size=junction.approaches.length,useLights=traffic+size<=limits.traffic;
+    if(!useLights&&stop+size>limits.stop)continue;
+    const selected=[];
+    for(const approach of junction.approaches){
+      const anchor={x:junction.x+approach.dx*6,y:junction.y+approach.dy*6};let curb=null;
+      for(const side of [1,-1]){for(let offset=1;offset<=4;offset++){
+        const x=anchor.x-approach.dy*offset*side,y=anchor.y+approach.dx*offset*side,key=tacticalKey(x,y);
+        if(x<3||y<3||x>=gridSize-3||y>=gridSize-3||tacticalFieldFeature(x,y,mission)||tacticalBuildingCellAt(x,y,mission)||protectedKeys.has(key)||reserved.has(key)||selected.some(p=>p.x===x&&p.y===y))continue;
+        curb={x,y};break;
+      }if(curb)break;}
+      if(!curb)break;
+      const x0=curb.x+(curb.y&1?0.5:0),farY=curb.y+approach.dy*4,farX=curb.x+approach.dx*4+(farY&1?0.5:0);
+      selected.push({...curb,visual:useLights?"traffic-light":"stop-sign",sceneType:useLights?"traffic":"stop",intersectionId:junction.id,intersectionCenter:{x:junction.x,y:junction.y},trafficApproach:approach.name,roadRotation:Math.atan2((farX-x0)*TACTICAL_HEX_WORLD_X,(farY-curb.y)*TACTICAL_HEX_WORLD_Z)});
+    }
+    // Reserve complete junction arrangements; never scatter partial controls elsewhere.
+    if(selected.length!==size)continue;
+    selected.forEach(prop=>{props.push(prop);reserved.add(tacticalKey(prop.x,prop.y));});if(useLights)traffic+=size;else stop+=size;
+  }
+  return props;
+}
 function tacticalStreetSceneProps(mission={}){
   const biome=tacticalBiomeForMission(mission);if(biome.key==="nature")return[];const seed=tacticalSeed(mission),gridSize=tacticalMapProfileForMission(mission).size||TACTICAL_GRID_SIZE;const props=[],used=new Set;const counts={};const limits=biome.key==="city"?{vehicle:7,bus:1,lamp:10,busStop:2,traffic:4,stop:4,machine:5,bench:5,civic:2,playground:1}:biome.key==="smalltown"?{vehicle:5,bus:1,lamp:7,busStop:2,traffic:2,stop:4,machine:3,bench:4,civic:1,playground:1}:{vehicle:3,bus:0,lamp:3,busStop:1,traffic:0,stop:2,machine:1,bench:2,civic:0,playground:0};const count=key=>counts[key]||0;const add=(key,x,y,visual,block=0,extra={})=>{const footprint=Array.isArray(extra.footprintCells)&&extra.footprintCells.length?extra.footprintCells:[{x,y}];if(footprint.some(cell=>used.has(tacticalKey(cell.x,cell.y))||cell.x<2||cell.y<2||cell.x>gridSize-3||cell.y>gridSize-3||tacticalBuildingCellAt(cell.x,cell.y,mission)))return false;props.push({x,y,...tacticalCoverStats(block,visual),visual,structural:true,sceneType:key,...extra});footprint.forEach(cell=>used.add(tacticalKey(cell.x,cell.y)));counts[key]=count(key)+1;return true;};const curbCell=(x,y)=>tacticalNeighbors(x,y).find(point=>point.x>2&&point.y>2&&point.x<gridSize-3&&point.y<gridSize-3&&!used.has(tacticalKey(point.x,point.y))&&!tacticalBuildingCellAt(point.x,point.y,mission)&&!tacticalFieldFeature(point.x,point.y,mission));
-  for(let y=3;y<gridSize-3;y+=1)for(let x=3;x<gridSize-3;x+=1){const feature=tacticalFieldFeature(x,y,mission);if(!["road","lane","path"].includes(feature)||tacticalBuildingCellAt(x,y,mission))continue;const roll=Math.abs(x*29+y*43+seed*7)%211;if(count("bus")<limits.bus&&feature==="road"&&roll===0){const footprint=tacticalStreetVehicleFootprint(x,y,mission,5,2);add("bus",x,y,"vehicle-bus",1,{lightType:"headlights",lightActive:Math.abs(seed+x*17+y*23)%2===0,lightRadius:9,roadRotation:footprint.rotation,footprintCells:footprint.cells,vehicleBodyAnchor:footprint.bodyAnchor,visualFootprint:{length:5,width:2},solidVehicleFootprint:true});continue;}if(count("vehicle")<limits.vehicle&&roll<5){const visual=(roll+seed)%3===0?"vehicle-sedan":(roll+seed)%3===1?"vehicle-van":"vehicle-utility";const footprint=tacticalStreetVehicleFootprint(x,y,mission,3,2);add("vehicle",x,y,visual,0.75,{lightType:"headlights",lightActive:Math.abs(seed+x*7+y*11)%3===0,lightRadius:8,roadRotation:footprint.rotation,footprintCells:footprint.cells,vehicleBodyAnchor:footprint.bodyAnchor,visualFootprint:{length:3,width:2},solidVehicleFootprint:true});continue;}const curb=curbCell(x,y);if(!curb)continue;if(count("lamp")<limits.lamp&&roll>=18&&roll<23)add("lamp",curb.x,curb.y,"lamp-post",0,{lightType:"streetlamp",lightActive:true,lightRadius:7});else if(count("busStop")<limits.busStop&&feature==="road"&&roll>=30&&roll<33)add("busStop",curb.x,curb.y,"bus-stop",0.5);else if(count("traffic")<limits.traffic&&feature==="road"&&roll>=42&&roll<45)add("traffic",curb.x,curb.y,"traffic-light",0.5);else if(count("stop")<limits.stop&&roll>=55&&roll<59)add("stop",curb.x,curb.y,"stop-sign",0);else if(count("bench")<limits.bench&&roll>=72&&roll<77)add("bench",curb.x,curb.y,"street-bench",0.5);}
+  tacticalIntersectionControlProps(mission,gridSize,limits).forEach(prop=>add(prop.sceneType,prop.x,prop.y,prop.visual,prop.sceneType==="traffic"?0.5:0,prop));
+  for(let y=3;y<gridSize-3;y+=1)for(let x=3;x<gridSize-3;x+=1){const feature=tacticalFieldFeature(x,y,mission);if(!["road","lane","path"].includes(feature)||tacticalBuildingCellAt(x,y,mission))continue;const roll=Math.abs(x*29+y*43+seed*7)%211;if(count("bus")<limits.bus&&feature==="road"&&roll===0){const footprint=tacticalStreetVehicleFootprint(x,y,mission,5,2);add("bus",x,y,"vehicle-bus",1,{lightType:"headlights",lightActive:Math.abs(seed+x*17+y*23)%2===0,lightRadius:9,roadRotation:footprint.rotation,footprintCells:footprint.cells,vehicleBodyAnchor:footprint.bodyAnchor,visualFootprint:{length:5,width:2},solidVehicleFootprint:true});continue;}if(count("vehicle")<limits.vehicle&&roll<5){const visual=(roll+seed)%3===0?"vehicle-sedan":(roll+seed)%3===1?"vehicle-van":"vehicle-utility";const footprint=tacticalStreetVehicleFootprint(x,y,mission,3,2);add("vehicle",x,y,visual,0.75,{lightType:"headlights",lightActive:Math.abs(seed+x*7+y*11)%3===0,lightRadius:8,roadRotation:footprint.rotation,footprintCells:footprint.cells,vehicleBodyAnchor:footprint.bodyAnchor,visualFootprint:{length:3,width:2},solidVehicleFootprint:true});continue;}const curb=curbCell(x,y);if(!curb)continue;if(count("lamp")<limits.lamp&&roll>=18&&roll<23)add("lamp",curb.x,curb.y,"lamp-post",0,{lightType:"streetlamp",lightActive:true,lightRadius:7});else if(count("busStop")<limits.busStop&&feature==="road"&&roll>=30&&roll<33)add("busStop",curb.x,curb.y,"bus-stop",0.5);else if(count("bench")<limits.bench&&roll>=72&&roll<77)add("bench",curb.x,curb.y,"street-bench",0.5);}
   tacticalBuildingPlans(mission).forEach((building,index)=>{(building.doors||[]).forEach((door,doorIndex)=>{const outside=tacticalNeighbors(door.x,door.y).find(point=>!tacticalBuildingCellAt(point.x,point.y,mission)&&!used.has(tacticalKey(point.x,point.y)));if(!outside)return;const h=Math.abs(seed+index*31+doorIndex*17);if(count("machine")<limits.machine){add("machine",outside.x,outside.y,h%2?"vending-machine":"newspaper-machine",0.5);}const near=tacticalNeighbors(outside.x,outside.y).find(point=>!used.has(tacticalKey(point.x,point.y))&&!tacticalBuildingCellAt(point.x,point.y,mission)&&!tacticalFieldFeature(point.x,point.y,mission));if(near&&count("bench")<limits.bench&&h%3===0)add("bench",near.x,near.y,"street-bench",0.5);if(building.key==="residence"&&near&&count("playground")<limits.playground&&h%2===0)add("playground",near.x,near.y,"playground",0.5);});});
   if(limits.civic){for(let y=6;y<gridSize-6&&count("civic")<limits.civic;y+=9)for(let x=6;x<gridSize-6&&count("civic")<limits.civic;x+=11){if(tacticalFieldFeature(x,y,mission)||tacticalBuildingCellAt(x,y,mission)||used.has(tacticalKey(x,y)))continue;const visual=(seed+x+y)%2?"civic-statue":"water-fountain";add("civic",x,y,visual,0.75);}}return props;
 }function tacticalMissionClockStamp(month=1,dayOfMonth=1,minute=720){return{month:Math.max(1,Number(month)||1),dayOfMonth:Math.max(1,Number(dayOfMonth)||1),minute:((Number(minute)||0)%1440+1440)%1440};}function tacticalLightingForMission(mission={}){const clock=mission.tacticalClock||mission.incidentClock||null;const location=mission.location||EARTH_BASE_REGIONS.find(region=>region.key===mission.region)?.center||{lat:0,lon:0};const safeClock=clock||{month:1,dayOfMonth:1,minute:720};const solar=geoscapeSolarElevationFactor(location,safeClock);const phase=solar>0.12?"day":solar<-0.12?"night":"twilight";const settings={day:{label:"Daylight",ambient:1,vision:20,sky:0x9fb8c8,fogNear:34,fogFar:96,key:1.08,localScale:0.2},twilight:{label:"Twilight",ambient:0.42,vision:12,sky:0x302b4d,fogNear:20,fogFar:68,key:0.48,localScale:0.82},night:{label:"Night",ambient:0.12,vision:7,sky:0x030914,fogNear:11,fogFar:46,key:0.14,localScale:1}}[phase];return{...settings,phase,solar,clock:safeClock,location};}
@@ -17251,7 +17290,7 @@ tacticalStreetSceneProps=function tacticalStreetScenePropsWithIngressClearance(m
   for(const prop of AEGIS_TACTICAL_STREET_SCENE_PROPS_BEFORE_2345_INGRESS_CLEARANCE(mission)){
     const footprint=tacticalGeneratedPropFootprintCells(prop),blocked=footprint.some(cell=>protectedKeys.has(tacticalKey(cell.x,cell.y))||used.has(tacticalKey(cell.x,cell.y)));
     if(!blocked){accepted.push(prop);footprint.forEach(cell=>used.add(tacticalKey(cell.x,cell.y)));continue;}
-    if(footprint.length!==1)continue;
+    if(prop.intersectionId||footprint.length!==1)continue;
     const relocated=tacticalIngressSafeRelocationCell({x:prop.x,y:prop.y},mission,protectedKeys,used);if(!relocated)continue;
     const moved={...prop,x:relocated.x,y:relocated.y};accepted.push(moved);used.add(tacticalKey(relocated.x,relocated.y));
   }

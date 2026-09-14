@@ -1,3 +1,13 @@
+v0.26.09.14.1149_INTERSECTION_TRAFFIC_CONTROLS_PATCH
+
+Intersection Traffic Controls
+- New street maps detect crossings and T-junctions from connected road/lane/path cells, consolidating wide junctions into one location.
+- Place complete, consistently oriented traffic-light or stop-sign arrangements on available roadside approaches. Reserve controls before other props and avoid buildings and protected entrances.
+- Skip junctions without enough safe space or prop budget; remove scattered mid-road controls. Entrance cleanup never relocates a control away from its junction. Existing saved prop placements are retained.
+- Save format remains 4. Publish index.html, service-worker.js and release-metadata.json together with existing assets.
+
+--- Previous patch ---
+
 v0.26.09.14.1112_BATTLE_VISIBILITY_REUSE_PERFORMANCE_PATCH
 
 Battle Visibility Reuse Performance

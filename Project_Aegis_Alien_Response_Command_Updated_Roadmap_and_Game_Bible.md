@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.14.1112_BATTLE_VISIBILITY_REUSE_PERFORMANCE_PATCH`
+Current browser build: `v0.26.09.14.1149_INTERSECTION_TRAFFIC_CONTROLS_PATCH`
 
 Current save format: `4`
 
@@ -115,7 +115,7 @@ Fire-Team Vitals Reassignment + Vehicle Headlight Alignment
 - Headlamps sit on the short front face along local +X; forward spotlights use the same group rotation. Daytime/unpowered lenses remain attached but do not emit light.
 - Existing tactical illumination, footprints, casualty-impact display timing and save format 4 are preserved.
 
-Roadmap intake items 1 and 2 are implemented in this build, pending field acceptance. Items 3–6 remain planned.
+Roadmap intake items 1 and 2 are implemented in this build, pending field acceptance. Item 3 was subsequently implemented in Browser 1149. Items 4–6 remain planned.
 
 ## Roadmap Intake — September 13, 2026: Fire-Team Vitals, Streets, Landmarks, Building Shapes and Soldier Identity
 
@@ -135,12 +135,14 @@ Roadmap intake items 1 and 2 are implemented in this build, pending field accept
 - Align lamp meshes, emissive surfaces and projected light direction with the same vehicle transform. Keep both lamps attached to the body across vehicle sizes and rotations.
 - **Acceptance:** inspect representative cars, buses and other elongated road vehicles at every supported heading in the persistent and fallback tactical renderers. At night, headlights must sit on the short front edge and illuminate forward.
 
-### 3. Generate stop signs and traffic lights at intersections
+### 3. Generate stop signs and traffic lights at intersections — Implemented in Browser 1149
 
 - Use generated road connectivity to identify intersections and their approaching lanes before placing traffic-control props. Place stop signs and traffic lights at suitable intersection approaches and roadside corners, oriented toward approaching traffic.
 - Choose a coherent control arrangement for each intersection rather than scattering unrelated signs/lights or placing conflicting controls on the same approach. Reserve their placement against buildings, other props and required pedestrian/vehicle routes.
 - Support the road junction types that the generator creates, including T-junctions and crossroads. Preserve deterministic results for a fixed map seed.
 - **Acceptance:** inspect multiple seeded street maps for intersection-linked placement, readable orientation, clear travel lanes, no overlapping props and stable save/reload results.
+
+Implementation: connected road cells identify crossings and T-junctions. Controls reserve safe roadside positions as complete arrangements before other props, face incoming approaches and are never relocated off-junction by entrance cleanup. New generation only; saved placements and save format 4 remain intact. Junctions without sufficient safe space or prop budget are left uncontrolled.
 
 ### 4. Support statues and fountains from one to seven hexes
 

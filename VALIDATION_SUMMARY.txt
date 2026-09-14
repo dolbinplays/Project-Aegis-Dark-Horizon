@@ -1,3 +1,16 @@
+PROJECT AEGIS — BROWSER 1149 VALIDATION SUMMARY
+Build: v0.26.09.14.1149_INTERSECTION_TRAFFIC_CONTROLS_PATCH
+Save format: 4
+
+- Node suite: 92/92 passed. New coverage checks wide-road consolidation, straight roads, corners, short stubs, T/cross arrangements, budgets, incoming-traffic orientation, protected entrances, blocked sites and deterministic placement.
+- Six tactical smoke scripts passed; final runtime syntax and packaged build seam checks passed.
+- Packaged browser inspection across 12 city seeds: 2–4 junctions and 6–8 placed controls per map, no overlapping prop footprints, no controls on roads/in buildings/on protected ingress cells, and identical regenerated props after JSON mission reload.
+- Visual QA used a generated-map schematic with real prop positions and facing directions (Temp/aegis-intersection-layout.png). This exposed and corrected short-stub junction centering. Actual 3D model placement in a played mission remains field acceptance.
+- Final browser diagnostics: baseline 897/967 and current 897/967; no new failures (same 70 existing failures). Comparison: local Temp/aegis-vip-marker-health.json.
+- Limits: new generation only, current axis-aligned road layout; existing prop budgets remain. Junctions lacking a complete safe arrangement are skipped. Saved props are not migrated. Save format remains 4.
+
+--- Previous patch validation ---
+
 PROJECT AEGIS — BROWSER 1112 VALIDATION SUMMARY
 Build: v0.26.09.14.1112_BATTLE_VISIBILITY_REUSE_PERFORMANCE_PATCH
 Save format: 4
