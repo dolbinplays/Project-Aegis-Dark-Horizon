@@ -1,3 +1,13 @@
+BUILD: v0.26.09.14.0717_VIP_CAMERA_DIRECTION_MARKERS_PATCH
+
+VIP Camera Direction Markers
+- FPV/TPV VIP indicators only appear inside the active camera view. Behind-camera, near/far-clipped and off-screen perspective markers are hidden instead of mirrored or clamped ahead.
+- Turning or switching cameras restores visible markers immediately, using camera orientation independently of soldier facing. Isometric edge guidance is retained.
+- Yellow awaiting-rescue and cyan ESCORTING presentation continue to use displayed escort state. Save format remains 4.
+- Publish index.html, service-worker.js and release-metadata.json together with existing assets.
+
+--- Previous patch ---
+
 BUILD: v0.26.09.13.2259_VIP_ESCORT_STATUS_MARKERS_PATCH
 
 VIP Escort Status Markers

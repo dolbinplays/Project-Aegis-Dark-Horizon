@@ -1,3 +1,16 @@
+PROJECT AEGIS — BROWSER 0717 VALIDATION SUMMARY
+Build: v0.26.09.14.0717_VIP_CAMERA_DIRECTION_MARKERS_PATCH
+Save format: 4
+
+- Node suite: 79/79 passed, including five new camera-projection tests with the bundled Three.js cameras.
+- Coverage: front/behind/eye/near/far positions, horizontal and vertical offscreen markers, camera rotation and parent transforms, mobile/desktop edges, perspective/orthographic switching, and retained escort labels.
+- Six tactical smoke scripts, runtime syntax and build seam checks passed.
+- Packaged Edge 844x390 renderer fixture: all three VIP markers visible looking forward, all hidden looking away, all restored looking back. Yellow/cyan status labels and stationary escort refresh passed. Screenshot: local Temp/aegis-vip-camera-direction.png.
+- Full browser diagnostics: baseline 897/967 and current 897/967; no new failures (same 70 existing failures). Comparison: local Temp/aegis-vip-marker-health.json.
+- Field acceptance: rotate FPV/TPV in a live mission and check reaction-camera transitions. Browser verification used a controlled renderer fixture, not a played-through mission.
+
+--- Previous patch validation ---
+
 PROJECT AEGIS — BROWSER 2259 VALIDATION SUMMARY
 Build: v0.26.09.13.2259_VIP_ESCORT_STATUS_MARKERS_PATCH
 Save format: 4

@@ -1,8 +1,20 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.13.2259_VIP_ESCORT_STATUS_MARKERS_PATCH`
+Current browser build: `v0.26.09.14.0717_VIP_CAMERA_DIRECTION_MARKERS_PATCH`
 
 Current save format: `4`
+
+## VIP Marker Direction in FPV and TPV — Implemented in Browser 0717
+
+**Requested September 13, 2026. Status: implemented September 14 in Browser 0717.**
+
+- Investigate VIP markers appearing in front of a soldier who is facing away from the VIP in first-person and third-person views. Compare soldier facing, active camera orientation and the VIP's actual world position to identify the incorrect projection or screen-edge clamping.
+- World-position VIP markers must respect the active camera's viewing direction. A VIP behind the camera must not project or clamp into the forward view as though it were ahead. In TPV, account for camera position/orbit separately from the soldier's facing.
+- If off-screen tracker guidance is retained, present it as a clearly distinct directional cue rather than an in-view marker. Preserve legitimate tracker knowledge without implying visual contact or granting sight through walls.
+- Preserve the yellow awaiting-rescue and cyan escorting states, accessible status labels and extraction/death cleanup. Check behavior during camera rotation, FPV/TPV switches, attack/reaction camera transitions and playback.
+- **Acceptance:** place VIPs ahead, behind, to either side and near screen edges; rotate the soldier and camera independently where supported. Verify markers never falsely appear ahead for targets behind the camera, including on mobile and after save/reload.
+
+Both 3D render paths share camera-space projection checks. Perspective markers outside the active camera frustum are hidden and restored as the camera turns; there is no perspective edge-clamped VIP cue. Isometric edge guidance remains. This presentation change does not change tracker knowledge or line of sight. Save format remains 4.
 
 ## VIP Marker Color Reflects Active Escort — Implemented in Browser 2259
 

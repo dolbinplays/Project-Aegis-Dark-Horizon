@@ -1,8 +1,8 @@
 {
-  "build": "v0.26.09.13.2259_VIP_ESCORT_STATUS_MARKERS_PATCH",
-  "package_filename": "Project_Aegis_v0.26.09.13.2259_VIP_ESCORT_STATUS_MARKERS_PATCH.zip",
+  "build": "v0.26.09.14.0717_VIP_CAMERA_DIRECTION_MARKERS_PATCH",
+  "package_filename": "Project_Aegis_v0.26.09.14.0717_VIP_CAMERA_DIRECTION_MARKERS_PATCH.zip",
   "save_format": 4,
-  "runtime_bytes": 7136437,
-  "runtime_sha256": "aa6d577736b2b17774236c6757e36e0741b9c365c88249e17c89e229d9c697ac",
-  "host_sha256": "b2d0176f432b8db63f25fb3e2eac5714797451f512ff71b1962c3f29ddf6f225"
+  "runtime_bytes": 7136916,
+  "runtime_sha256": "0fea6a2dad9a5b3987172c1852a8826d32f13e6bfb17c0aa9b62f33df4f7fa48",
+  "host_sha256": "d8fc1c73847347f2fbff76c30feab77f29c25745d1866ccab19449d4ae9b91b4"
 }
