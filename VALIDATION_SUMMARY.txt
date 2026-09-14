@@ -1,3 +1,16 @@
+PROJECT AEGIS — BROWSER 2259 VALIDATION SUMMARY
+Build: v0.26.09.13.2259_VIP_ESCORT_STATUS_MARKERS_PATCH
+Save format: 4
+
+- Node suite: 74/74 passed, including five new escort-marker tests.
+- Coverage: assignment versus confirmed escort, panic, absent/dead/downed/extracted escorts, dead/extracted VIP removal, optional untracked civilians, displayed-frame isolation, JSON reload, accessible labels, stationary tracker refresh and unchanged-state cache reuse.
+- Six tactical smoke scripts passed; runtime syntax, build seam and diff whitespace checks passed.
+- Edge 844x390 fixture rendered the actual persistent tracker geometry and shared DOM indicators: awaiting yellow, escorting cyan with ESCORTING label, interrupted yellow. Stationary transition rebuilt correctly with no duplicate indicators; actual perspective entries returned the same cyan color and label. Screenshot: local Temp/aegis-vip-escort-markers.png.
+- Full browser comparison: baseline 897/967 and current 897/967, with no new failures. The same 70 existing failures remain. The initial baseline navigation timed out; retry completed successfully. Comparison: local Temp/aegis-vip-marker-health.json.
+- Field acceptance: establish escort in a real battle, switch 2D/3D/FPV/TPV views, interrupt and resume escort, and extract the VIP. Check small-map text readability and save/reload. Browser visual verification used a controlled renderer fixture rather than a played-through mission.
+
+--- Previous patch validation ---
+
 PROJECT AEGIS — BROWSER 1807 VALIDATION SUMMARY
 Build: v0.26.09.13.1807_VEHICLE_BODY_FOOTPRINT_AND_PLAYBACK_PATH_INTEGRITY_PATCH
 Save format: 4

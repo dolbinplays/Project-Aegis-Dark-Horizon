@@ -1,3 +1,13 @@
+v0.26.09.13.2259_VIP_ESCORT_STATUS_MARKERS_PATCH
+
+VIP Escort Status Markers
+- Awaiting-rescue VIPs remain gold/yellow; active escorted VIPs use cyan with ESCORTING text and accessible status labels.
+- Panic or escort loss/incapacitation restores yellow. Assignment alone does not change status, and dead/extracted VIP trackers disappear.
+- Shared state covers 2D, both 3D renderers and perspective/minimap markers; stationary changes refresh cached presentation.
+- Save format remains 4. Publish index.html, service-worker.js and release-metadata.json together with existing assets.
+
+--- Previous patch ---
+
 v0.26.09.13.1807_VEHICLE_BODY_FOOTPRINT_AND_PLAYBACK_PATH_INTEGRITY_PATCH
 
 Vehicle Body Footprints + Playback Path Integrity

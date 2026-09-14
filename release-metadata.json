@@ -1,8 +1,8 @@
 {
-  "build": "v0.26.09.13.1807_VEHICLE_BODY_FOOTPRINT_AND_PLAYBACK_PATH_INTEGRITY_PATCH",
-  "package_filename": "Project_Aegis_v0.26.09.13.1807_VEHICLE_BODY_FOOTPRINT_AND_PLAYBACK_PATH_INTEGRITY_PATCH.zip",
+  "build": "v0.26.09.13.2259_VIP_ESCORT_STATUS_MARKERS_PATCH",
+  "package_filename": "Project_Aegis_v0.26.09.13.2259_VIP_ESCORT_STATUS_MARKERS_PATCH.zip",
   "save_format": 4,
-  "runtime_bytes": 7133851,
-  "runtime_sha256": "0db8ed8e860d8e8c802043e55a4268f7b1faf3168d34f1d62b346e2d6e295b47",
-  "host_sha256": "cb92c393e54d0323ba5b5dc1385658c682117b75419b717b3d7f2066139ca556"
+  "runtime_bytes": 7136437,
+  "runtime_sha256": "aa6d577736b2b17774236c6757e36e0741b9c365c88249e17c89e229d9c697ac",
+  "host_sha256": "b2d0176f432b8db63f25fb3e2eac5714797451f512ff71b1962c3f29ddf6f225"
 }

@@ -1,19 +1,19 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.13.1807_VEHICLE_BODY_FOOTPRINT_AND_PLAYBACK_PATH_INTEGRITY_PATCH`
+Current browser build: `v0.26.09.13.2259_VIP_ESCORT_STATUS_MARKERS_PATCH`
 
 Current save format: `4`
 
-## Roadmap Addition — VIP Marker Color Reflects Active Escort
+## VIP Marker Color Reflects Active Escort — Implemented in Browser 2259
 
-**Requested September 13, 2026. Status: planned, not implemented.**
+**Requested September 13, 2026. Status: implemented in Browser 2259.**
 
-- Keep the golden/yellow marker for VIPs awaiting rescue. Change it to a distinct escort color once the VIP is actively being escorted to a Skyranger; choose the final color during visual review.
+- Keep the golden/yellow marker for VIPs awaiting rescue. Change it to cyan once the VIP has an active living, conscious escort, with visible ESCORTING text and a descriptive accessible label.
 - Derive the marker from confirmed escort state, not merely assigning a rescuer or approaching the VIP. If escort is interrupted and the VIP returns to awaiting rescue, restore the golden/yellow marker. Boarding/extracted and dead VIPs must retain their appropriate existing presentation.
 - Include an accessible status label such as **VIP — Escorting** so color is not the only cue. Keep the state consistent across tactical map, 3D and FPV/TPV markers, control modes and save/reload. Playback should change the marker when the escort transition is shown.
 - **Acceptance:** verify awaiting rescue, active escort, interrupted escort, reassignment to another escort, boarding/extraction and death. Check marker readability by day/night and on mobile, plus consistent state after save/reload and during playback.
 
-This is a roadmap-only update; the runtime, build identifier and save format are unchanged.
+Shared marker state drives 2D, persistent/fallback 3D and perspective/minimap presentation. Stationary escort changes refresh the tracker, and no future simulation result is used to infer escort status. Save format remains 4.
 
 ## v0.26.09.13.1807_VEHICLE_BODY_FOOTPRINT_AND_PLAYBACK_PATH_INTEGRITY_PATCH
 
