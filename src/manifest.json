@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.09.13.1726_VITALS_SELECTION_AND_ITEMIZED_MISSION_REPORTS_PATCH",
+  "currentBuild": "v0.26.09.13.1807_VEHICLE_BODY_FOOTPRINT_AND_PLAYBACK_PATH_INTEGRITY_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "vitals-selection-and-itemized-mission-reports-complete",
+  "status": "vehicle-body-footprint-and-playback-integrity-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.09.13.1726_VITALS_SELECTION_AND_ITEMIZED_MISSION_REPORTS_PATCH",
+  "lastInspectedBuild": "v0.26.09.13.1807_VEHICLE_BODY_FOOTPRINT_AND_PLAYBACK_PATH_INTEGRITY_PATCH",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -47,7 +47,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.09.13.1726_VITALS_SELECTION_AND_ITEMIZED_MISSION_REPORTS_PATCH",
+    "browserBuild": "v0.26.09.13.1807_VEHICLE_BODY_FOOTPRINT_AND_PLAYBACK_PATH_INTEGRITY_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [

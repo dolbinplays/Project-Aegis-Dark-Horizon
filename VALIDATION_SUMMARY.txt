@@ -1,3 +1,18 @@
+PROJECT AEGIS — BROWSER 1807 VALIDATION SUMMARY
+Build: v0.26.09.13.1807_VEHICLE_BODY_FOOTPRINT_AND_PLAYBACK_PATH_INTEGRITY_PATCH
+Save format: 4
+
+- Node suite: 69/69 passed, including seven new vehicle footprint/playback tests.
+- Actual Three.js body geometry tested for four vehicle types at six headings on even/odd rows. Legal adjacent movement segments clear the body and shoulder margin.
+- Human, alien and civilian path searches and movement commits honor corrected cells. Sparse playback trails rebuild adjacent routes. Legacy body anchors remain stable, generated footprints survive JSON reload, cache invalidates after rotation, and destroyed vehicles remain traversable.
+- Six tactical smoke scripts passed. Runtime syntax, build seam and diff whitespace checks passed.
+- Edge integration fixture: corrected a legacy six-cell diagonal vehicle to 16 collision cells; an overlapping living unit was relocated to an open cell with HP 40 and TU 35 preserved. Five generated city maps each retained eight vehicles with no building/ingress overlap. Real pathfinding produced a 15-step detour, visually inspected with the actual Three.js vehicle model. Screenshot: local Temp/aegis-vehicle-footprint.png.
+- Full browser diagnostics: baseline 897/967, final 897/967; no new failures. Three outdated assertions were updated to distinguish bounded incomplete operations from elimination, compare KIA against actual final liveness, and retain incomplete report outcomes. The long-trail fixture now uses legal adjacent hexes. Inspection confirmed the changed simulation fixture withdrew at the existing 48-round safety limit with surviving wounded soldiers; no combat or safety-limit logic was changed.
+- Browser comparison: local Temp/aegis-vehicle-footprint-health.json. The remaining 70 diagnostic failures match the baseline.
+- Field acceptance: revisit the reported saved battle, route soldiers past diagonal vehicles, and verify AI/VIP playback. This validation used controlled fixtures, not the user's exact saved mission.
+
+--- Previous patch validation ---
+
 PROJECT AEGIS — BROWSER 1726 VALIDATION SUMMARY
 Build: v0.26.09.13.1726_VITALS_SELECTION_AND_ITEMIZED_MISSION_REPORTS_PATCH
 Save format: 4

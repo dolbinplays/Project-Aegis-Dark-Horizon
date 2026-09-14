@@ -1,3 +1,12 @@
+v0.26.09.13.1807_VEHICLE_BODY_FOOTPRINT_AND_PLAYBACK_PATH_INTEGRITY_PATCH
+
+Vehicle Body Footprints + Playback Path Integrity
+- Rotated land-vehicle bodies and shoulder clearance now drive the shared blocked footprint. New placement reserves it; saved vehicles preserve their visual anchor.
+- Sparse playback trails rebuild through adjacent legal cells rather than jumping through obstacles. Destroyed vehicles retain existing traversability.
+- Save format remains 4. Publish index.html, service-worker.js and release-metadata.json together with existing assets.
+
+--- Previous patch ---
+
 v0.26.09.13.1726_VITALS_SELECTION_AND_ITEMIZED_MISSION_REPORTS_PATCH
 
 Vitals Selection + Itemized Mission Reports

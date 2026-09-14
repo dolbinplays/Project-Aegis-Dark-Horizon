@@ -1,8 +1,28 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.13.1726_VITALS_SELECTION_AND_ITEMIZED_MISSION_REPORTS_PATCH`
+Current browser build: `v0.26.09.13.1807_VEHICLE_BODY_FOOTPRINT_AND_PLAYBACK_PATH_INTEGRITY_PATCH`
 
 Current save format: `4`
+
+## Roadmap Addition — VIP Marker Color Reflects Active Escort
+
+**Requested September 13, 2026. Status: planned, not implemented.**
+
+- Keep the golden/yellow marker for VIPs awaiting rescue. Change it to a distinct escort color once the VIP is actively being escorted to a Skyranger; choose the final color during visual review.
+- Derive the marker from confirmed escort state, not merely assigning a rescuer or approaching the VIP. If escort is interrupted and the VIP returns to awaiting rescue, restore the golden/yellow marker. Boarding/extracted and dead VIPs must retain their appropriate existing presentation.
+- Include an accessible status label such as **VIP — Escorting** so color is not the only cue. Keep the state consistent across tactical map, 3D and FPV/TPV markers, control modes and save/reload. Playback should change the marker when the escort transition is shown.
+- **Acceptance:** verify awaiting rescue, active escort, interrupted escort, reassignment to another escort, boarding/extraction and death. Check marker readability by day/night and on mobile, plus consistent state after save/reload and during playback.
+
+This is a roadmap-only update; the runtime, build identifier and save format are unchanged.
+
+## v0.26.09.13.1807_VEHICLE_BODY_FOOTPRINT_AND_PLAYBACK_PATH_INTEGRITY_PATCH
+
+- Live land vehicles block the complete rotated rendered body plus shoulder clearance, shared by player, alien and VIP pathfinding and movement commits.
+- Fresh vehicle placement reserves the same physical footprint; road headings use actual world hex spacing. Existing saved vehicles retain their rendered position and receive corrected collision cells without a save-format migration.
+- A stable vehicle body anchor prevents collision-cell expansion from shifting the model. Both 3D renderers share it. Footprint calculations are cached per cover.
+- Sparse recorded playback trails cannot jump over intervening obstacles; they are rebuilt through legal adjacent hexes. Destroyed vehicles remain traversable under existing rules.
+- Save format remains 4. Field acceptance: inspect a diagonal car in a loaded battle, route each unit type past it, and verify new vehicle placement avoids doors/buildings.
+
 
 ## v0.26.09.13.1726_VITALS_SELECTION_AND_ITEMIZED_MISSION_REPORTS_PATCH
 
@@ -18,7 +38,7 @@ Current save format: `4`
 - **Implemented in Browser 1249:** victory/failure notices layer above vitals, keeping the return-to-base button clickable without hiding vitals. Opening Base no longer starts a paused geoscape clock at 5 minutes.
 - **Planned — rendering performance:** profile battles with two fully upgraded Skyrangers and their full soldier complement on an older laptop using Performance graphics. Identify animation, draw-call, scene-update and AI/playback stalls before optimizing; preserve combat authority and visible action timing. Compare frame times and long pauses with the same battle before/after.
 - **Implemented in Browser 1726 — vitals selection:** clicking a living field soldier card selects that soldier in Manual and the team leader in Hybrid, with an outlined selected card and keyboard support. Downed soldiers can be inspected without dragging. KIA/extracted cards and Simulation, movement, enemy-turn and terminal states are read-only; clicks never issue movement orders.
-- **Planned — vehicle pathing:** investigate the supplied screenshot showing a soldier intersecting a red vehicle. Verify actual occupied hexes against rendered geometry, rotations, footprint sizes, route planning, direct movement and AI playback; distinguish visual interpolation clipping from illegal authoritative paths. Solid vehicles must block movement through their complete footprint across control modes and save/reload.
+- **Implemented in Browser 1807 — vehicle pathing:** collision footprints cover the rendered body at each heading, including corrected footprints for saved vehicles without shifting their models. Shared movement commits and path searches honor these cells, and sparse playback trails are rebuilt through adjacent legal cells. Automated coverage includes four vehicle types, six headings, odd/even rows, all three unit teams and saved footprint stability; field verification of the reported battle remains useful.
 - **Implemented in Browser 1726 — mission report readability:** new reports show itemized sections for objectives/VIP totals, personnel/medical outcomes, rewards/recovery and progression/command. Existing action logs and tactical timelines remain visible. Older summaries render as an itemized archive; original summary text and authoritative totals remain stored. Mobile layout verified at 390px width.
 
 
