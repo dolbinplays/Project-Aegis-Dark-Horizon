@@ -4,6 +4,17 @@ Current browser build: `v0.26.09.13.1249_MOBILE_ADAPTIVE_MISSION_FAILURE_NOTICE_
 
 Current save format: `4`
 
+## Field Feedback — End-of-Mission UI, Paused Time, and Larger Battles
+
+**Requested September 13, 2026.**
+
+- **Implemented in Browser 1249:** victory/failure notices layer above vitals, keeping the return-to-base button clickable without hiding vitals. Opening Base no longer starts a paused geoscape clock at 5 minutes.
+- **Planned — rendering performance:** profile battles with two fully upgraded Skyrangers and their full soldier complement on an older laptop using Performance graphics. Identify animation, draw-call, scene-update and AI/playback stalls before optimizing; preserve combat authority and visible action timing. Compare frame times and long pauses with the same battle before/after.
+- **Planned — vitals selection:** clicking a soldier card in vitals selects that soldier through existing tactical selection rules, updates selection feedback and avoids accidentally issuing a movement order. Define read-only/dead-soldier behavior and respect Simulation control ownership.
+- **Planned — vehicle pathing:** investigate the supplied screenshot showing a soldier intersecting a red vehicle. Verify actual occupied hexes against rendered geometry, rotations, footprint sizes, route planning, direct movement and AI playback; distinguish visual interpolation clipping from illegal authoritative paths. Solid vehicles must block movement through their complete footprint across control modes and save/reload.
+- **Planned — mission report readability:** replace the dense outcome paragraph with clear sections and itemized entries for objectives/VIP rescue totals, personnel outcomes, combat events, rewards/recovered equipment and progression/medical outcomes. Preserve all existing result information and authoritative totals; keep the layout readable on mobile.
+
+
 ## v0.26.09.13.1249_MOBILE_ADAPTIVE_MISSION_FAILURE_NOTICE_PATCH
 
 - Added a bottom-of-battle Mission Failed notice matching the victory box, including missed VIP rescue quotas with surviving soldiers. Shows the reason and a direct End Failed Incident and Return to Base button.

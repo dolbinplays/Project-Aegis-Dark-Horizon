@@ -2,7 +2,7 @@
   "build": "v0.26.09.13.1249_MOBILE_ADAPTIVE_MISSION_FAILURE_NOTICE_PATCH",
   "package_filename": "Project_Aegis_v0.26.09.13.1249_MOBILE_ADAPTIVE_MISSION_FAILURE_NOTICE_PATCH.zip",
   "save_format": 4,
-  "runtime_bytes": 7124606,
-  "runtime_sha256": "0084aad5880dda0d9e7bb30009e64e316ec8c851a53e9de44ed70fb0b76cf2e7",
-  "host_sha256": "dddca9f0e261e5ec733a67435ab1d2e57ba58bd51e695f285e28875f97a242cf"
+  "runtime_bytes": 7124746,
+  "runtime_sha256": "d00470ab4cee72d9a98e1a8354455448c82723e7eca3fa9dc2d34454379ce9a0",
+  "host_sha256": "0f129f32674e848a1a17a19f3d159c3f89a3a85cd1f9b1127ef68f20fc6e045d"
 }

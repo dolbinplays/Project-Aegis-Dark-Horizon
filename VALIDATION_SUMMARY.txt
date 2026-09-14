@@ -1,3 +1,16 @@
+PROJECT AEGIS — BROWSER 1249 VALIDATION SUMMARY
+Build: v0.26.09.13.1249_MOBILE_ADAPTIVE_MISSION_FAILURE_NOTICE_PATCH
+Save format: 4
+
+- Node suite: 57/57 passed, including terminal failure presentation, partial-rescue finalization and actual Base navigation effect with paused/remembered speeds.
+- Six tactical smoke scripts passed. Runtime syntax and build seam checks passed.
+- Edge mobile viewport 844x390: rendered the real TacticalMission component using a terminal rescue-failure fixture derived by the real terminal-state helper. Confirmed the failure reason/count, notice above vitals, and return-to-base button reaching onFinish without hiding vitals. Screenshot: local Temp/aegis-failure-notice.png.
+- The browser fixture supplies terminal objective inputs; it is not a full played-through campaign. Full in-browser Build Health was not rerun for this focused patch.
+- No rescue quota, combat, rendering performance or pathfinding rules changed. Other field requests are recorded as planned in the Game Bible.
+- Manual field acceptance: finish a failed VIP mission in Mobile/Adaptive Simulation and Hybrid, verify partial rescue credit and survivors in the report, and open Base while paused.
+
+--- Previous patch validation ---
+
 PROJECT AEGIS — BROWSER 1209 VALIDATION SUMMARY
 Build: v0.26.09.13.1209_FIRE_TEAM_VITALS_REASSIGNMENT_AND_VEHICLE_HEADLIGHT_ALIGNMENT_PATCH
 Save format: 4
