@@ -1,3 +1,15 @@
+PROJECT AEGIS — BROWSER 1351 VALIDATION SUMMARY
+Build: v0.26.09.14.1351_LAYERED_BUS_AND_SCHOOL_BUS_COLORS_PATCH
+Save format: 4
+
+- 94/94 Node tests and all six smoke scripts passed. Runtime syntax and packaged build seam checks passed.
+- Actual Three.js bounds verify matching layer footprints, doubled glass height, roof height equal to old glass height, touching layers, and unchanged lower body, wheel positions and headlights. Existing vehicle collision and heading tests also passed.
+- Yellow/blue body and roof colors are deterministic across JSON reload. Shared geometry/material caches remain in use; one roof mesh is added per bus.
+- Packaged Edge preview rendered both actual bus variants and was visually inspected: local Temp/aegis-bus-layers.png.
+- Full browser diagnostics were not rerun for this focused model patch to conserve the user's remaining usage. Field acceptance: inspect buses in a live battle, including night headlights and both render paths.
+
+--- Previous patch validation ---
+
 PROJECT AEGIS — BROWSER 1149 VALIDATION SUMMARY
 Build: v0.26.09.14.1149_INTERSECTION_TRAFFIC_CONTROLS_PATCH
 Save format: 4

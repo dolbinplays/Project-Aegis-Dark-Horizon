@@ -2,7 +2,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),asse
 const THREE=require('../assets/vendor/three.min.js');
 const source=fs.readFileSync(path.join(__dirname,'../src/browser-runtime.html'),'utf8');
 const ctx=vm.createContext({TACTICAL_ROAD_VEHICLE_HEIGHT_SCALE:1.5,tacticalAiCommanderScore:u=>u.score||0,tacticalDistance:(a,b)=>Math.hypot(a.x-b.x,a.y-b.y),tacticalFireTeamDesignation:i=>['Alpha','Bravo','Charlie'][i]});
-for(const name of ['tacticalPhysioCaptureFormation','tacticalPhysioRoleSlot','tacticalFireTeamRoleAssignments','tacticalFireTeamCentroid','tacticalFireTeamDistanceBetween','tacticalReconcileFireTeams','tacticalVehicleHeadlightLayout','tacticalThreeAddLandVehicle','tacticalThreeAddVehicleHeadlightBeam']){
+for(const name of ['tacticalPhysioCaptureFormation','tacticalPhysioRoleSlot','tacticalFireTeamRoleAssignments','tacticalFireTeamCentroid','tacticalFireTeamDistanceBetween','tacticalReconcileFireTeams','tacticalVehicleHeadlightLayout','tacticalBusBodyColor','tacticalThreeAddLandVehicle','tacticalThreeAddVehicleHeadlightBeam']){
   const a=source.indexOf('function '+name+'('),b=source.indexOf('function ',a+9);assert.ok(a>=0&&b>a,name);vm.runInContext(source.slice(a,b),ctx);
 }
 const member=(id,team,role,slot)=>({id,team:'human',alive:true,hp:40,x:5,y:5,score:10-slot,fireTeamId:team,fireTeamDesignation:team,fireTeamRole:role,physioFormation:{teamId:team,label:team,slot}});

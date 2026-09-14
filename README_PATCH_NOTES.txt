@@ -1,3 +1,13 @@
+BUILD: v0.26.09.14.1351_LAYERED_BUS_AND_SCHOOL_BUS_COLORS_PATCH
+
+Layered Bus Body and School-Bus Colors
+- Keep the original lower bus body, wheels, headlights and ground footprint.
+- Full-width/full-length glass is twice its former height, topped with a matching metal roof as thick as the old glass section.
+- A deterministic mix of yellow school-bus and blue city-bus metal colors survives reload. Both renderers use the shared vehicle builder.
+- Save format remains 4. Publish index.html, service-worker.js and release-metadata.json together with existing assets.
+
+--- Previous patch ---
+
 BUILD: v0.26.09.14.1149_INTERSECTION_TRAFFIC_CONTROLS_PATCH
 
 Intersection Traffic Controls

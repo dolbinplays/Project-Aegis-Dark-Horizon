@@ -1,8 +1,22 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.14.1149_INTERSECTION_TRAFFIC_CONTROLS_PATCH`
+Current browser build: `v0.26.09.14.1351_LAYERED_BUS_AND_SCHOOL_BUS_COLORS_PATCH`
 
 Current save format: `4`
+
+## Layered Bus Body and School-Bus Colors — Implemented in Browser 1351
+
+**Requested September 14, 2026. Status: implemented in Browser 1351.**
+
+- Preserve the current bus body's width, length and height.
+- Make the glass section match the full width and length of the bus body, and double its current height.
+- Add a metal roof block above the glass, matching the body's width and length. Its height should equal the glass section's current, pre-change height, making the roof the thinnest of the three main layers.
+- The resulting silhouette should read as a slab of glass sandwiched between two slabs of metal: existing lower body, taller glass section, thin metal roof.
+- Keep the existing wheels and lights unchanged in appearance and placement.
+- Give some buses yellow body/roof coloring so they resemble school buses, while retaining other bus colors. Keep each generated bus's variant consistent through save/reload and tactical view changes.
+- **Acceptance:** compare against the current bus dimensions; verify full-width/full-length glass at twice its former height, the thinner roof, unchanged wheels/lights, and a mix of yellow and other bus colors. Check both 3D render paths and retain the current ground footprint and collision alignment.
+
+Implemented in the shared vehicle builder used by both 3D renderers. Original body dimensions, wheels, headlights and collision footprint remain unchanged. Bus colors are deterministic from saved position unless an explicit variant is supplied. Save format remains 4.
 
 ## VIP Marker Direction in FPV and TPV — Implemented in Browser 0717
 

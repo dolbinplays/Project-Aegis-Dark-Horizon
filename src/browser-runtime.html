@@ -1512,7 +1512,7 @@ function aegisTacticalViewportDimensions(mount,fallback={},layout=AEGIS_INTERFAC
 }
 // AEGIS_MOBILE_INTERFACE_END
 
-const CURRENT_GAME_BUILD="v0.26.09.14.1149_INTERSECTION_TRAFFIC_CONTROLS_PATCH";
+const CURRENT_GAME_BUILD="v0.26.09.14.1351_LAYERED_BUS_AND_SCHOOL_BUS_COLORS_PATCH";
 const BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH=true;
 const TACTICAL_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH=true;
 const TACTICAL_OBSERVED_BEACON_REINFORCEMENT_CINEMATIC_DURATION_MS=2300;
@@ -7104,9 +7104,12 @@ function tacticalVehicleHeadlightLayout(cover={}){
   const x=length/2+0.06,y=(bus?0.82:van?0.70:0.55)*TACTICAL_ROAD_VEHICLE_HEIGHT_SCALE,z=width*0.32;
   return{length,width,lamps:[{x,y,z:-z},{x,y,z}],beam:{x,y,z:0},target:{x:x+8,y:Math.max(0.2,y-0.2),z:0}};
 }
+function tacticalBusBodyColor(cover={}){return (cover.busVariant?cover.busVariant==="school":Math.abs((Number(cover.x)||0)*31+(Number(cover.y)||0)*17)%3===0)?0xeab308:0x355a78;}
 function tacticalThreeAddLandVehicle(THREE,group,cover,geoCache,mat,qualitySettings={},lit=false){
   const visual=String(cover.visual||"").toLowerCase();
-  if(visual==="vehicle-bus"){const body=new THREE.Mesh(geoCache.wreck,mat("city-bus-body",0x355a78,{roughness:0.58,metalness:0.22}));body.scale.set(7.1,3.6*TACTICAL_ROAD_VEHICLE_HEIGHT_SCALE,4.25);body.position.y=1.02*TACTICAL_ROAD_VEHICLE_HEIGHT_SCALE;group.add(body);const windows=new THREE.Mesh(geoCache.wall,mat("city-bus-windows",0x15384c,{opacity:0.72,roughness:0.18,metalness:0.08,depthWrite:false}));windows.scale.set(6.65,1.44*TACTICAL_ROAD_VEHICLE_HEIGHT_SCALE,3.15);windows.position.y=1.88*TACTICAL_ROAD_VEHICLE_HEIGHT_SCALE;group.add(windows);[-2.25,2.25].forEach(x=>[-1.12,1.12].forEach(z=>{const wheel=new THREE.Mesh(new THREE.CylinderGeometry(0.24,0.24,0.16,12),mat("vehicle-wheel",0x111827,{roughness:1}));wheel.rotation.x=Math.PI/2;wheel.position.set(x,0.22,z);group.add(wheel);}));
+  if(visual==="vehicle-bus"){const bodyColor=tacticalBusBodyColor(cover);const body=new THREE.Mesh(geoCache.wreck,mat("bus-body-"+bodyColor,bodyColor,{roughness:0.58,metalness:0.22}));body.scale.set(7.1,3.6*TACTICAL_ROAD_VEHICLE_HEIGHT_SCALE,4.25);body.position.y=1.02*TACTICAL_ROAD_VEHICLE_HEIGHT_SCALE;group.add(body);const oldGlassHeight=0.62*1.44*TACTICAL_ROAD_VEHICLE_HEIGHT_SCALE,bodyTop=body.position.y+0.38*body.scale.y/2;
+    const windows=new THREE.Mesh(geoCache.wreck,mat("city-bus-windows",0x15384c,{opacity:0.72,roughness:0.18,metalness:0.08,depthWrite:false}));windows.name="bus-glass";windows.scale.set(7.1,oldGlassHeight*2/0.38,4.25);windows.position.y=bodyTop+oldGlassHeight;group.add(windows);
+    const roof=new THREE.Mesh(geoCache.wreck,mat("bus-roof-"+bodyColor,bodyColor,{roughness:0.58,metalness:0.22}));roof.name="bus-roof";roof.scale.set(7.1,oldGlassHeight/0.38,4.25);roof.position.y=bodyTop+oldGlassHeight*2.5;group.add(roof);[-2.25,2.25].forEach(x=>[-1.12,1.12].forEach(z=>{const wheel=new THREE.Mesh(new THREE.CylinderGeometry(0.24,0.24,0.16,12),mat("vehicle-wheel",0x111827,{roughness:1}));wheel.rotation.x=Math.PI/2;wheel.position.set(x,0.22,z);group.add(wheel);}));
     }else if(visual.includes("vehicle-")){const bodyColor=visual.includes("utility")?0xb45309:visual.includes("van")?0x475569:0x7f1d1d;const body=new THREE.Mesh(geoCache.wreck,mat(`vehicle-${bodyColor}`,bodyColor,{roughness:0.62,metalness:0.28}));body.scale.set(5.05,(visual.includes("van")?2.84:2.0)*TACTICAL_ROAD_VEHICLE_HEIGHT_SCALE,4.15);body.position.y=(visual.includes("van")?0.86:0.64)*TACTICAL_ROAD_VEHICLE_HEIGHT_SCALE;body.castShadow=qualitySettings.shadows;group.add(body);const cabin=new THREE.Mesh(geoCache.crate,mat("vehicle-glass",0x164e63,{opacity:0.68,roughness:0.2,metalness:0.12,emissive:0.05,emissiveColor:0x38bdf8,depthWrite:false}));cabin.scale.set(visual.includes("van")?2.75:2.25,(visual.includes("van")?1.8:1.24)*TACTICAL_ROAD_VEHICLE_HEIGHT_SCALE,2.65);cabin.position.set(-0.2,(visual.includes("van")?1.55:1.16)*TACTICAL_ROAD_VEHICLE_HEIGHT_SCALE,0);group.add(cabin);[-1.62,1.62].forEach(x=>[-1.05,1.05].forEach(z=>{const wheel=new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.22,0.15,12),mat("vehicle-wheel",0x111827,{roughness:1}));wheel.rotation.x=Math.PI/2;wheel.position.set(x,0.18,z);group.add(wheel);}));
     }
   const layout=tacticalVehicleHeadlightLayout(cover);
