@@ -1,8 +1,15 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.13.1249_MOBILE_ADAPTIVE_MISSION_FAILURE_NOTICE_PATCH`
+Current browser build: `v0.26.09.13.1726_VITALS_SELECTION_AND_ITEMIZED_MISSION_REPORTS_PATCH`
 
 Current save format: `4`
+
+## v0.26.09.13.1726_VITALS_SELECTION_AND_ITEMIZED_MISSION_REPORTS_PATCH
+
+- Vitals cards support direct selection in Manual, leader selection in Hybrid, and downed-soldier inspection without dragging. KIA/extracted soldiers, Simulation playback, moving units, enemy turns and completed battles are read-only. Selection clears pending targeting mode and marks the selected card.
+- New mission reports contain itemized Objectives and outcome, Personnel and medical outcomes, Rewards and recovery, and Soldier progression and command sections. Empty sections are omitted; the action log and archived tactical timeline remain intact.
+- Existing reports retain their saved summary and display it as an itemized archive. New sections persist as additive report data; save format remains 4.
+
 
 ## Field Feedback — End-of-Mission UI, Paused Time, and Larger Battles
 
@@ -10,9 +17,9 @@ Current save format: `4`
 
 - **Implemented in Browser 1249:** victory/failure notices layer above vitals, keeping the return-to-base button clickable without hiding vitals. Opening Base no longer starts a paused geoscape clock at 5 minutes.
 - **Planned — rendering performance:** profile battles with two fully upgraded Skyrangers and their full soldier complement on an older laptop using Performance graphics. Identify animation, draw-call, scene-update and AI/playback stalls before optimizing; preserve combat authority and visible action timing. Compare frame times and long pauses with the same battle before/after.
-- **Planned — vitals selection:** clicking a soldier card in vitals selects that soldier through existing tactical selection rules, updates selection feedback and avoids accidentally issuing a movement order. Define read-only/dead-soldier behavior and respect Simulation control ownership.
+- **Implemented in Browser 1726 — vitals selection:** clicking a living field soldier card selects that soldier in Manual and the team leader in Hybrid, with an outlined selected card and keyboard support. Downed soldiers can be inspected without dragging. KIA/extracted cards and Simulation, movement, enemy-turn and terminal states are read-only; clicks never issue movement orders.
 - **Planned — vehicle pathing:** investigate the supplied screenshot showing a soldier intersecting a red vehicle. Verify actual occupied hexes against rendered geometry, rotations, footprint sizes, route planning, direct movement and AI playback; distinguish visual interpolation clipping from illegal authoritative paths. Solid vehicles must block movement through their complete footprint across control modes and save/reload.
-- **Planned — mission report readability:** replace the dense outcome paragraph with clear sections and itemized entries for objectives/VIP rescue totals, personnel outcomes, combat events, rewards/recovered equipment and progression/medical outcomes. Preserve all existing result information and authoritative totals; keep the layout readable on mobile.
+- **Implemented in Browser 1726 — mission report readability:** new reports show itemized sections for objectives/VIP totals, personnel/medical outcomes, rewards/recovery and progression/command. Existing action logs and tactical timelines remain visible. Older summaries render as an itemized archive; original summary text and authoritative totals remain stored. Mobile layout verified at 390px width.
 
 
 ## v0.26.09.13.1249_MOBILE_ADAPTIVE_MISSION_FAILURE_NOTICE_PATCH

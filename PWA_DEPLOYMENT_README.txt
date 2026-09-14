@@ -1,3 +1,12 @@
+v0.26.09.13.1726_VITALS_SELECTION_AND_ITEMIZED_MISSION_REPORTS_PATCH
+
+Vitals Selection + Itemized Mission Reports
+- Select living field soldiers from vitals in Manual; Hybrid uses the leader, downed cards inspect, Simulation remains read-only. Selected cards have a visible outline.
+- New mission reports have grouped itemized results; older reports show itemized archived summaries. Logs and timelines remain intact.
+- Save format 4 is unchanged. Publish index.html, service-worker.js and release-metadata.json together with existing assets.
+
+--- Previous patch ---
+
 v0.26.09.13.1249_MOBILE_ADAPTIVE_MISSION_FAILURE_NOTICE_PATCH
 
 Mobile / Adaptive Mission Failure Notice

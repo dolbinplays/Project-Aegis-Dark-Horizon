@@ -1,8 +1,8 @@
 {
-  "build": "v0.26.09.13.1249_MOBILE_ADAPTIVE_MISSION_FAILURE_NOTICE_PATCH",
-  "package_filename": "Project_Aegis_v0.26.09.13.1249_MOBILE_ADAPTIVE_MISSION_FAILURE_NOTICE_PATCH.zip",
+  "build": "v0.26.09.13.1726_VITALS_SELECTION_AND_ITEMIZED_MISSION_REPORTS_PATCH",
+  "package_filename": "Project_Aegis_v0.26.09.13.1726_VITALS_SELECTION_AND_ITEMIZED_MISSION_REPORTS_PATCH.zip",
   "save_format": 4,
-  "runtime_bytes": 7124746,
-  "runtime_sha256": "d00470ab4cee72d9a98e1a8354455448c82723e7eca3fa9dc2d34454379ce9a0",
-  "host_sha256": "0f129f32674e848a1a17a19f3d159c3f89a3a85cd1f9b1127ef68f20fc6e045d"
+  "runtime_bytes": 7129762,
+  "runtime_sha256": "d9fc92bbaeb3f3e2c4993f998820961d00f910413289d37de90c1a4504f53d43",
+  "host_sha256": "b4ffdd44c19915258398f91eae4fb582533804bac2492d180e94ceea4a4af458"
 }

@@ -1,3 +1,16 @@
+PROJECT AEGIS — BROWSER 1726 VALIDATION SUMMARY
+Build: v0.26.09.13.1726_VITALS_SELECTION_AND_ITEMIZED_MISSION_REPORTS_PATCH
+Save format: 4
+
+- Node suite: 62/62 passed. New coverage includes Manual/Hybrid selection, downed inspection, non-field and blocked selection, report JSON persistence, itemized semantic markup and legacy text retention.
+- Six tactical smoke scripts passed. Runtime syntax, build seam and diff whitespace checks passed.
+- Real TacticalMission in Edge at 844x390: mouse selection and Enter selected the expected soldier, updated aria-pressed, sidebar name and tactical status. Screenshot: local Temp/aegis-vitals-selection.png.
+- Real MissionReportDetails component with representative outcome data at 390x844: sections/list items rendered without horizontal overflow. Screenshot: local Temp/aegis-itemized-report.png. This is a component fixture, not a completed campaign mission.
+- Deterministic full browser Build Health: committed baseline 897/967 and current 897/967; same 70 existing failures, no new failures. Comparison: local Temp/aegis-selection-reports-health.json.
+- Field acceptance: click a support card in Hybrid, inspect a downed soldier, confirm Simulation is read-only, then finish a real mission and reload its sectioned report. Verify legacy reports and the archived action timeline remain available.
+
+--- Previous patch validation ---
+
 PROJECT AEGIS — BROWSER 1249 VALIDATION SUMMARY
 Build: v0.26.09.13.1249_MOBILE_ADAPTIVE_MISSION_FAILURE_NOTICE_PATCH
 Save format: 4
