@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.14.0955_SOLID_BUILDING_WALL_VISIBILITY_PATCH`
+Current browser build: `v0.26.09.14.1112_BATTLE_VISIBILITY_REUSE_PERFORMANCE_PATCH`
 
 Current save format: `4`
 
@@ -48,7 +48,7 @@ Shared marker state drives 2D, persistent/fallback 3D and perspective/minimap pr
 **Requested September 13, 2026.**
 
 - **Implemented in Browser 1249:** victory/failure notices layer above vitals, keeping the return-to-base button clickable without hiding vitals. Opening Base no longer starts a paused geoscape clock at 5 minutes.
-- **Planned — rendering performance:** profile battles with two fully upgraded Skyrangers and their full soldier complement on an older laptop using Performance graphics. Identify animation, draw-call, scene-update and AI/playback stalls before optimizing; preserve combat authority and visible action timing. Compare frame times and long pauses with the same battle before/after.
+- **First performance slice implemented in Browser 1112; broader rendering profiling remains planned:** unchanged shared visibility now reuses one bounded result, preserving the original calculation on state changes. In a controlled 48-soldier/177-cover browser fixture, repeated checks fell from 26.6–44.7 ms to 0.3–0.4 ms with identical cells. This is not a total frame-rate measurement. profile battles with two fully upgraded Skyrangers and their full soldier complement on an older laptop using Performance graphics. Identify animation, draw-call, scene-update and AI/playback stalls before optimizing; preserve combat authority and visible action timing. Compare frame times and long pauses with the same battle before/after.
 - **Implemented in Browser 1726 — vitals selection:** clicking a living field soldier card selects that soldier in Manual and the team leader in Hybrid, with an outlined selected card and keyboard support. Downed soldiers can be inspected without dragging. KIA/extracted cards and Simulation, movement, enemy-turn and terminal states are read-only; clicks never issue movement orders.
 - **Implemented in Browser 1807 — vehicle pathing:** collision footprints cover the rendered body at each heading, including corrected footprints for saved vehicles without shifting their models. Shared movement commits and path searches honor these cells, and sparse playback trails are rebuilt through adjacent legal cells. Automated coverage includes four vehicle types, six headings, odd/even rows, all three unit teams and saved footprint stability; field verification of the reported battle remains useful.
 - **Implemented in Browser 1726 — mission report readability:** new reports show itemized sections for objectives/VIP totals, personnel/medical outcomes, rewards/recovery and progression/command. Existing action logs and tactical timelines remain visible. Older summaries render as an itemized archive; original summary text and authoritative totals remain stored. Mobile layout verified at 390px width.

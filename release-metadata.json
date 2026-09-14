@@ -1,8 +1,8 @@
 {
-  "build": "v0.26.09.14.0955_SOLID_BUILDING_WALL_VISIBILITY_PATCH",
-  "package_filename": "Project_Aegis_v0.26.09.14.0955_SOLID_BUILDING_WALL_VISIBILITY_PATCH.zip",
+  "build": "v0.26.09.14.1112_BATTLE_VISIBILITY_REUSE_PERFORMANCE_PATCH",
+  "package_filename": "Project_Aegis_v0.26.09.14.1112_BATTLE_VISIBILITY_REUSE_PERFORMANCE_PATCH.zip",
   "save_format": 4,
-  "runtime_bytes": 7137463,
-  "runtime_sha256": "3801a9732c7c2c828f45e7d47151261a0c1795da39307861d6ae09a3ccfce2e6",
-  "host_sha256": "195f3e183e6119508ba90188e7f146a15bd926fc3ba2b10a2f7f50334ec44ffa"
+  "runtime_bytes": 7138503,
+  "runtime_sha256": "cf8a51900817fd2d8e99200d7ae0282da402b5e7ef2838b0ff2440a88aafc9b5",
+  "host_sha256": "e854d3654a39f3b5d9111219662968963c67ceb6c5d29c2bc1f0989db79fcf65"
 }

@@ -1,3 +1,17 @@
+PROJECT AEGIS — BROWSER 1112 VALIDATION SUMMARY
+Build: v0.26.09.14.1112_BATTLE_VISIBILITY_REUSE_PERFORMANCE_PATCH
+Save format: 4
+
+- Node suite: 88/88 passed, including four new memoization tests for snapshot equality, caller mutation isolation, in-place invalidation, observer eligibility, cover fields, single-entry replacement and oversized-key bypass.
+- Six tactical smoke scripts, embedded JavaScript syntax, build seam and diff whitespace checks passed.
+- Packaged Edge benchmark: 48 soldiers and 177 generated cover objects on a 48-cell-wide map, eight consecutive calls. Baseline repeated calls 26.6–44.7 ms; cached repeated calls 0.3–0.4 ms. Both returned exactly the same 1267 cells. Cold calls were 85.4 ms baseline and 59.5 ms current; no cold-path speedup is claimed from this single sample.
+- Browser differential check against the retained original calculation matched every cell across initial/repeated state, movement, facing, downing, death, night, flashlight, breach, smoke, powered light, destroyed power control, larger map and JSON reload.
+- Full browser diagnostics: baseline 897/967 and current 897/967, with no new failures (same 70 existing failures). The build-label-only metadata update followed this comparison; final packaged build seam checks passed.
+- Local evidence: Temp/aegis-visibility-before.json, aegis-visibility-after.json; reproducible local scripts aegis-visibility-perf.cjs and aegis-visibility-parity.cjs.
+- Limits: this measures shared visibility computation in a controlled browser fixture, not total frame time, draw calls or FPS on the player's older laptop. Changed sight state still runs the original calculation. Larger-battle GPU/animation and AI-stall profiling remain on the roadmap.
+
+--- Previous patch validation ---
+
 PROJECT AEGIS — BROWSER 0955 VALIDATION SUMMARY
 Build: v0.26.09.14.0955_SOLID_BUILDING_WALL_VISIBILITY_PATCH
 Save format: 4

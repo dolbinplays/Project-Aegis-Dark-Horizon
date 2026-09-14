@@ -1,3 +1,13 @@
+v0.26.09.14.1112_BATTLE_VISIBILITY_REUSE_PERFORMANCE_PATCH
+
+Battle Visibility Reuse Performance
+- Reuse the last unchanged shared visibility result instead of repeating every soldier sight scan during battle updates. Cache misses run the existing interior-map calculation unchanged.
+- Value snapshots detect in-place movement, facing, flashlight, observer eligibility, lighting, smoke, power, wall and vehicle footprint changes. One bounded snapshot is retained; returned Sets are detached.
+- Browser fixture with 48 soldiers and 177 covers: repeated checks improved from 26.6–44.7 ms to 0.3–0.4 ms with identical visible cells. This measures visibility work, not total frame time or hardware-specific FPS.
+- Save format remains 4. Publish index.html, service-worker.js and release-metadata.json together with existing assets.
+
+--- Previous patch ---
+
 v0.26.09.14.0955_SOLID_BUILDING_WALL_VISIBILITY_PATCH
 
 Solid Building Wall Visibility
