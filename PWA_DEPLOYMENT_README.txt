@@ -1,3 +1,13 @@
+v0.26.09.14.0955_SOLID_BUILDING_WALL_VISIBILITY_PATCH
+
+Solid Building Wall Visibility
+- Standing beside a solid building wall or partition no longer grants sight through it, for observers or targets on either side. Shared sight checks apply to all teams.
+- Windows, existing open doorway gaps and breached structures allow aligned sight; a nearby opening does not bypass another wall. Breach rubble no longer blocks longer sightlines.
+- Solid wall faces remain discoverable and ordinary cover keeps its existing adjacency behavior. Structural state changes invalidate visibility caches.
+- Save format remains 4. Publish index.html, service-worker.js and release-metadata.json together with existing assets.
+
+--- Previous patch ---
+
 v0.26.09.14.0717_VIP_CAMERA_DIRECTION_MARKERS_PATCH
 
 VIP Camera Direction Markers

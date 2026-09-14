@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.14.0717_VIP_CAMERA_DIRECTION_MARKERS_PATCH`
+Current browser build: `v0.26.09.14.0955_SOLID_BUILDING_WALL_VISIBILITY_PATCH`
 
 Current save format: `4`
 
@@ -92,9 +92,9 @@ This is a roadmap-only update; the runtime, build identifier and save format are
 
 This is a roadmap-only update; the runtime, build identifier and save format are unchanged.
 
-## Roadmap Addition — Solid Building Walls Block Adjacent Vision
+## Solid Building Walls Block Adjacent Vision — Implemented in Browser 0955
 
-**Requested September 13, 2026. Status: planned, not implemented.**
+**Requested September 13, 2026. Status: implemented September 14 in Browser 0955.**
 
 - Remove any adjacency exception that lets a unit see through a solid building wall simply because it stands next to that wall. Apply this consistently to all units, from both inside and outside buildings.
 - Sight through a building boundary must pass through a **window, open door or breach**. Closed solid doors and intact solid wall sections block sight; an opening elsewhere on the same wall does not make the whole wall transparent.
@@ -103,7 +103,7 @@ This is a roadmap-only update; the runtime, build identifier and save format are
 - Update visibility when a door opens/closes or a wall is breached. Preserve previously explored terrain as memory without revealing live units or new interior information behind an intact wall.
 - **Acceptance:** place units directly adjacent to solid walls on both sides and confirm no through-wall sight. Repeat beside windows, closed/open doors and breaches, checking actual sightline alignment and blocked corners. Verify opening/closing a door and creating a breach update visibility correctly, then repeat after save/reload and across control modes and tactical views.
 
-This is a roadmap-only update; the runtime, build identifier and save format are unchanged.
+Shared line-of-sight checks now reject adjacent solid walls/partitions while retaining window and breach sightlines. Current generated doors are open gaps in the perimeter; this patch does not add interactive door opening/closing. A solid door cover is treated as a barrier. Wall faces themselves remain discoverable; normal cover adjacency and tracker knowledge are unchanged. Save format remains 4.
 
 ## v0.26.09.13.1209_FIRE_TEAM_VITALS_REASSIGNMENT_AND_VEHICLE_HEADLIGHT_ALIGNMENT_PATCH
 

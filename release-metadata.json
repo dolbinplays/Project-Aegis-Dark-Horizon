@@ -1,8 +1,8 @@
 {
-  "build": "v0.26.09.14.0717_VIP_CAMERA_DIRECTION_MARKERS_PATCH",
-  "package_filename": "Project_Aegis_v0.26.09.14.0717_VIP_CAMERA_DIRECTION_MARKERS_PATCH.zip",
+  "build": "v0.26.09.14.0955_SOLID_BUILDING_WALL_VISIBILITY_PATCH",
+  "package_filename": "Project_Aegis_v0.26.09.14.0955_SOLID_BUILDING_WALL_VISIBILITY_PATCH.zip",
   "save_format": 4,
-  "runtime_bytes": 7136916,
-  "runtime_sha256": "0fea6a2dad9a5b3987172c1852a8826d32f13e6bfb17c0aa9b62f33df4f7fa48",
-  "host_sha256": "d8fc1c73847347f2fbff76c30feab77f29c25745d1866ccab19449d4ae9b91b4"
+  "runtime_bytes": 7137463,
+  "runtime_sha256": "3801a9732c7c2c828f45e7d47151261a0c1795da39307861d6ae09a3ccfce2e6",
+  "host_sha256": "195f3e183e6119508ba90188e7f146a15bd926fc3ba2b10a2f7f50334ec44ffa"
 }

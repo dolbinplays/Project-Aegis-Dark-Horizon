@@ -1,3 +1,16 @@
+PROJECT AEGIS — BROWSER 0955 VALIDATION SUMMARY
+Build: v0.26.09.14.0955_SOLID_BUILDING_WALL_VISIBILITY_PATCH
+Save format: 4
+
+- Node suite: 84/84 passed, including five new solid-wall visibility tests using the actual hex line, facing, cover and breach helpers.
+- Coverage: observer/target adjacency on both sides for all teams, partitions, solid door covers, legacy visual-only walls, wall-face discovery, windows, doorway gaps, live breaches, neighboring openings, facing, normal cover, JSON reload and visibility cache signatures.
+- Six tactical smoke scripts, embedded JavaScript syntax, build seam and diff whitespace checks passed.
+- Packaged Edge fixture: shared visible-cell result hidden through intact wall, visible through breach/window, hidden again after restoring a JSON-loaded wall. Explicit cached visibility path also returned false/true/false with two misses and one cache hit.
+- Full browser diagnostics: baseline 897/967 and current 897/967; no new failures (same 70 existing failures). Comparison: local Temp/aegis-vip-marker-health.json.
+- Field acceptance: verify adjacent walls and aligned openings in a real mission in Manual, Hybrid and Simulation. This patch uses the existing hex sightline model and open doorway gaps; it adds no interactive door mechanism. Browser checks used controlled fixtures rather than a played-through mission.
+
+--- Previous patch validation ---
+
 PROJECT AEGIS — BROWSER 0717 VALIDATION SUMMARY
 Build: v0.26.09.14.0717_VIP_CAMERA_DIRECTION_MARKERS_PATCH
 Save format: 4
