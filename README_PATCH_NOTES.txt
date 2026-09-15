@@ -1,3 +1,17 @@
+PROJECT AEGIS — BROWSER 1426 PATCH NOTES
+Build: v0.26.09.15.1426_POST_CONTACT_FIRE_TEAM_REASSEMBLY_AND_LEADER_SUCCESSION_PATCH
+Save format: 4
+
+Post-Contact Fire-Team Reassembly and Leader Succession
+- Fixes the field regression where soldiers can disperse during alien combat and then branch back into unrelated individual search/objective movement instead of rebuilding their fire team.
+- Adds a dedicated team-wide post-contact recovery latch while preserving the existing leader-only split-search marker. This makes recovery survive a leader casualty, leadership reassignment, or team reconciliation between the fight and the regroup phase.
+- Once visible/remembered contact authority is resolved, the effective leader holds and reachable supports recover their authoritative formation cells before persistent VIP/Beacon/player assignments or ordinary sector search resume.
+- Active visible combat, unresolved Last Known Contact, escort/casualty duty, and existing Beacon forward-reform exceptions remain higher priority than normal regrouping.
+- Adds a bounded three-round degraded-cohesion fallback for a genuinely unreachable support: if all reachable supports have formed, the team may resume while the separated member continues normal formation catch-up when a legal route returns.
+- The additive recovery latch is retained in tactical playback/save snapshots. Save format remains 4.
+
+--- Previous patch notes ---
+
 PROJECT AEGIS — BROWSER 1316 PATCH NOTES
 Build: v0.26.09.15.1316_PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_HOTFIX_PATCH
 Save format: 4

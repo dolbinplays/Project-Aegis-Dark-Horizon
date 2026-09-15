@@ -1,0 +1,31 @@
+PROJECT AEGIS — POST-CONTACT FIRE-TEAM REASSEMBLY FIELD ACCEPTANCE
+Build: v0.26.09.15.1426_POST_CONTACT_FIRE_TEAM_REASSEMBLY_AND_LEADER_SUCCESSION_PATCH
+Save format: 4
+
+1. NORMAL REGROUP
+- Use a 3- or 4-soldier fire team and let members spread during a real alien firefight.
+- Resolve the visible/Last Known Contact threat.
+- Confirm the effective leader stops advancing while out-of-position supports route back into formation.
+- Confirm the team resumes its previous Default Search or explicit mission assignment only after recovery.
+
+2. LEADER CASUALTY / SUCCESSION
+- Repeat while the original fire-team leader is killed, downed, extracted or otherwise removed during the fight.
+- Confirm normal fire-team reconciliation selects a surviving effective leader.
+- Confirm the team still enters REFORM rather than forgetting the pending regroup and scattering.
+
+3. UNREACHABLE SUPPORT
+- Create a legal scenario where one support cannot route to its formation slot while the other reachable members can.
+- Confirm the reachable members attempt recovery first.
+- After three recovery rounds, confirm the unreachable member does not deadlock the whole team once every reachable support is formed.
+- Confirm the separated member still follows normal formation catch-up later if a path becomes available.
+
+4. PRIORITY EXCEPTIONS
+- Visible alien combat and unresolved Last Known Contact must interrupt/hold recovery.
+- Active VIP/civilian escort and casualty duties must not be broken just to satisfy formation.
+- Beacon Assault forward-reform/breacher behavior must remain intact.
+- Hybrid player orders and explicit VIP/Beacon objective ownership must survive the recovery transition.
+
+5. SAVE / PLAYBACK
+- Save/reload during or immediately after the fight and verify the pending team regroup is preserved.
+- Check streamed playback/status: members should not appear to branch into unrelated objectives before recovery is complete.
+- Confirm save format remains 4.

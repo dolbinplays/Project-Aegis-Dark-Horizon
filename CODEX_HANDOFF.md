@@ -1,3 +1,28 @@
+# CODEX HANDOFF — v0.26.09.15.1426_POST_CONTACT_FIRE_TEAM_REASSEMBLY_AND_LEADER_SUCCESSION_PATCH
+
+Browser 1316 is the field-tested wall-continuity baseline. Browser 1426 addresses the reported regression where soldiers can disperse during alien contact and then resume unrelated individual movement instead of rebuilding their fire team. Save format remains 4.
+
+## Post-contact fire-team reassembly / leader succession
+- Live combat now arms a dedicated `aiPostContactRecoveryRound` latch on every living member of each authoritative fire team. The older `aiPostContactSplitRound`/slot remains leader-only for split-search ownership, so this does not turn supports into independent search authorities.
+- Clearing/invalidating Last Known Contact records also arms the team-wide latch before releasing search scratch state.
+- `tacticalFireTeamPostContactRecoveryState(...)` reads the team latch after ordinary fire-team reconciliation, so if the former leader dies or is unavailable the newly authoritative leader still owns the regroup.
+- While recovery is active, the leader holds and reachable supports route to their formation cells before the team resumes its stored objective. Active combat, Last Known Contact authority and active escort/casualty duties still outrank ordinary regrouping.
+- A bounded degraded-cohesion fallback releases the team after three recovery rounds only when every support that still has a legal path is formed and the remaining blocker is genuinely unreachable. Normal formation following remains active afterward so the separated soldier can still catch up.
+- Playback snapshots persist the additive recovery round. Save format remains 4; no campaign migration is required.
+
+## Field acceptance
+- Let a 3–4 soldier team spread during a fight, end the contact, and verify the leader holds while supports reform before the team resumes Default AI or its persistent VIP/Beacon assignment.
+- Repeat with the original fire-team leader killed/downed during the fight; the surviving promoted/acting leader must retain the pending regroup.
+- Repeat with one support genuinely unable to route to its slot; after the bounded recovery window the reachable majority should continue while the separated member keeps normal catch-up behavior.
+- Verify visible contact, unresolved Last Known Contact, active escort/casualty work and Beacon forward-reform exceptions still outrank ordinary regrouping.
+
+## Next roadmap candidates
+- Tactical soldier face/equipment identity matching.
+- Command Screen → AEGIS Operations Overview.
+- Interactive closable/lockable building doors, then locked-shelter callouts and civilian/VIP casualty triage remain recorded later roadmap work.
+
+--- Previous handoff ---
+
 v0.26.09.15.1316_PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_HOTFIX_PATCH
 
 Procedural Building Staggered-Turn Connector Hotfix
@@ -7,6 +32,19 @@ Procedural Building Staggered-Turn Connector Hotfix
 - Door authority is unchanged. True generated doors stay open and retain their gray floor marker; no doorway-frame geometry is added. Collision, pathfinding, LOS, cover, structural HP, targeting and breach authority remain on existing structural covers.
 - Shared fallback/persistent renderer contract is covered by `tools/test-procedural-building-wall-continuity.cjs`. Save format remains 4.
 - Field checklist: `PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_FIELD_ACCEPTANCE.txt`.
+
+
+Roadmap addition — Interactive closable/lockable building doors
+- Every authoritative procedural doorway should eventually receive a real full-width door entity while retaining the gray doorway-floor marker; do not reuse the rejected 1255 narrow framing approach or reinterpret non-door wall gaps as doors.
+- Shared door state: open/closed/locked/breached/destroyed, with movement, LOS, cover, pathing, visuals and saves consuming the same authority. Soldiers, VIPs, civilians and aliens can operate unlocked doors.
+- Hiding VIPs/civilians may close and lock exterior doors. Locked doors must delay alien searches by forcing alternate-entry choice or a time-consuming breach instead of allowing magical traversal. Rescue AI must still be able to gain access without globally auto-unlocking shelters.
+- Preserve save format 4 if optional/backward-compatible state can be added safely; older live tactical saves containing open doorway gaps must not have their geometry unexpectedly narrowed or reclassified.
+
+Roadmap addition — Locked-shelter callouts and civilian/VIP casualty triage
+- Adjacent AEGIS soldiers should be able to spend TU to call out through a closed/locked authoritative door and ask sheltered VIPs/civilians to unlock/open it. Fear/panic/local threat may cause silence/refusal; retries cost time and AI rescue must not deadlock. No response must not magically reveal whether anyone is inside.
+- Some severe civilian/VIP hits should create a short **condition unknown / incapacitated** window instead of instant confirmed death. Unarmored survival odds are deliberately slim but non-zero; obvious overkill remains immediately fatal.
+- Adjacent AEGIS can spend time to assess the casualty. If salvageable, one Field Medkit charge can stabilize/save them by reusing existing casualty-care authority. Stabilization preserves life but does not automatically restore normal mobility; save/load and mission reports must distinguish confirmed dead, stabilized survivors and ordinary rescued survivors.
+- Preserve save format 4 if this can remain optional/backward-compatible state. This item is designed to build on the interactive locked-door roadmap and the existing Field Medkit / casualty-care system rather than introducing parallel door or medical authorities.
 
 Next roadmap candidate
 - **Post-Contact Fire-Team Reassembly and Mission Continuation** remains the next recommended behavior patch after this wall fix is visually accepted.
@@ -24,6 +62,13 @@ Procedural Building Micro-Gap Closure Hotfix
 - The change is presentation-only and shared by fallback/persistent Three.js. Preserve structural-cover authority, Browser 1050 four-way seam ownership, Browser 0904 tetromino footprints, Browser 0745 IndexedDB saves and save format 4.
 - Focused regression remains `tools/test-procedural-building-wall-continuity.cjs`; its new projection-aware case covers the staggered-row micro-gap.
 
+
+Roadmap addition — Interactive closable/lockable building doors
+- Every authoritative procedural doorway should eventually receive a real full-width door entity while retaining the gray doorway-floor marker; do not reuse the rejected 1255 narrow framing approach or reinterpret non-door wall gaps as doors.
+- Shared door state: open/closed/locked/breached/destroyed, with movement, LOS, cover, pathing, visuals and saves consuming the same authority. Soldiers, VIPs, civilians and aliens can operate unlocked doors.
+- Hiding VIPs/civilians may close and lock exterior doors. Locked doors must delay alien searches by forcing alternate-entry choice or a time-consuming breach instead of allowing magical traversal. Rescue AI must still be able to gain access without globally auto-unlocking shelters.
+- Preserve save format 4 if optional/backward-compatible state can be added safely; older live tactical saves containing open doorway gaps must not have their geometry unexpectedly narrowed or reclassified.
+
 Next roadmap candidate
 - **Post-Contact Fire-Team Reassembly and Mission Continuation** remains the next recommended behavior patch once this visual follow-up is field accepted.
 - After cohesion: tactical soldier face/equipment identity matching, then Command Screen → AEGIS Operations Overview.
@@ -40,6 +85,13 @@ Procedural Building Wall Continuity Hotfix
 - Both fallback and persistent Three.js renderers call the same perimeter-seam and corner-return helpers and expose diagnostic counts. Preserve the Browser 0904 I/O/T/L/J/S/Z footprint authority, legacy rectangular in-progress tactical-save compatibility, Browser 0745 IndexedDB durable saves, and save format 4.
 - Focused regression: `tools/test-procedural-building-wall-continuity.cjs`. Field checklist: `PROCEDURAL_BUILDING_WALL_CONTINUITY_FIELD_ACCEPTANCE.txt`.
 
+
+Roadmap addition — Interactive closable/lockable building doors
+- Every authoritative procedural doorway should eventually receive a real full-width door entity while retaining the gray doorway-floor marker; do not reuse the rejected 1255 narrow framing approach or reinterpret non-door wall gaps as doors.
+- Shared door state: open/closed/locked/breached/destroyed, with movement, LOS, cover, pathing, visuals and saves consuming the same authority. Soldiers, VIPs, civilians and aliens can operate unlocked doors.
+- Hiding VIPs/civilians may close and lock exterior doors. Locked doors must delay alien searches by forcing alternate-entry choice or a time-consuming breach instead of allowing magical traversal. Rescue AI must still be able to gain access without globally auto-unlocking shelters.
+- Preserve save format 4 if optional/backward-compatible state can be added safely; older live tactical saves containing open doorway gaps must not have their geometry unexpectedly narrowed or reclassified.
+
 Next roadmap candidate
 - **Post-Contact Fire-Team Reassembly and Mission Continuation** is the next recommended behavior patch. Once immediate contact ends, surviving reachable team members should reform around the authoritative leader and resume their persistent objective without deadlocking on unavailable members.
 - After cohesion: tactical soldier face/equipment identity matching, then the dedicated Command Screen → AEGIS Operations Overview dashboard work.
@@ -54,6 +106,13 @@ Tetromino Procedural Building Footprints
 - Pre-patch live tactical saves are detected by legacy structural covers lacking shape metadata and retain rectangular plan authority for that already-started battle. New saves carry building shape metadata in structural covers.
 - New focused regression file: tools/test-tetromino-building-footprints.cjs. Field checklist: PROCEDURAL_BUILDING_TETROMINO_FOOTPRINTS_FIELD_ACCEPTANCE.txt.
 - Save format remains 4. IndexedDB durable save storage from Browser 0745 remains in place.
+
+
+Roadmap addition — Interactive closable/lockable building doors
+- Every authoritative procedural doorway should eventually receive a real full-width door entity while retaining the gray doorway-floor marker; do not reuse the rejected 1255 narrow framing approach or reinterpret non-door wall gaps as doors.
+- Shared door state: open/closed/locked/breached/destroyed, with movement, LOS, cover, pathing, visuals and saves consuming the same authority. Soldiers, VIPs, civilians and aliens can operate unlocked doors.
+- Hiding VIPs/civilians may close and lock exterior doors. Locked doors must delay alien searches by forcing alternate-entry choice or a time-consuming breach instead of allowing magical traversal. Rescue AI must still be able to gain access without globally auto-unlocking shelters.
+- Preserve save format 4 if optional/backward-compatible state can be added safely; older live tactical saves containing open doorway gaps must not have their geometry unexpectedly narrowed or reclassified.
 
 Next roadmap candidate
 - **New field regression to investigate first:** connective wall/seam segments appear to have stopped generating consistently again, leaving intact procedural facades reading as disconnected wall pieces. Audit the 0137/1855/1410/1448/1532/1610 continuity chain against Browser 0904 tetromino footprint authority in both Three.js render paths; preserve doors, revealed breaches, windows and concave footprint recesses. Full acceptance criteria are in the canonical roadmap section **Procedural Building Connective Wall Segment Regression Investigation**.

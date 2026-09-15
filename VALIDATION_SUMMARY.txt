@@ -1,3 +1,18 @@
+PROJECT AEGIS — BROWSER 1426 VALIDATION SUMMARY
+Build: v0.26.09.15.1426_POST_CONTACT_FIRE_TEAM_REASSEMBLY_AND_LEADER_SUCCESSION_PATCH
+Save format: 4
+
+Post-Contact Fire-Team Reassembly and Leader Succession
+- Focused local Node regression coverage passed 26/26 tests: 5 new post-contact reassembly/leader-succession tests, 5 IndexedDB durable-save regressions, 7 tetromino-footprint regressions, and 9 procedural-building wall-continuity regressions.
+- The new post-contact suite executes the patched recovery helpers against live-combat fixtures and verifies team-wide recovery latching, leader-only split-search ownership, leader-casualty/succession persistence, bounded unreachable-support fallback after three recovery rounds, completion cleanup, unchanged fire-team assignment, playback snapshot persistence, and save format 4.
+- Existing IndexedDB, tetromino-footprint, and wall-continuity regressions remain green. The IndexedDB test's historical hard-coded build-id assertion was adapted only in a temporary local copy for this current-build regression run; the historical test file itself was not rewritten for the patch package.
+- Embedded JavaScript syntax passed for all 5 executable script blocks in canonical `src/browser-runtime.html`; generated `index.html` host JavaScript and `service-worker.js` also pass `node --check`.
+- Generated host/package seam validation passed: the embedded runtime payload is byte-for-byte identical to `src/browser-runtime.html`; source byte count/SHA-256 and host SHA-256 match `release-metadata.json`; and build IDs are synchronized across runtime, host, service worker, manifest, and release metadata.
+- This minimal patch workspace does not contain the repository-wide Node/smoke/mobile suite, so no new full-suite count is claimed. Browser 0904's last available full run was 106/106 Node tests plus six tactical smokes and 9/9 Mobile/PWA regressions; Browser 1426 adds focused coverage for the systems changed here.
+- Field acceptance remains required for live AI behavior: normal post-fight regroup, leader casualty during/after contact, Beacon/VIP exception behavior, a genuinely unreachable support member, save/reload during recovery, and Hybrid/Simulation continuation. Automated checks do not claim played-mission acceptance.
+
+--- Previous patch validation ---
+
 PROJECT AEGIS — BROWSER 1316 VALIDATION SUMMARY
 Build: v0.26.09.15.1316_PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_HOTFIX_PATCH
 Save format: 4

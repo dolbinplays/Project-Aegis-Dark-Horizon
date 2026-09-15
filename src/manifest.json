@@ -1,7 +1,7 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.09.15.1316_PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_HOTFIX_PATCH",
+  "currentBuild": "v0.26.09.15.1426_POST_CONTACT_FIRE_TEAM_REASSEMBLY_AND_LEADER_SUCCESSION_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.09.15.1316_PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_HOTFIX_PATCH",
+  "lastInspectedBuild": "v0.26.09.15.1426_POST_CONTACT_FIRE_TEAM_REASSEMBLY_AND_LEADER_SUCCESSION_PATCH",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -47,7 +47,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.09.15.1316_PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_HOTFIX_PATCH",
+    "browserBuild": "v0.26.09.15.1426_POST_CONTACT_FIRE_TEAM_REASSEMBLY_AND_LEADER_SUCCESSION_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -231,7 +231,8 @@
       "multihex-land-vehicle-fallback-render-centering",
       "civic-landmark-multihex-footprints",
       "durable-indexeddb-save-slot-storage",
-      "tetromino-procedural-building-wall-continuity"
+      "tetromino-procedural-building-wall-continuity",
+      "post-contact-fire-team-reassembly-and-leader-succession"
     ],
     "temporaryExceptions": [
       {

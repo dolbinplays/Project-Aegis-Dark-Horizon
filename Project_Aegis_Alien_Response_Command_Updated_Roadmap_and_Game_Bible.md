@@ -4,6 +4,50 @@ Current browser build: `v0.26.09.15.1316_PROCEDURAL_BUILDING_STAGGERED_TURN_CONN
 
 Current save format: `4`
 
+## Roadmap Addition — Interactive Closable and Lockable Building Doors
+
+**Requested September 15, 2026. Status: roadmap / not yet implemented.**
+
+- Replace the current permanently open procedural-building doorway gaps with **real interactive door entities** wherever the authoritative building plan declares a door. Preserve the established full-width doorway opening and gray doorway-floor marker; this feature must not narrow entrances or reinterpret non-door wall gaps as doors.
+- Doors need persistent tactical states such as **open, closed, locked, breached/damaged and destroyed**. Their visual state, collision, pathfinding, LOS/visibility, cover and interaction authority must all read from the same door-state record rather than separate renderer-only geometry.
+- **AEGIS soldiers, VIPs, civilians and aliens** can operate ordinary unlocked doors. Opening or closing a door should be an explicit tactical interaction with an appropriate time/action cost, and a door cannot close through a unit occupying the doorway. AI pathing may open a required unlocked door instead of treating it as a permanent obstacle.
+- **VIPs and civilians who are hiding inside a building may close and lock exterior doors** when doing so improves shelter and does not trap them in an immediately worse hazard. Their shelter logic should prefer securing a defensible interior over standing beside an open entrance when hostile aliens are searching nearby.
+- A **locked door must materially delay hostile entry**. Aliens that decide to search or enter the building cannot path through it as though it were open; they must spend tactical time breaching, damaging or otherwise defeating the door before crossing. The breach should create appropriate noise/attention and transition the same authoritative door state to damaged/breached/destroyed.
+- Alien search behavior must understand doors as part of building access. If a suspected VIP/civilian/AEGIS target is behind a locked entrance, aliens may choose another valid entrance or breach point, or commit time to the locked door rather than abandoning the search or magically acquiring a path through the wall.
+- Friendly rescue logic must not deadlock on a civilian-secured building. VIPs/civilians should be able to unlock/open for an adjacent identified AEGIS rescuer when appropriate, and AEGIS should retain a deliberate force/breach option for exceptional cases. Do not let automatic unlocking expose hiding civilians merely because an AEGIS unit exists somewhere on the map.
+- Closed intact doors should block movement and ordinary LOS through their opening; open/breached/destroyed doors should restore passage and aligned visibility. Door material/damage should integrate with the existing wall/breach system rather than becoming an unrelated second destruction model.
+- Save/load must preserve each door's placement, orientation, open/closed state, lock state, damage/breach state and any relevant interaction progress without increasing save format unless a migration genuinely requires it. In-progress older tactical saves that contain only open doorway gaps should load safely with a backward-compatible default instead of changing mission geometry unexpectedly.
+- Both tactical Three.js paths, 2D/hex presentation, FPV/TPV, selection/highlighting and any future Godot parity work should consume the same door authority. Door animation may be lightweight, but the visible panel must never clip across the full doorway or leave a misleading collision state.
+
+**Acceptance:** generate rectangular and T/L/J/S/Z structures with authoritative gray-floor doorways; verify each declared doorway has a full-width operable door while non-door perimeter cells remain solid. Test soldier, VIP, civilian and alien open/close behavior; civilian/VIP shelter locking; alien alternate-entry selection and locked-door breach delay; LOS/pathfinding before and after opening; doorway occupancy safety; rescue access to a locked shelter; save/reload in every state; renderer/view switching; and post-breach traversal. Confirm the earlier rejected Browser 1255 narrow framed-doorway approach is not reintroduced.
+
+## Roadmap Addition — Locked-Shelter Callouts and Civilian/VIP Casualty Triage
+
+**Requested September 15, 2026. Status: roadmap / not yet implemented.**
+
+### Adjacent locked-door callout / rescue access
+
+- When an AEGIS soldier is **adjacent to a closed, locked authoritative door**, provide a deliberate tactical action such as **Call Out / Identify AEGIS** instead of forcing the player to breach immediately. The action should consume an appropriate TU/action cost and should be available only when the soldier can physically address that doorway.
+- If living VIPs/civilians are sheltering inside and can reasonably hear the soldier, they may choose to **unlock and open the door from the inside**. A successful response should transition the same authoritative door state used by movement, LOS, pathfinding, rendering and save/load rather than creating a special rescue-only bypass.
+- A sheltered VIP/civilian may be **too frightened to answer or open the door**. Refusal/silence should consider existing panic/fear state and local danger rather than being a guaranteed random failure. Nearby aliens, recent gunfire/breaching, an injured occupant, or an occupant who has not yet established that the caller is friendly can all justify remaining locked down.
+- Repeated callouts should not become a zero-cost probability spam loop. A new attempt should cost time and either use bounded retry rules or require some meaningful change in conditions. A calmer occupant, removal of the nearby alien threat, or a clearly identified adjacent AEGIS soldier can improve the chance of cooperation.
+- If nobody is inside, the occupants are dead/unconscious, or they refuse to answer, the soldier should receive **no magical confirmation of the building interior**. The player may still choose another entrance or use the deliberate breach option from the door roadmap.
+- The interaction creates a tactical tradeoff: calling out is slower and potentially noisy but preserves the door and avoids an unnecessary breach. If sound/noise awareness is active in the current tactical rules, the callout should use that same authority rather than inventing a separate alert system.
+- AI/Hybrid rescue logic may use the same callout when it reaches a locked civilian/VIP shelter, but it must remain bounded and may fall back to alternate entry or breach after reasonable failed attempts so rescue behavior cannot deadlock.
+
+### Civilian/VIP casualty assessment and emergency aid
+
+- A civilian or VIP who is hit should not always resolve instantly to a binary living/dead state when the wound could plausibly be survivable. Add an **incapacitated / condition unknown** path for some severe hits so an apparently fallen noncombatant may still be alive for a short rescue window.
+- **Unarmored civilians/VIPs should have only a slim chance of surviving a potentially fatal hit**, while any actual body armor/protection, lower injury severity and other already-modeled protective factors can improve that chance. Clearly unsurvivable/overkill outcomes should still resolve directly to dead rather than generating false hope. Exact probabilities are a balance item for implementation; the roadmap intent is low but non-zero survival for an unarmored casualty.
+- An adjacent conscious AEGIS soldier should have a **Check Condition / Assess Casualty** action. The assessment costs tactical time but no medkit charge and resolves whether the casualty is truly dead or still salvageable. Until checked, the UI should distinguish an uncertain downed casualty from a confirmed death where practical rather than showing information the squad has not established.
+- If the casualty is salvageable, an AEGIS soldier with a Field Medkit may spend **one medkit charge** and the normal treatment action cost to stabilize/save them. Reuse the existing casualty-care/medkit authority where possible so treatment charges, TU costs, AI triage, save/load and mission reporting do not fork into a second medical system.
+- Successful treatment should **stabilize life, not magically restore full combat mobility**. A seriously injured VIP/civilian may remain incapacitated or require assisted extraction/mission-end recovery depending on the eventual casualty-transport rules. The important distinction is that stabilization prevents an otherwise avoidable death and records the person as alive/saved if the mission ultimately secures or extracts them under the applicable rescue rules.
+- A salvageable casualty can deteriorate if ignored. If bleeding/deterioration is reused from soldier casualty care, use the same bounded round-processing model and clearly expose urgency without requiring the player to inspect hidden percentages.
+- AI/Hybrid AEGIS should be able to assess and treat a nearby civilian/VIP casualty when tactically safe, with Medic specialization preferred where the existing triage system already provides that behavior. Alien AI must not gain the AEGIS assessment/treatment action merely because the shared casualty record exists.
+- Save/load must preserve uncertain/assessed/dead/stabilized state, treatment history and any remaining deterioration timer without increasing save format unless a migration genuinely requires it. Mission reports should distinguish **confirmed civilian/VIP deaths**, **stabilized survivors**, and ordinary rescued/extracted survivors so the player can see the result of emergency medical intervention.
+
+**Acceptance:** lock living VIPs/civilians inside an authoritative gray-floor doorway, approach with AEGIS, and verify an adjacent soldier can call out; cooperative occupants unlock/open, frightened occupants can remain silent, no occupant yields no interior confirmation, repeated attempts cost time, and AI rescue cannot deadlock. Separately, exercise unarmored and armored civilian/VIP hits that produce immediate death and uncertain incapacitation; verify assessment resolves dead vs salvageable, one Field Medkit charge stabilizes a viable casualty, ignored casualties can deteriorate, obviously unsurvivable hits remain dead, AI Medic triage can assist when safe, and save/reload plus mission reports preserve the correct outcome. Preserve save format 4 where possible.
+
 ## Procedural Building Staggered-Turn Connector Hotfix — Implemented in Browser 1316
 
 **Reported September 15, 2026. Status: implemented in Browser 1316; live field acceptance remains required.**
@@ -72,7 +116,7 @@ Save format remains 4. Native Godot parity remains a separate engine-port task.
 
 ## Roadmap Addition — Command Screen AEGIS Operations Overview
 
-**Requested September 15, 2026. Status: planned, not implemented.**
+**Requested September 15, 2026. Status: implemented in Browser 1426.**
 
 - Rework the existing **Command** screen into a true **AEGIS Operations Overview** now that this area no longer needs to function as the game-wide header. Preserve the useful strategic information already displayed along the top as the foundation, then use the available screen space for an at-a-glance headquarters dashboard rather than duplicating navigation chrome.
 - Keep the current total personnel figure, but add an immediately readable **personnel breakdown by type/role** using the personnel categories the campaign actually tracks. Where the underlying state supports it, distinguish how many are **available**, **deployed/committed**, **wounded or recovering**, **in transit**, or otherwise unavailable so the player can tell what manpower is usable right now rather than seeing only a raw total.
@@ -103,7 +147,9 @@ This Command-screen item remains roadmap-only; Browser 1050 does not implement i
 - Expose concise diagnostics where existing AI-status UI supports them, such as **`ALPHA — REFORMING: 2/3 in formation`**, **`ALPHA — REFORMING: waiting on support`** or **`ALPHA — REFORMED → RESUMING VIP APPROACH`**, using only information already known to the player/AI mode.
 - **Acceptance:** in several seeded missions, let a three- or four-soldier fire team disperse naturally during combat, then eliminate or lose contact with the immediate threat. Verify the team reforms around its leader before continuing, supports do not wander onto unrelated objectives, and the original persistent/default objective resumes automatically. Repeat with a wounded member, one unreachable member, a member killed during the fight, active VIP and Beacon assignments, Last Known Contact pursuit, save/reload during regroup, and Hybrid/Simulation control. Confirm no regression to Browser 1919 Beacon forward-reform behavior, VIP rescue resumption, casualty handling, or save format 4.
 
-This item is roadmap-only; Browser 1050 does not implement it. Save format remains 4.
+Implemented in Browser 1426. The recovery trigger now has a dedicated **team-wide post-contact latch** in addition to the older leader-only split-search marker, so a leader who is killed, downed, extracted or replaced during the firefight cannot make surviving supports forget that the team still needs to reform. The effective surviving leader becomes the recovery anchor after normal fire-team reconciliation.
+
+Browser 1426 also adds a bounded degraded-cohesion release: after three recovery rounds, a support whose formation cell has no legal route no longer deadlocks the entire team once every reachable support is back in formation. The separated member remains governed by normal formation-following behavior and can catch up when a route becomes available. Persistent VIP/Beacon/player assignments remain stored while reassembly is active and resume afterward. The additive recovery marker is included in tactical playback/save state; save format remains 4.
 
 ## 1–7 Hex Statues and Fountains — Implemented in Browser 2320
 
