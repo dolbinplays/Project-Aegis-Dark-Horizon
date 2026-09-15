@@ -1,3 +1,19 @@
+v0.26.09.15.1050_PROCEDURAL_BUILDING_WALL_CONTINUITY_HOTFIX_PATCH
+
+Procedural Building Wall Continuity Hotfix
+- Baseline: Browser 0904 tetromino procedural building footprints on save format 4. This patch responds to the field report that the new building shapes can render with disconnected wall pieces / missing connective segments.
+- Explicit discovered-building perimeter seams now use the same four-way/cardinal adjacency as the authoritative procedural footprint. Do not revert this to the generic six-way tactical neighbor graph: hex-only diagonals can bridge across an outdoor tetromino recess.
+- Intact wall cells at a facade turn now receive a full-height perpendicular presentation return. The established facade mesh supplies the first face; the return supplies the second face, preventing convex/turn cells from collapsing visually into pillar-like wall fragments.
+- Corner returns are presentation-only and require a revealed, living `buildingPart: wall` record. Doors, window apertures, revealed breaches/destroyed cells and outdoor tetromino recesses remain open. Gameplay collision/pathfinding, hard cover, structural HP, LOS, targeting and breach traversal continue to use structural-cover authority.
+- Both fallback and persistent Three.js renderers call the same perimeter-seam and corner-return helpers and expose diagnostic counts. Preserve the Browser 0904 I/O/T/L/J/S/Z footprint authority, legacy rectangular in-progress tactical-save compatibility, Browser 0745 IndexedDB durable saves, and save format 4.
+- Focused regression: `tools/test-procedural-building-wall-continuity.cjs`. Field checklist: `PROCEDURAL_BUILDING_WALL_CONTINUITY_FIELD_ACCEPTANCE.txt`.
+
+Next roadmap candidate
+- **Post-Contact Fire-Team Reassembly and Mission Continuation** is the next recommended behavior patch. Once immediate contact ends, surviving reachable team members should reform around the authoritative leader and resume their persistent objective without deadlocking on unavailable members.
+- After cohesion: tactical soldier face/equipment identity matching, then the dedicated Command Screen → AEGIS Operations Overview dashboard work.
+
+--- Previous patch ---
+
 v0.26.09.15.0904_TETROMINO_PROCEDURAL_BUILDING_FOOTPRINTS_PATCH
 
 Tetromino Procedural Building Footprints
@@ -8,7 +24,8 @@ Tetromino Procedural Building Footprints
 - Save format remains 4. IndexedDB durable save storage from Browser 0745 remains in place.
 
 Next roadmap candidate
-- Match tactical battle-model faces/equipment markings to soldier identity, unless field acceptance exposes a tetromino-building regression first.
+- **New field regression to investigate first:** connective wall/seam segments appear to have stopped generating consistently again, leaving intact procedural facades reading as disconnected wall pieces. Audit the 0137/1855/1410/1448/1532/1610 continuity chain against Browser 0904 tetromino footprint authority in both Three.js render paths; preserve doors, revealed breaches, windows and concave footprint recesses. Full acceptance criteria are in the canonical roadmap section **Procedural Building Connective Wall Segment Regression Investigation**.
+- Match tactical battle-model faces/equipment markings to soldier identity after any wall-continuity regression is resolved.
 - Command Screen AEGIS Operations Overview remains recorded as a later dedicated UI/dashboard patch.
 
 --- Previous patch ---
@@ -301,3 +318,9 @@ Optional tactical fields now include `bleeding`, `stabilized`, `bleedOutRounds`,
 5. AI prioritizes urgent bleeding casualty and prefers adjacent Medic.
 6. Save/reload active bleeding/stabilized cases with no reset/double tick.
 7. Regress Phase 1 dragging/all-down, Beacon effects, PWA, Mobile HUD, building seams, save format 4.
+## Roadmap intake — September 15, 2026: Post-contact fire-team cohesion
+
+- Planned only: after an alien firefight ends, autonomous soldiers should rebuild their assigned fire-team formation around the leader before resuming the team's authoritative objective instead of peeling off as independent agents.
+- Recovery must be bounded and may not deadlock on a downed, dead, extracted or unreachable member. Preserve Beacon Assault forward-reform, VIP/casualty exceptions, persistent player assignments and save format 4.
+- See the canonical roadmap/game bible section **Post-Contact Fire-Team Reassembly and Mission Continuation** for full acceptance criteria.
+

@@ -1,3 +1,16 @@
+PROJECT AEGIS — BROWSER 1050 PATCH NOTES
+Build: v0.26.09.15.1050_PROCEDURAL_BUILDING_WALL_CONTINUITY_HOTFIX_PATCH
+Save format: 4
+
+Procedural Building Wall Continuity Hotfix
+- Fixes the wall-gap regression reported on Browser 0904 tetromino procedural buildings. Explicit perimeter seams now use the same four-way/cardinal adjacency as the authoritative building footprint instead of inheriting the generic six-way tactical-neighbor graph.
+- Intact discovered wall cells at facade turns receive a full-height perpendicular presentation return so the turn renders as two connected wall faces instead of a pillar-like fragment.
+- Doors, window apertures, revealed breaches/destroyed cells and outdoor tetromino recesses remain open. The new return is presentation-only; collision/pathfinding, cover, structural HP, LOS, targeting and breach traversal continue to use existing structural-cover authority.
+- Both persistent and fallback Three.js renderers use the same seam/turn helpers and expose diagnostic counts for field verification. Browser 0904 tetromino footprints, legacy rectangular in-progress save handling and Browser 0745 IndexedDB durable saves remain intact.
+- Added focused wall-continuity regression coverage and a live field-acceptance checklist. Save format remains 4.
+
+--- Previous patch notes ---
+
 BUILD: v0.26.09.15.0904_TETROMINO_PROCEDURAL_BUILDING_FOOTPRINTS_PATCH
 
 Tetromino Procedural Building Footprints

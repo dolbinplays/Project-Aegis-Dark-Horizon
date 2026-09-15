@@ -1,3 +1,17 @@
+PROJECT AEGIS — BROWSER 1050 VALIDATION SUMMARY
+Build: v0.26.09.15.1050_PROCEDURAL_BUILDING_WALL_CONTINUITY_HOTFIX_PATCH
+Save format: 4
+
+- Focused local Node coverage available in this patch workspace passed 17/17 tests across the existing tetromino-footprint suite (7), existing IndexedDB save-storage suite (5), and the new procedural-building wall-continuity suite (5).
+- The new 5-test wall-continuity suite exercises all seven tetromino families through all four rotations, verifies intact wall turns receive perpendicular corner-return records, confirms doors/window apertures/revealed breaches remain excluded, requires explicit seams to stay on authoritative four-way footprint adjacency, and checks both Three.js renderer paths integrate the same return helper/diagnostics.
+- Canonical browser-runtime embedded JavaScript passed `node --check` for all 5 executable inline script blocks. The service worker and generated host executable JavaScript also passed syntax validation.
+- Packaged build-seam validation passed: `index.html` embeds byte-for-byte canonical `src/browser-runtime.html`; embedded byte count/SHA-256, `release-metadata.json`, host SHA-256, service-worker cache build, runtime build, manifest current/inspected/browser-parity builds and save format 4 all agree on Browser 1050.
+- Scope audit against Browser 0904 shows the runtime change is limited to the build ID/history entry, four-way explicit perimeter seam adjacency, the new facade-turn/corner-return helper, and matching calls in both Three.js renderers. Gameplay structural-cover authority is unchanged.
+- The full repository-wide Node/smoke/mobile suite was not available in this minimal patch workspace, so this validation does **not** claim a new full-suite count. Browser 0904 previously passed its full 106/106 Node suite, six tactical smoke scripts and 9/9 focused Mobile/PWA regressions; Browser 1050 retains focused regression coverage for the systems modified here.
+- Live field acceptance remains required because this environment cannot visually judge an actual generated tactical facade. Use `PROCEDURAL_BUILDING_WALL_CONTINUITY_FIELD_ACCEPTANCE.txt` to inspect straight runs, convex/concave turns, doors/windows/breaches, renderer/view changes, save/reload and movement/LOS agreement.
+
+--- Previous patch validation ---
+
 PROJECT AEGIS — BROWSER 0904 VALIDATION SUMMARY
 Build: v0.26.09.15.0904_TETROMINO_PROCEDURAL_BUILDING_FOOTPRINTS_PATCH
 Save format: 4

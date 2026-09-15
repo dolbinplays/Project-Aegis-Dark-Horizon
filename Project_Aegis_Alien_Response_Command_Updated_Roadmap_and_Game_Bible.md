@@ -1,8 +1,24 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.15.0904_TETROMINO_PROCEDURAL_BUILDING_FOOTPRINTS_PATCH`
+Current browser build: `v0.26.09.15.1050_PROCEDURAL_BUILDING_WALL_CONTINUITY_HOTFIX_PATCH`
 
 Current save format: `4`
+
+## Procedural Building Wall Continuity Hotfix — Implemented in Browser 1050
+
+**Reported September 15, 2026. Status: implemented in Browser 1050; live field acceptance remains required.**
+
+- The Browser 0904 tetromino rollout exposed a presentation regression in the procedural-building wall continuity chain: building footprint authority is now explicitly four-way/cardinal, while the older explicit seam pass still inherited the six-way tactical hex-neighbor graph, and a perimeter cell where a facade turned could still render only one wall orientation. The result could make intact T/L/J/S/Z structures read as disconnected wall pieces or pillar-like turns even though the underlying structural cover remained present.
+- **Explicit perimeter seam ownership now follows the same authoritative four-way footprint adjacency used by procedural building generation.** This keeps seam bridges on valid neighboring footprint cells and prevents a connector from claiming a hex-only diagonal across an outdoor tetromino recess.
+- Add a **full-height perpendicular corner return** wherever an intact discovered wall cell exposes both a horizontal and vertical facade direction. The normal wall face still renders through the established facade-orientation path; the return supplies the second face needed at the turn so the corner presents as a continuous wall rather than a thin isolated segment.
+- Corner returns are deliberately presentation-only and are generated only for intact `buildingPart: wall` records. **Doors, window apertures, revealed breaches/destroyed cells and outdoor tetromino recesses remain open.** The hotfix does not invent structural occupancy in those cells.
+- Both tactical Three.js presentation paths—the fallback renderer and persistent renderer—build the same authoritative perimeter seams and corner returns. Both expose a corner-return diagnostic count for field verification.
+- Gameplay authority remains unchanged: collision, movement/pathfinding, hard cover, structural HP, LOS, targeting and breach traversal continue to use the existing structural cover records. This patch repairs presentation continuity rather than masking a missing gameplay blocker.
+- Browser 0904 I/O/T/L/J/S/Z footprint authority, legacy rectangular in-progress tactical-save handling and Browser 0745 durable IndexedDB campaign saves remain intact. Save format remains 4.
+- Focused automated coverage now exercises all seven tetromino families through all four rotations, verifies every intact wall turn receives a return, confirms doors/windows/breaches do not, and checks explicit seams remain on cardinal footprint adjacency. Existing tetromino-footprint and IndexedDB save tests are retained.
+- **Acceptance:** generate/load rectangular O plus representative T/L/J/S/Z structures; discover them and inspect straight runs, convex and concave turns in 3D Iso/FPV/TPV; confirm intentional windows/doors/revealed breaches remain open; breach a wall and verify the local presentation updates; save/reload; switch renderer/view modes; and walk/path/trace LOS along the repaired perimeter to confirm presentation still matches the underlying structural authority.
+
+The previously planned wall-continuity regression investigation is satisfied by Browser 1050. If field testing still finds a specific gap, capture the building family/rotation and camera view so the remaining seam can be reduced to an exact footprint edge rather than reopening the older global connector behavior.
 
 ## Tetromino Procedural Building Footprints — Implemented in Browser 0904
 
@@ -46,7 +62,24 @@ Save format remains 4. Native Godot parity remains a separate engine-port task.
 - Keep the screen readable and command-oriented: prioritize current operational posture, readiness, capacity and exceptions over decorative detail. Detailed histories, full rosters and long logs remain in their existing dedicated screens.
 - **Acceptance:** compare every personnel subtotal and readiness count against its source screen in a mature multi-base campaign; verify changes after deployment, return, injury/recovery, transfer, recruitment, KIA, aircraft repair/refuel/travel, incident creation/resolution and save/reload. Confirm every clickable summary routes to the correct detailed screen, Mobile · Adaptive remains usable in portrait and short landscape, and no dashboard widget maintains a second independent copy of campaign state.
 
-This Command-screen item remains roadmap-only; Browser 0904 does not implement it. Save format remains 4.
+This Command-screen item remains roadmap-only; Browser 1050 does not implement it. Save format remains 4.
+
+## Roadmap Addition — Post-Contact Fire-Team Reassembly and Mission Continuation
+
+**Requested September 15, 2026. Status: planned, not implemented.**
+
+- Re-establish strong **fire-team cohesion after alien contact ends**. During an active firefight, soldiers may legitimately spread for cover, firing positions, casualty response or other higher-priority tactical needs; once the immediate contact is resolved and no higher-priority danger is holding them apart, autonomous soldiers should stop behaving like independent agents and begin rebuilding their assigned fire team.
+- Use the **fire-team leader as the normal post-contact movement anchor**. Supporting soldiers should route back toward their authoritative formation slots around that leader instead of independently choosing unrelated search, rescue, beacon, cover or exploration destinations while formation recovery is active.
+- Treat formation recovery as a bounded transition, not a permanent hold. The team should regroup to a practical cohesion tolerance and then resume its authoritative mission objective — for example Default Search, a persistent VIP/rescue assignment, a Beacon objective, Last Known Contact pursuit or another player-authored assignment — without requiring the player to toggle AI modes or reissue the objective.
+- Preserve legitimate exceptions already established elsewhere in the tactical AI. Active Beacon Assault may continue to use its forward-reform/breacher behavior; VIP escort and casualty recovery may temporarily distort the formation; panicked, downed, extracted or otherwise unavailable members must not deadlock the rest of the team.
+- Add a **degraded-cohesion fallback** for an unreachable or badly separated member. After bounded route retries / regroup time, the reachable majority should reform around the leader and continue the mission rather than waiting indefinitely for one soldier who cannot legally reach a slot. The separated member should continue trying to rejoin when safe.
+- Do not force an artificial snap-to-formation while aliens are still an immediate threat. Visible enemies, valid combat-search authority, urgent casualty treatment, direct player orders and other higher-priority tactical states continue to outrank ordinary reassembly. The fix should address the quiet period **after** the fight, when soldiers currently appear to peel away in different directions.
+- Keep the team assignment itself authoritative across the transition. Post-contact regrouping must not silently rewrite fire-team membership, persistent objective ownership or player-authored assignments. If a member was legitimately reassigned by an existing reassignment/absorption rule, recover toward the new authoritative team instead.
+- Persist enough recovery state through save/reload and streamed playback that loading during or immediately after a firefight does not cause members to forget the regroup phase or branch into unrelated individual objectives. Avoid introducing a new save-format version unless truly required.
+- Expose concise diagnostics where existing AI-status UI supports them, such as **`ALPHA — REFORMING: 2/3 in formation`**, **`ALPHA — REFORMING: waiting on support`** or **`ALPHA — REFORMED → RESUMING VIP APPROACH`**, using only information already known to the player/AI mode.
+- **Acceptance:** in several seeded missions, let a three- or four-soldier fire team disperse naturally during combat, then eliminate or lose contact with the immediate threat. Verify the team reforms around its leader before continuing, supports do not wander onto unrelated objectives, and the original persistent/default objective resumes automatically. Repeat with a wounded member, one unreachable member, a member killed during the fight, active VIP and Beacon assignments, Last Known Contact pursuit, save/reload during regroup, and Hybrid/Simulation control. Confirm no regression to Browser 1919 Beacon forward-reform behavior, VIP rescue resumption, casualty handling, or save format 4.
+
+This item is roadmap-only; Browser 1050 does not implement it. Save format remains 4.
 
 ## 1–7 Hex Statues and Fountains — Implemented in Browser 2320
 

@@ -1,0 +1,39 @@
+PROJECT AEGIS — PROCEDURAL BUILDING WALL CONTINUITY FIELD ACCEPTANCE
+Build: v0.26.09.15.1050_PROCEDURAL_BUILDING_WALL_CONTINUITY_HOTFIX_PATCH
+Save format: 4
+
+Purpose
+Confirm the Browser 1050 presentation hotfix restores continuous intact procedural building walls after the Browser 0904 tetromino rollout without closing intentional openings or changing gameplay authority.
+
+1. Generate representative buildings
+- Start several fresh tactical maps until you can inspect a rectangular/O building and representative T, L/J, S/Z shapes.
+- Include at least one shape with a clearly visible concave outdoor recess.
+- Discover the complete building perimeter before judging continuity; hidden building shell rules should remain unchanged.
+
+2. Inspect continuous intact walls
+- In 3D Iso, inspect long straight wall runs from near and oblique angles.
+- Inspect every visible footprint turn. A turn should read as two connected wall faces, not a thin pillar, isolated panel, or open vertical slit.
+- Repeat in FPV and TPV where the facade is visible.
+- If the fallback renderer can be selected/triggered in the current build, compare it with the persistent renderer. Both should present the same wall continuity.
+
+3. Preserve intentional openings
+- Doors must remain open and traversable.
+- Window apertures must remain visibly open; the hotfix must not add a solid corner return to a window cell.
+- Concave T/L/J/S/Z outdoor recess cells must remain outdoor/traversable rather than being bridged by a diagonal seam.
+- Reveal or create a breach. The breached cell must remain open and must not retain a full-height corner return.
+
+4. Verify gameplay authority still matches presentation
+- Route a soldier beside and around intact wall turns; they must not walk through intact structural wall cells.
+- Check LOS across an intact solid wall/turn and through a legitimate window/door/breach.
+- Confirm cover/targeting behavior still follows the structural cover state rather than the presentation-only return mesh.
+
+5. Save/reload and renderer/view changes
+- Save during a shaped tactical mission, reload it, and reinspect the same wall turns and openings.
+- Switch among 3D Iso/FPV/TPV and any available renderer/performance mode. Wall continuity should not require an unrelated camera or cover-state change to appear.
+- Restore a pre-0904 in-progress rectangular tactical save if available; its legacy rectangular geometry should remain unchanged.
+
+6. Regression reporting
+If any gap remains, record the mission name/seed if visible, building family/rotation if known, exact view (3D Iso/FPV/TPV), and whether the gap is on a straight run, convex turn, concave turn, window, door, or breach. A screenshot from an oblique angle is especially useful.
+
+Pass condition
+Intact discovered facades read as continuous walls on both renderer paths, intentional openings/recesses stay open, save/reload preserves the same result, and movement/LOS/cover authority agrees with the structural building state.
