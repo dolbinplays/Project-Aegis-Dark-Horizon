@@ -1,3 +1,16 @@
+PROJECT AEGIS — BROWSER 1230 PATCH NOTES
+Build: v0.26.09.15.1230_PROCEDURAL_BUILDING_MICRO_GAP_CLOSURE_HOTFIX_PATCH
+Save format: 4
+
+Procedural Building Micro-Gap Closure Hotfix
+- Follow-up to Browser 1050 after field testing showed the main wall-continuity regression was fixed but a few narrow cracks remained at staggered-row seams and wall turns.
+- Explicit perimeter infill now measures the actual rendered EW/NS facade half-extents projected onto each world-space seam. This removes the fixed-span assumption that could under-fill a diagonal hex-row join by a few hundredths of a world unit.
+- Seam infill receives a small controlled overlap and slightly more thickness so perspective/camera-angle precision cannot expose a hairline crack. The overlap is local to valid intact perimeter pairs; doors, revealed breaches, destroyed cells and outdoor tetromino recesses remain open.
+- Perpendicular corner returns receive a modest length/thickness overlap so their ends meet adjacent seam geometry cleanly without becoming gameplay blockers.
+- Both Three.js tactical renderers share the same helpers. Collision, pathfinding, LOS, cover, structural HP, targeting and breach authority remain unchanged. Save format remains 4.
+
+--- Previous patch notes ---
+
 PROJECT AEGIS — BROWSER 1050 PATCH NOTES
 Build: v0.26.09.15.1050_PROCEDURAL_BUILDING_WALL_CONTINUITY_HOTFIX_PATCH
 Save format: 4

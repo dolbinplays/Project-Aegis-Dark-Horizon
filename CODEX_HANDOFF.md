@@ -1,3 +1,19 @@
+v0.26.09.15.1230_PROCEDURAL_BUILDING_MICRO_GAP_CLOSURE_HOTFIX_PATCH
+
+Procedural Building Micro-Gap Closure Hotfix
+- Field follow-up to Browser 1050: broad wall continuity is now much better, but the supplied screenshot still shows a few hairline cracks at intact facade joins.
+- Root cause addressed here is geometric rather than structural: staggered hex rows make some cardinal footprint neighbors diagonal in world space, so a fixed assumed facade contribution can leave a tiny uncovered interval depending on whether the endpoint wall is EW or NS.
+- `tacticalThreeFacadeProjectedHalfSpan(...)` projects the actual rendered facade half-extents onto the seam vector. `tacticalThreePerimeterSeamInfillScale(...)` fills only the remaining interval plus a controlled 0.12-unit overlap.
+- Corner-return presentation gains a modest overlap as well. Doors, window apertures, revealed breaches/destroyed cells and outdoor tetromino recesses remain intentionally open.
+- The change is presentation-only and shared by fallback/persistent Three.js. Preserve structural-cover authority, Browser 1050 four-way seam ownership, Browser 0904 tetromino footprints, Browser 0745 IndexedDB saves and save format 4.
+- Focused regression remains `tools/test-procedural-building-wall-continuity.cjs`; its new projection-aware case covers the staggered-row micro-gap.
+
+Next roadmap candidate
+- **Post-Contact Fire-Team Reassembly and Mission Continuation** remains the next recommended behavior patch once this visual follow-up is field accepted.
+- After cohesion: tactical soldier face/equipment identity matching, then Command Screen → AEGIS Operations Overview.
+
+--- Previous patch ---
+
 v0.26.09.15.1050_PROCEDURAL_BUILDING_WALL_CONTINUITY_HOTFIX_PATCH
 
 Procedural Building Wall Continuity Hotfix

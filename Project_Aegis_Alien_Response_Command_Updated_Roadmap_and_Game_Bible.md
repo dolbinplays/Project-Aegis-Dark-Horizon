@@ -1,8 +1,20 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.15.1050_PROCEDURAL_BUILDING_WALL_CONTINUITY_HOTFIX_PATCH`
+Current browser build: `v0.26.09.15.1230_PROCEDURAL_BUILDING_MICRO_GAP_CLOSURE_HOTFIX_PATCH`
 
 Current save format: `4`
+
+## Procedural Building Micro-Gap Closure Hotfix — Implemented in Browser 1230
+
+**Reported September 15, 2026. Status: implemented in Browser 1230; live field acceptance remains required.**
+
+- Browser 1050 substantially restored procedural-building wall continuity, but field inspection still showed a few **hairline cracks** at intact joins. The remaining issue is presentation geometry on the staggered tactical hex lattice rather than missing structural covers.
+- A cardinal footprint neighbor one row north/south is diagonally offset in Three.js world space. The older seam filler assumed a fixed amount of rendered wall occupied that diagonal, which could under-estimate the exposed interval when an EW facade met a staggered-row seam.
+- Browser 1230 projects each endpoint facade's actual rendered half-extents onto the world-space seam vector before sizing the infill. The filler covers only the true uncovered distance plus a small controlled overlap, removing camera-visible micro-gaps without globally enlarging buildings.
+- Perpendicular corner returns receive a modest length/thickness overlap so convex/concave turns meet their adjacent seams cleanly. This remains presentation-only.
+- **Intentional openings remain authoritative:** door cells, revealed breaches/destroyed cells and outdoor tetromino recesses never enter the seam-pair pass. Window apertures remain within their window cell; the overlap affects only the narrow join between facade cells.
+- Collision, movement/pathfinding, cover, structural HP, LOS, targeting, breaching, building footprints and save data are unchanged. Both Three.js renderer paths share the same helper. Save format remains 4.
+- **Acceptance:** revisit structures showing the circled cracks from the field screenshot; orbit/zoom in 3D Iso and inspect FPV/TPV; verify the cracks are closed while doors/windows/revealed breaches remain visibly open. Repeat across at least T/L/J/S/Z turns, save/reload and renderer switching.
 
 ## Procedural Building Wall Continuity Hotfix — Implemented in Browser 1050
 

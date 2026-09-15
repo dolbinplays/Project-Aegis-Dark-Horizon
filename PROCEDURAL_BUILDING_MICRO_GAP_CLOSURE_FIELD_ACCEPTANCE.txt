@@ -1,0 +1,11 @@
+PROJECT AEGIS — BROWSER 1230 MICRO-GAP CLOSURE FIELD ACCEPTANCE
+Build: v0.26.09.15.1230_PROCEDURAL_BUILDING_MICRO_GAP_CLOSURE_HOTFIX_PATCH
+Save format: 4
+
+1. Revisit a generated tetromino building that showed the small cracks visible after Browser 1050.
+2. In 3D Iso, inspect straight wall/window joins and convex/concave turns from several camera angles and zoom levels. Hairline sky/ground slits should no longer be visible between intact pieces.
+3. Switch to FPV and TPV and inspect the same joins. The presentation should stay closed without oversized overlapping slabs.
+4. Confirm intentional door openings, window apertures, revealed breaches/destroyed cells and open T/L/J/S/Z recesses remain open.
+5. Breach one intact wall and confirm the local presentation opens rather than retaining a micro-gap filler across the breach.
+6. Save/reload the tactical mission and switch render quality/renderer paths if available. The same building footprint and repaired joins should remain stable.
+7. Confirm movement, pathfinding, LOS, cover and targeting match Browser 1050; this hotfix must not create new gameplay collision.

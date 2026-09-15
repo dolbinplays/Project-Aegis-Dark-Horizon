@@ -67,10 +67,10 @@ const wallContext=vm.createContext({
     return{building:activePlan,perimeter:perimeterKeys(activePlan).has(key(x,y)),door:doorKeys(activePlan).has(key(x,y))};
   },
 });
-for(const name of ['tacticalBuildingFacadeExposure','tacticalThreeExteriorFacadePair','tacticalThreeBuildingPerimeterSeamPairs','tacticalThreeBuildingCornerClosureRecords']){
+for(const name of ['tacticalBuildingFacadeExposure','tacticalThreeExteriorFacadePair','tacticalThreeBuildingPerimeterSeamPairs','tacticalThreeFacadeProjectedHalfSpan','tacticalThreePerimeterSeamInfillScale','tacticalThreeBuildingCornerClosureRecords']){
   vm.runInContext(functionSource(name),wallContext);
 }
-const wallApi=vm.runInContext(`({tacticalBuildingFacadeExposure,tacticalThreeBuildingPerimeterSeamPairs,tacticalThreeBuildingCornerClosureRecords})`,wallContext);
+const wallApi=vm.runInContext(`({tacticalBuildingFacadeExposure,tacticalThreeBuildingPerimeterSeamPairs,tacticalThreeFacadeProjectedHalfSpan,tacticalThreePerimeterSeamInfillScale,tacticalThreeBuildingCornerClosureRecords})`,wallContext);
 
 function fixture(family,rotation=0){
   const plan={id:`qa-${family}-${rotation}`,key:'records',x:10,y:10,width:12,height:9,shapeFamily:family,shapeRotation:rotation};
@@ -143,9 +143,10 @@ test('explicit wall seams follow authoritative four-way footprint adjacency inst
 
 test('corner-return renderer creates a full-height perpendicular wall, not a decorative pillar',()=>{
   const buildSource=functionSource('tacticalThreeBuildCornerClosures');
-  assert.match(buildSource,/returnWall\.scale\.set\(1\.2,\s*3\.15,\s*0\.9\)/);
+  assert.match(buildSource,/returnWall\.scale\.set\(1\.42,\s*3\.18,\s*0\.94\)/);
   assert.match(buildSource,/returnWall\.rotation\.y\s*=\s*Math\.PI\s*\/\s*2/);
   assert.match(buildSource,/aegisBuildingCornerReturn\s*=\s*true/);
+  assert.match(buildSource,/aegisBuildingCornerMicroGapOverlap\s*=\s*true/);
 });
 
 test('fallback and persistent Three.js renderers both build and report footprint corner returns',()=>{
@@ -153,4 +154,38 @@ test('fallback and persistent Three.js renderers both build and report footprint
   assert.ok((source.match(/aegisBuildingCornerClosureCount/g)||[]).length>=2,'both renderer datasets');
   assert.ok(source.includes('PROCEDURAL_BUILDING_TETROMINO_CORNER_CLOSURE_HOTFIX = true'));
   assert.ok(source.includes('CURRENT_SAVE_FORMAT_VERSION=4'));
+});
+
+
+test('projection-aware perimeter seam infill overlaps staggered-row facade endpoints without global wall inflation',()=>{
+  const a={visual:'building-wall-brick-ew'},b={visual:'building-window-brick-ew'},vertical={visual:'building-wall-brick-ns'};
+  const dx=Math.sqrt(3)*0.5,dz=Math.sqrt(3)*0.755,distance=Math.hypot(dx,dz);
+  const ew=wallApi.tacticalThreeFacadeProjectedHalfSpan(a,dx,dz),ns=wallApi.tacticalThreeFacadeProjectedHalfSpan(vertical,dx,dz);
+  assert.ok(Math.abs(ew-ns)>0.02,'orientation changes projected endpoint coverage');
+  const scale=wallApi.tacticalThreePerimeterSeamInfillScale(distance,a,b,dx,dz);
+  const filledLength=scale*0.92;
+  assert.ok(filledLength>Math.max(0,distance-ew-wallApi.tacticalThreeFacadeProjectedHalfSpan(b,-dx,-dz)),'controlled overlap exceeds exact uncovered span');
+  assert.ok(filledLength<distance,'micro-gap infill stays local to the seam rather than replacing the wall run');
+  const buildSource=functionSource('tacticalThreeBuildExplicitPerimeterSeams');
+  assert.match(buildSource,/tacticalThreePerimeterSeamInfillScale\(distance, seam\.a, seam\.b, dx, dz\)/);
+  assert.match(buildSource,/aegisBuildingPerimeterMicroGapClosure\s*=\s*true/);
+});
+
+test('projection-aware seam coverage closes every generated tetromino perimeter pair through all rotations',()=>{
+  const WORLD_X=Math.sqrt(3),WORLD_Z=Math.sqrt(3)*0.755;
+  const world=(x,y)=>({x:(x+(Math.abs(y)%2?0.5:0))*WORLD_X,z:y*WORLD_Z});
+  for(const family of families)for(let rotation=0;rotation<4;rotation++){
+    const plan=fixture(family,rotation);activePlan=plan;
+    const covers=presentationCovers(plan);
+    const seams=wallApi.tacticalThreeBuildingPerimeterSeamPairs({mission:{},presentationCovers:covers,discoveredBuildingIds:new Set([plan.id])});
+    assert.ok(seams.length>0,`${family} rotation ${rotation} has perimeter seams`);
+    for(const seam of seams){
+      const aw=world(seam.a.x,seam.a.y),bw=world(seam.b.x,seam.b.y),dx=bw.x-aw.x,dz=bw.z-aw.z,distance=Math.hypot(dx,dz);
+      const spanA=wallApi.tacticalThreeFacadeProjectedHalfSpan(seam.a,dx,dz),spanB=wallApi.tacticalThreeFacadeProjectedHalfSpan(seam.b,-dx,-dz);
+      const exactGap=Math.max(0,distance-spanA-spanB);
+      const fill=wallApi.tacticalThreePerimeterSeamInfillScale(distance,seam.a,seam.b,dx,dz)*0.92;
+      assert.ok(fill+1e-9>=exactGap,`${family} rotation ${rotation} ${key(seam.a.x,seam.a.y)}→${key(seam.b.x,seam.b.y)} covers geometric gap`);
+      if(exactGap>0.02)assert.ok(fill>=exactGap+0.10,`${family} rotation ${rotation} seam keeps overlap margin`);
+    }
+  }
 });

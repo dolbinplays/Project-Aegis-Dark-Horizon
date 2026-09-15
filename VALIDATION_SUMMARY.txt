@@ -1,3 +1,17 @@
+PROJECT AEGIS — BROWSER 1230 VALIDATION SUMMARY
+Build: v0.26.09.15.1230_PROCEDURAL_BUILDING_MICRO_GAP_CLOSURE_HOTFIX_PATCH
+Save format: 4
+
+- Focused Node regression coverage passed 19/19 tests: 7 procedural-building wall/micro-gap tests, 7 tetromino-footprint tests, and 5 IndexedDB-save tests.
+- The new wall tests exercise all seven I/O/T/L/J/S/Z families through all four rotations and verify every explicit perimeter pair has enough projection-aware infill to cover its computed world-space gap with a controlled overlap margin.
+- Door cells, window apertures, revealed breaches/destroyed cells and outdoor tetromino recesses remain excluded from corner-return/seam-closing authority as intended.
+- JavaScript syntax checks passed for all inline browser-runtime scripts, the generated host bootstrap, and service-worker.js.
+- Generated host verification confirmed the embedded runtime payload is byte-for-byte identical to src/browser-runtime.html and that runtime_bytes, runtime_sha256 and host_sha256 match release-metadata.json.
+- Save format remains 4. Browser 1050 cardinal seam ownership, Browser 0904 tetromino footprints and Browser 0745 IndexedDB durable saves remain present.
+- Live field acceptance is still required for the exact camera-visible micro-gaps from the supplied screenshot; use PROCEDURAL_BUILDING_MICRO_GAP_CLOSURE_FIELD_ACCEPTANCE.txt.
+
+--- Previous validation summary ---
+
 PROJECT AEGIS — BROWSER 1050 VALIDATION SUMMARY
 Build: v0.26.09.15.1050_PROCEDURAL_BUILDING_WALL_CONTINUITY_HOTFIX_PATCH
 Save format: 4

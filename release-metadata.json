@@ -1,8 +1,8 @@
 {
-  "build": "v0.26.09.15.1050_PROCEDURAL_BUILDING_WALL_CONTINUITY_HOTFIX_PATCH",
-  "package_filename": "Project_Aegis_v0.26.09.15.1050_PROCEDURAL_BUILDING_WALL_CONTINUITY_HOTFIX_PATCH.zip",
+  "build": "v0.26.09.15.1230_PROCEDURAL_BUILDING_MICRO_GAP_CLOSURE_HOTFIX_PATCH",
+  "package_filename": "Project_Aegis_v0.26.09.15.1230_PROCEDURAL_BUILDING_MICRO_GAP_CLOSURE_HOTFIX_PATCH.zip",
   "save_format": 4,
-  "runtime_bytes": 7178320,
-  "runtime_sha256": "19f1128d0e9e534aef117b2c849fb73e88d382bc99b79df2ff2d529d9f51d7b2",
-  "host_sha256": "ab9e1f581d7bdbc1c200b06c0de6b970bbb3fa7d182c64d968a6057e79fad5e0"
+  "runtime_bytes": 7183283,
+  "runtime_sha256": "7aca1742b9f2f2a6ba2672dd214b9ac792c2e58819f0780fc780ce45dc8e658b",
+  "host_sha256": "41e4a14f0d70e4c1e3485f87d55fe53610ffba36478556f6ccd5750f7801118e"
 }
