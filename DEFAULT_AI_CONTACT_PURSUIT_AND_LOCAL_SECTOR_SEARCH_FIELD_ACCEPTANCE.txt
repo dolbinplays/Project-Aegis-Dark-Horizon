@@ -1,0 +1,35 @@
+PROJECT AEGIS — DEFAULT AI CONTACT PURSUIT AND LOCAL SECTOR SEARCH FIELD ACCEPTANCE
+Build: v0.26.09.15.1525_DEFAULT_AI_CONTACT_PURSUIT_AND_LOCAL_SECTOR_SEARCH_HOTFIX
+Save format: 4
+
+Primary supplied-save fixture
+1. Load Post-Mission-Autosave-Alien-Abduction-Site_slot_4_v0_26_09_15_1426_2026-09-15T21-57-59.project-aegis-save.json.
+2. Send both available squads (Anaconda Squad and Bear Squad) to Alien Abduction Site — North America — Threat 2 — Tide Horror — Reward $520k — Panic if ignored +20.
+3. Use Default AI Doctrine for the participating fire teams.
+
+Expected local-search behavior
+- Farah Vale / Echo Fire Team must not choose a remote northwest edge sector merely because it has a lower sector number.
+- Before a reliable alien contact exists, each fire team should retain a deconflicted search partition but start with the nearest valid assigned sector to its current leader.
+- Search targets must remain inside playable tactical bounds and must advance normally as sectors are explored.
+- Multiple fire teams should not collapse onto the same initial sweep target unless the existing fallback logic intentionally releases partitioning because no assigned cells remain.
+
+Expected live-contact behavior
+- When a Default AI soldier personally spots an alien while still outside the soldier's preferred ranged engagement band, the soldier should make legal progress toward that alien rather than choosing an unrelated lateral/search movement.
+- The approach should stop once the preferred ranged engagement band is reached. From that point, existing cover, ranged standoff, line-of-sight, formation and role-spacing logic may choose lateral movement or a hold.
+- A soldier who acquires personal sight during the first movement leg should use the same bounded approach on the allowed reassessment/extension leg.
+
+Higher-priority behavior that must remain intact
+- Explicit player/hybrid fire-team movement orders.
+- Active VIP/civilian escort or casualty responsibilities.
+- Last Known Contact investigation and stale-contact clearing.
+- Alien Field Beacon assault/traffic authority.
+- Covered firing holds and immediate valid shots.
+- Browser 1426 post-contact fire-team reassembly and leader succession.
+
+Regression checks
+- Let contact end after the teams have spread: the 1426 post-contact recovery latch should still reform the fire team before ordinary search/objective continuation.
+- Repeat with an original fire-team leader lost or unavailable; surviving leadership should retain recovery authority.
+- Save/reload during the campaign and verify no migration prompt or save-format change; format remains 4.
+
+Pass criteria
+The supplied mission no longer reproduces Farah/Echo's arbitrary northwest cross-map search, visible long-range contacts cause bounded direct closing movement under Default AI, normal ranged tactics resume at engagement distance, and no higher-priority tactical authority regresses.

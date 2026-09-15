@@ -1512,7 +1512,7 @@ function aegisTacticalViewportDimensions(mount,fallback={},layout=AEGIS_INTERFAC
 }
 // AEGIS_MOBILE_INTERFACE_END
 
-const CURRENT_GAME_BUILD="v0.26.09.15.1426_POST_CONTACT_FIRE_TEAM_REASSEMBLY_AND_LEADER_SUCCESSION_PATCH";
+const CURRENT_GAME_BUILD="v0.26.09.15.1525_DEFAULT_AI_CONTACT_PURSUIT_AND_LOCAL_SECTOR_SEARCH_HOTFIX";
 const BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH=true;
 const TACTICAL_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH=true;
 const TACTICAL_OBSERVED_BEACON_REINFORCEMENT_CINEMATIC_DURATION_MS=2300;
@@ -3061,7 +3061,8 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
         personalContacts = tacticalAiPersonallyObservedAliens(human, allUnits(), covers, mission);
         if (personalContacts.length) {
           target = personalContacts.sort((left, right) => tacticalDistance(left, human) - tacticalDistance(right, human) || String(left.id).localeCompare(String(right.id)))[0];
-          const engagePlan = tacticalAiMovePlan({ unit: human, target, covers, units: allUnits(), commander: fireTeamLeader, doctrine, role: human.aiRole, reserveTu: human.reserveTu, mission, targetKnown: true, visitedCells: human.aiMoveVisited || [], maxMoveSteps: TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS });
+          const contactApproachPlan=tacticalAiSpottedAlienApproachPlan({unit:human,target,covers,units:allUnits(),reserveTu:human.reserveTu,mission,maxMoveSteps:TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS});
+          const engagePlan = contactApproachPlan&&contactApproachPlan.steps>0?contactApproachPlan:tacticalAiMovePlan({ unit: human, target, covers, units: allUnits(), commander: fireTeamLeader, doctrine, role: human.aiRole, reserveTu: human.reserveTu, mission, targetKnown: true, visitedCells: human.aiMoveVisited || [], maxMoveSteps: TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS });
           applyMovementPlan(engagePlan, personalContacts, "extension");
         } else if (search.remembered && directPlan.arrivedAtReport) {
           const resolvedContactIds=tacticalResolveLastKnownAlienContactAt(allUnits(),search.target,initialRound+round-1,{observer:human,covers,mission});
@@ -3086,7 +3087,9 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
           }
         }
       } else {
-        const plan = playerCommandMove?tacticalFireTeamCommandMovePlan({unit:human,target:playerCommandTarget,covers,units:allUnits(),reserveTu:human.reserveTu,mission}):hybridFlankMove?tacticalHybridAggressiveFlankMovePlan({unit:human,leader:fireTeamLeader,target:hybridCombatTarget,formationTarget,covers,units:allUnits(),reserveTu:human.reserveTu,mission,maxMoveSteps:TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS}):formationMove?tacticalFireTeamFormationMovePlan({unit:human,target:formationTarget,covers,units:allUnits(),reserveTu:human.reserveTu,mission,maxMoveSteps:TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS}):beaconPerimeterPlan&&beaconPerimeterPlan.steps>0?beaconPerimeterPlan:beaconCloseAssaultMove?tacticalAlienBeaconCloseAssaultMovePlan({unit:human,beacon:activeBeacon,covers,units:allUnits(),reserveTu:human.reserveTu,mission,maxMoveSteps:TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS}):tacticalAiMovePlan({ unit: human, target, covers, units: allUnits(), commander: fireTeamLeader, doctrine, role: human.aiRole, reserveTu: human.reserveTu, mission, targetKnown: beaconStrikeMove || ufoBayInspectionMove || personalContacts.length > 0 || Boolean(search.known), visitedCells: human.aiMoveVisited || [], maxMoveSteps: TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS });
+        const defaultAiSpottedContactApproach=Boolean(fireTeamPriorityState.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.LIVE_COMBAT&&personalContacts.length>0&&target?.team==="alien"&&!postContactNeedsFormation&&!playerCommandMove&&!formationMove&&!beaconStrikeMove&&!ufoBayInspectionMove);
+        const spottedContactApproachPlan=defaultAiSpottedContactApproach?tacticalAiSpottedAlienApproachPlan({unit:human,target,covers,units:allUnits(),reserveTu:human.reserveTu,mission,maxMoveSteps:TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS}):null;
+        const plan = playerCommandMove?tacticalFireTeamCommandMovePlan({unit:human,target:playerCommandTarget,covers,units:allUnits(),reserveTu:human.reserveTu,mission}):hybridFlankMove?tacticalHybridAggressiveFlankMovePlan({unit:human,leader:fireTeamLeader,target:hybridCombatTarget,formationTarget,covers,units:allUnits(),reserveTu:human.reserveTu,mission,maxMoveSteps:TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS}):formationMove?tacticalFireTeamFormationMovePlan({unit:human,target:formationTarget,covers,units:allUnits(),reserveTu:human.reserveTu,mission,maxMoveSteps:TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS}):beaconPerimeterPlan&&beaconPerimeterPlan.steps>0?beaconPerimeterPlan:beaconCloseAssaultMove?tacticalAlienBeaconCloseAssaultMovePlan({unit:human,beacon:activeBeacon,covers,units:allUnits(),reserveTu:human.reserveTu,mission,maxMoveSteps:TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS}):spottedContactApproachPlan&&spottedContactApproachPlan.steps>0?spottedContactApproachPlan:tacticalAiMovePlan({ unit: human, target, covers, units: allUnits(), commander: fireTeamLeader, doctrine, role: human.aiRole, reserveTu: human.reserveTu, mission, targetKnown: beaconStrikeMove || ufoBayInspectionMove || personalContacts.length > 0 || Boolean(search.known), visitedCells: human.aiMoveVisited || [], maxMoveSteps: TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS });
         const beforeCommandDistance=playerCommandMove?tacticalDistance(human,playerCommandTarget):null;
         const movedForCommand=applyMovementPlan(plan);
         if(movedForCommand){
@@ -3095,7 +3098,8 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
           const extensionTarget=personalContacts.slice().sort((left,right)=>tacticalDistance(left,human)-tacticalDistance(right,human)||String(left.id).localeCompare(String(right.id)))[0]||target;
           const remainingSteps=Math.max(0,Math.floor((Math.max(0,Number(human.tu)||0)-Math.max(0,Number(human.reserveTu)||0))/4));
           if(extensionTarget&&remainingSteps>0){
-            const extensionPlan=playerCommandMove?tacticalFireTeamCommandMovePlan({unit:human,target:playerCommandTarget,covers,units:allUnits(),reserveTu:human.reserveTu,mission}):hybridFlankMove?tacticalHybridAggressiveFlankMovePlan({unit:human,leader:fireTeamLeader,target:hybridCombatTarget,formationTarget,covers,units:allUnits(),reserveTu:human.reserveTu,mission,maxMoveSteps:remainingSteps}):formationMove?tacticalFireTeamFormationMovePlan({unit:human,target:formationTarget,covers,units:allUnits(),reserveTu:human.reserveTu,mission,maxMoveSteps:remainingSteps}):beaconCloseAssaultMove&&personalContacts.length===0?tacticalAlienBeaconCloseAssaultMovePlan({unit:human,beacon:activeBeacon,covers,units:allUnits(),reserveTu:human.reserveTu,mission,maxMoveSteps:remainingSteps}):tacticalAiMovePlan({unit:human,target:extensionTarget,covers,units:allUnits(),commander:fireTeamLeader,doctrine,role:human.aiRole,reserveTu:human.reserveTu,mission,targetKnown:beaconStrikeMove||ufoBayInspectionMove||personalContacts.length>0||Boolean(search.known),visitedCells:human.aiMoveVisited||[],maxMoveSteps:remainingSteps});
+            const extensionContactApproach=fireTeamPriorityState.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.LIVE_COMBAT&&personalContacts.length>0&&extensionTarget?.team==="alien"?tacticalAiSpottedAlienApproachPlan({unit:human,target:extensionTarget,covers,units:allUnits(),reserveTu:human.reserveTu,mission,maxMoveSteps:remainingSteps}):null;
+            const extensionPlan=playerCommandMove?tacticalFireTeamCommandMovePlan({unit:human,target:playerCommandTarget,covers,units:allUnits(),reserveTu:human.reserveTu,mission}):hybridFlankMove?tacticalHybridAggressiveFlankMovePlan({unit:human,leader:fireTeamLeader,target:hybridCombatTarget,formationTarget,covers,units:allUnits(),reserveTu:human.reserveTu,mission,maxMoveSteps:remainingSteps}):formationMove?tacticalFireTeamFormationMovePlan({unit:human,target:formationTarget,covers,units:allUnits(),reserveTu:human.reserveTu,mission,maxMoveSteps:remainingSteps}):beaconCloseAssaultMove&&personalContacts.length===0?tacticalAlienBeaconCloseAssaultMovePlan({unit:human,beacon:activeBeacon,covers,units:allUnits(),reserveTu:human.reserveTu,mission,maxMoveSteps:remainingSteps}):extensionContactApproach&&extensionContactApproach.steps>0?extensionContactApproach:tacticalAiMovePlan({unit:human,target:extensionTarget,covers,units:allUnits(),commander:fireTeamLeader,doctrine,role:human.aiRole,reserveTu:human.reserveTu,mission,targetKnown:beaconStrikeMove||ufoBayInspectionMove||personalContacts.length>0||Boolean(search.known),visitedCells:human.aiMoveVisited||[],maxMoveSteps:remainingSteps});
             applyMovementPlan(extensionPlan,personalContacts.length?personalContacts:squadContacts,"extension");
           }
         }
@@ -6640,6 +6644,7 @@ function tacticalAiKnownAlienCraftSweepCells({covers=[],units=[],unit=null,missi
   if(wreck.some(cover=>cover.revealed))tacticalCrashedUfoBayApproachCells({covers:records,units,unitId:unit?.id,mission}).forEach(cell=>add(cell,"crashed-ufo-bay"));
   return cells;
 }
+const TACTICAL_DEFAULT_AI_CONTACT_PURSUIT_AND_LOCAL_SECTOR_SEARCH_HOTFIX=true;
 function tacticalAiAlienHuntTarget({unit,aliens=[],units=[],covers=[],mission=null,explored=[],round=1}={}){
   if(!unit)return null;
   const gridSize=tacticalGridSizeFrom(unit,aliens,units,covers,mission);
@@ -6668,9 +6673,14 @@ function tacticalAiAlienHuntTarget({unit,aliens=[],units=[],covers=[],mission=nu
   for(let y=2;y<gridSize-2;y+=1){for(let x=2;x<gridSize-2;x+=1){const key=tacticalKey(x,y);if(exploredKeys.has(key)||blocked.has(key))continue;const sectorX=Math.floor(x/sectorSize),sectorY=Math.floor(y/sectorSize),sector=sectorX+sectorY*sectorsAcross;if(sector%team.count!==team.slot)continue;if(!sectorCells.has(sector))sectorCells.set(sector,[]);sectorCells.get(sector).push({x,y,key,sector,sectorX,sectorY});}}
   if(!sectorCells.size&&team.count>1){for(let y=2;y<gridSize-2;y+=1){for(let x=2;x<gridSize-2;x+=1){const key=tacticalKey(x,y);if(exploredKeys.has(key)||blocked.has(key))continue;const sectorX=Math.floor(x/sectorSize),sectorY=Math.floor(y/sectorSize),sector=sectorX+sectorY*sectorsAcross;if(!sectorCells.has(sector))sectorCells.set(sector,[]);sectorCells.get(sector).push({x,y,key,sector,sectorX,sectorY});}}}
   if(sectorCells.size){
-    const ordered=[...sectorCells.entries()].sort(([left],[right])=>left-right);
+    // Keep each fire team inside its deconflicted sector partition, but start from the
+    // nearest assigned sector instead of always beginning at the lowest numeric sector.
+    // This prevents a newly deployed leader on the far side of a large map from
+    // marching toward a remote map edge before it has any contact to investigate.
+    const sectorCenter=candidates=>({x:(candidates[0].sectorX+.5)*sectorSize,y:(candidates[0].sectorY+.5)*sectorSize});
+    const ordered=[...sectorCells.entries()].sort(([left,leftCells],[right,rightCells])=>tacticalDistance(authority,sectorCenter(leftCells))-tacticalDistance(authority,sectorCenter(rightCells))||left-right);
     const [,candidates]=ordered[huntIndex%ordered.length];
-    const center={x:(candidates[0].sectorX+.5)*sectorSize,y:(candidates[0].sectorY+.5)*sectorSize};
+    const center=sectorCenter(candidates);
     const target=[...candidates].sort((left,right)=>tacticalDistance(left,center)-tacticalDistance(right,center)||tacticalAiCellTieValue(authority,left,currentRound)-tacticalAiCellTieValue(authority,right,currentRound)||left.key.localeCompare(right.key))[0];
     return{target:{x:target.x,y:target.y,id:`alien-hunt-sector:${target.key}`,team:"search",hp:1,alive:true},known:false,huntMode:"fog-sweep",huntTarget:{x:target.x,y:target.y},huntIndex,systematic:true,gridSource:"assigned-sector",sector:target.sector,searchAuthorityId:authority.id};
   }
@@ -6990,6 +7000,21 @@ function tacticalApplyFireTeamLeadershipContinuity({units=[],covers=[],mission=n
   return{units:working,events};
 }
 function tacticalResolveFearTeamTurnStart({units=[],covers=[],mission=null,round=1,team="human"}={}){let working=(units||[]).map(unit=>({...unit}));const events=[],actedIds=new Set(),movementTrails={};for(const candidate of working.filter(unit=>unit.team===team&&Number(unit.hp)>0&&unit.alive!==false)){const live=working.find(unit=>unit.id===candidate.id);const resolved=tacticalResolveFearTurnStart({unit:live,units:working,covers,mission,round});working=working.map(unit=>unit.id===live.id?resolved.unit:unit);if(resolved.event)events.push(tacticalFearEventText(resolved.event));const frightened=working.find(unit=>unit.id===live.id);if(frightened?.fearState!==TACTICAL_FEAR_STATES.override)continue;const plan=tacticalFearForcedMovePlan({unit:frightened,units:working,covers,mission});const path=Array.isArray(plan?.path)&&plan.path.length?plan.path:[{x:frightened.x,y:frightened.y}];const destination=path[path.length-1],commit=tacticalMovementCommitCellState(frightened,destination,covers,working,{requireAdjacent:false});const steps=Math.max(0,path.length-1);const moved=steps>0&&commit.ok;working=working.map(unit=>unit.id===frightened.id?{...unit,x:moved?destination.x:unit.x,y:moved?destination.y:unit.y,facing:moved?facingToward(unit,destination.x,destination.y):unit.facing,tu:0,kneeling:unit.fearForcedAction==="seek-cover"||unit.fearForcedAction==="freeze"?true:unit.kneeling,aiTurnAction:`fear-${unit.fearForcedAction||"freeze"}`,fearForcedRound:Math.max(1,Number(round)||1)}:unit);if(moved)movementTrails[frightened.id]=path.map(point=>({x:point.x,y:point.y}));actedIds.add(frightened.id);events.push(`${frightened.name||"Unit"} ${moved?`moves ${steps} hex${steps===1?"":"es"} under fear`:`freezes in place`} and loses the rest of the turn.`);}if(team==="human"){const continuity=tacticalApplyFireTeamLeadershipContinuity({units:working,covers,mission,round,actedIds});working=continuity.units;events.push(...continuity.events);}return{units:working,events,actedIds,movementTrails};}
+function tacticalAiSpottedAlienApproachPlan({unit=null,target=null,covers=[],units=[],reserveTu=14,mission=null,maxMoveSteps=TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS}={}){
+  if(!unit||!target||target.team!=="alien"||Number(target.hp)<=0||target.alive===false)return null;
+  const weaponRange=Math.max(1,tacticalAiWeaponEffectiveRange(unit));
+  const preferredMax=Math.max(2,Math.min(weaponRange,tacticalAiPreferredStandoffForRange(weaponRange)+5));
+  const originDistance=tacticalDistance(unit,target);
+  if(originDistance<=preferredMax)return null;
+  const direct=tacticalAiDirectContactPlan({unit,target,covers,units,reserveTu,mission,maxMoveSteps});
+  if(!direct||Math.max(0,Number(direct.steps)||0)<=0||!Array.isArray(direct.path)||direct.path.length<=1)return direct;
+  let stopIndex=direct.path.length-1;
+  for(let index=1;index<direct.path.length;index+=1){
+    if(tacticalDistance(direct.path[index],target)<=preferredMax){stopIndex=index;break;}
+  }
+  const path=direct.path.slice(0,stopIndex+1),cell=path[path.length-1]||unit;
+  return{...direct,path,cell:{x:cell.x,y:cell.y},steps:Math.max(0,path.length-1),spottedAlienApproach:true,preferredContactMax:preferredMax};
+}
 function tacticalAiMovePlan({unit,target,covers=[],units=[],commander=null,doctrine=TACTICAL_AI_DOCTRINES[0],role="",reserveTu=14,mission=null,targetKnown=true,alienMove=false,visitedCells=[],maxMoveSteps=TACTICAL_AI_MAX_MOVE_STEPS}={}){
   if(!unit||!target)return{cell:unit,path:unit?[{x:unit.x,y:unit.y}]:[],steps:0,reserveTu};
   const movementLimit=clamp(Math.floor(Number(maxMoveSteps)||0),0,TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS);

@@ -7,8 +7,6 @@ const vm = require('node:vm');
 const root = path.resolve(__dirname, '..');
 const runtimePath = path.join(root, 'src', 'browser-runtime.html');
 const source = fs.readFileSync(runtimePath, 'utf8');
-const BUILD = 'v0.26.09.15.1426_POST_CONTACT_FIRE_TEAM_REASSEMBLY_AND_LEADER_SUCCESSION_PATCH';
-
 function extractFunction(name) {
   const marker = `function ${name}(`;
   const start = source.indexOf(marker);
@@ -97,7 +95,7 @@ function fixture() {
 }
 
 test('build exposes the new post-contact team latch hotfix under save format four', () => {
-  assert.match(source, new RegExp(`const CURRENT_GAME_BUILD="${BUILD.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`));
+  assert.match(source, /const CURRENT_GAME_BUILD="v0\.26\./);
   assert.match(source, /const TACTICAL_POST_CONTACT_TEAM_LATCH_AND_LEADER_SUCCESSION_HOTFIX=true/);
   assert.match(source, /const CURRENT_SAVE_FORMAT_VERSION=4/);
   assert.match(source, /aiPostContactRecoveryRound: unit\.aiPostContactRecoveryRound/);

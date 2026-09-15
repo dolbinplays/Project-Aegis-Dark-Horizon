@@ -1,3 +1,28 @@
+# CODEX HANDOFF — v0.26.09.15.1525_DEFAULT_AI_CONTACT_PURSUIT_AND_LOCAL_SECTOR_SEARCH_HOTFIX
+
+Browser 1525 is a focused Default AI navigation/combat-response hotfix built on Browser 1426. It was prompted by the supplied campaign fixture where both available squads are sent to the North America Alien Abduction Site and Farah Vale, leading Echo Fire Team, can head toward the northwest edge while Default AI soldiers appear reluctant to close on spotted aliens. Save format remains 4.
+
+## Default AI local search / visible-contact pursuit
+- `tacticalAiAlienHuntTarget(...)` still partitions unexplored sectors across fire teams to prevent every team from sweeping the same ground, but assigned sectors are now ordered by distance from the team's current authoritative leader instead of raw numeric sector id. A freshly deployed Echo team therefore starts with its nearest assigned sector rather than being dragged toward sector zero / the northwest side of a large map.
+- `tacticalAiSpottedAlienApproachPlan(...)` is a bounded live-contact movement bridge. If a personally observed alien is still outside the soldier's preferred ranged engagement band, it reuses `tacticalAiDirectContactPlan(...)` to advance along the direct legal route, then truncates that route as soon as the preferred band is reached.
+- Once inside the engagement band, the existing `tacticalAiMovePlan(...)` remains authoritative for cover, standoff, role spacing, formation and line-of-sight choices. This deliberately avoids turning Default AI into reckless point-blank charging.
+- The same bounded approach is used when a soldier gains personal contact during the first movement leg and reassesses for an extension move, as well as on later live-combat movement.
+- Player/hybrid commands, active formation recovery, Beacon assault logic, Last Known Contact, escort/casualty duties, covered-fire holds and Browser 1426 post-contact reassembly remain higher priority.
+
+## Regression / field acceptance
+- Focused regression: `tools/test-default-ai-contact-pursuit-and-local-sector-search.cjs`.
+- Primary field fixture: load the supplied Browser 1426 campaign, send Anaconda Squad and Bear Squad to the North America / Threat 2 / Tide Horror Alien Abduction Site, and observe Echo plus the first spotted contacts.
+- Farah/Echo should no longer select a remote northwest search sector solely because of sector numbering. Before contact, teams should begin in nearby deconflicted search sectors.
+- When a Default AI soldier personally spots an alien outside preferred engagement distance, movement should visibly close toward that contact. Once in ranged engagement distance, cover/standoff movement may again be lateral or stationary.
+- Recheck VIP/escort, Beacon, Last Known Contact and post-contact reassembly behavior to ensure the new movement bridge does not outrank those systems.
+
+## Next roadmap candidates
+- Tactical soldier face/equipment identity matching.
+- Command Screen → AEGIS Operations Overview.
+- Interactive closable/lockable building doors, then locked-shelter callouts and civilian/VIP casualty triage remain recorded later roadmap work.
+
+--- Previous handoff ---
+
 # CODEX HANDOFF — v0.26.09.15.1426_POST_CONTACT_FIRE_TEAM_REASSEMBLY_AND_LEADER_SUCCESSION_PATCH
 
 Browser 1316 is the field-tested wall-continuity baseline. Browser 1426 addresses the reported regression where soldiers can disperse during alien contact and then resume unrelated individual movement instead of rebuilding their fire team. Save format remains 4.

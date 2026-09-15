@@ -1,8 +1,19 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.15.1316_PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_HOTFIX_PATCH`
+Current browser build: `v0.26.09.15.1525_DEFAULT_AI_CONTACT_PURSUIT_AND_LOCAL_SECTOR_SEARCH_HOTFIX`
 
 Current save format: `4`
+
+## Default AI Contact Pursuit and Local Sector Search Hotfix — Implemented in Browser 1525
+
+**Reported September 15, 2026. Status: implemented in Browser 1525; live field acceptance remains required.**
+
+- Field reproduction uses the supplied mature campaign and the North America Alien Abduction Site (Threat 2 / Tide Horror) with both available squads deployed. Farah Vale can become Echo Fire Team's authoritative leader and previously could begin marching toward a remote northwest map sector despite deploying much closer to other valid unexplored sectors.
+- Default hidden-contact search continues to divide unexplored sectors among fire teams, but each team's partition now begins with the **nearest assigned sector to its current leader** rather than the lowest numeric sector id. This keeps search deconflicted while preventing arbitrary cross-map travel caused by grid numbering.
+- During live combat, a soldier who personally sees an alien outside the preferred ranged engagement band now uses a bounded direct-contact approach. The route is cut off as soon as the preferred engagement band is reached; at that point existing cover, ranged standoff, formation, role-spacing and firing-position logic resumes.
+- The direct-contact bridge also applies when a soldier acquires personal sight during a same-turn movement reassessment. It does not override explicit player/hybrid orders, VIP/civilian rescue authority, Last Known Contact, Beacon assault authority, covered-fire holds or Browser 1426 post-contact fire-team recovery.
+- No campaign-state migration is required. Save format remains 4.
+- **Acceptance:** load the supplied Browser 1426 campaign, send both available squads to the North America Alien Abduction Site, confirm Farah/Echo begins with nearby deconflicted search rather than a remote northwest edge sector, and verify newly spotted aliens at long range cause Default AI soldiers to close visibly toward contact until normal ranged engagement distance is reached. Then verify cover/standoff behavior resumes and post-contact reassembly still occurs after contact is cleared.
 
 ## Roadmap Addition — Interactive Closable and Lockable Building Doors
 

@@ -1,3 +1,20 @@
+PROJECT AEGIS — BROWSER 1525 VALIDATION SUMMARY
+Build: v0.26.09.15.1525_DEFAULT_AI_CONTACT_PURSUIT_AND_LOCAL_SECTOR_SEARCH_HOTFIX
+Save format: 4
+
+Default AI Contact Pursuit and Local Sector Search Hotfix
+- The supplied Browser 1426 save parses cleanly as save format 4 and contains the reported North America Alien Abduction Site (Threat 2, Tide Horror, reward $520k, panic +20), both ready squads, and Farah Vale as a Ready Sergeant/Officer. It contains no active tactical snapshot, confirming the reported behavior is reproduced from fresh tactical generation rather than stale in-mission coordinates.
+- Source inspection isolated two independent Default AI behaviors: hidden-contact sector partitions were visited by raw numeric sector order, which can send an early-slot team toward a remote northwest sector; and personally observed long-range contacts could immediately fall into the general cover/standoff movement scorer instead of visibly closing toward the contact.
+- Focused local Node regression coverage passed 31/31 tests across five suites: 5 new local-search/contact-pursuit tests, 5 post-contact fire-team reassembly tests, 5 IndexedDB durable-save tests, 9 procedural-building wall-continuity tests, and 7 tetromino-footprint tests.
+- New regression coverage verifies that a leader deployed near the southeast side of a 64-cell map selects its nearest assigned deconflicted sector rather than numeric sector zero; direct pursuit stops at the existing preferred ranged engagement band; normal cover/standoff authority resumes inside that band; and all live-combat movement/reassessment paths contain the bounded spotted-contact approach hook.
+- The historical IndexedDB and Browser 1426 post-contact tests were made build-id agnostic while retaining their feature-marker/save-format assertions, so they remain valid lineage regressions instead of failing merely because a newer build id is present.
+- Embedded JavaScript syntax passed for all 5 executable script blocks in canonical `src/browser-runtime.html`; generated `index.html` host JavaScript and `service-worker.js` also pass `node --check`.
+- Generated host/package seam validation passed: the embedded runtime payload is byte-for-byte identical to `src/browser-runtime.html`; runtime byte count and SHA-256 plus host SHA-256 match `release-metadata.json`; and build IDs are synchronized across runtime, host, service worker, manifest and release metadata.
+- This minimal patch workspace does not contain the repository-wide Node/smoke/mobile suite, so no new full-suite claim is made. Field acceptance remains required on the exact supplied mission.
+- Primary field pass: deploy Anaconda + Bear to the supplied North America Abduction Site; Farah/Echo should start in a nearby assigned search sector instead of marching toward a remote northwest edge, and personally spotted long-range aliens should draw Default AI movement toward contact until the preferred ranged band is reached. Browser 1426 post-contact reassembly, VIP/escort, Last Known Contact and Beacon priorities must remain intact.
+
+--- Previous patch validation ---
+
 PROJECT AEGIS — BROWSER 1426 VALIDATION SUMMARY
 Build: v0.26.09.15.1426_POST_CONTACT_FIRE_TEAM_REASSEMBLY_AND_LEADER_SUCCESSION_PATCH
 Save format: 4

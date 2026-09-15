@@ -1,3 +1,19 @@
+PROJECT AEGIS — BROWSER 1525 PATCH NOTES
+Build: v0.26.09.15.1525_DEFAULT_AI_CONTACT_PURSUIT_AND_LOCAL_SECTOR_SEARCH_HOTFIX
+Save format: 4
+
+Default AI Contact Pursuit and Local Sector Search Hotfix
+- Investigated the supplied mature campaign save and the exact North America Alien Abduction Site / two-squad deployment where Farah Vale can lead Echo Fire Team toward the northwest edge before useful contact.
+- Root cause for the apparent map-exit march was default hidden-contact sector search ordering: fire teams correctly received separate sector partitions, but each partition always started at its lowest numeric sector. On a large map that can send a newly deployed team across the battlefield toward the northwest-most assigned sector even when a much nearer assigned sector exists.
+- Default hidden-contact search now preserves the same deconflicted sector partitions but orders each team's assigned sectors by distance from its current authoritative leader. Teams therefore begin locally and expand their sweep instead of crossing the map solely because of sector numbering.
+- Root cause for weak visible-contact pursuit was a separate behavior: a soldier who personally spotted an alien could immediately hand movement to the general cover/standoff scorer. At long range that scorer can prefer lateral cover or formation geometry, making Default AI appear to ignore a newly spotted target.
+- While a personally spotted alien remains outside the soldier's preferred ranged engagement band, Default AI now uses the established direct-contact route to close the distance. Once the soldier reaches the preferred band, the normal cover, standoff, formation and firing-position logic regains control so this is not a point-blank charge rule.
+- The direct-pursuit handoff is applied both to ordinary live-combat movement and to same-turn reassessment after a soldier first gains personal sight of the contact.
+- Explicit player/hybrid movement, VIP/civilian duties, Last Known Contact, Beacon assault authority, ranged standoff once in engagement distance, and Browser 1426 post-contact regroup/leader succession remain higher-authority behavior.
+- Save format remains 4; no campaign migration is required.
+
+--- Previous patch notes ---
+
 PROJECT AEGIS — BROWSER 1426 PATCH NOTES
 Build: v0.26.09.15.1426_POST_CONTACT_FIRE_TEAM_REASSEMBLY_AND_LEADER_SUCCESSION_PATCH
 Save format: 4
