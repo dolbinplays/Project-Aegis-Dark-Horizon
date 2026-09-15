@@ -67,10 +67,10 @@ const wallContext=vm.createContext({
     return{building:activePlan,perimeter:perimeterKeys(activePlan).has(key(x,y)),door:doorKeys(activePlan).has(key(x,y))};
   },
 });
-for(const name of ['tacticalBuildingFacadeExposure','tacticalThreeExteriorFacadePair','tacticalThreeBuildingPerimeterSeamPairs','tacticalThreeFacadeProjectedHalfSpan','tacticalThreePerimeterSeamInfillScale','tacticalThreeBuildingCornerClosureRecords']){
+for(const name of ['tacticalBuildingFacadeExposure','tacticalBuildingCardinalAdjacentCells','tacticalThreeExteriorFacadePair','tacticalThreeBuildingPerimeterSeamPairs','tacticalThreeFacadeProjectedHalfSpan','tacticalThreePerimeterSeamInfillScale','tacticalThreeBuildingCornerClosureRecords']){
   vm.runInContext(functionSource(name),wallContext);
 }
-const wallApi=vm.runInContext(`({tacticalBuildingFacadeExposure,tacticalThreeBuildingPerimeterSeamPairs,tacticalThreeFacadeProjectedHalfSpan,tacticalThreePerimeterSeamInfillScale,tacticalThreeBuildingCornerClosureRecords})`,wallContext);
+const wallApi=vm.runInContext(`({tacticalBuildingFacadeExposure,tacticalBuildingCardinalAdjacentCells,tacticalThreeExteriorFacadePair,tacticalThreeBuildingPerimeterSeamPairs,tacticalThreeFacadeProjectedHalfSpan,tacticalThreePerimeterSeamInfillScale,tacticalThreeBuildingCornerClosureRecords})`,wallContext);
 
 function fixture(family,rotation=0){
   const plan={id:`qa-${family}-${rotation}`,key:'records',x:10,y:10,width:12,height:9,shapeFamily:family,shapeRotation:rotation};
@@ -188,4 +188,46 @@ test('projection-aware seam coverage closes every generated tetromino perimeter 
       if(exactGap>0.02)assert.ok(fill>=exactGap+0.10,`${family} rotation ${rotation} seam keeps overlap margin`);
     }
   }
+});
+
+
+test('staggered-row tetromino turns stay on the general structural connector path instead of being suppressed as cardinal facade seams',()=>{
+  const hexNeighbors=(x,y)=>{
+    const odd=y&1;
+    const deltas=odd?[[1,0],[-1,0],[1,-1],[0,-1],[1,1],[0,1]]:[[1,0],[-1,0],[0,-1],[-1,-1],[0,1],[-1,1]];
+    return deltas.map(([dx,dy])=>({x:x+dx,y:y+dy}));
+  };
+  let staggeredPairs=0;
+  for(const family of ['T','L','J','S','Z'])for(let rotation=0;rotation<4;rotation++){
+    const plan=fixture(family,rotation);activePlan=plan;
+    const covers=presentationCovers(plan),byKey=new Map(covers.map(c=>[key(c.x,c.y),c]));
+    for(const a of covers){
+      for(const cell of hexNeighbors(a.x,a.y)){
+        const b=byKey.get(key(cell.x,cell.y));
+        if(!b)continue;
+        if(key(a.x,a.y)>=key(b.x,b.y))continue;
+        const cardinal=wallApi.tacticalBuildingCardinalAdjacentCells(a,b);
+        if(cardinal)continue;
+        staggeredPairs+=1;
+        assert.equal(wallApi.tacticalThreeExteriorFacadePair(a,b,{}),false,`${family} rotation ${rotation} staggered pair ${key(a.x,a.y)}→${key(b.x,b.y)} must remain connector-eligible`);
+      }
+    }
+  }
+  assert.ok(staggeredPairs>0,'concave tetromino fixtures expose staggered non-cardinal wall neighbors');
+  assert.match(source,/tacticalConnectedStructuralWalls\(c,structuralByCell,props\.mission\)\.filter\(neighbor=>!tacticalThreeExteriorFacadePair\(c,neighbor,props\.mission\)\)/);
+  assert.match(source,/tacticalConnectedStructuralWalls\(c,structuralByCell,mission\)\.filter\(neighbor=>!tacticalThreeExteriorFacadePair\(c,neighbor,mission\)\)/);
+});
+
+test('explicit perimeter seams remain cardinal while true door cells stay open',()=>{
+  const plan=fixture('S',0);activePlan=plan;
+  const covers=presentationCovers(plan),byKey=new Map(covers.map(c=>[key(c.x,c.y),c]));
+  const seams=wallApi.tacticalThreeBuildingPerimeterSeamPairs({mission:{},presentationCovers:covers,discoveredBuildingIds:new Set([plan.id])});
+  assert.ok(seams.length>0,'S footprint has explicit seams');
+  for(const seam of seams)assert.equal(wallApi.tacticalBuildingCardinalAdjacentCells(seam.a,seam.b),true,'explicit seam is cardinal');
+  for(const door of plan.doors){
+    const fakeDoorCover={x:door.x,y:door.y,hp:20,revealed:true,buildingId:plan.id,buildingPart:'wall',visual:'building-wall-brick-ew'};
+    const adjacent=shapeApi.tacticalBuildingPerimeterCells(plan).map(c=>byKey.get(key(c.x,c.y))).find(Boolean);
+    assert.equal(wallApi.tacticalThreeExteriorFacadePair(fakeDoorCover,adjacent,{}),false,'door does not become a facade seam');
+  }
+  assert.ok(source.includes('PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_HOTFIX = true'));
 });

@@ -1,8 +1,20 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.15.1230_PROCEDURAL_BUILDING_MICRO_GAP_CLOSURE_HOTFIX_PATCH`
+Current browser build: `v0.26.09.15.1316_PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_HOTFIX_PATCH`
 
 Current save format: `4`
+
+## Procedural Building Staggered-Turn Connector Hotfix — Implemented in Browser 1316
+
+**Reported September 15, 2026. Status: implemented in Browser 1316; live field acceptance remains required.**
+
+- Field testing after Browser 1230 showed a small number of **doorway-sized openings that were not actual generated doors**. The decisive clue is that those cells did not carry the gray doorway floor marker used by authoritative procedural doors. The rejected Browser 1255 doorway-framing experiment is not part of this build and must not be restored.
+- Browser 1050 correctly moved explicit perimeter seams onto the four-way/cardinal tetromino footprint graph, but the renderer-side facade-pair classifier could still treat any same-building perimeter wall/window pair as if the explicit seam pass owned it. On the staggered tactical hex grid, two structural wall cells can be six-way tactical neighbors without being four-way/cardinal footprint neighbors.
+- Both Three.js renderers suppress the ordinary structural bridge when `tacticalThreeExteriorFacadePair(...)` says the explicit seam pass owns a pair. For the non-cardinal staggered pair, that suppression created an ownership hole: the ordinary bridge was skipped, while the explicit cardinal seam pass never generated a replacement.
+- Browser 1316 adds a shared cardinal-adjacency predicate to explicit facade ownership. **Cardinal footprint neighbors** continue to use the Browser 1230 projection-aware seam infill; **non-cardinal tactical hex neighbors** remain eligible for the established structural connector, restoring the missing visual bridge at T/L/J/S/Z step turns without filling outdoor recesses.
+- True generated door cells remain intentionally open and keep the existing gray doorway floor marker. This hotfix does not add doorway frames, change entrance width, create new doors, or classify non-door cells as doors.
+- The correction is presentation-only. Building footprints, collision, movement/pathfinding, cover, structural HP, LOS, targeting, windows, breach state and save data remain authoritative and unchanged. Both persistent and fallback Three.js paths share the same classifier. Save format remains 4.
+- **Acceptance:** revisit the exact screenshot-class gaps on T/L/J/S/Z structures; verify each non-door staggered step/turn is visually bridged, while gray-floor doorways retain their existing width. Orbit/zoom in 3D Iso, inspect FPV/TPV, switch renderer/view modes, breach a nearby wall, and save/reload. Confirm outdoor concave recesses remain open and units/pathing/LOS still match structural authority.
 
 ## Procedural Building Micro-Gap Closure Hotfix — Implemented in Browser 1230
 

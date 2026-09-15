@@ -1,3 +1,19 @@
+PROJECT AEGIS — BROWSER 1316 VALIDATION SUMMARY
+Build: v0.26.09.15.1316_PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_HOTFIX_PATCH
+Save format: 4
+
+Procedural Building Staggered-Turn Connector Hotfix
+- Focused Node regression set: 21/21 passed across `tools/test-procedural-building-wall-continuity.cjs`, `tools/test-tetromino-building-footprints.cjs`, and `tools/test-indexeddb-save-storage.cjs`.
+- New wall-continuity coverage finds T/L/J/S/Z perimeter pairs that are true six-way tactical hex neighbors but not four-way/cardinal footprint neighbors and verifies they are no longer classified as explicit facade seam pairs.
+- The same coverage verifies explicit seam pairs remain cardinal, true generated door cells remain excluded, and both Three.js render paths retain the ordinary structural-connector filter.
+- Save format remains 4. Browser 1230 projection-aware seam infill, Browser 1050 corner returns, Browser 0904 tetromino footprint authority and Browser 0745 IndexedDB save storage remain in place.
+- Embedded JavaScript syntax checks passed for all executable script blocks in `src/browser-runtime.html` and generated `index.html`; `service-worker.js` also passes `node --check`.
+- Generated host/package seam checks passed: embedded runtime bytes exactly match `src/browser-runtime.html`, source-byte count and SHA-256 match `release-metadata.json`, host SHA-256 matches, build IDs are synchronized across source/host/service worker/manifest/release metadata, and JSON metadata parses cleanly.
+- Final copy-over patch archive passes ZIP integrity testing and contains only the changed runtime/generated release files, synchronized documentation, the new field-acceptance checklist and the focused wall-continuity regression test.
+- Field acceptance remains required on the screenshot-class staggered turns/steps; no claim of played-mission visual acceptance is made by automated tests.
+
+--- Previous patch validation ---
+
 PROJECT AEGIS — BROWSER 1230 VALIDATION SUMMARY
 Build: v0.26.09.15.1230_PROCEDURAL_BUILDING_MICRO_GAP_CLOSURE_HOTFIX_PATCH
 Save format: 4

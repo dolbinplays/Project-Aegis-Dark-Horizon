@@ -1,3 +1,19 @@
+v0.26.09.15.1316_PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_HOTFIX_PATCH
+
+Procedural Building Staggered-Turn Connector Hotfix
+- Field evidence after Browser 1230 showed the remaining large openings were **not generated doorways**: the affected cells lacked the gray doorway floor marker. Do not restore the rejected Browser 1255 framed-doorway treatment; it narrowed legitimate entrances and addressed the wrong ownership path.
+- Root cause: Browser 1050 correctly restricted explicit perimeter seam generation to four-way/cardinal footprint adjacency, but `tacticalThreeExteriorFacadePair(...)` could still label a non-cardinal six-way hex-neighbor pair as an explicit facade pair. Both renderers then filtered that pair out of `tacticalConnectedStructuralWalls(...)`, while the explicit seam pass never owned it. The result was a missing bridge at staggered tetromino steps/turns.
+- `tacticalBuildingCardinalAdjacentCells(...)` now gates explicit facade-pair ownership. Cardinal footprint runs continue through the Browser 1230 projection-aware seam path; non-cardinal tactical hex-neighbor pairs keep the established structural connector.
+- Door authority is unchanged. True generated doors stay open and retain their gray floor marker; no doorway-frame geometry is added. Collision, pathfinding, LOS, cover, structural HP, targeting and breach authority remain on existing structural covers.
+- Shared fallback/persistent renderer contract is covered by `tools/test-procedural-building-wall-continuity.cjs`. Save format remains 4.
+- Field checklist: `PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_FIELD_ACCEPTANCE.txt`.
+
+Next roadmap candidate
+- **Post-Contact Fire-Team Reassembly and Mission Continuation** remains the next recommended behavior patch after this wall fix is visually accepted.
+- After cohesion: tactical soldier face/equipment identity matching, then Command Screen → AEGIS Operations Overview.
+
+--- Previous patch ---
+
 v0.26.09.15.1230_PROCEDURAL_BUILDING_MICRO_GAP_CLOSURE_HOTFIX_PATCH
 
 Procedural Building Micro-Gap Closure Hotfix

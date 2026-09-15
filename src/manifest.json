@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.09.15.1230_PROCEDURAL_BUILDING_MICRO_GAP_CLOSURE_HOTFIX_PATCH",
+  "currentBuild": "v0.26.09.15.1316_PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_HOTFIX_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "procedural-building-micro-gap-closure-hotfix-complete",
+  "status": "procedural-building-staggered-turn-connector-hotfix-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.09.15.1230_PROCEDURAL_BUILDING_MICRO_GAP_CLOSURE_HOTFIX_PATCH",
+  "lastInspectedBuild": "v0.26.09.15.1316_PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_HOTFIX_PATCH",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -47,7 +47,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.09.15.1230_PROCEDURAL_BUILDING_MICRO_GAP_CLOSURE_HOTFIX_PATCH",
+    "browserBuild": "v0.26.09.15.1316_PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_HOTFIX_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -632,7 +632,7 @@
       },
       {
         "system": "civic-landmark-multihex-footprints",
-        "reason": "Browser civic statues and fountains now use deterministic connected 1\u20137 hex footprints, shared collision/visibility/placement authority and footprint-scaled presentation. Native Godot needs equivalent engine-native landmark footprints and presentation."
+        "reason": "Browser civic statues and fountains now use deterministic connected 1–7 hex footprints, shared collision/visibility/placement authority and footprint-scaled presentation. Native Godot needs equivalent engine-native landmark footprints and presentation."
       },
       {
         "system": "tetromino-procedural-building-wall-continuity",

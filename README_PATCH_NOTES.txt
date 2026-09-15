@@ -1,3 +1,16 @@
+PROJECT AEGIS — BROWSER 1316 PATCH NOTES
+Build: v0.26.09.15.1316_PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_HOTFIX_PATCH
+Save format: 4
+
+Procedural Building Staggered-Turn Connector Hotfix
+- Follow-up to Browser 1230 after field testing confirmed that the remaining large gaps were not true doorways: the affected cells did not carry the gray generated-door floor marker.
+- Root cause was a connector-ownership mismatch introduced while Browser 1050 correctly moved explicit tetromino perimeter seams to the four-way/cardinal footprint graph. The ordinary structural connector still walks the six-way tactical hex-neighbor graph, but `tacticalThreeExteriorFacadePair(...)` could suppress that connector for same-building perimeter cells even when the pair was not a cardinal footprint seam.
+- The facade-pair classifier now reserves explicit seam ownership only for true cardinal footprint neighbors. Staggered-row wall/window cells that are real tactical hex neighbors but not cardinal footprint neighbors remain eligible for the established structural bridge, closing the step/turn gaps without globally widening walls.
+- True generated door cells remain untouched and open. This patch does not add framed doorway geometry, narrow entrances, alter gray doorway floor markers, or reinterpret non-door cells as doors.
+- Both fallback and persistent Three.js renderers use the same eligibility rule. Collision, pathfinding, LOS, cover, structural HP, targeting, breaches and building footprint authority are unchanged. Save format remains 4.
+
+--- Previous patch notes ---
+
 PROJECT AEGIS — BROWSER 1230 PATCH NOTES
 Build: v0.26.09.15.1230_PROCEDURAL_BUILDING_MICRO_GAP_CLOSURE_HOTFIX_PATCH
 Save format: 4

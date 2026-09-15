@@ -1,0 +1,23 @@
+PROJECT AEGIS — PROCEDURAL BUILDING STAGGERED-TURN CONNECTOR FIELD ACCEPTANCE
+Build: v0.26.09.15.1316_PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_HOTFIX_PATCH
+Save format: 4
+
+Purpose
+Verify that the remaining non-door gaps at staggered tetromino wall turns are closed without narrowing real doorways or bridging intentional footprint recesses.
+
+Field checks
+1. Load/generate a tactical map containing representative T, L, J, S and Z buildings, including a configuration similar to the supplied screenshots.
+2. Identify true generated doorways by the established gray doorway floor hex. Confirm their opening width and pathing look the same as Browser 1230.
+3. Inspect staggered wall steps/turns that do NOT have the gray doorway floor marker. They should now have continuous wall presentation rather than a doorway-sized missing bridge.
+4. Orbit and zoom in 3D Iso and inspect the same joins in FPV/TPV. Repeat with renderer/view-mode switching where available.
+5. Confirm concave outdoor tetromino recesses remain open; no new wall may span a footprint notch merely because two cells are hex neighbors.
+6. Inspect windows and real doorways next to repaired turns. Apertures must remain intentional and readable.
+7. Breach/destroy a nearby wall and verify the visual opening follows structural state rather than leaving or inventing a connector.
+8. Walk/path units around the repaired area and check LOS/cover behavior. Presentation must continue to match existing structural-cover authority.
+9. Save and reload the battle, then repeat the repaired-turn and true-door checks.
+
+Pass criteria
+- No screenshot-class non-door gap remains at staggered tetromino turns/steps.
+- True gray-floor doorways retain their pre-1255 width and remain passable.
+- Outdoor concave recesses, windows and breaches remain open.
+- No collision, pathfinding, LOS, cover, structural HP or save-format regression is observed.
