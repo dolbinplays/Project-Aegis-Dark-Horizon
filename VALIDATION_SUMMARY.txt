@@ -1,3 +1,16 @@
+PROJECT AEGIS — BROWSER 0904 VALIDATION SUMMARY
+Build: v0.26.09.15.0904_TETROMINO_PROCEDURAL_BUILDING_FOOTPRINTS_PATCH
+Save format: 4
+
+- Full Node regression suite: 106/106 tests passed. The new 7-test tetromino suite covers all seven families, all four rotations across a generated-seed sweep, scaled-footprint connectivity, real concave recesses, perimeter-to-interior doors, deterministic plans, legacy rectangular live-save compatibility and source integration for roofs/seams/egress/civilian placement.
+- All six tactical smoke scripts passed: observed beacon reinforcement cinematic, alien beacon materialization, Casualty Care Phases 1/2/3A and casualty terminal state.
+- Embedded JavaScript syntax passed across canonical runtime and packaged host. The packaged build-seam check passed for Browser 0904, and the focused Mobile/PWA regression suite passed 9/9.
+- The prior IndexedDB save-storage regression remains green. Its build assertion was made future-safe so later patches verify the durable backend without incorrectly requiring Browser 0745 to remain the current build.
+- Runtime compatibility: newly generated procedural buildings use I/O/T/L/J/S/Z footprint authority; pre-patch live tactical saves with structural building covers lacking shape metadata are detected on restore and retain legacy rectangular building plans for that in-progress battle. Save format remains 4.
+- Field acceptance remains: inspect representative generated shapes in live 3D Iso/FPV/TPV, verify concave recess traversal, wall/window/door continuity, roof cutaway, civilians/AI egress, save/reload of a new shaped battle, and restore of a pre-0904 in-progress rectangular battle.
+
+--- Previous patch validation ---
+
 PROJECT AEGIS — BROWSER 0745 VALIDATION SUMMARY
 Build: v0.26.09.15.0745_INDEXEDDB_SAVE_STORAGE_HOTFIX
 Save format: 4

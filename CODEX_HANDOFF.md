@@ -1,3 +1,18 @@
+v0.26.09.15.0904_TETROMINO_PROCEDURAL_BUILDING_FOOTPRINTS_PATCH
+
+Tetromino Procedural Building Footprints
+- Procedural structures now support I/O/T/L/J/S/Z footprint families and deterministic rotations within the existing archetype bounds.
+- Shared footprint authority drives interior/perimeter classification, doors, walls/windows, furnishings, roofs, perimeter seams, civilian placement, structure-distance checks and AI building egress. Concave recesses remain outside/traversable.
+- Pre-patch live tactical saves are detected by legacy structural covers lacking shape metadata and retain rectangular plan authority for that already-started battle. New saves carry building shape metadata in structural covers.
+- New focused regression file: tools/test-tetromino-building-footprints.cjs. Field checklist: PROCEDURAL_BUILDING_TETROMINO_FOOTPRINTS_FIELD_ACCEPTANCE.txt.
+- Save format remains 4. IndexedDB durable save storage from Browser 0745 remains in place.
+
+Next roadmap candidate
+- Match tactical battle-model faces/equipment markings to soldier identity, unless field acceptance exposes a tetromino-building regression first.
+- Command Screen AEGIS Operations Overview remains recorded as a later dedicated UI/dashboard patch.
+
+--- Previous patch ---
+
 v0.26.09.15.0745_INDEXEDDB_SAVE_STORAGE_HOTFIX
 
 Durable IndexedDB Save Storage Hotfix

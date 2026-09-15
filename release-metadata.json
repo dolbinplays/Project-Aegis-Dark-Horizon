@@ -1,8 +1,8 @@
 {
-  "build": "v0.26.09.15.0745_INDEXEDDB_SAVE_STORAGE_HOTFIX",
-  "package_filename": "Project_Aegis_v0.26.09.15.0745_INDEXEDDB_SAVE_STORAGE_HOTFIX.zip",
+  "build": "v0.26.09.15.0904_TETROMINO_PROCEDURAL_BUILDING_FOOTPRINTS_PATCH",
+  "package_filename": "Project_Aegis_v0.26.09.15.0904_TETROMINO_PROCEDURAL_BUILDING_FOOTPRINTS_PATCH.zip",
   "save_format": 4,
-  "runtime_bytes": 7160127,
-  "runtime_sha256": "baae22b9b99ad77d68130834472dc9a0b34a50c2075eca8f15a3397823b25bb6",
-  "host_sha256": "a33a93375d4dbdb570ed7c30fdb3cba05996243217316e50d18585d9bc7300cb"
+  "runtime_bytes": 7172020,
+  "runtime_sha256": "02d995c511d60c4dd38c6c4dbb2640276b9d0fb10c68177cad3d572c6474ee3c",
+  "host_sha256": "aa522db2cee0eac09683e7db1d4ff92dd5cdcd0f062f8bffbd2a8fd68747a902"
 }

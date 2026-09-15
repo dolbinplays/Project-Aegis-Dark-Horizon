@@ -1,0 +1,37 @@
+PROJECT AEGIS — TETROMINO PROCEDURAL BUILDING FOOTPRINTS FIELD ACCEPTANCE
+Build: v0.26.09.15.0904_TETROMINO_PROCEDURAL_BUILDING_FOOTPRINTS_PATCH
+Save format: 4
+
+Purpose
+Verify that procedural tactical buildings use their actual I/O/T/L/J/S/Z footprint as the shared authority for presentation and gameplay rather than filling a rectangular bounding box.
+
+1. Family / rotation coverage
+- Generate several city, small-town, farm and nature tactical maps.
+- Confirm examples of I, O, T, L, J, S and Z buildings appear over multiple seeds.
+- Confirm rotated variants remain connected and retain sensible overall building scale.
+
+2. Concave footprint integrity
+- Inspect T/L/J/S/Z recesses from 3D Iso and perspective views.
+- Confirm recessed cells remain outdoors: no phantom wall, floor, roof or interior furnishing should occupy the empty notch.
+- Walk a unit through an open recess where terrain/pathing permits. It must not be treated as an interior or blocked building cell.
+
+3. Walls, windows and doors
+- Inspect convex and concave corners for continuous perimeter walls without duplicate slabs or unexplained gaps.
+- Confirm windows only replace valid perimeter wall cells.
+- Confirm every generated door is on the actual perimeter and opens toward a usable connected interior cell.
+- Breach/window visibility and discovered-wall presentation should behave as they did before this patch.
+
+4. Roofs and cutaway
+- Confirm roof panels cover only occupied footprint cells and do not bridge T/L/J/S/Z recesses.
+- Select/move AEGIS soldiers inside structures and verify roof cutaway still follows known AEGIS occupancy/camera occlusion.
+- Confirm roof presentation returns correctly when the building is no longer cut away.
+
+5. Interiors / AI / civilians
+- Confirm furnishings and power controls appear only inside actual footprint cells.
+- Confirm generated civilians/VIPs do not start in empty concave recesses.
+- Confirm AI units can enter/exit through valid openings and building egress does not target a phantom rectangular edge.
+
+6. Save/reload compatibility
+- Save a newly generated tetromino battle, reload it and verify the same family, rotation, walls, doors, roof outline and interior occupancy remain aligned.
+- Load a pre-patch live tactical save containing rectangular procedural buildings. That already-started battle should retain its legacy rectangular building geometry instead of being reinterpreted as a tetromino map.
+- Finish either battle and confirm campaign save/load remains normal. Save format must remain 4.

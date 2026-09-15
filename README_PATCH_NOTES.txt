@@ -1,3 +1,14 @@
+BUILD: v0.26.09.15.0904_TETROMINO_PROCEDURAL_BUILDING_FOOTPRINTS_PATCH
+
+Tetromino Procedural Building Footprints
+- Procedural tactical structures can now use deterministic I, O, T, L, J, S and Z footprints with rotations while retaining the established archetype scale and map density.
+- Actual footprint cells own interiors, perimeter walls/windows, doors, furnishings, collision/pathfinding, civilian placement, structure distance and AI egress. Concave T/L/J/S/Z recesses remain open outdoor space.
+- Building roofs and discovered-wall perimeter seams follow the same footprint, so roof panels do not bridge empty recesses.
+- Pre-patch live tactical saves with legacy rectangular structural covers keep rectangular building authority when restored; newly generated battles use tetromino footprints.
+- Save format remains 4. The IndexedDB save-storage hotfix remains intact. Publish index.html, service-worker.js and release-metadata.json together with existing assets.
+
+--- Previous patch ---
+
 BUILD: v0.26.09.15.0745_INDEXEDDB_SAVE_STORAGE_HOTFIX
 
 Durable IndexedDB Save Storage Hotfix

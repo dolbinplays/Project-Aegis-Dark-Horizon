@@ -1,8 +1,22 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.15.0745_INDEXEDDB_SAVE_STORAGE_HOTFIX`
+Current browser build: `v0.26.09.15.0904_TETROMINO_PROCEDURAL_BUILDING_FOOTPRINTS_PATCH`
 
 Current save format: `4`
+
+## Tetromino Procedural Building Footprints — Implemented in Browser 0904
+
+**Planned September 15, 2026. Status: implemented in Browser 0904.**
+
+- Procedural tactical structures now support all seven standard tetromino families: **I, O, T, L, J, S and Z**, with deterministic rotations while preserving the established archetype scale, map density and conservative building-site spacing.
+- Each shape is expanded into authoritative tactical footprint cells. Interior/perimeter classification, wall/window placement, doors, furnishings, collision/pathfinding, building-aware civilian placement, structure-distance checks and AI building egress consume that shared footprint rather than assuming the entire bounding rectangle is occupied.
+- Concave T/L/J/S/Z recesses remain genuine outdoor cells. The generator does not fill those notches with phantom walls, interior floor authority or building occupancy.
+- Three.js roof panels and discovered-building perimeter seams follow actual footprint cells and edges. Roof details/furnishings select valid interior/footprint cells instead of the center of the old rectangular bounds.
+- Generated doors are chosen from actual perimeter cells with adjacent usable interior. Existing building archetype labels/materials and the established discovered-wall, breach/window visibility and roof-cutaway systems remain in place.
+- Live tactical saves created before this patch are protected: if restored structural building covers lack tetromino shape metadata, that already-started mission retains legacy rectangular building-plan authority. Newly generated battles use the new deterministic shapes and carry shape metadata in their structural covers.
+- **Acceptance:** generate all seven families and rotations across multiple seeds; inspect convex/concave walls and roofs; walk through open recesses; verify doors/interiors/occupants remain reachable; save/reload a new shaped battle; and restore a pre-patch live rectangular battle without geometry reinterpretation.
+
+Save format remains 4. Native Godot parity remains a separate engine-port task.
 
 ## Durable IndexedDB Save Storage — Implemented in Browser 0745
 
@@ -15,6 +29,24 @@ Current save format: `4`
 - If IndexedDB is unavailable or rejected, retain the existing localStorage compatibility fallback. If a manual save still cannot be persisted, retain the emergency import-compatible JSON download so campaign state is not silently lost.
 - Existing exported campaign JSON remains import-compatible. Save format remains 4.
 - **Acceptance:** import a large late-campaign JSON, save it into multiple manual slots, reload the PWA and load those slots; verify two-slot autosave rotation; finish a mission and verify the post-mission reboot restores its checkpoint; confirm legacy localStorage slots migrate; and confirm the emergency JSON path still appears only when both durable and fallback storage reject a manual save.
+
+## Roadmap Addition — Command Screen AEGIS Operations Overview
+
+**Requested September 15, 2026. Status: planned, not implemented.**
+
+- Rework the existing **Command** screen into a true **AEGIS Operations Overview** now that this area no longer needs to function as the game-wide header. Preserve the useful strategic information already displayed along the top as the foundation, then use the available screen space for an at-a-glance headquarters dashboard rather than duplicating navigation chrome.
+- Keep the current total personnel figure, but add an immediately readable **personnel breakdown by type/role** using the personnel categories the campaign actually tracks. Where the underlying state supports it, distinguish how many are **available**, **deployed/committed**, **wounded or recovering**, **in transit**, or otherwise unavailable so the player can tell what manpower is usable right now rather than seeing only a raw total.
+- Make the personnel panel one of the prominent dashboard elements. The exact categories must come from authoritative campaign data rather than invented labels, and totals must reconcile with Barracks, Sickbay, transfers, mission assignments, KIA status, recruitment and any non-soldier personnel systems that are actually implemented.
+- Add compact **operational-readiness summaries** for major AEGIS assets already tracked by the game, such as active squads/fire teams, aircraft readiness, bases, active incidents/missions and assets currently unavailable or requiring attention. Avoid creating parallel state; every value should be derived from the same authoritative systems used by the detailed screens.
+- Expand the overview with high-value **strategic status** already available elsewhere in the campaign, such as funds, global panic/threat, research and production activity, medical/recovery load and other command-level indicators that help the player decide what needs attention next. Preserve the useful current top-row information instead of replacing it without cause.
+- Add an **attention / exceptions** area for conditions such as critically wounded personnel, grounded or repairing aircraft, understaffed or unavailable capabilities, active alien threats, pending transfers or other meaningful blockers. This should summarize exceptions, not become a scrolling event log or duplicate Reports.
+- Make dashboard summaries **actionable navigation** where appropriate. Clicking/tapping a personnel, aircraft, base, medical, research, production, incident or other summary should open the existing detailed screen or relevant filtered view instead of creating a second management interface on Command.
+- Maintain clear distinction between **total strength** and **currently available strength**. A person or asset can remain part of AEGIS while being unavailable due to deployment, travel, injury, recovery, repair or another authoritative state. The Command overview should make that difference immediately understandable.
+- Design the overview responsively. Desktop/tablet can use a dashboard/card layout; Mobile · Adaptive should stack or condense the same authoritative summaries rather than merely shrinking the desktop layout. Respect the established command rails, bounded scrolling, safe areas and short-landscape constraints.
+- Keep the screen readable and command-oriented: prioritize current operational posture, readiness, capacity and exceptions over decorative detail. Detailed histories, full rosters and long logs remain in their existing dedicated screens.
+- **Acceptance:** compare every personnel subtotal and readiness count against its source screen in a mature multi-base campaign; verify changes after deployment, return, injury/recovery, transfer, recruitment, KIA, aircraft repair/refuel/travel, incident creation/resolution and save/reload. Confirm every clickable summary routes to the correct detailed screen, Mobile · Adaptive remains usable in portrait and short landscape, and no dashboard widget maintains a second independent copy of campaign state.
+
+This Command-screen item remains roadmap-only; Browser 0904 does not implement it. Save format remains 4.
 
 ## 1–7 Hex Statues and Fountains — Implemented in Browser 2320
 
@@ -192,12 +224,14 @@ Implementation: connected road cells identify crossings and T-junctions. Control
 
 Implementation: new civic landmarks choose deterministic connected footprints of 1–7 cells, store their exact footprint plus visual scale, and use the full footprint for battlefield reservation, hard-cover collision/pathfinding, visibility/reveal, selection and Skyranger placement clearance. Three.js centers the complete landmark assembly on the footprint centroid and scales its base/model together. Saved landmarks retain both footprint and scale; save format remains 4.
 
-### 5. Add buildings shaped like standard Tetris pieces
+### 5. Add buildings shaped like standard Tetris pieces — Implemented in Browser 0904
 
 - Extend top-down building generation beyond rectangles to all seven standard tetromino families: **I, O, T, L, J, S and Z**. Include their valid rotations; L/J and S/Z provide both handed variants. Interpret each tetromino cell as a scalable building section, rather than limiting a building to four tactical hexes.
 - Derive connected interiors, exterior walls, concave corners, doors, windows and roofs from the actual footprint. Do not fill the empty recesses of T/L/J/S/Z shapes with a rectangular bounding-box wall or roof.
 - Preserve existing perimeter seam closure, discovered-wall visibility, roof cutaways, collision/LOS and navigable entrances. Place occupants and objectives only in valid reachable interior cells; retain the footprint through save/load and all tactical presentations.
 - **Acceptance:** generate every family and orientation, inspect inside/outside corners and roof edges, walk through the connected interiors, and verify that empty recesses remain outside and traversable where appropriate.
+
+Implementation: Browser 0904 adds deterministic tetromino family/rotation metadata and a shared footprint-cell authority. Walls/windows, doors, furnishings, roofs, seams, civilian placement, structure-distance logic and building egress consume the footprint; T/L/J/S/Z recesses remain open. Pre-patch live tactical saves lacking shape metadata retain legacy rectangular geometry for that saved battle. Save format remains 4.
 
 ### 6. Match battle-model faces and equipment markings to soldier identity
 

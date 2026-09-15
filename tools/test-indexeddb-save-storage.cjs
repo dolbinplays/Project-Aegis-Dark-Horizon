@@ -7,10 +7,8 @@ const root = path.resolve(__dirname, '..');
 const runtimePath = path.join(root, 'src', 'browser-runtime.html');
 const source = fs.readFileSync(runtimePath, 'utf8');
 
-const BUILD = 'v0.26.09.15.0745_INDEXEDDB_SAVE_STORAGE_HOTFIX';
-
 test('save hotfix uses IndexedDB as the primary durable slot backend', () => {
-  assert.match(source, new RegExp(`const CURRENT_GAME_BUILD="${BUILD.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`));
+  assert.match(source, /const CURRENT_GAME_BUILD="v0\.26\.09\.\d+\.\d+_[A-Z0-9_]+"/);
   assert.match(source, /const INDEXEDDB_SAVE_STORAGE_HOTFIX=true/);
   assert.match(source, /indexedDB\.open\(AEGIS_SAVE_DATABASE_NAME,AEGIS_SAVE_DATABASE_VERSION\)/);
   assert.match(source, /async function readDurableManualSaveSlots\(\)/);
