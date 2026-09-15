@@ -43,7 +43,7 @@ const shapeContext=vm.createContext({
 });
 vm.runInContext(source.slice(shapeStart,shapeEnd),shapeContext);
 const shapeApi=vm.runInContext(`({
-  tacticalBuildingFootprintCells,tacticalBuildingPerimeterCells,tacticalBuildingDoorCells,tacticalBuildingFacadeOrientation
+  tacticalBuildingFootprintCells,tacticalBuildingPerimeterCells,tacticalBuildingInteriorCells,tacticalBuildingDoorCells,tacticalBuildingFacadeOrientation
 })`,shapeContext);
 
 let activePlan=null;
@@ -60,6 +60,8 @@ const wallContext=vm.createContext({
   tacticalKey:key,
   tacticalBuildingFootprintKeySet:footprintKeys,
   tacticalBuildingPerimeterCells:(plan)=>shapeApi.tacticalBuildingPerimeterCells(plan),
+  tacticalBuildingInteriorCells:(plan)=>shapeApi.tacticalBuildingInteriorCells(plan),
+  tacticalBuildingFacadeOrientation:(plan,cell)=>shapeApi.tacticalBuildingFacadeOrientation(plan,cell),
   tacticalBuildingPlans:()=>activePlan?[activePlan]:[],
   tacticalBuildingPresentationBuildingIdForCover:(cover)=>cover?.buildingId||null,
   tacticalBuildingCellAt:(x,y)=>{
@@ -67,10 +69,10 @@ const wallContext=vm.createContext({
     return{building:activePlan,perimeter:perimeterKeys(activePlan).has(key(x,y)),door:doorKeys(activePlan).has(key(x,y))};
   },
 });
-for(const name of ['tacticalBuildingFacadeExposure','tacticalThreeExteriorFacadePair','tacticalThreeBuildingPerimeterSeamPairs','tacticalThreeFacadeProjectedHalfSpan','tacticalThreePerimeterSeamInfillScale','tacticalThreeBuildingCornerClosureRecords']){
+for(const name of ['tacticalBuildingFacadeExposure','tacticalThreeExteriorFacadePair','tacticalThreeBuildingPerimeterSeamPairs','tacticalThreeFacadeProjectedHalfSpan','tacticalThreePerimeterSeamInfillScale','tacticalThreeBuildingCornerClosureRecords','tacticalBuildingDoorwayFrameOrientation','tacticalThreeBuildingDoorwayFrameRecords']){
   vm.runInContext(functionSource(name),wallContext);
 }
-const wallApi=vm.runInContext(`({tacticalBuildingFacadeExposure,tacticalThreeBuildingPerimeterSeamPairs,tacticalThreeFacadeProjectedHalfSpan,tacticalThreePerimeterSeamInfillScale,tacticalThreeBuildingCornerClosureRecords})`,wallContext);
+const wallApi=vm.runInContext(`({tacticalBuildingFacadeExposure,tacticalThreeBuildingPerimeterSeamPairs,tacticalThreeFacadeProjectedHalfSpan,tacticalThreePerimeterSeamInfillScale,tacticalThreeBuildingCornerClosureRecords,tacticalBuildingDoorwayFrameOrientation,tacticalThreeBuildingDoorwayFrameRecords})`,wallContext);
 
 function fixture(family,rotation=0){
   const plan={id:`qa-${family}-${rotation}`,key:'records',x:10,y:10,width:12,height:9,shapeFamily:family,shapeRotation:rotation};
@@ -188,4 +190,37 @@ test('projection-aware seam coverage closes every generated tetromino perimeter 
       if(exactGap>0.02)assert.ok(fill>=exactGap+0.10,`${family} rotation ${rotation} seam keeps overlap margin`);
     }
   }
+});
+
+
+test('every generated doorway receives a framed presentation record while the center remains passable',()=>{
+  for(const family of families)for(let rotation=0;rotation<4;rotation++){
+    const plan=fixture(family,rotation);activePlan=plan;
+    const covers=presentationCovers(plan),discovered=new Set([plan.id]);
+    const records=wallApi.tacticalThreeBuildingDoorwayFrameRecords({mission:{},presentationCovers:covers,discoveredBuildingIds:discovered});
+    assert.equal(records.length,plan.doors.length,`${family} rotation ${rotation} doorway frame count`);
+    for(const record of records){
+      assert.ok(plan.doors.some(door=>door.x===record.door.x&&door.y===record.door.y),`${family} rotation ${rotation} record maps to a declared door`);
+      assert.equal(covers.some(cover=>cover.x===record.door.x&&cover.y===record.door.y),false,`${family} rotation ${rotation} door center has no structural wall cover`);
+      assert.equal(record.sides.length,2,`${family} rotation ${rotation} doorway has two presentation wings`);
+      assert.ok(record.sides.some(side=>side.onPerimeter),`${family} rotation ${rotation} doorway touches the perimeter run`);
+    }
+  }
+});
+
+test('doorway frame renderer fills the omitted wall cell with two wings, a lintel and an eave without creating gameplay cover',()=>{
+  const buildSource=functionSource('tacticalThreeBuildDoorwayFrames');
+  assert.match(buildSource,/aegisBuildingDoorwayWing\s*=\s*true/);
+  assert.match(buildSource,/aegisBuildingDoorwayLintel\s*=\s*true/);
+  assert.match(buildSource,/aegisBuildingDoorwayEave\s*=\s*true/);
+  assert.match(buildSource,/openingHalf\s*=\s*0\.31/);
+  assert.match(buildSource,/outerDistance\s*=\s*side\.active\s*\?\s*distance\s*\+\s*0\.12\s*:\s*1\.05/);
+  assert.ok(!/covers\.push|pickables\.push/.test(buildSource),'doorway framing remains presentation-only');
+});
+
+test('fallback and persistent Three.js renderers both build and report framed doorways',()=>{
+  assert.ok((source.match(/tacticalThreeBuildDoorwayFrames\(\{/g)||[]).length>=3,'helper plus both renderer calls');
+  assert.ok((source.match(/aegisBuildingDoorwayFrameCount/g)||[]).length>=2,'both renderer datasets');
+  assert.ok(source.includes('PROCEDURAL_BUILDING_FRAMED_DOORWAY_CONTINUITY_HOTFIX = true'));
+  assert.ok(source.includes('CURRENT_SAVE_FORMAT_VERSION=4'));
 });

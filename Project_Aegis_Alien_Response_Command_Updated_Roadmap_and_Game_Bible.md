@@ -1,8 +1,20 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.15.1230_PROCEDURAL_BUILDING_MICRO_GAP_CLOSURE_HOTFIX_PATCH`
+Current browser build: `v0.26.09.15.1255_PROCEDURAL_BUILDING_FRAMED_DOORWAY_CONTINUITY_HOTFIX`
 
 Current save format: `4`
+
+## Procedural Building Framed Doorway Continuity Hotfix — Implemented in Browser 1255
+
+**Reported September 15, 2026. Status: implemented in Browser 1255; live field acceptance remains required.**
+
+- The remaining large openings circled after Browser 1230 are generated **doorway cells**, not ordinary intact-wall seam failures. Procedural building generation intentionally skips structural wall/window cover creation at declared door cells so soldiers, civilians and AI can enter the building. Earlier wall-continuity passes correctly excluded those cells, but visually that left an entire perimeter hex open.
+- Keep doorway gameplay authority unchanged and repair only its presentation. Every discovered declared door now receives a **framed open entrance** instead of a full-cell hole. The center remains passable and no new structural cover, collision proxy, LOS blocker, HP object or pickable target is created.
+- Build two full-height side wings from a narrow human-sized opening toward the neighboring perimeter facades. The wings follow the **actual Three.js world-space vector** to each active neighbor rather than assuming a square/cardinal world layout, so staggered tactical rows cannot reopen the diagonal cracks seen in field screenshots.
+- Add a lintel, trim cap and roof/eave bridge over the opening so players can immediately read the gap as an intentional doorway. Adjacent facades that are genuinely breached/destroyed are not claimed as active doorway connectors.
+- Both persistent and fallback Three.js renderers use the same doorway-frame builder and expose a doorway-frame diagnostic count. Browser 1230 projection-aware seam infill and Browser 1050 corner returns remain in place for non-door facade joins.
+- Save format remains 4. Browser 0904 tetromino footprint authority, Browser 0745 IndexedDB storage, pathfinding, collision, LOS, cover, breaching and save compatibility are unchanged.
+- **Acceptance:** revisit the exact building/camera angles from the two field screenshots; verify each formerly full-hex hole now reads as a framed open doorway with a clear center passage. Walk units through both entrances, orbit/zoom around the frames, inspect FPV/TPV, breach an adjacent wall, save/reload, and switch renderer/view modes. Also inspect representative I/O/T/L/J/S/Z rotations to verify no doorway frame fills an outdoor concave recess or a real breach.
 
 ## Procedural Building Micro-Gap Closure Hotfix — Implemented in Browser 1230
 

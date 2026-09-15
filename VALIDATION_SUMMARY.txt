@@ -1,3 +1,16 @@
+PROJECT AEGIS — BROWSER 1255 VALIDATION SUMMARY
+Build: v0.26.09.15.1255_PROCEDURAL_BUILDING_FRAMED_DOORWAY_CONTINUITY_HOTFIX
+Save format: 4
+
+- Focused Node regression set: 22/22 tests passed across `tools/test-procedural-building-wall-continuity.cjs`, `tools/test-tetromino-building-footprints.cjs`, and `tools/test-indexeddb-save-storage.cjs`. New coverage verifies every generated I/O/T/L/J/S/Z doorway through all four rotations receives one presentation-frame record while the structural center remains open/passable.
+- Doorway presentation tests verify two side wings, lintel and eave generation, world-space neighbor-vector bridging for staggered rows, both Three.js renderer integrations, and presentation-only authority with no structural cover/pickable creation.
+- Existing tetromino footprint, corner-return, projection-aware micro-gap and durable IndexedDB save regressions remain green.
+- Embedded JavaScript syntax passed for all five canonical runtime scripts, the packaged host script and `service-worker.js`.
+- Packaged build seam passed: the host payload decodes byte-for-byte to `src/browser-runtime.html`; runtime bytes/SHA-256, host SHA-256, release metadata, service worker and all three manifest build fields agree on Browser 1255.
+- Field acceptance remains required for the reported visual case: revisit the exact circled entrances, verify they now read as framed open doorways, walk units through them, inspect FPV/TPV and 3D Iso, breach an adjacent wall, save/reload, and verify no frame appears across a true tetromino recess or revealed breach.
+
+--- Previous patch validation ---
+
 PROJECT AEGIS — BROWSER 1230 VALIDATION SUMMARY
 Build: v0.26.09.15.1230_PROCEDURAL_BUILDING_MICRO_GAP_CLOSURE_HOTFIX_PATCH
 Save format: 4

@@ -1,0 +1,12 @@
+PROJECT AEGIS — BROWSER 1255 FRAMED DOORWAY CONTINUITY FIELD ACCEPTANCE
+
+Build: v0.26.09.15.1255_PROCEDURAL_BUILDING_FRAMED_DOORWAY_CONTINUITY_HOTFIX
+Save format: 4
+
+1. Revisit the same building/camera angles from the September 15 field screenshots. The two former full-hex wall holes should now read as intentional framed open doorways.
+2. Walk an AEGIS soldier and a VIP/civilian through each entrance. The center must remain passable and must not behave like hard cover.
+3. Orbit/zoom in 3D Iso and inspect the same entrances in FPV/TPV. Side wings should meet neighboring facade segments without diagonal cracks on staggered rows.
+4. Inspect the lintel, trim and roof/eave above each opening. The entrance should be visually bounded rather than appearing as a missing wall cell.
+5. Breach/destroy a wall immediately beside a doorway. The actual breach must remain open; doorway presentation must not replace structural authority.
+6. Save/reload and switch renderer/view modes. Doorway framing should remain stable and the building footprint/door locations must not change.
+7. Spot-check I/O/T/L/J/S/Z buildings and concave recesses. Doorway frames must appear only at declared doors, never across an outdoor tetromino recess or revealed breach.

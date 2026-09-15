@@ -1,3 +1,19 @@
+v0.26.09.15.1255_PROCEDURAL_BUILDING_FRAMED_DOORWAY_CONTINUITY_HOTFIX
+
+Procedural Building Framed Doorway Continuity Hotfix
+- Field follow-up to Browser 1230: the remaining circled “gaps” align with generated doorway cells. Those cells are deliberately omitted from `tacticalBuildingCovers(...)` so units can enter, which means prior seam/corner fixes correctly refused to fill them and left an entire perimeter hex visually empty.
+- `tacticalThreeBuildingDoorwayFrameRecords(...)` now derives a presentation frame for every declared procedural door after the building is discovered. The doorway center remains passable and receives no structural cover.
+- `tacticalThreeBuildDoorwayFrames(...)` builds two full-height side wings from a narrow opening to the neighboring facade using actual world-space neighbor vectors. This matters on staggered rows, where a north/south grid neighbor is diagonal in Three.js world space.
+- Each entrance also gets a lintel, trim cap and roof/eave bridge so it reads as an intentional open doorway rather than a missing wall cell. If an adjacent facade has actually been breached/destroyed, the frame does not claim that neighbor as an active connector.
+- Both persistent and fallback Three.js renderers use the same doorway-frame helper and expose `aegisBuildingDoorwayFrameCount`. Preserve Browser 1230 projection-aware micro-gap fills, Browser 1050 corner returns, Browser 0904 tetromino footprint authority, Browser 0745 IndexedDB storage and save format 4.
+- Focused regression remains `tools/test-procedural-building-wall-continuity.cjs`; new cases cover every I/O/T/L/J/S/Z rotation and verify that declared doors receive presentation frames while their center stays structurally open.
+
+Next roadmap candidate
+- **Post-Contact Fire-Team Reassembly and Mission Continuation** remains the next recommended behavior patch after doorway/wall field acceptance.
+- After cohesion: tactical soldier face/equipment identity matching, then Command Screen → AEGIS Operations Overview.
+
+--- Previous patch ---
+
 v0.26.09.15.1230_PROCEDURAL_BUILDING_MICRO_GAP_CLOSURE_HOTFIX_PATCH
 
 Procedural Building Micro-Gap Closure Hotfix
