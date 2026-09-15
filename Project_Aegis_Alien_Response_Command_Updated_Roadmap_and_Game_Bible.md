@@ -1,8 +1,20 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.14.2320_TACTICAL_CIVIC_LANDMARK_1_TO_7_HEX_FOOTPRINT_PATCH`
+Current browser build: `v0.26.09.15.0745_INDEXEDDB_SAVE_STORAGE_HOTFIX`
 
 Current save format: `4`
+
+## Durable IndexedDB Save Storage — Implemented in Browser 0745
+
+**Reported September 15, 2026. Status: implemented in Browser 0745.**
+
+- The reported Month 3 / Day 18 campaign export remains a valid save-format-4 file, but its full campaign payload has grown to roughly 894 KB minified. Repeating full snapshots across ten manual slots plus rotating autosaves can exceed the smaller synchronous localStorage origin quota even though the save itself is valid.
+- Use IndexedDB as the browser’s primary durable authority for manual save slots and rotating autosaves. Keep the current ten manual slots and two rotating autosaves; this is a storage-backend correction, not a save-format change.
+- Read legacy localStorage slot collections for backward compatibility. If IndexedDB has no collection yet, migrate existing slots lazily. Remove the superseded large localStorage collection only after the IndexedDB write succeeds.
+- Route manual save/delete, all-slot backup import, timed autosave, post-mission reboot checkpoint and startup post-mission restore through the same durable storage layer so these systems cannot disagree about which snapshot is authoritative.
+- If IndexedDB is unavailable or rejected, retain the existing localStorage compatibility fallback. If a manual save still cannot be persisted, retain the emergency import-compatible JSON download so campaign state is not silently lost.
+- Existing exported campaign JSON remains import-compatible. Save format remains 4.
+- **Acceptance:** import a large late-campaign JSON, save it into multiple manual slots, reload the PWA and load those slots; verify two-slot autosave rotation; finish a mission and verify the post-mission reboot restores its checkpoint; confirm legacy localStorage slots migrate; and confirm the emergency JSON path still appears only when both durable and fallback storage reject a manual save.
 
 ## 1–7 Hex Statues and Fountains — Implemented in Browser 2320
 

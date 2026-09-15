@@ -1,3 +1,15 @@
+PROJECT AEGIS — BROWSER 0745 VALIDATION SUMMARY
+Build: v0.26.09.15.0745_INDEXEDDB_SAVE_STORAGE_HOTFIX
+Save format: 4
+
+- Uploaded Browser 1351 campaign diagnostic: valid save format 4; 1,350,817 bytes pretty-printed / 894,436 bytes minified. The campaign data alone is 894,053 bytes, including 59 soldiers (~497 KB), 40 mission reports (~241 KB), and 270 aircraft records (~115 KB). This supports browser storage quota exhaustion when multiple full snapshots are retained in localStorage.
+- Full Node regression suite: 103/103 tests passed, including the new 5/5 IndexedDB save-storage contract covering primary durable storage, manual-save commit ordering, autosave/post-mission checkpoint authority, legacy localStorage migration/fallback, and unchanged save format 4.
+- All six tactical smoke scripts passed. Embedded runtime JavaScript syntax and the packaged build seam check passed. The previous civic-landmark footprint suite remains green within the full regression run.
+- Headless Chromium real-page validation was attempted, but this execution environment blocks localhost and file URLs by administrator policy before the Aegis host can load; this is an environment limitation, not a game runtime failure. Field acceptance therefore remains required for the actual PWA/browser storage path.
+- Field acceptance: import the reported late-campaign JSON, save into several manual slots, reload and load them, verify rotating autosaves and a post-mission reboot checkpoint, and confirm an older localStorage slot migrates without data loss.
+
+--- Previous patch validation ---
+
 PROJECT AEGIS — BROWSER 2320 VALIDATION SUMMARY
 Build: v0.26.09.14.2320_TACTICAL_CIVIC_LANDMARK_1_TO_7_HEX_FOOTPRINT_PATCH
 Save format: 4

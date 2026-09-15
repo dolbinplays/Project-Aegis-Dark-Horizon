@@ -1,3 +1,22 @@
+v0.26.09.15.0745_INDEXEDDB_SAVE_STORAGE_HOTFIX
+
+Durable IndexedDB Save Storage Hotfix
+- A mature Month 3 / Day 18 campaign export from Browser 1351 is about 1.35 MB pretty-printed / 894 KB minified. Storing repeated full-campaign snapshots across ten manual slots plus rotating autosaves in localStorage can exhaust the browser origin quota and produce the observed “Browser storage rejected the save” failure.
+- IndexedDB is now the primary storage authority for manual save collections and rotating autosaves. Existing localStorage collections migrate lazily; successful IndexedDB writes reclaim the superseded large localStorage key.
+- Save, delete, save-slot-backup import, autosave, post-mission reboot checkpoint and startup resume use the durable backend. localStorage remains a compatibility fallback, and the emergency JSON download remains the last-resort manual-save recovery path.
+- Existing exported JSON files remain import-compatible. Save format remains 4.
+
+--- Previous patch ---
+
+v0.26.09.14.2320_TACTICAL_CIVIC_LANDMARK_1_TO_7_HEX_FOOTPRINT_PATCH
+
+Tactical Civic Landmark 1–7 Hex Footprints
+- Statues and fountains use deterministic connected 1–7 hex footprints with shared placement, collision/pathfinding, hard-cover, visibility and selection authority.
+- 3D landmark presentation is centered/scaled to the authoritative footprint; footprint cells and scale survive save/reload.
+- Placement protects roads, ingress, neighboring structures, props and Skyranger extraction space. Save format remains 4.
+
+--- Previous patch ---
+
 v0.26.09.14.1351_LAYERED_BUS_AND_SCHOOL_BUS_COLORS_PATCH
 
 Layered Bus Body and School-Bus Colors

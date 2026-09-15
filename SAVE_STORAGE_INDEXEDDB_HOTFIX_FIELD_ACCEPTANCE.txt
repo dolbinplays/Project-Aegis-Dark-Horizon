@@ -1,0 +1,31 @@
+PROJECT AEGIS — DURABLE INDEXEDDB SAVE STORAGE HOTFIX FIELD ACCEPTANCE
+Build: v0.26.09.15.0745_INDEXEDDB_SAVE_STORAGE_HOTFIX
+Save format: 4
+
+Reported regression
+- Import the supplied Post-Mission Autosave - Alien Abduction Site Browser 1351 JSON. It is a valid save-format-4 campaign and should continue loading normally.
+- From that imported campaign, save to a manual slot. The save must complete without the “Browser storage rejected the save” modal under ordinary available site storage.
+
+Manual save durability
+- Save the imported campaign into at least three different manual slots.
+- Close/reload the PWA/browser and confirm the same slot names/metadata return.
+- Load each slot and verify Month 3 / Day 18 campaign state is intact.
+- Delete one slot, reload, and verify the deletion persists.
+
+Legacy migration
+- If an older localStorage-backed slot collection exists, launch this build and confirm the slots appear.
+- Perform one successful save and reload. Confirm the migrated slots remain present and writable.
+
+Autosave and post-mission lifecycle
+- Allow two rotating autosaves to be written and confirm both remain available across reload.
+- Complete a tactical mission and let the post-mission runtime reboot occur. Confirm the report/campaign resumes from the verified post-mission checkpoint with audio state continuity unchanged.
+
+Fallback safety
+- Existing exported .project-aegis-save.json files must still import without conversion.
+- If IndexedDB is unavailable, localStorage remains the compatibility fallback.
+- If both durable storage and the compatibility fallback reject a manual save, the existing emergency import-compatible JSON download should still be offered.
+
+Pass criteria
+- No save-format bump: save format remains 4.
+- Large imported campaigns can create persistent manual saves without relying on localStorage capacity.
+- Manual slots, autosaves, and post-mission checkpoints survive reload and agree on the same durable storage authority.

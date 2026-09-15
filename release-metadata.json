@@ -1,8 +1,8 @@
 {
-  "build": "v0.26.09.14.2320_TACTICAL_CIVIC_LANDMARK_1_TO_7_HEX_FOOTPRINT_PATCH",
-  "package_filename": "Project_Aegis_v0.26.09.14.2320_TACTICAL_CIVIC_LANDMARK_1_TO_7_HEX_FOOTPRINT_PATCH.zip",
+  "build": "v0.26.09.15.0745_INDEXEDDB_SAVE_STORAGE_HOTFIX",
+  "package_filename": "Project_Aegis_v0.26.09.15.0745_INDEXEDDB_SAVE_STORAGE_HOTFIX.zip",
   "save_format": 4,
-  "runtime_bytes": 7151060,
-  "runtime_sha256": "3711bc9e8626625ace0605dfd8dab2a1c48765c5e5d02b581765da0487911972",
-  "host_sha256": "d8d5342c34f89df74bc1630215d32b4595b79c27ddef2c38d31a32379e9a14ee"
+  "runtime_bytes": 7160127,
+  "runtime_sha256": "baae22b9b99ad77d68130834472dc9a0b34a50c2075eca8f15a3397823b25bb6",
+  "host_sha256": "a33a93375d4dbdb570ed7c30fdb3cba05996243217316e50d18585d9bc7300cb"
 }

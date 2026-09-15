@@ -1,3 +1,15 @@
+BUILD: v0.26.09.15.0745_INDEXEDDB_SAVE_STORAGE_HOTFIX
+
+Durable IndexedDB Save Storage Hotfix
+- Manual save slots and rotating autosaves now use IndexedDB as the primary browser storage backend so mature campaigns are not constrained by the much smaller localStorage quota.
+- Existing localStorage manual/autosave slots remain readable and migrate lazily into IndexedDB. After a successful durable write, the superseded large localStorage collection is removed to reclaim site quota.
+- Manual save, delete, all-slot backup import, rotating autosave, post-mission reboot checkpoint, and post-mission resume now share the same durable storage authority.
+- If IndexedDB is unavailable or rejected, the existing localStorage fallback remains; if browser storage still rejects a manual save, the emergency import-compatible JSON download remains the final safety path.
+- Existing exported campaign JSON remains import-compatible. Save format remains 4.
+- Publish index.html, service-worker.js and release-metadata.json together with existing assets.
+
+--- Previous patch ---
+
 BUILD: v0.26.09.14.2320_TACTICAL_CIVIC_LANDMARK_1_TO_7_HEX_FOOTPRINT_PATCH
 
 Tactical Civic Landmark 1–7 Hex Footprints
