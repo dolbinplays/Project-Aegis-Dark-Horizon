@@ -1,16 +1,3 @@
-PROJECT AEGIS — BROWSER 1255 PATCH NOTES
-Build: v0.26.09.15.1255_PROCEDURAL_BUILDING_FRAMED_DOORWAY_CONTINUITY_HOTFIX
-Save format: 4
-
-Procedural Building Framed Doorway Continuity Hotfix
-- Field follow-up to Browser 1230. The remaining large circled openings were generated doorway cells: procedural structure generation intentionally omits structural wall covers there so the doorway is traversable, which left a whole perimeter hex visually empty.
-- Every discovered declared doorway now receives a presentation-only frame: two full-height side wings, a lintel, trim cap and roof/eave bridge. The center remains open and passable.
-- Side wings follow the actual world-space vector to active neighboring facade cells, so staggered tactical rows cannot leave a diagonal crack beside the entrance.
-- Breached/destroyed neighboring facade cells are not claimed as active doorway connectors. No structural cover, collision proxy, LOS blocker, HP object or pickable target is added.
-- Both persistent and fallback Three.js renderers use the same doorway-frame helper. Browser 1230 micro-gap closure, Browser 1050 corner returns, Browser 0904 tetromino footprints and Browser 0745 IndexedDB storage remain intact. Save format remains 4.
-
---- Previous patch notes ---
-
 PROJECT AEGIS — BROWSER 1230 PATCH NOTES
 Build: v0.26.09.15.1230_PROCEDURAL_BUILDING_MICRO_GAP_CLOSURE_HOTFIX_PATCH
 Save format: 4
