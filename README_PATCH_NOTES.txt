@@ -1,3 +1,14 @@
+BUILD: v0.26.09.14.2320_TACTICAL_CIVIC_LANDMARK_1_TO_7_HEX_FOOTPRINT_PATCH
+
+Tactical Civic Landmark 1–7 Hex Footprints
+- Statues and fountains now use deterministic connected footprints from 1 through 7 occupied hexes; 7 hexes is the center plus all six neighbors.
+- Whole-footprint placement avoids generated routes, protected building ingress, neighboring structures and other scene props. Battlefield occupancy and Skyranger extraction placement reserve the same cells.
+- Hard-cover collision/pathfinding, visibility reveal and selection use the shared footprint. Three.js centers the model on the footprint and scales the base/model together; 2D icons report the footprint size.
+- Footprint cells and visual scale persist in tactical cover state across save/reload. Save format remains 4.
+- Publish index.html, service-worker.js and release-metadata.json together with existing assets.
+
+--- Previous patch ---
+
 BUILD: v0.26.09.14.1351_LAYERED_BUS_AND_SCHOOL_BUS_COLORS_PATCH
 
 Layered Bus Body and School-Bus Colors

@@ -1,3 +1,14 @@
+PROJECT AEGIS — BROWSER 2320 VALIDATION SUMMARY
+Build: v0.26.09.14.2320_TACTICAL_CIVIC_LANDMARK_1_TO_7_HEX_FOOTPRINT_PATCH
+Save format: 4
+
+- 98/98 Node tests and all six tactical smoke scripts passed. Runtime embedded-JavaScript syntax checks and the packaged build seam check passed.
+- Landmark helper coverage exercises all seven footprint sizes; each footprint is unique and connected, with 7H using the center plus all six immediate neighbors. Placement tests cover generated routes, protected ingress, building proximity and already occupied cells.
+- Source integration coverage checks whole-footprint battlefield reservation, hard-cover blockers, edge visibility reveal/selection authority, Skyranger extraction clearance, JSON footprint/scale persistence and footprint-centroid 3D scaling.
+- Field acceptance remains: inspect representative 1H–7H statues/fountains in live generated city/small-town battles, verify model fit and edge selection/visibility, then save/reload and confirm no unit can traverse occupied cells.
+
+--- Previous patch validation ---
+
 PROJECT AEGIS — BROWSER 1351 VALIDATION SUMMARY
 Build: v0.26.09.14.1351_LAYERED_BUS_AND_SCHOOL_BUS_COLORS_PATCH
 Save format: 4

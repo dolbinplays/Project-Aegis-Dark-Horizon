@@ -1,8 +1,21 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.14.1351_LAYERED_BUS_AND_SCHOOL_BUS_COLORS_PATCH`
+Current browser build: `v0.26.09.14.2320_TACTICAL_CIVIC_LANDMARK_1_TO_7_HEX_FOOTPRINT_PATCH`
 
 Current save format: `4`
+
+## 1–7 Hex Statues and Fountains — Implemented in Browser 2320
+
+**Requested September 13, 2026. Status: implemented in Browser 2320.**
+
+- Generate statues and fountains with every integer footprint size from 1 through 7 occupied hexes, using deliberate connected footprints. The 7-hex landmark uses a center cell plus its six immediate neighbors.
+- Scale the landmark model and base together to match the declared occupied footprint. Use that same footprint for placement clearance, collision/pathfinding, hard-cover blocking, visibility/reveal and selection.
+- Keep civic landmarks clear of generated routes, protected building approaches, neighboring structures, other props and Skyranger extraction/deployment space.
+- Persist both the chosen footprint cells and visual scale in tactical cover state so save/reload and renderer changes retain the landmark's physical size.
+- 3D rendering centers the landmark on the footprint centroid and scales the complete statue/fountain assembly as one unit. The 2D tactical icon reports the occupied size from 1H through 7H.
+- **Acceptance:** exercise all seven sizes in live generated battles; verify the model fits the occupied cells, units cannot walk through any occupied edge cell, visibility/selection works from footprint edges, and save/reload retains the same footprint and scale.
+
+Save format remains 4. Native Godot parity remains a separate engine-port task.
 
 ## Layered Bus Body and School-Bus Colors — Implemented in Browser 1351
 
@@ -129,11 +142,11 @@ Fire-Team Vitals Reassignment + Vehicle Headlight Alignment
 - Headlamps sit on the short front face along local +X; forward spotlights use the same group rotation. Daytime/unpowered lenses remain attached but do not emit light.
 - Existing tactical illumination, footprints, casualty-impact display timing and save format 4 are preserved.
 
-Roadmap intake items 1 and 2 are implemented in this build, pending field acceptance. Item 3 was subsequently implemented in Browser 1149. Items 4–6 remain planned.
+Roadmap intake items 1 and 2 are implemented in Browser 1209, pending field acceptance. Item 3 was subsequently implemented in Browser 1149. Item 4 is implemented in Browser 2320. Items 5–6 remain planned.
 
 ## Roadmap Intake — September 13, 2026: Fire-Team Vitals, Streets, Landmarks, Building Shapes and Soldier Identity
 
-**Status: items 1 and 2 implemented in Browser 1209, pending field acceptance; items 3–6 remain requested roadmap work.** The original intake was planning-only. See the current build addendum above for the implemented items.
+**Status: items 1 and 2 implemented in Browser 1209, pending field acceptance; item 3 implemented in Browser 1149; item 4 implemented in Browser 2320; items 5–6 remain requested roadmap work.** The original intake was planning-only. See the current build addenda above for the implemented items.
 
 ### 1. Reflect survivor absorption in fire-team vitals
 
@@ -158,12 +171,14 @@ Roadmap intake items 1 and 2 are implemented in this build, pending field accept
 
 Implementation: connected road cells identify crossings and T-junctions. Controls reserve safe roadside positions as complete arrangements before other props, face incoming approaches and are never relocated off-junction by entrance cleanup. New generation only; saved placements and save format 4 remain intact. Junctions without sufficient safe space or prop budget are left uncontrolled.
 
-### 4. Support statues and fountains from one to seven hexes
+### 4. Support statues and fountains from one to seven hexes — Implemented in Browser 2320
 
 - Generate statues and fountains with varied sizes spanning **every integer footprint size from 1 through 7 occupied hexes**. The largest compact footprint may use a center hex plus its six neighbors; intermediate sizes must form deliberate connected footprints.
 - Scale the landmark's model and base together to match its declared occupied cells. Placement clearance, collision, pathfinding, cover/LOS where applicable, selection and visibility must use the same footprint rather than treating an enlarged landmark as a one-hex object.
 - Keep larger landmarks clear of reserved roads, entrances, extraction paths and neighboring structures. Retain the chosen footprint and visual scale across saves and renderer changes.
 - **Acceptance:** exercise all seven footprint sizes, verify that the model fits its footprint and that units cannot walk through occupied cells, and inspect visibility/selection at the footprint edges.
+
+Implementation: new civic landmarks choose deterministic connected footprints of 1–7 cells, store their exact footprint plus visual scale, and use the full footprint for battlefield reservation, hard-cover collision/pathfinding, visibility/reveal, selection and Skyranger placement clearance. Three.js centers the complete landmark assembly on the footprint centroid and scales its base/model together. Saved landmarks retain both footprint and scale; save format remains 4.
 
 ### 5. Add buildings shaped like standard Tetris pieces
 

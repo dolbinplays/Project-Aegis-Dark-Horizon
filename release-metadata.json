@@ -1,8 +1,8 @@
 {
-  "build": "v0.26.09.14.1351_LAYERED_BUS_AND_SCHOOL_BUS_COLORS_PATCH",
-  "package_filename": "Project_Aegis_v0.26.09.14.1351_LAYERED_BUS_AND_SCHOOL_BUS_COLORS_PATCH.zip",
+  "build": "v0.26.09.14.2320_TACTICAL_CIVIC_LANDMARK_1_TO_7_HEX_FOOTPRINT_PATCH",
+  "package_filename": "Project_Aegis_v0.26.09.14.2320_TACTICAL_CIVIC_LANDMARK_1_TO_7_HEX_FOOTPRINT_PATCH.zip",
   "save_format": 4,
-  "runtime_bytes": 7142177,
-  "runtime_sha256": "cb91d40f48d89d46e53457ed032730826f2bf021521322c30b8c5d5df8b2194f",
-  "host_sha256": "c1a5591349f9fb3a1a20ad5796de904e95cd754ddde679729e345023f8093e2a"
+  "runtime_bytes": 7151060,
+  "runtime_sha256": "3711bc9e8626625ace0605dfd8dab2a1c48765c5e5d02b581765da0487911972",
+  "host_sha256": "d8d5342c34f89df74bc1630215d32b4595b79c27ddef2c38d31a32379e9a14ee"
 }

@@ -1,0 +1,20 @@
+PROJECT AEGIS — TACTICAL CIVIC LANDMARK 1–7 HEX FIELD ACCEPTANCE
+Build: v0.26.09.14.2320_TACTICAL_CIVIC_LANDMARK_1_TO_7_HEX_FOOTPRINT_PATCH
+Save format: 4 (unchanged)
+
+Goal
+Confirm that statues and fountains visually and physically occupy their declared connected 1–7 hex footprint in live play.
+
+Checklist
+1. Generate city/small-town tactical maps until representative statue/fountain landmarks from 1H through 7H are observed. The 2D civic icon reports the declared footprint size.
+2. Inspect the 7H case: it should use one center cell plus all six immediate neighbors. Intermediate footprints should stay connected and compact.
+3. Route player soldiers, AI soldiers/aliens and escorted VIPs around landmark edge cells. No unit should path or move through an occupied cell while the landmark is intact.
+4. Approach/reveal a landmark from an edge footprint cell and verify visibility/reveal and cover selection use the complete footprint rather than only the anchor.
+5. Verify newly generated landmarks do not overlap generated roads/routes, protected door approach lanes, buildings/adjacent structures, other props, or Skyranger ramp/extraction/deployment traffic.
+6. Switch between 2D tactical, 3D isometric, FPV/TPV as applicable. The landmark should keep the same physical footprint and the complete base/model should scale together around the footprint center.
+7. Save during a mission, reload, and repeat footprint-edge movement/selection checks. The same footprint cells and visual scale should be retained.
+8. If a landmark is destroyed through existing destructible-cover behavior, verify the existing destroyed-cover traversal/visual rules still apply normally.
+
+Automated coverage
+- Exercises all seven connected footprint sizes and 7H center-plus-six-neighbor topology.
+- Checks deterministic/persisted visual scale, placement clearance, whole-footprint battlefield reservation, edge visibility/selection integration, extraction clearance and 3D centroid/scaling integration.
