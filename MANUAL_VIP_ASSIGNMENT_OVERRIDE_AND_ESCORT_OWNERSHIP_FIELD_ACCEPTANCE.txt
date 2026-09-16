@@ -1,0 +1,25 @@
+PROJECT AEGIS — BROWSER 2345 FIELD ACCEPTANCE
+Build: v0.26.09.15.2345_MANUAL_VIP_ASSIGNMENT_OVERRIDE_AND_ESCORT_OWNERSHIP_HOTFIX
+Save format: 4
+
+Primary reproduction
+- Enter a tactical mission with at least two AEGIS fire teams and a known civilian/VIP.
+- In Assign Objectives, assign that civilian/VIP to Alpha Fire Team.
+- Take player control of a Bravo Fire Team soldier, move within contact distance, and use Contact.
+- If the civilian is calm and not already following anyone, the contact must be permitted despite Alpha's pre-escort objective reservation.
+- After the civilian joins Bravo's soldier, Alpha's stale civilian objective (and any assist assignment tied to it) must release to Default AI / next appropriate objective.
+
+AI reservation preservation
+- Repeat without manually contacting the civilian. Default/Simulation AI from Bravo must not autonomously steal Alpha's assigned rescuee.
+
+Physical escort ownership
+- Once the civilian/VIP is actually following Alpha (escortId is set), attempt Contact with Bravo.
+- Bravo must be told the civilian is already following the active escort; physical escort ownership must not be stolen.
+
+Failure/logging
+- Exercise any state in which Contact resolves to no legal candidate. The UI must not report that the civilian was contacted/will follow.
+
+Continuity
+- Save/reload before and after the manual handoff.
+- Confirm Browser 2231 AI Command stream handoff/escort-leader behavior remains intact.
+- Confirm save format remains 4.

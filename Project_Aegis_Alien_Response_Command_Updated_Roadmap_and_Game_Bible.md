@@ -1,8 +1,18 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.15.2231_AI_COMMAND_STREAM_HANDOFF_AND_ESCORT_LOCK_RUNTIME_HOTFIX`
+Current browser build: `v0.26.09.15.2345_MANUAL_VIP_ASSIGNMENT_OVERRIDE_AND_ESCORT_OWNERSHIP_HOTFIX`
 
 Current save format: `4`
+
+## Manual VIP Assignment Override + Escort Ownership Hotfix — Implemented in Browser 2345
+
+**September 15, 2026. Status: implemented; live field acceptance required.**
+
+- Assign Objectives reservations remain exclusive to autonomous AI planning, preventing AI teams from stealing one another's rescue assignments.
+- Explicit player Contact may override a different fire team's pre-escort civilian/VIP reservation.
+- Successful contact transfers the actual escort and releases the displaced objective/assist team through the existing handoff authority.
+- Active escortId ownership remains protected; this hotfix does not permit stealing a civilian/VIP who is already following another soldier.
+- Save format remains **4**.
 
 ## AI Command Stream Handoff + Escort Lock Runtime Hotfix — Implemented in Browser 2231
 

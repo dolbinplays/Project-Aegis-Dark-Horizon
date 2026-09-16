@@ -1,3 +1,17 @@
+PROJECT AEGIS — BROWSER 2345 VALIDATION SUMMARY
+Build: v0.26.09.15.2345_MANUAL_VIP_ASSIGNMENT_OVERRIDE_AND_ESCORT_OWNERSHIP_HOTFIX
+Save format: 4
+
+Manual VIP Assignment Override + Escort Ownership Hotfix
+- Root cause confirmed in Browser 2231: tacticalFireTeamContactCivilianIds() treated fireTeamObjectiveAssignmentTargetId as exclusive contact ownership even when the player explicitly selected a soldier from another fire team.
+- The hotfix gives only the explicit manual Contact path an allowAssignmentOverride authority flag. Autonomous AI calls keep the default false behavior.
+- Real escortId ownership is now explicitly protected from cross-soldier theft.
+- Existing tacticalReleaseDisplacedCivilianAssignmentsInPlace() remains the single handoff/release authority after a successful join.
+- The manual path now guards an empty candidate set before emitting its contact-success text.
+- Focused regression verifies AI reservation preservation, player override, active escort protection, post-join owner release, UI wiring, marker presence, and save format 4.
+- Browser 2345 focused/retained validation passed: manual override **10/10**, central objective authority **23/23**, global contact/VIP **6/6**, AI Command handoff **2/2**, contact/local-sector search **5/5**, Mobile/PWA **9/9**, mobile interface **10/10**, VIP escort markers **5/5**, and post-contact reassembly **5/5**.
+- `tools/check-aegis-build.cjs`, embedded JavaScript syntax, and `service-worker.js` syntax all pass. Packaged runtime: **7,234,011 bytes**, SHA-256 `64169df2085c4b9ed081d78d8bc2ea629a7f482f2babf8c3f2fe7c815e882566`; generated host SHA-256 `fc8579e4897789452db673dd34b88e88e8d04e7049c7cf7c9eaf38acabc1ef5a`.
+
 PROJECT AEGIS — BROWSER 2231 VALIDATION SUMMARY
 Build: v0.26.09.15.2231_AI_COMMAND_STREAM_HANDOFF_AND_ESCORT_LOCK_RUNTIME_HOTFIX
 Save format: 4

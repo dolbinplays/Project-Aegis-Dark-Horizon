@@ -1,8 +1,8 @@
 {
-  "build": "v0.26.09.15.2231_AI_COMMAND_STREAM_HANDOFF_AND_ESCORT_LOCK_RUNTIME_HOTFIX",
-  "package_filename": "Project_Aegis_v0.26.09.15.2231_AI_COMMAND_STREAM_HANDOFF_AND_ESCORT_LOCK_RUNTIME_HOTFIX.zip",
+  "build": "v0.26.09.15.2345_MANUAL_VIP_ASSIGNMENT_OVERRIDE_AND_ESCORT_OWNERSHIP_HOTFIX",
+  "package_filename": "Project_Aegis_v0.26.09.15.2345_MANUAL_VIP_ASSIGNMENT_OVERRIDE_AND_ESCORT_OWNERSHIP_HOTFIX.zip",
   "save_format": 4,
-  "runtime_bytes": 7232934,
-  "runtime_sha256": "fba5594ebffe042807b978d7278dde91ab48242b2ef6e2b8be506f87d04cc8ef",
-  "host_sha256": "d0af84f8cf62412a08e5423994cca724f8f0a71b333808ca410e3db20e4db3df"
+  "runtime_bytes": 7234011,
+  "runtime_sha256": "64169df2085c4b9ed081d78d8bc2ea629a7f482f2babf8c3f2fe7c815e882566",
+  "host_sha256": "fc8579e4897789452db673dd34b88e88e8d04e7049c7cf7c9eaf38acabc1ef5a"
 }

@@ -1,3 +1,18 @@
+# CODEX HANDOFF — v0.26.09.15.2345_MANUAL_VIP_ASSIGNMENT_OVERRIDE_AND_ESCORT_OWNERSHIP_HOTFIX
+
+Browser 2345 is a narrow manual-rescue ownership hotfix on top of Browser 2231. Save format remains 4.
+
+## Authority distinction
+- **Assign Objectives civilian ownership is an AI planning reservation.** Default/Simulation AI should not steal another fire team's explicit civilian/VIP assignment.
+- **escortId is physical escort ownership.** Once a civilian/VIP is actually following a soldier, unrelated soldiers may not steal that escort.
+- **Explicit player Contact may override a reservation that has not yet become an escort.** On a successful join, the existing displaced-assignment release authority clears the previous owner/assist team so they can resume their next objective.
+
+The patch deliberately does not change the Browser 1704/2121 nine-level Default AI priority hierarchy or Browser 2231 escort-leader lock.
+
+Focused regression: tools/test-manual-vip-assignment-override-hotfix.cjs.
+
+--- Previous handoff ---
+
 # CODEX HANDOFF — v0.26.09.15.2231_AI_COMMAND_STREAM_HANDOFF_AND_ESCORT_LOCK_RUNTIME_HOTFIX
 
 Browser 2231 is the runtime-integration hotfix following Browser 2121's central Default AI objective authority work. Save format remains 4.

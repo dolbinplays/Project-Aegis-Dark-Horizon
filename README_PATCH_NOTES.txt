@@ -1,3 +1,19 @@
+BUILD: v0.26.09.15.2345_MANUAL_VIP_ASSIGNMENT_OVERRIDE_AND_ESCORT_OWNERSHIP_HOTFIX
+
+PROJECT AEGIS — BROWSER 2345 PATCH NOTES
+Build: v0.26.09.15.2345_MANUAL_VIP_ASSIGNMENT_OVERRIDE_AND_ESCORT_OWNERSHIP_HOTFIX
+Save format: 4
+
+Manual VIP Assignment Override + Escort Ownership Hotfix
+- Separates Assign Objectives reservations from real escort ownership. A civilian/VIP assigned to another fire team remains reserved for autonomous AI planning, but an explicit player Contact action may override that pre-escort reservation.
+- A successful player override uses the existing displaced-objective handoff: the civilian follows the selected soldier and the previous owning/assist fire team is released only after the civilian actually joins.
+- A real escortId remains exclusive physical ownership; another soldier cannot steal a civilian/VIP who is already actively following someone else.
+- Adds a zero-candidate guard so a blocked contact can no longer emit a false success message.
+- Default/Simulation AI still respects explicit civilian objective ownership and cannot autonomously steal another team's assigned rescuee.
+- Save format remains 4.
+
+Focused regression: tools/test-manual-vip-assignment-override-hotfix.cjs
+
 BUILD: v0.26.09.15.2231_AI_COMMAND_STREAM_HANDOFF_AND_ESCORT_LOCK_RUNTIME_HOTFIX
 
 PROJECT AEGIS — BROWSER 2231 PATCH NOTES

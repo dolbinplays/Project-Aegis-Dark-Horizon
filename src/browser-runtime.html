@@ -1512,7 +1512,7 @@ function aegisTacticalViewportDimensions(mount,fallback={},layout=AEGIS_INTERFAC
 }
 // AEGIS_MOBILE_INTERFACE_END
 
-const CURRENT_GAME_BUILD="v0.26.09.15.2231_AI_COMMAND_STREAM_HANDOFF_AND_ESCORT_LOCK_RUNTIME_HOTFIX";
+const CURRENT_GAME_BUILD="v0.26.09.15.2345_MANUAL_VIP_ASSIGNMENT_OVERRIDE_AND_ESCORT_OWNERSHIP_HOTFIX";
 const BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH=true;
 const TACTICAL_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH=true;
 const TACTICAL_OBSERVED_BEACON_REINFORCEMENT_CINEMATIC_DURATION_MS=2300;
@@ -6398,12 +6398,16 @@ function tacticalExplicitVipOwnerTeamMap(units=[]){
   });
   return owners;
 }
-function tacticalFireTeamContactCivilianIds(units=[],leader=null,primary=null,mission={}){
+function tacticalFireTeamContactCivilianIds(units=[],leader=null,primary=null,mission={},options={}){
   if(!leader||!primary)return[];
+  const allowAssignmentOverride=Boolean(options?.allowAssignmentOverride);
+  // An Assign Objectives civilian reservation is AI planning authority, not a physical escort lock.
+  // A real escortId is physical ownership and cannot be stolen by an unrelated manual contact.
+  if(primary.escortId&&primary.escortId!==leader.id)return[];
   const explicitOwners=tacticalExplicitVipOwnerTeamMap(units),primaryOwner=explicitOwners.get(primary.id)||null,building=tacticalBuildingCellAt(primary.x,primary.y,mission||{})?.building||null,existingFollowers=tacticalEscortFollowers(units,leader.id),existingFollowerInBuilding=Boolean(building&&existingFollowers.some(unit=>tacticalBuildingCellAt(unit.x,unit.y,mission||{})?.building?.id===building.id));
-  if(primaryOwner&&leader.fireTeamId&&primaryOwner!==leader.fireTeamId&&!existingFollowerInBuilding)return[];
+  if(primaryOwner&&leader.fireTeamId&&primaryOwner!==leader.fireTeamId&&!existingFollowerInBuilding&&!allowAssignmentOverride)return[];
   if(!building)return[primary.id];
-  const buildingRescueAuthority=Boolean(existingFollowerInBuilding||!primaryOwner||!leader.fireTeamId||primaryOwner===leader.fireTeamId);
+  const buildingRescueAuthority=Boolean(allowAssignmentOverride||existingFollowerInBuilding||!primaryOwner||!leader.fireTeamId||primaryOwner===leader.fireTeamId);
   if(!buildingRescueAuthority)return[];
   const candidates=units.filter(unit=>unit.team==="civilian"&&unit.hp>0&&!unit.rescued&&!unit.escortId&&tacticalBuildingCellAt(unit.x,unit.y,mission||{})?.building?.id===building.id);
   return candidates.sort((left,right)=>(left.id===primary.id?-1:right.id===primary.id?1:0)||tacticalDistance(leader,left)-tacticalDistance(leader,right)||String(left.id).localeCompare(String(right.id))).map(unit=>unit.id);
@@ -6418,11 +6422,11 @@ function tacticalReleaseDisplacedCivilianAssignmentsInPlace(units=[],civilianIds
   (Array.isArray(units)?units:[]).forEach(unit=>{if(unit?.team!=="human"||!resetTeams.has(unit.fireTeamId))return;Object.assign(unit,{aiVipRescueTargetId:null,aiVipRescueCoordinatorId:null,aiVipRescueAssignedRound:null,aiRescueTargetId:null,aiRescueVisited:[],aiRescueStalls:0,aiVipApproachIngressBuildingId:null,aiVipApproachIngressOpeningX:null,aiVipApproachIngressOpeningY:null,aiVipApproachIngressOutsideX:null,aiVipApproachIngressOutsideY:null,aiVipApproachIngressKind:null,aiVipApproachOpeningKey:null,aiVipApproachStage:null,aiVipApproachStatusLabel:null});});
   return{releasedTeamIds,releasedAssistTeamIds:assistTeamIds};
 }
-function tacticalFireTeamContactCivilians({units=[],leaderId=null,primaryId=null,mission=null,allowNonLeader=false,round=1}={}){
+function tacticalFireTeamContactCivilians({units=[],leaderId=null,primaryId=null,mission=null,allowNonLeader=false,allowAssignmentOverride=false,round=1}={}){
   const leader=units.find(unit=>unit.id===leaderId&&unit.team==="human"&&unit.hp>0);
   const primary=units.find(unit=>unit.id===primaryId&&unit.team==="civilian"&&unit.hp>0&&!unit.rescued);
   if(!leader||!primary||(!allowNonLeader&&!tacticalFireTeamIsLeader(leader,units)))return{units,events:[],joinedIds:[],releasedObjectiveTeamIds:[],releasedAssistTeamIds:[]};
-  const ids=tacticalFireTeamContactCivilianIds(units,leader,primary,mission||{}),existing=tacticalEscortFollowers(units,leader.id).length,events=[],joinedIds=[];
+  const ids=tacticalFireTeamContactCivilianIds(units,leader,primary,mission||{},{allowAssignmentOverride}),existing=tacticalEscortFollowers(units,leader.id).length,events=[],joinedIds=[];
   let next=units.map(unit=>{
     if(ids.includes(unit.escortRecallCivilianId))unit={...unit,escortRecallCivilianId:null,escortRecallRound:null};
     if(unit.id===leader.id)return{...unit,tu:Math.max(0,unit.tu-8),facing:facingToward(unit,primary.x,primary.y),priorityCivilianId:primary.id,escortRecallCivilianId:null,escortRecallRound:null,fireTeamExtractionEscortCleared:false};
@@ -6793,6 +6797,7 @@ const TACTICAL_DEFAULT_AI_GLOBAL_CONTACT_AND_VIP_PRIORITY_HOTFIX=true;
 const TACTICAL_DEFAULT_AI_AUTHORITATIVE_SOLDIER_PRIORITY_STACK_PATCH=true;
 const TACTICAL_DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_AND_ROUTE_INVALIDATION_PATCH=true;
 const TACTICAL_AI_COMMAND_STREAM_HANDOFF_AND_ESCORT_LOCK_RUNTIME_HOTFIX=true;
+const TACTICAL_MANUAL_VIP_ASSIGNMENT_OVERRIDE_AND_ESCORT_OWNERSHIP_HOTFIX=true;
 function tacticalAiAlienHuntTarget({unit,aliens=[],units=[],covers=[],mission=null,explored=[],round=1}={}){
   if(!unit)return null;
   const gridSize=tacticalGridSizeFrom(unit,aliens,units,covers,mission);
@@ -14740,14 +14745,19 @@ function fireAtCover(targetCover){const action=tacticalActionState(unitsRef.curr
   if (!target || target.rescued || target.hp <= 0) return;
   if (tacticalDistance(selectedUnit, target) > 1) return setLog((old) => [target.name + " must be adjacent before an escort can make contact.", ...old].slice(0, 8));
   if (target.escortId === selectedUnit.id && !target.panic) return setLog((old) => [target.name + " is already following " + selectedUnit.name + ".", ...old].slice(0, 8));
+  if (target.escortId && target.escortId !== selectedUnit.id) {
+    const activeEscort = units.find((unit) => unit.id === target.escortId && unit.team === "human");
+    return setLog((old) => [target.name + " is already following " + (activeEscort?.name || "another AEGIS soldier") + ".", ...old].slice(0, 8));
+  }
   const followers = tacticalEscortFollowers(units, selectedUnit.id).filter((civilian) => civilian.id !== target.id);
   const targetBuilding=tacticalBuildingCellAt(target.x,target.y,mission||{})?.building||null,buildingConsolidation=Boolean(targetBuilding&&followers.some(civilian=>tacticalBuildingCellAt(civilian.x,civilian.y,mission||{})?.building?.id===targetBuilding.id));
   if (followers.length >= TACTICAL_ESCORT_CAPACITY&&!buildingConsolidation) return setLog((old) => [selectedUnit.name + " already has four civilians in their escort outside a building-wide rescue consolidation.", ...old].slice(0, 8));
   if (selectedUnit.tu < 8) return setLog((old) => [selectedUnit.name + " needs 8 TU to contact " + target.name + ".", ...old].slice(0, 8));
-  const candidateIds = tacticalFireTeamContactCivilianIds(units, selectedUnit, target, mission);
+  const candidateIds = tacticalFireTeamContactCivilianIds(units, selectedUnit, target, mission, { allowAssignmentOverride: true });
+  if (!candidateIds.length) return setLog((old) => [target.name + " cannot be contacted from the selected soldier's current escort state.", ...old].slice(0, 8));
   let contactResult = null;
   setUnits((old) => {
-    contactResult = tacticalFireTeamContactCivilians({ units: old, leaderId: selectedUnit.id, primaryId: target.id, mission, allowNonLeader: true, round: tacticalRound });
+    contactResult = tacticalFireTeamContactCivilians({ units: old, leaderId: selectedUnit.id, primaryId: target.id, mission, allowNonLeader: true, allowAssignmentOverride: true, round: tacticalRound });
     return contactResult.units;
   });
   const count = candidateIds.length;
