@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>CODEX HANDOFF — v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH | Project-Aegis-Dark-Horizon</title>
+<title>CODEX HANDOFF — v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH | Project-Aegis-Dark-Horizon</title>
 <meta name="generator" content="Jekyll v3.10.0" />
-<meta property="og:title" content="CODEX HANDOFF — v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH" />
+<meta property="og:title" content="CODEX HANDOFF — v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Current builds of any projects I’m working on" />
 <meta property="og:description" content="Current builds of any projects I’m working on" />
@@ -17,9 +17,9 @@
 <meta property="og:site_name" content="Project-Aegis-Dark-Horizon" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="CODEX HANDOFF — v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH" />
+<meta property="twitter:title" content="CODEX HANDOFF — v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","description":"Current builds of any projects I’m working on","headline":"CODEX HANDOFF — v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH","url":"https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/CODEX_HANDOFF.html"}</script>
+{"@context":"https://schema.org","@type":"WebPage","description":"Current builds of any projects I’m working on","headline":"CODEX HANDOFF — v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH","url":"https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/CODEX_HANDOFF.html"}</script>
 <!-- End Jekyll SEO tag -->
 
     <link rel="stylesheet" href="/Project-Aegis-Dark-Horizon/assets/css/style.css?v=4208bcc12de53e34da659f4c6c573d02a0e5740f">
@@ -41,7 +41,27 @@
       <h1><a href="https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/">Project-Aegis-Dark-Horizon</a></h1>
       
 
-      <h1 id="codex-handoff--v02609161102_player_selectable_vip_rescue_commitment_priority_lock_patch">CODEX HANDOFF — v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH</h1>
+      <h1 id="codex-handoff--v02609161356_interactive_building_door_state_and_pathing_foundation_patch">CODEX HANDOFF — v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH</h1>
+
+<p>Browser 1356 establishes one authoritative interactive procedural-building door foundation on top of Browser 1102. Save format remains 4.</p>
+
+<h2 id="door-authority">Door authority</h2>
+<ul>
+  <li><strong>Door cover record is truth.</strong> Planned doorway cells emit structural door covers carrying door state/lock authority consumed by renderer, movement, LOS, damage and persistence.</li>
+  <li><strong>Generated ordinary doors default open.</strong> This preserves Browser 1102 mission accessibility.</li>
+  <li><strong>Unlocked closed doors remain traversable intent.</strong> Movement opens them when committed; locked doors remain hard blockers.</li>
+  <li><strong>LOS follows the same state.</strong> Closed/locked/damaged intact doors block; open/breached/destroyed doors permit aligned visibility.</li>
+  <li><strong>Manual operation is tactical.</strong> Open/Close costs 8 TU and cannot close through an occupied doorway on desktop or mobile.</li>
+  <li><strong>Structural damage stays unified.</strong> Doors use the existing breach/restoration pipeline and dedicated Three.js panel geometry is presentation of that authority.</li>
+  <li><strong>Persistence is additive.</strong> Door fields ride on existing tactical cover state; save format remains 4.</li>
+  <li><strong>Not in 1356:</strong> civilian/VIP shelter locking, alien forced-entry decision logic, or AEGIS Call Out / Identify AEGIS.</li>
+</ul>
+<p>Focused regression: <code class="language-plaintext highlighter-rouge">tools/test-interactive-building-door-foundation.cjs</code> (<strong>11/11</strong>). Full retained test/smoke sweep: <strong>38/38</strong>.</p>
+<p>— Previous handoff —</p>
+
+<h1 id="codex-handoff--v02609161102_player_selectable_vip_rescue_commitment_priority_lock_patch">CODEX HANDOFF — v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH</h1>
+
+
 
 <p>Browser 1102 implements the player-selectable pre-Contact VIP rescue commitment requested after Browser 0820. Save format remains 4.</p>
 

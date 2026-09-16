@@ -1,8 +1,25 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH`
+Current browser build: `v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH`
 
 Current save format: `4`
+
+## Interactive Building Door State + Pathing Foundation — Implemented in Browser 1356
+
+**September 16, 2026. Status: implemented; live field acceptance required.**
+
+- Procedural-building doorway cells now create **real structural door records** at the same authoritative doorway coordinates instead of remaining permanent empty gaps. Newly generated ordinary doors begin **open** so Browser 1356 does not unexpectedly change established mission accessibility.
+- One authoritative door record carries the tactical state used by **rendering, movement/pathfinding, LOS/visibility, structural damage and save/load**. Supported foundation states are **open, closed, locked, damaged, breached and destroyed**.
+- AEGIS soldiers can explicitly **Open Door / Close Door** from the tactical action UI on desktop and mobile. The interaction costs **8 TU**, and a door cannot be closed through a unit occupying its doorway.
+- **Closed unlocked doors remain route-traversable** to movement planning. When a committed route crosses one, the door opens as part of traversal instead of being treated as a permanent wall. **Locked doors remain true movement/pathfinding blockers.**
+- Door state is also visibility authority: **closed, locked and damaged intact doors block ordinary LOS through the doorway; open, breached and destroyed doors permit aligned visibility.** Door state participates in the visibility cache identity so opening or closing cannot leave stale FOV.
+- Both Three.js tactical rendering paths draw dedicated door frames/panels from the same structural door state. Open panels rotate out of the opening rather than presenting a misleading invisible collision barrier.
+- Doors participate in the established structural damage/breach model. Partial structural damage can move a door to **damaged** state; a defeated structural door becomes the existing breach/rubble state rather than creating a separate destruction system.
+- Structural restoration and generated-building continuity now recognize door records while preserving the existing doorway locations, full-width entrances and floor continuity. The rejected narrow framed-doorway geometry is not restored.
+- Door fields live on the existing tactical cover records and therefore persist through tactical snapshots/save data without a schema migration. **Save format remains 4.**
+- Browser 1356 intentionally does **not** yet enable civilian/VIP shelter locking, alien forced-entry decision logic, or AEGIS **Call Out / Identify AEGIS**. Those remain the next behavioral layer on top of this foundation.
+
+**Acceptance:** generate several rectangular and T/L/J/S/Z procedural buildings and confirm authoritative entrances contain visible open door panels without narrowing the established doorway. Close/reopen doors with AEGIS and confirm the 8-TU cost, occupied-door close protection, movement auto-opening of an unlocked closed door, LOS changes immediately with the door state, and save/reload preserves the state. Confirm units do not path through a locked door, breached/destroyed doors restore passage/visibility, renderer/view switching remains aligned with collision, and existing building seams, VIP behavior and Default AI doctrine remain intact.
 
 ## Player-Selectable VIP Rescue Commitment / Priority Lock — Implemented in Browser 1102
 
@@ -123,22 +140,22 @@ Additional authority rules implemented with this consolidation:
 - No campaign-state migration is required. Save format remains 4.
 - **Acceptance:** load the supplied Browser 1426 campaign, send both available squads to the North America Alien Abduction Site, confirm Farah/Echo begins with nearby deconflicted search rather than a remote northwest edge sector, and verify newly spotted aliens at long range cause Default AI soldiers to close visibly toward contact until normal ranged engagement distance is reached. Then verify cover/standoff behavior resumes and post-contact reassembly still occurs after contact is cleared.
 
-## Roadmap Addition — Interactive Closable and Lockable Building Doors
+## Roadmap Follow-On — Locked Shelter, Forced Entry and AEGIS Callout
 
-**Requested September 15, 2026. Status: roadmap / not yet implemented.**
+**Foundation implemented in Browser 1356. Remaining behavior: roadmap / not yet implemented.**
 
-- Replace the current permanently open procedural-building doorway gaps with **real interactive door entities** wherever the authoritative building plan declares a door. Preserve the established full-width doorway opening and gray doorway-floor marker; this feature must not narrow entrances or reinterpret non-door wall gaps as doors.
-- Doors need persistent tactical states such as **open, closed, locked, breached/damaged and destroyed**. Their visual state, collision, pathfinding, LOS/visibility, cover and interaction authority must all read from the same door-state record rather than separate renderer-only geometry.
-- **AEGIS soldiers, VIPs, civilians and aliens** can operate ordinary unlocked doors. Opening or closing a door should be an explicit tactical interaction with an appropriate time/action cost, and a door cannot close through a unit occupying the doorway. AI pathing may open a required unlocked door instead of treating it as a permanent obstacle.
-- **VIPs and civilians who are hiding inside a building may close and lock exterior doors** when doing so improves shelter and does not trap them in an immediately worse hazard. Their shelter logic should prefer securing a defensible interior over standing beside an open entrance when hostile aliens are searching nearby.
-- A **locked door must materially delay hostile entry**. Aliens that decide to search or enter the building cannot path through it as though it were open; they must spend tactical time breaching, damaging or otherwise defeating the door before crossing. The breach should create appropriate noise/attention and transition the same authoritative door state to damaged/breached/destroyed.
-- Alien search behavior must understand doors as part of building access. If a suspected VIP/civilian/AEGIS target is behind a locked entrance, aliens may choose another valid entrance or breach point, or commit time to the locked door rather than abandoning the search or magically acquiring a path through the wall.
-- Friendly rescue logic must not deadlock on a civilian-secured building. VIPs/civilians should be able to unlock/open for an adjacent identified AEGIS rescuer when appropriate, and AEGIS should retain a deliberate force/breach option for exceptional cases. Do not let automatic unlocking expose hiding civilians merely because an AEGIS unit exists somewhere on the map.
-- Closed intact doors should block movement and ordinary LOS through their opening; open/breached/destroyed doors should restore passage and aligned visibility. Door material/damage should integrate with the existing wall/breach system rather than becoming an unrelated second destruction model.
-- Save/load must preserve each door's placement, orientation, open/closed state, lock state, damage/breach state and any relevant interaction progress without increasing save format unless a migration genuinely requires it. In-progress older tactical saves that contain only open doorway gaps should load safely with a backward-compatible default instead of changing mission geometry unexpectedly.
-- Both tactical Three.js paths, 2D/hex presentation, FPV/TPV, selection/highlighting and any future Godot parity work should consume the same door authority. Door animation may be lightweight, but the visible panel must never clip across the full doorway or leave a misleading collision state.
+Browser 1356 supplies the authoritative door entity/state, movement/pathing, LOS, structural damage, rendering and persistence foundation. The following behaviors remain intentionally separate follow-on work:
 
-**Acceptance:** generate rectangular and T/L/J/S/Z structures with authoritative gray-floor doorways; verify each declared doorway has a full-width operable door while non-door perimeter cells remain solid. Test soldier, VIP, civilian and alien open/close behavior; civilian/VIP shelter locking; alien alternate-entry selection and locked-door breach delay; LOS/pathfinding before and after opening; doorway occupancy safety; rescue access to a locked shelter; save/reload in every state; renderer/view switching; and post-breach traversal. Confirm the earlier rejected Browser 1255 narrow framed-doorway approach is not reintroduced.
+- **Civilian/VIP shelter locking:** civilians and VIPs hiding inside a building may close and lock suitable exterior doors when that improves shelter without trapping them in a worse hazard.
+- **Alien forced entry:** hostile AI must treat a locked door as a real delay, choose among alternate entrances/breach points, or spend tactical time damaging/breaching the door rather than pathing through it magically.
+- **Noise/attention:** forced entry should feed any applicable tactical awareness/noise authority instead of becoming a door-only alert system.
+- **Friendly rescue access:** rescue AI must not deadlock on a civilian-secured building. An adjacent identified AEGIS rescuer should be able to request entry, use another entrance, or deliberately breach when appropriate.
+- **Call Out / Identify AEGIS:** an adjacent soldier should be able to spend tactical time identifying the squad to sheltered occupants. Cooperative occupants may unlock/open; frightened occupants may remain silent according to panic/local danger. Repeated attempts must be bounded and cost time.
+- **No omniscient response:** silence must not reveal whether a building is empty, occupied, or contains incapacitated/dead occupants.
+- **Shared authority only:** all of these behaviors must mutate the Browser 1356 door state rather than inventing rescue-only or AI-only bypasses.
+- **Save/load:** shelter lock ownership, any bounded callout state and breach progress should remain additive where possible so save format can remain **4**.
+
+**Follow-on acceptance:** place civilians/VIPs behind locked authoritative doors and verify shelter selection, alternate-entry/forced-entry alien behavior, AEGIS callout/cooperation/refusal, bounded retry behavior, deliberate friendly breach, save/reload and AI continuation without deadlocks. Confirm Browser 1356 ordinary unlocked-door traversal still works when these behaviors are added.
 
 ## Roadmap Addition — Locked-Shelter Callouts and Civilian/VIP Casualty Triage
 

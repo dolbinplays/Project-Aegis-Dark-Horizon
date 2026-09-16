@@ -1,3 +1,20 @@
+PROJECT AEGIS — BROWSER 1356 VALIDATION SUMMARY
+Build: v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH
+Save format: 4
+
+Interactive Building Door State + Pathing Foundation
+- Exact Browser 1102 GitHub Pages artifact was used as the implementation baseline.
+- Procedural door cells now create authoritative structural door records while preserving existing entrance placement and default-open accessibility.
+- Shared state drives traversal, locked blocking, LOS, renderer presentation, structural breach/damage and tactical persistence.
+- Manual Open/Close costs 8 TU and rejects closing through an occupied doorway. AI/authoritative movement treats a closed unlocked door as traversable and opens it when crossing; locked remains blocked.
+- Focused door foundation regression: **11/11 passed**.
+- Procedural building wall continuity: **9/9 passed**. Solid-wall/door visibility: **5/5 passed**. Visibility memoization: **4/4 passed**. Tetromino building footprints: **7/7 passed**. Vehicle body footprints: **7/7 passed**.
+- Default AI central objective authority: **23/23 passed**. Authoritative priority stack: **23/23 passed**. Global contact/VIP priority: **6/6 passed**. Browser 1102 VIP Priority Lock and Browser 0820 casualty ownership remain in the retained green suite.
+- Mobile/PWA: **9/9 passed**. Mobile interface: **10/10 passed**.
+- Full current retained local test/smoke sweep: **38/38 entrypoint files passed, 0 failed**.
+- `tools/check-aegis-build.cjs`, embedded JavaScript syntax, and `service-worker.js` syntax all pass.
+- Packaged runtime: **7,276,028 bytes**, SHA-256 `aac8be48a7722ea778957f98203e7b76604b00975d39921e2ff845a457c5e7cd`; generated host SHA-256 `bb742ef3c089cfdab0266e2e70063ae357d79c0a78e290055a24430fe6667eb7`.
+
 PROJECT AEGIS — BROWSER 1102 VALIDATION SUMMARY
 Build: v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH
 Save format: 4

@@ -1,0 +1,14 @@
+PROJECT AEGIS — BROWSER 1356 FIELD ACCEPTANCE
+Build: v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH
+Save format: 4
+
+1. Start several fresh tactical missions containing procedural rectangular and T/L/J/S/Z buildings. Confirm existing authoritative entrances now show real open doors without narrowing the doorway or introducing new wall gaps.
+2. Move an AEGIS soldier beside an ordinary door. Use Close Door, confirm 8 TU is charged and LOS through the opening closes. Reopen it and confirm 8 TU is charged and LOS returns.
+3. Put a unit in the doorway and attempt to close the door. The close action must be rejected; the door must not clip through or trap the unit.
+4. Close an unlocked door, then plot/execute movement through it. The route should remain valid and the door should open when traversal commits rather than behaving like a permanent wall.
+5. Verify a locked door state is a true movement/path blocker until its state is changed or the structure is breached. Browser 1356 does not yet expose shelter-locking AI; this check is for the underlying authority.
+6. Damage/breach a door where practical and confirm damaged/closed state blocks appropriately while breached/destroyed state restores passage and aligned visibility.
+7. Switch 3D Iso / FPV / TPV and renderer-quality modes around an operated door. Visual panel state must agree with collision/LOS state.
+8. Save with at least one door in a non-default state, reload, and confirm the door remains in that state. Save format must remain 4.
+9. Recheck VIP Priority Lock, casualty response and ordinary Default AI movement in the same build. Door traversal must not steal or reorder those objective authorities.
+10. Confirm civilians do not yet autonomously lock shelter doors, aliens do not yet run new forced-entry doctrine, and Call Out / Identify AEGIS is not exposed. Those are follow-on roadmap behaviors.

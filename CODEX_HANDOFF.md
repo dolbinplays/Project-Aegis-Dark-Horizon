@@ -1,3 +1,21 @@
+# CODEX HANDOFF — v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH
+
+Browser 1356 establishes one authoritative interactive procedural-building door foundation on top of Browser 1102. Save format remains 4.
+
+## Door authority
+- **Door cover record is truth.** Planned doorway cells now emit structural `buildingPart:"door"` covers carrying `doorState` / `doorLocked`; renderer, movement, LOS, damage and persistence consume that state.
+- **Generated ordinary doors default open.** This preserves Browser 1102 mission accessibility and avoids changing older procedural layouts simply because doors now exist as entities.
+- **Unlocked closed doors are traversable intent, not hard path failures.** Route planning may cross them and movement opens them when committed. Locked doors remain hard blockers.
+- **LOS follows the same state.** Closed/locked/damaged intact doors block; open/breached/destroyed doors permit aligned visibility. Door state is part of the visibility cache key.
+- **Manual operation is tactical.** Adjacent/current AEGIS Open/Close costs 8 TU; occupied door cells cannot be closed through a unit. Desktop and mobile expose the same authority.
+- **Structural damage stays unified.** Doors use the established building breach/restoration pipeline. Dedicated Three.js frame/panel geometry is presentation of the same authority, not a second state machine.
+- **Persistence is additive.** Door fields live on tactical cover records already carried by snapshots/save state; save format remains 4.
+- **Not in 1356:** civilian/VIP shelter locking, alien forced-entry decision logic and AEGIS Call Out / Identify AEGIS. Those should mutate this same door authority in later patches.
+
+Focused regression: `tools/test-interactive-building-door-foundation.cjs` (**11/11**). Full retained test/smoke sweep: **38/38**.
+
+--- Previous handoff ---
+
 # CODEX HANDOFF — v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH
 
 Browser 1102 implements the player-selectable pre-Contact VIP rescue commitment requested after Browser 0820. Save format remains 4.

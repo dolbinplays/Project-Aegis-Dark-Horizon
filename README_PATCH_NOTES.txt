@@ -1,3 +1,23 @@
+BUILD: v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH
+
+PROJECT AEGIS — BROWSER 1356 PATCH NOTES
+Build: v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH
+Save format: 4
+
+Interactive Building Door State + Pathing Foundation
+- Procedural building doorway cells now emit real structural door entities at the existing authoritative doorway positions. Ordinary generated doors start open to preserve established mission accessibility.
+- Door authority supports open, closed, locked, damaged, breached and destroyed states shared by presentation, movement/pathfinding, LOS/visibility, structural damage and persisted tactical cover state.
+- Desktop and mobile tactical actions can Open Door / Close Door for 8 TU; an occupied doorway cannot be closed through a unit.
+- Closed unlocked doors remain route-traversable and auto-open when movement commits through them. Locked doors remain true path/movement blockers.
+- Closed/locked/damaged intact doors block aligned LOS; open/breached/destroyed doors allow it. Door state is included in visibility-cache identity.
+- Both Three.js cover renderers draw dedicated hinged door frames/panels from authoritative state, including a rotated open presentation.
+- Doors participate in the existing structural damage/breach pipeline and structural restoration rather than creating a second destruction model.
+- Existing full-width doorway locations, floor continuity and procedural building footprints remain unchanged; the rejected narrow doorway framing is not restored.
+- Door state rides on existing tactical cover records, so save format remains 4.
+- Civilian/VIP shelter locking, alien forced-entry behavior and AEGIS Call Out / Identify AEGIS remain follow-on roadmap work, not enabled by this foundation patch.
+
+Focused regression: tools/test-interactive-building-door-foundation.cjs
+
 BUILD: v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH
 
 PROJECT AEGIS — BROWSER 1102 PATCH NOTES
