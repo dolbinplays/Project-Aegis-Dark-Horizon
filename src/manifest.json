@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.09.16.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH",
+  "currentBuild": "v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "default-ai-casualty-stabilization-recovery-and-extraction-ownership-patch-complete",
+  "status": "player-selectable-vip-rescue-commitment-priority-lock-patch-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.09.16.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH",
+  "lastInspectedBuild": "v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -47,7 +47,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.09.16.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH",
+    "browserBuild": "v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -242,7 +242,8 @@
       "actor-scoped-escort-support-objectives",
       "last-known-over-beacon-priority",
       "ai-command-stream-handoff-runtime-integrity",
-      "default-ai-casualty-stabilization-recovery-extraction-ownership"
+      "default-ai-casualty-stabilization-recovery-extraction-ownership",
+      "player-selectable-vip-rescue-commitment-priority-lock"
     ],
     "temporaryExceptions": [
       {
@@ -643,7 +644,7 @@
       },
       {
         "system": "civic-landmark-multihex-footprints",
-        "reason": "Browser civic statues and fountains now use deterministic connected 1\u20137 hex footprints, shared collision/visibility/placement authority and footprint-scaled presentation. Native Godot needs equivalent engine-native landmark footprints and presentation."
+        "reason": "Browser civic statues and fountains now use deterministic connected 1–7 hex footprints, shared collision/visibility/placement authority and footprint-scaled presentation. Native Godot needs equivalent engine-native landmark footprints and presentation."
       },
       {
         "system": "tetromino-procedural-building-wall-continuity",

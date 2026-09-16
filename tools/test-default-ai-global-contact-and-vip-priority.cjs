@@ -46,7 +46,7 @@ function extractFunction(name) {
 }
 
 test('successor build preserves global contact and VIP priority hotfix under save format four', () => {
-  assert.match(source, /const CURRENT_GAME_BUILD="v0\.26\.09\.16\.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH"/);
+  assert.match(source, /const CURRENT_GAME_BUILD="v0\.26\.09\.16\.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH"/);
   assert.match(source, /const TACTICAL_DEFAULT_AI_GLOBAL_CONTACT_AND_VIP_PRIORITY_HOTFIX=true/);
   assert.match(source, /const CURRENT_SAVE_FORMAT_VERSION=4/);
 });
@@ -116,10 +116,12 @@ test('default AI authority keeps visible contact above known VIP rescue and expl
   assert.match(central, /add\("SEARCH",TACTICAL_FIRE_TEAM_TACTICAL_STATES\.DEFAULT_SEARCH,"SEARCH"/);
   assert.match(source, /tacticalAiMovementContactInterruptPlan\(\{unit:human,plan,units:allUnits\(\),covers,mission,knownContactIds:roundObservedContactIds\}\)/);
   assert.match(source, /interruptReason:"new-visible-alien-contact"/);
-  assert.match(rescue, /if\(dynamicCombatPriority&&!followers\.length\)/);
+  assert.match(rescue, /if\(dynamicCombatPriority&&!followers\.length&&!committedRescuer\)/);
+  assert.match(rescue, /const committedRescuer=Boolean\(soldier&&soldier\.fireTeamVipRescueCommitmentEnabled/);
+  assert.match(rescue, /player-vip-rescue-commitment/);
   assert.match(rescue, /noteNewRescueContact\(advancedLeader,"VIP approach movement"\)/);
   assert.match(rescue, /noteNewRescueContact\(advancedLeader,"VIP search movement"\)/);
-  assert.match(rescue, /if \(!dynamicCombatPriority && currentCivilian/);
+  assert.match(rescue, /if \(\(!dynamicCombatPriority\|\|committedRescuer\) && currentCivilian/);
 });
 
 test('escort leader and support doctrine remain authoritative during contact', () => {

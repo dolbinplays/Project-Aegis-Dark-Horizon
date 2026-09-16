@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>CODEX HANDOFF — v0.26.09.16.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH | Project-Aegis-Dark-Horizon</title>
+<title>CODEX HANDOFF — v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH | Project-Aegis-Dark-Horizon</title>
 <meta name="generator" content="Jekyll v3.10.0" />
-<meta property="og:title" content="CODEX HANDOFF — v0.26.09.16.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH" />
+<meta property="og:title" content="CODEX HANDOFF — v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Current builds of any projects I’m working on" />
 <meta property="og:description" content="Current builds of any projects I’m working on" />
@@ -17,9 +17,9 @@
 <meta property="og:site_name" content="Project-Aegis-Dark-Horizon" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="CODEX HANDOFF — v0.26.09.16.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH" />
+<meta property="twitter:title" content="CODEX HANDOFF — v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","description":"Current builds of any projects I’m working on","headline":"CODEX HANDOFF — v0.26.09.16.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH","url":"https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/CODEX_HANDOFF.html"}</script>
+{"@context":"https://schema.org","@type":"WebPage","description":"Current builds of any projects I’m working on","headline":"CODEX HANDOFF — v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH","url":"https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/CODEX_HANDOFF.html"}</script>
 <!-- End Jekyll SEO tag -->
 
     <link rel="stylesheet" href="/Project-Aegis-Dark-Horizon/assets/css/style.css?v=4208bcc12de53e34da659f4c6c573d02a0e5740f">
@@ -41,7 +41,25 @@
       <h1><a href="https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/">Project-Aegis-Dark-Horizon</a></h1>
       
 
-      <h1 id="codex-handoff--v02609160820_default_ai_casualty_stabilization_recovery_and_extraction_ownership_patch">CODEX HANDOFF — v0.26.09.16.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH</h1>
+      <h1 id="codex-handoff--v02609161102_player_selectable_vip_rescue_commitment_priority_lock_patch">CODEX HANDOFF — v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH</h1>
+
+<p>Browser 1102 implements the player-selectable pre-Contact VIP rescue commitment requested after Browser 0820. Save format remains 4.</p>
+
+<h2 id="vip-priority-lock-authority">VIP Priority Lock authority</h2>
+<ul>
+  <li><strong>Explicit civilian/VIP assignments can opt in.</strong> Assign Objectives exposes a VIP Priority Lock checkbox only when the team has an explicit civilian objective.</li>
+  <li><strong>One committed rescuer, not the whole team.</strong> <code class="language-plaintext highlighter-rouge">tacticalEnsureVipRescueCommitments(...)</code> maintains a single eligible rescue lead so teammates remain available for normal combat/support.</li>
+  <li><strong>Player commitment narrowly overrides visible-contact interruption.</strong> The committed rescuer continues pre-Contact approach when an alien appears; normal assignments still obey visible alien priority.</li>
+  <li><strong>Medical doctrine remains above the lock.</strong> Browser 0820 casualty responders are excluded from VIP commitment claims; the commitment can succeed to another teammate.</li>
+  <li><strong>Physical escort ownership wins after Contact.</strong> A matching <code class="language-plaintext highlighter-rouge">escortId</code> becomes the commitment authority; a cross-team escort clears the stale lock rather than being stolen.</li>
+  <li><strong>Persistent state is additive.</strong> Fire-team commitment enabled/target/rescuer/issued-round/status fields are carried through snapshots/playback; save format remains 4.</li>
+</ul>
+
+<p>Focused regression: <code class="language-plaintext highlighter-rouge">tools/test-vip-rescue-commitment-priority-lock.cjs</code>.</p>
+
+<p>— Previous handoff —</p>
+
+<h1 id="codex-handoff--v02609160820_default_ai_casualty_stabilization_recovery_and_extraction_ownership_patch">CODEX HANDOFF — v0.26.09.16.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH</h1>
 
 <p>Browser 0820 hardens Default AI priorities 1 and 2 without changing the accepted nine-level hierarchy. Save format remains 4.</p>
 

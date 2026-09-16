@@ -1,3 +1,20 @@
+PROJECT AEGIS — BROWSER 1102 VALIDATION SUMMARY
+Build: v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH
+Save format: 4
+
+Player-Selectable VIP Rescue Commitment / Priority Lock
+- Implements the roadmap's per-assignment rescue commitment without changing the accepted nine-level Default AI hierarchy.
+- A civilian/VIP explicit assignment can opt into VIP Priority Lock; one eligible member becomes the committed pre-Contact rescuer while other fire-team members remain free for combat/support.
+- Newly visible alien contact no longer interrupts only that committed pre-Contact rescuer. Toggle-off assignments retain the normal visible-contact-over-unformed-rescue behavior.
+- Browser 0820 medical authority remains higher: casualty responders are excluded from commitment eligibility and the lock can succeed to another eligible teammate.
+- Dead/downed, fear-Override, Hybrid player-controlled, medically occupied, or otherwise invalid committed rescuers do not retain stale ownership.
+- Successful Contact transitions planning authority to the real escortId. Cross-team physical escort ownership clears stale commitment state rather than being stolen.
+- Commitment enabled/target/rescuer/issued-round/status fields are carried through tactical snapshot/playback state; save format remains 4.
+- Assign Objectives draft state is transactional across Apply, Cancel, Default All and changing away from a civilian objective.
+- Focused VIP Priority Lock regression: **10/10 passed**. Browser 0820 casualty-response ownership: **13/13 passed**. Default AI central objective authority: **23/23 passed**. Authoritative priority stack: **23/23 passed**. Global contact/VIP priority: **6/6 passed**. Browser 2345 manual VIP assignment override remained passing. AI Command stream handoff: **2/2 passed**. Mobile/PWA: **9/9 passed**. Mobile interface: **10/10 passed**.
+- Full current retained local test/smoke sweep: **37/37 entrypoint files passed, 0 failed**, including casualty care/history, IndexedDB saves, beacon/reinforcement systems, post-contact reassembly, VIP escort/marker behavior, buildings, vehicles, visibility and terminal victory.
+- `tools/check-aegis-build.cjs`, embedded JavaScript syntax, and `service-worker.js` syntax all pass. Packaged runtime: **7,260,756 bytes**, SHA-256 `33fcfa478edd4db8c31e936158dabc23034072c8cc39fb4a87e4f6345c00dca3`; generated host SHA-256 `493f7e1e81e3321e19c23ecc0f506ee22aedcc85eaaa5465a1808acb1bad8d9c`.
+
 PROJECT AEGIS — BROWSER 0820 VALIDATION SUMMARY
 Build: v0.26.09.16.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH
 Save format: 4

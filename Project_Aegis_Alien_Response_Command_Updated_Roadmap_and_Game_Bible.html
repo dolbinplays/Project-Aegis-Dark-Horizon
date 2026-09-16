@@ -43,9 +43,26 @@
 
       <h1 id="project-aegis--alien-response-command--updated-roadmap-and-game-bible">PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE</h1>
 
-<p>Current browser build: <code class="language-plaintext highlighter-rouge">v0.26.09.16.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH</code></p>
+<p>Current browser build: <code class="language-plaintext highlighter-rouge">v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH</code></p>
 
 <p>Current save format: <code class="language-plaintext highlighter-rouge">4</code></p>
+
+<h2 id="player-selectable-vip-rescue-commitment--priority-lock--implemented-in-browser-1102">Player-Selectable VIP Rescue Commitment / Priority Lock — Implemented in Browser 1102</h2>
+
+<p><strong>September 16, 2026. Status: implemented; live field acceptance required.</strong></p>
+
+<ul>
+  <li><strong>Assign Objectives</strong> now exposes a per-civilian/VIP <strong>VIP Priority Lock</strong> checkbox. It is stored with that explicit rescue assignment and does not alter the global nine-level Default AI hierarchy.</li>
+  <li>When enabled, the assigned fire team reserves <strong>one eligible committed rescuer</strong> for the full approach → Contact → escort → extraction chain. The remaining team members stay available for ordinary combat/support behavior.</li>
+  <li>A newly spotted alien no longer cancels the committed rescuer’s pre-Contact approach. With the lock disabled, the existing visible-contact-over-unformed-rescue behavior remains unchanged.</li>
+  <li>Priority 1 <strong>stabilization</strong> and priority 2 <strong>casualty recovery/extraction</strong> remain higher authority. If the committed rescuer is claimed by medical duty, another eligible teammate inherits the VIP commitment when possible.</li>
+  <li>Dead/downed, fear-Override, Hybrid player-controlled, medically occupied, or otherwise ineligible committed rescuers are released and replaced when possible rather than leaving a stale claim.</li>
+  <li>Once Contact succeeds, the real civilian/VIP <code class="language-plaintext highlighter-rouge">escortId</code> becomes physical ownership and remains stronger than the planning commitment. A cross-team physical escort clears a stale lock instead of creating competing escort owners.</li>
+  <li>The commitment is replicated across the assigned fire team with the target, committed rescuer, issued round and status so save/load and streamed AI playback preserve the same authority. Save format remains <strong>4</strong>.</li>
+  <li>The UI draft is transactional: changing away from a civilian objective clears the draft lock, <strong>Default All</strong> clears it, <strong>Cancel</strong> restores the baseline setting, and <strong>Apply</strong> commits it.</li>
+</ul>
+
+<p><strong>Acceptance:</strong> assign a fire team to a known VIP, enable <strong>VIP Priority Lock</strong>, and reveal an alien while the team is still approaching. Confirm one committed rescuer continues toward Contact while teammates remain free to fight. Confirm the same VIP proceeds through escort/extraction, medical priorities can hand the commitment to another teammate, fear/incapacitation triggers succession, an active <code class="language-plaintext highlighter-rouge">escortId</code> remains authoritative, save/reload preserves the lock, and the same assignment with the toggle disabled still yields to normal visible-contact behavior.</p>
 
 <h2 id="default-ai-casualty-stabilization--recovery--extraction-ownership--implemented-in-browser-0820">Default AI Casualty Stabilization / Recovery / Extraction Ownership — Implemented in Browser 0820</h2>
 
@@ -164,25 +181,6 @@
   <li>No campaign-state migration is required. Save format remains 4.</li>
   <li><strong>Acceptance:</strong> load the supplied Browser 1426 campaign, send both available squads to the North America Alien Abduction Site, confirm Farah/Echo begins with nearby deconflicted search rather than a remote northwest edge sector, and verify newly spotted aliens at long range cause Default AI soldiers to close visibly toward contact until normal ranged engagement distance is reached. Then verify cover/standoff behavior resumes and post-contact reassembly still occurs after contact is cleared.</li>
 </ul>
-
-<h2 id="roadmap-addition--player-selectable-vip-rescue-commitment--priority-lock">Roadmap Addition — Player-Selectable VIP Rescue Commitment / Priority Lock</h2>
-
-<p><strong>Requested September 16, 2026. Status: roadmap / not yet implemented.</strong></p>
-
-<ul>
-  <li>Add a <strong>player-selectable option when assigning a fire team to a specific VIP/civilian</strong>. Working labels may include <strong>Maintain Rescue Contact</strong>, <strong>VIP Priority Lock</strong>, or <strong>Committed Rescue Lead</strong>. The setting is per assigned rescue objective rather than a universal AI doctrine change.</li>
-  <li>When enabled, the fire team reserves <strong>at least one suitable member as the committed rescuer</strong>. That soldier remains responsible for the full rescue chain: approach the assigned VIP/civilian, make Contact, establish the escort, accompany the rescuee to extraction, and remain committed until the rescuee is safely extracted.</li>
-  <li>A newly spotted alien must <strong>not automatically pull the committed rescuer away from the assigned VIP before Contact is made</strong>. Other available fire-team members may break off to engage, provide covering fire, reform, or respond to the threat under the normal Default AI hierarchy while the committed rescuer continues the rescue objective.</li>
-  <li>Once Contact/escort has been established, the existing physical <code class="language-plaintext highlighter-rouge">escortId</code> ownership remains authoritative. The new option extends the player's rescue commitment through the <strong>pre-contact approach phase</strong>; it must not create a second competing escort authority.</li>
-  <li>The committed rescuer may ignore ordinary <strong>Visible Alien Contact</strong> priority for this specific player-created rescue commitment, but the option does <strong>not</strong> outrank the top medical doctrine. <strong>Stabilize a bleeding casualty</strong> and <strong>recover/extract a stabilized or downed AEGIS soldier</strong> may still preempt the rescue lead when genuinely required.</li>
-  <li>Explicit player control remains authoritative. The player can manually redirect, cancel, or replace the committed rescuer. AI doctrine must not immediately undo a deliberate player change.</li>
-  <li>If the committed rescuer becomes dead, downed, panicked/otherwise incapable, route-invalid, or manually removed from the assignment, another eligible member of the assigned fire team should inherit the rescue commitment when possible. The system should avoid duplicate claims and should not steal a VIP/civilian already under another soldier's active <code class="language-plaintext highlighter-rouge">escortId</code>.</li>
-  <li>The Assign Objectives UI should show clearly whether the rescue assignment is using normal contact behavior or <strong>VIP Rescue Commitment / Priority Lock</strong>, and tactical HUD/status text should make the committed rescuer easy to identify.</li>
-  <li>The option should coexist with <strong>Civilian Escort Support</strong> behavior. The committed rescuer continues the VIP rescue/extraction chain while support members follow their existing Stay / Engage / Ask behavior when alien contact appears.</li>
-  <li>Save/load must preserve the toggle, assigned VIP/civilian, current committed rescuer, and any valid handoff state without changing save format unless a schema change proves unavoidable.</li>
-</ul>
-
-<p><strong>Acceptance:</strong> assign a fire team to a known VIP and enable the commitment option, then reveal an alien while the team is still approaching the VIP. Confirm at least one member continues to Contact and extract the assigned VIP while eligible teammates may engage according to support doctrine. Repeat with contact already established; with the committed rescuer incapacitated, panicked, or route-blocked; with a higher-priority bleeding/downed casualty; with explicit player reassignment/cancellation; with multiple simultaneous VIP assignments; and across save/reload, Default Simulation AI, Hybrid transitions, and AI Command handoff. Confirm normal assignments with the option disabled retain the existing Default AI visible-contact behavior.</p>
 
 <h2 id="roadmap-addition--interactive-closable-and-lockable-building-doors">Roadmap Addition — Interactive Closable and Lockable Building Doors</h2>
 

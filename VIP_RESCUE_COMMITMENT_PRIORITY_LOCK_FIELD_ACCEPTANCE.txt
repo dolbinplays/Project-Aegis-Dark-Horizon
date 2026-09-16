@@ -1,0 +1,35 @@
+PROJECT AEGIS — BROWSER 1102 FIELD ACCEPTANCE
+Build: v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH
+Save format: 4
+
+PRIMARY PLAYER FLOW
+1. Enter a tactical mission with a known VIP/civilian and a fire team with at least two active members.
+2. Open Assign Objectives and explicitly assign that VIP/civilian to the fire team.
+3. Enable VIP Priority Lock and Apply.
+4. Before the team reaches Contact range, reveal an alien.
+5. Confirm one committed rescuer continues toward the assigned VIP while the other eligible fire-team members remain available for combat/support.
+6. Confirm the committed rescuer makes Contact and continues the escort/extraction chain until the VIP boards.
+
+NORMAL-BEHAVIOR CONTROL
+- Repeat the same setup with VIP Priority Lock disabled. The existing Default AI behavior must remain: visible alien contact outranks an unformed pre-Contact rescue approach.
+
+MEDICAL PREEMPTION / SUCCESSION
+- Create a bleeding/downed AEGIS casualty while the committed rescuer is approaching. Priority 1/2 medical duty remains authoritative.
+- If the current rescuer is claimed by medical duty, confirm another eligible member inherits the VIP commitment when possible.
+- Repeat with the committed rescuer dead/downed, fear-Override or otherwise unavailable; confirm the commitment does not remain stale.
+
+ESCORT OWNERSHIP
+- After Contact, confirm the VIP's real escortId is authoritative.
+- A different team's active physical escort must not be stolen by a stale Priority Lock.
+
+UI / STATE CONTINUITY
+- Confirm the checkbox appears only for civilian/VIP objectives.
+- Change to a non-civilian objective and confirm the lock clears.
+- Confirm Default All clears it and Cancel restores the pre-dialog baseline.
+- Save/reload with the lock active and verify target/rescuer commitment remains coherent.
+- Exercise AI Command / streamed playback and confirm the committed rescuer does not silently change without an eligibility reason.
+
+CONTINUITY
+- Browser 0820 casualty-response ownership must remain intact.
+- Browser 2345 manual VIP assignment override / escort ownership must remain intact.
+- Save format remains 4.

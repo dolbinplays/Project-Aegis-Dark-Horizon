@@ -1,3 +1,21 @@
+BUILD: v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH
+
+PROJECT AEGIS — BROWSER 1102 PATCH NOTES
+Build: v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH
+Save format: 4
+
+Player-Selectable VIP Rescue Commitment / Priority Lock
+- Adds a per-civilian/VIP **VIP Priority Lock** checkbox to Assign Objectives for explicit rescue assignments.
+- With the lock enabled, one eligible member becomes the committed rescuer through approach, Contact, escort and extraction while the rest of the fire team remains available for combat/support.
+- Newly visible aliens do not cancel the committed rescuer's pre-Contact approach; assignments without the lock retain the existing visible-contact priority behavior.
+- Medical priorities 1 and 2 remain authoritative and may preempt the committed rescuer; another eligible teammate inherits the commitment when possible.
+- Dead/downed, fear-Override, Hybrid player-controlled, medically occupied or otherwise invalid rescuers are released and replaced rather than leaving a stale claim.
+- Successful Contact hands authority to the real `escortId`; cross-team active escorts clear stale commitment state rather than being stolen.
+- Commitment target/rescuer/status state is included in tactical snapshots/playback and remains additive under save format 4.
+- Assign Objectives draft handling supports Apply, Cancel, Default All and objective-type changes without leaking stale commitment state.
+
+Focused regression: tools/test-vip-rescue-commitment-priority-lock.cjs
+
 BUILD: v0.26.09.16.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH
 
 PROJECT AEGIS — BROWSER 0820 PATCH NOTES

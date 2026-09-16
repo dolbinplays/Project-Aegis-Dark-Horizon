@@ -1,3 +1,19 @@
+# CODEX HANDOFF — v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH
+
+Browser 1102 implements the player-selectable pre-Contact VIP rescue commitment requested after Browser 0820. Save format remains 4.
+
+## VIP Priority Lock authority
+- **Explicit civilian/VIP assignments can opt in.** Assign Objectives exposes a VIP Priority Lock checkbox only when the team has an explicit civilian objective.
+- **One committed rescuer, not the whole team.** `tacticalEnsureVipRescueCommitments(...)` maintains a single eligible rescue lead so teammates remain available for normal combat/support.
+- **Player commitment narrowly overrides visible-contact interruption.** The committed rescuer continues pre-Contact approach when an alien appears; normal assignments still obey visible alien priority.
+- **Medical doctrine remains above the lock.** Browser 0820 casualty responders are excluded from VIP commitment claims; the commitment can succeed to another teammate.
+- **Physical escort ownership wins after Contact.** A matching `escortId` becomes the commitment authority; a cross-team escort clears the stale lock rather than being stolen.
+- **Persistent state is additive.** Fire-team commitment enabled/target/rescuer/issued-round/status fields are carried through snapshots/playback; save format remains 4.
+
+Focused regression: `tools/test-vip-rescue-commitment-priority-lock.cjs`.
+
+--- Previous handoff ---
+
 # CODEX HANDOFF — v0.26.09.16.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH
 
 Browser 0820 hardens Default AI priorities 1 and 2 without changing the accepted nine-level hierarchy. Save format remains 4.
