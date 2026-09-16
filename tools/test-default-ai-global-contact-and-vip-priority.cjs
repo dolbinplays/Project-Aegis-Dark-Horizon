@@ -46,7 +46,7 @@ function extractFunction(name) {
 }
 
 test('successor build preserves global contact and VIP priority hotfix under save format four', () => {
-  assert.match(source, /const CURRENT_GAME_BUILD="v0\.26\.09\.15\.1704_DEFAULT_AI_AUTHORITATIVE_SOLDIER_PRIORITY_STACK_PATCH"/);
+  assert.match(source, /const CURRENT_GAME_BUILD="v0\.26\.09\.15\.2121_DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_AND_ROUTE_INVALIDATION_PATCH"/);
   assert.match(source, /const TACTICAL_DEFAULT_AI_GLOBAL_CONTACT_AND_VIP_PRIORITY_HOTFIX=true/);
   assert.match(source, /const CURRENT_SAVE_FORMAT_VERSION=4/);
 });
@@ -107,14 +107,15 @@ test('tracked VIP activates autonomous fire-team assignment even for a non-manda
   assert.equal(plan.assignments[0].vipId, 'vip-1');
 });
 
-test('default AI authority is combat first, then known VIP rescue, and only then exploration', () => {
-  const resolver = extractFunction('resolveMission');
+test('default AI authority keeps visible contact above known VIP rescue and exploration while preserving higher escort authority', () => {
+  const central = extractFunction('tacticalDefaultAiObjectiveDecision');
   const rescue = extractFunction('tacticalAiCivilianPriorityTurn');
-  assert.match(resolver, /const trackerGuidedRescue = !combatPriority && !roundStartLastKnownContactBarrier/);
-  assert.doesNotMatch(resolver, /trackerGuidedRescue = continuing &&/);
-  assert.match(resolver, /if\(rescueTurn\.combatPriority\)/);
-  assert.match(resolver, /if\(lastKnownContactPriority\|\|\(liveCombatPriority&&aiControlMode!=="hybrid"\)\)playerOrder=null/);
-  assert.match(resolver, /tacticalAiMovementContactInterruptPlan\(\{unit:human,plan,units:allUnits\(\),covers,mission,knownContactIds:roundObservedContactIds\}\)/);
+  assert.match(central, /if\(unitEscortActive\)add\("ACTIVE_ESCORT"/);
+  assert.match(central, /if\(liveCombatPriority\)add\("VISIBLE_ALIEN"/);
+  assert.match(central, /if\(civilianPersistent\)add\("KNOWN_CIVILIAN"/);
+  assert.match(central, /add\("SEARCH",TACTICAL_FIRE_TEAM_TACTICAL_STATES\.DEFAULT_SEARCH,"SEARCH"/);
+  assert.match(source, /tacticalAiMovementContactInterruptPlan\(\{unit:human,plan,units:allUnits\(\),covers,mission,knownContactIds:roundObservedContactIds\}\)/);
+  assert.match(source, /interruptReason:"new-visible-alien-contact"/);
   assert.match(rescue, /if\(dynamicCombatPriority&&!followers\.length\)/);
   assert.match(rescue, /noteNewRescueContact\(advancedLeader,"VIP approach movement"\)/);
   assert.match(rescue, /noteNewRescueContact\(advancedLeader,"VIP search movement"\)/);
@@ -123,7 +124,9 @@ test('default AI authority is combat first, then known VIP rescue, and only then
 
 test('escort leader and support doctrine remain authoritative during contact', () => {
   const priority = extractFunction('tacticalFireTeamPriorityState');
-  assert.ok(priority.indexOf('if(escortLeaderLock.active)') < priority.indexOf('else if(liveCombatPriority)'), 'escort leader lock must remain above combat');
+  const central = extractFunction('tacticalDefaultAiObjectiveDecision');
+  assert.match(priority, /return tacticalDefaultAiObjectiveDecision\(options\)/);
+  assert.ok(central.indexOf('ACTIVE_ESCORT') < central.indexOf('VISIBLE_ALIEN'), 'escort candidate must remain above visible combat');
   assert.match(source, /Ask When Contact Is Spotted/);
   assert.match(source, /Stay With Escort/);
   assert.match(source, /Engage Spotted Aliens/);

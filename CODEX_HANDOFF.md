@@ -1,3 +1,63 @@
+# CODEX HANDOFF — v0.26.09.15.2121_DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_AND_ROUTE_INVALIDATION_PATCH
+
+Browser 2121 is the follow-through audit on Browser 1704's Default AI priority-stack consolidation. Save format remains 4.
+
+## Central objective authority
+
+`tacticalDefaultAiObjectiveDecision(...)` is now the shared strategic resolver for Default AI actor intent. It evaluates the accepted hierarchy numerically:
+
+1. Stabilize a bleeding casualty.
+2. Recover/extract a stabilized or downed AEGIS soldier.
+3. Continue active civilian/VIP escort duty.
+4. Engage visible aliens.
+5. Investigate Last Known Contact or distress-reported attacker position.
+6. Neutralize a confirmed Alien Field Beacon.
+7. Clear an unchecked crashed-UFO bay.
+8. Approach/escort a known unassigned VIP or civilian.
+9. Search unexplored terrain.
+
+Persistent non-stack player/explicit assignments retain their existing bounded authority below known civilian rescue and above generic search where applicable. Hybrid explicit player movement remains player-owned.
+
+## Browser 1704 leaks corrected
+
+- **Beacon versus Last Known:** the old Beacon engagement-lock branch could force `lastKnownContactPriority=false`. That bypass is removed. Beacon engagement remains resumable persistent state, but Last Known/distress is always priority 5 and therefore wins.
+- **Per-team state overwrite:** Browser 1704 resolved state per soldier but wrote the result to every fire-team member. Browser 2121 applies runtime objective state per actor. An escort leader/Stay/Ask support can remain priority 3 while Engage support in the same team resolves priority 4.
+- **Stale route authority:** a higher-priority state now clears route scratch belonging to every lower category beneath it. Exploration hunt/patrol data is cleared by any priority 1–8 objective; VIP-approach scratch is cleared by priorities 1–7; local contact-search scratch is cleared by priorities 1–4.
+- **Last Known fallback:** an obstructed local Last Known/distress probe no longer calls generic patrol. It holds/retries the reported contact so priority 5 cannot degrade into priority 9.
+- **Known civilian assignment:** changing to a known VIP/civilian target clears stale exploration-sector/patrol state immediately while retaining the rescue assignment itself.
+
+## Diagnostics / persistence
+
+Each Default AI actor can now carry optional:
+- objective type and numeric priority;
+- objective source/reason;
+- target entity ID and coordinate;
+- objective round/revision;
+- previous objective/priority;
+- interruption reason/round.
+
+Those fields are included in streamed tactical snapshots. They are optional, so save format remains 4. Priority-1 stabilization and priority-2 casualty responders write the same diagnostics as normal mission objectives.
+
+## Formation, escort and Hybrid boundaries
+
+Browser 1426 post-contact recovery remains a moving formation overlay. It never enters the strategic candidate list and leader succession continues to inherit the recovery latch. Civilian Escort Support remains authoritative: leader always stays; Stay/Ask support remains attached; Engage support may break off for visible contact. Hybrid explicit orders are not silently replaced by Default-AI rescue/search movement.
+
+## Regression / field acceptance
+
+- Behavioral focused regression: `tools/test-default-ai-central-objective-authority.cjs` — 23/23 cases passed.
+- Historical focused entrypoint: `tools/test-default-ai-authoritative-priority-stack.cjs` now delegates to the behavioral suite. The retained Browser 1632 global-contact/VIP regression was made successor-build/central-resolver aware and passes 6/6.
+- Full retained local Node/smoke sweep from the exact Browser 1704 GitHub Pages artifact: 33/33 entrypoint files passed, including Mobile/PWA and six tactical smoke scripts. Build seam, embedded JavaScript syntax, service-worker syntax and package hashes all pass.
+- Field checklist: `DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_FIELD_ACCEPTANCE.txt`.
+- Primary live fixture remains both squads at North America / Alien Abduction Site / Threat 2 / Tide Horror / $520k / +20 Panic, with Farah/Echo watched from deployment through first contact and post-contact continuation.
+
+## Preserve going forward
+
+Do not restore the rejected Browser 1255 narrow doorway framing. Keep tetromino footprint/wall continuity, IndexedDB saves, Beacon forward reform/presentation, VIP/civilian boarding/extraction, Browser 1426 reassembly/leader succession and Browser 1525 local search/contact pursuit intact.
+
+Roadmap-only items remain: real closable/lockable doors and shelter callouts; civilian/VIP casualty assessment/stabilization; AEGIS Operations Overview work as currently recorded; and soldier battle-model face/equipment identity matching.
+
+---
+
 # CODEX HANDOFF — v0.26.09.15.1704_DEFAULT_AI_AUTHORITATIVE_SOLDIER_PRIORITY_STACK_PATCH
 
 Browser 1704 is the deep-dive consolidation of Default AI soldier behavior requested after the supplied two-squad North America Alien Abduction Site exposed competing movement authorities. Save format remains 4.

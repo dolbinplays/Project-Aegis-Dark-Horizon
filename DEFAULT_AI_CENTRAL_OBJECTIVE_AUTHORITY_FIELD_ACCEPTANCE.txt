@@ -1,0 +1,65 @@
+PROJECT AEGIS — BROWSER 2121 FIELD ACCEPTANCE
+Build: v0.26.09.15.2121_DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_AND_ROUTE_INVALIDATION_PATCH
+Save format: 4
+
+Primary regression fixture
+- Load the supplied mature campaign save used for Browser 1525/1704.
+- Send both available squads to North America / Alien Abduction Site / Threat 2 / Tide Horror / $520k / +20 Panic.
+- Use Default AI Doctrine unless a step explicitly says Hybrid.
+- Watch Farah / Echo Fire Team from deployment through first contact and post-contact continuation.
+
+Authoritative objective stack
+1. Bleeding stabilization.
+2. Downed/stabilized AEGIS recovery and extraction.
+3. Active VIP/civilian escort.
+4. Visible alien contact.
+5. Last Known Alien / distress-reported attacker position.
+6. Alien Field Beacon.
+7. Unchecked crashed-UFO bay.
+8. Known unassigned VIP/civilian approach.
+9. Exploration/search only when every higher category is absent.
+
+Route interruption / diagnostics
+- Begin a generic exploration route, then expose an alien partway through movement. The route must stop at the first legitimate sighting and no hunt/patrol continuation may resume on the following AI frame while visible contact remains.
+- Inspect available AI current-order/diagnostic presentation: the actor should report visible contact, its priority/source/target, and the interruption of the prior search objective.
+- Repeat while approaching a known VIP. The VIP assignment may remain remembered, but the stale approach route must be canceled until higher contact authority clears.
+- Lose visual contact without resolving the alien. Last Known Contact must take over; if its immediate local probe is obstructed, the actor should hold/retry the report rather than begin generic patrol.
+
+Civilian Escort Support
+- Establish a live VIP/civilian escort and reveal an alien.
+- Escort leader: must remain on priority 3 escort.
+- Stay With Escort support: remains priority 3.
+- Ask When Contact Is Spotted support: remains attached until the player decides.
+- Engage Spotted Aliens support: may break off under priority 4.
+- Confirm those different actor objectives can coexist in the same fire team without the break-off member changing the leader's displayed/saved objective.
+
+Casualty hierarchy
+- Create a bleeding downed AEGIS casualty with a medkit-capable responder. Stabilization must preempt visible contact and every lower objective.
+- After stabilization/downing, recovery/extraction must preempt active escort and visible contact for the assigned responder.
+- Routine non-bleeding first aid must remain opportunistic after strategic objective execution.
+
+Source / rescue ordering
+- With no casualty, escort, visible or Last Known contact, present both a confirmed Beacon and an unchecked crashed-UFO bay: Beacon receives authority first.
+- Remove/resolve Beacon while UFO bay remains: UFO bay becomes authority.
+- With UFO bay and a known unassigned civilian present: UFO bay retains priority 7; a different free team may receive the civilian if available.
+- With source objectives absent and a known unassigned VIP/civilian present: assign an appropriate free fire team and do not continue exploration.
+- With two free fire teams and two known civilians/VIPs, verify assignments remain deconflicted instead of all teams clumping on one target.
+
+Formation / leader succession
+- Spread a fire team during combat, then clear visible and Last Known contact.
+- The effective leader should resume the highest current strategic objective immediately while supports reform around the moving leader.
+- Kill/down the formal leader during or just after contact. The successor must retain the team's objective and the team-wide recovery latch.
+- Make one support temporarily unreachable and verify the bounded degraded-cohesion behavior from Browser 1426 still releases the reachable majority without changing mission objective.
+
+Save / reload
+- Save/reload during: visible contact after search interruption; Last Known search; known-VIP approach; casualty recovery; and post-contact formation recovery.
+- Confirm the correct current objective/assignment resumes and stale exploration is not resurrected.
+- Confirm save format remains 4 and mature IndexedDB campaign saves remain readable.
+
+Hybrid boundary
+- Give a Hybrid fire-team leader an explicit player movement order. Autonomous Default rescue/search reassignment must not silently replace that explicit Hybrid order.
+- Existing hard escort/safety rules remain unchanged.
+
+Preservation
+- Recheck Beacon forward reform/materialization/cinematic, VIP boarding/extraction, tetromino building walls, a genuine full-width generated doorway, and PWA installed launch/update behavior.
+- Confirm no Browser 1255 narrow doorway-frame geometry has returned.

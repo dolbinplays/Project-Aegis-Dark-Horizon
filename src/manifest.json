@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.09.15.1704_DEFAULT_AI_AUTHORITATIVE_SOLDIER_PRIORITY_STACK_PATCH",
+  "currentBuild": "v0.26.09.15.2121_DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_AND_ROUTE_INVALIDATION_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "default-ai-authoritative-soldier-priority-stack-complete",
+  "status": "default-ai-central-objective-authority-and-route-invalidation-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.09.15.1704_DEFAULT_AI_AUTHORITATIVE_SOLDIER_PRIORITY_STACK_PATCH",
+  "lastInspectedBuild": "v0.26.09.15.2121_DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_AND_ROUTE_INVALIDATION_PATCH",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -47,7 +47,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.09.15.1704_DEFAULT_AI_AUTHORITATIVE_SOLDIER_PRIORITY_STACK_PATCH",
+    "browserBuild": "v0.26.09.15.2121_DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_AND_ROUTE_INVALIDATION_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -236,7 +236,11 @@
       "default-ai-authoritative-soldier-priority-stack",
       "contact-interrupt-escort-support-release",
       "known-civilian-before-exploration",
-      "post-contact-formation-overlay"
+      "post-contact-formation-overlay",
+      "default-ai-central-objective-authority",
+      "default-ai-stale-route-invalidation",
+      "actor-scoped-escort-support-objectives",
+      "last-known-over-beacon-priority"
     ],
     "temporaryExceptions": [
       {
@@ -637,7 +641,7 @@
       },
       {
         "system": "civic-landmark-multihex-footprints",
-        "reason": "Browser civic statues and fountains now use deterministic connected 1\u20137 hex footprints, shared collision/visibility/placement authority and footprint-scaled presentation. Native Godot needs equivalent engine-native landmark footprints and presentation."
+        "reason": "Browser civic statues and fountains now use deterministic connected 1–7 hex footprints, shared collision/visibility/placement authority and footprint-scaled presentation. Native Godot needs equivalent engine-native landmark footprints and presentation."
       },
       {
         "system": "tetromino-procedural-building-wall-continuity",

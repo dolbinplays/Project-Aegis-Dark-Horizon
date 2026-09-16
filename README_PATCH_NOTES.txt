@@ -1,3 +1,34 @@
+BUILD: v0.26.09.15.2121_DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_AND_ROUTE_INVALIDATION_PATCH
+
+PROJECT AEGIS — BROWSER 2121 PATCH NOTES
+Build: v0.26.09.15.2121_DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_AND_ROUTE_INVALIDATION_PATCH
+Save format: 4
+
+Default AI Central Objective Authority + Route Invalidation
+- Completes the Browser 1704 consolidation by making one shared `tacticalDefaultAiObjectiveDecision(...)` the strategic objective resolver used for Default AI actor state. The accepted hierarchy remains unchanged: bleeding stabilization > casualty recovery/extraction > active escort > visible alien > Last Known/distress > Beacon > UFO bay > known civilian/VIP > exploration.
+- Fixes a Browser 1704 hierarchy leak where a persistent Beacon engagement lock could suppress Last Known Contact. The Beacon lock is now resumable state only; priority 5 Last Known/distress always outranks priority 6 Beacon assault.
+- Fixes fire-team state overwrite during Civilian Escort Support splits. Objective state is recorded per actor, so an escort leader or Stay/Ask support can remain on active escort while Engage support in the same fire team breaks off under visible-contact authority.
+- Higher-priority objective changes immediately invalidate stale lower-priority route scratch. Visible contact clears exploration/VIP-approach/contact-search movement state; Beacon/UFO/civilian assignment clears the lower route categories beneath it without deleting persistent assignment identity.
+- A newly assigned known civilian/VIP clears stale sector-search and patrol state immediately. Exploration therefore cannot survive beneath a priority-8 rescue assignment.
+- Obstructed Last Known/distress local search now holds/retries the reported position instead of silently substituting generic patrol. Priority 5 remains authoritative even when a local probe cannot currently produce a legal move.
+- Post-contact fire-team reassembly remains a formation overlay around the current objective. Leader succession continues to use Browser 1426's team-wide recovery latch; reform never becomes a strategic objective.
+- Adds optional save/playback diagnostics for objective type, priority, source, target entity/coordinate, revision, previous objective and interruption reason. Save format remains 4.
+- Priority-1 stabilization and priority-2 casualty responders now record the same objective diagnostics as the normal mission resolver. Routine non-bleeding first aid remains opportunistic after higher mission duties.
+- Hybrid explicit player movement remains player-owned. The central hierarchy governs Default Simulation and autonomous Default-AI portions of Hybrid without silently taking ownership of explicit Hybrid commands.
+- Replaces the Browser 1704 source-order-only focused check with a behavioral 23-case authority matrix covering the requested priority/interruption/save/leader/escort/multi-team cases.
+
+Preserved
+- Browser 1426 post-contact fire-team reassembly and leader succession.
+- Browser 1525 direct visible-contact pursuit and nearest deconflicted sector search.
+- Tetromino procedural building footprints and the 1050/1230/1316 wall-continuity chain.
+- Browser 0745 IndexedDB durable save storage.
+- Beacon forward-reform/materialization/cinematic behavior.
+- VIP/civilian rescue, escort, boarding and extraction logic, including Civilian Escort Support.
+- Full-width generated doorway baseline; the rejected Browser 1255 narrow doorway framing is not restored.
+- Save format 4.
+
+--- Previous patch notes ---
+
 BUILD: v0.26.09.15.1704_DEFAULT_AI_AUTHORITATIVE_SOLDIER_PRIORITY_STACK_PATCH
 
 PROJECT AEGIS — BROWSER 1704 PATCH NOTES

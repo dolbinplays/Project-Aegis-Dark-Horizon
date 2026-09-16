@@ -1,3 +1,31 @@
+PROJECT AEGIS — BROWSER 2121 VALIDATION SUMMARY
+Build: v0.26.09.15.2121_DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_AND_ROUTE_INVALIDATION_PATCH
+Save format: 4
+
+Default AI Central Objective Authority + Route Invalidation
+- GitHub `main` was rechecked before implementation at commit `f441b1bd0a31a10c6affd268d8b6c816ca04c956`, Browser 1704. The uploaded host's embedded runtime exactly matched the Browser 1704 release metadata: 7,216,384 bytes and SHA-256 `5fb6d04209bb90aaf8d13fcd67fdcee1d42a7a2a4be8bb75741dbd7094a1e5b4`.
+- Audit found two concrete authority leaks not covered by Browser 1704's 10 source-shape checks: a Beacon engagement lock could suppress priority-5 Last Known Contact, and per-soldier resolution was then copied to the entire fire team, allowing break-off escort support to overwrite the escort leader's saved/diagnostic objective.
+- Browser 2121 centralizes actor intent through `tacticalDefaultAiObjectiveDecision(...)`, makes state application actor-scoped during runtime planning, and invalidates stale lower-priority route caches whenever a higher objective takes authority.
+- Last Known/distress search is fail-closed. If bounded local probes are obstructed it holds/retries the report rather than falling through to generic exploration patrol.
+- Focused behavioral regression: **23/23 passed** in `tools/test-default-ai-central-objective-authority.cjs`. The historical `tools/test-default-ai-authoritative-priority-stack.cjs` entrypoint now executes the same behavioral matrix instead of hard-coding Browser 1704 source ordering.
+- Coverage includes: visible alien > exploration; visible alien > VIP approach while retained escort stays; visual-loss transition to Last Known; stabilization > contact; casualty recovery > escort/contact; escort support Stay/Ask vs Engage; visible alien > Beacon; Beacon > UFO bay; UFO bay > civilian; civilian > exploration; exploration-only fallback; formation overlay; leader succession; route interruption diagnostics; save/playback fields; Hybrid command boundary; and deconflicted multi-team civilian allocation.
+- Canonical runtime embedded JavaScript syntax: **PASS** across 5 executable inline script blocks. Service-worker and generated-host syntax are checked after packaging below.
+- Save format remains 4. New objective fields are optional tactical/playback metadata and require no campaign migration.
+- Exact end-to-end replay of the user's North America / Threat 2 / Tide Horror Alien Abduction Site remains a live field-acceptance gate because the campaign save was not part of the latest uploaded file set.
+
+Packaging / release validation
+- Existing `tools/package-runtime-shell.cjs`: **PASS**. Generated runtime is 7,230,299 bytes with SHA-256 `076f0ad90d45417d5e894ebf8c2a5f2893f9bf8fd25144433a323a9da0c90e44`; generated host SHA-256 is `7e18fc1ebc740a35124f1576deed25bb037d674737d82ddb57e2ea21e1ab5895`.
+- `tools/check-aegis-build.cjs`: **PASS** for Browser 2121. Embedded runtime bytes exactly match canonical `src/browser-runtime.html`; `release-metadata.json`, service-worker cache identity, source manifest and save format are synchronized.
+- Official embedded-JavaScript syntax check: **PASS** across 9 non-empty script blocks in 4 HTML files. `service-worker.js` also passes `node --check`.
+- Full retained local Node/smoke sweep available from the exact Browser 1704 GitHub Pages artifact: **33/33 entrypoint files passed, 0 failed**, including Mobile/PWA, IndexedDB saves, casualty care, Browser 1426 reassembly, Browser 1525 contact/local search, global contact/VIP priority, wall/tetromino/vehicle/visibility regressions and six tactical smoke scripts.
+- The legacy Browser 1632 global-contact/VIP test was updated only where its source-shape/build assertions had become obsolete under the centralized resolver; all six of its behavioral/contact/VIP/escort cases pass.
+- Final copy-over ZIP is built from the changed-file-only release list and is validated with archive integrity testing before delivery.
+
+Field acceptance
+- Use `DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_FIELD_ACCEPTANCE.txt`, with special attention to Farah/Echo's initial local search, first-contact route cancellation, all three Civilian Escort Support modes, Last Known-versus-Beacon ordering, save/reload during objective transitions and two-squad objective distribution.
+
+--- Previous validation summary ---
+
 PROJECT AEGIS — BROWSER 1704 VALIDATION SUMMARY
 Build: v0.26.09.15.1704_DEFAULT_AI_AUTHORITATIVE_SOLDIER_PRIORITY_STACK_PATCH
 Save format: 4

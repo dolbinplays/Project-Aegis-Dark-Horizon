@@ -1,8 +1,27 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.15.1704_DEFAULT_AI_AUTHORITATIVE_SOLDIER_PRIORITY_STACK_PATCH`
+Current browser build: `v0.26.09.15.2121_DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_AND_ROUTE_INVALIDATION_PATCH`
 
 Current save format: `4`
+
+## Default AI Central Objective Authority + Route Invalidation — Implemented in Browser 2121
+
+**Deep-dive follow-up September 15, 2026. Status: implemented; live field acceptance required.**
+
+Browser 2121 keeps the accepted nine-level hierarchy from Browser 1704 but removes remaining paths that could still preserve or overwrite lower-priority intent outside that hierarchy.
+
+- `tacticalDefaultAiObjectiveDecision(...)` is the shared strategic objective resolver for Default AI actor intent. Stabilization, casualty recovery, active escort, visible contact, Last Known/distress, Beacon, UFO bay, known civilians and fallback search use the same numeric ordering.
+- Objective state is actor-scoped during planning. A fire team may therefore legitimately contain an escort leader or Stay/Ask escort support at priority 3 while an Engage-support member is released to priority 4 visible contact, without either actor overwriting the other's saved intent.
+- A higher-priority objective invalidates stale route scratch immediately. Exploration caches cannot survive beneath known civilian rescue, source objectives, contact, escort or casualty work; VIP-approach scratch cannot survive beneath priority 1–7 work; and local contact-search scratch cannot survive beneath priorities 1–4.
+- Persistent Beacon engagement is explicitly subordinate to Last Known/distress contact. A Beacon lock remains resumable state but may not suppress priority 5.
+- Last Known/distress local search is fail-closed: if the bounded local-search probes are obstructed, the unit holds/retries the report rather than silently switching to generic patrol.
+- Changing to a known unassigned VIP/civilian clears stale sector-search/patrol state while preserving the coordinated rescue assignment.
+- Browser 1426 post-contact reassembly remains only a formation/cohesion overlay. It is not included in the objective candidate list and leader succession retains the team objective while supports reform around the effective leader.
+- Optional objective diagnostics persist through tactical snapshots: type, source, numeric priority, target entity/coordinate, revision, previous objective and interruption reason. Save format remains **4**.
+- Hybrid explicit player movement remains player-owned. The Default hierarchy applies to autonomous Default-AI decisions and does not silently replace explicit Hybrid orders.
+- Behavioral regression now covers the requested hierarchy matrix instead of only checking source statement ordering.
+
+**Acceptance:** use `DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_FIELD_ACCEPTANCE.txt`. Revisit Farah/Echo in the supplied North America Alien Abduction Site fixture, first-contact interruption, all Civilian Escort Support modes, Last Known-versus-Beacon ordering, save/reload during objective transitions, leader succession and two-squad assignment deconfliction.
 
 ## Authoritative Default AI Soldier Priority Stack — Implemented in Browser 1704
 
