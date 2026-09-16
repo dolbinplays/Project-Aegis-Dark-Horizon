@@ -1,3 +1,27 @@
+# CODEX HANDOFF — v0.26.09.15.2231_AI_COMMAND_STREAM_HANDOFF_AND_ESCORT_LOCK_RUNTIME_HOTFIX
+
+Browser 2231 is the runtime-integration hotfix following Browser 2121's central Default AI objective authority work. Save format remains 4.
+
+## AI Command handoff failure fixed
+
+The live **AI Command** path was traced end-to-end: `handOffToSimulationAi()` correctly entered `startSimulationAiStream()`, switched the turn to AI, and opened the planning overlay, but the first real `resolveMissionAiStreamBatchAsync(...)` call threw `ReferenceError: tacticalEscortLeaderLockState is not defined`. The handoff catch path then deliberately restored `turn=human`, producing the field symptom of a planning window followed by no AI movement and continued player control.
+
+`tacticalEscortLeaderLockState(...)` is now restored as a real runtime helper using existing fire-team and escort authority. It locks only the current effective fire-team leader when that leader owns living, active civilian/VIP followers. Supports remain governed by Civilian Escort Support, so Engage support can still break off while the leader/Stay/Ask actors retain priority-3 escort authority.
+
+## Regression coverage
+
+`tools/test-ai-command-stream-handoff.cjs` evaluates the actual application runtime and executes a real streamed first AI planning batch. It also continues multiple batches through search/contact transitions and verifies visible/Last Known actors do not retain stale exploration routes. Its two-squad acceptance profile mirrors the supplied North America Alien Abduction Site: Threat 2, Tide Horror, $520k reward, +20 Panic, with Farah included as an AEGIS actor.
+
+The existing Browser 2121 central-objective suite now evaluates the real escort-lock helper rather than masking it with a test-only stub. Final retained local regression/smoke sweep: **34/34 entrypoint files passed**; the focused central/handoff release gate passed **25/25 checks**; Mobile/PWA passed **9/9**.
+
+## Preserve
+
+Keep the Browser 2121 nine-level hierarchy, actor-scoped objective diagnostics/route invalidation, Browser 1426 moving reassembly/leader succession, Browser 1525 nearest-sector/contact pursuit, Beacon/UFO ordering, VIP/civilian escort and extraction, casualty-care phases, tetromino/wall continuity, IndexedDB saves, and the Android/PWA release-beacon launch path. Do not restore Browser 1255 narrow doorway framing.
+
+Field acceptance should still use the supplied Browser 1426 mature campaign save with both squads at North America / Alien Abduction Site / Threat 2 / Tide Horror.
+
+--- Previous handoff ---
+
 # CODEX HANDOFF — v0.26.09.15.2121_DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_AND_ROUTE_INVALIDATION_PATCH
 
 Browser 2121 is the follow-through audit on Browser 1704's Default AI priority-stack consolidation. Save format remains 4.

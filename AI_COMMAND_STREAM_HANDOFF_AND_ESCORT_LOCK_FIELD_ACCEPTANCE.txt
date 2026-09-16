@@ -1,0 +1,23 @@
+PROJECT AEGIS — BROWSER 2231 FIELD ACCEPTANCE
+Build: v0.26.09.15.2231_AI_COMMAND_STREAM_HANDOFF_AND_ESCORT_LOCK_RUNTIME_HOTFIX
+Save format: 4
+
+Primary AI Command gate
+- Load the supplied mature Browser 1426 campaign save.
+- Send both available squads to North America / Alien Abduction Site / Threat 2 / Tide Horror / $520k / +20 Panic.
+- Enter the tactical battle under player control, then press AI Command.
+- The planning overlay may appear briefly, but control must remain with Simulation AI afterward; soldiers must begin playback/movement rather than returning silently to the player turn.
+- Watch Farah / Echo from deployment through first contact.
+
+Objective/movement checks
+- Known unassigned VIP/civilian work must outrank generic exploration.
+- If a free team is searching, it should begin with the nearest deconflicted sector rather than a remote map edge.
+- When a new alien becomes visible, lower-priority movement must truncate immediately and free actors must promote to visible-contact authority.
+- When sight is lost without resolution, Last Known Contact must take over; search/patrol scratch must not resume beneath it.
+- Active escort leaders remain with their civilians/VIPs. Stay/Ask support remains attached; Engage support may break off without overwriting the leader's objective.
+- After contact resolves, moving formation recovery remains an overlay around the current mission objective.
+
+Continuity
+- Take Back Control, then press AI Command again during the same battle and confirm a second handoff also succeeds.
+- Save/reload during AI-controlled contact and repeat the handoff.
+- Confirm save format remains 4 and Browser 2121 objective diagnostics remain present.

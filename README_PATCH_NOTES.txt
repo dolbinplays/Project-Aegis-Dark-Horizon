@@ -1,3 +1,20 @@
+BUILD: v0.26.09.15.2231_AI_COMMAND_STREAM_HANDOFF_AND_ESCORT_LOCK_RUNTIME_HOTFIX
+
+PROJECT AEGIS — BROWSER 2231 PATCH NOTES
+Build: v0.26.09.15.2231_AI_COMMAND_STREAM_HANDOFF_AND_ESCORT_LOCK_RUNTIME_HOTFIX
+Save format: 4
+
+AI Command Stream Handoff + Escort Lock Runtime Hotfix
+- Fixes the broken battle AI Command button. The first streamed AI planning batch was throwing `ReferenceError: tacticalEscortLeaderLockState is not defined`; the existing handoff catch path then returned control to the player.
+- Restores `tacticalEscortLeaderLockState(...)` using the existing effective-leader and escort-follower authorities. Only the escort-owning leader is hard-locked; Civilian Escort Support still controls support breakoff behavior.
+- Adds a real-runtime AI Command stream regression that executes `resolveMissionAiStreamBatchAsync(...)`, verifies playback frames/continuation are produced, and requires actual AI movement rather than only source-shape tests.
+- Adds multi-round validation for Search → Visible Alien → Last Known Contact transitions with stale exploration route state cleared under contact authority.
+- Adds a two-squad North America Alien Abduction Site automated profile matching Threat 2 / Tide Horror / $520k / +20 Panic and verifies known VIP/civilian work outranks generic exploration.
+- Browser 2121's central hierarchy and route invalidation remain unchanged. Save format remains 4.
+- Validation: focused central/handoff checks 25/25; complete retained Node/smoke entrypoint sweep 34/34; Mobile/PWA 9/9; embedded JS/build seam/service-worker syntax all pass.
+
+--- Previous patch notes ---
+
 BUILD: v0.26.09.15.2121_DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_AND_ROUTE_INVALIDATION_PATCH
 
 PROJECT AEGIS — BROWSER 2121 PATCH NOTES

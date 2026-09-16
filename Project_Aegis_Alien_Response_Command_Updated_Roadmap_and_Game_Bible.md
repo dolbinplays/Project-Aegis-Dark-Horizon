@@ -1,8 +1,19 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.15.2121_DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_AND_ROUTE_INVALIDATION_PATCH`
+Current browser build: `v0.26.09.15.2231_AI_COMMAND_STREAM_HANDOFF_AND_ESCORT_LOCK_RUNTIME_HOTFIX`
 
 Current save format: `4`
+
+## AI Command Stream Handoff + Escort Lock Runtime Hotfix — Implemented in Browser 2231
+
+**September 15, 2026. Status: implemented; live field acceptance required.**
+
+- Browser 2121's central objective resolver was correct at the unit-test level but the live streamed AI Command path exposed a missing runtime helper: `tacticalEscortLeaderLockState(...)`. The planning call threw before producing its first playable AI frame, and the existing safety catch returned control to the player.
+- Browser 2231 restores that helper using the existing effective fire-team leader and civilian/VIP follower records. An escort-owning leader retains priority 3 while support behavior remains actor-specific under Civilian Escort Support.
+- A real-runtime stream regression now executes the same first planning batch used by the AI Command button, requires AI movement/playback output, and continues through contact transitions. This prevents source-order or stubbed-helper tests from masking another handoff failure.
+- The acceptance profile includes a two-squad North America Alien Abduction Site with Threat 2 Tide Horror, $520k reward and +20 Panic, mirroring the supplied mature campaign fixture. The exact supplied Browser 1426 save remains the live field-acceptance case for Farah/Echo and mature-campaign behavior.
+- Browser 2121's nine-level hierarchy, route invalidation and diagnostics are unchanged. Save format remains **4**.
+
 
 ## Default AI Central Objective Authority + Route Invalidation — Implemented in Browser 2121
 

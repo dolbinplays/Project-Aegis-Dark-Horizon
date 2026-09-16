@@ -1,3 +1,20 @@
+PROJECT AEGIS — BROWSER 2231 VALIDATION SUMMARY
+Build: v0.26.09.15.2231_AI_COMMAND_STREAM_HANDOFF_AND_ESCORT_LOCK_RUNTIME_HOTFIX
+Save format: 4
+
+AI Command Stream Handoff + Escort Lock Runtime Hotfix
+- Reproduced the field failure in the actual Browser 2121 runtime: the first `resolveMissionAiStreamBatchAsync(...)` call crashed with `ReferenceError: tacticalEscortLeaderLockState is not defined`. This exactly matches the UI behavior where AI planning appears and then player control is retained.
+- Restored the missing helper against the existing effective fire-team leader and `tacticalEscortFollowers(...)` authorities; no new parallel escort state was introduced.
+- The previously failing real first streamed batch now produces playback frames and a round-2 continuation. Multi-round execution reaches visible-contact and Last Known Contact authority without resurrecting stale exploration route scratch.
+- Automated two-squad mission profile mirrors the supplied North America Alien Abduction Site / Threat 2 / Tide Horror / $520k / +20 Panic acceptance fixture. The supplied Browser 1426 mature save remains the primary live field fixture.
+- Static tactical-function call audit reports no unresolved `tactical…(...)` runtime calls after the repair.
+- Focused release gate: **25/25 checks passed** across the Browser 2121 central-objective matrix plus the two real-runtime AI Command stream tests.
+- Final retained local Node/smoke sweep: **34/34 entrypoint files passed, 0 failed**, including all six tactical smokes, Mobile/PWA, save storage, casualty care, 1426 reassembly, 1525 contact/local search, building/vehicle/visibility, VIP marker and terminal-state regressions.
+- Mobile/PWA regression: **9/9 passed** after regenerating the host shell. Embedded JavaScript syntax: **PASS across 9 non-empty blocks in 4 HTML files**; `service-worker.js` passes `node --check`.
+- `tools/check-aegis-build.cjs` passes for Browser 2231. Packaged canonical runtime is **7,232,934 bytes**, SHA-256 `fba5594ebffe042807b978d7278dde91ab48242b2ef6e2b8be506f87d04cc8ef`; generated host SHA-256 is `d0af84f8cf62412a08e5423994cca724f8f0a71b333808ca410e3db20e4db3df`.
+
+--- Previous validation summary ---
+
 PROJECT AEGIS — BROWSER 2121 VALIDATION SUMMARY
 Build: v0.26.09.15.2121_DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_AND_ROUTE_INVALIDATION_PATCH
 Save format: 4
