@@ -1,3 +1,22 @@
+BUILD: v0.26.09.16.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH
+
+PROJECT AEGIS — BROWSER 0820 PATCH NOTES
+Build: v0.26.09.16.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH
+Save format: 4
+
+Default AI Casualty Stabilization / Recovery / Extraction Ownership
+- Adds persistent, mutually recorded casualty-response ownership so one autonomous responder keeps responsibility for a bleeding/downed AEGIS soldier across AI rounds instead of responder selection resetting to whoever is closest each pass.
+- Priority 1 stabilization now carries the same responder directly into priority 2 recovery ownership after successful stabilization.
+- Planning ownership is released when the responder becomes dead/downed, fear-Override, player-controlled under Hybrid authority, loses required medical capability for stabilization, or cannot route to the casualty.
+- A real physical drag relationship (draggingCasualtyId / draggedById) outranks AI planning ownership and is adopted for AI continuation after manual/control handoff.
+- Multiple responders are distributed across separate urgent casualties where possible; one responder cannot simultaneously own multiple casualty jobs.
+- Assigned casualty responders remain excluded from lower-priority autonomous behavior for the round, preventing visible-contact/search/escort logic from stealing them mid-duty.
+- Additive ownership fields are included in streamed tactical snapshots so responder continuity survives AI playback batches and save/load-compatible state copying.
+- Browser 2345 player VIP-contact override and real escort ownership behavior are preserved.
+- Save format remains 4.
+
+Focused regression: tools/test-default-ai-casualty-response-ownership.cjs
+
 BUILD: v0.26.09.15.2345_MANUAL_VIP_ASSIGNMENT_OVERRIDE_AND_ESCORT_OWNERSHIP_HOTFIX
 
 PROJECT AEGIS — BROWSER 2345 PATCH NOTES

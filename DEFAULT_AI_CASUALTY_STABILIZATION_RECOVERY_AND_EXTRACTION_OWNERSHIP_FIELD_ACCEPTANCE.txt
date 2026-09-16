@@ -1,0 +1,33 @@
+PROJECT AEGIS — BROWSER 0820 FIELD ACCEPTANCE
+Build: v0.26.09.16.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH
+Save format: 4
+
+Responder continuity
+- Create a tactical mission with one bleeding, downed AEGIS soldier and at least two living medkit-capable AEGIS responders.
+- Allow Default AI to begin moving one responder toward the casualty, then make a different responder physically closer without invalidating the first responder.
+- The original assigned responder must retain stabilization ownership instead of the AI switching to the newly closer soldier.
+- Other available soldiers must remain free for lower-priority combat/escort/search work rather than dogpiling the same casualty.
+
+Stabilize -> recover handoff
+- Allow the assigned responder to reach and stabilize the casualty.
+- The same responder must transition directly from stabilization ownership to casualty recovery/extraction ownership.
+- A newly visible alien must not cause the assigned responder to abandon/reacquire the casualty; other eligible AEGIS soldiers may handle the contact.
+
+Invalid responder release
+- While a responder owns a casualty, kill/incapacitate them, force fear Override, or make their route materially unreachable.
+- The stale ownership must release and another eligible responder must be allowed to take over.
+- A valid ownership assignment must not be replaced merely because another responder becomes closer.
+
+Player authority / physical drag
+- In Hybrid/manual control, explicitly control a fire-team leader near a casualty. Default AI must not commandeer that player-controlled lead as an autonomous responder.
+- If the player manually attaches a different soldier to drag a casualty, the real draggingCasualtyId/draggedById relationship must supersede any stale AI planning reservation and become the continuation owner when AI resumes.
+
+Multiple casualties
+- With one medic and multiple bleeding casualties, the responder should claim/treat the most urgent available casualty rather than simultaneously owning both.
+- With multiple responders and multiple casualties, separate responders should be assigned where possible rather than converging on the same casualty.
+
+Continuity
+- Save/reload or streamed AI playback while a responder is en route and verify the additive responder/target ownership fields survive tactical snapshots.
+- Confirm the existing nine-level Default AI priority hierarchy is unchanged: Stabilize remains priority 1 and Casualty Recovery remains priority 2.
+- Confirm Browser 2345 manual VIP assignment override/escort ownership behavior remains intact.
+- Confirm save format remains 4.

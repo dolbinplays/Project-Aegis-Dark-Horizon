@@ -1,3 +1,20 @@
+# CODEX HANDOFF — v0.26.09.16.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH
+
+Browser 0820 hardens Default AI priorities 1 and 2 without changing the accepted nine-level hierarchy. Save format remains 4.
+
+## Casualty-response ownership authority
+- **One casualty / one autonomous responder.** A bleeding or downed AEGIS soldier may carry an `aiCasualtyResponderId`; the responder carries the matching `aiCasualtyTargetId` and duty kind (`stabilize` or `recover`).
+- **Continuity beats proximity.** Once a valid responder owns a casualty, a newly closer teammate does not steal the job. Ownership releases only when the responder/casualty state becomes invalid or the route materially fails.
+- **Stabilize transitions into recover.** Successful priority-1 stabilization converts the same mutual assignment into priority-2 recovery/extraction ownership rather than re-running nearest-responder selection.
+- **Physical/manual state wins.** A valid `draggingCasualtyId` / `draggedById` pair is stronger than AI planning state and is adopted when AI resumes. Hybrid player-controlled leaders are excluded from autonomous responder claims.
+- **No lower-priority theft.** Assigned casualty-duty actors are excluded from lower-priority actor processing for that round.
+
+The patch uses additive optional tactical fields only; save format remains 4. Browser 2345 manual VIP assignment override and escort ownership remain unchanged.
+
+Focused regression: `tools/test-default-ai-casualty-response-ownership.cjs`.
+
+--- Previous handoff ---
+
 # CODEX HANDOFF — v0.26.09.15.2345_MANUAL_VIP_ASSIGNMENT_OVERRIDE_AND_ESCORT_OWNERSHIP_HOTFIX
 
 Browser 2345 is a narrow manual-rescue ownership hotfix on top of Browser 2231. Save format remains 4.

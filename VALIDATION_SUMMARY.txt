@@ -1,3 +1,19 @@
+PROJECT AEGIS — BROWSER 0820 VALIDATION SUMMARY
+Build: v0.26.09.16.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH
+Save format: 4
+
+Default AI Casualty Stabilization / Recovery / Extraction Ownership
+- Root issue: priorities 1 and 2 were correctly ordered, but responder selection was largely stateless until a drag was physically attached. A different medic/rescuer could therefore become the selected responder on a later AI pass simply because proximity changed.
+- Browser 0820 adds mutually recorded optional AI casualty ownership (`aiCasualtyResponderId` / `aiCasualtyTargetId` plus duty kind/assignment round). One valid autonomous responder keeps a casualty job across rounds.
+- Priority-1 stabilization transitions the same responder directly into priority-2 recovery/extraction ownership after successful stabilization instead of restarting nearest-responder selection.
+- Ownership is reconciled and released when the responder becomes dead/downed, fear-Override, Hybrid player-controlled, medically unable to stabilize, or materially unable to route to the casualty. A reachable teammate can then take over.
+- Real physical dragging (`draggingCasualtyId` / `draggedById`) outranks planning ownership and is adopted for AI continuation after manual/control handoff.
+- Multiple casualties distribute across separate responders where capacity exists; one responder cannot own multiple casualty assignments, and priority responders are withheld from lower-priority autonomous processing for the round.
+- Streamed tactical snapshots/playback explicitly preserve the additive ownership fields. Save format remains 4.
+- Focused ownership regression: **13/13 passed**. Default AI central objective authority: **23/23 passed**. Authoritative priority stack: **23/23 passed**. Global contact/VIP priority: **6/6 passed**. Browser 2345 manual VIP assignment override: **10/10 passed**. AI Command stream handoff: **2/2 passed**. Mobile/PWA: **9/9 passed**. Mobile interface: **10/10 passed**.
+- Full retained local sweep: **38/38 test/smoke entrypoints passed, 0 failed**, including casualty-care phases 1/2/3a, casualty terminal state/history, IndexedDB saves, beacon/reinforcement systems, post-contact reassembly, VIP escort/marker behavior, building/vehicle/visibility checks, and terminal victory.
+- `tools/check-aegis-build.cjs`, embedded JavaScript syntax, and `service-worker.js` syntax all pass. Packaged runtime: **7,247,277 bytes**, SHA-256 `32a657f21319cf0a7746b95bbddda2382b198176609778cdc2be3a9b723bed3b`; generated host SHA-256 `7763b127ca91ba615607532d4b93d117a1b744825e7a49206750235767607e1d`.
+
 PROJECT AEGIS — BROWSER 2345 VALIDATION SUMMARY
 Build: v0.26.09.15.2345_MANUAL_VIP_ASSIGNMENT_OVERRIDE_AND_ESCORT_OWNERSHIP_HOTFIX
 Save format: 4
