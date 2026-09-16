@@ -1,8 +1,48 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.15.1525_DEFAULT_AI_CONTACT_PURSUIT_AND_LOCAL_SECTOR_SEARCH_HOTFIX`
+Current browser build: `v0.26.09.15.1704_DEFAULT_AI_AUTHORITATIVE_SOLDIER_PRIORITY_STACK_PATCH`
 
 Current save format: `4`
+
+## Authoritative Default AI Soldier Priority Stack — Implemented in Browser 1704
+
+**Deep-dive September 15, 2026. Status: implemented; live field acceptance required.**
+
+The Default AI doctrine now uses the accepted mission-objective hierarchy below instead of allowing medical, escort, contact, source, rescue and exploration branches to acquire movement authority independently:
+
+1. **Stabilize a bleeding soldier/VIP/civilian.** The current executable casualty/downed model exists for AEGIS soldiers; civilian/VIP casualty triage remains a planned extension and should plug into this same highest-priority slot when implemented.
+2. **Recover/extract a stabilized or downed AEGIS soldier.**
+3. **Active civilian/VIP escort duty.** The escort leader remains committed. Civilian Escort Support controls support behavior when contact appears: Stay remains attached, Engage breaks off, Ask waits for player choice.
+4. **Visible alien contact.** New sighting interrupts and truncates lower-priority planned movement at the first sighting cell, then remaining free actions recalculate toward contact.
+5. **Last Known Alien / distress-reported attacker location.** Distress coordinates are part of Last Known Contact authority, not a separate lower-priority search branch.
+6. **Confirmed Alien Field Beacon.**
+7. **Unchecked crashed-UFO deployment bay.**
+8. **Known unassigned VIP/civilian approach and escort.** Tracker VIPs and ordinary revealed civilians qualify for coordinated fire-team assignment.
+9. **Exploration/search for undiscovered aliens and civilians.** Generic exploration is legal only after higher-priority known responsibilities are absent; specifically, it cannot begin while a known civilian/VIP remains unassigned.
+
+Additional authority rules implemented with this consolidation:
+- Priority 1 responders can route to a bleeding casualty and are withheld from lower-priority action for that round. Routine treatment of a non-bleeding wounded soldier is **not** a strategic priority and was moved to an opportunistic post-objective pass.
+- Beacon/UFO source responsibility is reserved before known-civilian assignment, preserving Beacon > UFO > known civilian ordering.
+- Default Simulation may clear stale autonomous/Command Map movement when a higher autonomous objective takes authority. Hybrid explicit player movement remains a separate player override unless an existing hard safety/escort rule applies.
+- Browser 1426 post-contact reassembly is now a **formation overlay**. The effective leader continues the highest-priority mission objective while supports reform around the moving leader; reassembly cannot hold the whole team ahead of contact, source or rescue objectives.
+- Planner-failure recovery is fail-closed: it continues/holds higher-priority contact/source/rescue authority rather than silently substituting generic patrol.
+- Perspective current-order diagnostics mirror the numbered stack so observed behavior and displayed AI intent use the same authority language.
+
+**Acceptance:** use `DEFAULT_AI_AUTHORITATIVE_PRIORITY_STACK_FIELD_ACCEPTANCE.txt`, including the supplied North America Alien Abduction Site fixture, all Civilian Escort Support modes, first-contact interruption, known VIP/civilian assignment, Beacon/UFO ordering, casualty response, post-contact leader succession, Hybrid behavior and save/reload. Save format remains **4**.
+
+## Default AI Global Contact Interruption and VIP Priority Hotfix — Implemented in Browser 1632; superseded by Browser 1704 authority consolidation
+
+**Clarified September 15, 2026. Status: implemented in Browser 1632; live field acceptance remains required.**
+
+- Default AI tactical authority is now explicit rather than allowing exploration, rescue and combat movement to compete as peer goals. The intended order is: **new/visible alien contact interrupts stale movement; established escort commitments remain protected according to Civilian Escort Support; known unassigned VIP locations receive available fire teams; ordinary exploration occurs only when those higher-priority responsibilities are absent.**
+- A newly spotted alien cancels the remainder of the current Default AI movement route at the first sighting cell. Free fire teams replan under live combat authority instead of finishing previously calculated sector-search or VIP-approach paths.
+- All fire teams that are not committed as active escort leaders/supports retained by player doctrine are eligible to route toward and engage the seen alien. Default Simulation releases lower-priority waypoint movement during visible combat; Hybrid explicit player movement remains player-owned.
+- The existing **Civilian Escort Support** choice remains authoritative. An escort leader does not abandon the civilian/VIP column. Supports set to **Stay With Escort** remain; supports set to **Engage Spotted Aliens** break off; **Ask When Contact Is Spotted** keeps the decision with the player rather than silently changing escort strength.
+- Known tracked VIPs can now activate squad-level rescue distribution even when generic mission civilian metadata is non-mandatory. Available fire-team leaders receive unresolved VIP coordinates before ordinary sector exploration. This applies from the fresh/initial Default AI pass, not only after simulation has already been running.
+- If alien contact is acquired while a team is searching for/approaching a VIP, the unformed search/approach duty is released for combat. If an escort is already established, escort authority and support doctrine decide who stays and who joins the fight.
+- After contact is resolved, Browser 1426 post-contact formation recovery still reforms fire teams before they resume unresolved VIP assignments. Browser 1525 nearest/deconflicted sector search remains the final fallback once no visible alien and no applicable known VIP assignment remains.
+- Save format remains 4; the change is behavioral/state-authority logic and requires no campaign migration.
+- **Acceptance:** use the supplied North America Alien Abduction Site campaign fixture with both squads. Confirm known VIPs receive teams before exploration; interrupt a moving search/VIP-approach team by revealing an alien and verify the route stops immediately; confirm all free teams converge on combat; test all three Civilian Escort Support settings; clear contact and confirm reassembly → remaining VIP work → exploration order; repeat across save/reload and Default Simulation/Hybrid transitions.
 
 ## Default AI Contact Pursuit and Local Sector Search Hotfix — Implemented in Browser 1525
 
@@ -161,6 +201,8 @@ This Command-screen item remains roadmap-only; Browser 1050 does not implement i
 Implemented in Browser 1426. The recovery trigger now has a dedicated **team-wide post-contact latch** in addition to the older leader-only split-search marker, so a leader who is killed, downed, extracted or replaced during the firefight cannot make surviving supports forget that the team still needs to reform. The effective surviving leader becomes the recovery anchor after normal fire-team reconciliation.
 
 Browser 1426 also adds a bounded degraded-cohesion release: after three recovery rounds, a support whose formation cell has no legal route no longer deadlocks the entire team once every reachable support is back in formation. The separated member remains governed by normal formation-following behavior and can catch up when a route becomes available. Persistent VIP/Beacon/player assignments remain stored while reassembly is active and resume afterward. The additive recovery marker is included in tactical playback/save state; save format remains 4.
+
+**Browser 1704 refinement:** formation recovery is no longer allowed to become a standalone mission-priority hold. The effective leader resumes the authoritative objective immediately after combat/Last Known authority clears, and reachable supports reform around that moving leader. The Browser 1426 team-wide latch and three-round unreachable-support fallback are retained.
 
 ## 1–7 Hex Statues and Fountains — Implemented in Browser 2320
 

@@ -1,3 +1,33 @@
+PROJECT AEGIS — BROWSER 1704 VALIDATION SUMMARY
+Build: v0.26.09.15.1704_DEFAULT_AI_AUTHORITATIVE_SOLDIER_PRIORITY_STACK_PATCH
+Save format: 4
+
+Default AI Authoritative Soldier Priority Stack
+- Deep-dive inspection found several competing behaviors that were not consistently ordered by the accepted mission hierarchy: routine non-bleeding first aid could preempt objectives; distress contacts were weaker than Last Known Contact; Beacon/UFO source selection could happen after civilian assignment; new contact did not always recalculate escort-support duty cleanly; post-contact reform could hold the leader as if reform were a mission objective; and emergency fallback could still substitute generic patrol.
+- Browser 1704 centralizes those behaviors around the accepted nine-level stack: bleeding stabilization > downed AEGIS recovery/extraction > active escort > visible alien > Last Known/distress contact > Beacon > unchecked UFO bay > known civilian/VIP > exploration.
+- Focused authoritative-stack regression passed 10/10 subtests. Retained Browser 1525 contact/local-search coverage passed 5/5 and the prior global-contact/VIP regression passed 6/6.
+- The complete available local regression/smoke sweep passed: 29/29 test/smoke entrypoint files, 0 failed. This includes mobile/PWA, casualty-care phases, save storage, wall/vehicle/visibility, VIP markers, and tactical presentation regressions available in this workspace.
+- Mobile/PWA regression passed 9/9 after regenerating the host shell. Embedded JavaScript syntax passed across 9 non-empty script blocks in 4 HTML files, and service-worker.js passes `node --check`.
+- `tools/check-aegis-build.cjs` passes for Browser 1704. Packaging regenerated index.html, service-worker.js and release-metadata.json from canonical src/browser-runtime.html with synchronized build identity and runtime SHA-256.
+- The supplied campaign remains the primary field fixture for the North America Alien Abduction Site and its contact/escort logs; automated tests do not claim an end-to-end played mission.
+- Civilian/VIP casualty triage remains planned work. Browser 1704 reserves its stabilization priority but does not create a new civilian/VIP downed-state model; current executable bleeding/downed casualty authority remains AEGIS-soldier based.
+- Field acceptance should verify: known VIP/civilian assignment before search, first-contact interruption of stale movement, all free fire teams converging on visible contact, all three Civilian Escort Support modes, Last Known/distress before Beacon, Beacon before UFO bay, casualty priorities, and moving-leader post-contact formation recovery.
+
+--- Previous validation summary ---
+
+PROJECT AEGIS — BROWSER 1632 VALIDATION SUMMARY
+Build: v0.26.09.15.1632_DEFAULT_AI_GLOBAL_CONTACT_AND_VIP_PRIORITY_HOTFIX
+Save format: 4
+
+Default AI Global Contact and VIP Priority Hotfix
+- Focused source/behavior regression coverage: 21/21 Node tests passed across the four test files present in this minimal patch workspace, including 6 new global-contact/VIP-priority tests plus retained Browser 1525 contact/local-search, Browser 1426 post-contact-reassembly, and IndexedDB save regressions.
+- New coverage verifies movement-path truncation at the first newly visible alien, no false repeat interruption for an already-known contact, automatic tracked-VIP fire-team assignment, the combat > VIP > exploration authority ordering, and preservation of escort-leader / Civilian Escort Support doctrine behavior.
+- The supplied campaign remains the field-acceptance fixture for the North America Alien Abduction Site; no claim is made that the full mission was played end-to-end in this build environment.
+- Executable JavaScript syntax, embedded-runtime byte/hash equality, synchronized build metadata, and ZIP integrity are verified during packaging.
+- Save format remains 4.
+
+--- Previous validation summary ---
+
 PROJECT AEGIS — BROWSER 1525 VALIDATION SUMMARY
 Build: v0.26.09.15.1525_DEFAULT_AI_CONTACT_PURSUIT_AND_LOCAL_SECTOR_SEARCH_HOTFIX
 Save format: 4

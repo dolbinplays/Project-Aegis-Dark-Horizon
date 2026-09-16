@@ -1,3 +1,74 @@
+# CODEX HANDOFF — v0.26.09.15.1704_DEFAULT_AI_AUTHORITATIVE_SOLDIER_PRIORITY_STACK_PATCH
+
+Browser 1704 is the deep-dive consolidation of Default AI soldier behavior requested after the supplied two-squad North America Alien Abduction Site exposed competing movement authorities. Save format remains 4.
+
+## Authoritative Default AI objective stack
+Default Simulation now resolves soldier/fire-team mission intent against one explicit order:
+1. Stabilize a bleeding casualty.
+2. Recover/extract a stabilized or downed AEGIS soldier.
+3. Continue active civilian/VIP escort duty.
+4. Engage visible aliens.
+5. Investigate Last Known Contact or a distress-reported attacker position.
+6. Neutralize a confirmed Alien Field Beacon.
+7. Clear an unchecked crashed-UFO deployment bay.
+8. Approach and escort a known unassigned VIP/civilian.
+9. Explore for undiscovered aliens/civilians.
+
+Civilian/VIP downed-triage itself is still a recorded future feature; the executable stabilization/recovery slots currently operate on AEGIS casualties because that is the casualty state implemented today.
+
+## What changed in Browser 1704
+- Bleeding stabilization is now a true pre-objective pass. A medkit responder may route to a bleeding downed soldier, and that responder is withheld from every lower-priority action for the remainder of the round. Casualty recovery/extraction follows as priority two. Routine non-bleeding medkit healing was found to be an unlisted competing priority and is now opportunistic after the main tactical pass.
+- New visible alien contact still truncates stale movement at the first sighting cell, but the contact interrupt now also recalculates escort-support duty immediately: the escort leader stays; Stay/Ask supports remain; Engage supports are released into combat. Remaining free actions replan from the new contact.
+- Distress-reported attacker coordinates are folded into Last Known Contact authority instead of competing as a separate search branch.
+- Beacon/UFO responsibility is reserved before known-civilian assignment, with Beacon before UFO. A reserved higher-priority source team cannot be stolen by VIP/civilian approach planning.
+- Known tracker VIPs and ordinary revealed civilians both qualify for coordinated fire-team assignment. Default Simulation may replace stale autonomous waypoint movement for a known civilian; Hybrid explicit player movement remains player-owned. Generic exploration is blocked while a known civilian/VIP remains unassigned.
+- Post-contact reassembly is no longer a mission objective that can hold the leader stationary. The effective leader resumes the highest-priority objective while supports rebuild formation around that moving anchor. The Browser 1426 team-wide recovery latch and bounded unreachable-member fallback remain.
+- Emergency planner recovery is priority-aware: visible/Last Known contact continues to receive movement authority, and Beacon/UFO/known-civilian responsibility causes a safe hold rather than an illegal generic patrol fallback.
+- FPV/TPV current-order diagnostics now present the same numbered priority stack; formation recovery is labeled as an overlay rather than a higher mission objective.
+
+## Field acceptance
+Use `DEFAULT_AI_AUTHORITATIVE_PRIORITY_STACK_FIELD_ACCEPTANCE.txt`. The primary fixture remains the supplied Browser 1426 save and the North America / Threat 2 / Tide Horror Alien Abduction Site with both available squads. Pay particular attention to Farah/Echo, whole-fire-team reaction to first alien contact, known VIP assignment, Civilian Escort Support modes, post-contact moving-leader reform, and fallback behavior.
+
+Focused regression: `tools/test-default-ai-authoritative-priority-stack.cjs`.
+
+## Next roadmap candidates
+- Tactical soldier face/equipment identity matching.
+- Command Screen → AEGIS Operations Overview.
+- Interactive closable/lockable doors, locked-shelter callouts, and civilian/VIP casualty triage remain recorded future systems.
+
+--- Previous handoff ---
+
+# CODEX HANDOFF — v0.26.09.15.1632_DEFAULT_AI_GLOBAL_CONTACT_AND_VIP_PRIORITY_HOTFIX
+
+Browser 1632 corrects the Default AI priority regression exposed by the supplied two-squad North America Alien Abduction Site fixture. The user-defined authority is now explicit: **seen alien contact > active escort commitment / escort-support player choice > known unassigned VIP rescue > ordinary exploration**. Save format remains 4.
+
+## Default AI global contact interruption
+- `tacticalAiMovementContactInterruptPlan(...)` walks a planned Default AI movement route cell-by-cell. The first cell that gains personal sight of a previously unknown living alien becomes the hard stop for that route. Stale search/VIP-approach movement beyond the sighting cell is discarded.
+- `tacticalAiCivilianPriorityTurn(...)` now promotes newly acquired contact during rescue search/approach to dynamic combat authority immediately. Later unformed rescue/search teams do not continue their old movement in the same planning pass.
+- After rescue planning reports live combat, `resolveMission(...)` releases unformed VIP-search/approach duty IDs so those teams can join combat. Established escort leaders remain duty-bound; escort supports stay or break off strictly through `tacticalEscortSupportModeForTeam(...)` and the existing Civilian Escort Support dropdown/prompt.
+- Default Simulation clears lower-priority fire-team command movement while live visible combat is active so free teams cannot keep following exploration/command-map waypoints instead of routing to the known alien. Hybrid command remains explicit player authority.
+
+## Known VIP assignment before exploration
+- `tacticalVipRescueAssignmentPlan(...)` now enables for a living unresolved tracked VIP even when the generic civilian objective is non-mandatory. Known VIP coordinates therefore receive available fire-team assignments before fallback exploration.
+- The initial/fresh Default AI mission pass may invoke tracked-VIP rescue; it is no longer restricted to a continuing simulation state.
+- Browser 1525 nearest-sector search remains intact only as the fallback when there is no visible alien combat authority and no applicable unassigned known VIP responsibility.
+- Browser 1426 post-contact reassembly remains the transition after combat ends; teams reform before returning to VIP work or fallback search.
+
+## Field acceptance
+- Primary fixture: supplied campaign save, both available squads to North America / Threat 2 / Tide Horror / Alien Abduction Site.
+- A known tracked VIP should receive a fire-team assignment and that team should visibly route toward the VIP instead of entering generic exploration.
+- If a new alien becomes visible during any exploration or VIP-approach route, movement should stop at the first sighting cell and all free teams should switch toward the contact.
+- An established escort leader must continue escorting. Support soldiers must honor Civilian Escort Support: Stay = remain attached; Engage = break off; Ask = wait for the player's decision.
+- After the contact is resolved, Browser 1426 formation recovery should occur, then remaining VIP assignments resume; only after those responsibilities are exhausted should Browser 1525 deconflicted exploration resume.
+- Focused regression: `tools/test-default-ai-global-contact-and-vip-priority.cjs`. Field checklist: `DEFAULT_AI_GLOBAL_CONTACT_AND_VIP_PRIORITY_FIELD_ACCEPTANCE.txt`.
+
+## Next roadmap candidates
+- Tactical soldier face/equipment identity matching.
+- Command Screen → AEGIS Operations Overview.
+- Interactive closable/lockable doors, locked-shelter callouts, and civilian/VIP casualty triage remain recorded future systems.
+
+--- Previous handoff ---
+
 # CODEX HANDOFF — v0.26.09.15.1525_DEFAULT_AI_CONTACT_PURSUIT_AND_LOCAL_SECTOR_SEARCH_HOTFIX
 
 Browser 1525 is a focused Default AI navigation/combat-response hotfix built on Browser 1426. It was prompted by the supplied campaign fixture where both available squads are sent to the North America Alien Abduction Site and Farah Vale, leading Echo Fire Team, can head toward the northwest edge while Default AI soldiers appear reluctant to close on spotted aliens. Save format remains 4.

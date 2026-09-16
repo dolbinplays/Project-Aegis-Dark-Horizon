@@ -1,3 +1,43 @@
+BUILD: v0.26.09.15.1704_DEFAULT_AI_AUTHORITATIVE_SOLDIER_PRIORITY_STACK_PATCH
+
+PROJECT AEGIS — BROWSER 1704 PATCH NOTES
+Build: v0.26.09.15.1704_DEFAULT_AI_AUTHORITATIVE_SOLDIER_PRIORITY_STACK_PATCH
+Save format: 4
+
+Default AI Authoritative Soldier Priority Stack
+- Consolidates Default Simulation mission intent into the accepted nine-level hierarchy: bleeding stabilization > downed AEGIS recovery/extraction > active escort > visible alien > Last Known/distress contact > Beacon > UFO bay > known civilian/VIP > exploration.
+- New alien contact truncates stale movement and recalculates remaining free actions. Civilian Escort Support is reapplied at the interrupt: escort leader stays, Stay/Ask support stays, Engage support breaks off.
+- Distress-reported attacker positions now use Last Known Contact authority.
+- Beacon/UFO teams are reserved before known-civilian assignment, with Beacon ahead of UFO bay.
+- Known revealed civilians now join tracker VIPs as coordinated rescue assignments. Exploration is blocked while a known civilian/VIP remains unassigned.
+- Bleeding stabilization may route a medkit responder to the casualty. Routine non-bleeding first aid is deferred until after mission-priority actions.
+- Post-contact reassembly is a moving formation overlay: the leader resumes the objective while supports catch up, rather than holding the team stationary.
+- Emergency AI fallback respects higher objectives and will hold instead of substituting generic patrol when necessary.
+- FPV/TPV current-order diagnostics mirror the numbered objective hierarchy.
+- Civilian/VIP casualty triage is still roadmap work; Browser 1704 reserves its intended priority slot but does not invent a civilian downed state.
+
+Field checklist: DEFAULT_AI_AUTHORITATIVE_PRIORITY_STACK_FIELD_ACCEPTANCE.txt
+Focused regression: tools/test-default-ai-authoritative-priority-stack.cjs
+
+--- Previous patch notes ---
+
+PROJECT AEGIS — BROWSER 1632 PATCH NOTES
+Build: v0.26.09.15.1632_DEFAULT_AI_GLOBAL_CONTACT_AND_VIP_PRIORITY_HOTFIX
+Save format: 4
+
+Default AI Global Contact and VIP Priority Hotfix
+- Reasserts the intended Default AI authority order: visible alien contact first, known/unassigned VIP rescue second, ordinary map exploration only when neither higher-priority responsibility exists.
+- Any newly spotted alien now interrupts the current Default AI movement path at the first sighting cell instead of allowing a stale exploration/VIP-search route to finish. Remaining free fire teams are then replanned under global live-contact combat authority.
+- In Default Simulation, visible alien contact releases lower-priority transient/persistent fire-team waypoint movement so free teams route toward and engage the known contact rather than continuing exploration. Hybrid player-command authority remains player-owned.
+- Active civilian/VIP escort leaders stay with their escorted column. Escort support soldiers obey the existing Civilian Escort Support doctrine: Stay With Escort remains attached, Engage Spotted Aliens breaks off, and Ask When Contact Is Spotted continues to defer that choice to the player rather than silently abandoning the escort.
+- If contact is acquired while a team is searching for or approaching a VIP, unformed search/approach movement is canceled immediately. A team that has already established an escort is preserved under the escort-support rules above.
+- Known tracked VIPs now enable automatic Default AI rescue assignment even when the mission's generic civilian-objective metadata is not itself mandatory. Available fire-team leaders receive VIP coordinates before ordinary hidden-contact sector exploration is considered.
+- Browser 1426 post-contact fire-team reassembly remains intact: after visible/remembered contact is resolved, teams reform and then resume remaining VIP/rescue responsibility or fallback exploration.
+- Browser 1525 nearest-sector ordering remains the fallback exploration behavior, but exploration is no longer a peer priority with known VIPs or visible aliens.
+- Save format remains 4; no campaign migration is required.
+
+--- Previous patch notes ---
+
 PROJECT AEGIS — BROWSER 1525 PATCH NOTES
 Build: v0.26.09.15.1525_DEFAULT_AI_CONTACT_PURSUIT_AND_LOCAL_SECTOR_SEARCH_HOTFIX
 Save format: 4

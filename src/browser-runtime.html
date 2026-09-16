@@ -1512,7 +1512,7 @@ function aegisTacticalViewportDimensions(mount,fallback={},layout=AEGIS_INTERFAC
 }
 // AEGIS_MOBILE_INTERFACE_END
 
-const CURRENT_GAME_BUILD="v0.26.09.15.1525_DEFAULT_AI_CONTACT_PURSUIT_AND_LOCAL_SECTOR_SEARCH_HOTFIX";
+const CURRENT_GAME_BUILD="v0.26.09.15.1704_DEFAULT_AI_AUTHORITATIVE_SOLDIER_PRIORITY_STACK_PATCH";
 const BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH=true;
 const TACTICAL_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH=true;
 const TACTICAL_OBSERVED_BEACON_REINFORCEMENT_CINEMATIC_DURATION_MS=2300;
@@ -1873,15 +1873,58 @@ function tacticalCasualtyDeteriorationStep(units=[],round=1){const currentRound=
 function tacticalMedicalPriorityTarget(units=[],rescuerId=null){const rescuer=(units||[]).find(unit=>unit?.id===rescuerId)||null;if(!tacticalHumanCombatActive(rescuer))return null;const adjacent=(units||[]).filter(unit=>unit?.team==="human"&&unit.id!==rescuer.id&&unit.alive!==false&&Number(unit.hp)>0&&tacticalDistance(rescuer,unit)<=1);const downed=adjacent.filter(tacticalHumanIsBleeding).sort((a,b)=>(Number(a.bleedOutRounds)||99)-(Number(b.bleedOutRounds)||99)||String(a.id).localeCompare(String(b.id)));if(downed[0])return downed[0];return adjacent.filter(unit=>!tacticalHumanIsDowned(unit)&&Number(unit.hp)<Number(unit.maxHp)).sort((a,b)=>(Number(a.hp)||0)/Math.max(1,Number(a.maxHp)||1)-(Number(b.hp)||0)/Math.max(1,Number(b.maxHp)||1)||String(a.id).localeCompare(String(b.id)))[0]||null;}
 function tacticalFirstAidActionState(units=[],rescuerId=null,targetId=null,turn="human"){const rescuer=(units||[]).find(unit=>unit?.id===rescuerId)||null,target=(units||[]).find(unit=>unit?.id===targetId)||null;if(turn!=="human")return{ok:false,reason:"Field treatment can only be performed during the human turn.",rescuer,target};if(!tacticalHumanCombatActive(rescuer))return{ok:false,reason:"Select a conscious AEGIS responder first.",rescuer,target};if(!target||target.team!=="human"||target.alive===false||Number(target.hp)<=0)return{ok:false,reason:"Select a living AEGIS casualty to treat.",rescuer,target};if(rescuer.id===target.id)return{ok:false,reason:"Use the normal Medkit action for self-treatment.",rescuer,target};if(tacticalDistance(rescuer,target)>1)return{ok:false,reason:"Move adjacent to the casualty before providing first aid.",rescuer,target};if((Number(rescuer.medkitCharges)||0)<=0)return{ok:false,reason:`${rescuer.name||"This responder"} has no Field Medkit charges remaining.`,rescuer,target};if(tacticalHumanIsDowned(target)){if(!tacticalHumanIsBleeding(target))return{ok:false,reason:target.stabilized?`${target.name||"This casualty"} is already stabilized.`:`${target.name||"This casualty"} does not currently require stabilization.`,rescuer,target};if((Number(rescuer.tu)||0)<TACTICAL_STABILIZE_TU)return{ok:false,reason:`${rescuer.name||"This responder"} needs ${TACTICAL_STABILIZE_TU} TU to stabilize the casualty.`,rescuer,target};return{ok:true,kind:"stabilize",cost:TACTICAL_STABILIZE_TU,rescuer,target,reason:`Stabilize ${target.name||"casualty"} for ${TACTICAL_STABILIZE_TU} TU and 1 medical charge.`};}if(Number(target.hp)>=Number(target.maxHp))return{ok:false,reason:`${target.name||"This soldier"} is already at full health.`,rescuer,target};if((Number(rescuer.tu)||0)<TACTICAL_FIRST_AID_TU)return{ok:false,reason:`${rescuer.name||"This responder"} needs ${TACTICAL_FIRST_AID_TU} TU to treat a teammate.`,rescuer,target};return{ok:true,kind:"treat",cost:TACTICAL_FIRST_AID_TU,rescuer,target,reason:`Treat ${target.name||"casualty"} for up to ${TACTICAL_FIRST_AID_HEAL} HP, ${TACTICAL_FIRST_AID_TU} TU, and 1 medical charge.`};}
 function tacticalFirstAidUseResult(units=[],rescuerId=null,targetId=null,turn="human",round=1){const action=tacticalFirstAidActionState(units,rescuerId,targetId,turn);if(!action.ok)return{...action,units};const nextCharges=Math.max(0,(Number(action.rescuer.medkitCharges)||0)-1);let healed=0;const next=(units||[]).map(unit=>{if(unit.id===action.rescuer.id)return{...unit,tu:Math.max(0,(Number(unit.tu)||0)-action.cost),medkitCharges:nextCharges,baseSoldier:unit.baseSoldier?{...unit.baseSoldier,medkit:true,medicalCharges:nextCharges}:unit.baseSoldier};if(unit.id!==action.target.id)return unit;if(action.kind==="stabilize")return{...unit,bleeding:false,stabilized:true,bleedOutRounds:Math.max(0,Number(unit.bleedOutRounds)||0),stabilizedById:action.rescuer.id,stabilizedRound:Math.max(1,Number(round)||1),draggedById:unit.draggedById||null,tu:0};const hp=Math.min(Number(unit.maxHp)||0,(Number(unit.hp)||0)+TACTICAL_FIRST_AID_HEAL);healed=Math.max(0,hp-(Number(unit.hp)||0));return{...unit,hp};});return{ok:true,kind:action.kind,cost:action.cost,healed,chargesSpent:1,rescuer:next.find(unit=>unit.id===action.rescuer.id)||action.rescuer,target:next.find(unit=>unit.id===action.target.id)||action.target,units:next};}
-function tacticalAiMedicalTriageStep({humans=[],round=1}={}){const downed=(humans||[]).filter(tacticalHumanIsBleeding).sort((a,b)=>(Number(a.bleedOutRounds)||99)-(Number(b.bleedOutRounds)||99)||String(a.id).localeCompare(String(b.id)));const responders=(humans||[]).filter(unit=>tacticalHumanCombatActive(unit)&&(Number(unit.medkitCharges)||0)>0&&!unit.draggingCasualtyId);for(const casualty of downed){const candidates=responders.filter(unit=>tacticalDistance(unit,casualty)<=1&&(Number(unit.tu)||0)>=TACTICAL_STABILIZE_TU).sort((a,b)=>Number(String(b.baseSoldier?.specialization||"").toLowerCase()==="medic")-Number(String(a.baseSoldier?.specialization||"").toLowerCase()==="medic")||(Number(b.medkitCharges)||0)-(Number(a.medkitCharges)||0)||String(a.id).localeCompare(String(b.id)));const responder=candidates[0];if(!responder)continue;const result=tacticalFirstAidUseResult(humans,responder.id,casualty.id,"human",round);if(result.ok)return{humans:result.units,events:[`${responder.name||"AEGIS medic"} stabilizes downed ${casualty.name||"soldier"}; the bleed-out clock is stopped.`],actedIds:[responder.id]};}const wounded=(humans||[]).filter(unit=>tacticalHumanCombatActive(unit)&&Number(unit.hp)<Math.max(1,Number(unit.maxHp)||1)*0.45).sort((a,b)=>(Number(a.hp)||0)/Math.max(1,Number(a.maxHp)||1)-(Number(b.hp)||0)/Math.max(1,Number(b.maxHp)||1));for(const patient of wounded){const candidates=responders.filter(unit=>unit.id!==patient.id&&tacticalDistance(unit,patient)<=1&&(Number(unit.tu)||0)>=TACTICAL_FIRST_AID_TU).sort((a,b)=>Number(String(b.baseSoldier?.specialization||"").toLowerCase()==="medic")-Number(String(a.baseSoldier?.specialization||"").toLowerCase()==="medic")||String(a.id).localeCompare(String(b.id)));const responder=candidates[0];if(!responder)continue;const result=tacticalFirstAidUseResult(humans,responder.id,patient.id,"human",round);if(result.ok)return{humans:result.units,events:[`${responder.name||"AEGIS medic"} treats wounded ${patient.name||"soldier"} for ${result.healed} HP.`],actedIds:[responder.id]};}return{humans,events:[],actedIds:[]};}
-function tacticalAiCasualtyRecoveryStep({humans=[],aliens=[],covers=[],mission=null,round=1}={}){const activeHumans=(humans||[]).filter(tacticalHumanCombatActive),downed=(humans||[]).filter(tacticalHumanIsDowned);if(!activeHumans.length||!downed.length)return{humans,events:[],movementTrails:{},actedIds:[]};const visible=tacticalVisibleCellSet(activeHumans,covers,mission),knownThreats=(aliens||[]).filter(alien=>alien?.alive!==false&&Number(alien.hp)>0&&visible.has(tacticalKey(alien.x,alien.y)));if(!knownThreats.length)return{humans,events:[],movementTrails:{},actedIds:[]};const occupied=new Set([...(humans||[]),...(aliens||[])].filter(unit=>unit&&unit.alive!==false&&Number(unit.hp)>0).map(unit=>tacticalKey(unit.x,unit.y))),gridSize=tacticalGridSizeFrom(humans,aliens,covers,mission);for(const casualty of downed){const nearestThreat=[...knownThreats].sort((a,b)=>tacticalDistance(casualty,a)-tacticalDistance(casualty,b))[0];if(!nearestThreat||tacticalDistance(casualty,nearestThreat)>12)continue;const rescuers=activeHumans.filter(unit=>!unit.draggingCasualtyId&&(Number(unit.tu)||0)>=TACTICAL_CASUALTY_DRAG_STEP_TU&&tacticalDistance(unit,casualty)<=1).sort((a,b)=>Number(Boolean(b.medkitCharges))-Number(Boolean(a.medkitCharges))||tacticalDistance(a,nearestThreat)-tacticalDistance(b,nearestThreat)||String(a.id).localeCompare(String(b.id)));const rescuer=rescuers[0];if(!rescuer)continue;const origin={x:rescuer.x,y:rescuer.y},baseDistance=tacticalDistance(rescuer,nearestThreat);const cells=tacticalNeighbors(rescuer.x,rescuer.y,gridSize).filter(cell=>tacticalKey(cell.x,cell.y)!==tacticalKey(casualty.x,casualty.y)&&!occupied.has(tacticalKey(cell.x,cell.y))&&!isHardCoverAt(covers,cell.x,cell.y));cells.sort((a,b)=>{const coverA=Number(covers.some(cover=>cover.hp>0&&cover.kind==="hard"&&adjacentToCover(a,cover))),coverB=Number(covers.some(cover=>cover.hp>0&&cover.kind==="hard"&&adjacentToCover(b,cover)));return coverB-coverA||tacticalDistance(b,nearestThreat)-tacticalDistance(a,nearestThreat)||String(tacticalKey(a.x,a.y)).localeCompare(tacticalKey(b.x,b.y));});const destination=cells.find(cell=>tacticalDistance(cell,nearestThreat)>baseDistance)||cells[0];if(!destination)continue;const next=(humans||[]).map(unit=>unit.id===rescuer.id?{...unit,x:destination.x,y:destination.y,facing:updateFacing(unit,destination.x,destination.y),tu:Math.max(0,(Number(unit.tu)||0)-TACTICAL_CASUALTY_DRAG_STEP_TU),aiTurnAction:"casualty-recovery-drag"}:unit.id===casualty.id?{...unit,x:origin.x,y:origin.y,prone:true,draggedById:null}:unit);return{humans:next,events:[`${rescuer.name||"AEGIS responder"} pulls downed ${casualty.name||"soldier"} one hex toward safer ground.`],movementTrails:{[rescuer.id]:[origin,destination],[casualty.id]:[{x:casualty.x,y:casualty.y},origin]},actedIds:[rescuer.id]};}return{humans,events:[],movementTrails:{},actedIds:[]};}
-function tacticalAiCasualtyExtractionStep({humans=[],aliens=[],covers=[],mission=null,skyranger=null,round=1}={}){
-  const source=Array.isArray(humans)?humans:[];
+function tacticalAiMedicalTriageStep({humans=[],aliens=[],covers=[],mission=null,round=1,stabilizeOnly=false,routineOnly=false}={}){
+  const source=Array.isArray(humans)?humans:[],events=[],actedIds=[],dutyIds=[],movementTrails={};
+  const downed=source.filter(tacticalHumanIsBleeding).sort((a,b)=>(Number(a.bleedOutRounds)||99)-(Number(b.bleedOutRounds)||99)||String(a.id).localeCompare(String(b.id)));
+  const responders=source.filter(unit=>tacticalHumanCombatActive(unit)&&(Number(unit.medkitCharges)||0)>0&&!unit.draggingCasualtyId);
+  if(!routineOnly){
+    for(const casualty of downed){
+      const adjacent=responders.filter(unit=>tacticalDistance(unit,casualty)<=1&&(Number(unit.tu)||0)>=TACTICAL_STABILIZE_TU).sort((a,b)=>Number(String(b.baseSoldier?.specialization||b.specialization||"").toLowerCase()==="medic")-Number(String(a.baseSoldier?.specialization||a.specialization||"").toLowerCase()==="medic")||(Number(b.medkitCharges)||0)-(Number(a.medkitCharges)||0)||String(a.id).localeCompare(String(b.id)));
+      const responder=adjacent[0];
+      if(responder){const result=tacticalFirstAidUseResult(source,responder.id,casualty.id,"human",round);if(result.ok)return{humans:result.units,events:[`${responder.name||"AEGIS medic"} stabilizes downed ${casualty.name||"soldier"}; the bleed-out clock is stopped.`],actedIds:[responder.id],dutyIds:[responder.id],movementTrails};}
+    }
+    for(const casualty of downed){
+      const candidates=responders.filter(unit=>(Number(unit.tu)||0)>=TACTICAL_STABILIZE_TU+4).map(unit=>{
+        const routeUnits=[...source,...(Array.isArray(aliens)?aliens:[])].filter(other=>other?.id!==unit.id&&other?.id!==casualty.id&&!other?.rescued&&!other?.extracted&&!other?.casualtyExtracted);
+        const gridSize=tacticalGridSizeFrom(unit,casualty,covers,routeUnits,mission),neighbors=tacticalNeighbors(casualty.x,casualty.y,gridSize).filter(cell=>!isHardCoverAt(covers,cell.x,cell.y)&&!routeUnits.some(other=>other?.alive!==false&&Number(other?.hp)>0&&other.x===cell.x&&other.y===cell.y));
+        const routes=neighbors.map(cell=>tacticalAiHazardAwarePath(unit,cell,covers,routeUnits,Math.min(TACTICAL_AI_MAX_CANDIDATES,Math.max(16,gridSize*2)),null,mission)).filter(path=>Array.isArray(path)&&path.length>1).sort((a,b)=>a.length-b.length);
+        return{unit,path:routes[0]||null};
+      }).filter(item=>item.path).sort((a,b)=>a.path.length-b.path.length||Number(String(b.unit.baseSoldier?.specialization||b.unit.specialization||"").toLowerCase()==="medic")-Number(String(a.unit.baseSoldier?.specialization||a.unit.specialization||"").toLowerCase()==="medic")||String(a.unit.id).localeCompare(String(b.unit.id)));
+      const choice=candidates[0];if(!choice)continue;
+      const responder=choice.unit,maxSteps=Math.max(0,Math.floor(((Number(responder.tu)||0)-TACTICAL_STABILIZE_TU)/4)),path=choice.path.slice(0,maxSteps+1),destination=path[path.length-1]||responder,steps=Math.max(0,path.length-1);
+      if(!steps)continue;
+      let next=source.map(unit=>unit.id===responder.id?{...unit,x:destination.x,y:destination.y,facing:updateFacing(unit,destination.x,destination.y),tu:Math.max(0,(Number(unit.tu)||0)-steps*4),aiTurnAction:"medical-stabilization-approach"}:unit);
+      movementTrails[responder.id]=path.map(cell=>({x:cell.x,y:cell.y}));actedIds.push(responder.id);dutyIds.push(responder.id);
+      const movedResponder=next.find(unit=>unit.id===responder.id),movedCasualty=next.find(unit=>unit.id===casualty.id);
+      if(movedResponder&&movedCasualty&&tacticalDistance(movedResponder,movedCasualty)<=1&&(Number(movedResponder.tu)||0)>=TACTICAL_STABILIZE_TU){const result=tacticalFirstAidUseResult(next,movedResponder.id,movedCasualty.id,"human",round);if(result.ok)return{humans:result.units,events:[`${responder.name||"AEGIS medic"} moves to downed ${casualty.name||"soldier"} and stabilizes the bleeding casualty.`],actedIds,dutyIds,movementTrails};}
+      events.push(`${responder.name||"AEGIS medic"} moves toward bleeding ${casualty.name||"soldier"}; stabilization remains the highest-priority duty.`);return{humans:next,events,actedIds,dutyIds,movementTrails};
+    }
+    if(stabilizeOnly)return{humans:source,events,actedIds,dutyIds,movementTrails};
+  }
+  if(!stabilizeOnly){
+    const wounded=source.filter(unit=>tacticalHumanCombatActive(unit)&&Number(unit.hp)<Math.max(1,Number(unit.maxHp)||1)*0.45).sort((a,b)=>(Number(a.hp)||0)/Math.max(1,Number(a.maxHp)||1)-(Number(b.hp)||0)/Math.max(1,Number(b.maxHp)||1));
+    for(const patient of wounded){const candidates=responders.filter(unit=>unit.id!==patient.id&&tacticalDistance(unit,patient)<=1&&(Number(unit.tu)||0)>=TACTICAL_FIRST_AID_TU).sort((a,b)=>Number(String(b.baseSoldier?.specialization||b.specialization||"").toLowerCase()==="medic")-Number(String(a.baseSoldier?.specialization||a.specialization||"").toLowerCase()==="medic")||String(a.id).localeCompare(String(b.id)));const responder=candidates[0];if(!responder)continue;const result=tacticalFirstAidUseResult(source,responder.id,patient.id,"human",round);if(result.ok)return{humans:result.units,events:[`${responder.name||"AEGIS medic"} treats wounded ${patient.name||"soldier"} for ${result.healed} HP after higher-priority tactical duties.`],actedIds:[responder.id],dutyIds:[],movementTrails};}
+  }
+  return{humans:source,events,actedIds,dutyIds,movementTrails};
+}
+function tacticalAiCasualtyRecoveryStep({humans=[],aliens=[],covers=[],mission=null,round=1,excludedResponderIds=[]}={}){const excluded=excludedResponderIds instanceof Set?excludedResponderIds:new Set(excludedResponderIds||[]),activeHumans=(humans||[]).filter(unit=>tacticalHumanCombatActive(unit)&&!excluded.has(unit.id)),downed=(humans||[]).filter(tacticalHumanIsDowned);if(!activeHumans.length||!downed.length)return{humans,events:[],movementTrails:{},actedIds:[]};const visible=tacticalVisibleCellSet(activeHumans,covers,mission),knownThreats=(aliens||[]).filter(alien=>alien?.alive!==false&&Number(alien.hp)>0&&visible.has(tacticalKey(alien.x,alien.y)));if(!knownThreats.length)return{humans,events:[],movementTrails:{},actedIds:[]};const occupied=new Set([...(humans||[]),...(aliens||[])].filter(unit=>unit&&unit.alive!==false&&Number(unit.hp)>0).map(unit=>tacticalKey(unit.x,unit.y))),gridSize=tacticalGridSizeFrom(humans,aliens,covers,mission);for(const casualty of downed){const nearestThreat=[...knownThreats].sort((a,b)=>tacticalDistance(casualty,a)-tacticalDistance(casualty,b))[0];if(!nearestThreat||tacticalDistance(casualty,nearestThreat)>12)continue;const rescuers=activeHumans.filter(unit=>!unit.draggingCasualtyId&&(Number(unit.tu)||0)>=TACTICAL_CASUALTY_DRAG_STEP_TU&&tacticalDistance(unit,casualty)<=1).sort((a,b)=>Number(Boolean(b.medkitCharges))-Number(Boolean(a.medkitCharges))||tacticalDistance(a,nearestThreat)-tacticalDistance(b,nearestThreat)||String(a.id).localeCompare(String(b.id)));const rescuer=rescuers[0];if(!rescuer)continue;const origin={x:rescuer.x,y:rescuer.y},baseDistance=tacticalDistance(rescuer,nearestThreat);const cells=tacticalNeighbors(rescuer.x,rescuer.y,gridSize).filter(cell=>tacticalKey(cell.x,cell.y)!==tacticalKey(casualty.x,casualty.y)&&!occupied.has(tacticalKey(cell.x,cell.y))&&!isHardCoverAt(covers,cell.x,cell.y));cells.sort((a,b)=>{const coverA=Number(covers.some(cover=>cover.hp>0&&cover.kind==="hard"&&adjacentToCover(a,cover))),coverB=Number(covers.some(cover=>cover.hp>0&&cover.kind==="hard"&&adjacentToCover(b,cover)));return coverB-coverA||tacticalDistance(b,nearestThreat)-tacticalDistance(a,nearestThreat)||String(tacticalKey(a.x,a.y)).localeCompare(tacticalKey(b.x,b.y));});const destination=cells.find(cell=>tacticalDistance(cell,nearestThreat)>baseDistance)||cells[0];if(!destination)continue;const next=(humans||[]).map(unit=>unit.id===rescuer.id?{...unit,x:destination.x,y:destination.y,facing:updateFacing(unit,destination.x,destination.y),tu:Math.max(0,(Number(unit.tu)||0)-TACTICAL_CASUALTY_DRAG_STEP_TU),aiTurnAction:"casualty-recovery-drag"}:unit.id===casualty.id?{...unit,x:origin.x,y:origin.y,prone:true,draggedById:null}:unit);return{humans:next,events:[`${rescuer.name||"AEGIS responder"} pulls downed ${casualty.name||"soldier"} one hex toward safer ground.`],movementTrails:{[rescuer.id]:[origin,destination],[casualty.id]:[{x:casualty.x,y:casualty.y},origin]},actedIds:[rescuer.id]};}return{humans,events:[],movementTrails:{},actedIds:[]};}
+function tacticalAiCasualtyExtractionStep({humans=[],aliens=[],covers=[],mission=null,skyranger=null,round=1,excludedResponderIds=[]}={}){
+  const source=Array.isArray(humans)?humans:[],excluded=excludedResponderIds instanceof Set?excludedResponderIds:new Set(excludedResponderIds||[]);
   const casualties=source.filter(unit=>tacticalHumanIsDowned(unit)&&!unit.extracted&&!unit.casualtyExtracted).sort((a,b)=>Number(tacticalHumanIsBleeding(b))-Number(tacticalHumanIsBleeding(a))||(Number(a.bleedOutRounds)||99)-(Number(b.bleedOutRounds)||99)||String(a.id).localeCompare(String(b.id)));
   const ramps=tacticalPlayerSkyrangerCrafts(skyranger).map(craft=>({craft,cell:tacticalSkyrangerRampTouchCellForCraft(craft)})).filter(entry=>entry.cell);
   if(!casualties.length||!ramps.length)return{humans:source,events:[],movementTrails:{},actedIds:[],extractedIds:[]};
   for(const casualty of casualties){
-    const responders=source.filter(unit=>tacticalHumanCombatActive(unit)&&unit.fearState!==TACTICAL_FEAR_STATES.override&&(!unit.draggingCasualtyId||unit.draggingCasualtyId===casualty.id)&&(!casualty.draggedById||casualty.draggedById===unit.id)&&tacticalDistance(unit,casualty)<=1).sort((a,b)=>Number(String(b.baseSoldier?.specialization||b.specialization||"").toLowerCase()==="medic")-Number(String(a.baseSoldier?.specialization||a.specialization||"").toLowerCase()==="medic")||String(a.id).localeCompare(String(b.id)));
+    let responders=source.filter(unit=>!excluded.has(unit.id)&&tacticalHumanCombatActive(unit)&&unit.fearState!==TACTICAL_FEAR_STATES.override&&(!unit.draggingCasualtyId||unit.draggingCasualtyId===casualty.id)&&(!casualty.draggedById||casualty.draggedById===unit.id)&&tacticalDistance(unit,casualty)<=1).sort((a,b)=>Number(String(b.baseSoldier?.specialization||b.specialization||"").toLowerCase()==="medic")-Number(String(a.baseSoldier?.specialization||a.specialization||"").toLowerCase()==="medic")||String(a.id).localeCompare(String(b.id)));
+    if(!responders.length){
+      const routeCandidates=source.filter(unit=>!excluded.has(unit.id)&&tacticalHumanCombatActive(unit)&&unit.fearState!==TACTICAL_FEAR_STATES.override&&!unit.draggingCasualtyId&&!casualty.draggedById&&(Number(unit.tu)||0)>=4).map(unit=>{
+        const routeUnits=[...source,...(Array.isArray(aliens)?aliens:[])].filter(other=>other?.id!==unit.id&&other?.id!==casualty.id&&!other?.rescued&&!other?.extracted&&!other?.casualtyExtracted),gridSize=tacticalGridSizeFrom(unit,casualty,covers,routeUnits,mission);
+        const neighbors=tacticalNeighbors(casualty.x,casualty.y,gridSize).filter(cell=>!isHardCoverAt(covers,cell.x,cell.y)&&!routeUnits.some(other=>other?.alive!==false&&Number(other?.hp)>0&&other.x===cell.x&&other.y===cell.y));
+        const routes=neighbors.map(cell=>tacticalAiHazardAwarePath(unit,cell,covers,routeUnits,Math.min(TACTICAL_AI_MAX_CANDIDATES,Math.max(16,gridSize*2)),null,mission)).filter(path=>Array.isArray(path)&&path.length>1).sort((a,b)=>a.length-b.length);
+        return{unit,path:routes[0]||null};
+      }).filter(item=>item.path).sort((a,b)=>a.path.length-b.path.length||Number(String(b.unit.baseSoldier?.specialization||b.unit.specialization||"").toLowerCase()==="medic")-Number(String(a.unit.baseSoldier?.specialization||a.unit.specialization||"").toLowerCase()==="medic")||String(a.unit.id).localeCompare(String(b.unit.id)));
+      const approach=routeCandidates[0];
+      if(approach){const responder=approach.unit,maxSteps=Math.max(0,Math.floor((Number(responder.tu)||0)/4)),trail=approach.path.slice(0,maxSteps+1),destination=trail[trail.length-1]||responder,steps=Math.max(0,trail.length-1);if(steps>0){const next=source.map(unit=>unit.id===responder.id?{...unit,x:destination.x,y:destination.y,facing:updateFacing(unit,destination.x,destination.y),tu:Math.max(0,(Number(unit.tu)||0)-steps*4),aiTurnAction:"casualty-extraction-approach"}:unit);return{humans:next,events:[`${responder.name||"AEGIS responder"} moves ${steps} hex${steps===1?"":"es"} toward downed ${casualty.name||"soldier"} to begin casualty extraction.`],movementTrails:{[responder.id]:trail.map(cell=>({x:cell.x,y:cell.y}))},actedIds:[responder.id],extractedIds:[]};}}
+    }
     for(const responder of responders){
       const alreadyAttached=responder.draggingCasualtyId===casualty.id&&casualty.draggedById===responder.id;
       const attachCost=alreadyAttached?0:TACTICAL_CASUALTY_DRAG_ATTACH_TU;
@@ -2701,9 +2744,19 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
 	    humans=humanFearTurn.units.filter(unit=>unit.team==="human");aliens=humanFearTurn.units.filter(unit=>unit.team==="alien");civilians=humanFearTurn.units.filter(unit=>unit.team==="civilian");
 	    humanFearTurn.actedIds.forEach(id=>roundActedIds.add(id));tacticalMovementTrailMerge(frameMovementTrails,humanFearTurn.movementTrails);logs.push(...humanFearTurn.events);
     const casualtyDeterioration=tacticalCasualtyDeteriorationStep(humans,initialRound+round-1);humans=casualtyDeterioration.units;logs.push(...casualtyDeterioration.events.map(event=>`Casualty status: ${event}`));
-    const medicalTriage=tacticalAiMedicalTriageStep({humans,round:initialRound+round-1});humans=medicalTriage.humans;medicalTriage.actedIds.forEach(id=>roundActedIds.add(id));logs.push(...medicalTriage.events.map(event=>`Field medicine: ${event}`));
-    const casualtyRecovery=tacticalAiCasualtyRecoveryStep({humans,aliens,covers,mission,round:initialRound+round-1});humans=casualtyRecovery.humans;casualtyRecovery.actedIds.forEach(id=>roundActedIds.add(id));tacticalMovementTrailMerge(frameMovementTrails,casualtyRecovery.movementTrails);logs.push(...casualtyRecovery.events.map(event=>`Casualty recovery: ${event}`));
-    const casualtyExtraction=tacticalAiCasualtyExtractionStep({humans,aliens,covers,mission,skyranger:rescuePlacement,round:initialRound+round-1});humans=casualtyExtraction.humans;casualtyExtraction.actedIds.forEach(id=>roundActedIds.add(id));const casualtyExtractionDutyIds=new Set(casualtyExtraction.actedIds);tacticalMovementTrailMerge(frameMovementTrails,casualtyExtraction.movementTrails);logs.push(...casualtyExtraction.events.map(event=>`Casualty extraction: ${event}`));
+    // Priority 1: bleeding stabilization. This prepass may route a medic/responder to the casualty,
+    // and its actors are withheld from every lower-priority objective for the rest of this round.
+    const medicalTriage=tacticalAiMedicalTriageStep({humans,aliens,covers,mission,round:initialRound+round-1,stabilizeOnly:true});
+    humans=medicalTriage.humans;medicalTriage.actedIds.forEach(id=>roundActedIds.add(id));tacticalMovementTrailMerge(frameMovementTrails,medicalTriage.movementTrails);logs.push(...medicalTriage.events.map(event=>`Field medicine: ${event}`));
+    const medicalPriorityDutyIds=new Set([...(medicalTriage.dutyIds||[]),...(medicalTriage.actedIds||[])]);
+    // Priority 2: move threatened downed soldiers to safety, then route/drag stabilized casualties to a Skyranger.
+    const casualtyRecovery=tacticalAiCasualtyRecoveryStep({humans,aliens,covers,mission,round:initialRound+round-1,excludedResponderIds:medicalPriorityDutyIds});
+    humans=casualtyRecovery.humans;casualtyRecovery.actedIds.forEach(id=>roundActedIds.add(id));tacticalMovementTrailMerge(frameMovementTrails,casualtyRecovery.movementTrails);logs.push(...casualtyRecovery.events.map(event=>`Casualty recovery: ${event}`));
+    const casualtyRecoveryDutyIds=new Set(casualtyRecovery.actedIds||[]);
+    const casualtyExtraction=tacticalAiCasualtyExtractionStep({humans,aliens,covers,mission,skyranger:rescuePlacement,round:initialRound+round-1,excludedResponderIds:new Set([...medicalPriorityDutyIds,...casualtyRecoveryDutyIds])});
+    humans=casualtyExtraction.humans;casualtyExtraction.actedIds.forEach(id=>roundActedIds.add(id));tacticalMovementTrailMerge(frameMovementTrails,casualtyExtraction.movementTrails);logs.push(...casualtyExtraction.events.map(event=>`Casualty extraction: ${event}`));
+    const casualtyExtractionDutyIds=new Set(casualtyExtraction.actedIds||[]);
+    const priorityResponderDutyIds=new Set([...medicalPriorityDutyIds,...casualtyRecoveryDutyIds,...casualtyExtractionDutyIds]);
     const secureRescuePhase = continuing && tacticalAiShouldContinueRescue(mission, humans, aliens, civilians);
     let contactUnits = tacticalUpdateAlienContactMemory(allUnits(), covers, mission, initialRound + round - 1);
     let preContactClaims = tacticalPreContactCivilianClaims({ units: contactUnits, covers, mission, visibleCells: new Set(contactUnits.filter((unit) => unit.revealed).map((unit) => tacticalKey(unit.x, unit.y))), alienContactSeen });
@@ -2721,32 +2774,55 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
     const roundObservedContactIds=new Set(observedBeforeRescue.map(alien=>alien.id));
     const rememberedCombatContact = tacticalMissionHasUnresolvedAlienContact(aliens);
     if(rememberedCombatContact)alienContactSeen=true;
-    // Browser 2304: freeze unresolved Last Known Contact authority at round start.
-    // A team that has not actually established an escort cannot begin/resume VIP approach in the same
-    // computed round that still starts with an unresolved contact. This prevents rescue movement from
-    // appearing before a later lethal shot in the same streamed round is presented to the player.
-    const roundStartLastKnownContactBarrier=Boolean(rememberedCombatContact);
+    // The canonical stack treats distress-reported attacker coordinates as Last Known Contact authority.
+    // Freeze both kinds of contact at round start so no free team can start a lower-priority rescue/search
+    // route and then appear to ignore a contact that was already known to AEGIS.
+    const roundStartDistressContactBarrier=humans.some(unit=>tacticalHumanCombatActive(unit)&&Boolean(tacticalAiDistressTarget(unit,humans,aliens,initialRound+round-1)));
+    const roundStartLastKnownContactBarrier=Boolean(rememberedCombatContact||roundStartDistressContactBarrier);
     const lastKnownContactRescueExcludedLeaderIds=roundStartLastKnownContactBarrier?humans.filter(unit=>unit?.team==="human"&&unit.hp>0&&unit.alive!==false&&unit.fireTeamId&&tacticalFireTeamIsLeader(unit,allUnits())&&tacticalEscortFollowers(allUnits(),unit.id).length===0).map(unit=>unit.id):[];
     const hiddenContactRescue=tacticalAiHiddenContactRescueConcurrencyState({units:allUnits(),covers,mission,observedAliens:observedBeforeRescue});
     const rescueAuthorityPhase=Boolean(secureRescuePhase||hiddenContactRescue.active);
-    const combatPriority = observedBeforeRescue.length > 0;
+    let combatPriority = observedBeforeRescue.length > 0;
     if(combatPriority)tacticalArmFireTeamPostCombatFormationRecovery(humans,initialRound+round-1);
+    // Reserve reinforcement-source teams before known-civilian assignment because Beacon (#6) and UFO bay
+    // (#7) both outrank approaching an unassigned VIP/civilian (#8). Visible/Last Known contact blocks both.
+    const explicitBeaconAssignmentKnowledge=humans.some(unit=>{const assignment=unit?.fireTeamId?tacticalFireTeamObjectiveAssignmentForTeam(humans,unit.fireTeamId):null;return assignment?.mode==="explicit"&&assignment.type==="beacon";});
+    const beaconKnowledgeForRound = beaconKnowledgeActive()||explicitBeaconAssignmentKnowledge ? ALIEN_FIELD_BEACON_KNOWLEDGE.confirmed : ALIEN_FIELD_BEACON_KNOWLEDGE.unknown;
+    const preRescueBeaconObjective=tacticalAlienBeaconObjectiveState({mission,covers,humans,knowledge:beaconKnowledgeForRound});
+    const preRescueExplicitBeaconTeam=!combatPriority&&!roundStartLastKnownContactBarrier?tacticalExplicitBeaconAssaultTeamId({units:allUnits(),covers,knowledge:beaconKnowledgeForRound}):null;
+    const preRescueBeaconTeam=!combatPriority&&!roundStartLastKnownContactBarrier?(preRescueExplicitBeaconTeam||tacticalAiBeaconStrikeTeamId({units:allUnits(),covers,mission,knowledge:beaconKnowledgeForRound,excludedUnitIds:new Set(),preservePlayerOrders:aiControlMode==="hybrid"})):null;
+    const preRescueUfoTeam=!combatPriority&&!roundStartLastKnownContactBarrier&&!preRescueBeaconObjective.pending?tacticalAiUfoBayInspectionTeamId({units:allUnits(),covers,mission,knowledge:beaconKnowledgeForRound,excludedUnitIds:new Set(),preservePlayerOrders:aiControlMode==="hybrid"}):null;
+    const reservedSourceTeamId=preRescueBeaconTeam||preRescueUfoTeam||null;
+    const reservedSourceLeaderIds=reservedSourceTeamId?humans.filter(unit=>unit.fireTeamId===reservedSourceTeamId&&tacticalFireTeamIsLeader(unit,humans)).map(unit=>unit.id):[];
     const hiddenSearchLeaderIds=hiddenContactRescue.searchLeaderId?[hiddenContactRescue.searchLeaderId]:[];
-    const rescueExcludedLeaderIds=Array.from(new Set([...hiddenSearchLeaderIds,...lastKnownContactRescueExcludedLeaderIds]));
-    const trackerGuidedRescue = continuing && !combatPriority && !roundStartLastKnownContactBarrier && tacticalVipTrackerPings(allUnits(), mission, initialRound + round - 1).length > 0;
+    const rescueExcludedLeaderIds=Array.from(new Set([...hiddenSearchLeaderIds,...lastKnownContactRescueExcludedLeaderIds,...reservedSourceLeaderIds]));
+    const trackerGuidedRescue = !combatPriority && !roundStartLastKnownContactBarrier && tacticalVipTrackerPings(allUnits(), mission, initialRound + round - 1).length > 0;
     if(roundStartLastKnownContactBarrier&&lastKnownContactRescueExcludedLeaderIds.length){logs.push(`Last Known Contact barrier: ${lastKnownContactRescueExcludedLeaderIds.length} unengaged fire-team leader${lastKnownContactRescueExcludedLeaderIds.length===1?" is":"s are"} held in combat-search authority for this entire round; uncontacted VIP assignments resume only after the contact is resolved and the next round begins.`);}
     else if(hiddenContactRescue.active&&hiddenContactRescue.searchLeaderId){const searchLead=humans.find(unit=>unit.id===hiddenContactRescue.searchLeaderId);logs.push(`AI split-task doctrine: ${searchLead?.name||"one fire-team lead"} continues the hidden-contact search while other free fire teams recover ${hiddenContactRescue.rescue.active} active VIP${hiddenContactRescue.rescue.active===1?"":"s"}.`);}
     const classicLineupRescueState=classicLineupUnresolvedRescueTargets(allUnits(),mission);
     const classicLineupRescuePriority=Boolean(mode==="classic"&&CLASSIC_LINEUP_VIP_RESCUE_PRIORITY_AND_SUPPORT_STANDOFF_PATCH&&classicLineupRescueState.targets.length&&(classicLineupRescueState.mandatory||observedBeforeRescue.length===0));
-    if ((continuing||classicLineupRescuePriority) && civilians.some((civilian) => civilian.alive && !civilian.rescued) && (classicLineupRescuePriority || trackerGuidedRescue || civilians.some((civilian) => civilian.alive && !civilian.rescued && (civilian.revealed || rescueAuthorityPhase)))) {
+    if (civilians.some((civilian) => civilian.alive && !civilian.rescued) && (classicLineupRescuePriority || trackerGuidedRescue || civilians.some((civilian) => civilian.alive && !civilian.rescued && (civilian.revealed || rescueAuthorityPhase)))) {
       const rescueTurn = classicLineupRescuePriority
         ? classicLineupVipRescuePriorityTurn({ units: allUnits(), covers, placement: rescuePlacement, fireMode: aiFireModeKey, weaponUpgrades, round: initialRound + round - 1, mission, threats: observedBeforeRescue, explored: exploredCells })
-        : tacticalAiCivilianPriorityTurn({ units: allUnits(), covers, placement: rescuePlacement, secureRescue: rescueAuthorityPhase, fireMode: aiFireModeKey, weaponUpgrades, round: initialRound + round - 1, mission, combatPriority, threats: observedBeforeRescue, explored: exploredCells, excludedLeaderIds:rescueExcludedLeaderIds });
+        : tacticalAiCivilianPriorityTurn({ units: allUnits(), covers, placement: rescuePlacement, secureRescue: rescueAuthorityPhase, fireMode: aiFireModeKey, weaponUpgrades, round: initialRound + round - 1, mission, combatPriority, threats: observedBeforeRescue, explored: exploredCells, excludedLeaderIds:rescueExcludedLeaderIds, overrideLowerPriorityOrders:aiControlMode!=="hybrid" });
       covers = rescueTurn.covers || covers;
       humans = rescueTurn.units.filter((unit) => unit.team === "human");
       aliens = rescueTurn.units.filter((unit) => unit.team === "alien");
       civilians = rescueTurn.units.filter((unit) => unit.team === "civilian").map((civilian) => ({ ...civilian, alive: civilian.hp > 0 && !civilian.rescued }));
       civilianDutyIds = new Set(rescueTurn.dutyIds);
+      if(rescueTurn.combatPriority){
+        combatPriority=true;
+        const combatUnits=allUnits();
+        civilianDutyIds=new Set(Array.from(civilianDutyIds).filter(id=>{
+          const member=humans.find(unit=>unit.id===id);if(!member)return false;
+          const leader=tacticalFireTeamLeaderForUnit(member,humans)||member;
+          const followers=tacticalEscortFollowers(combatUnits,leader.id);
+          if(!followers.length)return false;
+          if(member.id===leader.id)return true;
+          return tacticalEscortSupportModeForTeam(combatUnits,member.fireTeamId)!=="breakoff";
+        }));
+        tacticalArmFireTeamPostCombatFormationRecovery(humans,initialRound+round-1);
+      }
       rescueTurn.actedIds.forEach((id) => roundActedIds.add(id));
       rescueEvents = rescueTurn.events;
       tacticalMovementTrailMerge(frameMovementTrails,rescueTurn.movementTrails);
@@ -2754,6 +2830,8 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
       rescueTurn.explored.forEach((key) => exploredCells.add(key));
       logs.push(...rescueEvents.map((event) => `AI rescue priority: ${event}`));
     }
+    const knownUnassignedCivilianPriorityTargets=tacticalKnownUnassignedCivilianTargets(allUnits());
+    const knownUnassignedCivilianPriorityPending=knownUnassignedCivilianPriorityTargets.length>0;
     const rescueFailureDustOff=tacticalAiRescueFailureDustOffState({mission,humans,civilians});
     if(rescueFailureDustOff.shouldDustOff){
       aiRescueDustOff=true;aiRescueDustOffProgress=rescueFailureDustOff.progress;
@@ -2768,15 +2846,13 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
     let shots = [];
     const commander = tacticalAiCommanderForUnits(humans);
     const doctrine = tacticalAiDoctrineForCommander(commander);
-    const explicitBeaconAssignmentKnowledge=humans.some(unit=>{const assignment=unit?.fireTeamId?tacticalFireTeamObjectiveAssignmentForTeam(humans,unit.fireTeamId):null;return assignment?.mode==="explicit"&&assignment.type==="beacon";});
-    const beaconKnowledgeForRound = beaconKnowledgeActive()||explicitBeaconAssignmentKnowledge ? ALIEN_FIELD_BEACON_KNOWLEDGE.confirmed : ALIEN_FIELD_BEACON_KNOWLEDGE.unknown;
     const beaconObjectiveAtTurnStart = tacticalAlienBeaconObjectiveState({ mission, covers, humans, knowledge: beaconKnowledgeForRound });
     const beaconNeutralizePhase = Boolean(!aliens.some((unit)=>unit.alive&&Number(unit.hp)>0) && !tacticalAiShouldContinueRescue(mission, humans, aliens, civilians) && beaconObjectiveAtTurnStart.pending && beaconObjectiveAtTurnStart.phase === "neutralize");
     const beaconAutomatedEndgame = Boolean(beaconNeutralizePhase && aiControlMode !== "hybrid");
-    const explicitBeaconAssaultTeamId = !combatPriority ? tacticalExplicitBeaconAssaultTeamId({units:allUnits(),covers,knowledge:beaconKnowledgeForRound}) : null;
-    const beaconStrikeTeamId = !combatPriority ? (explicitBeaconAssaultTeamId || tacticalAiBeaconStrikeTeamId({ units: allUnits(), covers, mission, knowledge: beaconKnowledgeForRound, excludedUnitIds: civilianDutyIds, preservePlayerOrders:aiControlMode==="hybrid" })) : null;
+    const explicitBeaconAssaultTeamId = !combatPriority&&!roundStartLastKnownContactBarrier ? (preRescueExplicitBeaconTeam||tacticalExplicitBeaconAssaultTeamId({units:allUnits(),covers,knowledge:beaconKnowledgeForRound})) : null;
+    const beaconStrikeTeamId = !combatPriority&&!roundStartLastKnownContactBarrier ? (preRescueBeaconTeam||explicitBeaconAssaultTeamId||tacticalAiBeaconStrikeTeamId({ units: allUnits(), covers, mission, knowledge: beaconKnowledgeForRound, excludedUnitIds: civilianDutyIds, preservePlayerOrders:aiControlMode==="hybrid" })) : null;
     const reinforcementObjectiveAtTurnStart=tacticalReinforcementSourceObjectiveState({mission,covers,humans,aliens,civilians,knowledge:beaconKnowledgeForRound});
-    const ufoBayInspectionTeamId=!combatPriority?tacticalAiUfoBayInspectionTeamId({units:allUnits(),covers,mission,knowledge:beaconKnowledgeForRound,excludedUnitIds:civilianDutyIds,preservePlayerOrders:aiControlMode==="hybrid"}):null;
+    const ufoBayInspectionTeamId=!combatPriority&&!roundStartLastKnownContactBarrier&&!beaconObjectiveAtTurnStart.pending?(preRescueUfoTeam||tacticalAiUfoBayInspectionTeamId({units:allUnits(),covers,mission,knowledge:beaconKnowledgeForRound,excludedUnitIds:civilianDutyIds,preservePlayerOrders:aiControlMode==="hybrid"})):null;
     if(ufoBayInspectionTeamId&&reinforcementObjectiveAtTurnStart.ufoBayObjective.pending){
       const bay=reinforcementObjectiveAtTurnStart.ufoBayObjective.bay,previousPhase=normalizeTacticalUfoBayClearancePhase(bay?.ufoBayClearancePhase);
       covers=tacticalSetUfoBayClearancePhase(covers,TACTICAL_UFO_BAY_CLEARANCE_PHASES.assigned,{round:initialRound+round-1,teamId:ufoBayInspectionTeamId});
@@ -2814,9 +2890,20 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
     const scheduledHumanTurnOrder=tacticalFireTeamTurnOrder(humans.filter(tacticalHumanCombatActive),initialRound+round-1);
     const humanTurnOrder=beaconAutomatedEndgame&&beaconAssaulterId?[...scheduledHumanTurnOrder.filter(unit=>unit.id===beaconAssaulterId),...scheduledHumanTurnOrder.filter(unit=>unit.id!==beaconAssaulterId)]:scheduledHumanTurnOrder;
     const recordNewContactInterrupt=(observer,source="movement")=>{
-      const remainingActorIds=humanTurnOrder.filter(candidate=>candidate.alive&&candidate.id!==observer?.id&&!civilianDutyIds.has(candidate.id)&&!roundActedIds.has(candidate.id)).map(candidate=>candidate.id);
+      // On new contact, keep only true active-escort authority in the duty set. Escort leaders always stay;
+      // support soldiers stay for Stay/Ask and are released immediately for Engage Spotted Aliens.
+      const combatRetainedCivilianDutyIds=new Set(Array.from(civilianDutyIds).filter(id=>{
+        const member=humans.find(unit=>unit.id===id);if(!member)return false;
+        const leader=tacticalFireTeamLeaderForUnit(member,humans)||member,followers=tacticalEscortFollowers(allUnits(),leader.id);
+        if(!followers.length)return false;
+        if(member.id===leader.id)return true;
+        return tacticalEscortSupportModeForTeam(allUnits(),member.fireTeamId)!=="breakoff";
+      }));
+      const remainingActorIds=humanTurnOrder.filter(candidate=>candidate.alive&&candidate.id!==observer?.id&&!combatRetainedCivilianDutyIds.has(candidate.id)&&!roundActedIds.has(candidate.id)).map(candidate=>candidate.id);
       const interrupt=tacticalAiNewContactInterruptRecord({observer,units:allUnits(),covers,mission,knownContactIds:roundObservedContactIds,remainingActorIds,round:initialRound+round-1,sequence:roundContactInterrupts.length,source});
       if(!interrupt)return null;
+      civilianDutyIds=combatRetainedCivilianDutyIds;
+      tacticalArmFireTeamPostCombatFormationRecovery(humans,initialRound+round-1);
       interrupt.alienIds.forEach(alienId=>{roundObservedContactIds.add(alienId);const alien=aliens.find(candidate=>candidate.id===alienId);if(alien){alien.revealed=true;alien.lastKnownX=alien.x;alien.lastKnownY=alien.y;alien.aegisContactObserved=true;alien.aegisLastSeenMarkerActive=false;alien.aegisLastSeenX=alien.x;alien.aegisLastSeenY=alien.y;alien.aegisLastSeenLevel=tacticalUnitLevel(alien);alien.aegisLastSeenRound=initialRound+round-1;alien.aegisLastSeenObserverId=observer?.id||null;alien.aegisLastSeenResolvedRound=null;}});
       roundContactInterrupts.push(interrupt);
       logs.push(`Contact interrupt: ${interrupt.observerName} spotted ${interrupt.alienNames.join(", ")}. ${interrupt.remainingActorIds.length?`${interrupt.remainingActorIds.length} remaining AEGIS action${interrupt.remainingActorIds.length===1?" was":"s were"} recalculated from the new contact.`:"The contact was committed after the final AEGIS action."}`);
@@ -2829,7 +2916,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
 	    const processHumanAiTurn=(human,allowFriendlyTrafficDefer=true)=>{
 	      pendingHumanTrafficIds.delete(human.id);
           if(!tacticalHumanCombatActive(human))return;
-	      if(casualtyExtractionDutyIds.has(human.id))return;
+	      if(priorityResponderDutyIds.has(human.id))return;
 	      if(human.fearForcedRound===initialRound+round-1)return;
 	      const turnUnits=allUnits();
 	      const escortLeaderLock=tacticalEscortLeaderLockState(human,turnUnits);
@@ -2851,7 +2938,8 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
       const activeContactInterrupt=[...roundContactInterrupts].reverse().find(interrupt=>interrupt.remainingActorIds.includes(human.id))||null;
       if(activeContactInterrupt){human.aiContactReplanRound=initialRound+round-1;human.aiContactReplanId=activeContactInterrupt.id;human.aiContactReplanSource=activeContactInterrupt.observerId;}
       const lastKnownContactSearch=!squadContacts.length?tacticalAiLastKnownContactAssignment(human,turnUnits,initialRound+round-1):null;
-      const distressSearch = !lastKnownContactSearch?tacticalAiDistressTarget(human, humans, aliens, initialRound + round - 1):null;
+      const rawDistressSearch = !lastKnownContactSearch?tacticalAiDistressTarget(human, humans, aliens, initialRound + round - 1):null;
+      const distressSearch=rawDistressSearch?{...rawDistressSearch,lastKnownContact:true,remembered:true,distressContact:true}:null;
       const beaconSearch = !squadContacts.length && !lastKnownContactSearch && !distressSearch ? tacticalAiBeaconSearchTarget({ unit: human, units: turnUnits, covers, mission, explored: exploredCells, round: initialRound + round - 1, knowledge: beaconKnowledgeForRound }) : null;
       const search = squadContacts.length
         ? { target: [...squadContacts].sort((left, right) => tacticalDistance(left, human) - tacticalDistance(right, human) || String(left.id).localeCompare(String(right.id)))[0], known: true }
@@ -2873,7 +2961,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
       }
       const fireTeamLeader = tacticalFireTeamLeaderForUnit(human, humans) || commander;
       let playerOrder=beaconAutomatedEndgame?null:tacticalFireTeamCommandOrderForUnit(human,humans);
-      if(lastKnownContactPriority)playerOrder=null;
+      if(lastKnownContactPriority||(liveCombatPriority&&aiControlMode!=="hybrid"))playerOrder=null;
       const activeBeacon = tacticalActiveAlienBeacon(covers);
       const assignedBeaconAssault=tacticalFireTeamBeaconAssaultState({unit:human,units:turnUnits,covers,mission,knowledge:beaconKnowledgeForRound});
       const beaconAssignmentNeutralization=tacticalFireTeamBeaconAssignmentNeutralizationState({unit:human,units:turnUnits,covers,mission,knowledge:beaconKnowledgeForRound,tech});
@@ -2896,7 +2984,12 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
         postContactRecovery={...postContactRecovery,active:false,pending:false,completed:true};
       }
       const postContactNeedsFormation=Boolean(postContactRecovery.active&&postContactRecovery.needsFormation&&!beaconAssaultTeamCohesionActive);
-      const fireTeamPriorityState=tacticalFireTeamPriorityState({unit:human,units:turnUnits,round:initialRound+round-1,liveCombatPriority,lastKnownContactPriority,civilianDutyIds,postContactRecovery,playerOrder,assignedBeaconAssault,beaconAssignmentNeutralization});
+      // Formation recovery is an overlay: the effective leader keeps advancing the highest-priority
+      // objective while supports reform around that moving anchor whenever their route permits.
+      const postContactSupportReform=Boolean(postContactNeedsFormation&&fireTeamLeader?.id!==human.id);
+      const reinforcementSourcePriorityKind=tacticalFireTeamReinforcementPriorityKind({unit:human,beaconTeamId:beaconStrikeTeamId,ufoBayTeamId:ufoBayInspectionTeamId,liveCombatPriority,lastKnownContactPriority,civilianDutyIds});
+      const activeAssignedCivilian=human.aiVipRescueTargetId?turnUnits.find(candidate=>candidate?.id===human.aiVipRescueTargetId&&candidate.team==="civilian"&&Number(candidate.hp)>0&&candidate.alive!==false&&!candidate.rescued&&!candidate.escortId):null;
+      const fireTeamPriorityState=tacticalFireTeamPriorityState({unit:human,units:turnUnits,round:initialRound+round-1,liveCombatPriority,lastKnownContactPriority,civilianDutyIds,postContactRecovery,playerOrder,assignedBeaconAssault,beaconAssignmentNeutralization,reinforcementSourcePriorityKind,knownCivilianPriority:Boolean(activeAssignedCivilian)});
       const stateApplied=tacticalApplyFireTeamPriorityStateInPlace(turnUnits,human.fireTeamId,fireTeamPriorityState,initialRound+round-1);
       if(stateApplied.changed&&fireTeamLeader?.id===human.id)logs.push(`${tacticalFireTeamLabelForUnit(human)} tactical state: ${fireTeamPriorityState.label} (${fireTeamPriorityState.reason}).`);
       const persistentObjectiveResumePriority=Boolean(fireTeamPriorityState.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.PERSISTENT_ASSIGNMENT);
@@ -2957,22 +3050,22 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
       const beaconStrikeTarget = beaconStrikeActor ? { ...activeBeacon, id: activeBeacon.id || "alien-field-beacon", team: "beacon", hp: Math.max(1, Number(activeBeacon.hp) || 1), alive: true } : null;
       const formationTarget = beaconAutomatedEndgame||explicitBeaconTrafficClear ? null : fireTeamLeader?.id !== human.id && (postContactNeedsFormation || (!explicitBeaconAssaulter && (hybridCommandActive || !liveCombatPriority))) ? tacticalFireTeamFormationTargetForUnit(human, allUnits(), covers, mission) : null;
       const hybridEscortSupportStays=Boolean(hybridCommandActive&&fireTeamLeader?.id!==human.id&&tacticalEscortFollowers(allUnits(),fireTeamLeader?.id).length&&tacticalEscortSupportModeForTeam(allUnits(),human.fireTeamId)!=="breakoff");
-      const hybridCombatTarget=!postContactNeedsFormation&&hybridCommandActive&&fireTeamLeader?.id!==human.id&&!hybridEscortSupportStays?tacticalHybridCombatTargetForFireTeam(playerOrder,fireTeamLeader,allUnits(),covers,mission):null;
-      const hybridFlankMove=Boolean(!postContactNeedsFormation&&hybridCombatTarget&&formationTarget);
+      const hybridCombatTarget=!postContactSupportReform&&hybridCommandActive&&fireTeamLeader?.id!==human.id&&!hybridEscortSupportStays?tacticalHybridCombatTargetForFireTeam(playerOrder,fireTeamLeader,allUnits(),covers,mission):null;
+      const hybridFlankMove=Boolean(!postContactSupportReform&&hybridCombatTarget&&formationTarget);
       const formationMove = Boolean(formationTarget&&!hybridFlankMove);
       const beaconAssaultLeaderAnchor=Boolean(beaconAssaultTeamCohesionActive&&fireTeamLeader?.id===human.id);
       const beaconAssaultSupportFormation=Boolean(beaconAssaultTeamCohesionActive&&!explicitBeaconAssaulter&&fireTeamLeader?.id!==human.id&&formationMove);
       if(beaconAssaultTeamCohesionActive){human.aiBeaconAssaultTeamRole=explicitBeaconAssaulter?"breacher":beaconAssaultLeaderAnchor?"leader-anchor":"support-cover";}
-      if(postContactNeedsFormation&&fireTeamLeader?.id===human.id){human.aiTurnAction="post-contact-form-up";human.fireTeamPaceMode="forming";human.fireTeamFormationReady=false;return;}
+      if(postContactNeedsFormation&&fireTeamLeader?.id===human.id){human.fireTeamPaceMode="forming-forward";human.fireTeamFormationReady=false;human.aiPostContactFormationOverlay="leader-advancing-objective";}
       const hybridSupportCatchUp=tacticalHybridSupportCatchUpState({unit:human,leader:fireTeamLeader,formationTarget,chosenReserveTu:human.reserveTu,combatTarget:hybridCombatTarget});
       if(hybridCommandActive&&formationMove&&hybridSupportCatchUp.active){
         human.aiCatchUpPreviousReserveTu=Math.max(0,Number(human.reserveTu)||0);human.reserveTu=hybridSupportCatchUp.movementReserveTu;human.aiReserveMode="catch-up";human.aiReserveLabel="Formation Catch-Up";human.aiReserveWantsKneel=false;human.aiTurnAction="formation-catch-up";
       }
-      const playerCommandMove=Boolean(playerCommandTarget&&!postContactNeedsFormation);
+      const playerCommandMove=Boolean(playerCommandTarget&&!postContactSupportReform);
       const beaconHoldToAttack=Boolean(beaconStrikeAttack&&beaconImmediateAttack.ready);
       const beaconCommittedSupportHold=Boolean(beaconEngagementLock.active&&beaconAssignmentNeutralization.active&&beaconStrikeAssigned&&!beaconStrikeActor&&!formationMove&&!explicitBeaconTrafficClear);
       const stateSearchTarget=[TACTICAL_FIRE_TEAM_TACTICAL_STATES.LIVE_COMBAT,TACTICAL_FIRE_TEAM_TACTICAL_STATES.LAST_KNOWN_CONTACT,TACTICAL_FIRE_TEAM_TACTICAL_STATES.DEFAULT_SEARCH].includes(fireTeamPriorityState.key)?search.target:null;
-      let target = postContactNeedsFormation&&formationTarget ? { ...formationTarget, id: `formation-recovery:${human.fireTeamId}` } : playerCommandTarget || hybridCombatTarget || (formationTarget ? { ...formationTarget, id: `formation:${human.fireTeamId}` } : personalContacts.sort((left, right) => tacticalDistance(left, human) - tacticalDistance(right, human) || String(left.id).localeCompare(String(right.id)))[0] || beaconStrikeTarget || ufoBayTarget || (beaconPerimeterPlan?.target ? { ...beaconPerimeterPlan.target, id:`beacon-perimeter:${human.id}`, team:"command", hp:1, alive:true } : null) || stateSearchTarget);
+      let target = postContactSupportReform&&formationTarget ? { ...formationTarget, id: `formation-recovery:${human.fireTeamId}` } : playerCommandTarget || hybridCombatTarget || (formationTarget ? { ...formationTarget, id: `formation:${human.fireTeamId}` } : personalContacts.sort((left, right) => tacticalDistance(left, human) - tacticalDistance(right, human) || String(left.id).localeCompare(String(right.id)))[0] || beaconStrikeTarget || ufoBayTarget || (beaconPerimeterPlan?.target ? { ...beaconPerimeterPlan.target, id:`beacon-perimeter:${human.id}`, team:"command", hp:1, alive:true } : null) || stateSearchTarget);
       if (!target) {if(persistentObjectiveResumePriority){human.aiTurnAction="persistent-objective-hold";human.fireTeamCommandStatus=human.fireTeamCommandStatus||"holding";}return;}
       const coveredFiringHold=tacticalAiCoveredFiringHoldState({unit:human,targets:personalContacts,units:allUnits(),covers,mission,formationTarget,leader:fireTeamLeader,blocked:playerCommandMove||ufoBayInspectionMove||beaconStrikeMove});
       if(coveredFiringHold.active){target=coveredFiringHold.target;human.aiCoveredFireHold=true;human.aiCoveredFireTargetId=target.id;human.aiCoveredFireScore=coveredFiringHold.coverScore;human.aiTurnAction="hold-cover-fire";}
@@ -3015,6 +3108,9 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
           plan={...plan,path,cell:{x:cell.x,y:cell.y},steps:Math.max(0,path.length-1)};
         }
         plan=tacticalAuthoritativeMovementPlan(human,plan,covers,allUnits(),mission);
+        const contactInterruptPlan=tacticalAiMovementContactInterruptPlan({unit:human,plan,units:allUnits(),covers,mission,knownContactIds:roundObservedContactIds});
+        plan=contactInterruptPlan.plan||plan;
+        if(contactInterruptPlan.interrupted){human.aiTurnAction="contact-interrupt";human.aiContactInterruptPending=true;}
         if (plan.steps <= 0) return false;
         if(phase!=="extension"&&!tacticalAiMovementCommitAllowed(roundMovementCommittedIds,human.id,plan.steps))return false;
         const destinationOccupant=allUnits().find(other=>other&&other.id!==human.id&&other.hp>0&&other.alive!==false&&!other.rescued&&other.x===plan.cell.x&&other.y===plan.cell.y);
@@ -3042,7 +3138,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
         recordNewContactInterrupt(human,phase==="extension"?"movement-reassessment":"movement");
         return true;
       };
-      const directResponse = !beaconStrikeAssigned && !postContactNeedsFormation && !formationMove && !playerCommandMove && personalContacts.length === 0 && (fireTeamPriorityState.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.LIVE_COMBAT||fireTeamPriorityState.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.LAST_KNOWN_CONTACT||(fireTeamPriorityState.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.DEFAULT_SEARCH&&Boolean(distressSearch)));
+      const directResponse = !beaconStrikeAssigned && !postContactSupportReform && !formationMove && !playerCommandMove && personalContacts.length === 0 && (fireTeamPriorityState.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.LIVE_COMBAT||fireTeamPriorityState.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.LAST_KNOWN_CONTACT||(fireTeamPriorityState.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.DEFAULT_SEARCH&&Boolean(distressSearch)));
       if (coveredFiringHold.active||beaconHoldToAttack||beaconCommittedSupportHold) {
         if(beaconCommittedSupportHold){human.aiTurnAction="beacon-assault-support-hold";human.facing=facingToward(human,activeBeacon.x,activeBeacon.y);}
         else human.facing=facingToward(human,beaconHoldToAttack&&activeBeacon?activeBeacon.x:target.x,beaconHoldToAttack&&activeBeacon?activeBeacon.y:target.y);
@@ -3087,7 +3183,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
           }
         }
       } else {
-        const defaultAiSpottedContactApproach=Boolean(fireTeamPriorityState.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.LIVE_COMBAT&&personalContacts.length>0&&target?.team==="alien"&&!postContactNeedsFormation&&!playerCommandMove&&!formationMove&&!beaconStrikeMove&&!ufoBayInspectionMove);
+        const defaultAiSpottedContactApproach=Boolean(fireTeamPriorityState.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.LIVE_COMBAT&&personalContacts.length>0&&target?.team==="alien"&&!postContactSupportReform&&!playerCommandMove&&!formationMove&&!beaconStrikeMove&&!ufoBayInspectionMove);
         const spottedContactApproachPlan=defaultAiSpottedContactApproach?tacticalAiSpottedAlienApproachPlan({unit:human,target,covers,units:allUnits(),reserveTu:human.reserveTu,mission,maxMoveSteps:TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS}):null;
         const plan = playerCommandMove?tacticalFireTeamCommandMovePlan({unit:human,target:playerCommandTarget,covers,units:allUnits(),reserveTu:human.reserveTu,mission}):hybridFlankMove?tacticalHybridAggressiveFlankMovePlan({unit:human,leader:fireTeamLeader,target:hybridCombatTarget,formationTarget,covers,units:allUnits(),reserveTu:human.reserveTu,mission,maxMoveSteps:TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS}):formationMove?tacticalFireTeamFormationMovePlan({unit:human,target:formationTarget,covers,units:allUnits(),reserveTu:human.reserveTu,mission,maxMoveSteps:TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS}):beaconPerimeterPlan&&beaconPerimeterPlan.steps>0?beaconPerimeterPlan:beaconCloseAssaultMove?tacticalAlienBeaconCloseAssaultMovePlan({unit:human,beacon:activeBeacon,covers,units:allUnits(),reserveTu:human.reserveTu,mission,maxMoveSteps:TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS}):spottedContactApproachPlan&&spottedContactApproachPlan.steps>0?spottedContactApproachPlan:tacticalAiMovePlan({ unit: human, target, covers, units: allUnits(), commander: fireTeamLeader, doctrine, role: human.aiRole, reserveTu: human.reserveTu, mission, targetKnown: beaconStrikeMove || ufoBayInspectionMove || personalContacts.length > 0 || Boolean(search.known), visitedCells: human.aiMoveVisited || [], maxMoveSteps: TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS });
         const beforeCommandDistance=playerCommandMove?tacticalDistance(human,playerCommandTarget):null;
@@ -3115,9 +3211,11 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
           }
         }
       }
-      if (fireTeamPriorityState.allowsGenericSearch && !personalContacts.length && !directResponse && !formationMove && !playerCommandMove && !beaconStrikeMove && !beaconHoldToAttack && !explicitBeaconAssaulter && !beaconAssignmentNeutralization.active && !ufoBayInspectionMove && !roundMovementCommittedIds.has(human.id) && (!search.huntMode || !roundActedIds.has(human.id))) {
+      if (fireTeamPriorityState.allowsGenericSearch && !knownUnassignedCivilianPriorityPending && !personalContacts.length && !directResponse && !formationMove && !playerCommandMove && !beaconStrikeMove && !beaconHoldToAttack && !explicitBeaconAssaulter && !beaconAssignmentNeutralization.active && !ufoBayInspectionMove && !roundMovementCommittedIds.has(human.id) && (!search.huntMode || !roundActedIds.has(human.id))) {
         const patrol = tacticalAiFallbackPatrolPlan(human, covers, allUnits(), human.reserveTu, human.aiMoveVisited || [], { mission, round: initialRound + round - 1, preferInterior: true });
         applyMovementPlan(patrol);
+      }else if(fireTeamPriorityState.allowsGenericSearch&&knownUnassignedCivilianPriorityPending&&!roundMovementCommittedIds.has(human.id)&&!roundActedIds.has(human.id)){
+        human.aiTurnAction="known-civilian-assignment-pending";
       }
       if(movementLegs>0){
         human.aiTurnReassessed=true;
@@ -3263,8 +3361,14 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
     const processHumanEmergencyGridTurn=(human,error=null)=>{
       if(!human||!human.alive||civilianDutyIds.has(human.id))return false;
       const reason=String(error?.message||error||"normal tactical planner returned no usable action").slice(0,180);
-      const rawPlan=tacticalAiFallbackPatrolPlan(human,covers,allUnits(),Math.max(0,Number(human.reserveTu)||0),human.aiMoveVisited||[],{mission,round:initialRound+round-1,preferInterior:true,emergency:true});
-      const plan=tacticalAuthoritativeMovementPlan(human,rawPlan,covers,allUnits(),mission);
+      const emergencyUnits=allUnits(),emergencyObserved=tacticalAiObservedAliens(emergencyUnits,covers,mission).sort((a,b)=>tacticalDistance(a,human)-tacticalDistance(b,human)||String(a.id).localeCompare(String(b.id)));
+      const emergencyLastKnown=emergencyObserved.length?null:(tacticalAiLastKnownContactAssignment(human,emergencyUnits,initialRound+round-1)||tacticalAiDistressTarget(human,humans,aliens,initialRound+round-1));
+      const emergencyTarget=emergencyObserved[0]||emergencyLastKnown?.target||null;
+      const emergencySourceAssigned=Boolean(beaconStrikeTeamId&&human.fireTeamId===beaconStrikeTeamId||ufoBayInspectionTeamId&&human.fireTeamId===ufoBayInspectionTeamId);
+      const emergencyKnownCivilianAssigned=Boolean(human.aiVipRescueTargetId);
+      const emergencyHigherPriorityHold=Boolean(!emergencyTarget&&(emergencySourceAssigned||emergencyKnownCivilianAssigned||knownUnassignedCivilianPriorityPending));
+      const rawPlan=emergencyTarget?tacticalAiMovePlan({unit:human,target:emergencyTarget,covers,units:emergencyUnits,commander:tacticalFireTeamLeaderForUnit(human,humans)||human,doctrine,role:human.aiRole,reserveTu:Math.max(0,Number(human.reserveTu)||0),mission,targetKnown:true,visitedCells:human.aiMoveVisited||[],maxMoveSteps:TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS}):emergencyHigherPriorityHold?{path:[{x:human.x,y:human.y}],steps:0,aiPatrolIndex:human.aiPatrolIndex||0,aiPatrolTargetX:human.x,aiPatrolTargetY:human.y,priorityHold:true}:tacticalAiFallbackPatrolPlan(human,covers,emergencyUnits,Math.max(0,Number(human.reserveTu)||0),human.aiMoveVisited||[],{mission,round:initialRound+round-1,preferInterior:true,emergency:true});
+      const plan=tacticalAuthoritativeMovementPlan(human,rawPlan,covers,emergencyUnits,mission);
       human.aiPatrolIndex=Math.max(0,Number(plan.aiPatrolIndex)||0);human.aiPatrolTargetX=Number(plan.aiPatrolTargetX);human.aiPatrolTargetY=Number(plan.aiPatrolTargetY);
       const path=Array.isArray(plan.path)&&plan.path.length?plan.path:[{x:human.x,y:human.y}];
       if(plan.steps>0){
@@ -3273,7 +3377,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
         const cell=path[path.length-1];human.x=cell.x;human.y=cell.y;human.tu=Math.max(0,Number(human.tu)-Math.max(0,Number(plan.steps)||0)*4);Object.assign(human,tacticalAutoStandForMovement(human));
         human.aiMoveVisited=[...(human.aiMoveVisited||[]),...path.map(point=>tacticalKey(point.x,point.y))].slice(-24);human.aiTurnAction="emergency-grid-search";human.aiEmergencyGridRecovery=true;human.aiTurnReassessed=true;roundMovementCommittedIds.add(human.id);roundActedIds.add(human.id);
         recordNewContactInterrupt(human,"emergency-grid-movement");
-      }else{human.aiTurnAction="emergency-grid-hold";human.aiEmergencyGridRecovery=true;}
+      }else{human.aiTurnAction=emergencyHigherPriorityHold?"emergency-priority-hold":"emergency-grid-hold";human.aiEmergencyGridRecovery=true;}
       tacticalVisibleCellSet(allUnits(),covers,mission).forEach(key=>exploredCells.add(key));
       const range=human.weaponKind==="ballistic"?18:20;
       const contacts=tacticalAiRevealPersonallyVisibleContacts(human,aliens,covers,mission).filter(alien=>tacticalDistance(alien,human)<=range).sort((left,right)=>tacticalDistance(left,human)-tacticalDistance(right,human)||String(left.id).localeCompare(String(right.id)));
@@ -3294,7 +3398,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
           logs.push(`AI recovery: ${human.name} reacquired ${target.name||"a hostile"} during the grid sweep and immediately returned to combat.`);
         }else logs.push(`AI recovery: ${human.name} reacquired ${target.name||"a hostile"} during the grid sweep but held because the selected reserve could not be fired safely.`);
       }
-      logs.push(`AI recovery grid search: ${human.name} isolated planner failure (${reason}) and ${plan.steps>0?`swept toward sector ${Number(plan.searchTeamSlot)+1}`:"held the nearest legal search position"}. Escort/extraction duties remain outside this fallback.`);
+      logs.push(`AI recovery: ${human.name} isolated planner failure (${reason}) and ${emergencyTarget?"continued toward the active alien-contact authority":emergencyHigherPriorityHold?"held rather than violate a higher-priority mission objective":plan.steps>0?`swept toward sector ${Number(plan.searchTeamSlot)+1}`:"held the nearest legal search position"}.`);
       return true;
     };
     const processHumanAiTurnSafely=(human,allowFriendlyTrafficDefer=true)=>{
@@ -3309,6 +3413,10 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
       const human=humans.find((unit)=>unit.id===unitId&&unit.alive);
       if(human)processHumanAiTurnSafely(human,false);
     });
+    // Routine non-bleeding first aid is opportunistic, not a strategic objective. It only runs after
+    // every authoritative mission-priority action has had its chance for the round.
+    const routineMedical=tacticalAiMedicalTriageStep({humans,aliens,covers,mission,round:initialRound+round-1,routineOnly:true});
+    if(routineMedical.actedIds?.length){humans=routineMedical.humans;routineMedical.actedIds.forEach(id=>roundActedIds.add(id));logs.push(...routineMedical.events.map(event=>`Field medicine: ${event}`));}
     if(beaconAutomatedEndgame&&beaconEndgameProgressBefore?.active){
       let progressAfter=tacticalAiBeaconEndgameProgressState({units:allUnits(),covers,mission,knowledge:beaconKnowledgeForRound,assaulterId:beaconAssaulterId});
       if(!tacticalAiBeaconEndgameProgressed(beaconEndgameProgressBefore,progressAfter)){
@@ -4535,7 +4643,7 @@ function tacticalLastKnownContinuationAndEscortLeaderLockContractChecks(){
     "Unresolved reports prevent battlefield-secured terminal resolution until AEGIS verifies the reported cells":terminal.unresolvedLastKnownContact===true&&terminal.primarySecured===false&&terminal.resolved===false,
     "Stream continuation remembers contact authority whenever a Last Known Contact marker remains":continuation.alienContactSeen===true&&resolverSource.includes("rememberedCombatContact = tacticalMissionHasUnresolvedAlienContact(aliens)"),
     "Pre-contact objective claiming cannot restart while unresolved Last Known Contact knowledge remains":preContactSource.includes("unresolvedLastKnownContact")&&preContactSource.includes("alienContactSeen || visibleAlien || unresolvedLastKnownContact"),
-    "An escort-owning fire-team leader is locked to extraction even when visible aliens and Last Known Contact reports coexist":lock.active&&lock.civilianIds.includes(vip.id)&&state.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.ESCORT&&state.priority===5&&state.reason==="escort-leader-locked-until-extraction",
+    "An escort-owning fire-team leader is locked to extraction even when visible aliens and Last Known Contact reports coexist":lock.active&&lock.civilianIds.includes(vip.id)&&state.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.ESCORT&&state.priority===TACTICAL_DEFAULT_AI_PRIORITY_STACK.ACTIVE_ESCORT&&state.reason==="escort-leader-locked-until-extraction",
     "Escort leader lock does not remove the configured support breakoff doctrine":support.fireTeamEscortSupportMode==="breakoff"&&prioritySource.includes("escortLeaderLock.active"),
     "Mission threat music latches through streamed playback instead of oscillating at contact frame boundaries":missionSource.includes("tacticalThreatMusicContactLatchRef")&&missionSource.includes("tacticalMusicActiveContact||Boolean(aiPlayback)&&tacticalThreatMusicContactLatchRef.current"),
     "Continuation and escort-lock hotfix preserves save format four":CURRENT_SAVE_FORMAT_VERSION===4
@@ -6504,6 +6612,18 @@ function tacticalAiNewContactInterruptRecord({observer=null,units=[],covers=[],m
   const alienIds=contacts.map(alien=>alien.id);
   return{id:`contact-replan:${Math.max(1,Number(round)||1)}:${Math.max(0,Number(sequence)||0)}:${observer.id}:${alienIds.join("|")}`,round:Math.max(1,Number(round)||1),observerId:observer.id,observerName:observer.name||"AEGIS soldier",alienIds,alienNames:contacts.map(alien=>alien.name||alien.alienType||"alien contact"),remainingActorIds:Array.from(new Set((remainingActorIds||[]).filter(Boolean))),source:String(source||"movement"),label:"Contact - replanning remaining fire teams"};
 }
+function tacticalAiMovementContactInterruptPlan({unit=null,plan=null,units=[],covers=[],mission=null,knownContactIds=[]}={}){
+  if(!unit||!plan||!Array.isArray(plan.path)||plan.path.length<=1)return{plan,interrupted:false,alienIds:[]};
+  const known=knownContactIds instanceof Set?knownContactIds:new Set(knownContactIds||[]);
+  for(let index=1;index<plan.path.length;index+=1){
+    const cell=plan.path[index],observer={...unit,x:cell.x,y:cell.y};
+    const contacts=tacticalAiPersonallyObservedAliens(observer,units,covers,mission).filter(alien=>!known.has(alien.id));
+    if(!contacts.length)continue;
+    const path=plan.path.slice(0,index+1),stop=path[path.length-1]||unit;
+    return{plan:{...plan,path,cell:{x:stop.x,y:stop.y},steps:Math.max(0,path.length-1),contactInterrupted:true,contactInterruptAlienIds:contacts.map(alien=>alien.id)},interrupted:true,alienIds:contacts.map(alien=>alien.id),cell:{x:stop.x,y:stop.y}};
+  }
+  return{plan,interrupted:false,alienIds:[]};
+}
 function tacticalAiRevealPersonallyVisibleContacts(observer=null,units=[],covers=[],mission=null){
 if(!tacticalHumanCombatActive(observer))return[];
 const context=tacticalVisibilityContext(covers,mission);
@@ -6645,6 +6765,8 @@ function tacticalAiKnownAlienCraftSweepCells({covers=[],units=[],unit=null,missi
   return cells;
 }
 const TACTICAL_DEFAULT_AI_CONTACT_PURSUIT_AND_LOCAL_SECTOR_SEARCH_HOTFIX=true;
+const TACTICAL_DEFAULT_AI_GLOBAL_CONTACT_AND_VIP_PRIORITY_HOTFIX=true;
+const TACTICAL_DEFAULT_AI_AUTHORITATIVE_SOLDIER_PRIORITY_STACK_PATCH=true;
 function tacticalAiAlienHuntTarget({unit,aliens=[],units=[],covers=[],mission=null,explored=[],round=1}={}){
   if(!unit)return null;
   const gridSize=tacticalGridSizeFrom(unit,aliens,units,covers,mission);
@@ -7438,7 +7560,43 @@ const TACTICAL_TRADITIONAL_ARCHITECTURE_STYLES={
   temperate:{key:"temperate-traditional",label:"Traditional brick-and-timber architecture",facade:0xa66f55,roof:0x3f4650,trim:0x513a2b,shutter:0x38576b,foundation:0x656b70,awning:0x77513c,roofKind:"pitched-eave"}
 };
 function tacticalTraditionalArchitectureForEnvironment(environment={}){return TACTICAL_TRADITIONAL_ARCHITECTURE_STYLES[environment?.key]||TACTICAL_TRADITIONAL_ARCHITECTURE_STYLES.temperate;}
-function tacticalFirstPersonCurrentObjectiveOrder(unit=null,units=[],covers=[],mission=null,fireTeamOrder=null){if(!unit||unit.team!=="human")return null;const labelTarget=id=>(units||[]).find(candidate=>candidate?.id===id)?.name||"contact";if(unit.fearState===TACTICAL_FEAR_STATES.override)return{title:"FEAR OVERRIDE",text:`Normal orders are suspended: ${String(unit.fearForcedAction||"freeze").replaceAll("-"," ")}. A Bravery recovery check occurs at the next normal turn start.`};if(unit.fireTeamSupportResponse==="rally-leader")return{title:"LEADERSHIP RESPONSE",text:`Rally the frightened fire-team leader (${TACTICAL_FIRE_TEAM_RALLY_TU_COST} TU); the bonus applies to the leader's next recovery check.`};if(unit.fireTeamSupportResponse==="continue-escort")return{title:"LEADERSHIP RESPONSE",text:"Continue the active civilian/VIP escort while the acting leader maintains fire-team command."};if(unit.fireTeamSupportResponse==="hold-fight")return{title:"LEADERSHIP RESPONSE",text:"Hold useful cover and fight the visible alien contact while temporary command is active."};if(unit.fireTeamSupportResponse==="cover-withdrawal")return{title:"LEADERSHIP RESPONSE",text:"Cover the frightened leader's withdrawal and remain coordinated with the acting leader."};if(unit.fireTeamLeadershipState==="acting-leader")return{title:"ACTING FIRE-TEAM COMMAND",text:fireTeamOrder?`Assume command and execute the player order at hex ${fireTeamOrder.x},${fireTeamOrder.y}.`:"Assume temporary command, preserve cohesion, and continue the highest-priority known objective."};if(unit.fireTeamTacticalStateKey===TACTICAL_FIRE_TEAM_TACTICAL_STATES.REFORM)return{title:"FIRE-TEAM STATE - REFORM",text:"Recover the fire-team formation around the effective leader before resuming the interrupted assignment."};if(unit.fireTeamTacticalStateKey===TACTICAL_FIRE_TEAM_TACTICAL_STATES.LAST_KNOWN_CONTACT)return{title:"FIRE-TEAM STATE - CONTACT SEARCH",text:"Investigate and legitimately clear unresolved Last Known Contact reports before resuming lower-priority objectives."};if(fireTeamOrder)return{title:"PLAYER / FIRE TEAM ORDER",text:`Advance to hex ${fireTeamOrder.x},${fireTeamOrder.y}${fireTeamOrder.preferredTargetName?` and prioritize ${fireTeamOrder.preferredTargetName}`:""}.`};if(unit.aiVipRescueTargetId)return{title:"CURRENT OBJECTIVE",text:`Reach and secure ${labelTarget(unit.aiVipRescueTargetId)}.`};if(unit.escortRecallCivilianId)return{title:"CURRENT OBJECTIVE",text:`Regroup with separated ${labelTarget(unit.escortRecallCivilianId)}.`};const followers=tacticalEscortFollowers(units,unit.id);if(followers.length)return{title:"CURRENT OBJECTIVE",text:`Escort ${followers.map(follower=>follower.name||"civilian").slice(0,2).join(" / ")}${followers.length>2?` +${followers.length-2}`:""} to Skyranger extraction.`};if(unit.fireTeamExtractionGuardActive)return{title:"CURRENT ORDER",text:"Hold the extraction corridor and protect the evac route."};if(unit.fireTeamEscortSupportMode==="breakoff")return{title:"CURRENT ORDER",text:"Break off from escort support and engage visible alien contact."};if(unit.fireTeamEscortSupportMode)return{title:"CURRENT ORDER",text:"Stay on escort support and protect the civilian/VIP column."};if(unit.aiAlienHuntMode==="fog-sweep")return{title:"CURRENT OBJECTIVE",text:"Sweep unexplored terrain for the remaining alien force."};if(unit.aiAlienHuntMode==="grid-sweep")return{title:"CURRENT OBJECTIVE",text:"Conduct systematic grid search for the remaining alien force."};const contactSearchCell=tacticalValidCoordinatePair(unit.aiContactSearchTargetX,unit.aiContactSearchTargetY,tacticalGridSizeFrom(unit,mission),1);if(contactSearchCell)return{title:"CURRENT OBJECTIVE",text:`Search last known contact near hex ${contactSearchCell.x},${contactSearchCell.y}.`};const beacon=tacticalActiveAlienBeacon(covers);if(beacon&&beacon.revealed&&tacticalDistance(unit,beacon)<=18)return{title:"CURRENT OBJECTIVE",text:`Support neutralization of the Alien Field Beacon at ${beacon.x},${beacon.y}.`};const visibleAliens=(units||[]).filter(candidate=>candidate?.team==="alien"&&Number(candidate.hp)>0&&candidate.revealed&&hasLineOfSight(unit,candidate.x,candidate.y,covers,mission));if(visibleAliens.length)return{title:"CURRENT ORDER",text:`Engage visible alien contact${visibleAliens.length>1?"s":""} from useful cover while maintaining ranged standoff and fire-team cohesion.`};if(unit.aiTurnAction)return{title:"CURRENT ORDER",text:String(unit.aiTurnAction).replace(/[-_]+/g," ")};return{title:"CURRENT ORDER",text:tacticalFireTeamIsLeader(unit,units)?"Advance the fire team toward the active mission objective.":"Maintain formation and support the effective fire-team leader."};}
+function tacticalFirstPersonCurrentObjectiveOrder(unit=null,units=[],covers=[],mission=null,fireTeamOrder=null){
+  if(!unit||unit.team!=="human")return null;
+  const safeUnits=Array.isArray(units)?units:[],labelTarget=id=>safeUnits.find(candidate=>candidate?.id===id)?.name||"contact";
+  if(unit.fearState===TACTICAL_FEAR_STATES.override)return{title:"FEAR OVERRIDE",text:`Normal orders are suspended: ${String(unit.fearForcedAction||"freeze").replaceAll("-"," ")}. A Bravery recovery check occurs at the next normal turn start.`};
+  if(unit.fireTeamSupportResponse==="rally-leader")return{title:"LEADERSHIP RESPONSE",text:`Rally the frightened fire-team leader (${TACTICAL_FIRE_TEAM_RALLY_TU_COST} TU); the bonus applies to the leader's next recovery check.`};
+  if(unit.fireTeamSupportResponse==="continue-escort")return{title:"LEADERSHIP RESPONSE",text:"Continue the active civilian/VIP escort while the acting leader maintains fire-team command."};
+  if(unit.fireTeamSupportResponse==="hold-fight")return{title:"LEADERSHIP RESPONSE",text:"Hold useful cover and fight the visible alien contact while temporary command is active."};
+  if(unit.fireTeamSupportResponse==="cover-withdrawal")return{title:"LEADERSHIP RESPONSE",text:"Cover the frightened leader's withdrawal and remain coordinated with the acting leader."};
+  if(unit.fireTeamLeadershipState==="acting-leader")return{title:"ACTING FIRE-TEAM COMMAND",text:fireTeamOrder?`Assume command and execute the player order at hex ${fireTeamOrder.x},${fireTeamOrder.y}.`:"Assume temporary command, preserve cohesion, and continue the highest-priority known objective."};
+  const action=String(unit.aiTurnAction||"");
+  if(action.includes("medical-stabil")||action.includes("stabiliz"))return{title:"PRIORITY 1 - STABILIZE",text:"Reach and stabilize the bleeding casualty before lower-priority mission objectives."};
+  if(action.startsWith("casualty-recovery")||action.startsWith("casualty-extraction")||unit.draggingCasualtyId)return{title:"PRIORITY 2 - CASUALTY RECOVERY",text:unit.draggingCasualtyId?`Recover ${labelTarget(unit.draggingCasualtyId)} to Skyranger extraction.`:"Reach the downed AEGIS casualty and begin recovery/extraction."};
+  const followers=tacticalEscortFollowers(safeUnits,unit.id);
+  const escortSupportMode=String(unit.fireTeamEscortSupportMode||"");
+  const activeEscortDuty=followers.length>0||escortSupportMode==="stay"||escortSupportMode==="ask"||unit.fireTeamExtractionGuardActive||unit.escortRecallCivilianId;
+  if(activeEscortDuty){
+    if(unit.escortRecallCivilianId)return{title:"PRIORITY 3 - ACTIVE ESCORT",text:`Regroup with separated ${labelTarget(unit.escortRecallCivilianId)}.`};
+    if(followers.length)return{title:"PRIORITY 3 - ACTIVE ESCORT",text:`Escort ${followers.map(follower=>follower.name||"civilian").slice(0,2).join(" / ")}${followers.length>2?` +${followers.length-2}`:""} to Skyranger extraction.`};
+    if(unit.fireTeamExtractionGuardActive)return{title:"PRIORITY 3 - ACTIVE ESCORT",text:"Hold the extraction corridor and protect the evac route."};
+    return{title:"PRIORITY 3 - ACTIVE ESCORT",text:escortSupportMode==="ask"?"Hold escort support until Command decides whether to break off for alien contact.":"Stay on escort support and protect the civilian/VIP column."};
+  }
+  if(fireTeamOrder)return{title:"PLAYER / FIRE TEAM ORDER",text:`Advance to hex ${fireTeamOrder.x},${fireTeamOrder.y}${fireTeamOrder.preferredTargetName?` and prioritize ${fireTeamOrder.preferredTargetName}`:""}.`};
+  const visibleAliens=safeUnits.filter(candidate=>candidate?.team==="alien"&&Number(candidate.hp)>0&&candidate.alive!==false&&candidate.revealed&&hasLineOfSight(unit,candidate.x,candidate.y,covers,mission));
+  if(visibleAliens.length||escortSupportMode==="breakoff")return{title:"PRIORITY 4 - VISIBLE ALIEN",text:`Engage visible alien contact${visibleAliens.length>1?"s":""}; lower-priority movement has been canceled while contact remains active.`};
+  const contactSearchCell=tacticalValidCoordinatePair(unit.aiContactSearchTargetX,unit.aiContactSearchTargetY,tacticalGridSizeFrom(unit,mission),1);
+  if(unit.fireTeamTacticalStateKey===TACTICAL_FIRE_TEAM_TACTICAL_STATES.LAST_KNOWN_CONTACT||contactSearchCell)return{title:"PRIORITY 5 - LAST KNOWN CONTACT",text:contactSearchCell?`Investigate and clear the Last Known Contact near hex ${contactSearchCell.x},${contactSearchCell.y}.`:"Investigate and legitimately clear the unresolved Last Known Contact report."};
+  const beacon=tacticalActiveAlienBeacon(covers),assignment=unit.fireTeamId?tacticalFireTeamObjectiveAssignmentForTeam(safeUnits,unit.fireTeamId):null;
+  const beaconAssigned=unit.aiReinforcementSourceKind==="beacon"||assignment?.type==="beacon"||assignment?.assistObjectiveType==="beacon";
+  if(beacon&&beacon.revealed&&(beaconAssigned||tacticalDistance(unit,beacon)<=18))return{title:"PRIORITY 6 - ALIEN FIELD BEACON",text:`Support neutralization of the Alien Field Beacon at ${beacon.x},${beacon.y}.`};
+  if(unit.aiReinforcementSourceKind==="ufo-bay"||assignment?.type==="ufo-bay")return{title:"PRIORITY 7 - UFO BAY",text:"Approach and verify the uncleared crashed-UFO deployment bay."};
+  if(unit.aiVipRescueTargetId)return{title:"PRIORITY 8 - KNOWN CIVILIAN/VIP",text:`Reach and secure ${labelTarget(unit.aiVipRescueTargetId)}.`};
+  if(unit.aiAlienHuntMode==="fog-sweep")return{title:"PRIORITY 9 - SEARCH",text:"Sweep unexplored terrain for undiscovered aliens and civilians."};
+  if(unit.aiAlienHuntMode==="grid-sweep")return{title:"PRIORITY 9 - SEARCH",text:"Conduct systematic map search for undiscovered aliens and civilians."};
+  if(unit.fireTeamTacticalStateKey===TACTICAL_FIRE_TEAM_TACTICAL_STATES.REFORM||unit.aiPostContactFormationOverlay)return{title:"FORMATION OVERLAY",text:"Re-form around the effective leader while continuing the current mission objective; formation recovery does not outrank the objective stack."};
+  if(unit.aiTurnAction)return{title:"CURRENT ORDER",text:String(unit.aiTurnAction).replace(/[-_]+/g," ")};
+  return{title:"CURRENT ORDER",text:tacticalFireTeamIsLeader(unit,safeUnits)?"Advance the fire team toward the highest-priority known mission objective.":"Maintain formation while supporting the effective leader's highest-priority objective."};
+}
 function TacticalFpvOrderOverlay({order}){if(!order)return null;return React.createElement("div",{"data-aegis-fpv-current-order":"true",className:"mt-2 border-t border-sky-300/20 pt-2 text-left"},React.createElement("div",{className:"text-[8px] font-black uppercase tracking-[0.22em] text-amber-300"},order.title||"CURRENT ORDER"),React.createElement("div",{className:"mt-1 text-[11px] font-semibold leading-snug text-slate-100"},order.text||"Maintain formation."));}
 function tacticalThreeStatusConditions(unit=null,covers=[]){if(!unit)return[];const statuses=[];const add=(key,short,label,description,tone)=>statuses.push({key,short,label,description,tone});if(unit.casualtyExtracted||unit.extracted)add("casualty-extracted","EVAC","Casualty Extracted","This unconscious casualty is safely aboard the Skyranger and will survive a withdrawal.","border-cyan-200/70 bg-cyan-950/80 text-cyan-50");if(tacticalHumanIsDowned(unit))add("downed","DWN","Downed / Unconscious","This soldier is alive but unconscious and cannot act or provide vision. An adjacent conscious AEGIS soldier can stabilize active bleeding with a Field Medkit or secure and drag them to safer ground.","border-red-200/80 bg-red-950/90 text-red-50");if(unit.draggingCasualtyId)add("dragging-casualty","DRG","Dragging Casualty",`This soldier is dragging a downed teammate. Movement costs ${TACTICAL_CASUALTY_DRAG_STEP_TU} TU per hex until the casualty is released.`,"border-amber-200/70 bg-amber-950/75 text-amber-50");if(unit.fearState===TACTICAL_FEAR_STATES.override)add("panicked","PAN","Panicked",`Fear has overridden normal orders. Current forced response: ${String(unit.fearForcedAction||"freeze").replaceAll("-"," ")}. A recovery check occurs at the next normal turn start.`,"border-rose-300/70 bg-rose-950/80 text-rose-100");else if(unit.fearState===TACTICAL_FEAR_STATES.pinned)add("pinned","PIN","Pinned","Heavy morale pressure is limiting this soldier's combat performance and accuracy.","border-orange-300/70 bg-orange-950/80 text-orange-100");else if(unit.fearState===TACTICAL_FEAR_STATES.shaken)add("shaken","SHK","Shaken","Morale pressure is applying a moderate accuracy penalty until the soldier steadies.","border-amber-300/70 bg-amber-950/80 text-amber-100");if(tacticalHumanIsBleeding(unit))add("bleeding","BLD","Bleeding",`This downed casualty is unstable. ${Math.max(0,Number(unit.bleedOutRounds)||0)} round${Math.max(0,Number(unit.bleedOutRounds)||0)===1?"":"s"} remain before critical collapse unless an adjacent responder stabilizes them.`,"border-red-300/70 bg-red-950/80 text-red-100");else if(unit.bleeding||Number(unit.bleedTurns)>0)add("bleeding","BLD","Bleeding","This unit has an active bleeding condition and needs medical attention.","border-red-300/70 bg-red-950/80 text-red-100");if(tacticalHumanIsDowned(unit)&&unit.stabilized)add("stabilized","STB","Stabilized","Bleeding is controlled. This casualty remains unconscious and cannot act, but the battlefield bleed-out clock is stopped.","border-emerald-300/70 bg-emerald-950/75 text-emerald-100");const maxHp=Math.max(1,Number(unit.maxHp)||Number(unit.hp)||1);if(Number(unit.hp)<maxHp||Number(unit.baseSoldier?.injuryDays)>0)add("wounded","WND","Wounded",`Current health is ${Math.max(0,Math.round(Number(unit.hp)||0))}/${Math.round(maxHp)}. Existing injuries may also reduce combat stats.`,"border-rose-200/55 bg-rose-950/55 text-rose-100");if(unit.kneeling)add("kneeling","KNL","Kneeling","The soldier is kneeling, affecting stance-based accuracy, defense, and movement costs.","border-sky-300/60 bg-sky-950/65 text-sky-100");if(tacticalFireIntensityAt(covers,unit.x,unit.y)>0)add("burning","FIR","In Fire","The occupied hex is burning and can inflict continuing battlefield harm.","border-orange-300/70 bg-orange-950/85 text-orange-100");if(tacticalSmokeDensityAt(covers,unit.x,unit.y)>0)add("smoke","SMK","In Smoke","Smoke at this hex can interfere with tactical visibility and shooting.","border-slate-300/65 bg-slate-800/90 text-slate-100");if(Number(unit.fearRallyBonus)>0)add("rallied","RLY","Rallied",`A teammate spent ${TACTICAL_FIRE_TEAM_RALLY_TU_COST} TU to add +${Math.round(Number(unit.fearRallyBonus))} to this soldier's next normal fear-recovery check. No extra check is created.`,"border-emerald-300/65 bg-emerald-950/70 text-emerald-100");if(unit.fireTeamLeadershipState==="acting-leader")add("acting-leader","ACT","Acting Leader","This soldier temporarily commands the fire team while its formal leader is under a fear override.","border-violet-300/70 bg-violet-950/75 text-violet-100");if(unit.fireTeamLeadershipState==="leader-overridden")add("command-disrupted","CMD","Command Disrupted","Fear has suspended this leader's command authority until a normal recovery check succeeds.","border-fuchsia-300/70 bg-fuchsia-950/75 text-fuchsia-100");if(tacticalEscortFollowers([],unit.id).length>0||unit.aiVipRescueTargetId)add("escort","ESC","Escort Duty","This soldier has an active civilian or VIP rescue responsibility.","border-emerald-300/60 bg-emerald-950/70 text-emerald-100");return statuses;}
 function tacticalThreeStatusRoleLabel(unit=null,units=[]){if(!unit)return"Member";if(unit.fireTeamLeadershipState==="acting-leader")return"Acting Leader";if(unit.fireTeamLeadershipState==="leader-overridden")return"Leader - Command Disrupted";if(tacticalFireTeamIsFormalLeader(unit,units))return"Leader";return unit.fireTeamRole==="left"?"Left Support":unit.fireTeamRole==="right"?"Right Support":unit.fireTeamRole==="rear"?"Rear Support":unit.fireTeamRole==="wingman"?"Wingman":"Member";}
@@ -8284,7 +8442,7 @@ function tacticalUfoBayInspectionResult(options={}){const state=tacticalUfoBayIn
 function tacticalAiUfoBayInspectionTeamId({units=[],covers=[],mission=null,knowledge="unknown",excludedUnitIds=new Set(),preservePlayerOrders=false}={}){const humans=(Array.isArray(units)?units:[]).filter(unit=>unit?.team==="human"&&unit.hp>0&&unit.alive!==false),aliens=(Array.isArray(units)?units:[]).filter(unit=>unit?.team==="alien"),objective=tacticalUfoBayClearanceState({mission,covers,humans,aliens,knowledge});if(!objective.pending||!objective.discovered)return null;const excluded=excludedUnitIds instanceof Set?excludedUnitIds:new Set(excludedUnitIds||[]),leaders=humans.filter(unit=>tacticalFireTeamIsLeader(unit,humans)&&unit.fireTeamId&&!excluded.has(unit.id)&&tacticalEscortFollowers(units,unit.id).length===0&&(!preservePlayerOrders||!tacticalFireTeamCommandOrderForUnit(unit,humans)));return leaders.sort((left,right)=>tacticalDistance(left,objective.bay)-tacticalDistance(right,objective.bay)||tacticalAiCommanderScore(right)-tacticalAiCommanderScore(left)||String(left.id).localeCompare(String(right.id)))[0]?.fireTeamId||null;}
 function tacticalAiShouldContinueUfoBay(mission=null,humans=[],aliens=[],covers=[],knowledge="unknown"){return Boolean((Array.isArray(humans)?humans:[]).some(unit=>unit&&unit.alive!==false&&Number(unit.hp)>0)&&tacticalUfoBayClearanceState({mission,covers,humans,aliens,knowledge}).pending);}
 function tacticalAiUfoBayInspectionTarget({unit=null,units=[],covers=[],mission=null}={}){const bay=tacticalCrashedUfoBayRecord(covers);if(!unit||!bay)return null;return tacticalCrashedUfoBayApproachCells({covers,units,unitId:unit.id,mission}).sort((left,right)=>tacticalDistance(unit,left)-tacticalDistance(unit,right)||tacticalDistance(left,bay)-tacticalDistance(right,bay)||left.y-right.y||left.x-right.x)[0]||null;}
-function tacticalReinforcementSourceObjectiveState({mission=null,covers=[],humans=[],aliens=[],civilians=[],knowledge="unknown",shieldKnowledge=[]}={}){const livingHumans=(Array.isArray(humans)?humans:[]).filter(unit=>unit&&unit.hp>0&&unit.alive!==false),livingAliens=(Array.isArray(aliens)?aliens:[]).filter(unit=>unit&&unit.hp>0&&unit.alive!==false),activeEscort=Boolean((Array.isArray(civilians)?civilians:[]).some(unit=>unit&&unit.hp>0&&!unit.rescued&&unit.escortId)),knownAliens=tacticalAiObservedAliens([...livingHumans,...livingAliens],covers,mission),beaconObjective=tacticalAlienBeaconObjectiveState({mission,covers,humans:livingHumans,knowledge,shieldKnowledge}),ufoBayObjective=tacticalUfoBayClearanceState({mission,covers,humans:livingHumans,aliens:livingAliens,knowledge}),source=beaconObjective.pending?{kind:"alien-field-beacon",...beaconObjective}:ufoBayObjective.pending?{kind:"ufo-bay",...ufoBayObjective}:null,priority=activeEscort?"active-escort":knownAliens.length?"known-live-alien":source?"reinforcement-source":"routine";return{applicable:Boolean(beaconObjective.applicable||ufoBayObjective.applicable),pending:Boolean(source),complete:!source,priority,activeEscort,knownAlienCount:knownAliens.length,source,beaconObjective,ufoBayObjective,message:source?.message||"No unresolved confirmed reinforcement source."};}
+function tacticalReinforcementSourceObjectiveState({mission=null,covers=[],humans=[],aliens=[],civilians=[],knowledge="unknown",shieldKnowledge=[]}={}){const livingHumans=(Array.isArray(humans)?humans:[]).filter(unit=>unit&&unit.hp>0&&unit.alive!==false),livingAliens=(Array.isArray(aliens)?aliens:[]).filter(unit=>unit&&unit.hp>0&&unit.alive!==false),activeEscort=Boolean((Array.isArray(civilians)?civilians:[]).some(unit=>unit&&unit.hp>0&&!unit.rescued&&unit.escortId)),knownAliens=tacticalAiObservedAliens([...livingHumans,...livingAliens],covers,mission),lastKnownContact=Boolean(tacticalMissionHasUnresolvedAlienContact(livingAliens)||livingHumans.some(unit=>tacticalAiDistressTarget(unit,livingHumans,livingAliens,Math.max(1,...livingHumans.map(candidate=>Number(candidate?.distressRound)||1))))),beaconObjective=tacticalAlienBeaconObjectiveState({mission,covers,humans:livingHumans,knowledge,shieldKnowledge}),ufoBayObjective=tacticalUfoBayClearanceState({mission,covers,humans:livingHumans,aliens:livingAliens,knowledge}),source=beaconObjective.pending?{kind:"alien-field-beacon",...beaconObjective}:ufoBayObjective.pending?{kind:"ufo-bay",...ufoBayObjective}:null,priority=activeEscort?"active-escort":knownAliens.length?"known-live-alien":lastKnownContact?"last-known-contact":source?"reinforcement-source":"routine";return{applicable:Boolean(beaconObjective.applicable||ufoBayObjective.applicable),pending:Boolean(source),complete:!source,priority,activeEscort,knownAlienCount:knownAliens.length,lastKnownContact,source,beaconObjective,ufoBayObjective,message:source?.message||"No unresolved confirmed reinforcement source."};}
 function TacticalReinforcementSourceStatus({mission=null,covers=[],units=[],knowledge="unknown",shieldKnowledge=[],selectedUnit=null,turn="human",onInspect=()=>{}}={}){const humans=(units||[]).filter(unit=>unit.team==="human"),aliens=(units||[]).filter(unit=>unit.team==="alien"),civilians=(units||[]).filter(unit=>unit.team==="civilian"),objective=tacticalReinforcementSourceObjectiveState({mission,covers,humans,aliens,civilians,knowledge,shieldKnowledge});if(!objective.applicable)return null;const action=objective.source?.kind==="ufo-bay"?tacticalUfoBayInspectionActionState({unit:selectedUnit,mission,covers,units,knowledge,turn}):null;return React.createElement("div",{className:"mb-1 rounded-2xl border border-fuchsia-400/45 bg-fuchsia-950/30 px-3 py-2 text-xs text-fuchsia-50","data-aegis-reinforcement-source-objective":objective.source?.kind||"clear"},React.createElement("div",{className:"flex flex-wrap items-center justify-between gap-2"},React.createElement("div",null,React.createElement("b",{className:"uppercase tracking-wide text-fuchsia-200"},objective.source?.kind==="ufo-bay"?"Reinforcement Source - UFO Bay":objective.source?.kind==="alien-field-beacon"?"Reinforcement Source - Field Beacon":"Reinforcement Source Verified"),React.createElement("div",{className:"mt-1 text-slate-200"},objective.message)),action&&React.createElement("button",{type:"button",onClick:onInspect,disabled:!action.ok,title:action.reason,className:"rounded-xl border border-fuchsia-300/60 bg-fuchsia-800 px-3 py-2 font-black text-white disabled:cursor-not-allowed disabled:opacity-45"},"Inspect UFO Bay")),objective.pending&&React.createElement("div",{className:"mt-1 text-[10px] uppercase tracking-wide text-fuchsia-300"},objective.priority==="active-escort"?"Priority held by active escort":objective.priority==="known-live-alien"?"Priority held by known live alien":"Immediate investigation priority"));}
 function tacticalAiShouldContinueBeacon(mission = null, humans = [], covers = [], knowledge = "unknown") {
   return tacticalAlienBeaconObjectiveState({ mission, humans, covers, knowledge }).pending;
@@ -9156,6 +9314,10 @@ const TACTICAL_LAST_KNOWN_CONTACT_AUTHORITATIVE_TEAM_PURSUIT_HOTFIX=true;
 const TACTICAL_LAST_KNOWN_CONTACT_NULL_TARGET_PURGE_AND_OBJECTIVE_RELEASE_HOTFIX=true;
 const TACTICAL_LAST_KNOWN_CONTACT_RESCUE_BARRIER_AND_CAUSAL_THREAT_MUSIC_HOTFIX=true;
 const TACTICAL_FIRE_TEAM_TACTICAL_STATES=Object.freeze({LIVE_COMBAT:"live-combat",ESCORT:"escort",LAST_KNOWN_CONTACT:"last-known-contact",REFORM:"reform",PERSISTENT_ASSIGNMENT:"persistent-assignment",DEFAULT_SEARCH:"default-search"});
+const TACTICAL_DEFAULT_AI_PRIORITY_STACK=Object.freeze({STABILIZE:10,CASUALTY_RECOVERY:20,ACTIVE_ESCORT:30,VISIBLE_ALIEN:40,LAST_KNOWN_CONTACT:50,ALIEN_BEACON:60,UFO_BAY:70,KNOWN_CIVILIAN:80,SEARCH:90});
+function tacticalDefaultAiPriorityRank(key="SEARCH"){return Number(TACTICAL_DEFAULT_AI_PRIORITY_STACK[String(key||"SEARCH").toUpperCase()])||TACTICAL_DEFAULT_AI_PRIORITY_STACK.SEARCH;}
+function tacticalKnownUnassignedCivilianTargets(units=[]){const safe=Array.isArray(units)?units:[],assigned=new Set(safe.filter(unit=>unit?.team==="human"&&unit.aiVipRescueTargetId).map(unit=>unit.aiVipRescueTargetId));return safe.filter(unit=>unit?.team==="civilian"&&Number(unit.hp)>0&&unit.alive!==false&&!unit.rescued&&!unit.escortId&&(unit.vipTracker===true||unit.revealed===true)&&!assigned.has(unit.id)&&!unit.priorityEscortId);}
+function tacticalFireTeamReinforcementPriorityKind({unit=null,beaconTeamId=null,ufoBayTeamId=null,liveCombatPriority=false,lastKnownContactPriority=false,civilianDutyIds=null}={}){if(!unit||liveCombatPriority||lastKnownContactPriority||civilianDutyIds?.has?.(unit.id))return null;if(beaconTeamId&&unit.fireTeamId===beaconTeamId)return"beacon";if(ufoBayTeamId&&unit.fireTeamId===ufoBayTeamId)return"ufo-bay";return null;}
 const TACTICAL_LAST_KNOWN_CONTACT_REACHED_DISTANCE=1;
 function tacticalLastKnownAlienContactCellGroups(units=[]){
   const groups=new Map();
@@ -9320,28 +9482,28 @@ function tacticalCompleteFireTeamPostContactRecovery(units=[],teamId=null){
   });
   return changed;
 }
-function tacticalFireTeamPriorityState({unit=null,units=[],round=1,liveCombatPriority=false,lastKnownContactPriority=false,civilianDutyIds=null,postContactRecovery=null,playerOrder=null,assignedBeaconAssault=null,beaconAssignmentNeutralization=null}={}){
+function tacticalFireTeamPriorityState({unit=null,units=[],round=1,liveCombatPriority=false,lastKnownContactPriority=false,civilianDutyIds=null,postContactRecovery=null,playerOrder=null,assignedBeaconAssault=null,beaconAssignmentNeutralization=null,reinforcementSourcePriorityKind=null,knownCivilianPriority=false}={}){
   const safeUnits=Array.isArray(units)?units:[];
   const assignment=unit?.fireTeamId?tacticalFireTeamObjectiveAssignmentForTeam(safeUnits,unit.fireTeamId):{mode:"default",objectiveId:TACTICAL_FIRE_TEAM_OBJECTIVE_DEFAULT};
   const members=unit?.fireTeamId?safeUnits.filter(candidate=>candidate?.team==="human"&&candidate.hp>0&&candidate.alive!==false&&candidate.fireTeamId===unit.fireTeamId):unit?[unit]:[];
   const escortLeaderLock=tacticalEscortLeaderLockState(unit,safeUnits);
-  const escortActive=Boolean(escortLeaderLock.active||members.some(member=>civilianDutyIds?.has?.(member.id)));
-  const beaconPersistent=Boolean(assignedBeaconAssault?.assigned||beaconAssignmentNeutralization?.active);
+  const unitEscortActive=Boolean(escortLeaderLock.active||civilianDutyIds?.has?.(unit?.id));
+  const teamEscortActive=Boolean(escortLeaderLock.active||members.some(member=>civilianDutyIds?.has?.(member.id)));
+  const assignmentType=assignment?.mode==="assist"?(assignment.assistObjectiveType||assignment.type):assignment?.type;
+  const beaconPersistent=Boolean(assignedBeaconAssault?.assigned||beaconAssignmentNeutralization?.active||assignmentType==="beacon"||assignmentType==="command-core");
+  const ufoPersistent=Boolean(assignmentType==="ufo-bay");
+  const civilianPersistent=Boolean(knownCivilianPriority||assignmentType==="civilian");
   const assignmentPersistent=Boolean(assignment?.mode&&assignment.mode!=="default");
   const commandPersistent=Boolean(playerOrder);
-  let key=TACTICAL_FIRE_TEAM_TACTICAL_STATES.DEFAULT_SEARCH,priority=60,reason="no-higher-priority-duty",label="Default sector search";
-  if(escortLeaderLock.active){key=TACTICAL_FIRE_TEAM_TACTICAL_STATES.ESCORT;priority=5;reason="escort-leader-locked-until-extraction";label="Civilian/VIP escort - leader locked";}
-  else if(liveCombatPriority){key=TACTICAL_FIRE_TEAM_TACTICAL_STATES.LIVE_COMBAT;priority=10;reason="visible-alien-contact";label="Engage visible alien contact";}
-  else if(escortActive){key=TACTICAL_FIRE_TEAM_TACTICAL_STATES.ESCORT;priority=20;reason="active-civilian-vip-escort";label="Civilian/VIP escort";}
-  else if(lastKnownContactPriority){key=TACTICAL_FIRE_TEAM_TACTICAL_STATES.LAST_KNOWN_CONTACT;priority=30;reason="unresolved-last-known-contact";label="Investigate Last Known Contact";}
-  else if(postContactRecovery?.active&&postContactRecovery?.needsFormation){key=TACTICAL_FIRE_TEAM_TACTICAL_STATES.REFORM;priority=40;reason="post-contact-formation-recovery";label="Re-form fire team";}
-  else if(beaconPersistent||assignmentPersistent||commandPersistent){
-    key=TACTICAL_FIRE_TEAM_TACTICAL_STATES.PERSISTENT_ASSIGNMENT;priority=50;
-    if(beaconPersistent){reason="assigned-beacon-assault";label="Alien Field Beacon assault";}
-    else if(assignmentPersistent){reason=`assigned-objective:${assignment.type||assignment.mode||"objective"}`;label=assignment.label||"Assigned mission objective";}
-    else{reason=`fire-team-order:${playerOrder?.kind||"command"}`;label="Fire-team command order";}
-  }
-  return{key,priority,reason,label,round:Math.max(1,Number(round)||1),assignment,leader:tacticalFireTeamLeaderForUnit(unit,members)||unit,members,escortActive,escortLeaderLock,persistent:Boolean(key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.PERSISTENT_ASSIGNMENT),allowsGenericSearch:key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.DEFAULT_SEARCH};
+  let key=TACTICAL_FIRE_TEAM_TACTICAL_STATES.DEFAULT_SEARCH,priority=tacticalDefaultAiPriorityRank("SEARCH"),reason="no-higher-priority-duty",label="Default sector search";
+  if(unitEscortActive){key=TACTICAL_FIRE_TEAM_TACTICAL_STATES.ESCORT;priority=tacticalDefaultAiPriorityRank("ACTIVE_ESCORT");reason=escortLeaderLock.active?"escort-leader-locked-until-extraction":"active-civilian-vip-escort";label=escortLeaderLock.active?"Civilian/VIP escort - leader locked":"Civilian/VIP escort";}
+  else if(liveCombatPriority){key=TACTICAL_FIRE_TEAM_TACTICAL_STATES.LIVE_COMBAT;priority=tacticalDefaultAiPriorityRank("VISIBLE_ALIEN");reason="visible-alien-contact";label="Engage visible alien contact";}
+  else if(lastKnownContactPriority){key=TACTICAL_FIRE_TEAM_TACTICAL_STATES.LAST_KNOWN_CONTACT;priority=tacticalDefaultAiPriorityRank("LAST_KNOWN_CONTACT");reason="unresolved-last-known-contact";label="Investigate Last Known Contact";}
+  else if(reinforcementSourcePriorityKind==="beacon"||beaconPersistent){key=TACTICAL_FIRE_TEAM_TACTICAL_STATES.PERSISTENT_ASSIGNMENT;priority=tacticalDefaultAiPriorityRank("ALIEN_BEACON");reason="assigned-beacon-assault";label="Alien Field Beacon assault";}
+  else if(reinforcementSourcePriorityKind==="ufo-bay"||ufoPersistent){key=TACTICAL_FIRE_TEAM_TACTICAL_STATES.PERSISTENT_ASSIGNMENT;priority=tacticalDefaultAiPriorityRank("UFO_BAY");reason="ufo-bay-clearance";label="Clear crashed UFO bay";}
+  else if(civilianPersistent){key=TACTICAL_FIRE_TEAM_TACTICAL_STATES.PERSISTENT_ASSIGNMENT;priority=tacticalDefaultAiPriorityRank("KNOWN_CIVILIAN");reason="known-civilian-rescue";label=assignment.label||"Approach known civilian/VIP";}
+  else if(assignmentPersistent||commandPersistent){key=TACTICAL_FIRE_TEAM_TACTICAL_STATES.PERSISTENT_ASSIGNMENT;priority=85;if(assignmentPersistent){reason=`assigned-objective:${assignment.type||assignment.mode||"objective"}`;label=assignment.label||"Assigned mission objective";}else{reason=`fire-team-order:${playerOrder?.kind||"command"}`;label="Fire-team command order";}}
+  return{key,priority,reason,label,round:Math.max(1,Number(round)||1),assignment,leader:tacticalFireTeamLeaderForUnit(unit,members)||unit,members,escortActive:teamEscortActive,unitEscortActive,escortLeaderLock,persistent:Boolean(key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.PERSISTENT_ASSIGNMENT),formationRecoveryActive:Boolean(postContactRecovery?.active&&postContactRecovery?.needsFormation),allowsGenericSearch:key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.DEFAULT_SEARCH};
 }
 function tacticalApplyFireTeamPriorityStateInPlace(units=[],teamId=null,state=null,round=1){
   if(!teamId||!state)return{changed:false,previous:null,current:state?.key||null};
@@ -10665,15 +10827,16 @@ function tacticalAiHiddenContactRescueConcurrencyState({units=[],covers=[],missi
   }
   return{active:true,rescue,observedAliens:observed,hiddenAliens,searchLeaderId,eligibleLeaderIds:eligibleLeaders.map(unit=>unit.id)};
 }
-function tacticalVipRescueCoordinatorExperience(unit={}){const source=unit?.baseSoldier||unit?.base||unit||{};return Math.max(0,Number(source.xp)||0);}function tacticalVipRescueCoordinatorForUnits(units=[]){return[...(Array.isArray(units)?units:[])].filter(unit=>unit?.team==="human"&&Number(unit.hp)>0&&unit.alive!==false).sort((left,right)=>{const leftSource=left?.baseSoldier||left?.base||left||{};const rightSource=right?.baseSoldier||right?.base||right||{};return tacticalAiRankIndex(String(rightSource.rank||"Rookie"))-tacticalAiRankIndex(String(leftSource.rank||"Rookie"))||tacticalVipRescueCoordinatorExperience(right)-tacticalVipRescueCoordinatorExperience(left)||(Number(rightSource.missions)||0)-(Number(leftSource.missions)||0)||String(left.id).localeCompare(String(right.id));})[0]||null;}function tacticalVipRescueAssignmentPlan({units=[],mission=null,secureRescue=false,excludedLeaderIds=[]}={}){
+function tacticalVipRescueCoordinatorExperience(unit={}){const source=unit?.baseSoldier||unit?.base||unit||{};return Math.max(0,Number(source.xp)||0);}function tacticalVipRescueCoordinatorForUnits(units=[]){return[...(Array.isArray(units)?units:[])].filter(unit=>unit?.team==="human"&&Number(unit.hp)>0&&unit.alive!==false).sort((left,right)=>{const leftSource=left?.baseSoldier||left?.base||left||{};const rightSource=right?.baseSoldier||right?.base||right||{};return tacticalAiRankIndex(String(rightSource.rank||"Rookie"))-tacticalAiRankIndex(String(leftSource.rank||"Rookie"))||tacticalVipRescueCoordinatorExperience(right)-tacticalVipRescueCoordinatorExperience(left)||(Number(rightSource.missions)||0)-(Number(leftSource.missions)||0)||String(left.id).localeCompare(String(right.id));})[0]||null;}function tacticalVipRescueAssignmentPlan({units=[],mission=null,secureRescue=false,excludedLeaderIds=[],overrideLowerPriorityOrders=false}={}){
   const safeUnits=Array.isArray(units)?units:[];
   const excludedLeaders=new Set(Array.isArray(excludedLeaderIds)?excludedLeaderIds:excludedLeaderIds instanceof Set?Array.from(excludedLeaderIds):[]);
   const civilians=safeUnits.filter(unit=>unit?.team==="civilian");
   const explicitCivilianTargetIds=new Set(safeUnits.filter(unit=>unit?.team==="human"&&unit.fireTeamObjectiveAssignmentMode==="explicit"&&unit.fireTeamObjectiveAssignmentType==="civilian"&&unit.fireTeamObjectiveAssignmentTargetId).map(unit=>unit.fireTeamObjectiveAssignmentTargetId));
-  const enabled=tacticalCivilianObjectiveForMission(mission||{},civilians.length).mandatory||explicitCivilianTargetIds.size>0;
+  const knownCivilianPresent=civilians.some(unit=>Number(unit.hp)>0&&unit.alive!==false&&!unit.rescued&&!unit.escortId&&(unit.vipTracker===true||unit.revealed===true));
+  const enabled=tacticalCivilianObjectiveForMission(mission||{},civilians.length).mandatory||knownCivilianPresent||explicitCivilianTargetIds.size>0;
   const coordinator=tacticalVipRescueCoordinatorForUnits(safeUnits);
   if(!enabled)return{enabled:false,coordinator,assignments:[],eligibleLeaderCount:0,commandOverrides:0};
-  const vips=civilians.filter(unit=>Number(unit.hp)>0&&unit.alive!==false&&!unit.rescued&&!unit.escortId&&(unit.vipTracker!==false||explicitCivilianTargetIds.has(unit.id))).sort((left,right)=>String(left.id).localeCompare(String(right.id)));
+  const vips=civilians.filter(unit=>Number(unit.hp)>0&&unit.alive!==false&&!unit.rescued&&!unit.escortId&&(unit.vipTracker===true||unit.revealed===true||explicitCivilianTargetIds.has(unit.id))).sort((left,right)=>String(left.id).localeCompare(String(right.id)));
   let commandOverrides=0;
   const leaders=tacticalFireTeamTurnOrder(safeUnits.filter(unit=>{
     if(unit?.team!=="human"||Number(unit.hp)<=0||unit.alive===false||!unit.fireTeamId||!tacticalFireTeamIsLeader(unit,safeUnits)||tacticalEscortFollowers(safeUnits,unit.id).length>0||excludedLeaders.has(unit.id))return false;
@@ -10681,7 +10844,7 @@ function tacticalVipRescueCoordinatorExperience(unit={}){const source=unit?.base
     if(unit.fireTeamObjectiveAssignmentMode==="explicit"&&unit.fireTeamObjectiveAssignmentType!=="civilian")return false;
     const order=tacticalFireTeamCommandOrderForUnit(unit,safeUnits);
     if(!order)return true;
-    const canOverride=Boolean(secureRescue&&!unit.hybridPlayerControlledLead);
+    const canOverride=Boolean((secureRescue||overrideLowerPriorityOrders)&&!unit.hybridPlayerControlledLead);
     if(canOverride)commandOverrides+=1;
     return canOverride;
   }),1);
@@ -10710,9 +10873,9 @@ function tacticalVipRescueCoordinatorExperience(unit={}){const source=unit?.base
     claimed.add(target.id);assignedTeamIds.add(leader.fireTeamId);
     assignments.push({fireTeamId:leader.fireTeamId,leaderId:leader.id,vipId:target.id,distance:tacticalDistance(leader,target),preserved:false});
   });
-  return{enabled:true,coordinator,assignments,eligibleLeaderCount:leaders.length,commandOverrides};
+  return{enabled:true,coordinator,assignments,eligibleLeaderCount:leaders.length,commandOverrides,overrideLowerPriorityOrders:Boolean(overrideLowerPriorityOrders)};
 }
-function tacticalApplyVipRescueAssignments(units=[],plan=null,round=1,secureRescue=false){
+function tacticalApplyVipRescueAssignments(units=[],plan=null,round=1,secureRescue=false,overrideLowerPriorityOrders=false){
   if(!plan?.enabled)return Array.isArray(units)?units:[];
   const safeUnits=Array.isArray(units)?units:[];
   const assignmentByTeam=new Map((plan.assignments||[]).map(assignment=>[assignment.fireTeamId,assignment.vipId]));
@@ -10722,7 +10885,7 @@ function tacticalApplyVipRescueAssignments(units=[],plan=null,round=1,secureResc
     const vipId=assignmentByTeam.get(unit.fireTeamId)||null;
     const vipChanged=(unit.aiVipRescueTargetId||null)!==(vipId||null);
     const patch={...unit,aiVipRescueTargetId:vipId,aiVipRescueCoordinatorId:plan.coordinator?.id||null,aiVipRescueAssignedRound:vipId?Math.max(1,Number(unit.aiVipRescueAssignedRound)||Number(round)||1):null,...(vipChanged?{aiVipApproachIngressBuildingId:null,aiVipApproachIngressOpeningX:null,aiVipApproachIngressOpeningY:null,aiVipApproachIngressOutsideX:null,aiVipApproachIngressOutsideY:null,aiVipApproachIngressKind:null,aiVipApproachOpeningKey:null,aiVipApproachAvoidOpeningKey:null,aiVipApproachAvoidUntilRound:null,aiVipApproachStallCount:0,aiVipApproachLastDistance:null,aiVipApproachLastProgressRound:null,aiVipApproachStage:null,aiVipApproachStatusLabel:null,aiRescueTargetId:null,aiRescueVisited:[],aiRescueStalls:0}:null)};
-    if(secureRescue&&vipId&&!hybridTeamIds.has(unit.fireTeamId)){
+    if((secureRescue||overrideLowerPriorityOrders||plan?.overrideLowerPriorityOrders)&&vipId&&!hybridTeamIds.has(unit.fireTeamId)){
       Object.assign(patch,{fireTeamCommandOrderId:null,fireTeamCommandTeamId:null,fireTeamCommandTargetX:null,fireTeamCommandTargetY:null,fireTeamCommandPreferredTargetId:null,fireTeamCommandPreferredTargetName:null,fireTeamCommandStatus:"vip-rescue-override",fireTeamCommandCompletedRound:Math.max(1,Number(round)||1),fireTeamCommandCompletedReason:"vip-rescue-override",fireTeamCommandLastDistance:null,fireTeamCommandStallCount:0});
     }
     return patch;
@@ -11036,7 +11199,7 @@ function tacticalEscortStoredCoverTarget(civilian=null,units=[],covers=[],placem
   if((units||[]).some(unit=>unit.id!==civilian.id&&Number(unit.hp)>0&&unit.alive!==false&&!unit.rescued&&unit.x===cell.x&&unit.y===cell.y))return null;
   return cell;
 }
-function tacticalAiCivilianPriorityTurn({ units = [], covers = [], placement = null, secureRescue = false, fireMode = "single", weaponUpgrades = {}, round = 1, mission = null, combatPriority = false, threats = [], explored = [], excludedLeaderIds = [] } = {}) {
+function tacticalAiCivilianPriorityTurn({ units = [], covers = [], placement = null, secureRescue = false, fireMode = "single", weaponUpgrades = {}, round = 1, mission = null, combatPriority = false, threats = [], explored = [], excludedLeaderIds = [], overrideLowerPriorityOrders = false } = {}) {
   covers=(Array.isArray(covers)?covers:[]).map(cover=>({...cover}));
   let nextUnits = tacticalReleaseCompletedVipEscortState(units.map((unit) => ({ ...unit })));
   const dutyIds = [];
@@ -11044,6 +11207,17 @@ function tacticalAiCivilianPriorityTurn({ units = [], covers = [], placement = n
   const stalledIds = [];
   const events = [];
   const movementTrails = {};
+  let dynamicCombatPriority=Boolean(combatPriority);
+  const initialThreatIds=new Set((Array.isArray(threats)?threats:[]).filter(alien=>alien?.team==="alien"&&alien.hp>0&&alien.alive!==false).map(alien=>alien.id));
+  const noteNewRescueContact=(observer,context="rescue movement")=>{
+    if(!observer)return[];
+    const contacts=tacticalAiPersonallyObservedAliens(observer,nextUnits,covers,mission).filter(alien=>!initialThreatIds.has(alien.id));
+    if(!contacts.length)return[];
+    contacts.forEach(alien=>initialThreatIds.add(alien.id));
+    dynamicCombatPriority=true;
+    events.push(`Contact interrupt: ${observer.name||"AEGIS soldier"} spotted ${contacts.map(alien=>alien.name||alien.alienType||"alien contact").join(", ")} during ${context}. Unformed rescue/search movement is canceled and free fire teams are switching to combat authority.`);
+    return contacts;
+  };
   const exploredCells = new Set(explored || []);
   const excludedLeaders = new Set(Array.isArray(excludedLeaderIds)?excludedLeaderIds:excludedLeaderIds instanceof Set?Array.from(excludedLeaderIds):[]);
   const soldiers = tacticalAiRescueActorOrder(nextUnits,round,excludedLeaders);
@@ -11071,17 +11245,17 @@ function tacticalAiCivilianPriorityTurn({ units = [], covers = [], placement = n
   const guardPhase = Boolean(secureRescue && activeVips.length && activeVips.every((unit) => unit.revealed && unit.escortId));
   const claimedCivilianIds = new Set();
   const autonomousRescueNeed=activeVips.some(unit=>!unit.escortId&&!explicitCivilianTargetIds.has(unit.id));
-  const trackerGuidance = !combatPriority && autonomousRescueNeed && tacticalVipTrackerPings(nextUnits, mission, round).length > 0;
+  const trackerGuidance = !dynamicCombatPriority && autonomousRescueNeed && tacticalVipTrackerPings(nextUnits, mission, round).length > 0;
   const searchActive = !guardPhase && autonomousRescueNeed && (secureRescue || trackerGuidance);
   const searchAssignments = guardPhase
     ? tacticalAiRescueGuardAssignments({ soldiers:rescueSearchSoldiers, units: nextUnits, covers, placement, round })
     : searchActive ? tacticalAiSecureSearchAssignments({ soldiers:rescueSearchSoldiers, units: nextUnits, covers, mission, explored: exploredCells, round, excludedTrackerIds:Array.from(explicitCivilianTargetIds) }) : [];
   const searchBySoldier = new Map(searchAssignments.map((assignment) => [assignment.soldierId, assignment]));
-  const vipCoordination = tacticalVipRescueAssignmentPlan({ units: nextUnits, mission, secureRescue, excludedLeaderIds: Array.from(excludedLeaders) });
+  const vipCoordination = tacticalVipRescueAssignmentPlan({ units: nextUnits, mission, secureRescue, excludedLeaderIds: Array.from(excludedLeaders), overrideLowerPriorityOrders });
   if (vipCoordination.enabled) {
     if(secureRescue&&vipCoordination.commandOverrides>0)events.push(`Secure-rescue authority released ${vipCoordination.commandOverrides} stale autonomous fire-team order${vipCoordination.commandOverrides===1?"":"s"} so VIP recovery can continue.`);
     const previousByTeam = new Map(nextUnits.filter((unit) => unit.team === "human" && unit.fireTeamId && unit.aiVipRescueTargetId).map((unit) => [unit.fireTeamId, unit.aiVipRescueTargetId]));
-    nextUnits = tacticalApplyVipRescueAssignments(nextUnits, vipCoordination, round, secureRescue);
+    nextUnits = tacticalApplyVipRescueAssignments(nextUnits, vipCoordination, round, secureRescue, overrideLowerPriorityOrders);
     (vipCoordination.assignments || []).filter((assignment) => previousByTeam.get(assignment.fireTeamId) !== assignment.vipId).forEach((assignment) => {
       const leader = nextUnits.find((unit) => unit.id === assignment.leaderId);
       const vip = nextUnits.find((unit) => unit.id === assignment.vipId);
@@ -11113,12 +11287,16 @@ function tacticalAiCivilianPriorityTurn({ units = [], covers = [], placement = n
     const coordinatesFireTeam=Boolean(isFireTeamLeader||assignedFollowers.length);
     if (!soldier || !coordinatesFireTeam) continue;
     let followers = assignedFollowers;
+    if(dynamicCombatPriority&&!followers.length){
+      nextUnits=nextUnits.map(unit=>unit?.fireTeamId===soldier.fireTeamId?{...unit,aiTurnAction:"contact-interrupt-rescue-suspended"}:unit);
+      continue;
+    }
     let escortSupportMode=soldier?.fireTeamId?tacticalEscortSupportModeForTeam(nextUnits,soldier.fireTeamId):"stay";
     const hasActiveEscortThreat=Boolean(Array.isArray(threats)&&threats.some(alien=>alien&&alien.hp>0&&alien.alive!==false));
     if(coordinatesFireTeam&&followers.length&&escortSupportMode==="breakoff"&&!hasActiveEscortThreat){nextUnits=tacticalSetEscortSupportResponse(nextUnits,[soldier.fireTeamId],"stay",round);escortSupportMode="stay";}
     const escortSupportBreakoff=Boolean(coordinatesFireTeam&&followers.length&&escortSupportMode==="breakoff"&&hasActiveEscortThreat);
     let targetCivilian = null;
-    if (isFireTeamLeader && !followers.length && !combatPriority) {
+    if (isFireTeamLeader && !followers.length && !dynamicCombatPriority) {
       const engagedWithAlien = tacticalAiSoldierEngagedWithAliens(soldier, nextUnits, covers, mission);
       const recallTarget=!engagedWithAlien&&soldier.escortRecallCivilianId?nextUnits.find((unit)=>unit.id===soldier.escortRecallCivilianId&&unit.team==="civilian"&&unit.hp>0&&!unit.rescued&&!unit.escortId)||null:null;
       if(recallTarget)targetCivilian=recallTarget;
@@ -11159,7 +11337,7 @@ function tacticalAiCivilianPriorityTurn({ units = [], covers = [], placement = n
     const escortBaseMaxSteps = Math.min(TACTICAL_AI_MAX_MOVE_STEPS, Math.max(0, Math.floor((soldier.tu - escortReserve) / 4)));
     const memberReserveTuById = Object.fromEntries(fireTeamDutyMembers.map((member) => [member.id, member.id === soldier.id ? escortReserve : tacticalAiShotReserve(member, fireMode, weaponUpgrades).tu]));
     const escortPace = tacticalFireTeamFormationPaceState(nextUnits, soldier, covers, mission || {}, { leaderReserveTu: escortReserve, memberReserveTuById });
-    const secureRescuePaceOverride=Boolean(secureRescue&&!combatPriority&&!hasActiveEscortThreat&&!hybridEscortLeaderHold);
+    const secureRescuePaceOverride=Boolean(secureRescue&&!dynamicCombatPriority&&!hasActiveEscortThreat&&!hybridEscortLeaderHold);
     const escortCatchupPace=tacticalEscortCatchupPaceState(nextUnits,soldier,covers,mission||{});
     const ordinaryEscortMaxSteps=secureRescuePaceOverride?escortBaseMaxSteps:Math.min(escortBaseMaxSteps, escortPace.applies ? escortPace.limit : escortBaseMaxSteps);
     const escortMaxSteps=followers.length&&escortCatchupPace.active&&ordinaryEscortMaxSteps>0?Math.max(1,Math.floor(ordinaryEscortMaxSteps/2)):ordinaryEscortMaxSteps;
@@ -11183,8 +11361,10 @@ function tacticalAiCivilianPriorityTurn({ units = [], covers = [], placement = n
         if(!advancedLeader||!previousLeader||advancedLeader.x===previousLeader.x&&advancedLeader.y===previousLeader.y)break;
         visited.add(tacticalKey(advancedLeader.x,advancedLeader.y));
         acted = true;
+        if(noteNewRescueContact(advancedLeader,"VIP search movement").length)break;
       }
       soldier = nextUnits.find((unit) => unit.id === originalSoldier.id);
+      if(dynamicCombatPriority)continue;
       const discoveredIds = revealObservedCivilians([soldier]);
       if (discoveredIds.length) {
         discoveredIds.forEach((id) => claimedCivilianIds.add(id));
@@ -11215,6 +11395,7 @@ function tacticalAiCivilianPriorityTurn({ units = [], covers = [], placement = n
           if(!advancedLeader||!previousLeader||advancedLeader.x===previousLeader.x&&advancedLeader.y===previousLeader.y)break;
           visited.add(tacticalKey(advancedLeader.x,advancedLeader.y));
           acted = true;
+          if(noteNewRescueContact(advancedLeader,"VIP approach movement").length)break;
         }
         soldier = nextUnits.find((unit) => unit.id === originalSoldier.id);
         currentCivilian = nextUnits.find((unit) => unit.id === targetCivilian.id);
@@ -11229,7 +11410,7 @@ function tacticalAiCivilianPriorityTurn({ units = [], covers = [], placement = n
           events.push(`${tacticalFireTeamLabelForUnit(soldier)} detected a stalled VIP approach and will recalculate an alternate building ingress next round.`);
         }
       }
-      if (currentCivilian && currentCivilian.hp > 0 && !currentCivilian.rescued && tacticalDistance(soldier, currentCivilian) <= 1 && soldier.tu >= 8) {
+      if (!dynamicCombatPriority && currentCivilian && currentCivilian.hp > 0 && !currentCivilian.rescued && tacticalDistance(soldier, currentCivilian) <= 1 && soldier.tu >= 8) {
         if (!currentCivilian.revealed && secureRescue) events.push(`${currentCivilian.name || "Civilian"} located during the area-secure sweep.`);
         const contact = tacticalFireTeamContactCivilians({ units: nextUnits, leaderId: soldier.id, primaryId: currentCivilian.id, mission, round });
         nextUnits = contact.units.map(unit=>unit.fireTeamId===soldier.fireTeamId?{...unit,aiVipApproachIngressBuildingId:null,aiVipApproachIngressOpeningX:null,aiVipApproachIngressOpeningY:null,aiVipApproachIngressOutsideX:null,aiVipApproachIngressOutsideY:null,aiVipApproachIngressKind:null,aiVipApproachOpeningKey:null,aiVipApproachAvoidOpeningKey:null,aiVipApproachAvoidUntilRound:null,aiVipApproachStallCount:0,aiVipApproachLastDistance:null,aiVipApproachStage:"escort-formed",aiVipApproachStatusLabel:null}:unit);
@@ -11322,7 +11503,7 @@ function tacticalAiCivilianPriorityTurn({ units = [], covers = [], placement = n
       events.push(`${soldier.name || "AI escort"} retained the civilian column and reset its bounded route search.`);
     }
   }
-  return { units: nextUnits, covers, dutyIds: Array.from(new Set(dutyIds)), actedIds: Array.from(new Set(actedIds)), stalledIds: Array.from(new Set(stalledIds)), events, movementTrails: tacticalMovementTrailSnapshot(movementTrails), spottedCount: nextUnits.filter((unit) => unit.team === "civilian" && unit.hp > 0 && !unit.rescued && unit.revealed).length, secureRescue: Boolean(secureRescue), guardPhase, combatPriority: Boolean(combatPriority), explored: Array.from(exploredCells), searchAssignments };
+  return { units: nextUnits, covers, dutyIds: Array.from(new Set(dutyIds)), actedIds: Array.from(new Set(actedIds)), stalledIds: Array.from(new Set(stalledIds)), events, movementTrails: tacticalMovementTrailSnapshot(movementTrails), spottedCount: nextUnits.filter((unit) => unit.team === "civilian" && unit.hp > 0 && !unit.rescued && unit.revealed).length, secureRescue: Boolean(secureRescue), guardPhase, combatPriority: Boolean(dynamicCombatPriority), explored: Array.from(exploredCells), searchAssignments };
 }
 function tacticalAdvanceEscortedCivilians(units = [], escortId = null, nextCell = null, covers = [], placement = null, stepCost = 4, mission = null, options = {}) {
   const leader = units.find((unit) => unit.id === escortId && unit.team === "human" && unit.hp > 0);
@@ -18365,7 +18546,7 @@ function tacticalPostContactFormationAndBeaconObjectiveResumeContractChecks(){
     "After contact clears, a scattered fire-team leader holds while supports recover exact formation":TACTICAL_POST_CONTACT_FORMATION_AND_BEACON_OBJECTIVE_RESUME_HOTFIX&&recoveryLeader.active&&recoveryLeader.leaderHold&&recoverySupport.supportReform&&supportTarget&&tacticalDistance(support,supportTarget)>0,
     "Formation recovery completes before post-contact split-search state is released":formedState.active&&formedState.formationReady&&completed&&formed.every(unit=>unit.aiPostContactSplitRound==null&&unit.aiPostContactSplitSlot==null),
     "An explicit Alien Field Beacon assignment survives post-contact recovery and remains a capable persistent objective":beaconState.assigned&&beaconState.capable&&beaconState.assignment?.mode==="explicit"&&beaconState.assignment?.type==="beacon",
-    "Persistent assigned objectives block stale distress direct-response movement from hijacking Beacon Assault resumption":resolverSource.includes("!persistentObjectiveResumePriority && !beaconStrikeAssigned")&&resolverSource.includes("postContactNeedsFormation")&&resolverSource.includes("formation-recovery:")&&resolverSource.includes("post-contact-form-up")&&resolverSource.includes("beacon-assault-blocked-hold"),
+    "Persistent assigned objectives block stale distress direct-response movement from hijacking Beacon Assault resumption":resolverSource.includes("!persistentObjectiveResumePriority && !beaconStrikeAssigned")&&resolverSource.includes("postContactNeedsFormation")&&resolverSource.includes("postContactSupportReform")&&resolverSource.includes("leader-advancing-objective")&&resolverSource.includes("beacon-assault-blocked-hold"),
     "Live alien combat still interrupts formation recovery until the firefight is over":combatBlocked.active===false&&combatBlocked.blocked===true,
     "Post-contact recovery uses existing optional tactical fields and leaves save format four unchanged":CURRENT_SAVE_FORMAT_VERSION===4
   };
@@ -18429,11 +18610,11 @@ function tacticalFireTeamPriorityStateMachineContractChecks(){
   const applyUnits=[{...leader},{...support}],applied=tacticalApplyFireTeamPriorityStateInPlace(applyUnits,leader.fireTeamId,persistent,30);
   const resolverSource=String(resolveMission),hudSource=String(tacticalFirstPersonCurrentObjectiveOrder);
   return{
-    "Fire-team state priority is combat then escort then Last Known Contact then reform then persistent assignment then default search":TACTICAL_FIRE_TEAM_PRIORITY_AND_OBJECTIVE_STATE_MACHINE_PATCH&&combat.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.LIVE_COMBAT&&escort.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.ESCORT&&markerState.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.LAST_KNOWN_CONTACT&&reform.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.REFORM&&persistent.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.PERSISTENT_ASSIGNMENT&&defaultState.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.DEFAULT_SEARCH,
+    "Fire-team state follows active escort, visible alien, Last Known Contact, objective assignment, then search while reform remains an overlay":TACTICAL_FIRE_TEAM_PRIORITY_AND_OBJECTIVE_STATE_MACHINE_PATCH&&combat.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.LIVE_COMBAT&&escort.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.ESCORT&&markerState.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.LAST_KNOWN_CONTACT&&reform.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.PERSISTENT_ASSIGNMENT&&reform.formationRecoveryActive&&persistent.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.PERSISTENT_ASSIGNMENT&&defaultState.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.DEFAULT_SEARCH,
     "One resolved state is written to every living member of the fire team":applied.changed&&applyUnits.every(unit=>unit.fireTeamTacticalStateKey===TACTICAL_FIRE_TEAM_TACTICAL_STATES.PERSISTENT_ASSIGNMENT&&unit.fireTeamTacticalStateReason==="assigned-beacon-assault"&&unit.fireTeamTacticalStateRound===30),
     "Persistent objectives cannot fall through distress response or generic patrol":resolverSource.includes("fireTeamPriorityState.key===TACTICAL_FIRE_TEAM_TACTICAL_STATES.DEFAULT_SEARCH&&Boolean(distressSearch)")&&resolverSource.includes("fireTeamPriorityState.allowsGenericSearch && !personalContacts.length")&&resolverSource.includes('human.aiTurnAction="persistent-objective-hold"'),
     "Search targets are inaccessible to a persistent assignment unless a higher-priority contact state owns them":resolverSource.includes("const stateSearchTarget=[TACTICAL_FIRE_TEAM_TACTICAL_STATES.LIVE_COMBAT,TACTICAL_FIRE_TEAM_TACTICAL_STATES.LAST_KNOWN_CONTACT,TACTICAL_FIRE_TEAM_TACTICAL_STATES.DEFAULT_SEARCH]"),
-    "Reform and Last Known Contact states are exposed in perspective current-order diagnostics":hudSource.includes("FIRE-TEAM STATE - REFORM")&&hudSource.includes("FIRE-TEAM STATE - CONTACT SEARCH"),
+    "Last Known Contact is exposed as priority five and formation recovery is diagnostic overlay rather than mission authority":hudSource.includes("PRIORITY 5 - LAST KNOWN CONTACT")&&hudSource.includes("FORMATION OVERLAY"),
     "Fire-team tactical state metadata is retained in streamed tactical snapshots":resolverSource.includes("fireTeamTacticalStateKey: unit.fireTeamTacticalStateKey||null")&&resolverSource.includes("fireTeamTacticalStateReason: unit.fireTeamTacticalStateReason||null")&&resolverSource.includes("fireTeamTacticalStateObjectiveId: unit.fireTeamTacticalStateObjectiveId||null"),
     "State-machine consolidation preserves save format four":CURRENT_SAVE_FORMAT_VERSION===4
   };

@@ -1,0 +1,59 @@
+PROJECT AEGIS — BROWSER 1704 FIELD ACCEPTANCE
+Build: v0.26.09.15.1704_DEFAULT_AI_AUTHORITATIVE_SOLDIER_PRIORITY_STACK_PATCH
+Save format: 4
+
+Primary fixture
+- Load the supplied Browser 1426 campaign save.
+- Send both available squads to North America / Alien Abduction Site / Threat 2 / Tide Horror / $520k / +20 Panic.
+- Use Default AI Doctrine unless a step explicitly tests Hybrid.
+
+Authoritative objective order
+1. Stabilize a bleeding AEGIS casualty. (Civilian/VIP downed-triage state remains future roadmap work.)
+2. Recover/extract a stabilized or downed AEGIS soldier.
+3. Continue active civilian/VIP escort duty.
+4. Engage visible aliens.
+5. Investigate Last Known Contact / distress-reported attacker position.
+6. Neutralize a confirmed Alien Field Beacon.
+7. Clear an unchecked crashed-UFO deployment bay.
+8. Approach and escort known unassigned VIPs/civilians.
+9. Explore for undiscovered aliens/civilians.
+
+Contact interruption
+- Let one free soldier/fire team begin exploration or VIP-approach movement, then expose a new alien partway through the route.
+- The stale movement must stop at the first sighting cell; all remaining free fire-team actions must recalculate toward visible contact.
+- Existing escort leaders remain on their escort.
+- Civilian Escort Support = Engage Spotted Aliens: support soldiers break off to fight.
+- Civilian Escort Support = Stay With Escort: supports remain with the escort.
+- Civilian Escort Support = Ask When Contact Is Spotted: supports remain held until the player decides.
+
+VIP/civilian priority
+- With no visible/Last Known alien and no higher source objective, expose a tracker VIP or ordinary civilian.
+- A free fire-team leader should receive the known civilian/VIP assignment and route toward that location.
+- Free teams must not perform generic exploration while a known unassigned civilian/VIP still exists.
+- Once every known civilian/VIP is assigned/escorted/resolved, lower-priority exploration may resume.
+
+Beacon / UFO ordering
+- With no visible/Last Known contact or active escort conflict, confirm an active Field Beacon and an unchecked crashed-UFO bay.
+- Beacon responsibility must be allocated before UFO-bay inspection.
+- Known unassigned civilian approach must not steal the fire-team reserved for the higher-priority source objective.
+
+Post-contact cohesion
+- Spread a fire team naturally in combat, then clear visible and Last Known contact.
+- The effective leader should immediately resume the highest-priority mission objective instead of waiting stationary for formation.
+- Supports should rebuild formation around that moving leader when practical.
+- Repeat after leader loss/succession and with one unreachable support.
+
+Casualty behavior
+- Create a bleeding downed AEGIS casualty with a medkit-capable responder not initially adjacent.
+- The responder should route toward and stabilize the casualty before escort/combat/source/rescue/search duties unless a hard override prevents action.
+- A stabilized/downed casualty should draw a recovery/extraction responder before normal mission objectives.
+- Ordinary non-bleeding medkit healing must not consume the responder before higher-priority mission actions; it is opportunistic after the main tactical pass.
+
+Emergency / fallback behavior
+- Exercise a planner failure while visible alien, Last Known Contact, Beacon/UFO responsibility, or known civilian assignment exists.
+- The recovery planner must continue/hold the higher-priority objective; it must not silently fall back to generic patrol.
+
+Hybrid / save continuity
+- Hybrid explicit player movement remains player-owned unless an existing hard safety/escort rule says otherwise.
+- Save and reload during contact, known-VIP approach, casualty recovery, and post-contact formation recovery.
+- Save format remains 4 and objective state should resume without branching to exploration.
