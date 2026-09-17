@@ -1,0 +1,17 @@
+PROJECT AEGIS — BROWSER 1726 FIELD ACCEPTANCE
+Build: v0.26.09.16.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX
+Save format: 4
+
+Primary visual reproduction
+1. Start a fresh mission with procedural buildings and locate a standard generated door.
+2. View the doorway in 3D Iso and, where convenient, FPV/TPV.
+3. Confirm the jambs/lintel visually span the authoritative doorway without the large empty side gaps seen in Browser 1356.
+4. Confirm an OPEN door leaf is hinged at one side of the frame and swung toward the building interior. It must not appear edge-on in the center of the doorway.
+5. Close the door. Confirm the closed leaf fills the framed aperture and does not float inside an oversized opening.
+
+Continuity
+6. Open/Close remains 8 TU and cannot close through a living unit.
+7. Closed unlocked doors remain path-traversable and auto-open on committed traversal.
+8. Locked doors remain path blockers.
+9. LOS closes/opens with authoritative door state as in Browser 1356.
+10. Save/reload a non-default door state and confirm it persists. Save format remains 4.

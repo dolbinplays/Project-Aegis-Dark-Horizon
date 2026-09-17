@@ -1,3 +1,20 @@
+BUILD: v0.26.09.16.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX
+
+PROJECT AEGIS — BROWSER 1726 PATCH NOTES
+Build: v0.26.09.16.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX
+Save format: 4
+
+Door Aperture Alignment + True-Hinge Open Pose Hotfix
+- Corrects the Browser 1356 procedural-door presentation defect reported in field testing: the door frame no longer occupies only a narrow strip inside the authoritative doorway while leaving oversized side gaps.
+- Both Three.js tactical cover renderers now call one shared door geometry helper so Iso/FPV/TPV presentation cannot diverge.
+- Door-frame outer width is derived from the actual authoritative hex-to-hex structural spacing for EW and NS facades, with panel width derived from that same aperture contract.
+- Open door leaves now rotate around a jamb-side hinge pivot. The leaf no longer rotates around its own center or remains as an edge-on slab in the middle of the passage.
+- The open swing direction is selected toward the building interior when an interior neighbor is known.
+- Door state, TU cost, occupied-close protection, route auto-open, locked blocking, LOS authority, damage/breach state, and save/load behavior are unchanged from Browser 1356.
+- Save format remains 4.
+
+Focused regression: tools/test-door-aperture-alignment-and-open-pose-hotfix.cjs
+
 BUILD: v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH
 
 PROJECT AEGIS — BROWSER 1356 PATCH NOTES

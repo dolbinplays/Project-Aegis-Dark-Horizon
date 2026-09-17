@@ -1,8 +1,21 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH`
+Current browser build: `v0.26.09.16.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX`
 
 Current save format: `4`
+
+## Door Aperture Alignment + True-Hinge Open Pose Hotfix — Implemented in Browser 1726
+
+**September 16, 2026. Status: implemented; live field acceptance required.**
+
+- Field testing of Browser 1356 exposed a presentation mismatch at procedural doors: the generated frame was much narrower than the authoritative doorway span, leaving large visible gaps to either side, while an open leaf rotated around its own center and appeared edge-on in the middle of the passage.
+- Browser 1726 introduces one shared **door geometry contract** consumed by both Three.js tactical cover render paths. Frame width is derived from the actual EW/NS hex structural spacing rather than the old fixed narrow dimensions.
+- Jambs, lintel and leaf width are derived from that same aperture span so the visible frame fills the doorway cleanly instead of floating inside a much wider opening.
+- The door leaf now uses a **true jamb-side hinge pivot**. In the open state it swings from the hinge toward the building interior rather than rotating in place around its center.
+- This is a presentation/layout correction only. Browser 1356 door authority remains intact: open/closed/locked/damaged/breached/destroyed states, 8-TU manual operation, occupied-close protection, closed-unlocked path traversal/auto-open, locked blocking, LOS authority, structural damage and save/load persistence are unchanged.
+- Save format remains **4**.
+
+**Acceptance:** inspect procedural doors from 3D Iso, FPV and TPV. Confirm there are no oversized side gaps around a standard door frame, a closed leaf fills its framed aperture, and an open leaf rests at the hinge side rather than standing in the center of the doorway. Then recheck Open/Close, movement auto-open, locked blocking, LOS and save/reload behavior from Browser 1356.
 
 ## Interactive Building Door State + Pathing Foundation — Implemented in Browser 1356
 

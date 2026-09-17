@@ -60,7 +60,7 @@ test('door entities participate in structural restoration, discovered-building r
  assert.match(runtime,/part === "door" \|\| visual\.includes\("building-wall"\)/);
  assert.match(runtime,/visual\.includes\("building-door"\)/);assert.match(runtime,/wall, window, partition, or door/);
 });
-test('Three.js renders a dedicated hinged door panel rather than treating a door as a rock',()=>{
- const count=(runtime.match(/panel\.userData\.aegisDoorState=tacticalBuildingDoorState\(c\)/g)||[]).length;
- assert.equal(count,2);assert.match(runtime,/door-frame-/);assert.match(runtime,/door-panel-/);
+test('Three.js renders doors through the shared aperture/hinge helper rather than as generic cover',()=>{
+ const count=(runtime.match(/tacticalThreeAddBuildingDoorModel\(\{THREE,group,cover:c,geoCache,materialFor:mat,qualitySettings,mission/g)||[]).length;
+ assert.equal(count,2);assert.match(runtime,/door-frame-/);assert.match(runtime,/door-panel-/);assert.match(runtime,/aegis-door-hinge-pivot/);
 });

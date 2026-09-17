@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>CODEX HANDOFF — v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH | Project-Aegis-Dark-Horizon</title>
+<title>CODEX HANDOFF — v0.26.09.16.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX | Project-Aegis-Dark-Horizon</title>
 <meta name="generator" content="Jekyll v3.10.0" />
-<meta property="og:title" content="CODEX HANDOFF — v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH" />
+<meta property="og:title" content="CODEX HANDOFF — v0.26.09.16.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Current builds of any projects I’m working on" />
 <meta property="og:description" content="Current builds of any projects I’m working on" />
@@ -17,9 +17,9 @@
 <meta property="og:site_name" content="Project-Aegis-Dark-Horizon" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="CODEX HANDOFF — v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH" />
+<meta property="twitter:title" content="CODEX HANDOFF — v0.26.09.16.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","description":"Current builds of any projects I’m working on","headline":"CODEX HANDOFF — v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH","url":"https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/CODEX_HANDOFF.html"}</script>
+{"@context":"https://schema.org","@type":"WebPage","description":"Current builds of any projects I’m working on","headline":"CODEX HANDOFF — v0.26.09.16.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX","url":"https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/CODEX_HANDOFF.html"}</script>
 <!-- End Jekyll SEO tag -->
 
     <link rel="stylesheet" href="/Project-Aegis-Dark-Horizon/assets/css/style.css?v=4208bcc12de53e34da659f4c6c573d02a0e5740f">
@@ -41,7 +41,24 @@
       <h1><a href="https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/">Project-Aegis-Dark-Horizon</a></h1>
       
 
-      <h1 id="codex-handoff--v02609161356_interactive_building_door_state_and_pathing_foundation_patch">CODEX HANDOFF — v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH</h1>
+      <h1 id="codex-handoff--v02609161726_door_aperture_alignment_and_true_hinge_open_pose_hotfix">CODEX HANDOFF — v0.26.09.16.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX</h1>
+
+<p>Browser 1726 is a narrow visual/layout hotfix on top of Browser 1356. Save format remains 4.</p>
+
+<h2 id="door-geometry-correction">Door geometry correction</h2>
+<ul>
+  <li><strong>1356 root cause:</strong> door logic was correct, but renderer geometry used a fixed narrow frame and rotated the open leaf around its own center.</li>
+  <li><strong>Shared geometry authority:</strong> <code class="language-plaintext highlighter-rouge">tacticalThreeBuildingDoorGeometrySpec(...)</code> derives frame and leaf width from actual EW/NS hex structural spacing.</li>
+  <li><strong>True hinge:</strong> <code class="language-plaintext highlighter-rouge">tacticalThreeAddBuildingDoorModel(...)</code> mounts the leaf on a jamb-side pivot and both Three.js cover render paths call this same helper.</li>
+  <li><strong>Interior swing:</strong> the open angle is chosen toward the building interior when an adjacent interior cell is known.</li>
+  <li><strong>Gameplay unchanged:</strong> Browser 1356 state/pathing/LOS/TU/damage/persistence authority remains unchanged.</li>
+  <li>Save format remains 4.</li>
+</ul>
+
+<p>Focused regression: <code class="language-plaintext highlighter-rouge">tools/test-door-aperture-alignment-and-open-pose-hotfix.cjs</code> (<strong>6/6</strong>).</p>
+<p>— Previous handoff —</p>
+
+<h1 id="codex-handoff--v02609161356_interactive_building_door_state_and_pathing_foundation_patch">CODEX HANDOFF — v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH</h1>
 
 <p>Browser 1356 establishes one authoritative interactive procedural-building door foundation on top of Browser 1102. Save format remains 4.</p>
 

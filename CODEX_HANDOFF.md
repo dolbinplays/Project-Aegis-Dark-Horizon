@@ -1,3 +1,19 @@
+# CODEX HANDOFF — v0.26.09.16.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX
+
+Browser 1726 is a narrow visual/layout hotfix on top of Browser 1356. Save format remains 4.
+
+## Door geometry correction
+- **1356 root cause:** door logic was correct, but renderer geometry used a fixed narrow frame and rotated the open leaf around its own center.
+- **Shared geometry authority:** `tacticalThreeBuildingDoorGeometrySpec(...)` derives the frame and leaf width from actual EW/NS hex structural spacing.
+- **True hinge:** `tacticalThreeAddBuildingDoorModel(...)` mounts the leaf on a jamb-side pivot and both Three.js cover render paths call this same helper.
+- **Interior swing:** the open angle is chosen toward the building interior when the adjacent interior cell is known.
+- **Gameplay unchanged:** Browser 1356 state/pathing/LOS/TU/damage/persistence authority remains unchanged.
+- Save format remains 4.
+
+Focused regression: `tools/test-door-aperture-alignment-and-open-pose-hotfix.cjs`.
+
+--- Previous handoff ---
+
 # CODEX HANDOFF — v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH
 
 Browser 1356 establishes one authoritative interactive procedural-building door foundation on top of Browser 1102. Save format remains 4.

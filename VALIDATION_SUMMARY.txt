@@ -1,3 +1,20 @@
+PROJECT AEGIS — BROWSER 1726 VALIDATION SUMMARY
+Build: v0.26.09.16.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX
+Save format: 4
+
+Door Aperture Alignment + True-Hinge Open Pose Hotfix
+- Exact deployed Browser 1356 GitHub Pages artifact at commit 7a5098fb8a2c4cb7cf25e0b816bd134b17585af3 was used as the baseline.
+- Field issue reproduced from source geometry: the 1356 frame used fixed narrow jamb/lintel dimensions and the open panel rotated around its own center, leaving visible side voids and an edge-on leaf in the middle of the doorway.
+- Browser 1726 replaces the duplicated renderer-specific geometry with one shared `tacticalThreeAddBuildingDoorModel(...)` helper.
+- EW/NS frame span is derived from authoritative hex structural spacing. Jamb, lintel and leaf dimensions use the same aperture contract.
+- The leaf mounts on a jamb-side `aegis-door-hinge-pivot`; open state rotates that pivot toward the building interior rather than rotating the panel around its center.
+- Browser 1356 door gameplay authority remains unchanged: state machine, 8-TU operation, occupied close rejection, unlocked traversal/auto-open, locked blocking, LOS, breach/damage and persistence.
+- Focused geometry hotfix regression: **6/6 passed**. Retained Browser 1356 door foundation: **11/11 passed**.
+- Full current retained local test/smoke sweep: **39/39 entrypoint files passed, 0 failed**.
+- Default AI central objective authority: **23/23 passed**. Global contact/VIP priority: **6/6 passed**. VIP Priority Lock and casualty-response ownership remain in the retained green suite.
+- `tools/check-aegis-build.cjs`, embedded JavaScript syntax, and `service-worker.js` syntax all pass.
+- Packaged runtime: **7,277,208 bytes**, SHA-256 `3ccd8619d6524eaa3ed5878a68a9bc47123be49e93cba9ab640c7d500b4caaae`; generated host SHA-256 `b46a6b007f2efe74ab50869e0a904a3bc5925d52fd92eec81c9b8595e5136f10`.
+
 PROJECT AEGIS — BROWSER 1356 VALIDATION SUMMARY
 Build: v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH
 Save format: 4
