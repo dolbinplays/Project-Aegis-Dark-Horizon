@@ -1,3 +1,30 @@
+# CODEX HANDOFF — Standalone Prop Editor Foundation Tool 1155
+
+The browser game remains `v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH` with save format **4**. This authoring-tool addition does not modify tactical runtime/save authority.
+
+## New standalone authoring files
+- `AEGIS_Prop_Editor_CURRENT.html` — stable launcher.
+- `AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html` — current Prop Editor foundation.
+- Schema authority: single props export as `aegis-prop-definition-v1`; whole libraries export as `aegis-prop-library-v1`.
+
+## Prop Editor foundation behavior
+- Built-in editable templates cover tree, lamp post, stop sign, vending machine, newspaper machine, bus stop, street bench, crates, concrete barrier, fence, rock and bush.
+- Components use editable primitive geometry (box/cylinder/sphere/cone/torus), position, Euler rotation in degrees, scale, color, roughness, metalness, opacity, emissive color/strength and shadow flag.
+- Prop metadata covers current Browser 1145 concerns: visual key, navigation class, cover kind/block, HP, LOS hint, hex-edge placement, edge fraction, curb preference and natural-prop road avoidance.
+- Collision-envelope authoring supports box/cylinder/none. It is metadata only in this foundation; Browser 1145 still owns live movement occupancy by tactical cell through `tacticalCoverBlocksMovement(...)`.
+- The Three.js preview provides owning-hex/grid/unit references, click selection, orbit/zoom and front/side/iso/top camera presets.
+- Editor workflow includes component/prop creation, duplication/deletion, transform snapping, keyboard nudge, undo/redo, localStorage draft save/restore, JSON text import, file import, single-prop export and library export.
+- The standalone editor is intentionally excluded from the installed PWA navigation interception by the existing service-worker rule that only handles root/index navigation.
+
+## Roadmap added with this tool
+- **Prop Editor phase 2:** add a shared runtime model-definition authority/import path so editor JSON can drive actual tactical Three.js prop models without manually rewriting renderer branches.
+- **Building Layout Editor:** standalone visual editor for footprints, walls, doors, windows, furnishings and shared-library props; include traversability, egress, doorway, seam and overlap validation plus a tactical Three.js preview.
+- Building Layout Editor must consume the same prop schema/library rather than creating a separate prop format.
+
+Focused regression: `tools/test-prop-editor-foundation.cjs`. Field acceptance: `PROP_EDITOR_FOUNDATION_FIELD_ACCEPTANCE.txt`.
+
+--- Current browser handoff remains below ---
+
 # CODEX HANDOFF — v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH
 
 Browser 1145 moves qualifying tactical scenery off the unit-standing center of its hex and gives physically solid props one shared navigation authority across manual movement and AI. Save format remains 4.

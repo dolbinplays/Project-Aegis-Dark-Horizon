@@ -1,3 +1,16 @@
+AUTHORING TOOL: v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL
+PROJECT AEGIS — PROP EDITOR FOUNDATION VALIDATION
+Game baseline remains Browser 1145; save format remains 4.
+
+- Authoritative source baseline: GitHub main commit `92b1a9130a585ba7689e0faf58580c7167624bda` / successful Pages workflow run `35260494234` / artifact `10514791600`.
+- Game runtime invariance verified: `src/browser-runtime.html`, `index.html`, `service-worker.js`, `release-metadata.json`, and `manifest.webmanifest` are byte-identical to Browser 1145.
+- New focused regression `tools/test-prop-editor-foundation.cjs`: 8/8 passed.
+- `tools/check-aegis-build.cjs`, `tools/check-embedded-js.cjs`, and `node --check service-worker.js` pass.
+- Retained short/medium game test/smoke entrypoints: 45/45 passed (including the new Prop Editor test; game-behavior entrypoints remain clean).
+- Long AI command-stream handoff: 2/2 passed.
+- Manual field acceptance checklist: `PROP_EDITOR_FOUNDATION_FIELD_ACCEPTANCE.txt`.
+- The standalone editor is not intercepted as the installed game's root/index launch navigation.
+
 BUILD: v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH
 PROJECT AEGIS — BROWSER 1145 VALIDATION SUMMARY
 Build: v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH

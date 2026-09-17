@@ -4,6 +4,40 @@ Current browser build: `v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_
 
 Current save format: `4`
 
+## Developer Authoring Tools Roadmap — Prop Editor + Building Layout Editor
+
+**Requested September 17, 2026. Prop Editor foundation implemented as a standalone authoring tool; Building Layout Editor remains roadmap / not yet implemented. Browser game runtime remains 1145.**
+
+The long-term goal is to give Project Aegis the same kind of direct authoring workflow already proven by the articulated soldier pose editor, but for tactical scenery and procedural structures. These tools must remain **standalone downloadable HTML authoring tools** and must not become the installed game's launch page or alter campaign/save data merely by opening them.
+
+### Prop Editor — Foundation Tool 1155
+
+- Stable launcher: `AEGIS_Prop_Editor_CURRENT.html`. Current foundation: `AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html`.
+- The editor includes a working library of common tactical props such as trees, lamp posts, stop signs, vending/news machines, bus stops, benches, crates, concrete barriers, fences, rocks and bushes.
+- A prop is represented by schema `aegis-prop-definition-v1`: metadata + collision envelope + an ordered list of editable primitive components.
+- Individual components can be selected from a list or directly in the Three.js preview and can be moved, rotated, scaled, renamed, recolored, re-materialed, duplicated, added or removed.
+- Supported foundation primitives are box, cylinder, sphere, cone and torus. Primitive dimensions are editable independently from transform scale.
+- Prop-level authoring fields include visual key, solid/passable/decorative navigation class, hard/soft/no-cover classification, cover-block value, HP, LOS hint, center/hex-edge/special placement mode, edge fraction, curb preference and natural-prop road avoidance.
+- A visible collision-envelope editor supports box/cylinder/none and independent offset/dimensions so future runtime integration can validate sub-hex presentation against movement authority.
+- The preview includes the owning hex, grid/axes, a normal unit-standing scale reference, orbit/zoom, front/side/iso/top views and click-to-select component picking.
+- Editing workflow includes transform snapping, keyboard nudge, duplicate/delete, undo/redo, browser-local draft save/restore, single-prop JSON import/export, whole-library JSON export/import and foundation validation warnings.
+- The foundation intentionally does **not** overwrite live game prop models automatically yet. The next Prop Editor integration phase should add a shared game-side prop model library/runtime loader so exported definitions can become authoritative presentation without hand-translating every component into renderer code.
+- Existing Browser 1145 movement/edge-placement authority remains unchanged by the standalone editor. Save format remains **4**.
+
+**Acceptance for the foundation:** open the tool directly from disk, switch among built-in prop templates, select components in both list and preview, modify transforms/materials/primitive dimensions, add/duplicate/delete a component, edit collision and navigation metadata, undo/redo, save/restore a draft, export/import a single prop and a whole library, and confirm the tool never changes game saves or the installed-app launch path.
+
+### Building Layout Editor — Planned
+
+- Provide a visual tactical building canvas for placing/removing/moving structural cells, exterior/interior walls, doors, windows, furnishings and props.
+- Support dwelling/business and future building-use templates so furnishing sets can be curated rather than relying only on procedural selection.
+- Let the author add new building layouts, duplicate existing layouts, remove inappropriate props/furniture, reposition items, and explicitly preserve walking lanes, door swing zones and shelter/cover opportunities.
+- Include grid/hex snapping, undo/redo, duplicate/delete, save/load JSON and deterministic export suitable for the procedural building authority.
+- Provide validation warnings for blocked entrances, unreachable rooms, overlapping solid props, wall/door/window seam gaps, invalid concave corners, insufficient egress, and layouts that trap civilians/VIPs.
+- Include a Three.js tactical preview mode so the same structure can be inspected in a game-like 3D presentation before export.
+- When implemented, it should consume the same prop-definition library as the Prop Editor rather than inventing a second prop format.
+
+**Acceptance when implemented:** create a dwelling and a business from templates, edit footprint/walls/doors/windows, place furniture and props from the shared library, intentionally create blocked-door/seam/unreachable-room errors and verify validation catches them, then export/reload both layouts without drift.
+
 ## Window Aperture Seam Closure + Procedural Building Shell Polish — Implemented in Browser 0953
 
 **September 17, 2026. Status: implemented; live field acceptance required.**

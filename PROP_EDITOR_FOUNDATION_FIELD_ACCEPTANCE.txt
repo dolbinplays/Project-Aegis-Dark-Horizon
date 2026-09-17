@@ -1,0 +1,23 @@
+PROJECT AEGIS — PROP EDITOR FOUNDATION TOOL 1155
+Field acceptance checklist
+
+Game baseline remains Browser 1145. Save format remains 4. This is a standalone authoring-tool addition.
+
+1. Open AEGIS_Prop_Editor_CURRENT.html directly from the project folder. Confirm it forwards to the versioned 1155 Prop Editor and does not launch the game or installed PWA shell.
+2. Switch among the built-in Tree, Lamp Post, Stop Sign, Vending Machine, Newspaper Machine, Bus Stop, Street Bench, Crates, Concrete Barrier, Fence, Rock and Bush templates.
+3. Select components from the component list and by clicking visible geometry in the Three.js preview. Confirm the selected component highlights.
+4. Change component position, rotation and scale. Change primitive dimensions. Confirm the preview updates immediately.
+5. Change color, roughness, metalness, opacity, emissive settings and shadow flag. Confirm material changes appear in the preview.
+6. Add a new component, duplicate it, rename it, change its primitive, and delete it. Confirm undo/redo can reverse and reapply those edits.
+7. Use keyboard arrow/PageUp/PageDown nudge with snapping enabled and disabled. Confirm Shift uses the larger movement step.
+8. Edit prop-level visual key, navigation class, cover kind/block, HP, LOS hint, edge-placement mode/fraction, curb preference and natural-prop behavior.
+9. Edit the collision envelope between box, cylinder and none. Toggle collision/unit reference visibility.
+10. Use New Prop, Duplicate and Delete in the working prop library. Confirm the filter locates props by display name or visual key.
+11. Save a browser-local draft, make changes, then restore it. Confirm the prior library returns.
+12. Download one prop JSON and the whole library JSON. Re-import each and confirm the definition reloads without transform/material drift.
+13. Paste valid prop JSON into the text area and Load JSON Text. Paste invalid JSON and confirm the tool reports the error instead of corrupting the editor state.
+14. Confirm validation warns for an empty prop, a solid prop with no collision envelope, invalid edge fraction, duplicate component names, and invalid scales.
+15. Confirm the normal unit reference remains centered in the owning hex so prop clearances can be judged visually.
+16. Close the tool and launch the installed/browser game normally. Confirm Browser 1145 and save format 4 are unchanged and no editor page is treated as the installed launch shell.
+
+Automated focused regression: node tools/test-prop-editor-foundation.cjs

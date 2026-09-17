@@ -41,6 +41,68 @@
       <h1><a href="https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/">Project-Aegis-Dark-Horizon</a></h1>
       
 
+<h1 id="codex-handoff-standalone-prop-editor-foundation-tool-1155">CODEX
+HANDOFF — Standalone Prop Editor Foundation Tool 1155</h1>
+<p>The browser game remains
+<code>v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH</code>
+with save format <strong>4</strong>. This authoring-tool addition does
+not modify tactical runtime/save authority.</p>
+<h2 id="new-standalone-authoring-files">New standalone authoring
+files</h2>
+<ul>
+<li><code>AEGIS_Prop_Editor_CURRENT.html</code> — stable launcher.</li>
+<li><code>AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html</code>
+— current Prop Editor foundation.</li>
+<li>Schema authority: single props export as
+<code>aegis-prop-definition-v1</code>; whole libraries export as
+<code>aegis-prop-library-v1</code>.</li>
+</ul>
+<h2 id="prop-editor-foundation-behavior">Prop Editor foundation
+behavior</h2>
+<ul>
+<li>Built-in editable templates cover tree, lamp post, stop sign,
+vending machine, newspaper machine, bus stop, street bench, crates,
+concrete barrier, fence, rock and bush.</li>
+<li>Components use editable primitive geometry
+(box/cylinder/sphere/cone/torus), position, Euler rotation in degrees,
+scale, color, roughness, metalness, opacity, emissive color/strength and
+shadow flag.</li>
+<li>Prop metadata covers current Browser 1145 concerns: visual key,
+navigation class, cover kind/block, HP, LOS hint, hex-edge placement,
+edge fraction, curb preference and natural-prop road avoidance.</li>
+<li>Collision-envelope authoring supports box/cylinder/none. It is
+metadata only in this foundation; Browser 1145 still owns live movement
+occupancy by tactical cell through
+<code>tacticalCoverBlocksMovement(...)</code>.</li>
+<li>The Three.js preview provides owning-hex/grid/unit references, click
+selection, orbit/zoom and front/side/iso/top camera presets.</li>
+<li>Editor workflow includes component/prop creation,
+duplication/deletion, transform snapping, keyboard nudge, undo/redo,
+localStorage draft save/restore, JSON text import, file import,
+single-prop export and library export.</li>
+<li>The standalone editor is intentionally excluded from the installed
+PWA navigation interception by the existing service-worker rule that
+only handles root/index navigation.</li>
+</ul>
+<h2 id="roadmap-added-with-this-tool">Roadmap added with this tool</h2>
+<ul>
+<li><strong>Prop Editor phase 2:</strong> add a shared runtime
+model-definition authority/import path so editor JSON can drive actual
+tactical Three.js prop models without manually rewriting renderer
+branches.</li>
+<li><strong>Building Layout Editor:</strong> standalone visual editor
+for footprints, walls, doors, windows, furnishings and shared-library
+props; include traversability, egress, doorway, seam and overlap
+validation plus a tactical Three.js preview.</li>
+<li>Building Layout Editor must consume the same prop schema/library
+rather than creating a separate prop format.</li>
+</ul>
+<p>Focused regression:
+<code>tools/test-prop-editor-foundation.cjs</code>. Field acceptance:
+<code>PROP_EDITOR_FOUNDATION_FIELD_ACCEPTANCE.txt</code>.</p>
+
+<hr />
+<p><strong>Current browser handoff remains below.</strong></p>
 <h1
 id="codex-handoff--v02609171145_hex_edge_prop_placement_and_solid_prop_navigation_patch">CODEX
 HANDOFF —

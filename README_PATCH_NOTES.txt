@@ -1,4 +1,17 @@
 BUILD: v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH
+AUTHORING TOOL: v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL
+PROJECT AEGIS — PROP EDITOR FOUNDATION TOOL
+Game baseline: v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH
+Save format: 4 (unchanged)
+
+Prop Editor Foundation
+- Adds `AEGIS_Prop_Editor_CURRENT.html` plus the versioned 1155 standalone editor. The game runtime/index/service worker/release metadata are unchanged.
+- Provides editable Three.js templates for common tactical props and a reusable `aegis-prop-definition-v1` component schema.
+- Supports component selection, primitive dimensions, position/rotation/scale, materials, add/duplicate/delete, prop creation/duplication/deletion, collision-envelope metadata, Browser 1145 movement/cover/LOS/hex-edge authoring metadata, undo/redo, local draft persistence, validation, JSON import/export and a unit/hex scale preview.
+- Adds the Building Layout Editor roadmap: visual structural/furniture/prop layout authoring, shared Prop Editor library, traversability/egress/seam/overlap validation and tactical Three.js preview.
+- The foundation intentionally does not make editor JSON authoritative in the live game yet; that is Prop Editor phase 2.
+- Focused regression: `tools/test-prop-editor-foundation.cjs` — 8/8 passed.
+
 PROJECT AEGIS — BROWSER 1145 PATCH NOTES
 Build: v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH
 Save format: 4
