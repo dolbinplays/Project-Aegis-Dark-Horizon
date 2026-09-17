@@ -16,7 +16,7 @@ const soldier={id:'s1',name:'Rook',team:'human',hp:40,tu:40,x:4,y:5};
 
 test('patch identity and generated building cover source define real door records without a save-format migration',()=>{
  assert.match(runtime,/TACTICAL_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH=true/);
- assert.match(runtime,/buildingPart:"door"/);assert.match(runtime,/doorState:TACTICAL_BUILDING_DOOR_STATES\.OPEN/);
+ assert.match(runtime,/buildingPart:"door"/);assert.match(runtime,/doorState:TACTICAL_BUILDING_DOOR_STATES\.CLOSED/);assert.match(runtime,/doorLocked:false/);
  assert.match(runtime,/const CURRENT_SAVE_FORMAT_VERSION=4/);
 });
 test('door state model distinguishes open closed locked damaged breached and destroyed',()=>{

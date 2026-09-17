@@ -1,0 +1,28 @@
+PROJECT AEGIS — PROCEDURAL BUILDING SEAM CONTINUITY + CLOSED EXTERIOR DOOR DEFAULTS FIELD ACCEPTANCE
+
+Build: v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH
+Save format: 4
+
+PURPOSE
+-------
+Verify the Browser 2245 structural-shell cleanup in live tactical presentation without regressing Browser 2146 shelter/furnishing behavior.
+
+CHECKS
+------
+1. Start several fresh procedural missions with rectangular and T/L/J/S/Z buildings. Confirm ordinary exterior doors begin CLOSED but UNLOCKED.
+2. Approach a closed unlocked exterior door with AEGIS and confirm route planning still considers the entrance legal and committed traversal auto-opens the door.
+3. Confirm a closed door blocks normal LOS until opened, while manual Open/Close and the existing 8-TU interaction remain functional.
+4. Trigger Browser 2146 civilian/VIP shelter securing. Confirm the civilian still physically reaches the entrance before the same door changes from closed/unlocked to civilian-secured locked.
+5. Inspect door frames in 3D Iso, FPV and TPV from oblique angles. Confirm no daylight/background slit remains between either jamb and its adjacent wall/window panel.
+6. Inspect concave corners on T/L/J/S/Z footprints, especially staggered notches. Confirm intended solid corners do not show sky/background through the turn.
+7. Walk/target near the repaired seams and confirm collision/pathing/LOS remain aligned with the visible shell; no apparent passable slit should exist where the building is structurally closed.
+8. Breach/destroy a door and confirm seam helper geometry does not reseal the deliberate opening.
+9. Recheck Browser 2146 interior furniture, civilian retreat-to-cover, Browser 2051 Call Out, and VIP Priority Lock.
+10. Save/reload with doors in open, closed, civilian-locked and breached states; confirm save format remains 4 and states restore correctly.
+
+PASS CRITERIA
+-------------
+- Fresh exterior doors are closed/unlocked.
+- Door-jamb and concave-corner shell gaps are visually closed in all tactical views.
+- Real door/breach openings remain openings.
+- Pathing, LOS, shelter behavior, furnishings and save/load do not regress.

@@ -1,8 +1,35 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH`
+Current browser build: `v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH`
 
 Current save format: `4`
+
+## Procedural Building Seam Continuity + Closed Exterior Door Defaults — Implemented in Browser 2245
+
+**September 16, 2026. Status: implemented; live field acceptance required.**
+
+- Ordinary generated **exterior doors now begin closed but unlocked**. They visually seal the structure and block ordinary LOS at mission start while remaining legal route intent; committed traversal retains the established automatic-open behavior.
+- Civilian/VIP shelter logic still uses the same authoritative door records. A closed/unlocked starting door can later become civilian-secured and locked after the Browser 2146 physical securing behavior reaches it.
+- Door presentation now adds bounded **jamb-to-adjacent-wall seam closure** so the frame terminates flush against neighboring wall/window geometry instead of leaving the screenshot-class daylight slit.
+- Irregular T/L/J/S/Z footprints now receive dedicated **concave-corner closure** where an intended solid turn is neither handled by the existing cardinal seam path nor already connected by the six-way tactical-hex structural connector.
+- Breached/destroyed door openings are excluded from seam closure, so deliberate structural openings are never visually patched over.
+- The repair is presentation-shell alignment on top of existing authoritative cover/pathing/LOS state; it does not create a second collision system.
+- Both Three.js tactical render paths consume the same door-wall seam and concave-corner closure helpers.
+- Save format remains **4**.
+
+**Acceptance:** generate rectangular and T/L/J/S/Z structures; verify fresh exterior doors are closed/unlocked and auto-open on legal traversal, inspect both sides of door frames for zero daylight slits, inspect concave turns from Iso/FPV/TPV, breach a door and confirm the opening stays open, then recheck Browser 2146 shelter securing/furniture, Browser 2051 Call Out, LOS/pathing and save/reload.
+
+## Roadmap Addition — Assisting Fire Teams Share Beacon Fire
+
+**Requested September 16, 2026. Status: roadmap / not part of Browser 2245.**
+
+- When a fire team is explicitly assigned to **assist another fire team whose current objective is an Alien Field Beacon**, the assisting team should inherit that beacon as a coordinated support target rather than merely following the primary team.
+- Once an assisting soldier has a legal shot under normal range/LOS/TU/ammunition rules and no higher Default AI priority applies, the soldier should **fire on the same beacon** until it is destroyed or the assist relationship/objective changes.
+- The accepted Default AI hierarchy remains authoritative: stabilization, casualty recovery, active escort duty and visible-alien combat continue to preempt beacon fire as defined by doctrine.
+- Assist behavior should work for manual and AI-created assist assignments, avoid duplicate/stale target ownership, and avoid wasting attacks with a weapon/damage type the beacon is known to be immune to.
+- The shared target must remain the authoritative beacon record; do not create an assist-only beacon state.
+
+**Acceptance when implemented:** assign Team B to assist Team A on a known beacon, give both teams legal firing opportunities, and confirm both contribute fire after higher priorities clear. Recheck target loss, beacon destruction, immunity-aware weapon choice, assignment changes, save/reload and Default AI priority ordering.
 
 ## Physical Shelter Securing + Interior Furnishing/Cover Overhaul — Implemented in Browser 2146
 

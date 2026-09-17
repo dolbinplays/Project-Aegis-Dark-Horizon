@@ -1,3 +1,32 @@
+# CODEX HANDOFF — v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH
+
+Browser 2245 closes the remaining screenshot-class procedural shell gaps and changes ordinary exterior door defaults without changing the authoritative door state machine. Save format remains 4.
+
+## Exterior door defaults
+- **Fresh ordinary exterior doors start closed/unlocked.** They block ordinary LOS and present a sealed building at mission start, but route planning still treats them as traversable and committed movement auto-opens them.
+- **Shelter behavior composes with the default.** Browser 2146 civilians/VIPs still physically reach the door before converting that same closed/unlocked record into a civilian-secured locked door. Browser 2051 Call Out remains unchanged.
+
+## Structural shell continuity
+- `tacticalThreeDoorWallSeamRecords(...)` derives bounded door-to-neighbor seam records from discovered authoritative perimeter covers. `tacticalThreeDoorWallSeamGeometry(...)` fills only the uncovered projected interval with controlled overlap rather than stretching a decorative wall across the entrance.
+- `tacticalThreeConcaveCornerClosureRecords(...)` closes irregular non-hex-connected concave turns left between the older cardinal seam and six-way connector ownership paths.
+- Both Three.js render paths call the shared build helpers and expose diagnostic counts. Breached/destroyed doors are excluded from decorative seam closure.
+- Gameplay collision/pathing/LOS remains owned by existing cover/door state; the new geometry makes presentation agree with that authority.
+
+## Preserve
+- Browser 2146 physical shelter securing and furnishing cover.
+- Browser 2051 Call Out and nearest-first objective sorting.
+- Browser 1102 VIP Priority Lock.
+- Door open/close TU cost, occupied-close safeguard, closed-unlocked auto-open traversal, locked blocking, LOS state, damage/breach and save format 4.
+
+## Roadmap queued after this structural patch
+- Assisting fire teams should also engage the supported team's Alien Field Beacon once higher Default AI priorities are clear and the beacon can be legally damaged.
+- Alien forced-entry/breaching remains the next larger door-behavior layer after the shell is field-accepted.
+- Shielded-beacon immunity rings remain roadmap-only and intentionally unexplained by in-game text.
+
+Focused regression: `tools/test-structural-building-closure-and-door-defaults.cjs`.
+
+--- Previous handoff ---
+
 # CODEX HANDOFF — v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH
 
 Browser 2146 turns Browser 2051 shelter security into physical civilian behavior and replaces generic interior primitives with archetype-aware furnishing cover. Save format remains 4.

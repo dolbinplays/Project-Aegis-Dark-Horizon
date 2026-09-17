@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>CODEX HANDOFF — v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH | Project-Aegis-Dark-Horizon</title>
+<title>CODEX HANDOFF — v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH | Project-Aegis-Dark-Horizon</title>
 <meta name="generator" content="Jekyll v3.10.0" />
-<meta property="og:title" content="CODEX HANDOFF — v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH" />
+<meta property="og:title" content="CODEX HANDOFF — v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Current builds of any projects I’m working on" />
 <meta property="og:description" content="Current builds of any projects I’m working on" />
@@ -17,9 +17,9 @@
 <meta property="og:site_name" content="Project-Aegis-Dark-Horizon" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="CODEX HANDOFF — v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH" />
+<meta property="twitter:title" content="CODEX HANDOFF — v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","description":"Current builds of any projects I’m working on","headline":"CODEX HANDOFF — v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH","url":"https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/CODEX_HANDOFF.html"}</script>
+{"@context":"https://schema.org","@type":"WebPage","description":"Current builds of any projects I’m working on","headline":"CODEX HANDOFF — v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH","url":"https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/CODEX_HANDOFF.html"}</script>
 <!-- End Jekyll SEO tag -->
 
     <link rel="stylesheet" href="/Project-Aegis-Dark-Horizon/assets/css/style.css?v=4208bcc12de53e34da659f4c6c573d02a0e5740f">
@@ -41,7 +41,38 @@
       <h1><a href="https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/">Project-Aegis-Dark-Horizon</a></h1>
       
 
-      <h1 id="codex-handoff--v02609162146_physical_shelter_securing_and_interior_furnishing_cover_overhaul_patch">CODEX HANDOFF — v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH</h1>
+      <h1 id="codex-handoff--v02609162245_procedural_building_seam_continuity_and_closed_exterior_door_defaults_patch">CODEX HANDOFF — v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH</h1>
+<p>Browser 2245 closes the remaining screenshot-class procedural shell gaps and changes ordinary exterior door defaults without changing the authoritative door state machine. Save format remains 4.</p>
+<h2 id="exterior-door-defaults">Exterior door defaults</h2>
+<ul>
+  <li><strong>Fresh ordinary exterior doors start closed/unlocked.</strong> They block ordinary LOS and present a sealed building at mission start, but route planning still treats them as traversable and committed movement auto-opens them.</li>
+  <li><strong>Shelter behavior composes with the default.</strong> Browser 2146 civilians/VIPs still physically reach the door before converting that same closed/unlocked record into a civilian-secured locked door. Browser 2051 Call Out remains unchanged.</li>
+</ul>
+<h2 id="structural-shell-continuity">Structural shell continuity</h2>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">tacticalThreeDoorWallSeamRecords(...)</code> derives bounded door-to-neighbor seam records from discovered authoritative perimeter covers. <code class="language-plaintext highlighter-rouge">tacticalThreeDoorWallSeamGeometry(...)</code> fills only the uncovered projected interval with controlled overlap rather than stretching a decorative wall across the entrance.</li>
+  <li><code class="language-plaintext highlighter-rouge">tacticalThreeConcaveCornerClosureRecords(...)</code> closes irregular non-hex-connected concave turns left between the older cardinal seam and six-way connector ownership paths.</li>
+  <li>Both Three.js render paths call the shared build helpers and expose diagnostic counts. Breached/destroyed doors are excluded from decorative seam closure.</li>
+  <li>Gameplay collision/pathing/LOS remains owned by existing cover/door state; the new geometry makes presentation agree with that authority.</li>
+</ul>
+<h2 id="preserve">Preserve</h2>
+<ul>
+  <li>Browser 2146 physical shelter securing and furnishing cover.</li>
+  <li>Browser 2051 Call Out and nearest-first objective sorting.</li>
+  <li>Browser 1102 VIP Priority Lock.</li>
+  <li>Door open/close TU cost, occupied-close safeguard, closed-unlocked auto-open traversal, locked blocking, LOS state, damage/breach and save format 4.</li>
+</ul>
+<h2 id="roadmap-queued-after-this-structural-patch">Roadmap queued after this structural patch</h2>
+<ul>
+  <li>Assisting fire teams should also engage the supported team’s Alien Field Beacon once higher Default AI priorities are clear and the beacon can be legally damaged.</li>
+  <li>Alien forced-entry/breaching remains the next larger door-behavior layer after the shell is field-accepted.</li>
+  <li>Shielded-beacon immunity rings remain roadmap-only and intentionally unexplained by in-game text.</li>
+</ul>
+<p>Focused regression: <code class="language-plaintext highlighter-rouge">tools/test-structural-building-closure-and-door-defaults.cjs</code>.</p>
+<hr />
+<p>Previous handoff</p>
+
+<h1 id="codex-handoff--v02609162146_physical_shelter_securing_and_interior_furnishing_cover_overhaul_patch">CODEX HANDOFF — v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH</h1>
 <p>Browser 2146 turns Browser 2051 shelter security into physical civilian behavior and replaces generic interior primitives with archetype-aware furnishing cover. Save format remains 4.</p>
 <h2 id="shelter-movement-authority">Shelter movement authority</h2>
 <ul>

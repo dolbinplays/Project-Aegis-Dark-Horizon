@@ -1,3 +1,19 @@
+BUILD: v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH
+PROJECT AEGIS — BROWSER 2245 PATCH NOTES
+Build: v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH
+Save format: 4
+
+Procedural Building Seam Continuity + Closed Exterior Door Defaults
+- Builds directly on Browser 2146's physical shelter securing and furnishing-cover overhaul.
+- Fresh procedural exterior doors now begin CLOSED but UNLOCKED. They block ordinary LOS and visually seal the structure at mission start, while remaining legal pathfinding routes and auto-opening when an authorized traversal commits through them.
+- Civilian/VIP shelter behavior can still convert those same authoritative doors into locked shelter entrances; AEGIS Call Out remains required only after a civilian-secured lock exists.
+- Added a shared door-jamb-to-adjacent-wall seam pass. Door frames now receive bounded structural bridge geometry to neighboring wall/window panels so the screenshot-class daylight slit beside a door does not remain visible.
+- Added dedicated concave-corner closure geometry for non-hex-connected T/L/J/S/Z footprint turns that were not owned by the existing cardinal seam or six-way connector passes.
+- Door-wall and concave-corner closure use the same discovered-building/perimeter authority as the existing renderer. Breached/destroyed door openings are deliberately excluded so a real breach is never visually resealed.
+- Existing movement/collision/LOS authority remains cell/cover driven; this patch makes the visible shell agree with that already-solid tactical authority instead of adding a second gameplay collision layer.
+- Browser 2146 physical shelter securing, furnishing cover, Browser 2051 Call Out, Browser 1102 VIP Priority Lock, and save format 4 are retained.
+- New focused regression: tools/test-structural-building-closure-and-door-defaults.cjs.
+
 BUILD: v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH
 PROJECT AEGIS — BROWSER 2146 PATCH NOTES
 Build: v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH

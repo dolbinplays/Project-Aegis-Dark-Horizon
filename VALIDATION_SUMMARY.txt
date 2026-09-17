@@ -1,3 +1,26 @@
+BUILD: v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH
+PROJECT AEGIS — BROWSER 2245 VALIDATION SUMMARY
+Build: v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH
+Save format: 4
+
+Procedural Building Seam Continuity + Closed Exterior Door Defaults
+- Authoritative source baseline: Browser 2146 GitHub main commit `4d5648e22b394a7f18627bfeaf7a602046d72ed3` / successful Pages artifact `10482275288`.
+- Fresh ordinary procedural exterior doors now begin closed but unlocked. Existing route authority still treats them as traversable and auto-opens on committed movement; closed/locked LOS behavior remains authoritative.
+- Door-jamb-to-wall seam presentation now derives bounded closure records from discovered authoritative perimeter covers and fills only the uncovered projected interval with controlled overlap.
+- T/L/J/S/Z concave notches that are not already six-way connected now receive dedicated closure records; existing cardinal seam/connector ownership is preserved.
+- Breached/destroyed doors are excluded from door-wall closure so deliberate openings remain open.
+- The new structural pass is presentation alignment only; gameplay collision/pathing/LOS remains owned by the existing cover/door state.
+- New focused structural regression `tools/test-structural-building-closure-and-door-defaults.cjs`: **6/6 passed**.
+- Retained interactive door foundation: **11/11 passed**. Browser 1726 door aperture/hinge: **6/6 passed**.
+- Browser 2146 physical shelter/furnishing: **7/7 passed**. Browser 2051 shelter/Call Out/objective sorting: **9/9 passed**.
+- Default AI central objective authority: **23/23 passed**. VIP Priority Lock: **10/10 passed**.
+- Mobile/PWA: **9/9 passed**.
+- Full retained test/smoke sweep: **42/42 entrypoint files passed, 0 failed**.
+- Final install-style verification: the finished 16-file replacement ZIP was applied over a fresh copy of the exact Browser 2146 GitHub Pages baseline; build seam, embedded-JS/service-worker syntax and the complete **42/42** matrix passed again.
+- `tools/check-aegis-build.cjs`, embedded JavaScript syntax, and `service-worker.js` syntax all pass.
+- Packaged runtime: **7,314,275 bytes**, SHA-256 `3665e4598dec6e741a9ab79a6e7f2403872dc0adcf6b33d058f00424c9638cae`; generated host SHA-256 `6a8c6c8b36a813a049e6adaf6871d78d170532cef8059c188414d49122f9462e`.
+- Roadmap now also records coordinated beacon fire for fire teams assigned to assist another team on a beacon. That AI behavior is not part of Browser 2245.
+
 BUILD: v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH
 PROJECT AEGIS — BROWSER 2146 VALIDATION SUMMARY
 Build: v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH
