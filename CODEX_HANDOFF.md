@@ -1,3 +1,35 @@
+# CODEX HANDOFF — v0.26.09.17.0953_WINDOW_APERTURE_SEAM_CLOSURE_AND_PROCEDURAL_BUILDING_SHELL_POLISH_PATCH
+
+Browser 0953 finishes the next procedural shell cleanup pass by making window apertures occupy the same vertical facade envelope as neighboring solid wall panels. Save format remains 4.
+
+## Window aperture geometry authority
+- `tacticalThreeBuildingWindowGeometrySpec(...)` is now the shared presentation contract for window lower wall, upper wall, jambs, glass and connector bands.
+- The lower wall reaches the same local bottom as a normal `3.15`-scale solid wall; the upper wall reaches the same top. Jambs overlap both bands by a bounded amount so the screenshot-class top/bottom daylight slits cannot reappear through floating-point/camera alignment.
+- The pane fills the intended opening while remaining inside the facade width; no full-height decorative slab is placed across the window aperture.
+- EW and NS facades use the same dimensions and differ only by orientation.
+
+## Renderer and roof continuity
+- Both the fallback and persistent Three.js cover paths consume the shared spec.
+- Window-to-window / window-to-wall structural connector bands now use the same lower/upper vertical spans.
+- Persistent traditional architecture keeps the eave/roof line at the neighboring solid-wall height over window cells, removing the old vertical discontinuity.
+- Interior window glow follows the same pane dimensions/center.
+
+## Preserve
+- Window LOS/ballistics/shatter rules remain authoritative and unchanged.
+- Browser 2245 closed/unlocked exterior doors, door-jamb seam closure and concave-corner closure.
+- Browser 2146 physical shelter securing and furnishing cover; Browser 2051 Call Out; Browser 1102 VIP Priority Lock.
+- Save format 4.
+
+## Roadmap queued after this shell pass
+- Assisting fire teams should also fire on the supported team's Alien Field Beacon once higher Default AI priorities are clear and the beacon can be legally/effectively damaged.
+- A nickname may be assigned to only one living AEGIS soldier at a time; confirmed death releases the nickname for reuse.
+- Alien forced-entry/breaching remains the next larger door-behavior layer after shell field acceptance.
+- Shielded-beacon immunity rings remain roadmap-only and intentionally unexplained by in-game text.
+
+Focused regression: `tools/test-window-aperture-seam-closure-and-shell-polish.cjs`.
+
+--- Previous handoff ---
+
 # CODEX HANDOFF — v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH
 
 Browser 2245 closes the remaining screenshot-class procedural shell gaps and changes ordinary exterior door defaults without changing the authoritative door state machine. Save format remains 4.

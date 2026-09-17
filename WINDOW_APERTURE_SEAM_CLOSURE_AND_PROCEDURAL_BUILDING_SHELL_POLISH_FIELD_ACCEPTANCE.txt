@@ -1,0 +1,22 @@
+PROJECT AEGIS — WINDOW APERTURE SEAM CLOSURE + PROCEDURAL BUILDING SHELL POLISH FIELD ACCEPTANCE
+Build: v0.26.09.17.0953_WINDOW_APERTURE_SEAM_CLOSURE_AND_PROCEDURAL_BUILDING_SHELL_POLISH_PATCH
+Save format: 4
+
+FIELD CHECK
+1. Generate several procedural structures including rectangular and T/L/J/S/Z footprints.
+2. Inspect both EW and NS windows in 3D Iso, FPV and TPV.
+3. Confirm there is no daylight/background slit below a window assembly at the ground/foundation seam.
+4. Confirm there is no daylight/background slit above a window assembly at the lintel/roof-line seam.
+5. Inspect left/right transitions into adjacent wall/window panels; they should read as a continuous facade without a passable/visible micro-gap.
+6. Confirm the glass opening itself remains visible and is not covered by a full-height closure slab.
+7. Confirm neighboring roof/eave lines stay level through window cells.
+8. Recheck intact-window LOS, window shattering/ballistic behavior, door seams, concave corners and closed/unlocked exterior-door defaults.
+9. Recheck Browser 2146 civilian shelter movement/furnishing cover and Browser 2051 Call Out through the same structures.
+10. Save/reload a tactical mission and confirm save format remains 4.
+
+AUTOMATED GATE
+- tools/test-window-aperture-seam-closure-and-shell-polish.cjs
+- tools/test-procedural-building-wall-continuity.cjs
+- tools/test-structural-building-closure-and-door-defaults.cjs
+- tools/test-solid-wall-visibility.cjs
+- tools/test-interactive-building-door-foundation.cjs

@@ -1,3 +1,28 @@
+BUILD: v0.26.09.17.0953_WINDOW_APERTURE_SEAM_CLOSURE_AND_PROCEDURAL_BUILDING_SHELL_POLISH_PATCH
+PROJECT AEGIS — BROWSER 0953 VALIDATION SUMMARY
+Build: v0.26.09.17.0953_WINDOW_APERTURE_SEAM_CLOSURE_AND_PROCEDURAL_BUILDING_SHELL_POLISH_PATCH
+Save format: 4
+
+Window Aperture Seam Closure + Procedural Building Shell Polish
+- Authoritative source baseline: Browser 2245 GitHub main commit `84f25aa3e0b6702dcc4931bc672e9010720f66bd` / successful Pages workflow run `35246723891` / artifact `10507208548`.
+- Window presentation now uses one shared `tacticalThreeBuildingWindowGeometrySpec(...)` contract in both fallback and persistent Three.js tactical renderers.
+- Window lower-wall geometry reaches the same authoritative shell bottom as a neighboring solid wall, eliminating the screenshot-class horizontal slit below windows.
+- Window upper-wall/lintel geometry reaches the same authoritative shell top as a neighboring solid wall, eliminating the horizontal slit above windows while preserving the intended glass aperture.
+- Lower/upper wall sections deliberately overlap the window jambs by a small bounded seam margin so camera-angle/sub-pixel cracks cannot expose daylight at the aperture corners.
+- Persistent roof/eave placement over window cells now aligns with the neighboring solid-wall roof line rather than dropping below it.
+- Window-adjacent connector strips, glass panes and interior window glow consume the same shared aperture dimensions; the transparent window opening remains available for legitimate window LOS/ballistics behavior.
+- Browser 2245 closed/unlocked exterior-door defaults, door-jamb closure and concave-corner closure remain intact. Browser 2146 shelter/furnishing and Browser 2051 Call Out remain intact.
+- New focused regression `tools/test-window-aperture-seam-closure-and-shell-polish.cjs`: **6/6 passed**.
+- Retained procedural wall continuity: **9/9 passed**. Structural building closure/default doors: **6/6 passed**. Solid-wall visibility: **5/5 passed**.
+- Interactive door foundation: **11/11 passed**. Door aperture/hinge hotfix: **6/6 passed**.
+- Physical shelter/furnishing: **7/7 passed**. Shelter/Call Out/objective sorting: **9/9 passed**.
+- Mobile/PWA after canonical host packaging: **9/9 passed**.
+- Full frozen-tree test/smoke sweep: **43/43 entrypoint files passed, 0 failed**.
+- `tools/check-aegis-build.cjs`, embedded JavaScript syntax, and `service-worker.js` syntax all pass.
+- Packaged runtime: **7,318,583 bytes**, SHA-256 `396c9dd40e86aa8f389f1a6ebd81c2399dcae5af4a9a9f5306c24d2f228b4d2b`; generated host SHA-256 `0a874deb673d7f966dffc0869480a986746503b9b3fcc2ff2a4fc74c67923256`.
+- Final install-style verification: the 15-file replacement ZIP was applied over a fresh copy of the exact Browser 2245 GitHub Pages baseline; build seam, embedded-JS/service-worker syntax, Mobile/PWA **9/9**, and the complete **43/43** test/smoke matrix passed again.
+- Roadmap retains coordinated assisting-fire-team beacon engagement and unique living-soldier nickname ownership as future work; neither behavior is included in Browser 0953.
+
 BUILD: v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH
 PROJECT AEGIS — BROWSER 2245 VALIDATION SUMMARY
 Build: v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH

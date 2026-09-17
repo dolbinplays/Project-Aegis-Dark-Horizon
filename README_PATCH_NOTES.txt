@@ -1,3 +1,19 @@
+BUILD: v0.26.09.17.0953_WINDOW_APERTURE_SEAM_CLOSURE_AND_PROCEDURAL_BUILDING_SHELL_POLISH_PATCH
+PROJECT AEGIS — BROWSER 0953 PATCH NOTES
+Build: v0.26.09.17.0953_WINDOW_APERTURE_SEAM_CLOSURE_AND_PROCEDURAL_BUILDING_SHELL_POLISH_PATCH
+Save format: 4
+
+Window Aperture Seam Closure + Procedural Building Shell Polish
+- Builds directly on Browser 2245's closed/unlocked exterior-door defaults and structural seam closure work.
+- Corrects the screenshot-class horizontal daylight slits above and below procedural windows. The root cause was a window presentation envelope that did not reach the same full wall bottom/top as neighboring solid facade panels.
+- Adds one shared `tacticalThreeBuildingWindowGeometrySpec(...)` contract. Lower wall, upper wall, jambs, glass, inter-panel connectors and interior window glow now derive from the same full-height facade envelope.
+- The lower window wall now reaches the ordinary solid-wall ground seam; the upper wall reaches the ordinary solid-wall roof line. Controlled overlap with jambs prevents sub-pixel horizontal cracks without covering the intended transparent window opening.
+- Persistent architecture now keeps window roof/eave height aligned with neighboring solid wall segments instead of lowering the roof treatment over a window cell.
+- Both Three.js tactical cover render paths consume the shared window geometry contract, including EW and NS windows.
+- Gameplay window LOS/ballistics authority is unchanged: intact windows remain legitimate window apertures, shattered windows retain their existing behavior, and the patch adds no collision/pathing state.
+- Browser 2245 door-wall/concave-corner fixes, Browser 2146 shelter/furnishings, Browser 2051 Call Out, and save format 4 are retained.
+- New focused regression: tools/test-window-aperture-seam-closure-and-shell-polish.cjs.
+
 BUILD: v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH
 PROJECT AEGIS — BROWSER 2245 PATCH NOTES
 Build: v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH

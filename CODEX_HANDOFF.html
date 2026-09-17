@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>CODEX HANDOFF — v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH | Project-Aegis-Dark-Horizon</title>
+<title>CODEX HANDOFF — v0.26.09.17.0953_WINDOW_APERTURE_SEAM_CLOSURE_AND_PROCEDURAL_BUILDING_SHELL_POLISH_PATCH | Project-Aegis-Dark-Horizon</title>
 <meta name="generator" content="Jekyll v3.10.0" />
-<meta property="og:title" content="CODEX HANDOFF — v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH" />
+<meta property="og:title" content="CODEX HANDOFF — v0.26.09.17.0953_WINDOW_APERTURE_SEAM_CLOSURE_AND_PROCEDURAL_BUILDING_SHELL_POLISH_PATCH" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Current builds of any projects I’m working on" />
 <meta property="og:description" content="Current builds of any projects I’m working on" />
@@ -17,9 +17,9 @@
 <meta property="og:site_name" content="Project-Aegis-Dark-Horizon" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="CODEX HANDOFF — v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH" />
+<meta property="twitter:title" content="CODEX HANDOFF — v0.26.09.17.0953_WINDOW_APERTURE_SEAM_CLOSURE_AND_PROCEDURAL_BUILDING_SHELL_POLISH_PATCH" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","description":"Current builds of any projects I’m working on","headline":"CODEX HANDOFF — v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH","url":"https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/CODEX_HANDOFF.html"}</script>
+{"@context":"https://schema.org","@type":"WebPage","description":"Current builds of any projects I’m working on","headline":"CODEX HANDOFF — v0.26.09.17.0953_WINDOW_APERTURE_SEAM_CLOSURE_AND_PROCEDURAL_BUILDING_SHELL_POLISH_PATCH","url":"https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/CODEX_HANDOFF.html"}</script>
 <!-- End Jekyll SEO tag -->
 
     <link rel="stylesheet" href="/Project-Aegis-Dark-Horizon/assets/css/style.css?v=4208bcc12de53e34da659f4c6c573d02a0e5740f">
@@ -41,885 +41,1659 @@
       <h1><a href="https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/">Project-Aegis-Dark-Horizon</a></h1>
       
 
-      <h1 id="codex-handoff--v02609162245_procedural_building_seam_continuity_and_closed_exterior_door_defaults_patch">CODEX HANDOFF — v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH</h1>
-<p>Browser 2245 closes the remaining screenshot-class procedural shell gaps and changes ordinary exterior door defaults without changing the authoritative door state machine. Save format remains 4.</p>
+<h1
+id="codex-handoff--v02609170953_window_aperture_seam_closure_and_procedural_building_shell_polish_patch">CODEX
+HANDOFF —
+v0.26.09.17.0953_WINDOW_APERTURE_SEAM_CLOSURE_AND_PROCEDURAL_BUILDING_SHELL_POLISH_PATCH</h1>
+<p>Browser 0953 finishes the next procedural shell cleanup pass by
+making window apertures occupy the same vertical facade envelope as
+neighboring solid wall panels. Save format remains 4.</p>
+<h2 id="window-aperture-geometry-authority">Window aperture geometry
+authority</h2>
+<ul>
+<li><code>tacticalThreeBuildingWindowGeometrySpec(...)</code> is now the
+shared presentation contract for window lower wall, upper wall, jambs,
+glass and connector bands.</li>
+<li>The lower wall reaches the same local bottom as a normal
+<code>3.15</code>-scale solid wall; the upper wall reaches the same top.
+Jambs overlap both bands by a bounded amount so the screenshot-class
+top/bottom daylight slits cannot reappear through floating-point/camera
+alignment.</li>
+<li>The pane fills the intended opening while remaining inside the
+facade width; no full-height decorative slab is placed across the window
+aperture.</li>
+<li>EW and NS facades use the same dimensions and differ only by
+orientation.</li>
+</ul>
+<h2 id="renderer-and-roof-continuity">Renderer and roof continuity</h2>
+<ul>
+<li>Both the fallback and persistent Three.js cover paths consume the
+shared spec.</li>
+<li>Window-to-window / window-to-wall structural connector bands now use
+the same lower/upper vertical spans.</li>
+<li>Persistent traditional architecture keeps the eave/roof line at the
+neighboring solid-wall height over window cells, removing the old
+vertical discontinuity.</li>
+<li>Interior window glow follows the same pane dimensions/center.</li>
+</ul>
+<h2 id="preserve">Preserve</h2>
+<ul>
+<li>Window LOS/ballistics/shatter rules remain authoritative and
+unchanged.</li>
+<li>Browser 2245 closed/unlocked exterior doors, door-jamb seam closure
+and concave-corner closure.</li>
+<li>Browser 2146 physical shelter securing and furnishing cover; Browser
+2051 Call Out; Browser 1102 VIP Priority Lock.</li>
+<li>Save format 4.</li>
+</ul>
+<h2 id="roadmap-queued-after-this-shell-pass">Roadmap queued after this
+shell pass</h2>
+<ul>
+<li>Assisting fire teams should also fire on the supported team's Alien
+Field Beacon once higher Default AI priorities are clear and the beacon
+can be legally/effectively damaged.</li>
+<li>A nickname may be assigned to only one living AEGIS soldier at a
+time; confirmed death releases the nickname for reuse.</li>
+<li>Alien forced-entry/breaching remains the next larger door-behavior
+layer after shell field acceptance.</li>
+<li>Shielded-beacon immunity rings remain roadmap-only and intentionally
+unexplained by in-game text.</li>
+</ul>
+<p>Focused regression:
+<code>tools/test-window-aperture-seam-closure-and-shell-polish.cjs</code>.</p>
+<p>--- Previous handoff ---</p>
+<h1
+id="codex-handoff--v02609162245_procedural_building_seam_continuity_and_closed_exterior_door_defaults_patch">CODEX
+HANDOFF —
+v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH</h1>
+<p>Browser 2245 closes the remaining screenshot-class procedural shell
+gaps and changes ordinary exterior door defaults without changing the
+authoritative door state machine. Save format remains 4.</p>
 <h2 id="exterior-door-defaults">Exterior door defaults</h2>
 <ul>
-  <li><strong>Fresh ordinary exterior doors start closed/unlocked.</strong> They block ordinary LOS and present a sealed building at mission start, but route planning still treats them as traversable and committed movement auto-opens them.</li>
-  <li><strong>Shelter behavior composes with the default.</strong> Browser 2146 civilians/VIPs still physically reach the door before converting that same closed/unlocked record into a civilian-secured locked door. Browser 2051 Call Out remains unchanged.</li>
+<li><strong>Fresh ordinary exterior doors start
+closed/unlocked.</strong> They block ordinary LOS and present a sealed
+building at mission start, but route planning still treats them as
+traversable and committed movement auto-opens them.</li>
+<li><strong>Shelter behavior composes with the default.</strong> Browser
+2146 civilians/VIPs still physically reach the door before converting
+that same closed/unlocked record into a civilian-secured locked door.
+Browser 2051 Call Out remains unchanged.</li>
 </ul>
 <h2 id="structural-shell-continuity">Structural shell continuity</h2>
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">tacticalThreeDoorWallSeamRecords(...)</code> derives bounded door-to-neighbor seam records from discovered authoritative perimeter covers. <code class="language-plaintext highlighter-rouge">tacticalThreeDoorWallSeamGeometry(...)</code> fills only the uncovered projected interval with controlled overlap rather than stretching a decorative wall across the entrance.</li>
-  <li><code class="language-plaintext highlighter-rouge">tacticalThreeConcaveCornerClosureRecords(...)</code> closes irregular non-hex-connected concave turns left between the older cardinal seam and six-way connector ownership paths.</li>
-  <li>Both Three.js render paths call the shared build helpers and expose diagnostic counts. Breached/destroyed doors are excluded from decorative seam closure.</li>
-  <li>Gameplay collision/pathing/LOS remains owned by existing cover/door state; the new geometry makes presentation agree with that authority.</li>
+<li><code>tacticalThreeDoorWallSeamRecords(...)</code> derives bounded
+door-to-neighbor seam records from discovered authoritative perimeter
+covers. <code>tacticalThreeDoorWallSeamGeometry(...)</code> fills only
+the uncovered projected interval with controlled overlap rather than
+stretching a decorative wall across the entrance.</li>
+<li><code>tacticalThreeConcaveCornerClosureRecords(...)</code> closes
+irregular non-hex-connected concave turns left between the older
+cardinal seam and six-way connector ownership paths.</li>
+<li>Both Three.js render paths call the shared build helpers and expose
+diagnostic counts. Breached/destroyed doors are excluded from decorative
+seam closure.</li>
+<li>Gameplay collision/pathing/LOS remains owned by existing cover/door
+state; the new geometry makes presentation agree with that
+authority.</li>
 </ul>
-<h2 id="preserve">Preserve</h2>
+<h2 id="preserve-1">Preserve</h2>
 <ul>
-  <li>Browser 2146 physical shelter securing and furnishing cover.</li>
-  <li>Browser 2051 Call Out and nearest-first objective sorting.</li>
-  <li>Browser 1102 VIP Priority Lock.</li>
-  <li>Door open/close TU cost, occupied-close safeguard, closed-unlocked auto-open traversal, locked blocking, LOS state, damage/breach and save format 4.</li>
+<li>Browser 2146 physical shelter securing and furnishing cover.</li>
+<li>Browser 2051 Call Out and nearest-first objective sorting.</li>
+<li>Browser 1102 VIP Priority Lock.</li>
+<li>Door open/close TU cost, occupied-close safeguard, closed-unlocked
+auto-open traversal, locked blocking, LOS state, damage/breach and save
+format 4.</li>
 </ul>
-<h2 id="roadmap-queued-after-this-structural-patch">Roadmap queued after this structural patch</h2>
+<h2 id="roadmap-queued-after-this-structural-patch">Roadmap queued after
+this structural patch</h2>
 <ul>
-  <li>Assisting fire teams should also engage the supported team’s Alien Field Beacon once higher Default AI priorities are clear and the beacon can be legally damaged.</li>
-  <li>Alien forced-entry/breaching remains the next larger door-behavior layer after the shell is field-accepted.</li>
-  <li>Shielded-beacon immunity rings remain roadmap-only and intentionally unexplained by in-game text.</li>
+<li>Assisting fire teams should also engage the supported team's Alien
+Field Beacon once higher Default AI priorities are clear and the beacon
+can be legally damaged.</li>
+<li>Alien forced-entry/breaching remains the next larger door-behavior
+layer after the shell is field-accepted.</li>
+<li>Shielded-beacon immunity rings remain roadmap-only and intentionally
+unexplained by in-game text.</li>
 </ul>
-<p>Focused regression: <code class="language-plaintext highlighter-rouge">tools/test-structural-building-closure-and-door-defaults.cjs</code>.</p>
-<hr />
-<p>Previous handoff</p>
-
-<h1 id="codex-handoff--v02609162146_physical_shelter_securing_and_interior_furnishing_cover_overhaul_patch">CODEX HANDOFF — v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH</h1>
-<p>Browser 2146 turns Browser 2051 shelter security into physical civilian behavior and replaces generic interior primitives with archetype-aware furnishing cover. Save format remains 4.</p>
+<p>Focused regression:
+<code>tools/test-structural-building-closure-and-door-defaults.cjs</code>.</p>
+<p>--- Previous handoff ---</p>
+<h1
+id="codex-handoff--v02609162146_physical_shelter_securing_and_interior_furnishing_cover_overhaul_patch">CODEX
+HANDOFF —
+v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH</h1>
+<p>Browser 2146 turns Browser 2051 shelter security into physical
+civilian behavior and replaces generic interior primitives with
+archetype-aware furnishing cover. Save format remains 4.</p>
 <h2 id="shelter-movement-authority">Shelter movement authority</h2>
 <ul>
-  <li><strong>No remote door locking.</strong> A threatened unescorted/non-panicked civilian or VIP must reach an interior-adjacent position at the assigned exterior door before that door can close and lock.</li>
-  <li><strong>One securer per entrance where possible.</strong> Nearby occupants are deconflicted across unsecured doors; movement is bounded and emitted as a tactical movement trail for streamed/offline playback.</li>
-  <li><strong>Retreat after securing.</strong> Once all viable entrances are secured, shelter occupants can move deeper inside toward adjacent cells beside useful furnishing cover.</li>
-  <li><strong>2051 authority is preserved.</strong> The same door record remains collision/pathing/LOS/save truth, and AEGIS Call Out still opens civilian-secured doors.</li>
+<li><strong>No remote door locking.</strong> A threatened
+unescorted/non-panicked civilian or VIP must reach an interior-adjacent
+position at the assigned exterior door before that door can close and
+lock.</li>
+<li><strong>One securer per entrance where possible.</strong> Nearby
+occupants are deconflicted across unsecured doors; movement is bounded
+and emitted as a tactical movement trail for streamed/offline
+playback.</li>
+<li><strong>Retreat after securing.</strong> Once all viable entrances
+are secured, shelter occupants can move deeper inside toward adjacent
+cells beside useful furnishing cover.</li>
+<li><strong>2051 authority is preserved.</strong> The same door record
+remains collision/pathing/LOS/save truth, and AEGIS Call Out still opens
+civilian-secured doors.</li>
 </ul>
-<h2 id="interior-furnishing--cover-authority">Interior furnishing + cover authority</h2>
+<h2 id="interior-furnishing--cover-authority">Interior furnishing +
+cover authority</h2>
 <ul>
-  <li><strong>Archetype-aware interiors.</strong> Markets/offices/diners/workshops/fire stations use counters, registers, shelving, files, booths, racks and workbenches; residences/farmhouses use couches, armchairs, dining furniture, beds, dressers, bookcases and kitchen counters.</li>
-  <li><strong>Furniture is gameplay geometry.</strong> Large furnishings carry 0.5/0.75 tactical cover and block their occupied cell; small detail items remain non-blocking.</li>
-  <li><strong>Door/swing lanes stay clear.</strong> Furnishing candidates keep a wider buffer from authoritative doors and remain sparse enough to preserve interior circulation.</li>
-  <li><strong>Shared presentation.</strong> Both Three.js tactical render paths call <code class="language-plaintext highlighter-rouge">tacticalThreeAddInteriorFurnishingModel(...)</code>, using cached primitive geometry rather than unrelated rock/ball stand-ins.</li>
+<li><strong>Archetype-aware interiors.</strong>
+Markets/offices/diners/workshops/fire stations use counters, registers,
+shelving, files, booths, racks and workbenches; residences/farmhouses
+use couches, armchairs, dining furniture, beds, dressers, bookcases and
+kitchen counters.</li>
+<li><strong>Furniture is gameplay geometry.</strong> Large furnishings
+carry 0.5/0.75 tactical cover and block their occupied cell; small
+detail items remain non-blocking.</li>
+<li><strong>Door/swing lanes stay clear.</strong> Furnishing candidates
+keep a wider buffer from authoritative doors and remain sparse enough to
+preserve interior circulation.</li>
+<li><strong>Shared presentation.</strong> Both Three.js tactical render
+paths call <code>tacticalThreeAddInteriorFurnishingModel(...)</code>,
+using cached primitive geometry rather than unrelated rock/ball
+stand-ins.</li>
 </ul>
 <h2 id="still-deferred">Still deferred</h2>
 <ul>
-  <li>Alien forced-entry/breach decision doctrine.</li>
-  <li>Shielded-beacon immunity color rings (no explanatory in-game text).</li>
-  <li>Remaining door-jamb-to-neighboring-wall seam continuity issue reported after Browser 1726.</li>
+<li>Alien forced-entry/breach decision doctrine.</li>
+<li>Shielded-beacon immunity color rings (no explanatory in-game
+text).</li>
+<li>Remaining door-jamb-to-neighboring-wall seam continuity issue
+reported after Browser 1726.</li>
 </ul>
-<p>Focused regression: <code class="language-plaintext highlighter-rouge">tools/test-physical-shelter-securing-and-interior-furnishing.cjs</code> (<strong>7/7</strong>).</p>
-<p>— Previous handoff —</p>
-<h1 id="codex-handoff--v02609162051_civilian_vip_shelter_locking_aegis_callout_and_objective_distance_sort_patch">CODEX HANDOFF — v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH</h1>
-<p>Browser 2051 adds civilian/VIP shelter locking, friendly AEGIS Call Out ingress, and per-fire-team nearest-first Assign Objectives sorting on top of Browser 1726. Save format remains 4.</p>
+<p>Focused regression:
+<code>tools/test-physical-shelter-securing-and-interior-furnishing.cjs</code>.</p>
+<p>--- Previous handoff ---</p>
+<h1
+id="codex-handoff--v02609162051_civilian_vip_shelter_locking_aegis_callout_and_objective_distance_sort_patch">CODEX
+HANDOFF —
+v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH</h1>
+<p>Browser 2051 adds civilian/VIP shelter locking, friendly AEGIS Call
+Out ingress, and per-fire-team nearest-first Assign Objectives sorting
+on top of Browser 1726. Save format remains 4.</p>
 <h2 id="shelter-and-rescue-authority">Shelter and rescue authority</h2>
 <ul>
-<li><strong>Existing door state remains truth.</strong> Shelter logic mutates the Browser 1356/1726 door record.</li>
-<li><strong>Threat-bounded shelter locking.</strong> Living unrescued/unescorted civilians or VIPs inside a building may close/lock suitable intact doors when a visible alien is nearby, while refusing unsafe or occupied cases.</li>
-<li><strong>Call Out / Identify AEGIS.</strong> Adjacent AEGIS can spend 8 TU to unlock/open a civilian-secured door on desktop or Mobile.</li>
-<li><strong>Rescue AI understands the interaction.</strong> A shelter ingress can resolve as <code class="language-plaintext highlighter-rouge">shelter-callout-ready</code> and continue the Contact/escort chain.</li>
-<li><strong>Persistence is additive.</strong> Shelter state rides on existing unit snapshots and cover records; save format remains 4.</li>
+<li><strong>Existing door state remains truth.</strong> Shelter logic
+mutates the Browser 1356/1726 door record; there is no rescue-only
+collision or LOS bypass.</li>
+<li><strong>Threat-bounded shelter locking.</strong> Living
+unrescued/unescorted civilians or VIPs inside a building can close/lock
+suitable intact doors when a visible alien is nearby. The pass refuses
+to secure a building around an AEGIS soldier or alien and skips
+immediate fire/dense-smoke hazards.</li>
+<li><strong>Call Out / Identify AEGIS.</strong> An adjacent active AEGIS
+soldier can spend 8 TU at a civilian-secured locked door. Cooperative
+occupants respond by unlocking/opening the same authoritative door;
+desktop and Mobile share this action.</li>
+<li><strong>Rescue AI understands the interaction.</strong> A locked
+shelter ingress can resolve as <code>shelter-callout-ready</code>;
+Default/Hybrid rescue logic can call out and continue Contact/escort
+instead of declaring the VIP unreachable. VIP Priority Lock remains
+compatible.</li>
+<li><strong>Persistence is additive.</strong> Shelter unit fields are
+included in tactical snapshots and shelter ownership rides on existing
+cover state. Save format remains 4.</li>
 </ul>
 <h2 id="assign-objectives-ordering">Assign Objectives ordering</h2>
-<ul><li>Each fire team’s spatial objectives sort nearest-to-farthest from that team’s current leader.</li><li>Equal-distance ties are deterministic; Default AI Doctrine remains fixed.</li></ul>
+<ul>
+<li>Spatial objectives in each fire team's Own an objective dropdown are
+sorted nearest-to-farthest from that team's current leader.</li>
+<li>Equal-distance ties are deterministic; Default AI Doctrine and
+non-spatial choices remain in fixed logical positions.</li>
+</ul>
 <h2 id="deferred--roadmap-only">Deferred / roadmap-only</h2>
-<ul><li>Alien forced-entry/breach doctrine remains follow-on.</li><li>Shielded beacon immunity top-rings remain roadmap-only and must have no explanatory in-game text.</li><li>Door-jamb-to-wall seam continuity remains roadmap-only.</li></ul>
-<p>Focused regression: <code class="language-plaintext highlighter-rouge">tools/test-civilian-shelter-callout-objective-distance.cjs</code> (<strong>9/9</strong>).</p>
-<p>— Previous handoff —</p>
-<h1 id="codex-handoff--v02609161726_door_aperture_alignment_and_true_hinge_open_pose_hotfix">CODEX HANDOFF — v0.26.09.16.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX</h1>
-
-<p>Browser 1726 is a narrow visual/layout hotfix on top of Browser 1356. Save format remains 4.</p>
-
+<ul>
+<li>Alien forced-entry/breach decision doctrine remains the next
+door-system behavioral layer.</li>
+<li>Shielded beacons should eventually show subtle colored top rings
+matching weapon/damage immunities with <strong>no explanatory in-game
+text</strong>.</li>
+<li>Remaining door-frame-to-adjacent-wall seam gaps require a dedicated
+continuity fix.</li>
+</ul>
+<p>Focused regression:
+<code>tools/test-civilian-shelter-callout-objective-distance.cjs</code>
+(<strong>9/9</strong> before release packaging).</p>
+<p>--- Previous handoff ---</p>
+<h1
+id="codex-handoff--v02609161726_door_aperture_alignment_and_true_hinge_open_pose_hotfix">CODEX
+HANDOFF —
+v0.26.09.16.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX</h1>
+<p>Browser 1726 is a narrow visual/layout hotfix on top of Browser 1356.
+Save format remains 4.</p>
 <h2 id="door-geometry-correction">Door geometry correction</h2>
 <ul>
-  <li><strong>1356 root cause:</strong> door logic was correct, but renderer geometry used a fixed narrow frame and rotated the open leaf around its own center.</li>
-  <li><strong>Shared geometry authority:</strong> <code class="language-plaintext highlighter-rouge">tacticalThreeBuildingDoorGeometrySpec(...)</code> derives frame and leaf width from actual EW/NS hex structural spacing.</li>
-  <li><strong>True hinge:</strong> <code class="language-plaintext highlighter-rouge">tacticalThreeAddBuildingDoorModel(...)</code> mounts the leaf on a jamb-side pivot and both Three.js cover render paths call this same helper.</li>
-  <li><strong>Interior swing:</strong> the open angle is chosen toward the building interior when an adjacent interior cell is known.</li>
-  <li><strong>Gameplay unchanged:</strong> Browser 1356 state/pathing/LOS/TU/damage/persistence authority remains unchanged.</li>
-  <li>Save format remains 4.</li>
+<li><strong>1356 root cause:</strong> door logic was correct, but
+renderer geometry used a fixed narrow frame and rotated the open leaf
+around its own center.</li>
+<li><strong>Shared geometry authority:</strong>
+<code>tacticalThreeBuildingDoorGeometrySpec(...)</code> derives the
+frame and leaf width from actual EW/NS hex structural spacing.</li>
+<li><strong>True hinge:</strong>
+<code>tacticalThreeAddBuildingDoorModel(...)</code> mounts the leaf on a
+jamb-side pivot and both Three.js cover render paths call this same
+helper.</li>
+<li><strong>Interior swing:</strong> the open angle is chosen toward the
+building interior when the adjacent interior cell is known.</li>
+<li><strong>Gameplay unchanged:</strong> Browser 1356
+state/pathing/LOS/TU/damage/persistence authority remains
+unchanged.</li>
+<li>Save format remains 4.</li>
 </ul>
-
-<p>Focused regression: <code class="language-plaintext highlighter-rouge">tools/test-door-aperture-alignment-and-open-pose-hotfix.cjs</code> (<strong>6/6</strong>).</p>
-<p>— Previous handoff —</p>
-
-<h1 id="codex-handoff--v02609161356_interactive_building_door_state_and_pathing_foundation_patch">CODEX HANDOFF — v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH</h1>
-
-<p>Browser 1356 establishes one authoritative interactive procedural-building door foundation on top of Browser 1102. Save format remains 4.</p>
-
+<p>Focused regression:
+<code>tools/test-door-aperture-alignment-and-open-pose-hotfix.cjs</code>.</p>
+<p>--- Previous handoff ---</p>
+<h1
+id="codex-handoff--v02609161356_interactive_building_door_state_and_pathing_foundation_patch">CODEX
+HANDOFF —
+v0.26.09.16.1356_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH</h1>
+<p>Browser 1356 establishes one authoritative interactive
+procedural-building door foundation on top of Browser 1102. Save format
+remains 4.</p>
 <h2 id="door-authority">Door authority</h2>
 <ul>
-  <li><strong>Door cover record is truth.</strong> Planned doorway cells emit structural door covers carrying door state/lock authority consumed by renderer, movement, LOS, damage and persistence.</li>
-  <li><strong>Generated ordinary doors default open.</strong> This preserves Browser 1102 mission accessibility.</li>
-  <li><strong>Unlocked closed doors remain traversable intent.</strong> Movement opens them when committed; locked doors remain hard blockers.</li>
-  <li><strong>LOS follows the same state.</strong> Closed/locked/damaged intact doors block; open/breached/destroyed doors permit aligned visibility.</li>
-  <li><strong>Manual operation is tactical.</strong> Open/Close costs 8 TU and cannot close through an occupied doorway on desktop or mobile.</li>
-  <li><strong>Structural damage stays unified.</strong> Doors use the existing breach/restoration pipeline and dedicated Three.js panel geometry is presentation of that authority.</li>
-  <li><strong>Persistence is additive.</strong> Door fields ride on existing tactical cover state; save format remains 4.</li>
-  <li><strong>Not in 1356:</strong> civilian/VIP shelter locking, alien forced-entry decision logic, or AEGIS Call Out / Identify AEGIS.</li>
+<li><strong>Door cover record is truth.</strong> Planned doorway cells
+now emit structural <code>buildingPart:"door"</code> covers carrying
+<code>doorState</code> / <code>doorLocked</code>; renderer, movement,
+LOS, damage and persistence consume that state.</li>
+<li><strong>Generated ordinary doors default open.</strong> This
+preserves Browser 1102 mission accessibility and avoids changing older
+procedural layouts simply because doors now exist as entities.</li>
+<li><strong>Unlocked closed doors are traversable intent, not hard path
+failures.</strong> Route planning may cross them and movement opens them
+when committed. Locked doors remain hard blockers.</li>
+<li><strong>LOS follows the same state.</strong> Closed/locked/damaged
+intact doors block; open/breached/destroyed doors permit aligned
+visibility. Door state is part of the visibility cache key.</li>
+<li><strong>Manual operation is tactical.</strong> Adjacent/current
+AEGIS Open/Close costs 8 TU; occupied door cells cannot be closed
+through a unit. Desktop and mobile expose the same authority.</li>
+<li><strong>Structural damage stays unified.</strong> Doors use the
+established building breach/restoration pipeline. Dedicated Three.js
+frame/panel geometry is presentation of the same authority, not a second
+state machine.</li>
+<li><strong>Persistence is additive.</strong> Door fields live on
+tactical cover records already carried by snapshots/save state; save
+format remains 4.</li>
+<li><strong>Not in 1356:</strong> civilian/VIP shelter locking, alien
+forced-entry decision logic and AEGIS Call Out / Identify AEGIS. Those
+should mutate this same door authority in later patches.</li>
 </ul>
-<p>Focused regression: <code class="language-plaintext highlighter-rouge">tools/test-interactive-building-door-foundation.cjs</code> (<strong>11/11</strong>). Full retained test/smoke sweep: <strong>38/38</strong>.</p>
-<p>— Previous handoff —</p>
-
-<h1 id="codex-handoff--v02609161102_player_selectable_vip_rescue_commitment_priority_lock_patch">CODEX HANDOFF — v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH</h1>
-
-
-
-<p>Browser 1102 implements the player-selectable pre-Contact VIP rescue commitment requested after Browser 0820. Save format remains 4.</p>
-
+<p>Focused regression:
+<code>tools/test-interactive-building-door-foundation.cjs</code>
+(<strong>11/11</strong>). Full retained test/smoke sweep:
+<strong>38/38</strong>.</p>
+<p>--- Previous handoff ---</p>
+<h1
+id="codex-handoff--v02609161102_player_selectable_vip_rescue_commitment_priority_lock_patch">CODEX
+HANDOFF —
+v0.26.09.16.1102_PLAYER_SELECTABLE_VIP_RESCUE_COMMITMENT_PRIORITY_LOCK_PATCH</h1>
+<p>Browser 1102 implements the player-selectable pre-Contact VIP rescue
+commitment requested after Browser 0820. Save format remains 4.</p>
 <h2 id="vip-priority-lock-authority">VIP Priority Lock authority</h2>
 <ul>
-  <li><strong>Explicit civilian/VIP assignments can opt in.</strong> Assign Objectives exposes a VIP Priority Lock checkbox only when the team has an explicit civilian objective.</li>
-  <li><strong>One committed rescuer, not the whole team.</strong> <code class="language-plaintext highlighter-rouge">tacticalEnsureVipRescueCommitments(...)</code> maintains a single eligible rescue lead so teammates remain available for normal combat/support.</li>
-  <li><strong>Player commitment narrowly overrides visible-contact interruption.</strong> The committed rescuer continues pre-Contact approach when an alien appears; normal assignments still obey visible alien priority.</li>
-  <li><strong>Medical doctrine remains above the lock.</strong> Browser 0820 casualty responders are excluded from VIP commitment claims; the commitment can succeed to another teammate.</li>
-  <li><strong>Physical escort ownership wins after Contact.</strong> A matching <code class="language-plaintext highlighter-rouge">escortId</code> becomes the commitment authority; a cross-team escort clears the stale lock rather than being stolen.</li>
-  <li><strong>Persistent state is additive.</strong> Fire-team commitment enabled/target/rescuer/issued-round/status fields are carried through snapshots/playback; save format remains 4.</li>
+<li><strong>Explicit civilian/VIP assignments can opt in.</strong>
+Assign Objectives exposes a VIP Priority Lock checkbox only when the
+team has an explicit civilian objective.</li>
+<li><strong>One committed rescuer, not the whole team.</strong>
+<code>tacticalEnsureVipRescueCommitments(...)</code> maintains a single
+eligible rescue lead so teammates remain available for normal
+combat/support.</li>
+<li><strong>Player commitment narrowly overrides visible-contact
+interruption.</strong> The committed rescuer continues pre-Contact
+approach when an alien appears; normal assignments still obey visible
+alien priority.</li>
+<li><strong>Medical doctrine remains above the lock.</strong> Browser
+0820 casualty responders are excluded from VIP commitment claims; the
+commitment can succeed to another teammate.</li>
+<li><strong>Physical escort ownership wins after Contact.</strong> A
+matching <code>escortId</code> becomes the commitment authority; a
+cross-team escort clears the stale lock rather than being stolen.</li>
+<li><strong>Persistent state is additive.</strong> Fire-team commitment
+enabled/target/rescuer/issued-round/status fields are carried through
+snapshots/playback; save format remains 4.</li>
 </ul>
-
-<p>Focused regression: <code class="language-plaintext highlighter-rouge">tools/test-vip-rescue-commitment-priority-lock.cjs</code>.</p>
-
-<p>— Previous handoff —</p>
-
-<h1 id="codex-handoff--v02609160820_default_ai_casualty_stabilization_recovery_and_extraction_ownership_patch">CODEX HANDOFF — v0.26.09.16.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH</h1>
-
-<p>Browser 0820 hardens Default AI priorities 1 and 2 without changing the accepted nine-level hierarchy. Save format remains 4.</p>
-
-<h2 id="casualty-response-ownership-authority">Casualty-response ownership authority</h2>
+<p>Focused regression:
+<code>tools/test-vip-rescue-commitment-priority-lock.cjs</code>.</p>
+<p>--- Previous handoff ---</p>
+<h1
+id="codex-handoff--v02609160820_default_ai_casualty_stabilization_recovery_and_extraction_ownership_patch">CODEX
+HANDOFF —
+v0.26.09.16.0820_DEFAULT_AI_CASUALTY_STABILIZATION_RECOVERY_AND_EXTRACTION_OWNERSHIP_PATCH</h1>
+<p>Browser 0820 hardens Default AI priorities 1 and 2 without changing
+the accepted nine-level hierarchy. Save format remains 4.</p>
+<h2 id="casualty-response-ownership-authority">Casualty-response
+ownership authority</h2>
 <ul>
-  <li><strong>One casualty / one autonomous responder.</strong> Mutual optional responder/target ownership fields preserve a casualty job across AI rounds.</li>
-  <li><strong>Continuity beats proximity.</strong> A newly closer teammate does not steal a valid assignment; invalid responders release ownership.</li>
-  <li><strong>Stabilize transitions into recover.</strong> Successful priority-1 stabilization converts the same responder into priority-2 recovery/extraction ownership.</li>
-  <li><strong>Physical/manual state wins.</strong> A real dragging relationship outranks AI planning state, and Hybrid player-controlled leaders are not commandeered.</li>
-  <li><strong>No lower-priority theft.</strong> Assigned casualty responders are withheld from lower-priority autonomous processing for the round.</li>
+<li><strong>One casualty / one autonomous responder.</strong> A bleeding
+or downed AEGIS soldier may carry an <code>aiCasualtyResponderId</code>;
+the responder carries the matching <code>aiCasualtyTargetId</code> and
+duty kind (<code>stabilize</code> or <code>recover</code>).</li>
+<li><strong>Continuity beats proximity.</strong> Once a valid responder
+owns a casualty, a newly closer teammate does not steal the job.
+Ownership releases only when the responder/casualty state becomes
+invalid or the route materially fails.</li>
+<li><strong>Stabilize transitions into recover.</strong> Successful
+priority-1 stabilization converts the same mutual assignment into
+priority-2 recovery/extraction ownership rather than re-running
+nearest-responder selection.</li>
+<li><strong>Physical/manual state wins.</strong> A valid
+<code>draggingCasualtyId</code> / <code>draggedById</code> pair is
+stronger than AI planning state and is adopted when AI resumes. Hybrid
+player-controlled leaders are excluded from autonomous responder
+claims.</li>
+<li><strong>No lower-priority theft.</strong> Assigned casualty-duty
+actors are excluded from lower-priority actor processing for that
+round.</li>
 </ul>
-
-<p>The patch uses additive optional tactical fields only; save format remains 4. Browser 2345 VIP-contact/escort behavior is preserved.</p>
-
-<p>Focused regression: <code class="language-plaintext highlighter-rouge">tools/test-default-ai-casualty-response-ownership.cjs</code>.</p>
-
-<p>— Previous handoff —</p>
-
-<h1 id="codex-handoff--v02609152345_manual_vip_assignment_override_and_escort_ownership_hotfix">CODEX HANDOFF — v0.26.09.15.2345_MANUAL_VIP_ASSIGNMENT_OVERRIDE_AND_ESCORT_OWNERSHIP_HOTFIX</h1>
-
-<p>Browser 2345 is a narrow manual-rescue ownership hotfix on top of Browser 2231. Save format remains 4.</p>
-
+<p>The patch uses additive optional tactical fields only; save format
+remains 4. Browser 2345 manual VIP assignment override and escort
+ownership remain unchanged.</p>
+<p>Focused regression:
+<code>tools/test-default-ai-casualty-response-ownership.cjs</code>.</p>
+<p>--- Previous handoff ---</p>
+<h1
+id="codex-handoff--v02609152345_manual_vip_assignment_override_and_escort_ownership_hotfix">CODEX
+HANDOFF —
+v0.26.09.15.2345_MANUAL_VIP_ASSIGNMENT_OVERRIDE_AND_ESCORT_OWNERSHIP_HOTFIX</h1>
+<p>Browser 2345 is a narrow manual-rescue ownership hotfix on top of
+Browser 2231. Save format remains 4.</p>
 <h2 id="authority-distinction">Authority distinction</h2>
 <ul>
-  <li><strong>Assign Objectives civilian ownership is an AI planning reservation.</strong> Default/Simulation AI should not steal another fire team’s explicit civilian/VIP assignment.</li>
-  <li><strong>escortId is physical escort ownership.</strong> Once a civilian/VIP is actually following a soldier, unrelated soldiers may not steal that escort.</li>
-  <li><strong>Explicit player Contact may override a reservation that has not yet become an escort.</strong> On a successful join, the existing displaced-assignment release authority clears the previous owner/assist team so they can resume their next objective.</li>
+<li><strong>Assign Objectives civilian ownership is an AI planning
+reservation.</strong> Default/Simulation AI should not steal another
+fire team's explicit civilian/VIP assignment.</li>
+<li><strong>escortId is physical escort ownership.</strong> Once a
+civilian/VIP is actually following a soldier, unrelated soldiers may not
+steal that escort.</li>
+<li><strong>Explicit player Contact may override a reservation that has
+not yet become an escort.</strong> On a successful join, the existing
+displaced-assignment release authority clears the previous owner/assist
+team so they can resume their next objective.</li>
 </ul>
-
-<p>The patch deliberately does not change the Browser 1704/2121 nine-level Default AI priority hierarchy or Browser 2231 escort-leader lock.</p>
-
-<p>Focused regression: tools/test-manual-vip-assignment-override-hotfix.cjs.</p>
-
-<p>— Previous handoff —</p>
-
-<h1 id="codex-handoff--v02609152231_ai_command_stream_handoff_and_escort_lock_runtime_hotfix">CODEX HANDOFF — v0.26.09.15.2231_AI_COMMAND_STREAM_HANDOFF_AND_ESCORT_LOCK_RUNTIME_HOTFIX</h1>
-
-<p>Browser 2231 is the runtime-integration hotfix following Browser 2121’s central Default AI objective authority work. Save format remains 4.</p>
-
-<h2 id="ai-command-handoff-failure-fixed">AI Command handoff failure fixed</h2>
-
-<p>The live <strong>AI Command</strong> path was traced end-to-end: <code class="language-plaintext highlighter-rouge">handOffToSimulationAi()</code> correctly entered <code class="language-plaintext highlighter-rouge">startSimulationAiStream()</code>, switched the turn to AI, and opened the planning overlay, but the first real <code class="language-plaintext highlighter-rouge">resolveMissionAiStreamBatchAsync(...)</code> call threw <code class="language-plaintext highlighter-rouge">ReferenceError: tacticalEscortLeaderLockState is not defined</code>. The handoff catch path then deliberately restored <code class="language-plaintext highlighter-rouge">turn=human</code>, producing the field symptom of a planning window followed by no AI movement and continued player control.</p>
-
-<p><code class="language-plaintext highlighter-rouge">tacticalEscortLeaderLockState(...)</code> is now restored as a real runtime helper using existing fire-team and escort authority. It locks only the current effective fire-team leader when that leader owns living, active civilian/VIP followers. Supports remain governed by Civilian Escort Support, so Engage support can still break off while the leader/Stay/Ask actors retain priority-3 escort authority.</p>
-
+<p>The patch deliberately does not change the Browser 1704/2121
+nine-level Default AI priority hierarchy or Browser 2231 escort-leader
+lock.</p>
+<p>Focused regression:
+tools/test-manual-vip-assignment-override-hotfix.cjs.</p>
+<p>--- Previous handoff ---</p>
+<h1
+id="codex-handoff--v02609152231_ai_command_stream_handoff_and_escort_lock_runtime_hotfix">CODEX
+HANDOFF —
+v0.26.09.15.2231_AI_COMMAND_STREAM_HANDOFF_AND_ESCORT_LOCK_RUNTIME_HOTFIX</h1>
+<p>Browser 2231 is the runtime-integration hotfix following Browser
+2121's central Default AI objective authority work. Save format remains
+4.</p>
+<h2 id="ai-command-handoff-failure-fixed">AI Command handoff failure
+fixed</h2>
+<p>The live <strong>AI Command</strong> path was traced end-to-end:
+<code>handOffToSimulationAi()</code> correctly entered
+<code>startSimulationAiStream()</code>, switched the turn to AI, and
+opened the planning overlay, but the first real
+<code>resolveMissionAiStreamBatchAsync(...)</code> call threw
+<code>ReferenceError: tacticalEscortLeaderLockState is not defined</code>.
+The handoff catch path then deliberately restored
+<code>turn=human</code>, producing the field symptom of a planning
+window followed by no AI movement and continued player control.</p>
+<p><code>tacticalEscortLeaderLockState(...)</code> is now restored as a
+real runtime helper using existing fire-team and escort authority. It
+locks only the current effective fire-team leader when that leader owns
+living, active civilian/VIP followers. Supports remain governed by
+Civilian Escort Support, so Engage support can still break off while the
+leader/Stay/Ask actors retain priority-3 escort authority.</p>
 <h2 id="regression-coverage">Regression coverage</h2>
-
-<p><code class="language-plaintext highlighter-rouge">tools/test-ai-command-stream-handoff.cjs</code> evaluates the actual application runtime and executes a real streamed first AI planning batch. It also continues multiple batches through search/contact transitions and verifies visible/Last Known actors do not retain stale exploration routes. Its two-squad acceptance profile mirrors the supplied North America Alien Abduction Site: Threat 2, Tide Horror, $520k reward, +20 Panic, with Farah included as an AEGIS actor.</p>
-
-<p>The existing Browser 2121 central-objective suite now evaluates the real escort-lock helper rather than masking it with a test-only stub. Final retained local regression/smoke sweep: <strong>34/34 entrypoint files passed</strong>; the focused central/handoff release gate passed <strong>25/25 checks</strong>; Mobile/PWA passed <strong>9/9</strong>.</p>
-
-<h2 id="preserve">Preserve</h2>
-
-<p>Keep the Browser 2121 nine-level hierarchy, actor-scoped objective diagnostics/route invalidation, Browser 1426 moving reassembly/leader succession, Browser 1525 nearest-sector/contact pursuit, Beacon/UFO ordering, VIP/civilian escort and extraction, casualty-care phases, tetromino/wall continuity, IndexedDB saves, and the Android/PWA release-beacon launch path. Do not restore Browser 1255 narrow doorway framing.</p>
-
-<p>Field acceptance should still use the supplied Browser 1426 mature campaign save with both squads at North America / Alien Abduction Site / Threat 2 / Tide Horror.</p>
-
-<p>— Previous handoff —</p>
-
-<h1 id="codex-handoff--v02609152121_default_ai_central_objective_authority_and_route_invalidation_patch">CODEX HANDOFF — v0.26.09.15.2121_DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_AND_ROUTE_INVALIDATION_PATCH</h1>
-
-<p>Browser 2121 is the follow-through audit on Browser 1704’s Default AI priority-stack consolidation. Save format remains 4.</p>
-
+<p><code>tools/test-ai-command-stream-handoff.cjs</code> evaluates the
+actual application runtime and executes a real streamed first AI
+planning batch. It also continues multiple batches through
+search/contact transitions and verifies visible/Last Known actors do not
+retain stale exploration routes. Its two-squad acceptance profile
+mirrors the supplied North America Alien Abduction Site: Threat 2, Tide
+Horror, $520k reward, +20 Panic, with Farah included as an AEGIS
+actor.</p>
+<p>The existing Browser 2121 central-objective suite now evaluates the
+real escort-lock helper rather than masking it with a test-only stub.
+Final retained local regression/smoke sweep: <strong>34/34 entrypoint
+files passed</strong>; the focused central/handoff release gate passed
+<strong>25/25 checks</strong>; Mobile/PWA passed
+<strong>9/9</strong>.</p>
+<h2 id="preserve-2">Preserve</h2>
+<p>Keep the Browser 2121 nine-level hierarchy, actor-scoped objective
+diagnostics/route invalidation, Browser 1426 moving reassembly/leader
+succession, Browser 1525 nearest-sector/contact pursuit, Beacon/UFO
+ordering, VIP/civilian escort and extraction, casualty-care phases,
+tetromino/wall continuity, IndexedDB saves, and the Android/PWA
+release-beacon launch path. Do not restore Browser 1255 narrow doorway
+framing.</p>
+<p>Field acceptance should still use the supplied Browser 1426 mature
+campaign save with both squads at North America / Alien Abduction Site /
+Threat 2 / Tide Horror.</p>
+<p>--- Previous handoff ---</p>
+<h1
+id="codex-handoff--v02609152121_default_ai_central_objective_authority_and_route_invalidation_patch">CODEX
+HANDOFF —
+v0.26.09.15.2121_DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_AND_ROUTE_INVALIDATION_PATCH</h1>
+<p>Browser 2121 is the follow-through audit on Browser 1704's Default AI
+priority-stack consolidation. Save format remains 4.</p>
 <h2 id="central-objective-authority">Central objective authority</h2>
-
-<p><code class="language-plaintext highlighter-rouge">tacticalDefaultAiObjectiveDecision(...)</code> is now the shared strategic resolver for Default AI actor intent. It evaluates the accepted hierarchy numerically:</p>
-
-<ol>
-  <li>Stabilize a bleeding casualty.</li>
-  <li>Recover/extract a stabilized or downed AEGIS soldier.</li>
-  <li>Continue active civilian/VIP escort duty.</li>
-  <li>Engage visible aliens.</li>
-  <li>Investigate Last Known Contact or distress-reported attacker position.</li>
-  <li>Neutralize a confirmed Alien Field Beacon.</li>
-  <li>Clear an unchecked crashed-UFO bay.</li>
-  <li>Approach/escort a known unassigned VIP or civilian.</li>
-  <li>Search unexplored terrain.</li>
+<p><code>tacticalDefaultAiObjectiveDecision(...)</code> is now the
+shared strategic resolver for Default AI actor intent. It evaluates the
+accepted hierarchy numerically:</p>
+<ol type="1">
+<li>Stabilize a bleeding casualty.</li>
+<li>Recover/extract a stabilized or downed AEGIS soldier.</li>
+<li>Continue active civilian/VIP escort duty.</li>
+<li>Engage visible aliens.</li>
+<li>Investigate Last Known Contact or distress-reported attacker
+position.</li>
+<li>Neutralize a confirmed Alien Field Beacon.</li>
+<li>Clear an unchecked crashed-UFO bay.</li>
+<li>Approach/escort a known unassigned VIP or civilian.</li>
+<li>Search unexplored terrain.</li>
 </ol>
-
-<p>Persistent non-stack player/explicit assignments retain their existing bounded authority below known civilian rescue and above generic search where applicable. Hybrid explicit player movement remains player-owned.</p>
-
+<p>Persistent non-stack player/explicit assignments retain their
+existing bounded authority below known civilian rescue and above generic
+search where applicable. Hybrid explicit player movement remains
+player-owned.</p>
 <h2 id="browser-1704-leaks-corrected">Browser 1704 leaks corrected</h2>
-
 <ul>
-  <li><strong>Beacon versus Last Known:</strong> the old Beacon engagement-lock branch could force <code class="language-plaintext highlighter-rouge">lastKnownContactPriority=false</code>. That bypass is removed. Beacon engagement remains resumable persistent state, but Last Known/distress is always priority 5 and therefore wins.</li>
-  <li><strong>Per-team state overwrite:</strong> Browser 1704 resolved state per soldier but wrote the result to every fire-team member. Browser 2121 applies runtime objective state per actor. An escort leader/Stay/Ask support can remain priority 3 while Engage support in the same team resolves priority 4.</li>
-  <li><strong>Stale route authority:</strong> a higher-priority state now clears route scratch belonging to every lower category beneath it. Exploration hunt/patrol data is cleared by any priority 1–8 objective; VIP-approach scratch is cleared by priorities 1–7; local contact-search scratch is cleared by priorities 1–4.</li>
-  <li><strong>Last Known fallback:</strong> an obstructed local Last Known/distress probe no longer calls generic patrol. It holds/retries the reported contact so priority 5 cannot degrade into priority 9.</li>
-  <li><strong>Known civilian assignment:</strong> changing to a known VIP/civilian target clears stale exploration-sector/patrol state immediately while retaining the rescue assignment itself.</li>
+<li><strong>Beacon versus Last Known:</strong> the old Beacon
+engagement-lock branch could force
+<code>lastKnownContactPriority=false</code>. That bypass is removed.
+Beacon engagement remains resumable persistent state, but Last
+Known/distress is always priority 5 and therefore wins.</li>
+<li><strong>Per-team state overwrite:</strong> Browser 1704 resolved
+state per soldier but wrote the result to every fire-team member.
+Browser 2121 applies runtime objective state per actor. An escort
+leader/Stay/Ask support can remain priority 3 while Engage support in
+the same team resolves priority 4.</li>
+<li><strong>Stale route authority:</strong> a higher-priority state now
+clears route scratch belonging to every lower category beneath it.
+Exploration hunt/patrol data is cleared by any priority 1–8 objective;
+VIP-approach scratch is cleared by priorities 1–7; local contact-search
+scratch is cleared by priorities 1–4.</li>
+<li><strong>Last Known fallback:</strong> an obstructed local Last
+Known/distress probe no longer calls generic patrol. It holds/retries
+the reported contact so priority 5 cannot degrade into priority 9.</li>
+<li><strong>Known civilian assignment:</strong> changing to a known
+VIP/civilian target clears stale exploration-sector/patrol state
+immediately while retaining the rescue assignment itself.</li>
 </ul>
-
 <h2 id="diagnostics--persistence">Diagnostics / persistence</h2>
-
 <p>Each Default AI actor can now carry optional:</p>
 <ul>
-  <li>objective type and numeric priority;</li>
-  <li>objective source/reason;</li>
-  <li>target entity ID and coordinate;</li>
-  <li>objective round/revision;</li>
-  <li>previous objective/priority;</li>
-  <li>interruption reason/round.</li>
+<li>objective type and numeric priority;</li>
+<li>objective source/reason;</li>
+<li>target entity ID and coordinate;</li>
+<li>objective round/revision;</li>
+<li>previous objective/priority;</li>
+<li>interruption reason/round.</li>
 </ul>
-
-<p>Those fields are included in streamed tactical snapshots. They are optional, so save format remains 4. Priority-1 stabilization and priority-2 casualty responders write the same diagnostics as normal mission objectives.</p>
-
-<h2 id="formation-escort-and-hybrid-boundaries">Formation, escort and Hybrid boundaries</h2>
-
-<p>Browser 1426 post-contact recovery remains a moving formation overlay. It never enters the strategic candidate list and leader succession continues to inherit the recovery latch. Civilian Escort Support remains authoritative: leader always stays; Stay/Ask support remains attached; Engage support may break off for visible contact. Hybrid explicit orders are not silently replaced by Default-AI rescue/search movement.</p>
-
+<p>Those fields are included in streamed tactical snapshots. They are
+optional, so save format remains 4. Priority-1 stabilization and
+priority-2 casualty responders write the same diagnostics as normal
+mission objectives.</p>
+<h2 id="formation-escort-and-hybrid-boundaries">Formation, escort and
+Hybrid boundaries</h2>
+<p>Browser 1426 post-contact recovery remains a moving formation
+overlay. It never enters the strategic candidate list and leader
+succession continues to inherit the recovery latch. Civilian Escort
+Support remains authoritative: leader always stays; Stay/Ask support
+remains attached; Engage support may break off for visible contact.
+Hybrid explicit orders are not silently replaced by Default-AI
+rescue/search movement.</p>
 <h2 id="regression--field-acceptance">Regression / field acceptance</h2>
-
 <ul>
-  <li>Behavioral focused regression: <code class="language-plaintext highlighter-rouge">tools/test-default-ai-central-objective-authority.cjs</code> — 23/23 cases passed.</li>
-  <li>Historical focused entrypoint: <code class="language-plaintext highlighter-rouge">tools/test-default-ai-authoritative-priority-stack.cjs</code> now delegates to the behavioral suite. The retained Browser 1632 global-contact/VIP regression was made successor-build/central-resolver aware and passes 6/6.</li>
-  <li>Full retained local Node/smoke sweep from the exact Browser 1704 GitHub Pages artifact: 33/33 entrypoint files passed, including Mobile/PWA and six tactical smoke scripts. Build seam, embedded JavaScript syntax, service-worker syntax and package hashes all pass.</li>
-  <li>Field checklist: <code class="language-plaintext highlighter-rouge">DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_FIELD_ACCEPTANCE.txt</code>.</li>
-  <li>Primary live fixture remains both squads at North America / Alien Abduction Site / Threat 2 / Tide Horror / $520k / +20 Panic, with Farah/Echo watched from deployment through first contact and post-contact continuation.</li>
+<li>Behavioral focused regression:
+<code>tools/test-default-ai-central-objective-authority.cjs</code> —
+23/23 cases passed.</li>
+<li>Historical focused entrypoint:
+<code>tools/test-default-ai-authoritative-priority-stack.cjs</code> now
+delegates to the behavioral suite. The retained Browser 1632
+global-contact/VIP regression was made successor-build/central-resolver
+aware and passes 6/6.</li>
+<li>Full retained local Node/smoke sweep from the exact Browser 1704
+GitHub Pages artifact: 33/33 entrypoint files passed, including
+Mobile/PWA and six tactical smoke scripts. Build seam, embedded
+JavaScript syntax, service-worker syntax and package hashes all
+pass.</li>
+<li>Field checklist:
+<code>DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_FIELD_ACCEPTANCE.txt</code>.</li>
+<li>Primary live fixture remains both squads at North America / Alien
+Abduction Site / Threat 2 / Tide Horror / $520k / +20 Panic, with
+Farah/Echo watched from deployment through first contact and
+post-contact continuation.</li>
 </ul>
-
 <h2 id="preserve-going-forward">Preserve going forward</h2>
-
-<p>Do not restore the rejected Browser 1255 narrow doorway framing. Keep tetromino footprint/wall continuity, IndexedDB saves, Beacon forward reform/presentation, VIP/civilian boarding/extraction, Browser 1426 reassembly/leader succession and Browser 1525 local search/contact pursuit intact.</p>
-
-<p>Roadmap-only items remain: real closable/lockable doors and shelter callouts; civilian/VIP casualty assessment/stabilization; AEGIS Operations Overview work as currently recorded; and soldier battle-model face/equipment identity matching.</p>
-
+<p>Do not restore the rejected Browser 1255 narrow doorway framing. Keep
+tetromino footprint/wall continuity, IndexedDB saves, Beacon forward
+reform/presentation, VIP/civilian boarding/extraction, Browser 1426
+reassembly/leader succession and Browser 1525 local search/contact
+pursuit intact.</p>
+<p>Roadmap-only items remain: real closable/lockable doors and shelter
+callouts; civilian/VIP casualty assessment/stabilization; AEGIS
+Operations Overview work as currently recorded; and soldier battle-model
+face/equipment identity matching.</p>
 <hr />
-
-<h1 id="codex-handoff--v02609151704_default_ai_authoritative_soldier_priority_stack_patch">CODEX HANDOFF — v0.26.09.15.1704_DEFAULT_AI_AUTHORITATIVE_SOLDIER_PRIORITY_STACK_PATCH</h1>
-
-<p>Browser 1704 is the deep-dive consolidation of Default AI soldier behavior requested after the supplied two-squad North America Alien Abduction Site exposed competing movement authorities. Save format remains 4.</p>
-
-<h2 id="authoritative-default-ai-objective-stack">Authoritative Default AI objective stack</h2>
-<p>Default Simulation now resolves soldier/fire-team mission intent against one explicit order:</p>
-<ol>
-  <li>Stabilize a bleeding casualty.</li>
-  <li>Recover/extract a stabilized or downed AEGIS soldier.</li>
-  <li>Continue active civilian/VIP escort duty.</li>
-  <li>Engage visible aliens.</li>
-  <li>Investigate Last Known Contact or a distress-reported attacker position.</li>
-  <li>Neutralize a confirmed Alien Field Beacon.</li>
-  <li>Clear an unchecked crashed-UFO deployment bay.</li>
-  <li>Approach and escort a known unassigned VIP/civilian.</li>
-  <li>Explore for undiscovered aliens/civilians.</li>
+<h1
+id="codex-handoff--v02609151704_default_ai_authoritative_soldier_priority_stack_patch">CODEX
+HANDOFF —
+v0.26.09.15.1704_DEFAULT_AI_AUTHORITATIVE_SOLDIER_PRIORITY_STACK_PATCH</h1>
+<p>Browser 1704 is the deep-dive consolidation of Default AI soldier
+behavior requested after the supplied two-squad North America Alien
+Abduction Site exposed competing movement authorities. Save format
+remains 4.</p>
+<h2 id="authoritative-default-ai-objective-stack">Authoritative Default
+AI objective stack</h2>
+<p>Default Simulation now resolves soldier/fire-team mission intent
+against one explicit order:</p>
+<ol type="1">
+<li>Stabilize a bleeding casualty.</li>
+<li>Recover/extract a stabilized or downed AEGIS soldier.</li>
+<li>Continue active civilian/VIP escort duty.</li>
+<li>Engage visible aliens.</li>
+<li>Investigate Last Known Contact or a distress-reported attacker
+position.</li>
+<li>Neutralize a confirmed Alien Field Beacon.</li>
+<li>Clear an unchecked crashed-UFO deployment bay.</li>
+<li>Approach and escort a known unassigned VIP/civilian.</li>
+<li>Explore for undiscovered aliens/civilians.</li>
 </ol>
-
-<p>Civilian/VIP downed-triage itself is still a recorded future feature; the executable stabilization/recovery slots currently operate on AEGIS casualties because that is the casualty state implemented today.</p>
-
+<p>Civilian/VIP downed-triage itself is still a recorded future feature;
+the executable stabilization/recovery slots currently operate on AEGIS
+casualties because that is the casualty state implemented today.</p>
 <h2 id="what-changed-in-browser-1704">What changed in Browser 1704</h2>
 <ul>
-  <li>Bleeding stabilization is now a true pre-objective pass. A medkit responder may route to a bleeding downed soldier, and that responder is withheld from every lower-priority action for the remainder of the round. Casualty recovery/extraction follows as priority two. Routine non-bleeding medkit healing was found to be an unlisted competing priority and is now opportunistic after the main tactical pass.</li>
-  <li>New visible alien contact still truncates stale movement at the first sighting cell, but the contact interrupt now also recalculates escort-support duty immediately: the escort leader stays; Stay/Ask supports remain; Engage supports are released into combat. Remaining free actions replan from the new contact.</li>
-  <li>Distress-reported attacker coordinates are folded into Last Known Contact authority instead of competing as a separate search branch.</li>
-  <li>Beacon/UFO responsibility is reserved before known-civilian assignment, with Beacon before UFO. A reserved higher-priority source team cannot be stolen by VIP/civilian approach planning.</li>
-  <li>Known tracker VIPs and ordinary revealed civilians both qualify for coordinated fire-team assignment. Default Simulation may replace stale autonomous waypoint movement for a known civilian; Hybrid explicit player movement remains player-owned. Generic exploration is blocked while a known civilian/VIP remains unassigned.</li>
-  <li>Post-contact reassembly is no longer a mission objective that can hold the leader stationary. The effective leader resumes the highest-priority objective while supports rebuild formation around that moving anchor. The Browser 1426 team-wide recovery latch and bounded unreachable-member fallback remain.</li>
-  <li>Emergency planner recovery is priority-aware: visible/Last Known contact continues to receive movement authority, and Beacon/UFO/known-civilian responsibility causes a safe hold rather than an illegal generic patrol fallback.</li>
-  <li>FPV/TPV current-order diagnostics now present the same numbered priority stack; formation recovery is labeled as an overlay rather than a higher mission objective.</li>
+<li>Bleeding stabilization is now a true pre-objective pass. A medkit
+responder may route to a bleeding downed soldier, and that responder is
+withheld from every lower-priority action for the remainder of the
+round. Casualty recovery/extraction follows as priority two. Routine
+non-bleeding medkit healing was found to be an unlisted competing
+priority and is now opportunistic after the main tactical pass.</li>
+<li>New visible alien contact still truncates stale movement at the
+first sighting cell, but the contact interrupt now also recalculates
+escort-support duty immediately: the escort leader stays; Stay/Ask
+supports remain; Engage supports are released into combat. Remaining
+free actions replan from the new contact.</li>
+<li>Distress-reported attacker coordinates are folded into Last Known
+Contact authority instead of competing as a separate search branch.</li>
+<li>Beacon/UFO responsibility is reserved before known-civilian
+assignment, with Beacon before UFO. A reserved higher-priority source
+team cannot be stolen by VIP/civilian approach planning.</li>
+<li>Known tracker VIPs and ordinary revealed civilians both qualify for
+coordinated fire-team assignment. Default Simulation may replace stale
+autonomous waypoint movement for a known civilian; Hybrid explicit
+player movement remains player-owned. Generic exploration is blocked
+while a known civilian/VIP remains unassigned.</li>
+<li>Post-contact reassembly is no longer a mission objective that can
+hold the leader stationary. The effective leader resumes the
+highest-priority objective while supports rebuild formation around that
+moving anchor. The Browser 1426 team-wide recovery latch and bounded
+unreachable-member fallback remain.</li>
+<li>Emergency planner recovery is priority-aware: visible/Last Known
+contact continues to receive movement authority, and
+Beacon/UFO/known-civilian responsibility causes a safe hold rather than
+an illegal generic patrol fallback.</li>
+<li>FPV/TPV current-order diagnostics now present the same numbered
+priority stack; formation recovery is labeled as an overlay rather than
+a higher mission objective.</li>
 </ul>
-
 <h2 id="field-acceptance">Field acceptance</h2>
-<p>Use <code class="language-plaintext highlighter-rouge">DEFAULT_AI_AUTHORITATIVE_PRIORITY_STACK_FIELD_ACCEPTANCE.txt</code>. The primary fixture remains the supplied Browser 1426 save and the North America / Threat 2 / Tide Horror Alien Abduction Site with both available squads. Pay particular attention to Farah/Echo, whole-fire-team reaction to first alien contact, known VIP assignment, Civilian Escort Support modes, post-contact moving-leader reform, and fallback behavior.</p>
-
-<p>Focused regression: <code class="language-plaintext highlighter-rouge">tools/test-default-ai-authoritative-priority-stack.cjs</code>.</p>
-
+<p>Use
+<code>DEFAULT_AI_AUTHORITATIVE_PRIORITY_STACK_FIELD_ACCEPTANCE.txt</code>.
+The primary fixture remains the supplied Browser 1426 save and the North
+America / Threat 2 / Tide Horror Alien Abduction Site with both
+available squads. Pay particular attention to Farah/Echo,
+whole-fire-team reaction to first alien contact, known VIP assignment,
+Civilian Escort Support modes, post-contact moving-leader reform, and
+fallback behavior.</p>
+<p>Focused regression:
+<code>tools/test-default-ai-authoritative-priority-stack.cjs</code>.</p>
 <h2 id="next-roadmap-candidates">Next roadmap candidates</h2>
 <ul>
-  <li>Tactical soldier face/equipment identity matching.</li>
-  <li>Command Screen → AEGIS Operations Overview.</li>
-  <li>Interactive closable/lockable doors, locked-shelter callouts, and civilian/VIP casualty triage remain recorded future systems.</li>
+<li>Tactical soldier face/equipment identity matching.</li>
+<li>Command Screen → AEGIS Operations Overview.</li>
+<li>Interactive closable/lockable doors, locked-shelter callouts, and
+civilian/VIP casualty triage remain recorded future systems.</li>
 </ul>
-
-<p>— Previous handoff —</p>
-
-<h1 id="codex-handoff--v02609151632_default_ai_global_contact_and_vip_priority_hotfix">CODEX HANDOFF — v0.26.09.15.1632_DEFAULT_AI_GLOBAL_CONTACT_AND_VIP_PRIORITY_HOTFIX</h1>
-
-<p>Browser 1632 corrects the Default AI priority regression exposed by the supplied two-squad North America Alien Abduction Site fixture. The user-defined authority is now explicit: <strong>seen alien contact &gt; active escort commitment / escort-support player choice &gt; known unassigned VIP rescue &gt; ordinary exploration</strong>. Save format remains 4.</p>
-
-<h2 id="default-ai-global-contact-interruption">Default AI global contact interruption</h2>
+<p>--- Previous handoff ---</p>
+<h1
+id="codex-handoff--v02609151632_default_ai_global_contact_and_vip_priority_hotfix">CODEX
+HANDOFF —
+v0.26.09.15.1632_DEFAULT_AI_GLOBAL_CONTACT_AND_VIP_PRIORITY_HOTFIX</h1>
+<p>Browser 1632 corrects the Default AI priority regression exposed by
+the supplied two-squad North America Alien Abduction Site fixture. The
+user-defined authority is now explicit: <strong>seen alien contact &gt;
+active escort commitment / escort-support player choice &gt; known
+unassigned VIP rescue &gt; ordinary exploration</strong>. Save format
+remains 4.</p>
+<h2 id="default-ai-global-contact-interruption">Default AI global
+contact interruption</h2>
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">tacticalAiMovementContactInterruptPlan(...)</code> walks a planned Default AI movement route cell-by-cell. The first cell that gains personal sight of a previously unknown living alien becomes the hard stop for that route. Stale search/VIP-approach movement beyond the sighting cell is discarded.</li>
-  <li><code class="language-plaintext highlighter-rouge">tacticalAiCivilianPriorityTurn(...)</code> now promotes newly acquired contact during rescue search/approach to dynamic combat authority immediately. Later unformed rescue/search teams do not continue their old movement in the same planning pass.</li>
-  <li>After rescue planning reports live combat, <code class="language-plaintext highlighter-rouge">resolveMission(...)</code> releases unformed VIP-search/approach duty IDs so those teams can join combat. Established escort leaders remain duty-bound; escort supports stay or break off strictly through <code class="language-plaintext highlighter-rouge">tacticalEscortSupportModeForTeam(...)</code> and the existing Civilian Escort Support dropdown/prompt.</li>
-  <li>Default Simulation clears lower-priority fire-team command movement while live visible combat is active so free teams cannot keep following exploration/command-map waypoints instead of routing to the known alien. Hybrid command remains explicit player authority.</li>
+<li><code>tacticalAiMovementContactInterruptPlan(...)</code> walks a
+planned Default AI movement route cell-by-cell. The first cell that
+gains personal sight of a previously unknown living alien becomes the
+hard stop for that route. Stale search/VIP-approach movement beyond the
+sighting cell is discarded.</li>
+<li><code>tacticalAiCivilianPriorityTurn(...)</code> now promotes newly
+acquired contact during rescue search/approach to dynamic combat
+authority immediately. Later unformed rescue/search teams do not
+continue their old movement in the same planning pass.</li>
+<li>After rescue planning reports live combat,
+<code>resolveMission(...)</code> releases unformed VIP-search/approach
+duty IDs so those teams can join combat. Established escort leaders
+remain duty-bound; escort supports stay or break off strictly through
+<code>tacticalEscortSupportModeForTeam(...)</code> and the existing
+Civilian Escort Support dropdown/prompt.</li>
+<li>Default Simulation clears lower-priority fire-team command movement
+while live visible combat is active so free teams cannot keep following
+exploration/command-map waypoints instead of routing to the known alien.
+Hybrid command remains explicit player authority.</li>
 </ul>
-
-<h2 id="known-vip-assignment-before-exploration">Known VIP assignment before exploration</h2>
+<h2 id="known-vip-assignment-before-exploration">Known VIP assignment
+before exploration</h2>
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">tacticalVipRescueAssignmentPlan(...)</code> now enables for a living unresolved tracked VIP even when the generic civilian objective is non-mandatory. Known VIP coordinates therefore receive available fire-team assignments before fallback exploration.</li>
-  <li>The initial/fresh Default AI mission pass may invoke tracked-VIP rescue; it is no longer restricted to a continuing simulation state.</li>
-  <li>Browser 1525 nearest-sector search remains intact only as the fallback when there is no visible alien combat authority and no applicable unassigned known VIP responsibility.</li>
-  <li>Browser 1426 post-contact reassembly remains the transition after combat ends; teams reform before returning to VIP work or fallback search.</li>
+<li><code>tacticalVipRescueAssignmentPlan(...)</code> now enables for a
+living unresolved tracked VIP even when the generic civilian objective
+is non-mandatory. Known VIP coordinates therefore receive available
+fire-team assignments before fallback exploration.</li>
+<li>The initial/fresh Default AI mission pass may invoke tracked-VIP
+rescue; it is no longer restricted to a continuing simulation
+state.</li>
+<li>Browser 1525 nearest-sector search remains intact only as the
+fallback when there is no visible alien combat authority and no
+applicable unassigned known VIP responsibility.</li>
+<li>Browser 1426 post-contact reassembly remains the transition after
+combat ends; teams reform before returning to VIP work or fallback
+search.</li>
 </ul>
-
 <h2 id="field-acceptance-1">Field acceptance</h2>
 <ul>
-  <li>Primary fixture: supplied campaign save, both available squads to North America / Threat 2 / Tide Horror / Alien Abduction Site.</li>
-  <li>A known tracked VIP should receive a fire-team assignment and that team should visibly route toward the VIP instead of entering generic exploration.</li>
-  <li>If a new alien becomes visible during any exploration or VIP-approach route, movement should stop at the first sighting cell and all free teams should switch toward the contact.</li>
-  <li>An established escort leader must continue escorting. Support soldiers must honor Civilian Escort Support: Stay = remain attached; Engage = break off; Ask = wait for the player’s decision.</li>
-  <li>After the contact is resolved, Browser 1426 formation recovery should occur, then remaining VIP assignments resume; only after those responsibilities are exhausted should Browser 1525 deconflicted exploration resume.</li>
-  <li>Focused regression: <code class="language-plaintext highlighter-rouge">tools/test-default-ai-global-contact-and-vip-priority.cjs</code>. Field checklist: <code class="language-plaintext highlighter-rouge">DEFAULT_AI_GLOBAL_CONTACT_AND_VIP_PRIORITY_FIELD_ACCEPTANCE.txt</code>.</li>
+<li>Primary fixture: supplied campaign save, both available squads to
+North America / Threat 2 / Tide Horror / Alien Abduction Site.</li>
+<li>A known tracked VIP should receive a fire-team assignment and that
+team should visibly route toward the VIP instead of entering generic
+exploration.</li>
+<li>If a new alien becomes visible during any exploration or
+VIP-approach route, movement should stop at the first sighting cell and
+all free teams should switch toward the contact.</li>
+<li>An established escort leader must continue escorting. Support
+soldiers must honor Civilian Escort Support: Stay = remain attached;
+Engage = break off; Ask = wait for the player's decision.</li>
+<li>After the contact is resolved, Browser 1426 formation recovery
+should occur, then remaining VIP assignments resume; only after those
+responsibilities are exhausted should Browser 1525 deconflicted
+exploration resume.</li>
+<li>Focused regression:
+<code>tools/test-default-ai-global-contact-and-vip-priority.cjs</code>.
+Field checklist:
+<code>DEFAULT_AI_GLOBAL_CONTACT_AND_VIP_PRIORITY_FIELD_ACCEPTANCE.txt</code>.</li>
 </ul>
-
 <h2 id="next-roadmap-candidates-1">Next roadmap candidates</h2>
 <ul>
-  <li>Tactical soldier face/equipment identity matching.</li>
-  <li>Command Screen → AEGIS Operations Overview.</li>
-  <li>Interactive closable/lockable doors, locked-shelter callouts, and civilian/VIP casualty triage remain recorded future systems.</li>
+<li>Tactical soldier face/equipment identity matching.</li>
+<li>Command Screen → AEGIS Operations Overview.</li>
+<li>Interactive closable/lockable doors, locked-shelter callouts, and
+civilian/VIP casualty triage remain recorded future systems.</li>
 </ul>
-
-<p>— Previous handoff —</p>
-
-<h1 id="codex-handoff--v02609151525_default_ai_contact_pursuit_and_local_sector_search_hotfix">CODEX HANDOFF — v0.26.09.15.1525_DEFAULT_AI_CONTACT_PURSUIT_AND_LOCAL_SECTOR_SEARCH_HOTFIX</h1>
-
-<p>Browser 1525 is a focused Default AI navigation/combat-response hotfix built on Browser 1426. It was prompted by the supplied campaign fixture where both available squads are sent to the North America Alien Abduction Site and Farah Vale, leading Echo Fire Team, can head toward the northwest edge while Default AI soldiers appear reluctant to close on spotted aliens. Save format remains 4.</p>
-
-<h2 id="default-ai-local-search--visible-contact-pursuit">Default AI local search / visible-contact pursuit</h2>
+<p>--- Previous handoff ---</p>
+<h1
+id="codex-handoff--v02609151525_default_ai_contact_pursuit_and_local_sector_search_hotfix">CODEX
+HANDOFF —
+v0.26.09.15.1525_DEFAULT_AI_CONTACT_PURSUIT_AND_LOCAL_SECTOR_SEARCH_HOTFIX</h1>
+<p>Browser 1525 is a focused Default AI navigation/combat-response
+hotfix built on Browser 1426. It was prompted by the supplied campaign
+fixture where both available squads are sent to the North America Alien
+Abduction Site and Farah Vale, leading Echo Fire Team, can head toward
+the northwest edge while Default AI soldiers appear reluctant to close
+on spotted aliens. Save format remains 4.</p>
+<h2 id="default-ai-local-search--visible-contact-pursuit">Default AI
+local search / visible-contact pursuit</h2>
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">tacticalAiAlienHuntTarget(...)</code> still partitions unexplored sectors across fire teams to prevent every team from sweeping the same ground, but assigned sectors are now ordered by distance from the team’s current authoritative leader instead of raw numeric sector id. A freshly deployed Echo team therefore starts with its nearest assigned sector rather than being dragged toward sector zero / the northwest side of a large map.</li>
-  <li><code class="language-plaintext highlighter-rouge">tacticalAiSpottedAlienApproachPlan(...)</code> is a bounded live-contact movement bridge. If a personally observed alien is still outside the soldier’s preferred ranged engagement band, it reuses <code class="language-plaintext highlighter-rouge">tacticalAiDirectContactPlan(...)</code> to advance along the direct legal route, then truncates that route as soon as the preferred band is reached.</li>
-  <li>Once inside the engagement band, the existing <code class="language-plaintext highlighter-rouge">tacticalAiMovePlan(...)</code> remains authoritative for cover, standoff, role spacing, formation and line-of-sight choices. This deliberately avoids turning Default AI into reckless point-blank charging.</li>
-  <li>The same bounded approach is used when a soldier gains personal contact during the first movement leg and reassesses for an extension move, as well as on later live-combat movement.</li>
-  <li>Player/hybrid commands, active formation recovery, Beacon assault logic, Last Known Contact, escort/casualty duties, covered-fire holds and Browser 1426 post-contact reassembly remain higher priority.</li>
+<li><code>tacticalAiAlienHuntTarget(...)</code> still partitions
+unexplored sectors across fire teams to prevent every team from sweeping
+the same ground, but assigned sectors are now ordered by distance from
+the team's current authoritative leader instead of raw numeric sector
+id. A freshly deployed Echo team therefore starts with its nearest
+assigned sector rather than being dragged toward sector zero / the
+northwest side of a large map.</li>
+<li><code>tacticalAiSpottedAlienApproachPlan(...)</code> is a bounded
+live-contact movement bridge. If a personally observed alien is still
+outside the soldier's preferred ranged engagement band, it reuses
+<code>tacticalAiDirectContactPlan(...)</code> to advance along the
+direct legal route, then truncates that route as soon as the preferred
+band is reached.</li>
+<li>Once inside the engagement band, the existing
+<code>tacticalAiMovePlan(...)</code> remains authoritative for cover,
+standoff, role spacing, formation and line-of-sight choices. This
+deliberately avoids turning Default AI into reckless point-blank
+charging.</li>
+<li>The same bounded approach is used when a soldier gains personal
+contact during the first movement leg and reassesses for an extension
+move, as well as on later live-combat movement.</li>
+<li>Player/hybrid commands, active formation recovery, Beacon assault
+logic, Last Known Contact, escort/casualty duties, covered-fire holds
+and Browser 1426 post-contact reassembly remain higher priority.</li>
 </ul>
-
-<h2 id="regression--field-acceptance-1">Regression / field acceptance</h2>
+<h2 id="regression--field-acceptance-1">Regression / field
+acceptance</h2>
 <ul>
-  <li>Focused regression: <code class="language-plaintext highlighter-rouge">tools/test-default-ai-contact-pursuit-and-local-sector-search.cjs</code>.</li>
-  <li>Primary field fixture: load the supplied Browser 1426 campaign, send Anaconda Squad and Bear Squad to the North America / Threat 2 / Tide Horror Alien Abduction Site, and observe Echo plus the first spotted contacts.</li>
-  <li>Farah/Echo should no longer select a remote northwest search sector solely because of sector numbering. Before contact, teams should begin in nearby deconflicted search sectors.</li>
-  <li>When a Default AI soldier personally spots an alien outside preferred engagement distance, movement should visibly close toward that contact. Once in ranged engagement distance, cover/standoff movement may again be lateral or stationary.</li>
-  <li>Recheck VIP/escort, Beacon, Last Known Contact and post-contact reassembly behavior to ensure the new movement bridge does not outrank those systems.</li>
+<li>Focused regression:
+<code>tools/test-default-ai-contact-pursuit-and-local-sector-search.cjs</code>.</li>
+<li>Primary field fixture: load the supplied Browser 1426 campaign, send
+Anaconda Squad and Bear Squad to the North America / Threat 2 / Tide
+Horror Alien Abduction Site, and observe Echo plus the first spotted
+contacts.</li>
+<li>Farah/Echo should no longer select a remote northwest search sector
+solely because of sector numbering. Before contact, teams should begin
+in nearby deconflicted search sectors.</li>
+<li>When a Default AI soldier personally spots an alien outside
+preferred engagement distance, movement should visibly close toward that
+contact. Once in ranged engagement distance, cover/standoff movement may
+again be lateral or stationary.</li>
+<li>Recheck VIP/escort, Beacon, Last Known Contact and post-contact
+reassembly behavior to ensure the new movement bridge does not outrank
+those systems.</li>
 </ul>
-
 <h2 id="next-roadmap-candidates-2">Next roadmap candidates</h2>
 <ul>
-  <li>Tactical soldier face/equipment identity matching.</li>
-  <li>Command Screen → AEGIS Operations Overview.</li>
-  <li>Interactive closable/lockable building doors, then locked-shelter callouts and civilian/VIP casualty triage remain recorded later roadmap work.</li>
+<li>Tactical soldier face/equipment identity matching.</li>
+<li>Command Screen → AEGIS Operations Overview.</li>
+<li>Interactive closable/lockable building doors, then locked-shelter
+callouts and civilian/VIP casualty triage remain recorded later roadmap
+work.</li>
 </ul>
-
-<p>— Previous handoff —</p>
-
-<h1 id="codex-handoff--v02609151426_post_contact_fire_team_reassembly_and_leader_succession_patch">CODEX HANDOFF — v0.26.09.15.1426_POST_CONTACT_FIRE_TEAM_REASSEMBLY_AND_LEADER_SUCCESSION_PATCH</h1>
-
-<p>Browser 1316 is the field-tested wall-continuity baseline. Browser 1426 addresses the reported regression where soldiers can disperse during alien contact and then resume unrelated individual movement instead of rebuilding their fire team. Save format remains 4.</p>
-
-<h2 id="post-contact-fire-team-reassembly--leader-succession">Post-contact fire-team reassembly / leader succession</h2>
+<p>--- Previous handoff ---</p>
+<h1
+id="codex-handoff--v02609151426_post_contact_fire_team_reassembly_and_leader_succession_patch">CODEX
+HANDOFF —
+v0.26.09.15.1426_POST_CONTACT_FIRE_TEAM_REASSEMBLY_AND_LEADER_SUCCESSION_PATCH</h1>
+<p>Browser 1316 is the field-tested wall-continuity baseline. Browser
+1426 addresses the reported regression where soldiers can disperse
+during alien contact and then resume unrelated individual movement
+instead of rebuilding their fire team. Save format remains 4.</p>
+<h2
+id="post-contact-fire-team-reassembly--leader-succession">Post-contact
+fire-team reassembly / leader succession</h2>
 <ul>
-  <li>Live combat now arms a dedicated <code class="language-plaintext highlighter-rouge">aiPostContactRecoveryRound</code> latch on every living member of each authoritative fire team. The older <code class="language-plaintext highlighter-rouge">aiPostContactSplitRound</code>/slot remains leader-only for split-search ownership, so this does not turn supports into independent search authorities.</li>
-  <li>Clearing/invalidating Last Known Contact records also arms the team-wide latch before releasing search scratch state.</li>
-  <li><code class="language-plaintext highlighter-rouge">tacticalFireTeamPostContactRecoveryState(...)</code> reads the team latch after ordinary fire-team reconciliation, so if the former leader dies or is unavailable the newly authoritative leader still owns the regroup.</li>
-  <li>While recovery is active, the leader holds and reachable supports route to their formation cells before the team resumes its stored objective. Active combat, Last Known Contact authority and active escort/casualty duties still outrank ordinary regrouping.</li>
-  <li>A bounded degraded-cohesion fallback releases the team after three recovery rounds only when every support that still has a legal path is formed and the remaining blocker is genuinely unreachable. Normal formation following remains active afterward so the separated soldier can still catch up.</li>
-  <li>Playback snapshots persist the additive recovery round. Save format remains 4; no campaign migration is required.</li>
+<li>Live combat now arms a dedicated
+<code>aiPostContactRecoveryRound</code> latch on every living member of
+each authoritative fire team. The older
+<code>aiPostContactSplitRound</code>/slot remains leader-only for
+split-search ownership, so this does not turn supports into independent
+search authorities.</li>
+<li>Clearing/invalidating Last Known Contact records also arms the
+team-wide latch before releasing search scratch state.</li>
+<li><code>tacticalFireTeamPostContactRecoveryState(...)</code> reads the
+team latch after ordinary fire-team reconciliation, so if the former
+leader dies or is unavailable the newly authoritative leader still owns
+the regroup.</li>
+<li>While recovery is active, the leader holds and reachable supports
+route to their formation cells before the team resumes its stored
+objective. Active combat, Last Known Contact authority and active
+escort/casualty duties still outrank ordinary regrouping.</li>
+<li>A bounded degraded-cohesion fallback releases the team after three
+recovery rounds only when every support that still has a legal path is
+formed and the remaining blocker is genuinely unreachable. Normal
+formation following remains active afterward so the separated soldier
+can still catch up.</li>
+<li>Playback snapshots persist the additive recovery round. Save format
+remains 4; no campaign migration is required.</li>
 </ul>
-
 <h2 id="field-acceptance-2">Field acceptance</h2>
 <ul>
-  <li>Let a 3–4 soldier team spread during a fight, end the contact, and verify the leader holds while supports reform before the team resumes Default AI or its persistent VIP/Beacon assignment.</li>
-  <li>Repeat with the original fire-team leader killed/downed during the fight; the surviving promoted/acting leader must retain the pending regroup.</li>
-  <li>Repeat with one support genuinely unable to route to its slot; after the bounded recovery window the reachable majority should continue while the separated member keeps normal catch-up behavior.</li>
-  <li>Verify visible contact, unresolved Last Known Contact, active escort/casualty work and Beacon forward-reform exceptions still outrank ordinary regrouping.</li>
+<li>Let a 3–4 soldier team spread during a fight, end the contact, and
+verify the leader holds while supports reform before the team resumes
+Default AI or its persistent VIP/Beacon assignment.</li>
+<li>Repeat with the original fire-team leader killed/downed during the
+fight; the surviving promoted/acting leader must retain the pending
+regroup.</li>
+<li>Repeat with one support genuinely unable to route to its slot; after
+the bounded recovery window the reachable majority should continue while
+the separated member keeps normal catch-up behavior.</li>
+<li>Verify visible contact, unresolved Last Known Contact, active
+escort/casualty work and Beacon forward-reform exceptions still outrank
+ordinary regrouping.</li>
 </ul>
-
 <h2 id="next-roadmap-candidates-3">Next roadmap candidates</h2>
 <ul>
-  <li>Tactical soldier face/equipment identity matching.</li>
-  <li>Command Screen → AEGIS Operations Overview.</li>
-  <li>Interactive closable/lockable building doors, then locked-shelter callouts and civilian/VIP casualty triage remain recorded later roadmap work.</li>
+<li>Tactical soldier face/equipment identity matching.</li>
+<li>Command Screen → AEGIS Operations Overview.</li>
+<li>Interactive closable/lockable building doors, then locked-shelter
+callouts and civilian/VIP casualty triage remain recorded later roadmap
+work.</li>
 </ul>
-
-<p>— Previous handoff —</p>
-
+<p>--- Previous handoff ---</p>
 <p>v0.26.09.15.1316_PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_HOTFIX_PATCH</p>
-
 <p>Procedural Building Staggered-Turn Connector Hotfix</p>
 <ul>
-  <li>Field evidence after Browser 1230 showed the remaining large openings were <strong>not generated doorways</strong>: the affected cells lacked the gray doorway floor marker. Do not restore the rejected Browser 1255 framed-doorway treatment; it narrowed legitimate entrances and addressed the wrong ownership path.</li>
-  <li>Root cause: Browser 1050 correctly restricted explicit perimeter seam generation to four-way/cardinal footprint adjacency, but <code class="language-plaintext highlighter-rouge">tacticalThreeExteriorFacadePair(...)</code> could still label a non-cardinal six-way hex-neighbor pair as an explicit facade pair. Both renderers then filtered that pair out of <code class="language-plaintext highlighter-rouge">tacticalConnectedStructuralWalls(...)</code>, while the explicit seam pass never owned it. The result was a missing bridge at staggered tetromino steps/turns.</li>
-  <li><code class="language-plaintext highlighter-rouge">tacticalBuildingCardinalAdjacentCells(...)</code> now gates explicit facade-pair ownership. Cardinal footprint runs continue through the Browser 1230 projection-aware seam path; non-cardinal tactical hex-neighbor pairs keep the established structural connector.</li>
-  <li>Door authority is unchanged. True generated doors stay open and retain their gray floor marker; no doorway-frame geometry is added. Collision, pathfinding, LOS, cover, structural HP, targeting and breach authority remain on existing structural covers.</li>
-  <li>Shared fallback/persistent renderer contract is covered by <code class="language-plaintext highlighter-rouge">tools/test-procedural-building-wall-continuity.cjs</code>. Save format remains 4.</li>
-  <li>Field checklist: <code class="language-plaintext highlighter-rouge">PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_FIELD_ACCEPTANCE.txt</code>.</li>
+<li>Field evidence after Browser 1230 showed the remaining large
+openings were <strong>not generated doorways</strong>: the affected
+cells lacked the gray doorway floor marker. Do not restore the rejected
+Browser 1255 framed-doorway treatment; it narrowed legitimate entrances
+and addressed the wrong ownership path.</li>
+<li>Root cause: Browser 1050 correctly restricted explicit perimeter
+seam generation to four-way/cardinal footprint adjacency, but
+<code>tacticalThreeExteriorFacadePair(...)</code> could still label a
+non-cardinal six-way hex-neighbor pair as an explicit facade pair. Both
+renderers then filtered that pair out of
+<code>tacticalConnectedStructuralWalls(...)</code>, while the explicit
+seam pass never owned it. The result was a missing bridge at staggered
+tetromino steps/turns.</li>
+<li><code>tacticalBuildingCardinalAdjacentCells(...)</code> now gates
+explicit facade-pair ownership. Cardinal footprint runs continue through
+the Browser 1230 projection-aware seam path; non-cardinal tactical
+hex-neighbor pairs keep the established structural connector.</li>
+<li>Door authority is unchanged. True generated doors stay open and
+retain their gray floor marker; no doorway-frame geometry is added.
+Collision, pathfinding, LOS, cover, structural HP, targeting and breach
+authority remain on existing structural covers.</li>
+<li>Shared fallback/persistent renderer contract is covered by
+<code>tools/test-procedural-building-wall-continuity.cjs</code>. Save
+format remains 4.</li>
+<li>Field checklist:
+<code>PROCEDURAL_BUILDING_STAGGERED_TURN_CONNECTOR_FIELD_ACCEPTANCE.txt</code>.</li>
 </ul>
-
 <p>Roadmap addition — Interactive closable/lockable building doors</p>
 <ul>
-  <li>Every authoritative procedural doorway should eventually receive a real full-width door entity while retaining the gray doorway-floor marker; do not reuse the rejected 1255 narrow framing approach or reinterpret non-door wall gaps as doors.</li>
-  <li>Shared door state: open/closed/locked/breached/destroyed, with movement, LOS, cover, pathing, visuals and saves consuming the same authority. Soldiers, VIPs, civilians and aliens can operate unlocked doors.</li>
-  <li>Hiding VIPs/civilians may close and lock exterior doors. Locked doors must delay alien searches by forcing alternate-entry choice or a time-consuming breach instead of allowing magical traversal. Rescue AI must still be able to gain access without globally auto-unlocking shelters.</li>
-  <li>Preserve save format 4 if optional/backward-compatible state can be added safely; older live tactical saves containing open doorway gaps must not have their geometry unexpectedly narrowed or reclassified.</li>
+<li>Every authoritative procedural doorway should eventually receive a
+real full-width door entity while retaining the gray doorway-floor
+marker; do not reuse the rejected 1255 narrow framing approach or
+reinterpret non-door wall gaps as doors.</li>
+<li>Shared door state: open/closed/locked/breached/destroyed, with
+movement, LOS, cover, pathing, visuals and saves consuming the same
+authority. Soldiers, VIPs, civilians and aliens can operate unlocked
+doors.</li>
+<li>Hiding VIPs/civilians may close and lock exterior doors. Locked
+doors must delay alien searches by forcing alternate-entry choice or a
+time-consuming breach instead of allowing magical traversal. Rescue AI
+must still be able to gain access without globally auto-unlocking
+shelters.</li>
+<li>Preserve save format 4 if optional/backward-compatible state can be
+added safely; older live tactical saves containing open doorway gaps
+must not have their geometry unexpectedly narrowed or reclassified.</li>
 </ul>
-
-<p>Roadmap addition — Locked-shelter callouts and civilian/VIP casualty triage</p>
+<p>Roadmap addition — Locked-shelter callouts and civilian/VIP casualty
+triage</p>
 <ul>
-  <li>Adjacent AEGIS soldiers should be able to spend TU to call out through a closed/locked authoritative door and ask sheltered VIPs/civilians to unlock/open it. Fear/panic/local threat may cause silence/refusal; retries cost time and AI rescue must not deadlock. No response must not magically reveal whether anyone is inside.</li>
-  <li>Some severe civilian/VIP hits should create a short <strong>condition unknown / incapacitated</strong> window instead of instant confirmed death. Unarmored survival odds are deliberately slim but non-zero; obvious overkill remains immediately fatal.</li>
-  <li>Adjacent AEGIS can spend time to assess the casualty. If salvageable, one Field Medkit charge can stabilize/save them by reusing existing casualty-care authority. Stabilization preserves life but does not automatically restore normal mobility; save/load and mission reports must distinguish confirmed dead, stabilized survivors and ordinary rescued survivors.</li>
-  <li>Preserve save format 4 if this can remain optional/backward-compatible state. This item is designed to build on the interactive locked-door roadmap and the existing Field Medkit / casualty-care system rather than introducing parallel door or medical authorities.</li>
+<li>Adjacent AEGIS soldiers should be able to spend TU to call out
+through a closed/locked authoritative door and ask sheltered
+VIPs/civilians to unlock/open it. Fear/panic/local threat may cause
+silence/refusal; retries cost time and AI rescue must not deadlock. No
+response must not magically reveal whether anyone is inside.</li>
+<li>Some severe civilian/VIP hits should create a short
+<strong>condition unknown / incapacitated</strong> window instead of
+instant confirmed death. Unarmored survival odds are deliberately slim
+but non-zero; obvious overkill remains immediately fatal.</li>
+<li>Adjacent AEGIS can spend time to assess the casualty. If
+salvageable, one Field Medkit charge can stabilize/save them by reusing
+existing casualty-care authority. Stabilization preserves life but does
+not automatically restore normal mobility; save/load and mission reports
+must distinguish confirmed dead, stabilized survivors and ordinary
+rescued survivors.</li>
+<li>Preserve save format 4 if this can remain
+optional/backward-compatible state. This item is designed to build on
+the interactive locked-door roadmap and the existing Field Medkit /
+casualty-care system rather than introducing parallel door or medical
+authorities.</li>
 </ul>
-
 <p>Next roadmap candidate</p>
 <ul>
-  <li><strong>Post-Contact Fire-Team Reassembly and Mission Continuation</strong> remains the next recommended behavior patch after this wall fix is visually accepted.</li>
-  <li>After cohesion: tactical soldier face/equipment identity matching, then Command Screen → AEGIS Operations Overview.</li>
+<li><strong>Post-Contact Fire-Team Reassembly and Mission
+Continuation</strong> remains the next recommended behavior patch after
+this wall fix is visually accepted.</li>
+<li>After cohesion: tactical soldier face/equipment identity matching,
+then Command Screen → AEGIS Operations Overview.</li>
 </ul>
-
-<p>— Previous patch —</p>
-
+<p>--- Previous patch ---</p>
 <p>v0.26.09.15.1230_PROCEDURAL_BUILDING_MICRO_GAP_CLOSURE_HOTFIX_PATCH</p>
-
 <p>Procedural Building Micro-Gap Closure Hotfix</p>
 <ul>
-  <li>Field follow-up to Browser 1050: broad wall continuity is now much better, but the supplied screenshot still shows a few hairline cracks at intact facade joins.</li>
-  <li>Root cause addressed here is geometric rather than structural: staggered hex rows make some cardinal footprint neighbors diagonal in world space, so a fixed assumed facade contribution can leave a tiny uncovered interval depending on whether the endpoint wall is EW or NS.</li>
-  <li><code class="language-plaintext highlighter-rouge">tacticalThreeFacadeProjectedHalfSpan(...)</code> projects the actual rendered facade half-extents onto the seam vector. <code class="language-plaintext highlighter-rouge">tacticalThreePerimeterSeamInfillScale(...)</code> fills only the remaining interval plus a controlled 0.12-unit overlap.</li>
-  <li>Corner-return presentation gains a modest overlap as well. Doors, window apertures, revealed breaches/destroyed cells and outdoor tetromino recesses remain intentionally open.</li>
-  <li>The change is presentation-only and shared by fallback/persistent Three.js. Preserve structural-cover authority, Browser 1050 four-way seam ownership, Browser 0904 tetromino footprints, Browser 0745 IndexedDB saves and save format 4.</li>
-  <li>Focused regression remains <code class="language-plaintext highlighter-rouge">tools/test-procedural-building-wall-continuity.cjs</code>; its new projection-aware case covers the staggered-row micro-gap.</li>
+<li>Field follow-up to Browser 1050: broad wall continuity is now much
+better, but the supplied screenshot still shows a few hairline cracks at
+intact facade joins.</li>
+<li>Root cause addressed here is geometric rather than structural:
+staggered hex rows make some cardinal footprint neighbors diagonal in
+world space, so a fixed assumed facade contribution can leave a tiny
+uncovered interval depending on whether the endpoint wall is EW or
+NS.</li>
+<li><code>tacticalThreeFacadeProjectedHalfSpan(...)</code> projects the
+actual rendered facade half-extents onto the seam vector.
+<code>tacticalThreePerimeterSeamInfillScale(...)</code> fills only the
+remaining interval plus a controlled 0.12-unit overlap.</li>
+<li>Corner-return presentation gains a modest overlap as well. Doors,
+window apertures, revealed breaches/destroyed cells and outdoor
+tetromino recesses remain intentionally open.</li>
+<li>The change is presentation-only and shared by fallback/persistent
+Three.js. Preserve structural-cover authority, Browser 1050 four-way
+seam ownership, Browser 0904 tetromino footprints, Browser 0745
+IndexedDB saves and save format 4.</li>
+<li>Focused regression remains
+<code>tools/test-procedural-building-wall-continuity.cjs</code>; its new
+projection-aware case covers the staggered-row micro-gap.</li>
 </ul>
-
 <p>Roadmap addition — Interactive closable/lockable building doors</p>
 <ul>
-  <li>Every authoritative procedural doorway should eventually receive a real full-width door entity while retaining the gray doorway-floor marker; do not reuse the rejected 1255 narrow framing approach or reinterpret non-door wall gaps as doors.</li>
-  <li>Shared door state: open/closed/locked/breached/destroyed, with movement, LOS, cover, pathing, visuals and saves consuming the same authority. Soldiers, VIPs, civilians and aliens can operate unlocked doors.</li>
-  <li>Hiding VIPs/civilians may close and lock exterior doors. Locked doors must delay alien searches by forcing alternate-entry choice or a time-consuming breach instead of allowing magical traversal. Rescue AI must still be able to gain access without globally auto-unlocking shelters.</li>
-  <li>Preserve save format 4 if optional/backward-compatible state can be added safely; older live tactical saves containing open doorway gaps must not have their geometry unexpectedly narrowed or reclassified.</li>
+<li>Every authoritative procedural doorway should eventually receive a
+real full-width door entity while retaining the gray doorway-floor
+marker; do not reuse the rejected 1255 narrow framing approach or
+reinterpret non-door wall gaps as doors.</li>
+<li>Shared door state: open/closed/locked/breached/destroyed, with
+movement, LOS, cover, pathing, visuals and saves consuming the same
+authority. Soldiers, VIPs, civilians and aliens can operate unlocked
+doors.</li>
+<li>Hiding VIPs/civilians may close and lock exterior doors. Locked
+doors must delay alien searches by forcing alternate-entry choice or a
+time-consuming breach instead of allowing magical traversal. Rescue AI
+must still be able to gain access without globally auto-unlocking
+shelters.</li>
+<li>Preserve save format 4 if optional/backward-compatible state can be
+added safely; older live tactical saves containing open doorway gaps
+must not have their geometry unexpectedly narrowed or reclassified.</li>
 </ul>
-
 <p>Next roadmap candidate</p>
 <ul>
-  <li><strong>Post-Contact Fire-Team Reassembly and Mission Continuation</strong> remains the next recommended behavior patch once this visual follow-up is field accepted.</li>
-  <li>After cohesion: tactical soldier face/equipment identity matching, then Command Screen → AEGIS Operations Overview.</li>
+<li><strong>Post-Contact Fire-Team Reassembly and Mission
+Continuation</strong> remains the next recommended behavior patch once
+this visual follow-up is field accepted.</li>
+<li>After cohesion: tactical soldier face/equipment identity matching,
+then Command Screen → AEGIS Operations Overview.</li>
 </ul>
-
-<p>— Previous patch —</p>
-
+<p>--- Previous patch ---</p>
 <p>v0.26.09.15.1050_PROCEDURAL_BUILDING_WALL_CONTINUITY_HOTFIX_PATCH</p>
-
 <p>Procedural Building Wall Continuity Hotfix</p>
 <ul>
-  <li>Baseline: Browser 0904 tetromino procedural building footprints on save format 4. This patch responds to the field report that the new building shapes can render with disconnected wall pieces / missing connective segments.</li>
-  <li>Explicit discovered-building perimeter seams now use the same four-way/cardinal adjacency as the authoritative procedural footprint. Do not revert this to the generic six-way tactical neighbor graph: hex-only diagonals can bridge across an outdoor tetromino recess.</li>
-  <li>Intact wall cells at a facade turn now receive a full-height perpendicular presentation return. The established facade mesh supplies the first face; the return supplies the second face, preventing convex/turn cells from collapsing visually into pillar-like wall fragments.</li>
-  <li>Corner returns are presentation-only and require a revealed, living <code class="language-plaintext highlighter-rouge">buildingPart: wall</code> record. Doors, window apertures, revealed breaches/destroyed cells and outdoor tetromino recesses remain open. Gameplay collision/pathfinding, hard cover, structural HP, LOS, targeting and breach traversal continue to use structural-cover authority.</li>
-  <li>Both fallback and persistent Three.js renderers call the same perimeter-seam and corner-return helpers and expose diagnostic counts. Preserve the Browser 0904 I/O/T/L/J/S/Z footprint authority, legacy rectangular in-progress tactical-save compatibility, Browser 0745 IndexedDB durable saves, and save format 4.</li>
-  <li>Focused regression: <code class="language-plaintext highlighter-rouge">tools/test-procedural-building-wall-continuity.cjs</code>. Field checklist: <code class="language-plaintext highlighter-rouge">PROCEDURAL_BUILDING_WALL_CONTINUITY_FIELD_ACCEPTANCE.txt</code>.</li>
+<li>Baseline: Browser 0904 tetromino procedural building footprints on
+save format 4. This patch responds to the field report that the new
+building shapes can render with disconnected wall pieces / missing
+connective segments.</li>
+<li>Explicit discovered-building perimeter seams now use the same
+four-way/cardinal adjacency as the authoritative procedural footprint.
+Do not revert this to the generic six-way tactical neighbor graph:
+hex-only diagonals can bridge across an outdoor tetromino recess.</li>
+<li>Intact wall cells at a facade turn now receive a full-height
+perpendicular presentation return. The established facade mesh supplies
+the first face; the return supplies the second face, preventing
+convex/turn cells from collapsing visually into pillar-like wall
+fragments.</li>
+<li>Corner returns are presentation-only and require a revealed, living
+<code>buildingPart: wall</code> record. Doors, window apertures,
+revealed breaches/destroyed cells and outdoor tetromino recesses remain
+open. Gameplay collision/pathfinding, hard cover, structural HP, LOS,
+targeting and breach traversal continue to use structural-cover
+authority.</li>
+<li>Both fallback and persistent Three.js renderers call the same
+perimeter-seam and corner-return helpers and expose diagnostic counts.
+Preserve the Browser 0904 I/O/T/L/J/S/Z footprint authority, legacy
+rectangular in-progress tactical-save compatibility, Browser 0745
+IndexedDB durable saves, and save format 4.</li>
+<li>Focused regression:
+<code>tools/test-procedural-building-wall-continuity.cjs</code>. Field
+checklist:
+<code>PROCEDURAL_BUILDING_WALL_CONTINUITY_FIELD_ACCEPTANCE.txt</code>.</li>
 </ul>
-
 <p>Roadmap addition — Interactive closable/lockable building doors</p>
 <ul>
-  <li>Every authoritative procedural doorway should eventually receive a real full-width door entity while retaining the gray doorway-floor marker; do not reuse the rejected 1255 narrow framing approach or reinterpret non-door wall gaps as doors.</li>
-  <li>Shared door state: open/closed/locked/breached/destroyed, with movement, LOS, cover, pathing, visuals and saves consuming the same authority. Soldiers, VIPs, civilians and aliens can operate unlocked doors.</li>
-  <li>Hiding VIPs/civilians may close and lock exterior doors. Locked doors must delay alien searches by forcing alternate-entry choice or a time-consuming breach instead of allowing magical traversal. Rescue AI must still be able to gain access without globally auto-unlocking shelters.</li>
-  <li>Preserve save format 4 if optional/backward-compatible state can be added safely; older live tactical saves containing open doorway gaps must not have their geometry unexpectedly narrowed or reclassified.</li>
+<li>Every authoritative procedural doorway should eventually receive a
+real full-width door entity while retaining the gray doorway-floor
+marker; do not reuse the rejected 1255 narrow framing approach or
+reinterpret non-door wall gaps as doors.</li>
+<li>Shared door state: open/closed/locked/breached/destroyed, with
+movement, LOS, cover, pathing, visuals and saves consuming the same
+authority. Soldiers, VIPs, civilians and aliens can operate unlocked
+doors.</li>
+<li>Hiding VIPs/civilians may close and lock exterior doors. Locked
+doors must delay alien searches by forcing alternate-entry choice or a
+time-consuming breach instead of allowing magical traversal. Rescue AI
+must still be able to gain access without globally auto-unlocking
+shelters.</li>
+<li>Preserve save format 4 if optional/backward-compatible state can be
+added safely; older live tactical saves containing open doorway gaps
+must not have their geometry unexpectedly narrowed or reclassified.</li>
 </ul>
-
 <p>Next roadmap candidate</p>
 <ul>
-  <li><strong>Post-Contact Fire-Team Reassembly and Mission Continuation</strong> is the next recommended behavior patch. Once immediate contact ends, surviving reachable team members should reform around the authoritative leader and resume their persistent objective without deadlocking on unavailable members.</li>
-  <li>After cohesion: tactical soldier face/equipment identity matching, then the dedicated Command Screen → AEGIS Operations Overview dashboard work.</li>
+<li><strong>Post-Contact Fire-Team Reassembly and Mission
+Continuation</strong> is the next recommended behavior patch. Once
+immediate contact ends, surviving reachable team members should reform
+around the authoritative leader and resume their persistent objective
+without deadlocking on unavailable members.</li>
+<li>After cohesion: tactical soldier face/equipment identity matching,
+then the dedicated Command Screen → AEGIS Operations Overview dashboard
+work.</li>
 </ul>
-
-<p>— Previous patch —</p>
-
+<p>--- Previous patch ---</p>
 <p>v0.26.09.15.0904_TETROMINO_PROCEDURAL_BUILDING_FOOTPRINTS_PATCH</p>
-
 <p>Tetromino Procedural Building Footprints</p>
 <ul>
-  <li>Procedural structures now support I/O/T/L/J/S/Z footprint families and deterministic rotations within the existing archetype bounds.</li>
-  <li>Shared footprint authority drives interior/perimeter classification, doors, walls/windows, furnishings, roofs, perimeter seams, civilian placement, structure-distance checks and AI building egress. Concave recesses remain outside/traversable.</li>
-  <li>Pre-patch live tactical saves are detected by legacy structural covers lacking shape metadata and retain rectangular plan authority for that already-started battle. New saves carry building shape metadata in structural covers.</li>
-  <li>New focused regression file: tools/test-tetromino-building-footprints.cjs. Field checklist: PROCEDURAL_BUILDING_TETROMINO_FOOTPRINTS_FIELD_ACCEPTANCE.txt.</li>
-  <li>Save format remains 4. IndexedDB durable save storage from Browser 0745 remains in place.</li>
+<li>Procedural structures now support I/O/T/L/J/S/Z footprint families
+and deterministic rotations within the existing archetype bounds.</li>
+<li>Shared footprint authority drives interior/perimeter classification,
+doors, walls/windows, furnishings, roofs, perimeter seams, civilian
+placement, structure-distance checks and AI building egress. Concave
+recesses remain outside/traversable.</li>
+<li>Pre-patch live tactical saves are detected by legacy structural
+covers lacking shape metadata and retain rectangular plan authority for
+that already-started battle. New saves carry building shape metadata in
+structural covers.</li>
+<li>New focused regression file:
+tools/test-tetromino-building-footprints.cjs. Field checklist:
+PROCEDURAL_BUILDING_TETROMINO_FOOTPRINTS_FIELD_ACCEPTANCE.txt.</li>
+<li>Save format remains 4. IndexedDB durable save storage from Browser
+0745 remains in place.</li>
 </ul>
-
 <p>Roadmap addition — Interactive closable/lockable building doors</p>
 <ul>
-  <li>Every authoritative procedural doorway should eventually receive a real full-width door entity while retaining the gray doorway-floor marker; do not reuse the rejected 1255 narrow framing approach or reinterpret non-door wall gaps as doors.</li>
-  <li>Shared door state: open/closed/locked/breached/destroyed, with movement, LOS, cover, pathing, visuals and saves consuming the same authority. Soldiers, VIPs, civilians and aliens can operate unlocked doors.</li>
-  <li>Hiding VIPs/civilians may close and lock exterior doors. Locked doors must delay alien searches by forcing alternate-entry choice or a time-consuming breach instead of allowing magical traversal. Rescue AI must still be able to gain access without globally auto-unlocking shelters.</li>
-  <li>Preserve save format 4 if optional/backward-compatible state can be added safely; older live tactical saves containing open doorway gaps must not have their geometry unexpectedly narrowed or reclassified.</li>
+<li>Every authoritative procedural doorway should eventually receive a
+real full-width door entity while retaining the gray doorway-floor
+marker; do not reuse the rejected 1255 narrow framing approach or
+reinterpret non-door wall gaps as doors.</li>
+<li>Shared door state: open/closed/locked/breached/destroyed, with
+movement, LOS, cover, pathing, visuals and saves consuming the same
+authority. Soldiers, VIPs, civilians and aliens can operate unlocked
+doors.</li>
+<li>Hiding VIPs/civilians may close and lock exterior doors. Locked
+doors must delay alien searches by forcing alternate-entry choice or a
+time-consuming breach instead of allowing magical traversal. Rescue AI
+must still be able to gain access without globally auto-unlocking
+shelters.</li>
+<li>Preserve save format 4 if optional/backward-compatible state can be
+added safely; older live tactical saves containing open doorway gaps
+must not have their geometry unexpectedly narrowed or reclassified.</li>
 </ul>
-
 <p>Next roadmap candidate</p>
 <ul>
-  <li><strong>New field regression to investigate first:</strong> connective wall/seam segments appear to have stopped generating consistently again, leaving intact procedural facades reading as disconnected wall pieces. Audit the 0137/1855/1410/1448/1532/1610 continuity chain against Browser 0904 tetromino footprint authority in both Three.js render paths; preserve doors, revealed breaches, windows and concave footprint recesses. Full acceptance criteria are in the canonical roadmap section <strong>Procedural Building Connective Wall Segment Regression Investigation</strong>.</li>
-  <li>Match tactical battle-model faces/equipment markings to soldier identity after any wall-continuity regression is resolved.</li>
-  <li>Command Screen AEGIS Operations Overview remains recorded as a later dedicated UI/dashboard patch.</li>
+<li><strong>New field regression to investigate first:</strong>
+connective wall/seam segments appear to have stopped generating
+consistently again, leaving intact procedural facades reading as
+disconnected wall pieces. Audit the 0137/1855/1410/1448/1532/1610
+continuity chain against Browser 0904 tetromino footprint authority in
+both Three.js render paths; preserve doors, revealed breaches, windows
+and concave footprint recesses. Full acceptance criteria are in the
+canonical roadmap section <strong>Procedural Building Connective Wall
+Segment Regression Investigation</strong>.</li>
+<li>Match tactical battle-model faces/equipment markings to soldier
+identity after any wall-continuity regression is resolved.</li>
+<li>Command Screen AEGIS Operations Overview remains recorded as a later
+dedicated UI/dashboard patch.</li>
 </ul>
-
-<p>— Previous patch —</p>
-
+<p>--- Previous patch ---</p>
 <p>v0.26.09.15.0745_INDEXEDDB_SAVE_STORAGE_HOTFIX</p>
-
 <p>Durable IndexedDB Save Storage Hotfix</p>
 <ul>
-  <li>A mature Month 3 / Day 18 campaign export from Browser 1351 is about 1.35 MB pretty-printed / 894 KB minified. Storing repeated full-campaign snapshots across ten manual slots plus rotating autosaves in localStorage can exhaust the browser origin quota and produce the observed “Browser storage rejected the save” failure.</li>
-  <li>IndexedDB is now the primary storage authority for manual save collections and rotating autosaves. Existing localStorage collections migrate lazily; successful IndexedDB writes reclaim the superseded large localStorage key.</li>
-  <li>Save, delete, save-slot-backup import, autosave, post-mission reboot checkpoint and startup resume use the durable backend. localStorage remains a compatibility fallback, and the emergency JSON download remains the last-resort manual-save recovery path.</li>
-  <li>Existing exported JSON files remain import-compatible. Save format remains 4.</li>
+<li>A mature Month 3 / Day 18 campaign export from Browser 1351 is about
+1.35 MB pretty-printed / 894 KB minified. Storing repeated full-campaign
+snapshots across ten manual slots plus rotating autosaves in
+localStorage can exhaust the browser origin quota and produce the
+observed “Browser storage rejected the save” failure.</li>
+<li>IndexedDB is now the primary storage authority for manual save
+collections and rotating autosaves. Existing localStorage collections
+migrate lazily; successful IndexedDB writes reclaim the superseded large
+localStorage key.</li>
+<li>Save, delete, save-slot-backup import, autosave, post-mission reboot
+checkpoint and startup resume use the durable backend. localStorage
+remains a compatibility fallback, and the emergency JSON download
+remains the last-resort manual-save recovery path.</li>
+<li>Existing exported JSON files remain import-compatible. Save format
+remains 4.</li>
 </ul>
-
-<p>— Previous patch —</p>
-
+<p>--- Previous patch ---</p>
 <p>v0.26.09.14.2320_TACTICAL_CIVIC_LANDMARK_1_TO_7_HEX_FOOTPRINT_PATCH</p>
-
 <p>Tactical Civic Landmark 1–7 Hex Footprints</p>
 <ul>
-  <li>Statues and fountains use deterministic connected 1–7 hex footprints with shared placement, collision/pathfinding, hard-cover, visibility and selection authority.</li>
-  <li>3D landmark presentation is centered/scaled to the authoritative footprint; footprint cells and scale survive save/reload.</li>
-  <li>Placement protects roads, ingress, neighboring structures, props and Skyranger extraction space. Save format remains 4.</li>
+<li>Statues and fountains use deterministic connected 1–7 hex footprints
+with shared placement, collision/pathfinding, hard-cover, visibility and
+selection authority.</li>
+<li>3D landmark presentation is centered/scaled to the authoritative
+footprint; footprint cells and scale survive save/reload.</li>
+<li>Placement protects roads, ingress, neighboring structures, props and
+Skyranger extraction space. Save format remains 4.</li>
 </ul>
-
-<p>— Previous patch —</p>
-
+<p>--- Previous patch ---</p>
 <p>v0.26.09.14.1351_LAYERED_BUS_AND_SCHOOL_BUS_COLORS_PATCH</p>
-
 <p>Layered Bus Body and School-Bus Colors</p>
 <ul>
-  <li>Keep the original lower bus body, wheels, headlights and ground footprint.</li>
-  <li>Full-width/full-length glass is twice its former height, topped with a matching metal roof as thick as the old glass section.</li>
-  <li>A deterministic mix of yellow school-bus and blue city-bus metal colors survives reload. Both renderers use the shared vehicle builder.</li>
-  <li>Save format remains 4. Publish index.html, service-worker.js and release-metadata.json together with existing assets.</li>
+<li>Keep the original lower bus body, wheels, headlights and ground
+footprint.</li>
+<li>Full-width/full-length glass is twice its former height, topped with
+a matching metal roof as thick as the old glass section.</li>
+<li>A deterministic mix of yellow school-bus and blue city-bus metal
+colors survives reload. Both renderers use the shared vehicle
+builder.</li>
+<li>Save format remains 4. Publish index.html, service-worker.js and
+release-metadata.json together with existing assets.</li>
 </ul>
-
-<p>— Previous patch —</p>
-
+<p>--- Previous patch ---</p>
 <p>v0.26.09.14.1149_INTERSECTION_TRAFFIC_CONTROLS_PATCH</p>
-
 <p>Intersection Traffic Controls</p>
 <ul>
-  <li>New street maps detect crossings and T-junctions from connected road/lane/path cells, consolidating wide junctions into one location.</li>
-  <li>Place complete, consistently oriented traffic-light or stop-sign arrangements on available roadside approaches. Reserve controls before other props and avoid buildings and protected entrances.</li>
-  <li>Skip junctions without enough safe space or prop budget; remove scattered mid-road controls. Entrance cleanup never relocates a control away from its junction. Existing saved prop placements are retained.</li>
-  <li>Save format remains 4. Publish index.html, service-worker.js and release-metadata.json together with existing assets.</li>
+<li>New street maps detect crossings and T-junctions from connected
+road/lane/path cells, consolidating wide junctions into one
+location.</li>
+<li>Place complete, consistently oriented traffic-light or stop-sign
+arrangements on available roadside approaches. Reserve controls before
+other props and avoid buildings and protected entrances.</li>
+<li>Skip junctions without enough safe space or prop budget; remove
+scattered mid-road controls. Entrance cleanup never relocates a control
+away from its junction. Existing saved prop placements are
+retained.</li>
+<li>Save format remains 4. Publish index.html, service-worker.js and
+release-metadata.json together with existing assets.</li>
 </ul>
-
-<p>— Previous patch —</p>
-
+<p>--- Previous patch ---</p>
 <p>v0.26.09.14.1112_BATTLE_VISIBILITY_REUSE_PERFORMANCE_PATCH</p>
-
 <p>Battle Visibility Reuse Performance</p>
 <ul>
-  <li>Reuse the last unchanged shared visibility result instead of repeating every soldier sight scan during battle updates. Cache misses run the existing interior-map calculation unchanged.</li>
-  <li>Value snapshots detect in-place movement, facing, flashlight, observer eligibility, lighting, smoke, power, wall and vehicle footprint changes. One bounded snapshot is retained; returned Sets are detached.</li>
-  <li>Browser fixture with 48 soldiers and 177 covers: repeated checks improved from 26.6–44.7 ms to 0.3–0.4 ms with identical visible cells. This measures visibility work, not total frame time or hardware-specific FPS.</li>
-  <li>Save format remains 4. Publish index.html, service-worker.js and release-metadata.json together with existing assets.</li>
+<li>Reuse the last unchanged shared visibility result instead of
+repeating every soldier sight scan during battle updates. Cache misses
+run the existing interior-map calculation unchanged.</li>
+<li>Value snapshots detect in-place movement, facing, flashlight,
+observer eligibility, lighting, smoke, power, wall and vehicle footprint
+changes. One bounded snapshot is retained; returned Sets are
+detached.</li>
+<li>Browser fixture with 48 soldiers and 177 covers: repeated checks
+improved from 26.6–44.7 ms to 0.3–0.4 ms with identical visible cells.
+This measures visibility work, not total frame time or hardware-specific
+FPS.</li>
+<li>Save format remains 4. Publish index.html, service-worker.js and
+release-metadata.json together with existing assets.</li>
 </ul>
-
-<p>— Previous patch —</p>
-
+<p>--- Previous patch ---</p>
 <p>v0.26.09.14.0955_SOLID_BUILDING_WALL_VISIBILITY_PATCH</p>
-
 <p>Solid Building Wall Visibility</p>
 <ul>
-  <li>Standing beside a solid building wall or partition no longer grants sight through it, for observers or targets on either side. Shared sight checks apply to all teams.</li>
-  <li>Windows, existing open doorway gaps and breached structures allow aligned sight; a nearby opening does not bypass another wall. Breach rubble no longer blocks longer sightlines.</li>
-  <li>Solid wall faces remain discoverable and ordinary cover keeps its existing adjacency behavior. Structural state changes invalidate visibility caches.</li>
-  <li>Save format remains 4. Publish index.html, service-worker.js and release-metadata.json together with existing assets.</li>
+<li>Standing beside a solid building wall or partition no longer grants
+sight through it, for observers or targets on either side. Shared sight
+checks apply to all teams.</li>
+<li>Windows, existing open doorway gaps and breached structures allow
+aligned sight; a nearby opening does not bypass another wall. Breach
+rubble no longer blocks longer sightlines.</li>
+<li>Solid wall faces remain discoverable and ordinary cover keeps its
+existing adjacency behavior. Structural state changes invalidate
+visibility caches.</li>
+<li>Save format remains 4. Publish index.html, service-worker.js and
+release-metadata.json together with existing assets.</li>
 </ul>
-
-<p>— Previous patch —</p>
-
+<p>--- Previous patch ---</p>
 <p>v0.26.09.14.0717_VIP_CAMERA_DIRECTION_MARKERS_PATCH</p>
-
 <p>VIP Camera Direction Markers</p>
 <ul>
-  <li>FPV/TPV VIP indicators only appear inside the active camera view. Behind-camera, near/far-clipped and off-screen perspective markers are hidden instead of mirrored or clamped ahead.</li>
-  <li>Turning or switching cameras restores visible markers immediately, using camera orientation independently of soldier facing. Isometric edge guidance is retained.</li>
-  <li>Yellow awaiting-rescue and cyan ESCORTING presentation continue to use displayed escort state. Save format remains 4.</li>
-  <li>Publish index.html, service-worker.js and release-metadata.json together with existing assets.</li>
+<li>FPV/TPV VIP indicators only appear inside the active camera view.
+Behind-camera, near/far-clipped and off-screen perspective markers are
+hidden instead of mirrored or clamped ahead.</li>
+<li>Turning or switching cameras restores visible markers immediately,
+using camera orientation independently of soldier facing. Isometric edge
+guidance is retained.</li>
+<li>Yellow awaiting-rescue and cyan ESCORTING presentation continue to
+use displayed escort state. Save format remains 4.</li>
+<li>Publish index.html, service-worker.js and release-metadata.json
+together with existing assets.</li>
 </ul>
-
-<p>— Previous patch —</p>
-
+<p>--- Previous patch ---</p>
 <p>v0.26.09.13.2259_VIP_ESCORT_STATUS_MARKERS_PATCH</p>
-
 <p>VIP Escort Status Markers</p>
 <ul>
-  <li>Awaiting-rescue VIPs remain gold/yellow; active escorted VIPs use cyan with ESCORTING text and accessible status labels.</li>
-  <li>Panic or escort loss/incapacitation restores yellow. Assignment alone does not change status, and dead/extracted VIP trackers disappear.</li>
-  <li>Shared state covers 2D, both 3D renderers and perspective/minimap markers; stationary changes refresh cached presentation.</li>
-  <li>Save format remains 4. Publish index.html, service-worker.js and release-metadata.json together with existing assets.</li>
+<li>Awaiting-rescue VIPs remain gold/yellow; active escorted VIPs use
+cyan with ESCORTING text and accessible status labels.</li>
+<li>Panic or escort loss/incapacitation restores yellow. Assignment
+alone does not change status, and dead/extracted VIP trackers
+disappear.</li>
+<li>Shared state covers 2D, both 3D renderers and perspective/minimap
+markers; stationary changes refresh cached presentation.</li>
+<li>Save format remains 4. Publish index.html, service-worker.js and
+release-metadata.json together with existing assets.</li>
 </ul>
-
-<p>— Previous patch —</p>
-
+<p>--- Previous patch ---</p>
 <p>v0.26.09.13.1807_VEHICLE_BODY_FOOTPRINT_AND_PLAYBACK_PATH_INTEGRITY_PATCH</p>
-
-<p>Vehicle Body Footprints + Playback Path Integrity
-Validation: 69 Node tests and six smoke scripts pass; final browser diagnostics 897/967 match baseline with no new failures. Updated obsolete elimination-only assertions to respect existing incomplete-operation and casualty authority.</p>
+<p>Vehicle Body Footprints + Playback Path Integrity Validation: 69 Node
+tests and six smoke scripts pass; final browser diagnostics 897/967
+match baseline with no new failures. Updated obsolete elimination-only
+assertions to respect existing incomplete-operation and casualty
+authority.</p>
 <ul>
-  <li>Rotated land-vehicle bodies and shoulder clearance now drive the shared blocked footprint. New placement reserves it; saved vehicles preserve their visual anchor.</li>
-  <li>Sparse playback trails rebuild through adjacent legal cells rather than jumping through obstacles. Destroyed vehicles retain existing traversability.</li>
-  <li>Save format remains 4. Publish index.html, service-worker.js and release-metadata.json together with existing assets.</li>
+<li>Rotated land-vehicle bodies and shoulder clearance now drive the
+shared blocked footprint. New placement reserves it; saved vehicles
+preserve their visual anchor.</li>
+<li>Sparse playback trails rebuild through adjacent legal cells rather
+than jumping through obstacles. Destroyed vehicles retain existing
+traversability.</li>
+<li>Save format remains 4. Publish index.html, service-worker.js and
+release-metadata.json together with existing assets.</li>
 </ul>
-
-<p>— Previous patch —</p>
-
+<p>--- Previous patch ---</p>
 <p>v0.26.09.13.1726_VITALS_SELECTION_AND_ITEMIZED_MISSION_REPORTS_PATCH</p>
-
 <p>Vitals Selection + Itemized Mission Reports</p>
 <ul>
-  <li>Select living field soldiers from vitals in Manual; Hybrid uses the leader, downed cards inspect, Simulation remains read-only. Selected cards have a visible outline.</li>
-  <li>New mission reports have grouped itemized results; older reports show itemized archived summaries. Logs and timelines remain intact.</li>
-  <li>Save format 4 is unchanged. Publish index.html, service-worker.js and release-metadata.json together with existing assets.</li>
+<li>Select living field soldiers from vitals in Manual; Hybrid uses the
+leader, downed cards inspect, Simulation remains read-only. Selected
+cards have a visible outline.</li>
+<li>New mission reports have grouped itemized results; older reports
+show itemized archived summaries. Logs and timelines remain intact.</li>
+<li>Save format 4 is unchanged. Publish index.html, service-worker.js
+and release-metadata.json together with existing assets.</li>
 </ul>
-
-<p>— Previous patch —</p>
-
+<p>--- Previous patch ---</p>
 <p>v0.26.09.13.1249_MOBILE_ADAPTIVE_MISSION_FAILURE_NOTICE_PATCH</p>
-
 <p>Mobile / Adaptive Mission Failure Notice</p>
 <ul>
-  <li>Victory/failure notices layer above vitals. Opening Base preserves a paused clock instead of starting 5-minute time passage.</li>
-  <li>Shows Mission Failed for a terminal missed VIP quota even with surviving soldiers, with an explanation and End Failed Incident and Return to Base.</li>
-  <li>Completed AI/Hybrid failures use the existing final result; manual failures use live finalization. Pending playback and interrupted streams cannot trigger premature failure notices.</li>
-  <li>VIP quota rebalancing is roadmap-only. Save format remains 4.</li>
-  <li>Publish index.html, service-worker.js and release-metadata.json together with the existing assets.</li>
+<li>Victory/failure notices layer above vitals. Opening Base preserves a
+paused clock instead of starting 5-minute time passage.</li>
+<li>Shows Mission Failed for a terminal missed VIP quota even with
+surviving soldiers, with an explanation and End Failed Incident and
+Return to Base.</li>
+<li>Completed AI/Hybrid failures use the existing final result; manual
+failures use live finalization. Pending playback and interrupted streams
+cannot trigger premature failure notices.</li>
+<li>VIP quota rebalancing is roadmap-only. Save format remains 4.</li>
+<li>Publish index.html, service-worker.js and release-metadata.json
+together with the existing assets.</li>
 </ul>
-
-<p>— Previous patch —</p>
-
-<h1 id="codex-handoff--v02609131209_fire_team_vitals_reassignment_and_vehicle_headlight_alignment_patch">CODEX HANDOFF — v0.26.09.13.1209_FIRE_TEAM_VITALS_REASSIGNMENT_AND_VEHICLE_HEADLIGHT_ALIGNMENT_PATCH</h1>
-
-<p>Vitals follow survivors absorbed into another team without losing casualty cards. Land-vehicle headlamps and forward beams align with the narrow front face in both 3D renderers.</p>
-
+<p>--- Previous patch ---</p>
+<h1
+id="codex-handoff--v02609131209_fire_team_vitals_reassignment_and_vehicle_headlight_alignment_patch">CODEX
+HANDOFF —
+v0.26.09.13.1209_FIRE_TEAM_VITALS_REASSIGNMENT_AND_VEHICLE_HEADLIGHT_ALIGNMENT_PATCH</h1>
+<p>Vitals follow survivors absorbed into another team without losing
+casualty cards. Land-vehicle headlamps and forward beams align with the
+narrow front face in both 3D renderers.</p>
 <ul>
-  <li>Living soldiers who change fire teams receive a unique slot in the receiving vitals panel; unchanged teammates keep their slots and fallen soldiers stay in their former panel.</li>
-  <li>Panels remain alphabetical. Extra casualty cards use additional grid rows instead of hiding members beyond four. Reconciled slots persist with tactical snapshots.</li>
-  <li>Cars, vans, utility vehicles and buses share their detailed model and headlamp geometry across persistent and fallback renderers.</li>
-  <li>Headlamps sit on the short front face along local +X; forward spotlights use the same group rotation. Daytime/unpowered lenses remain attached but do not emit light.</li>
-  <li>Existing tactical illumination, footprints, casualty-impact display timing and save format 4 are preserved.</li>
+<li>Living soldiers who change fire teams receive a unique slot in the
+receiving vitals panel; unchanged teammates keep their slots and fallen
+soldiers stay in their former panel.</li>
+<li>Panels remain alphabetical. Extra casualty cards use additional grid
+rows instead of hiding members beyond four. Reconciled slots persist
+with tactical snapshots.</li>
+<li>Cars, vans, utility vehicles and buses share their detailed model
+and headlamp geometry across persistent and fallback renderers.</li>
+<li>Headlamps sit on the short front face along local +X; forward
+spotlights use the same group rotation. Daytime/unpowered lenses remain
+attached but do not emit light.</li>
+<li>Existing tactical illumination, footprints, casualty-impact display
+timing and save format 4 are preserved.</li>
 </ul>
-
-<p>Authority: tacticalPhysioCaptureFormation updates live transfer membership and reserves valid existing slots before allocating arrivals. tacticalReconcileFireTeams captures formation again after reassignment. KIA cards retain former membership. The HUD renders all members and additional grid rows.</p>
-
-<p>Vehicle rendering: tacticalThreeAddLandVehicle shares the existing body dimensions; tacticalVehicleHeadlightLayout owns lamp/front/beam anchors. Positive local X is forward. tacticalThreeAddVehicleHeadlightBeam targets forward within the same rotated group; persistent rendering retains its existing light budget. Gameplay light profiles and LOS remain unchanged.</p>
-
-<p>Field gates: absorb a singleton; save/reload; check casualty-filled receiving panels and alphabetical order; confirm impact holds still release correctly. Inspect each vehicle type at multiple rotations by day/night in both renderers. Check Mobile panels with additional casualty rows.</p>
-
+<p>Authority: tacticalPhysioCaptureFormation updates live transfer
+membership and reserves valid existing slots before allocating arrivals.
+tacticalReconcileFireTeams captures formation again after reassignment.
+KIA cards retain former membership. The HUD renders all members and
+additional grid rows.</p>
+<p>Vehicle rendering: tacticalThreeAddLandVehicle shares the existing
+body dimensions; tacticalVehicleHeadlightLayout owns lamp/front/beam
+anchors. Positive local X is forward.
+tacticalThreeAddVehicleHeadlightBeam targets forward within the same
+rotated group; persistent rendering retains its existing light budget.
+Gameplay light profiles and LOS remain unchanged.</p>
+<p>Field gates: absorb a singleton; save/reload; check casualty-filled
+receiving panels and alphabetical order; confirm impact holds still
+release correctly. Inspect each vehicle type at multiple rotations by
+day/night in both renderers. Check Mobile panels with additional
+casualty rows.</p>
 <hr />
-
-<h1 id="codex-handoff--v02609122346_tactical_casualty_care_phase_3c_medical_resupply_and_impact_synchronized_vitals_patch">CODEX HANDOFF — v0.26.09.12.2346_TACTICAL_CASUALTY_CARE_PHASE_3C_MEDICAL_RESUPPLY_AND_IMPACT_SYNCHRONIZED_VITALS_PATCH</h1>
-
-<p>Medical charges now persist between missions and refill from local stores. Fire-team vitals reveal injuries after the attack impact rather than at frame hydration.</p>
-
+<h1
+id="codex-handoff--v02609122346_tactical_casualty_care_phase_3c_medical_resupply_and_impact_synchronized_vitals_patch">CODEX
+HANDOFF —
+v0.26.09.12.2346_TACTICAL_CASUALTY_CARE_PHASE_3C_MEDICAL_RESUPPLY_AND_IMPACT_SYNCHRONIZED_VITALS_PATCH</h1>
+<p>Medical charges now persist between missions and refill from local
+stores. Fire-team vitals reveal injuries after the attack impact rather
+than at frame hydration.</p>
 <ul>
-  <li>Remaining charges and reusable kit ownership survive mission return, save/load, tactical transfers and empty kits. Legacy issued kits retain their existing 4/10-charge allocation.</li>
-  <li>A purchased Medkit includes four charges. Medical Supplies cost 10k per charge; Medics can refill to ten and other soldiers to four. Returning a kit stores its empty shell and unused charges separately; reissue does not create charges.</li>
-  <li>Refill Medkit controls in Quartermaster and personnel/Sickbay loadouts consume only the soldier’s local Medical Supplies. Soldiers committed to a sortie or transfer cannot alter their medical loadout.</li>
-  <li>Victory salvages fallen soldiers’ actual remaining charges and kit shells; failed extractions do not return medical supplies. Tactical kit transfers preserve ownership.</li>
-  <li>Soldier cards and launch summaries display persistent charge availability and empty-kit warnings.</li>
-  <li>Vitals hold pre-hit health and medical state during observed attacks, then update after projectile impact and its reaction hold. Playback cancellation clears display holds; gameplay authority remains unchanged.</li>
-  <li>Save format remains 4; permanent injuries, advanced formulations and encumbrance remain deferred.</li>
+<li>Remaining charges and reusable kit ownership survive mission return,
+save/load, tactical transfers and empty kits. Legacy issued kits retain
+their existing 4/10-charge allocation.</li>
+<li>A purchased Medkit includes four charges. Medical Supplies cost 10k
+per charge; Medics can refill to ten and other soldiers to four.
+Returning a kit stores its empty shell and unused charges separately;
+reissue does not create charges.</li>
+<li>Refill Medkit controls in Quartermaster and personnel/Sickbay
+loadouts consume only the soldier's local Medical Supplies. Soldiers
+committed to a sortie or transfer cannot alter their medical
+loadout.</li>
+<li>Victory salvages fallen soldiers' actual remaining charges and kit
+shells; failed extractions do not return medical supplies. Tactical kit
+transfers preserve ownership.</li>
+<li>Soldier cards and launch summaries display persistent charge
+availability and empty-kit warnings.</li>
+<li>Vitals hold pre-hit health and medical state during observed
+attacks, then update after projectile impact and its reaction hold.
+Playback cancellation clears display holds; gameplay authority remains
+unchanged.</li>
+<li>Save format remains 4; permanent injuries, advanced formulations and
+encumbrance remain deferred.</li>
 </ul>
-
-<p>Authority: soldier.medicalCharges stores campaign charges; tactical medicalKitOwned tracks shell transfers independently of charges. Final medical outcomes feed growth.medkitOwned and the shared campaign aftermath. Refill/return use local inventories. Medkit is a four-charge retail pack; Empty Medkit is a reusable shell; Medical Supplies are individual charges.</p>
-
-<p>Vitals: applyAiFrameToMap holds injured human snapshots before hydrating observed shot results. showShotEvent/playAiPlaybackFrame release those display snapshots after travel plus impact hold. cancelAiPlaybackTimers clears holds; unmount cancels their timers. Do not delay authoritative units or change shot outcomes for HUD timing.</p>
-
-<p>Field gates: repeat kit issue/refill/return at two bases; save an empty kit; transfer a kit during battle; win/withdraw with a fallen kit owner; verify remaining supplies after the post-mission reboot. Watch a nonfatal hit, downing and KIA at slow/normal/fast playback and in Manual/Hybrid; vitals must change after impact. Check Mobile refill controls and stable alphabetical vitals. Native parity remains deferred.</p>
-
+<p>Authority: soldier.medicalCharges stores campaign charges; tactical
+medicalKitOwned tracks shell transfers independently of charges. Final
+medical outcomes feed growth.medkitOwned and the shared campaign
+aftermath. Refill/return use local inventories. Medkit is a four-charge
+retail pack; Empty Medkit is a reusable shell; Medical Supplies are
+individual charges.</p>
+<p>Vitals: applyAiFrameToMap holds injured human snapshots before
+hydrating observed shot results. showShotEvent/playAiPlaybackFrame
+release those display snapshots after travel plus impact hold.
+cancelAiPlaybackTimers clears holds; unmount cancels their timers. Do
+not delay authoritative units or change shot outcomes for HUD
+timing.</p>
+<p>Field gates: repeat kit issue/refill/return at two bases; save an
+empty kit; transfer a kit during battle; win/withdraw with a fallen kit
+owner; verify remaining supplies after the post-mission reboot. Watch a
+nonfatal hit, downing and KIA at slow/normal/fast playback and in
+Manual/Hybrid; vitals must change after impact. Check Mobile refill
+controls and stable alphabetical vitals. Native parity remains
+deferred.</p>
 <hr />
-
-<h1 id="codex-handoff--v02609122122_tactical_casualty_care_phase_3b_sickbay_recovery_and_rescue_outcomes_patch">CODEX HANDOFF — v0.26.09.12.2122_TACTICAL_CASUALTY_CARE_PHASE_3B_SICKBAY_RECOVERY_AND_RESCUE_OUTCOMES_PATCH</h1>
-
-<p>Phase 3B adds persistent medical histories, return-to-duty estimates, fractional recovery credit and explicit medical debriefs. Includes the prior stable-slot and alphabetical vitals fixes. Save format remains 4. Native parity remains deferred in the manifest.</p>
-
+<h1
+id="codex-handoff--v02609122122_tactical_casualty_care_phase_3b_sickbay_recovery_and_rescue_outcomes_patch">CODEX
+HANDOFF —
+v0.26.09.12.2122_TACTICAL_CASUALTY_CARE_PHASE_3B_SICKBAY_RECOVERY_AND_RESCUE_OUTCOMES_PATCH</h1>
+<p>Phase 3B adds persistent medical histories, return-to-duty estimates,
+fractional recovery credit and explicit medical debriefs. Includes the
+prior stable-slot and alphabetical vitals fixes. Save format remains 4.
+Native parity remains deferred in the manifest.</p>
 <h2 id="medical-record-authority">Medical record authority</h2>
-
 <ul>
-  <li>tacticalApplyCasualtyExtractionAftermath creates medicalRecords from the authoritative final battlefield after recovery/KIA reconciliation. Each record retains mission and soldier IDs, final HP, outcome, stabilization, rescuer, craft and round metadata.</li>
-  <li>campaignRecordMissionMedical attaches each record once per mission/soldier during the shared campaign aftermath map, before friendship processing and the existing post-mission save/reboot. Reapplying a record does not restart care.</li>
-  <li>Outcomes: evacuated, recovered-after-victory, wounded-returned, unrecovered, kia. Records are retained on the soldier, including after return to duty or death.</li>
-  <li>addMissionReport retains structured records; buildMissionReportEntries appends medical summaries after terminal log trimming.</li>
+<li>tacticalApplyCasualtyExtractionAftermath creates medicalRecords from
+the authoritative final battlefield after recovery/KIA reconciliation.
+Each record retains mission and soldier IDs, final HP, outcome,
+stabilization, rescuer, craft and round metadata.</li>
+<li>campaignRecordMissionMedical attaches each record once per
+mission/soldier during the shared campaign aftermath map, before
+friendship processing and the existing post-mission save/reboot.
+Reapplying a record does not restart care.</li>
+<li>Outcomes: evacuated, recovered-after-victory, wounded-returned,
+unrecovered, kia. Records are retained on the soldier, including after
+return to duty or death.</li>
+<li>addMissionReport retains structured records;
+buildMissionReportEntries appends medical summaries after terminal log
+trimming.</li>
 </ul>
-
 <h2 id="recovery-authority">Recovery authority</h2>
-
 <ul>
-  <li>recoveryDaysRemaining stores full-speed care days, including fractional Barracks credit. Sickbay spends 1/day; Barracks spends 0.5/day.</li>
-  <li>soldierRecoverySummary derives remaining calendar days at the current care speed and progress from that same countdown. Bed transfers retain credit. Old saves fall back to woundDays(status).</li>
-  <li>recoverSoldierOneDay owns healing, countdown and completion. At zero it marks the active medical record completed, records actual care days, and uses the existing Ready/auto-squad-return path.</li>
-  <li>SoldierMedicalHistory renders in SoldierCard for both layouts. Mobile Sickbay list uses calendar-day ETA.</li>
+<li>recoveryDaysRemaining stores full-speed care days, including
+fractional Barracks credit. Sickbay spends 1/day; Barracks spends
+0.5/day.</li>
+<li>soldierRecoverySummary derives remaining calendar days at the
+current care speed and progress from that same countdown. Bed transfers
+retain credit. Old saves fall back to woundDays(status).</li>
+<li>recoverSoldierOneDay owns healing, countdown and completion. At zero
+it marks the active medical record completed, records actual care days,
+and uses the existing Ready/auto-squad-return path.</li>
+<li>SoldierMedicalHistory renders in SoldierCard for both layouts.
+Mobile Sickbay list uses calendar-day ETA.</li>
 </ul>
-
 <h2 id="field-acceptance-3">Field acceptance</h2>
-
-<ol>
-  <li>Stabilize and evacuate one casualty; win with another living casualty still in the field. Verify distinct report outcomes and rescue details in each soldier’s history.</li>
-  <li>Withdraw with one evacuated casualty and one casualty left behind. Verify the first survives and the second remains KIA in report, roster and reload.</li>
-  <li>Move a patient between Sickbay and Barracks after a day of care. Verify changed ETA, retained fractional progress, and save/reload consistency.</li>
-  <li>Finish recovery. Verify Ready status, existing squad-return behavior and completed medical history.</li>
-  <li>Inspect Standard and Mobile Sickbay history, progress and ETA. Recheck stable, alphabetical vitals after leader death.</li>
+<ol type="1">
+<li>Stabilize and evacuate one casualty; win with another living
+casualty still in the field. Verify distinct report outcomes and rescue
+details in each soldier's history.</li>
+<li>Withdraw with one evacuated casualty and one casualty left behind.
+Verify the first survives and the second remains KIA in report, roster
+and reload.</li>
+<li>Move a patient between Sickbay and Barracks after a day of care.
+Verify changed ETA, retained fractional progress, and save/reload
+consistency.</li>
+<li>Finish recovery. Verify Ready status, existing squad-return behavior
+and completed medical history.</li>
+<li>Inspect Standard and Mobile Sickbay history, progress and ETA.
+Recheck stable, alphabetical vitals after leader death.</li>
 </ol>
-
 <hr />
-
-<h1 id="codex-handoff--v02609121403_tactical_casualty_care_phase_3a_extraction_and_fire_team_physiological_hud_patch">CODEX HANDOFF — v0.26.09.12.1403_TACTICAL_CASUALTY_CARE_PHASE_3A_EXTRACTION_AND_FIRE_TEAM_PHYSIOLOGICAL_HUD_PATCH</h1>
-
-<p>Browser 1300 is the release baseline. Browser 1403 implements Tactical Casualty Care Phase 3A: authoritative Skyranger recovery, recovered-versus-abandoned mission aftermath, and the roadmap fire-team physiological HUD with a Mobile Adaptive show/hide button. Save format remains 4.</p>
-
-<h2 id="extraction-and-aftermath-authority">Extraction and aftermath authority</h2>
-
+<h1
+id="codex-handoff--v02609121403_tactical_casualty_care_phase_3a_extraction_and_fire_team_physiological_hud_patch">CODEX
+HANDOFF —
+v0.26.09.12.1403_TACTICAL_CASUALTY_CARE_PHASE_3A_EXTRACTION_AND_FIRE_TEAM_PHYSIOLOGICAL_HUD_PATCH</h1>
+<p>Browser 1300 is the release baseline. Browser 1403 implements
+Tactical Casualty Care Phase 3A: authoritative Skyranger recovery,
+recovered-versus-abandoned mission aftermath, and the roadmap fire-team
+physiological HUD with a Mobile Adaptive show/hide button. Save format
+remains 4.</p>
+<h2 id="extraction-and-aftermath-authority">Extraction and aftermath
+authority</h2>
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">tacticalExtractDraggedCasualtyAtSkyranger(...)</code> is the boarding authority. The conscious rescuer must occupy a player Skyranger’s first ramp cell, retain a valid adjacent drag link, and carry a living downed casualty.</li>
-  <li>A completed extraction sets <code class="language-plaintext highlighter-rouge">casualtyExtracted</code>, <code class="language-plaintext highlighter-rouge">casualtyRecovered</code>, <code class="language-plaintext highlighter-rouge">rescued</code>, rescuer/craft/round metadata, stops active bleeding, clears both drag fields, and removes the casualty from render/path occupancy.</li>
-  <li>Manual ramp-side attachment and manual drag movement both call the same helper. <code class="language-plaintext highlighter-rouge">tacticalAiCasualtyExtractionStep(...)</code> uses the existing attach/per-hex TU costs and hazard-aware route authority; it does not inspect hidden alien positions.</li>
-  <li><code class="language-plaintext highlighter-rouge">tacticalApplyCasualtyExtractionAftermath(...)</code> owns final recovery. Victory recovers living downed soldiers. Defeat/withdrawal saves physically extracted casualties and records unextracted downed personnel as KIA/unrecovered.</li>
-  <li><code class="language-plaintext highlighter-rouge">finishTacticalMission(...)</code> receives the final battlefield units. Terminal Simulation/Hybrid playback commits the last frame before aftermath; <code class="language-plaintext highlighter-rouge">resolveMission(...)</code> applies the same outcome to Classic/direct simulation.</li>
+<li><code>tacticalExtractDraggedCasualtyAtSkyranger(...)</code> is the
+boarding authority. The conscious rescuer must occupy a player
+Skyranger's first ramp cell, retain a valid adjacent drag link, and
+carry a living downed casualty.</li>
+<li>A completed extraction sets <code>casualtyExtracted</code>,
+<code>casualtyRecovered</code>, <code>rescued</code>,
+rescuer/craft/round metadata, stops active bleeding, clears both drag
+fields, and removes the casualty from render/path occupancy.</li>
+<li>Manual ramp-side attachment and manual drag movement both call the
+same helper. <code>tacticalAiCasualtyExtractionStep(...)</code> uses the
+existing attach/per-hex TU costs and hazard-aware route authority; it
+does not inspect hidden alien positions.</li>
+<li><code>tacticalApplyCasualtyExtractionAftermath(...)</code> owns
+final recovery. Victory recovers living downed soldiers.
+Defeat/withdrawal saves physically extracted casualties and records
+unextracted downed personnel as KIA/unrecovered.</li>
+<li><code>finishTacticalMission(...)</code> receives the final
+battlefield units. Terminal Simulation/Hybrid playback commits the last
+frame before aftermath; <code>resolveMission(...)</code> applies the
+same outcome to Classic/direct simulation.</li>
 </ul>
-
 <h2 id="physiological-hud">Physiological HUD</h2>
-
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">TacticalFireTeamPhysiologicalHud</code> groups all AEGIS soldiers by fire team and arranges up to four members in the roadmap diamond.</li>
-  <li>Trace color derives from authoritative HP/incapacity. Trace duration derives from fear pressure/state, and KIA is a flatline. Status text includes medical, fear, extraction, and death states.</li>
-  <li>Standard layout keeps the bottom-edge monitor visible. Mobile Adaptive uses the left-rail <code class="language-plaintext highlighter-rouge">Team Vitals</code> / <code class="language-plaintext highlighter-rouge">Hide Vitals</code> button; <code class="language-plaintext highlighter-rouge">mobilePhysioHudOpen</code> persists in the live mission cache.</li>
+<li><code>TacticalFireTeamPhysiologicalHud</code> groups all AEGIS
+soldiers by fire team and arranges up to four members in the roadmap
+diamond.</li>
+<li>Trace color derives from authoritative HP/incapacity. Trace duration
+derives from fear pressure/state, and KIA is a flatline. Status text
+includes medical, fear, extraction, and death states.</li>
+<li>Standard layout keeps the bottom-edge monitor visible. Mobile
+Adaptive uses the left-rail <code>Team Vitals</code> /
+<code>Hide Vitals</code> button; <code>mobilePhysioHudOpen</code>
+persists in the live mission cache.</li>
 </ul>
-
-<h2 id="preserve-1">Preserve</h2>
-
+<h2 id="preserve-3">Preserve</h2>
 <ul>
-  <li>Save format 4 and optional-field loading.</li>
-  <li>Browser 1300 terminal Hybrid precedence/final-frame commit.</li>
-  <li>Phase 1/2 downing, bleeding, stabilization, Field Medkit, and triage rules.</li>
-  <li>Existing Beacon, mobile, PWA, building, vehicle, horizon, and renderer authority.</li>
-  <li>One active <code class="language-plaintext highlighter-rouge">finishAiPlayback()</code> definition and one mutable current patch-history record.</li>
+<li>Save format 4 and optional-field loading.</li>
+<li>Browser 1300 terminal Hybrid precedence/final-frame commit.</li>
+<li>Phase 1/2 downing, bleeding, stabilization, Field Medkit, and triage
+rules.</li>
+<li>Existing Beacon, mobile, PWA, building, vehicle, horizon, and
+renderer authority.</li>
+<li>One active <code>finishAiPlayback()</code> definition and one
+mutable current patch-history record.</li>
 </ul>
-
 <h2 id="field-gates">Field gates</h2>
-
-<ol>
-  <li>Extract a downed casualty by dragging onto the Skyranger ramp, then repeat by attaching while already standing on the ramp.</li>
-  <li>Withdraw with one extracted and one unextracted downed casualty; verify the former survives and the latter is KIA/unrecovered.</li>
-  <li>Win with a living unextracted downed soldier and verify recovery.</li>
-  <li>Observe AI extraction TU spending and confirm panic/hidden information constraints.</li>
-  <li>Inspect all health/fear/medical trace states in Standard and Mobile Adaptive; close/reopen Team Vitals and restore the live mission.</li>
-  <li>Repeat Browser 1300 terminal Hybrid, Phase 1/2 casualty, PWA update/cold-start, and representative tactical presentation gates.</li>
+<ol type="1">
+<li>Extract a downed casualty by dragging onto the Skyranger ramp, then
+repeat by attaching while already standing on the ramp.</li>
+<li>Withdraw with one extracted and one unextracted downed casualty;
+verify the former survives and the latter is KIA/unrecovered.</li>
+<li>Win with a living unextracted downed soldier and verify
+recovery.</li>
+<li>Observe AI extraction TU spending and confirm panic/hidden
+information constraints.</li>
+<li>Inspect all health/fear/medical trace states in Standard and Mobile
+Adaptive; close/reopen Team Vitals and restore the live mission.</li>
+<li>Repeat Browser 1300 terminal Hybrid, Phase 1/2 casualty, PWA
+update/cold-start, and representative tactical presentation gates.</li>
 </ol>
-
 <hr />
-
-<h1 id="previous-handoff--v02609121300_build_audit_and_terminal_playback_integrity_patch">Previous handoff — v0.26.09.12.1300_BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH</h1>
-
-<p>Browser 1226 is the gameplay baseline. Browser 1300 audits the patches added since Browser 1058, fixes terminal Hybrid completion, aligns fallback 3D land-vehicle placement with footprint authority, repairs generic checks, and removes merged one-use patch-delivery files. Save format remains 4.</p>
-
+<h1
+id="previous-handoff--v02609121300_build_audit_and_terminal_playback_integrity_patch">Previous
+handoff —
+v0.26.09.12.1300_BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH</h1>
+<p>Browser 1226 is the gameplay baseline. Browser 1300 audits the
+patches added since Browser 1058, fixes terminal Hybrid completion,
+aligns fallback 3D land-vehicle placement with footprint authority,
+repairs generic checks, and removes merged one-use patch-delivery files.
+Save format remains 4.</p>
 <h2 id="fixed-authority-boundaries">Fixed authority boundaries</h2>
-
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">finishAiPlayback()</code> must evaluate a terminal Hybrid result before consuming <code class="language-plaintext highlighter-rouge">hybridContinuation</code>. A successful final frame is reconciled through <code class="language-plaintext highlighter-rouge">tacticalCommittedPlaybackFrameUnits(...)</code> and <code class="language-plaintext highlighter-rouge">tacticalTerminalVictoryResultFromCommittedBattlefield(...)</code> for both Simulation and Hybrid playback.</li>
-  <li>Completion must continue to wait while the playback sequencer owns pending presentation actions. Interrupted, pending, and operation-incomplete streams must not finalize.</li>
-  <li><code class="language-plaintext highlighter-rouge">tacticalThreeCoverWorldAnchor(...)</code> owns the center of multi-hex land-vehicle presentation in both fallback and persistent Three.js renderers. <code class="language-plaintext highlighter-rouge">tacticalThreeBuildingPresentationCoverShouldRender(...)</code> owns footprint-cell visibility.</li>
-  <li><code class="language-plaintext highlighter-rouge">check-aegis-build.cjs</code> locates actual patch-history mutation statements; quoted contract-test strings are not mutations.</li>
+<li><code>finishAiPlayback()</code> must evaluate a terminal Hybrid
+result before consuming <code>hybridContinuation</code>. A successful
+final frame is reconciled through
+<code>tacticalCommittedPlaybackFrameUnits(...)</code> and
+<code>tacticalTerminalVictoryResultFromCommittedBattlefield(...)</code>
+for both Simulation and Hybrid playback.</li>
+<li>Completion must continue to wait while the playback sequencer owns
+pending presentation actions. Interrupted, pending, and
+operation-incomplete streams must not finalize.</li>
+<li><code>tacticalThreeCoverWorldAnchor(...)</code> owns the center of
+multi-hex land-vehicle presentation in both fallback and persistent
+Three.js renderers.
+<code>tacticalThreeBuildingPresentationCoverShouldRender(...)</code>
+owns footprint-cell visibility.</li>
+<li><code>check-aegis-build.cjs</code> locates actual patch-history
+mutation statements; quoted contract-test strings are not
+mutations.</li>
 </ul>
-
 <h2 id="repository-layout">Repository layout</h2>
-
 <ul>
-  <li>Keep <code class="language-plaintext highlighter-rouge">src/browser-runtime.html</code> as canonical game source and generate <code class="language-plaintext highlighter-rouge">index.html</code>, <code class="language-plaintext highlighter-rouge">service-worker.js</code>, and <code class="language-plaintext highlighter-rouge">release-metadata.json</code> with <code class="language-plaintext highlighter-rouge">node tools/package-runtime-shell.cjs</code>.</li>
-  <li>Keep <code class="language-plaintext highlighter-rouge">src/manifest.json</code>, this handoff, <code class="language-plaintext highlighter-rouge">README_PATCH_NOTES.txt</code>, <code class="language-plaintext highlighter-rouge">VALIDATION_SUMMARY.txt</code>, the canonical Game Bible, PWA documentation, stable test/smoke tools, and field-acceptance plans.</li>
-  <li>One-use <code class="language-plaintext highlighter-rouge">APPLY_*</code> wrappers, <code class="language-plaintext highlighter-rouge">manifest.*.merge.json</code> fragments, <code class="language-plaintext highlighter-rouge">tools/apply-*</code> updaters, upload lists, per-patch checker snapshots, superseded handoffs, and duplicate Game Bible snapshots were removed after merge. Retrieve an old copy from Git history if needed for archaeology.</li>
+<li>Keep <code>src/browser-runtime.html</code> as canonical game source
+and generate <code>index.html</code>, <code>service-worker.js</code>,
+and <code>release-metadata.json</code> with
+<code>node tools/package-runtime-shell.cjs</code>.</li>
+<li>Keep <code>src/manifest.json</code>, this handoff,
+<code>README_PATCH_NOTES.txt</code>,
+<code>VALIDATION_SUMMARY.txt</code>, the canonical Game Bible, PWA
+documentation, stable test/smoke tools, and field-acceptance plans.</li>
+<li>One-use <code>APPLY_*</code> wrappers,
+<code>manifest.*.merge.json</code> fragments, <code>tools/apply-*</code>
+updaters, upload lists, per-patch checker snapshots, superseded
+handoffs, and duplicate Game Bible snapshots were removed after merge.
+Retrieve an old copy from Git history if needed for archaeology.</li>
 </ul>
-
 <h2 id="field-gates-1">Field gates</h2>
-
-<ol>
-  <li>Finish a Hybrid mission whose playback still contains a continuation snapshot; it must open the terminal report without returning to another player round.</li>
-  <li>Confirm survivor/KIA/civilian counts in that report match the final playback frame.</li>
-  <li>Spot-check a bus or other multi-hex road vehicle in the fallback 3D renderer for centered placement and footprint-cell reveal.</li>
-  <li>Repeat the existing Casualty Care Phase 2 bleeding/stabilization/triage field acceptance and one installed-PWA cold launch.</li>
+<ol type="1">
+<li>Finish a Hybrid mission whose playback still contains a continuation
+snapshot; it must open the terminal report without returning to another
+player round.</li>
+<li>Confirm survivor/KIA/civilian counts in that report match the final
+playback frame.</li>
+<li>Spot-check a bus or other multi-hex road vehicle in the fallback 3D
+renderer for centered placement and footprint-cell reveal.</li>
+<li>Repeat the existing Casualty Care Phase 2
+bleeding/stabilization/triage field acceptance and one installed-PWA
+cold launch.</li>
 </ol>
-
 <hr />
-
-<h1 id="previous-handoff--v02609121226_tactical_casualty_care_phase_2_bleeding_stabilization_and_triage_patch">Previous handoff — v0.26.09.12.1226_TACTICAL_CASUALTY_CARE_PHASE_2_BLEEDING_STABILIZATION_AND_TRIAGE_PATCH</h1>
-
-<p>Browser 2248 is the gameplay baseline. Browser 1226 adds Tactical Casualty Care Phase 2: bleeding/deterioration, stabilization, targeted adjacent first aid, multi-charge Field Medkits, and bounded shared AI triage. Save format remains 4.</p>
-
+<h1
+id="previous-handoff--v02609121226_tactical_casualty_care_phase_2_bleeding_stabilization_and_triage_patch">Previous
+handoff —
+v0.26.09.12.1226_TACTICAL_CASUALTY_CARE_PHASE_2_BLEEDING_STABILIZATION_AND_TRIAGE_PATCH</h1>
+<p>Browser 2248 is the gameplay baseline. Browser 1226 adds Tactical
+Casualty Care Phase 2: bleeding/deterioration, stabilization, targeted
+adjacent first aid, multi-charge Field Medkits, and bounded shared AI
+triage. Save format remains 4.</p>
 <h2 id="medical-state-authority">Medical state authority</h2>
 <ul>
-  <li>Recoverable Phase 1 downings now set <code class="language-plaintext highlighter-rouge">bleeding:true</code>, <code class="language-plaintext highlighter-rouge">stabilized:false</code>, <code class="language-plaintext highlighter-rouge">bleedOutRounds:3</code>, and <code class="language-plaintext highlighter-rouge">bleedLastProcessedRound</code> to the downing round. Catastrophic KIA clears those fields.</li>
-  <li><code class="language-plaintext highlighter-rouge">tacticalCasualtyDeteriorationStep(units, round)</code> is the once-per-round bleed authority. Preserve the <code class="language-plaintext highlighter-rouge">bleedLastProcessedRound</code> guard; Manual/Hybrid/Simulation paths may touch the same round. Expiration becomes authoritative KIA.</li>
-  <li>Stabilization stops bleeding but does <strong>not</strong> revive the casualty. A stabilized soldier remains alive, downed/unconscious/prone and non-combat-active.</li>
+<li>Recoverable Phase 1 downings now set <code>bleeding:true</code>,
+<code>stabilized:false</code>, <code>bleedOutRounds:3</code>, and
+<code>bleedLastProcessedRound</code> to the downing round. Catastrophic
+KIA clears those fields.</li>
+<li><code>tacticalCasualtyDeteriorationStep(units, round)</code> is the
+once-per-round bleed authority. Preserve the
+<code>bleedLastProcessedRound</code> guard; Manual/Hybrid/Simulation
+paths may touch the same round. Expiration becomes authoritative
+KIA.</li>
+<li>Stabilization stops bleeding but does <strong>not</strong> revive
+the casualty. A stabilized soldier remains alive,
+downed/unconscious/prone and non-combat-active.</li>
 </ul>
-
 <h2 id="field-medkit-authority">Field Medkit authority</h2>
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">tacticalFieldMedkitCapacity(...)</code>: ordinary issued kit = 4 tactical charges; Medic specialization = 10. <code class="language-plaintext highlighter-rouge">tacticalInitialMedkitCharges(...)</code> initializes new deployments and respects restored/continuing tactical charge state.</li>
-  <li>Self-treatment remains 12 TU / up to 12 HP / 1 charge.</li>
-  <li><code class="language-plaintext highlighter-rouge">tacticalFirstAidUseResult(...)</code> owns adjacent treatment: conscious wounded teammate = 14 TU / up to 10 HP / 1 charge; bleeding downed casualty = stabilization for 16 TU / 1 charge.</li>
-  <li>Do not convert tactical charges into strategic inventory consumption in this phase. The issued Field Medkit is reusable equipment; strategic resupply/economics are Phase 3.</li>
+<li><code>tacticalFieldMedkitCapacity(...)</code>: ordinary issued kit =
+4 tactical charges; Medic specialization = 10.
+<code>tacticalInitialMedkitCharges(...)</code> initializes new
+deployments and respects restored/continuing tactical charge state.</li>
+<li>Self-treatment remains 12 TU / up to 12 HP / 1 charge.</li>
+<li><code>tacticalFirstAidUseResult(...)</code> owns adjacent treatment:
+conscious wounded teammate = 14 TU / up to 10 HP / 1 charge; bleeding
+downed casualty = stabilization for 16 TU / 1 charge.</li>
+<li>Do not convert tactical charges into strategic inventory consumption
+in this phase. The issued Field Medkit is reusable equipment; strategic
+resupply/economics are Phase 3.</li>
 </ul>
-
 <h2 id="ai-triage">AI triage</h2>
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">tacticalMedicalPriorityTarget(...)</code> and <code class="language-plaintext highlighter-rouge">tacticalAiMedicalTriageStep(...)</code> share the same treatment rules as Manual play. Urgent bleeding casualties rank first and an adjacent Medic is preferred where possible.</li>
-  <li>The existing Phase 1 visibility-safe emergency drag remains separate. Do not introduce hidden alien coordinates as a medical trigger.</li>
+<li><code>tacticalMedicalPriorityTarget(...)</code> and
+<code>tacticalAiMedicalTriageStep(...)</code> share the same treatment
+rules as Manual play. Urgent bleeding casualties rank first and an
+adjacent Medic is preferred where possible.</li>
+<li>The existing Phase 1 visibility-safe emergency drag remains
+separate. Do not introduce hidden alien coordinates as a medical
+trigger.</li>
 </ul>
-
 <h2 id="round--visibility-invariants">Round / visibility invariants</h2>
 <ul>
-  <li>Downed/unconscious soldiers must remain <code class="language-plaintext highlighter-rouge">tu:0</code> during human-round refresh.</li>
-  <li>Downed/unconscious soldiers provide neither live tactical LOS nor Simulation-playback visibility reconstruction.</li>
-  <li><code class="language-plaintext highlighter-rouge">resolveMission(...)</code> intentionally differs from Browser 2248 because Phase 2 applies casualty deterioration and AI medical triage.</li>
-  <li><code class="language-plaintext highlighter-rouge">tacticalMissionTerminalState(...)</code> should remain the Browser 2248 Phase 1 authority: living vs. combat-active vs. downed humans, with all-down resolving defeat.</li>
+<li>Downed/unconscious soldiers must remain <code>tu:0</code> during
+human-round refresh.</li>
+<li>Downed/unconscious soldiers provide neither live tactical LOS nor
+Simulation-playback visibility reconstruction.</li>
+<li><code>resolveMission(...)</code> intentionally differs from Browser
+2248 because Phase 2 applies casualty deterioration and AI medical
+triage.</li>
+<li><code>tacticalMissionTerminalState(...)</code> should remain the
+Browser 2248 Phase 1 authority: living vs. combat-active vs. downed
+humans, with all-down resolving defeat.</li>
 </ul>
-
 <h2 id="snapshotsave">Snapshot/save</h2>
-<p>Optional tactical fields now include <code class="language-plaintext highlighter-rouge">bleeding</code>, <code class="language-plaintext highlighter-rouge">stabilized</code>, <code class="language-plaintext highlighter-rouge">bleedOutRounds</code>, <code class="language-plaintext highlighter-rouge">bleedLastProcessedRound</code>, <code class="language-plaintext highlighter-rouge">stabilizedById</code>, <code class="language-plaintext highlighter-rouge">stabilizedRound</code>, and <code class="language-plaintext highlighter-rouge">medkitCharges</code>. Save format stays <strong>4</strong>.</p>
-
-<h2 id="preserve-byte-for-byte-unless-explicitly-targeted">Preserve byte-for-byte unless explicitly targeted</h2>
+<p>Optional tactical fields now include <code>bleeding</code>,
+<code>stabilized</code>, <code>bleedOutRounds</code>,
+<code>bleedLastProcessedRound</code>, <code>stabilizedById</code>,
+<code>stabilizedRound</code>, and <code>medkitCharges</code>. Save
+format stays <strong>4</strong>.</p>
+<h2 id="preserve-byte-for-byte-unless-explicitly-targeted">Preserve
+byte-for-byte unless explicitly targeted</h2>
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">tacticalAlienReinforcementArrival(...)</code></li>
-  <li><code class="language-plaintext highlighter-rouge">tacticalBuildingPlans(...)</code></li>
-  <li><code class="language-plaintext highlighter-rouge">tacticalBuildingCovers(...)</code></li>
-  <li><code class="language-plaintext highlighter-rouge">makeBattlefield(...)</code></li>
-  <li><code class="language-plaintext highlighter-rouge">tacticalAiMissionResolution(...)</code></li>
-  <li><code class="language-plaintext highlighter-rouge">tacticalThreePersistentStartBeaconReinforcementArrivalCinematic(...)</code></li>
-  <li><code class="language-plaintext highlighter-rouge">tacticalThreePersistentCreateAlienTransitMaterializationEffect(...)</code></li>
-  <li>Browser 1800 <code class="language-plaintext highlighter-rouge">release-beacon-navigation-v2</code> / <code class="language-plaintext highlighter-rouge">aegis-launch-shell-v2</code> PWA architecture</li>
-  <li>Browser 1740 Mobile Tactical Status HUD collapse/expand</li>
-  <li>Browser 1610 building perimeter seams</li>
-  <li>Browser 1254 horizon treatment</li>
-  <li>exactly one <code class="language-plaintext highlighter-rouge">finishAiPlayback()</code> definition</li>
+<li><code>tacticalAlienReinforcementArrival(...)</code></li>
+<li><code>tacticalBuildingPlans(...)</code></li>
+<li><code>tacticalBuildingCovers(...)</code></li>
+<li><code>makeBattlefield(...)</code></li>
+<li><code>tacticalAiMissionResolution(...)</code></li>
+<li><code>tacticalThreePersistentStartBeaconReinforcementArrivalCinematic(...)</code></li>
+<li><code>tacticalThreePersistentCreateAlienTransitMaterializationEffect(...)</code></li>
+<li>Browser 1800 <code>release-beacon-navigation-v2</code> /
+<code>aegis-launch-shell-v2</code> PWA architecture</li>
+<li>Browser 1740 Mobile Tactical Status HUD collapse/expand</li>
+<li>Browser 1610 building perimeter seams</li>
+<li>Browser 1254 horizon treatment</li>
+<li>exactly one <code>finishAiPlayback()</code> definition</li>
 </ul>
-
 <h2 id="field-gates-2">Field gates</h2>
-<ol>
-  <li>Bleeding casualty counts 3 -&gt; 2 -&gt; 1 -&gt; KIA exactly once per round when untreated.</li>
-  <li>Stabilization spends 16 TU/1 charge, stops deterioration, and does not revive.</li>
-  <li>Adjacent teammate treatment spends 14 TU/1 charge and heals &lt;=10; self treatment spends 12 TU/1 charge and heals &lt;=12.</li>
-  <li>Ordinary Field Medkit starts 4 charges; Medic kit starts 10.</li>
-  <li>AI prioritizes urgent bleeding casualty and prefers adjacent Medic.</li>
-  <li>Save/reload active bleeding/stabilized cases with no reset/double tick.</li>
-  <li>Regress Phase 1 dragging/all-down, Beacon effects, PWA, Mobile HUD, building seams, save format 4.
-    <h2 id="roadmap-intake--september-15-2026-post-contact-fire-team-cohesion">Roadmap intake — September 15, 2026: Post-contact fire-team cohesion</h2>
-  </li>
+<ol type="1">
+<li>Bleeding casualty counts 3 -&gt; 2 -&gt; 1 -&gt; KIA exactly once
+per round when untreated.</li>
+<li>Stabilization spends 16 TU/1 charge, stops deterioration, and does
+not revive.</li>
+<li>Adjacent teammate treatment spends 14 TU/1 charge and heals &lt;=10;
+self treatment spends 12 TU/1 charge and heals &lt;=12.</li>
+<li>Ordinary Field Medkit starts 4 charges; Medic kit starts 10.</li>
+<li>AI prioritizes urgent bleeding casualty and prefers adjacent
+Medic.</li>
+<li>Save/reload active bleeding/stabilized cases with no reset/double
+tick.</li>
+<li>Regress Phase 1 dragging/all-down, Beacon effects, PWA, Mobile HUD,
+building seams, save format 4.</li>
 </ol>
-
+<h2
+id="roadmap-intake--september-15-2026-post-contact-fire-team-cohesion">Roadmap
+intake — September 15, 2026: Post-contact fire-team cohesion</h2>
 <ul>
-  <li>Planned only: after an alien firefight ends, autonomous soldiers should rebuild their assigned fire-team formation around the leader before resuming the team’s authoritative objective instead of peeling off as independent agents.</li>
-  <li>Recovery must be bounded and may not deadlock on a downed, dead, extracted or unreachable member. Preserve Beacon Assault forward-reform, VIP/casualty exceptions, persistent player assignments and save format 4.</li>
-  <li>See the canonical roadmap/game bible section <strong>Post-Contact Fire-Team Reassembly and Mission Continuation</strong> for full acceptance criteria.</li>
+<li>Planned only: after an alien firefight ends, autonomous soldiers
+should rebuild their assigned fire-team formation around the leader
+before resuming the team's authoritative objective instead of peeling
+off as independent agents.</li>
+<li>Recovery must be bounded and may not deadlock on a downed, dead,
+extracted or unreachable member. Preserve Beacon Assault forward-reform,
+VIP/casualty exceptions, persistent player assignments and save format
+4.</li>
+<li>See the canonical roadmap/game bible section <strong>Post-Contact
+Fire-Team Reassembly and Mission Continuation</strong> for full
+acceptance criteria.</li>
 </ul>
-
-
 
       
+
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
     <script>anchors.add();</script>

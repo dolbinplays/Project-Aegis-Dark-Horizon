@@ -1,8 +1,23 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.16.2245_PROCEDURAL_BUILDING_SEAM_CONTINUITY_AND_CLOSED_EXTERIOR_DOOR_DEFAULTS_PATCH`
+Current browser build: `v0.26.09.17.0953_WINDOW_APERTURE_SEAM_CLOSURE_AND_PROCEDURAL_BUILDING_SHELL_POLISH_PATCH`
 
 Current save format: `4`
+
+## Window Aperture Seam Closure + Procedural Building Shell Polish — Implemented in Browser 0953
+
+**September 17, 2026. Status: implemented; live field acceptance required.**
+
+- Procedural windows now use one shared `tacticalThreeBuildingWindowGeometrySpec(...)` rather than renderer-specific vertical dimensions.
+- The lower wall section reaches the same facade bottom as neighboring solid wall panels, closing the reported gap below windows.
+- The upper wall section reaches the same facade top/roof line as neighboring solid panels, closing the reported gap above windows.
+- Lower/upper wall bands overlap the vertical jambs by a small controlled amount to prevent sub-pixel daylight cracks while leaving the intended glass aperture open.
+- Window glass, EW/NS orientation, interior glow and window-adjacent connector bands all consume the same geometry contract.
+- Persistent traditional architecture no longer lowers the roof/eave treatment over window cells; roof continuity matches adjacent solid walls.
+- This remains presentation-shell work only. Existing window LOS, shattering, ballistic penalty, collision/pathing and structural state remain authoritative and unchanged.
+- Browser 2245 door-wall/concave-corner closure and closed/unlocked door defaults are retained. Save format remains **4**.
+
+**Acceptance:** generate brick/metal/timber structures with EW and NS windows across rectangular and T/L/J/S/Z footprints. Inspect windows from 3D Iso, FPV and TPV for no daylight slit above, below or at the side transition into neighboring wall panels. Confirm roof lines remain continuous, intact windows still permit their intended LOS, shattered windows still behave correctly, and no wall geometry covers the glass opening.
 
 ## Procedural Building Seam Continuity + Closed Exterior Door Defaults — Implemented in Browser 2245
 
@@ -30,6 +45,19 @@ Current save format: `4`
 - The shared target must remain the authoritative beacon record; do not create an assist-only beacon state.
 
 **Acceptance when implemented:** assign Team B to assist Team A on a known beacon, give both teams legal firing opportunities, and confirm both contribute fire after higher priorities clear. Recheck target loss, beacon destruction, immunity-aware weapon choice, assignment changes, save/reload and Default AI priority ordering.
+
+## Roadmap Addition — Unique Living-Soldier Nicknames
+
+**Requested September 17, 2026. Status: roadmap / not part of Browser 0953.**
+
+- A nickname may be assigned to **only one living AEGIS soldier at a time**.
+- Comparison should be case-insensitive and trim harmless leading/trailing whitespace, so `Ghost`, `ghost`, and ` Ghost ` are the same reserved nickname.
+- Manual rename/edit, recruitment/character generation, imports and any future random nickname assignment must all use one authoritative uniqueness check rather than UI-only validation.
+- Wounded, unconscious, hospitalized, downed, missing/recoverable or otherwise living soldiers continue to reserve the nickname.
+- Once a soldier is **confirmed dead**, that nickname becomes available for another soldier.
+- Existing saves with accidental duplicate living nicknames must still load safely; any cleanup/migration should be deterministic and preserve save format **4** if possible.
+
+**Acceptance when implemented:** attempt duplicate assignment through every nickname entry path, verify normalization/case handling, verify living non-active soldiers still reserve names, confirm a KIA releases the nickname, and load a legacy duplicate save without corruption.
 
 ## Physical Shelter Securing + Interior Furnishing/Cover Overhaul — Implemented in Browser 2146
 
