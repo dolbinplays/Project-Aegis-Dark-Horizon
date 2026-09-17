@@ -1,0 +1,16 @@
+PROJECT AEGIS — PROP EDITOR RUNTIME LIBRARY INTEGRATION FIELD ACCEPTANCE
+Build: v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH
+Save format: 4
+Baseline: Browser 1145 GitHub main commit 92b1a9130a585ba7689e0faf58580c7167624bda / Pages run 35260494234 / artifact 10514791600
+
+1. Confirm browser runtime loads `assets/data/aegis-prop-library.js` before tactical prop model construction and the library reports `aegis-prop-library-v1`.
+2. Confirm tree, lamp-post, stop-sign, vending-machine, newspaper-machine, bus-stop, street-bench, crates, concrete, fence, rock and bush resolve to `aegis-prop-definition-v1` records.
+3. Inspect representative missions in both tactical Three.js paths (3D Iso plus FPV/TPV) and verify integrated props render from component definitions.
+4. Edit a prop in `AEGIS_Prop_Editor_CURRENT.html`, use **Download Game Runtime Library JS**, replace `assets/data/aegis-prop-library.js`, reload and confirm the edited model appears in game.
+5. Verify converted props retain Browser 1145 movement classification and deterministic hex-edge placement. Bush/brush/crop passability and solid tree/pole/machine routing must not regress.
+6. Remove or invalidate one prop definition and confirm the old hard-coded renderer safely supplies that prop rather than making it disappear or crash.
+7. Confirm the service worker caches `./assets/data/aegis-prop-library.js` and Mobile/PWA startup/reload remains healthy.
+8. Confirm save/load remains format 4 and no schema migration is introduced.
+9. Boundary check: add a brand-new prop visual key only to the library. It should be renderable if a tactical cover record references it, but it should NOT begin spawning procedurally until an explicit spawn/content rule is added.
+
+Focused automated regression: tools/test-prop-editor-runtime-library-integration.cjs

@@ -1,15 +1,34 @@
-AUTHORING TOOL: v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL
-PROJECT AEGIS — PROP EDITOR FOUNDATION VALIDATION
-Game baseline remains Browser 1145; save format remains 4.
+PROP EDITOR HOTFIX: v0.26.09.17.1340_PROP_EDITOR_STARTUP_AND_LIBRARY_LIST_HOTFIX
+Game baseline remains Browser 1320; save format remains 4.
+- Root cause confirmed in the shipped 1320 editor: `buildUnitReference()` called `THREE.CapsuleGeometry`, but AEGIS bundles Three.js r128, where CapsuleGeometry is unavailable.
+- The exception occurred before final `refreshAll()`, leaving the prop list empty and the canvas at its initial small WebGL size.
+- Hotfix replaces the mannequin torso with supported `CylinderGeometry`, updates the stale 1155 badge, and preserves canonical `assets/data/aegis-prop-library.js` loading.
+- Focused startup/library-list regression: 5/5 passed.
+- Extracted inline editor JavaScript passes `node --check`.
+- Game runtime/PWA files are intentionally unchanged.
 
-- Authoritative source baseline: GitHub main commit `92b1a9130a585ba7689e0faf58580c7167624bda` / successful Pages workflow run `35260494234` / artifact `10514791600`.
-- Game runtime invariance verified: `src/browser-runtime.html`, `index.html`, `service-worker.js`, `release-metadata.json`, and `manifest.webmanifest` are byte-identical to Browser 1145.
-- New focused regression `tools/test-prop-editor-foundation.cjs`: 8/8 passed.
-- `tools/check-aegis-build.cjs`, `tools/check-embedded-js.cjs`, and `node --check service-worker.js` pass.
-- Retained short/medium game test/smoke entrypoints: 45/45 passed (including the new Prop Editor test; game-behavior entrypoints remain clean).
-- Long AI command-stream handoff: 2/2 passed.
-- Manual field acceptance checklist: `PROP_EDITOR_FOUNDATION_FIELD_ACCEPTANCE.txt`.
-- The standalone editor is not intercepted as the installed game's root/index launch navigation.
+BUILD: v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH
+PROJECT AEGIS — BROWSER 1320 VALIDATION SUMMARY
+Build: v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH
+Save format: 4
+
+Prop Editor Runtime Library Integration
+- Authoritative source baseline: Browser 1145 GitHub main commit `92b1a9130a585ba7689e0faf58580c7167624bda` / successful Pages run `35260494234` / artifact `10514791600`.
+- Canonical shared prop assets: `assets/data/aegis-prop-library.js` (36,106 bytes, SHA-256 `e46c9036722d1a22c84a31ad90e1e412b488759198fb24c1be3e795cc2f8000e`) and JSON mirror (35,986 bytes, SHA-256 `7f9d5b3924e8fd584f193b3d858044f5c3878dee92efcaca2c2d49f8feb93a8c`).
+- Runtime loads `aegis-prop-library-v1` before tactical prop construction. Both Three.js tactical cover paths prefer shared `aegis-prop-definition-v1` component models and retain the legacy renderer as a missing/malformed-definition fallback.
+- Initial shared set: tree, lamp-post, stop-sign, vending-machine, newspaper-machine, bus-stop, street-bench, crates, concrete, fence, rock and bush.
+- Shared metadata drives navigation class and Browser 1145 deterministic hex-edge placement for converted props. Existing tactical cell/cover HP/block/LOS balance remains authoritative/fallback-safe; the editor library does not silently rebalance cover gameplay.
+- Updated Prop Editor loads the canonical project library and exports a drop-in `aegis-prop-library.js` using **Download Game Runtime Library JS**. New visual keys are renderable when referenced but still require an explicit spawn/content rule before procedural maps begin generating them.
+- Service worker precaches the shared library; Mobile/PWA regression: **9/9 passed**.
+- New focused regression `tools/test-prop-editor-runtime-library-integration.cjs`: **8/8 passed**, including mocked Three.js instantiation and shared metadata/provenance checks.
+- Browser 1145 prop/navigation regression and Browser 1036 Assist regression remain green.
+- Two retained Default AI tests were updated only from hard-coded Browser 1145 current-build identity to Browser 1320; behavioral assertions are unchanged and pass.
+- `tools/test-ai-command-stream-handoff.cjs` was made script-position-independent because Browser 1320 adds one external shared-library script tag; the real streamed AI handoff remains **2/2 passed**.
+- Complete frozen-tree retained sweep: **46/46 entrypoint files passed, 0 failed** (40 test entrypoints + 6 smoke entrypoints; long AI handoff included as one test entrypoint).
+- `tools/check-aegis-build.cjs`, embedded JavaScript syntax, and `service-worker.js` syntax pass.
+- Packaged runtime: **7,335,051 bytes**, SHA-256 `ee36f2c2433bca106e3ab51ec90bb911d610909c5be2b2fdaadd8ace2fda7332`; generated host SHA-256 `3d11994c2c9ce276d1f4693d84cb8e8316b5b15185adfa8caa34318b8674185a`.
+- Install-style verification: the 20-file replacement ZIP was applied over a fresh copy of the exact Browser 1145 GitHub Pages baseline; build seam, embedded-JS/service-worker syntax, Mobile/PWA **9/9**, all 45 short/medium retained entrypoints, and streamed AI handoff **2/2** passed for a complete **46/46** overlay matrix.
+- Save format remains **4**.
 
 BUILD: v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH
 PROJECT AEGIS — BROWSER 1145 VALIDATION SUMMARY

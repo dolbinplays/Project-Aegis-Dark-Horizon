@@ -1,0 +1,22 @@
+AEGIS PROP EDITOR LIVE TRANSFORM + NATURAL ORBIT DRAG — FIELD ACCEPTANCE
+
+Build:
+v0.26.09.17.1620_PROP_EDITOR_LIVE_TRANSFORM_AND_NATURAL_ORBIT_DRAG_PATCH
+
+Acceptance criteria:
+1. Position X/Y/Z range controls can be clicked and dragged continuously until pointer release.
+2. Rotation X/Y/Z range controls can be clicked and dragged continuously until pointer release.
+3. Scale X/Y/Z range controls can be clicked and dragged continuously until pointer release.
+4. The selected component changes in the Three.js preview in real time throughout the drag.
+5. The paired numeric field remains synchronized with the effective value, including snapping.
+6. Click-on-track behavior remains supported.
+7. One slider gesture produces one Undo history checkpoint instead of one checkpoint per input tick.
+8. Position and rotation snapping remain authoritative while dragging.
+9. Viewport orbit drag direction follows the pointer horizontally and vertically rather than feeling reversed.
+10. No tactical runtime, game save schema, or save-format change is introduced. Save format remains 4.
+
+Implementation notes:
+- Slider input no longer calls refreshComponentEditor() during an active gesture, so the active range DOM node is not destroyed and recreated while dragging.
+- Live transform updates mutate the selected Three.js preview mesh position/rotation/scale directly.
+- The numeric value field remains synchronized with the effective snapped value.
+- Orbit yaw and pitch mouse-delta signs are inverted for natural grab-style view manipulation.

@@ -1,29 +1,44 @@
-# CODEX HANDOFF — Standalone Prop Editor Foundation Tool 1155
+# PROP EDITOR HOTFIX — v0.26.09.17.1340_PROP_EDITOR_STARTUP_AND_LIBRARY_LIST_HOTFIX
 
-The browser game remains `v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH` with save format **4**. This authoring-tool addition does not modify tactical runtime/save authority.
+Game baseline remains Browser 1320; save format remains 4. The 1320 editor shipped with a startup-only compatibility bug: `buildUnitReference()` used `THREE.CapsuleGeometry`, unavailable in the project's bundled Three.js r128. The resulting exception occurred before `refreshAll()`, so the Prop Library panel remained empty even though the canonical library loaded. Prop Editor 1340 replaces only the mannequin torso primitive with supported cylinder geometry, corrects the stale Foundation Tool 1155 badge, and leaves the game/runtime prop library untouched.
 
-## New standalone authoring files
-- `AEGIS_Prop_Editor_CURRENT.html` — stable launcher.
-- `AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html` — current Prop Editor foundation.
-- Schema authority: single props export as `aegis-prop-definition-v1`; whole libraries export as `aegis-prop-library-v1`.
+Focused regression: `tools/test-prop-editor-startup-and-library-list-hotfix.cjs` (5/5).
 
-## Prop Editor foundation behavior
-- Built-in editable templates cover tree, lamp post, stop sign, vending machine, newspaper machine, bus stop, street bench, crates, concrete barrier, fence, rock and bush.
-- Components use editable primitive geometry (box/cylinder/sphere/cone/torus), position, Euler rotation in degrees, scale, color, roughness, metalness, opacity, emissive color/strength and shadow flag.
-- Prop metadata covers current Browser 1145 concerns: visual key, navigation class, cover kind/block, HP, LOS hint, hex-edge placement, edge fraction, curb preference and natural-prop road avoidance.
-- Collision-envelope authoring supports box/cylinder/none. It is metadata only in this foundation; Browser 1145 still owns live movement occupancy by tactical cell through `tacticalCoverBlocksMovement(...)`.
-- The Three.js preview provides owning-hex/grid/unit references, click selection, orbit/zoom and front/side/iso/top camera presets.
-- Editor workflow includes component/prop creation, duplication/deletion, transform snapping, keyboard nudge, undo/redo, localStorage draft save/restore, JSON text import, file import, single-prop export and library export.
-- The standalone editor is intentionally excluded from the installed PWA navigation interception by the existing service-worker rule that only handles root/index navigation.
+--- Previous handoff ---
 
-## Roadmap added with this tool
-- **Prop Editor phase 2:** add a shared runtime model-definition authority/import path so editor JSON can drive actual tactical Three.js prop models without manually rewriting renderer branches.
-- **Building Layout Editor:** standalone visual editor for footprints, walls, doors, windows, furnishings and shared-library props; include traversability, egress, doorway, seam and overlap validation plus a tactical Three.js preview.
-- Building Layout Editor must consume the same prop schema/library rather than creating a separate prop format.
+# CODEX HANDOFF — v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH
 
-Focused regression: `tools/test-prop-editor-foundation.cjs`. Field acceptance: `PROP_EDITOR_FOUNDATION_FIELD_ACCEPTANCE.txt`.
+Browser 1320 integrates the standalone Prop Editor schema into the playable game through one canonical shared prop library. Save format remains 4.
 
---- Current browser handoff remains below ---
+## Shared runtime prop-definition authority
+- `assets/data/aegis-prop-library.js` exposes `window.AEGIS_PROP_LIBRARY` using `aegis-prop-library-v1`; individual records use `aegis-prop-definition-v1`. A JSON mirror is retained for inspection/tooling.
+- `tacticalRuntimePropDefinitionForVisual(...)` and related helpers normalize library lookup/metadata. `tacticalThreeAddRuntimePropDefinitionModel(...)` instantiates editor-authored box/cylinder/sphere/cone/torus components.
+- Both tactical Three.js cover render paths attempt the shared-library model first and then fall back to the legacy hard-coded visual branch if no usable definition exists. This is deliberate incremental migration/failure containment.
+- The integrated common set currently includes tree, lamp-post, stop-sign, vending-machine, newspaper-machine, bus-stop, street-bench, crates, concrete, fence, rock and bush.
+
+## Gameplay metadata integration
+- `tacticalPropNavigationClass(...)`, `tacticalCoverUsesHexEdgePlacement(...)`, `tacticalPropEdgeFraction(...)` and edge-direction preferences consult shared prop metadata before legacy fallback.
+- `tacticalApplyHexEdgePropPlacement(...)` persists definition/schema/nav/LOS/editor-cover provenance on generated cover records.
+- Existing tactical cover HP/block/LOS balance remains authoritative/fallback-safe. Browser 1320 does **not** globally overwrite cell cover values simply because the editor library contains metadata.
+- Browser 1145 solid-prop navigation and deterministic edge placement therefore remain behaviorally intact while the source of common-prop metadata becomes authorable.
+
+## Prop Editor → game handoff
+- `AEGIS_Prop_Editor_CURRENT.html` / `AEGIS_Prop_Editor_v0.26.09.17.1320_RUNTIME_LIBRARY_INTEGRATION_TOOL.html` load the canonical project library when available.
+- **Download Game Runtime Library JS** exports the exact `window.AEGIS_PROP_LIBRARY=...` payload expected at `assets/data/aegis-prop-library.js`. Replacing that project file and reloading is the direct authoring handoff.
+- The service worker precaches the shared JS asset so installed/PWA play uses the same prop definitions.
+- Boundary: a new editor/library visual key becomes renderable when referenced, but random/procedural mission generation still needs a spawn/content rule before the new prop appears automatically.
+
+## Roadmap / preserve
+- Building Layout Editor remains next-stage developer tooling and must consume this same shared prop library/schema.
+- Unique living-soldier nickname ownership remains queued.
+- Alien forced-entry / door breaching remains queued.
+- Shielded-beacon immunity rings remain queued and intentionally unexplained by in-game text.
+- Browser 1036 Assist execution, Browser 0953 shell fixes, Browser 2245 door/corner closure, Browser 2146 shelter/furnishings and Browser 2051 Call Out remain intact.
+- Save format stays **4**.
+
+Focused regression: `tools/test-prop-editor-runtime-library-integration.cjs`.
+
+--- Previous handoff ---
 
 # CODEX HANDOFF — v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH
 

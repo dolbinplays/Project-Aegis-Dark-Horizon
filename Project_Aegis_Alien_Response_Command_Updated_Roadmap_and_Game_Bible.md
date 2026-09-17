@@ -1,42 +1,46 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH`
+Current browser build: `v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH`
 
 Current save format: `4`
 
-## Developer Authoring Tools Roadmap — Prop Editor + Building Layout Editor
 
-**Requested September 17, 2026. Prop Editor foundation implemented as a standalone authoring tool; Building Layout Editor remains roadmap / not yet implemented. Browser game runtime remains 1145.**
+## Prop Editor 1340 Startup / Library List Hotfix — Implemented
 
-The long-term goal is to give Project Aegis the same kind of direct authoring workflow already proven by the articulated soldier pose editor, but for tactical scenery and procedural structures. These tools must remain **standalone downloadable HTML authoring tools** and must not become the installed game's launch page or alter campaign/save data merely by opening them.
+**September 17, 2026. Status: implemented; live field acceptance requested.**
 
-### Prop Editor — Foundation Tool 1155
+- Corrects the runtime-integrated Prop Editor startup crash caused by unsupported `THREE.CapsuleGeometry` under the project's Three.js r128 bundle.
+- The crash previously happened before the editor's final refresh, making the Prop Library list appear empty even when opening the correct 1320 file.
+- Uses supported geometry for the optional unit-size mannequin and corrects the stale `Foundation Tool 1155` badge.
+- Game Browser 1320, canonical prop-library data, navigation/edge-placement rules, PWA files and save format remain unchanged.
 
-- Stable launcher: `AEGIS_Prop_Editor_CURRENT.html`. Current foundation: `AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html`.
-- The editor includes a working library of common tactical props such as trees, lamp posts, stop signs, vending/news machines, bus stops, benches, crates, concrete barriers, fences, rocks and bushes.
-- A prop is represented by schema `aegis-prop-definition-v1`: metadata + collision envelope + an ordered list of editable primitive components.
-- Individual components can be selected from a list or directly in the Three.js preview and can be moved, rotated, scaled, renamed, recolored, re-materialed, duplicated, added or removed.
-- Supported foundation primitives are box, cylinder, sphere, cone and torus. Primitive dimensions are editable independently from transform scale.
-- Prop-level authoring fields include visual key, solid/passable/decorative navigation class, hard/soft/no-cover classification, cover-block value, HP, LOS hint, center/hex-edge/special placement mode, edge fraction, curb preference and natural-prop road avoidance.
-- A visible collision-envelope editor supports box/cylinder/none and independent offset/dimensions so future runtime integration can validate sub-hex presentation against movement authority.
-- The preview includes the owning hex, grid/axes, a normal unit-standing scale reference, orbit/zoom, front/side/iso/top views and click-to-select component picking.
-- Editing workflow includes transform snapping, keyboard nudge, duplicate/delete, undo/redo, browser-local draft save/restore, single-prop JSON import/export, whole-library JSON export/import and foundation validation warnings.
-- The foundation intentionally does **not** overwrite live game prop models automatically yet. The next Prop Editor integration phase should add a shared game-side prop model library/runtime loader so exported definitions can become authoritative presentation without hand-translating every component into renderer code.
-- Existing Browser 1145 movement/edge-placement authority remains unchanged by the standalone editor. Save format remains **4**.
+**Acceptance:** open `AEGIS_Prop_Editor_CURRENT.html`, confirm the Prop Library immediately lists runtime props such as Tree, Lamp Post and Vending Machine, filter for `Tree`, select it, and confirm the 3D preview/components populate without a console exception.
 
-**Acceptance for the foundation:** open the tool directly from disk, switch among built-in prop templates, select components in both list and preview, modify transforms/materials/primitive dimensions, add/duplicate/delete a component, edit collision and navigation metadata, undo/redo, save/restore a draft, export/import a single prop and a whole library, and confirm the tool never changes game saves or the installed-app launch path.
 
-### Building Layout Editor — Planned
+## Prop Editor Runtime Library Integration — Implemented in Browser 1320
 
-- Provide a visual tactical building canvas for placing/removing/moving structural cells, exterior/interior walls, doors, windows, furnishings and props.
-- Support dwelling/business and future building-use templates so furnishing sets can be curated rather than relying only on procedural selection.
-- Let the author add new building layouts, duplicate existing layouts, remove inappropriate props/furniture, reposition items, and explicitly preserve walking lanes, door swing zones and shelter/cover opportunities.
-- Include grid/hex snapping, undo/redo, duplicate/delete, save/load JSON and deterministic export suitable for the procedural building authority.
-- Provide validation warnings for blocked entrances, unreachable rooms, overlapping solid props, wall/door/window seam gaps, invalid concave corners, insufficient egress, and layouts that trap civilians/VIPs.
-- Include a Three.js tactical preview mode so the same structure can be inspected in a game-like 3D presentation before export.
-- When implemented, it should consume the same prop-definition library as the Prop Editor rather than inventing a second prop format.
+**September 17, 2026. Status: implemented; live field acceptance required.**
 
-**Acceptance when implemented:** create a dwelling and a business from templates, edit footprint/walls/doors/windows, place furniture and props from the shared library, intentionally create blocked-door/seam/unreachable-room errors and verify validation catches them, then export/reload both layouts without drift.
+- Browser 1320 promotes the Prop Editor's `aegis-prop-definition-v1` / `aegis-prop-library-v1` schema into a canonical game asset at `assets/data/aegis-prop-library.js` (with a JSON mirror for inspection/tooling).
+- The first runtime-integrated common set covers trees, lamp posts, stop signs, vending machines, newspaper machines, bus stops, street benches, crates, concrete barriers, fences, rocks and bushes.
+- Both Three.js tactical cover render paths query the shared definition first. Missing or malformed definitions fall back to the established hard-coded model, so incremental conversion cannot make scenery disappear.
+- Navigation class and Browser 1145 deterministic hex-edge placement metadata also come from the shared library for converted props. Existing tactical cover HP/block/LOS balance remains authoritative/fallback-safe rather than being silently rewritten by editor defaults.
+- `AEGIS_Prop_Editor_CURRENT.html` loads the same project library and can export a drop-in `aegis-prop-library.js` using **Download Game Runtime Library JS**. That creates the direct approved-editor → project-file → game-runtime workflow requested by the player/developer.
+- The installed/PWA shell precaches the library so browser and installed play use the same definitions. Save format remains **4**.
+- **Boundary:** adding a completely new visual key to the editor/library makes the renderer capable of building it when referenced, but does not automatically make procedural generation spawn it. New prop categories still need appropriate content/spawn rules before they appear naturally on missions.
+
+**Acceptance:** edit a runtime-integrated prop in the editor, export the game runtime library JS, replace `assets/data/aegis-prop-library.js`, reload, and confirm both Three.js tactical views use the edited component model while Browser 1145 solid/passable navigation and edge placement remain correct. Remove/corrupt one definition and confirm the legacy renderer fallback remains safe. Test installed/PWA reload with the library precached.
+
+## Developer Tool Roadmap — Prop Editor + Building Layout Editor
+
+**Requested September 17, 2026. Status: Prop Editor runtime bridge implemented in Browser 1320; Building Layout Editor remains roadmap.**
+
+- **Prop Editor:** continue expanding the standalone downloadable editor so common and newly authored props can be built from selectable components, moved/rotated/scaled, duplicated, added/removed, assigned materials, and given collision/navigation/cover/LOS/hex-edge metadata. Runtime handoff now uses the canonical shared prop library rather than bespoke Three.js edits.
+- **Building Layout Editor:** create a separate downloadable editor that can place/remove walls, doors, windows, furnishings and shared-library props; edit dwelling/business archetypes; maintain walking lanes and door-swing clearance; add/remove inappropriate props; create new layouts; and export deterministic layout data for the game.
+- Both editors must share the same prop schema/library. The Building Layout Editor must not fork prop definitions or create a second collision/navigation truth.
+- Building editor validation should warn about blocked entrances, unreachable rooms, overlapping solid props, invalid footprints, door swing conflicts, and wall/window/door seam gaps, with a Three.js tactical preview matching game geometry.
+- Both tools should support grid snapping, undo/redo, duplicate/delete, numeric transforms, import/export and reusable templates.
+- Keep these as standalone downloadable HTML developer tools; they are not part of the normal player UI/PWA launch path.
 
 ## Window Aperture Seam Closure + Procedural Building Shell Polish — Implemented in Browser 0953
 

@@ -1,17 +1,34 @@
+BUILD: v0.26.09.17.1340_PROP_EDITOR_STARTUP_AND_LIBRARY_LIST_HOTFIX
+PROJECT AEGIS — PROP EDITOR 1340 HOTFIX NOTES
+Game baseline: v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH
+Save format: 4
+
+Prop Editor startup + library list hotfix
+- Corrects a startup crash in the 1320 Prop Editor caused by `THREE.CapsuleGeometry`, which is unavailable in Project Aegis's bundled Three.js r128.
+- Replaces the mannequin torso with supported cylinder geometry; this allows startup to continue through `refreshAll()` so the prop-library list populates normally.
+- Corrects the stale `Foundation Tool 1155` badge to `Runtime Integration 1340 Hotfix`.
+- The canonical runtime prop library, game runtime, PWA shell, save format and tactical behavior are unchanged.
+- New focused regression: `tools/test-prop-editor-startup-and-library-list-hotfix.cjs`.
+
+BUILD: v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH
+PROJECT AEGIS — BROWSER 1320 PATCH NOTES
+Build: v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH
+Save format: 4
+
+Prop Editor Runtime Library Integration
+- Builds directly on Browser 1145 and turns the standalone Prop Editor schema into a live game-runtime authority for the common tactical prop set.
+- Adds canonical `assets/data/aegis-prop-library.js` / `.json` data using `aegis-prop-library-v1` and `aegis-prop-definition-v1`.
+- Both Three.js tactical cover render paths now prefer the shared library definition for supported prop visuals and fall back to the established hard-coded renderer if a definition is absent or malformed.
+- Shared library metadata also drives solid/passable navigation class and deterministic hex-edge placement for converted props, while existing tactical cover HP/block/LOS gameplay authority remains fallback-safe and is not globally rebalanced by editor defaults.
+- The Prop Editor now loads the same canonical game library when opened from the project and can export a drop-in `aegis-prop-library.js` through **Download Game Runtime Library JS**. Replace `assets/data/aegis-prop-library.js` with that export to hand approved edits to the game.
+- The initial runtime-integrated common set includes tree, lamp-post, stop-sign, vending-machine, newspaper-machine, bus-stop, street-bench, crates, concrete, fence, rock and bush definitions.
+- A newly authored prop definition can render through the shared library when a tactical cover record references its visual key, but adding a brand-new prop to random/procedural map generation still requires an appropriate spawn/content rule; the library does not invent placement rules automatically.
+- The service worker precaches the canonical prop library so installed/PWA play has the same prop definitions as browser play.
+- Building Layout Editor remains roadmap work and must consume this same prop library/schema rather than creating a parallel format.
+- Save format remains 4.
+- New focused regression: `tools/test-prop-editor-runtime-library-integration.cjs`.
+
 BUILD: v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH
-AUTHORING TOOL: v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL
-PROJECT AEGIS — PROP EDITOR FOUNDATION TOOL
-Game baseline: v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH
-Save format: 4 (unchanged)
-
-Prop Editor Foundation
-- Adds `AEGIS_Prop_Editor_CURRENT.html` plus the versioned 1155 standalone editor. The game runtime/index/service worker/release metadata are unchanged.
-- Provides editable Three.js templates for common tactical props and a reusable `aegis-prop-definition-v1` component schema.
-- Supports component selection, primitive dimensions, position/rotation/scale, materials, add/duplicate/delete, prop creation/duplication/deletion, collision-envelope metadata, Browser 1145 movement/cover/LOS/hex-edge authoring metadata, undo/redo, local draft persistence, validation, JSON import/export and a unit/hex scale preview.
-- Adds the Building Layout Editor roadmap: visual structural/furniture/prop layout authoring, shared Prop Editor library, traversability/egress/seam/overlap validation and tactical Three.js preview.
-- The foundation intentionally does not make editor JSON authoritative in the live game yet; that is Prop Editor phase 2.
-- Focused regression: `tools/test-prop-editor-foundation.cjs` — 8/8 passed.
-
 PROJECT AEGIS — BROWSER 1145 PATCH NOTES
 Build: v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH
 Save format: 4

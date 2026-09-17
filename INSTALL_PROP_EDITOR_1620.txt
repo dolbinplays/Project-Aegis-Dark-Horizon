@@ -1,0 +1,13 @@
+PROJECT AEGIS — PROP EDITOR 1620 INSTALL
+
+Copy these two HTML files into the Project-Aegis-Dark-Horizon repository root:
+- AEGIS_Prop_Editor_v0.26.09.17.1620_PROP_EDITOR_LIVE_TRANSFORM_AND_NATURAL_ORBIT_DRAG_PATCH.html
+- AEGIS_Prop_Editor_CURRENT.html
+
+Keep the repository's existing assets/vendor/three.min.js in place. The editor references that existing dependency.
+
+This patch is based on the exact AEGIS Prop Editor 1155 source from the current main branch.
+It does not replace index.html, modify the tactical game runtime, or change save format 4.
+
+GitHub note:
+The ChatGPT GitHub connection used for this patch could read main but did not have repository write permission, so these files were not committed automatically.

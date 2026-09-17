@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>CODEX HANDOFF — v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH | Project-Aegis-Dark-Horizon</title>
+<title>CODEX HANDOFF — v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH | Project-Aegis-Dark-Horizon</title>
 <meta name="generator" content="Jekyll v3.10.0" />
-<meta property="og:title" content="CODEX HANDOFF — v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH" />
+<meta property="og:title" content="CODEX HANDOFF — v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Current builds of any projects I’m working on" />
 <meta property="og:description" content="Current builds of any projects I’m working on" />
@@ -17,9 +17,9 @@
 <meta property="og:site_name" content="Project-Aegis-Dark-Horizon" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="CODEX HANDOFF — v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH" />
+<meta property="twitter:title" content="CODEX HANDOFF — v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","description":"Current builds of any projects I’m working on","headline":"CODEX HANDOFF — v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH","url":"https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/CODEX_HANDOFF.html"}</script>
+{"@context":"https://schema.org","@type":"WebPage","description":"Current builds of any projects I’m working on","headline":"CODEX HANDOFF — v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH","url":"https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/CODEX_HANDOFF.html"}</script>
 <!-- End Jekyll SEO tag -->
 
     <link rel="stylesheet" href="/Project-Aegis-Dark-Horizon/assets/css/style.css?v=4208bcc12de53e34da659f4c6c573d02a0e5740f">
@@ -37,72 +37,93 @@
   </head>
   <body>
     <div class="container-lg px-3 my-5 markdown-body">
+<h1>PROP EDITOR HOTFIX — v0.26.09.17.1340_PROP_EDITOR_STARTUP_AND_LIBRARY_LIST_HOTFIX</h1>
+<p>Game baseline remains Browser 1320; save format remains 4. The 1320 editor used <code>THREE.CapsuleGeometry</code> for its optional mannequin, but Project Aegis bundles Three.js r128 where that primitive is unavailable. The resulting startup exception occurred before the final library refresh, leaving the Prop Library list empty. Prop Editor 1340 replaces the mannequin torso with supported cylinder geometry, corrects the stale 1155 badge, and leaves the playable game/runtime library unchanged.</p>
+<p>Focused startup/library regression: <strong>5/5 passed</strong>.</p>
+<hr>
       
       <h1><a href="https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/">Project-Aegis-Dark-Horizon</a></h1>
       
 
-<h1 id="codex-handoff-standalone-prop-editor-foundation-tool-1155">CODEX
-HANDOFF — Standalone Prop Editor Foundation Tool 1155</h1>
-<p>The browser game remains
-<code>v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH</code>
-with save format <strong>4</strong>. This authoring-tool addition does
-not modify tactical runtime/save authority.</p>
-<h2 id="new-standalone-authoring-files">New standalone authoring
-files</h2>
+<h1
+id="codex-handoff-v0.26.09.17.1320_prop_editor_runtime_library_integration_patch">CODEX
+HANDOFF —
+v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH</h1>
+<p>Browser 1320 integrates the standalone Prop Editor schema into the
+playable game through one canonical shared prop library. Save format
+remains 4.</p>
+<h2 id="shared-runtime-prop-definition-authority">Shared runtime
+prop-definition authority</h2>
 <ul>
-<li><code>AEGIS_Prop_Editor_CURRENT.html</code> — stable launcher.</li>
-<li><code>AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html</code>
-— current Prop Editor foundation.</li>
-<li>Schema authority: single props export as
-<code>aegis-prop-definition-v1</code>; whole libraries export as
-<code>aegis-prop-library-v1</code>.</li>
+<li><code>assets/data/aegis-prop-library.js</code> exposes
+<code>window.AEGIS_PROP_LIBRARY</code> using
+<code>aegis-prop-library-v1</code>; individual records use
+<code>aegis-prop-definition-v1</code>. A JSON mirror is retained for
+inspection/tooling.</li>
+<li><code>tacticalRuntimePropDefinitionForVisual(...)</code> and related
+helpers normalize library lookup/metadata.
+<code>tacticalThreeAddRuntimePropDefinitionModel(...)</code>
+instantiates editor-authored box/cylinder/sphere/cone/torus
+components.</li>
+<li>Both tactical Three.js cover render paths attempt the shared-library
+model first and then fall back to the legacy hard-coded visual branch if
+no usable definition exists. This is deliberate incremental
+migration/failure containment.</li>
+<li>The integrated common set currently includes tree, lamp-post,
+stop-sign, vending-machine, newspaper-machine, bus-stop, street-bench,
+crates, concrete, fence, rock and bush.</li>
 </ul>
-<h2 id="prop-editor-foundation-behavior">Prop Editor foundation
-behavior</h2>
+<h2 id="gameplay-metadata-integration">Gameplay metadata
+integration</h2>
 <ul>
-<li>Built-in editable templates cover tree, lamp post, stop sign,
-vending machine, newspaper machine, bus stop, street bench, crates,
-concrete barrier, fence, rock and bush.</li>
-<li>Components use editable primitive geometry
-(box/cylinder/sphere/cone/torus), position, Euler rotation in degrees,
-scale, color, roughness, metalness, opacity, emissive color/strength and
-shadow flag.</li>
-<li>Prop metadata covers current Browser 1145 concerns: visual key,
-navigation class, cover kind/block, HP, LOS hint, hex-edge placement,
-edge fraction, curb preference and natural-prop road avoidance.</li>
-<li>Collision-envelope authoring supports box/cylinder/none. It is
-metadata only in this foundation; Browser 1145 still owns live movement
-occupancy by tactical cell through
-<code>tacticalCoverBlocksMovement(...)</code>.</li>
-<li>The Three.js preview provides owning-hex/grid/unit references, click
-selection, orbit/zoom and front/side/iso/top camera presets.</li>
-<li>Editor workflow includes component/prop creation,
-duplication/deletion, transform snapping, keyboard nudge, undo/redo,
-localStorage draft save/restore, JSON text import, file import,
-single-prop export and library export.</li>
-<li>The standalone editor is intentionally excluded from the installed
-PWA navigation interception by the existing service-worker rule that
-only handles root/index navigation.</li>
+<li><code>tacticalPropNavigationClass(...)</code>,
+<code>tacticalCoverUsesHexEdgePlacement(...)</code>,
+<code>tacticalPropEdgeFraction(...)</code> and edge-direction
+preferences consult shared prop metadata before legacy fallback.</li>
+<li><code>tacticalApplyHexEdgePropPlacement(...)</code> persists
+definition/schema/nav/LOS/editor-cover provenance on generated cover
+records.</li>
+<li>Existing tactical cover HP/block/LOS balance remains
+authoritative/fallback-safe. Browser 1320 does <strong>not</strong>
+globally overwrite cell cover values simply because the editor library
+contains metadata.</li>
+<li>Browser 1145 solid-prop navigation and deterministic edge placement
+therefore remain behaviorally intact while the source of common-prop
+metadata becomes authorable.</li>
 </ul>
-<h2 id="roadmap-added-with-this-tool">Roadmap added with this tool</h2>
+<h2 id="prop-editor-game-handoff">Prop Editor → game handoff</h2>
 <ul>
-<li><strong>Prop Editor phase 2:</strong> add a shared runtime
-model-definition authority/import path so editor JSON can drive actual
-tactical Three.js prop models without manually rewriting renderer
-branches.</li>
-<li><strong>Building Layout Editor:</strong> standalone visual editor
-for footprints, walls, doors, windows, furnishings and shared-library
-props; include traversability, egress, doorway, seam and overlap
-validation plus a tactical Three.js preview.</li>
-<li>Building Layout Editor must consume the same prop schema/library
-rather than creating a separate prop format.</li>
+<li><code>AEGIS_Prop_Editor_CURRENT.html</code> /
+<code>AEGIS_Prop_Editor_v0.26.09.17.1320_RUNTIME_LIBRARY_INTEGRATION_TOOL.html</code>
+load the canonical project library when available.</li>
+<li><strong>Download Game Runtime Library JS</strong> exports the exact
+<code>window.AEGIS_PROP_LIBRARY=...</code> payload expected at
+<code>assets/data/aegis-prop-library.js</code>. Replacing that project
+file and reloading is the direct authoring handoff.</li>
+<li>The service worker precaches the shared JS asset so installed/PWA
+play uses the same prop definitions.</li>
+<li>Boundary: a new editor/library visual key becomes renderable when
+referenced, but random/procedural mission generation still needs a
+spawn/content rule before the new prop appears automatically.</li>
+</ul>
+<h2 id="roadmap-preserve">Roadmap / preserve</h2>
+<ul>
+<li>Building Layout Editor remains next-stage developer tooling and must
+consume this same shared prop library/schema.</li>
+<li>Unique living-soldier nickname ownership remains queued.</li>
+<li>Alien forced-entry / door breaching remains queued.</li>
+<li>Shielded-beacon immunity rings remain queued and intentionally
+unexplained by in-game text.</li>
+<li>Browser 1036 Assist execution, Browser 0953 shell fixes, Browser
+2245 door/corner closure, Browser 2146 shelter/furnishings and Browser
+2051 Call Out remain intact.</li>
+<li>Save format stays <strong>4</strong>.</li>
 </ul>
 <p>Focused regression:
-<code>tools/test-prop-editor-foundation.cjs</code>. Field acceptance:
-<code>PROP_EDITOR_FOUNDATION_FIELD_ACCEPTANCE.txt</code>.</p>
+<code>tools/test-prop-editor-runtime-library-integration.cjs</code>.</p>
 
-<hr />
-<p><strong>Current browser handoff remains below.</strong></p>
+<p>--- Previous handoff ---</p>
+
 <h1
 id="codex-handoff--v02609171145_hex_edge_prop_placement_and_solid_prop_navigation_patch">CODEX
 HANDOFF —

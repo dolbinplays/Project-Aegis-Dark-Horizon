@@ -1,5 +1,5 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH";
 const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v2";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
@@ -9,7 +9,8 @@ const AEGIS_SMALL_SHELL = [
   "./manifest.webmanifest",
   "./assets/icons/aegis-192.png",
   "./assets/icons/aegis-512.png",
-  "./release-metadata.json"
+  "./release-metadata.json",
+  "./assets/data/aegis-prop-library.js"
 ];
 
 function isCacheableResponse(response) {

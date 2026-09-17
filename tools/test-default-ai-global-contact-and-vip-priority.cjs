@@ -46,7 +46,7 @@ function extractFunction(name) {
 }
 
 test('successor build preserves global contact and VIP priority hotfix under save format four', () => {
-  assert.match(source, /const CURRENT_GAME_BUILD="v0\.26\.09\.17\.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH"/);
+  assert.match(source, /const CURRENT_GAME_BUILD="v0\.26\.09\.17\.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH"/);
   assert.match(source, /const TACTICAL_DEFAULT_AI_GLOBAL_CONTACT_AND_VIP_PRIORITY_HOTFIX=true/);
   assert.match(source, /const CURRENT_SAVE_FORMAT_VERSION=4/);
 });

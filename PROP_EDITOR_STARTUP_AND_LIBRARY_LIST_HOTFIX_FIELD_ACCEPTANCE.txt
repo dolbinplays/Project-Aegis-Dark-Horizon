@@ -1,0 +1,10 @@
+PROJECT AEGIS — PROP EDITOR 1340 FIELD ACCEPTANCE
+1. Open AEGIS_Prop_Editor_CURRENT.html directly from the project folder.
+2. Confirm the header reads Runtime Integration 1340 Hotfix.
+3. Confirm the Prop Library list is populated without typing anything.
+4. Type Tree in Filter; confirm Tree remains visible/selectable.
+5. Select Tree; confirm trunk/canopy components and 3D preview appear.
+6. Toggle the unit-size mannequin; confirm no startup or render exception.
+7. Select Vending Machine and Lamp Post; confirm their components load.
+8. Export Game Runtime Library JS; confirm filename is aegis-prop-library.js.
+9. Game baseline should remain Browser 1320 and save format 4.

@@ -1,0 +1,1661 @@
+/* Project Aegis shared tactical prop library. Generated/exportable by AEGIS Prop Editor. */
+window.AEGIS_PROP_LIBRARY={
+  "schema": "aegis-prop-library-v1",
+  "libraryVersion": "v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH",
+  "sourceEditorBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+  "props": [
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-tree",
+      "name": "Tree",
+      "visualKey": "tree",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "soft",
+        "coverBlock": 0,
+        "maxHp": 30,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.35,
+        "curbLike": false,
+        "natural": true,
+        "notes": ""
+      },
+      "collision": {
+        "shape": "cylinder",
+        "radius": 0.22,
+        "height": 0.85,
+        "offset": [
+          0,
+          0.425,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-tree-1",
+          "name": "Trunk",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.12,
+            "radiusBottom": 0.17,
+            "height": 0.78,
+            "segments": 10
+          },
+          "position": [
+            0,
+            0.39,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#6b4423",
+            "roughness": 0.92,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-tree-2",
+          "name": "Canopy",
+          "primitive": "sphere",
+          "size": {
+            "radius": 0.58,
+            "widthSegments": 10,
+            "heightSegments": 7
+          },
+          "position": [
+            0,
+            1.05,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1.05,
+            0.82,
+            1
+          ],
+          "material": {
+            "color": "#397c43",
+            "roughness": 0.98,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ]
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-lamp-post",
+      "name": "Lamp Post",
+      "visualKey": "lamp-post",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "soft",
+        "coverBlock": 0,
+        "maxHp": 24,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.42,
+        "curbLike": true,
+        "natural": false,
+        "notes": ""
+      },
+      "collision": {
+        "shape": "cylinder",
+        "radius": 0.11,
+        "height": 2.28,
+        "offset": [
+          0,
+          1.14,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-lamp-post-1",
+          "name": "Base",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.1,
+            "radiusBottom": 0.13,
+            "height": 0.18,
+            "segments": 10
+          },
+          "position": [
+            0,
+            0.09,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#334155",
+            "roughness": 0.7,
+            "metalness": 0.55,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-lamp-post-2",
+          "name": "Pole",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.05,
+            "radiusBottom": 0.07,
+            "height": 2.1,
+            "segments": 10
+          },
+          "position": [
+            0,
+            1.13,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#334155",
+            "roughness": 0.65,
+            "metalness": 0.58,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-lamp-post-3",
+          "name": "Lamp",
+          "primitive": "sphere",
+          "size": {
+            "radius": 0.14,
+            "widthSegments": 12,
+            "heightSegments": 8
+          },
+          "position": [
+            0,
+            2.18,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#ffe09a",
+            "roughness": 0.25,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#ffc85c",
+            "emissiveStrength": 1.2,
+            "castShadow": false
+          }
+        }
+      ]
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-stop-sign",
+      "name": "Stop Sign",
+      "visualKey": "stop-sign",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "soft",
+        "coverBlock": 0,
+        "maxHp": 20,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.42,
+        "curbLike": true,
+        "natural": false,
+        "notes": ""
+      },
+      "collision": {
+        "shape": "cylinder",
+        "radius": 0.08,
+        "height": 1.85,
+        "offset": [
+          0,
+          0.925,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-stop-sign-1",
+          "name": "Pole",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.035,
+            "radiusBottom": 0.045,
+            "height": 1.65,
+            "segments": 8
+          },
+          "position": [
+            0,
+            0.825,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#94a3b8",
+            "roughness": 0.45,
+            "metalness": 0.65,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-stop-sign-2",
+          "name": "Octagonal sign",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.3,
+            "radiusBottom": 0.3,
+            "height": 0.055,
+            "segments": 8
+          },
+          "position": [
+            0,
+            1.62,
+            0
+          ],
+          "rotation": [
+            90,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#b91c1c",
+            "roughness": 0.55,
+            "metalness": 0.08,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-stop-sign-3",
+          "name": "Center plate",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.22,
+            "radiusBottom": 0.22,
+            "height": 0.061,
+            "segments": 8
+          },
+          "position": [
+            0,
+            1.62,
+            -0.003
+          ],
+          "rotation": [
+            90,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#dc2626",
+            "roughness": 0.55,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ]
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-vending-machine",
+      "name": "Vending Machine",
+      "visualKey": "vending-machine",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "hard",
+        "coverBlock": 0.5,
+        "maxHp": 48,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.33,
+        "curbLike": false,
+        "natural": false,
+        "notes": ""
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          0.78,
+          1.48,
+          0.54
+        ],
+        "offset": [
+          0,
+          0.74,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-vending-machine-1",
+          "name": "Cabinet",
+          "primitive": "box",
+          "size": {
+            "width": 0.72,
+            "height": 1.48,
+            "depth": 0.48
+          },
+          "position": [
+            0,
+            0.74,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#1d4ed8",
+            "roughness": 0.62,
+            "metalness": 0.18,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-vending-machine-2",
+          "name": "Front inset",
+          "primitive": "box",
+          "size": {
+            "width": 0.58,
+            "height": 0.82,
+            "depth": 0.035
+          },
+          "position": [
+            0,
+            0.91,
+            0.255
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#0f172a",
+            "roughness": 0.4,
+            "metalness": 0.12,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-vending-machine-3",
+          "name": "Product glass",
+          "primitive": "box",
+          "size": {
+            "width": 0.49,
+            "height": 0.52,
+            "depth": 0.025
+          },
+          "position": [
+            -0.02,
+            1.03,
+            0.277
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#164e63",
+            "roughness": 0.18,
+            "metalness": 0.05,
+            "opacity": 0.72,
+            "emissive": "#0ea5e9",
+            "emissiveStrength": 0.1,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-vending-machine-4",
+          "name": "Control panel",
+          "primitive": "box",
+          "size": {
+            "width": 0.11,
+            "height": 0.36,
+            "depth": 0.045
+          },
+          "position": [
+            0.245,
+            0.82,
+            0.29
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#111827",
+            "roughness": 0.55,
+            "metalness": 0.3,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-vending-machine-5",
+          "name": "Dispense slot",
+          "primitive": "box",
+          "size": {
+            "width": 0.38,
+            "height": 0.14,
+            "depth": 0.04
+          },
+          "position": [
+            -0.05,
+            0.32,
+            0.28
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#020617",
+            "roughness": 0.75,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ]
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-newspaper-machine",
+      "name": "Newspaper Machine",
+      "visualKey": "newspaper-machine",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "soft",
+        "coverBlock": 0.25,
+        "maxHp": 28,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.33,
+        "curbLike": false,
+        "natural": false,
+        "notes": ""
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          0.65,
+          1.04,
+          0.5
+        ],
+        "offset": [
+          0,
+          0.52,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-newspaper-machine-1",
+          "name": "Body",
+          "primitive": "box",
+          "size": {
+            "width": 0.62,
+            "height": 0.82,
+            "depth": 0.46
+          },
+          "position": [
+            0,
+            0.52,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#f59e0b",
+            "roughness": 0.68,
+            "metalness": 0.08,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-newspaper-machine-2",
+          "name": "Window",
+          "primitive": "box",
+          "size": {
+            "width": 0.47,
+            "height": 0.37,
+            "depth": 0.025
+          },
+          "position": [
+            0,
+            0.62,
+            0.244
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#164e63",
+            "roughness": 0.2,
+            "metalness": 0.05,
+            "opacity": 0.76,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-newspaper-machine-3",
+          "name": "Base",
+          "primitive": "box",
+          "size": {
+            "width": 0.38,
+            "height": 0.22,
+            "depth": 0.34
+          },
+          "position": [
+            0,
+            0.11,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#475569",
+            "roughness": 0.8,
+            "metalness": 0.15,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ]
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-bus-stop",
+      "name": "Bus Stop",
+      "visualKey": "bus-stop",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "hard",
+        "coverBlock": 0.5,
+        "maxHp": 42,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.33,
+        "curbLike": true,
+        "natural": false,
+        "notes": ""
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          1.22,
+          1.78,
+          0.65
+        ],
+        "offset": [
+          0,
+          0.89,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-bus-stop-1",
+          "name": "Left post",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.04,
+            "radiusBottom": 0.05,
+            "height": 1.75,
+            "segments": 8
+          },
+          "position": [
+            -0.48,
+            0.875,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#475569",
+            "roughness": 0.55,
+            "metalness": 0.62,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-bus-stop-2",
+          "name": "Right post",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.04,
+            "radiusBottom": 0.05,
+            "height": 1.75,
+            "segments": 8
+          },
+          "position": [
+            0.48,
+            0.875,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#475569",
+            "roughness": 0.55,
+            "metalness": 0.62,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-bus-stop-3",
+          "name": "Roof",
+          "primitive": "box",
+          "size": {
+            "width": 1.18,
+            "height": 0.08,
+            "depth": 0.58
+          },
+          "position": [
+            0,
+            1.73,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#64748b",
+            "roughness": 0.5,
+            "metalness": 0.45,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-bus-stop-4",
+          "name": "Back glass",
+          "primitive": "box",
+          "size": {
+            "width": 0.98,
+            "height": 1.15,
+            "depth": 0.025
+          },
+          "position": [
+            0,
+            0.92,
+            -0.23
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#164e63",
+            "roughness": 0.15,
+            "metalness": 0.05,
+            "opacity": 0.45,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-bus-stop-5",
+          "name": "Bench seat",
+          "primitive": "box",
+          "size": {
+            "width": 0.82,
+            "height": 0.1,
+            "depth": 0.28
+          },
+          "position": [
+            0,
+            0.43,
+            0.04
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#7c4a2d",
+            "roughness": 0.82,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-bus-stop-6",
+          "name": "Bench back",
+          "primitive": "box",
+          "size": {
+            "width": 0.82,
+            "height": 0.34,
+            "depth": 0.08
+          },
+          "position": [
+            0,
+            0.67,
+            -0.09
+          ],
+          "rotation": [
+            -8,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#7c4a2d",
+            "roughness": 0.82,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ]
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-street-bench",
+      "name": "Street Bench",
+      "visualKey": "street-bench",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "soft",
+        "coverBlock": 0.25,
+        "maxHp": 32,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.33,
+        "curbLike": true,
+        "natural": false,
+        "notes": ""
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          1.12,
+          0.92,
+          0.48
+        ],
+        "offset": [
+          0,
+          0.46,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-street-bench-1",
+          "name": "Seat",
+          "primitive": "box",
+          "size": {
+            "width": 1.05,
+            "height": 0.11,
+            "depth": 0.34
+          },
+          "position": [
+            0,
+            0.48,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#7c4a2d",
+            "roughness": 0.86,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-street-bench-2",
+          "name": "Back",
+          "primitive": "box",
+          "size": {
+            "width": 1.05,
+            "height": 0.38,
+            "depth": 0.09
+          },
+          "position": [
+            0,
+            0.72,
+            -0.13
+          ],
+          "rotation": [
+            -10,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#7c4a2d",
+            "roughness": 0.86,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-street-bench-3",
+          "name": "Left leg",
+          "primitive": "box",
+          "size": {
+            "width": 0.1,
+            "height": 0.44,
+            "depth": 0.18
+          },
+          "position": [
+            -0.38,
+            0.22,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#334155",
+            "roughness": 0.6,
+            "metalness": 0.55,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-street-bench-4",
+          "name": "Right leg",
+          "primitive": "box",
+          "size": {
+            "width": 0.1,
+            "height": 0.44,
+            "depth": 0.18
+          },
+          "position": [
+            0.38,
+            0.22,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#334155",
+            "roughness": 0.6,
+            "metalness": 0.55,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ]
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-crates",
+      "name": "Crates",
+      "visualKey": "crates",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "hard",
+        "coverBlock": 0.5,
+        "maxHp": 44,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.3,
+        "curbLike": false,
+        "natural": false,
+        "notes": ""
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          0.78,
+          0.72,
+          0.78
+        ],
+        "offset": [
+          0,
+          0.36,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-crates-1",
+          "name": "Main crate",
+          "primitive": "box",
+          "size": {
+            "width": 0.72,
+            "height": 0.66,
+            "depth": 0.72
+          },
+          "position": [
+            0,
+            0.33,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#8b5a2b",
+            "roughness": 0.88,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-crates-2",
+          "name": "Top slat",
+          "primitive": "box",
+          "size": {
+            "width": 0.76,
+            "height": 0.07,
+            "depth": 0.12
+          },
+          "position": [
+            0,
+            0.68,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#5b371f",
+            "roughness": 0.92,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-crates-3",
+          "name": "Front slat",
+          "primitive": "box",
+          "size": {
+            "width": 0.76,
+            "height": 0.08,
+            "depth": 0.08
+          },
+          "position": [
+            0,
+            0.36,
+            0.4
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#5b371f",
+            "roughness": 0.92,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ]
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-concrete",
+      "name": "Concrete Barrier",
+      "visualKey": "concrete",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "hard",
+        "coverBlock": 0.75,
+        "maxHp": 70,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.3,
+        "curbLike": false,
+        "natural": false,
+        "notes": ""
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          1.18,
+          0.65,
+          0.5
+        ],
+        "offset": [
+          0,
+          0.325,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-concrete-1",
+          "name": "Barrier",
+          "primitive": "box",
+          "size": {
+            "width": 1.04,
+            "height": 0.62,
+            "depth": 0.32
+          },
+          "position": [
+            0,
+            0.31,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#94a3b8",
+            "roughness": 0.96,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-concrete-2",
+          "name": "Base",
+          "primitive": "box",
+          "size": {
+            "width": 1.18,
+            "height": 0.12,
+            "depth": 0.48
+          },
+          "position": [
+            0,
+            0.06,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#64748b",
+            "roughness": 0.98,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ]
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-fence",
+      "name": "Fence Segment",
+      "visualKey": "fence",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "hard",
+        "coverBlock": 0.5,
+        "maxHp": 34,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.3,
+        "curbLike": false,
+        "natural": false,
+        "notes": ""
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          1.08,
+          0.94,
+          0.18
+        ],
+        "offset": [
+          0,
+          0.47,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-fence-1",
+          "name": "Left post",
+          "primitive": "box",
+          "size": {
+            "width": 0.1,
+            "height": 0.92,
+            "depth": 0.1
+          },
+          "position": [
+            -0.47,
+            0.46,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#76512e",
+            "roughness": 0.94,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-fence-2",
+          "name": "Right post",
+          "primitive": "box",
+          "size": {
+            "width": 0.1,
+            "height": 0.92,
+            "depth": 0.1
+          },
+          "position": [
+            0.47,
+            0.46,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#76512e",
+            "roughness": 0.94,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-fence-3",
+          "name": "Top rail",
+          "primitive": "box",
+          "size": {
+            "width": 1,
+            "height": 0.1,
+            "depth": 0.09
+          },
+          "position": [
+            0,
+            0.72,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#76512e",
+            "roughness": 0.94,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-fence-4",
+          "name": "Low rail",
+          "primitive": "box",
+          "size": {
+            "width": 1,
+            "height": 0.1,
+            "depth": 0.09
+          },
+          "position": [
+            0,
+            0.36,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#76512e",
+            "roughness": 0.94,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ]
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-rock",
+      "name": "Rock",
+      "visualKey": "rock",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "hard",
+        "coverBlock": 0.5,
+        "maxHp": 55,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.3,
+        "curbLike": false,
+        "natural": true,
+        "notes": ""
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          0.95,
+          0.76,
+          0.82
+        ],
+        "offset": [
+          0,
+          0.38,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-rock-1",
+          "name": "Rock mass",
+          "primitive": "sphere",
+          "size": {
+            "radius": 0.52,
+            "widthSegments": 7,
+            "heightSegments": 5
+          },
+          "position": [
+            0,
+            0.38,
+            0
+          ],
+          "rotation": [
+            0,
+            16,
+            5
+          ],
+          "scale": [
+            1.1,
+            0.72,
+            0.92
+          ],
+          "material": {
+            "color": "#64748b",
+            "roughness": 0.99,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ]
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-bush",
+      "name": "Bush",
+      "visualKey": "bush",
+      "metadata": {
+        "navigationClass": "passable",
+        "coverKind": "soft",
+        "coverBlock": 0,
+        "maxHp": 20,
+        "losClass": "existing-cover",
+        "edgePlacement": "center",
+        "edgeFraction": 0,
+        "curbLike": false,
+        "natural": true,
+        "notes": ""
+      },
+      "collision": {
+        "shape": "none",
+        "size": [
+          0,
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-bush-1",
+          "name": "Foliage",
+          "primitive": "sphere",
+          "size": {
+            "radius": 0.56,
+            "widthSegments": 8,
+            "heightSegments": 6
+          },
+          "position": [
+            0,
+            0.32,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1.15,
+            0.52,
+            0.92
+          ],
+          "material": {
+            "color": "#4d7c0f",
+            "roughness": 1,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ]
+    }
+  ]
+};
