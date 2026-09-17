@@ -1,3 +1,26 @@
+BUILD: v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH
+PROJECT AEGIS — BROWSER 1145 VALIDATION SUMMARY
+Build: v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH
+Save format: 4
+
+Hex-Edge Prop Placement + Solid Prop Navigation
+- Authoritative source baseline: Browser 1036 GitHub main commit `7742b8a5b6c8bb482df6f44a0e88dbf2e018d8cc` / successful Pages run `35255948860` / artifact `10512605575`.
+- Qualifying one-cell scenery now receives deterministic saved edge-placement metadata. Persistent Three.js tactical presentation used by 3D Iso / FPV / TPV consumes that metadata, shifting props toward a legal owning-hex edge while keeping the tactical cell itself authoritative.
+- Curb fixtures prefer road/lane/path-facing edges when legal; natural props avoid road-facing edges. Building ingress cells, building cells and occupied neighboring cover are penalized so presentation offsets do not create obvious doorway/structure overlaps.
+- Trees, lamp posts, traffic/stop signs, vending/news machines, bus stops, benches, rocks, concrete, crates, wrecks, fences and hay now share one authoritative solid-prop movement predicate while alive. Bushes, brush and crops remain passable.
+- `tacticalCoverBlocksMovement(...)` now feeds hard-cover footprint keys, open-cell checks and the tactical path-blocker index, so manual path/reachable-cell logic, AI routing and unit placement agree on solid-prop occupancy. Destroyed props release their cell immediately.
+- Closed unlocked doors remain legal/auto-open-capable routes; locked doors remain blockers. Existing cover/LOS/ballistic semantics remain separate from movement solidity.
+- Multihex vehicles, civic landmarks, building structures and interior furnishings retain their existing footprint/presentation rules rather than receiving the new one-cell edge shift.
+- New focused regression `tools/test-hex-edge-prop-placement-and-solid-prop-navigation.cjs`: **9/9 passed**, including an authoritative route-search detour around a tree and reachable-cell exclusion.
+- Interactive-door and vehicle-footprint harnesses were updated only to load the new shared movement predicate in their isolated VM slices; retained behavior remains green.
+- Mobile/PWA after canonical host packaging: **9/9 passed**.
+- AI command-stream handoff: **2/2 passed**.
+- Full frozen-tree test/smoke sweep: **45/45 entrypoint files passed, 0 failed** (39 test entrypoints + 6 smoke entrypoints; long AI handoff included as one entrypoint).
+- `tools/check-aegis-build.cjs`, embedded JavaScript syntax, and `service-worker.js` syntax all pass.
+- Packaged runtime: **7,329,340 bytes**, SHA-256 `9eb357c6c341b49aecb59d3a706e661e82c34057dcdeb244df72921fb619f827`; generated host SHA-256 `c2aa537a6cbd0cf63b2a2aa8796b733e6f67ed047265ec81088eb9a752f57329`.
+- Final install-style verification: the 17-file replacement ZIP was applied over a fresh copy of the exact Browser 1036 GitHub Pages baseline; build seam, embedded-JS/service-worker syntax, Mobile/PWA **9/9**, all 44 non-long test/smoke entrypoints, and AI command-stream handoff **2/2** passed for a complete **45/45** overlay matrix.
+- Roadmap retains unique living-soldier nickname ownership, alien forced entry/breaching, and unexplained shield-immunity rings as follow-on work.
+
 BUILD: v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH
 PROJECT AEGIS — BROWSER 1036 VALIDATION SUMMARY
 Build: v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH

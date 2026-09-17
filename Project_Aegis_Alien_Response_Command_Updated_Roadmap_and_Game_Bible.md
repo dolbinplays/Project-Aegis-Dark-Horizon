@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH`
+Current browser build: `v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH`
 
 Current save format: `4`
 
@@ -61,18 +61,20 @@ Current save format: `4`
 
 **Acceptance when implemented:** attempt duplicate assignment through every nickname entry path, verify normalization/case handling, verify living non-active soldiers still reserve names, confirm a KIA releases the nickname, and load a legacy duplicate save without corruption.
 
-## Roadmap Addition — Hex-Edge Prop Placement / Unit-Prop Separation
+## Hex-Edge Prop Placement + Solid Prop Navigation — Implemented in Browser 1145
 
-**Requested September 17, 2026. Status: roadmap / not part of Browser 1036.**
+**September 17, 2026. Status: implemented; live field acceptance required.**
 
-- Qualifying props such as trees, small rocks, streetlights, utility poles, signs, parking meters, hydrants and similar narrow/vertical scenery should spawn near a deterministic **edge or corner of their owning hex** instead of at the unit-standing center.
-- Preserve a clear center radius so soldiers, aliens, VIPs and civilians do not visually stand inside scenery when occupying the hex.
-- Edge choice must be deterministic across save/reload and must respect roads, curbs, walls, doors, sidewalks, neighboring blocked geometry and existing prop occupancy.
-- Large props that already own a true blocking/cover footprint retain their explicit footprint rules. Existing collision, cover and LOS authority must stay aligned with the visual offset.
-- Avoid stacking multiple edge props into the same presentation point; roadside props should prefer believable curb/edge positions where possible.
-- Verify presentation in 3D Iso, FPV and TPV.
+- Qualifying one-cell props no longer render at the exact unit-standing center of their tactical hex. Generated props persist deterministic `propEdgeDirectionKey` and `propEdgeFraction` metadata and the shared Three.js cover anchor applies that offset in 3D Iso / FPV / TPV.
+- Edge placement stays inside the owning hex. Slender poles/signs sit nearest the edge, trees use a moderate offset, and broader machines/cover use a smaller offset. Multihex vehicles, civic landmarks, building structure and interior furniture retain their established footprint/centroid rules.
+- Roadside fixtures prefer road/lane/path-facing edges when legal; natural props avoid road-facing edges where possible. Candidate edges are screened against building ingress protection, building cells and neighboring occupied cover.
+- One shared `tacticalCoverBlocksMovement(...)` contract now classifies physically solid props for navigation. Trees, lamp posts, traffic lights, stop signs, vending/news machines, bus stops, benches, rocks, concrete, crates, wrecks, fences and hay block movement while alive even when their prior cover presentation was soft.
+- Bushes, brush and crops remain passable low foliage. Destroyed props cease blocking without a special-case migration.
+- `tacticalHardCoverFootprintKeySet(...)`, `isHardCoverAt(...)` and `tacticalPathBlockerIndex(...)` consume the same movement predicate. Manual movement previews/path search, Default/Hybrid AI, alien movement, civilian/VIP routing and open-cell/spawn repair therefore agree about solid scenery.
+- The patch deliberately separates movement solidity from LOS solidity. Existing cover/visibility/ballistic rules remain authoritative, so a slim lamp post can block occupying its tactical cell without becoming an artificial full-height vision wall.
+- Closed unlocked doors remain legal traversal/auto-open routes and locked doors remain blockers. Save format remains **4**.
 
-**Acceptance when implemented:** sample generated urban/rural maps and confirm qualifying props maintain a minimum clearance radius around their owning hex center while remaining deterministic, tactically aligned and free of wall/door/road overlap.
+**Acceptance:** use `HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_FIELD_ACCEPTANCE.txt`. Generate city/small-town/farm/nature maps, inspect edge offsets in Iso/FPV/TPV, route AEGIS/aliens/civilians around trees/poles/machines, destroy a blocking prop and cross its cell, verify bushes/brush/crops remain passable, confirm doors/vehicles/buildings keep prior authority, and save/reload to verify stable placement.
 
 ## Physical Shelter Securing + Interior Furnishing/Cover Overhaul — Implemented in Browser 2146
 

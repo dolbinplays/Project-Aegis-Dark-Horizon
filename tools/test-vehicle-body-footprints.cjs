@@ -8,6 +8,7 @@ const context=vm.createContext({TACTICAL_HEX_WORLD_X:X,TACTICAL_HEX_WORLD_Z:Z,TA
 for(const name of ['tacticalOffsetToCube','tacticalDistance','tacticalStepForDirection','tacticalNeighbors','tacticalHexPixel','tacticalThreeWorldForCell','tacticalStreetRoadDirection','tacticalStreetVehicleFootprint','tacticalLandVehicleBodyAnchor','tacticalVehiclePolygonsOverlap','tacticalLandVehicleBodyFootprint','tacticalCoverFootprintCells','tacticalHardCoverFootprintKeySet','tacticalLiveLandVehicleFootprintKeySet','tacticalCoverOccupiesCell','tacticalMovementCommitCellState','tacticalThreeCoverWorldAnchor','tacticalVehicleHeadlightLayout','tacticalBusBodyColor','tacticalThreeAddLandVehicle','tacticalGridSizeFrom','tacticalPathBlockerIndex','tacticalPathSearch','tacticalPath']){
   const a=source.indexOf('function '+name+'('),b=source.indexOf('function ',a+10);assert.ok(a>=0,name);vm.runInContext(source.slice(a,b),context);
 }
+{const a=source.indexOf('function tacticalPropVisualKey'),b=source.indexOf('function tacticalHardCoverFootprintKeySet',a);assert.ok(a>=0&&b>a,'prop navigation helper functions');vm.runInContext(source.slice(a,b),context);}
 const world=(x,y)=>({x:(x+(y&1?.5:0))*X,z:y*Z});
 const key=p=>`${p.x},${p.y}`;
 function model(cover){

@@ -1,0 +1,20 @@
+Project Aegis — Hex-Edge Prop Placement & Solid Prop Navigation Field Acceptance
+
+Scope
+- Qualifying one-cell terrain props render toward a deterministic edge of their owning hex instead of on the unit center point.
+- Props that visually represent solid physical objects participate in the same authoritative movement blocker set used by manual movement, AI movement, spawn/open-cell checks, civilians/VIPs, and aliens.
+- Low foliage remains passable unless another system explicitly marks it hard.
+
+Acceptance
+1. Trees, lamp posts, traffic lights, stop signs, vending/news machines, bus stops, benches, rocks, concrete, crates, wrecks, fences, and hay classify as solid navigation props while alive.
+2. Bushes, brush, and crops remain passable soft terrain.
+3. Destroyed solid props stop blocking movement.
+4. Closed unlocked building doors remain traversable/auto-open capable; locked doors remain blockers.
+5. Generated qualifying one-cell props carry deterministic propPlacementMode, propEdgeDirectionKey, and propEdgeFraction metadata.
+6. Edge fractions remain inside the owning hex (< 0.5 center-to-neighbor distance), with slimmer poles/signs placed nearest the edge.
+7. Curb fixtures prefer road/lane/path-facing edges when legal; natural props avoid road-facing edges when alternatives exist.
+8. Building ingress protected cells, neighboring occupied cover cells, and building cells are avoided when choosing a visual edge.
+9. Multihex vehicles, civic landmarks, building structural pieces, and interior furniture retain their existing centroid/footprint placement.
+10. Three.js cover anchoring consumes the shared saved edge-placement metadata so 3D Iso / FPV / TPV agree.
+11. Navigation classification does not change LOS semantics by itself; existing cover/visibility authority remains responsible for LOS.
+12. Campaign save format remains 4.

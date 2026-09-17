@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>CODEX HANDOFF — v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH | Project-Aegis-Dark-Horizon</title>
+<title>CODEX HANDOFF — v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH | Project-Aegis-Dark-Horizon</title>
 <meta name="generator" content="Jekyll v3.10.0" />
-<meta property="og:title" content="CODEX HANDOFF — v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH" />
+<meta property="og:title" content="CODEX HANDOFF — v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Current builds of any projects I’m working on" />
 <meta property="og:description" content="Current builds of any projects I’m working on" />
@@ -17,9 +17,9 @@
 <meta property="og:site_name" content="Project-Aegis-Dark-Horizon" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="CODEX HANDOFF — v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH" />
+<meta property="twitter:title" content="CODEX HANDOFF — v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","description":"Current builds of any projects I’m working on","headline":"CODEX HANDOFF — v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH","url":"https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/CODEX_HANDOFF.html"}</script>
+{"@context":"https://schema.org","@type":"WebPage","description":"Current builds of any projects I’m working on","headline":"CODEX HANDOFF — v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH","url":"https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/CODEX_HANDOFF.html"}</script>
 <!-- End Jekyll SEO tag -->
 
     <link rel="stylesheet" href="/Project-Aegis-Dark-Horizon/assets/css/style.css?v=4208bcc12de53e34da659f4c6c573d02a0e5740f">
@@ -41,36 +41,144 @@
       <h1><a href="https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/">Project-Aegis-Dark-Horizon</a></h1>
       
 
-<h1 id="codex-handoff--v02609171036_fire_team_assist_shared_objective_execution_patch">CODEX HANDOFF — v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH</h1>
-<p>Browser 1036 upgrades <strong>Assist Fire Team</strong> from formation-only support into shared execution of the supported team’s current VIP/civilian or Alien Field Beacon objective. Save format remains 4.</p>
+<h1
+id="codex-handoff--v02609171145_hex_edge_prop_placement_and_solid_prop_navigation_patch">CODEX
+HANDOFF —
+v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH</h1>
+<p>Browser 1145 moves qualifying tactical scenery off the unit-standing
+center of its hex and gives physically solid props one shared navigation
+authority across manual movement and AI. Save format remains 4.</p>
+<h2 id="hex-edge-presentation-authority">Hex-edge presentation
+authority</h2>
+<ul>
+<li><code>tacticalApplyHexEdgePropPlacement(...)</code> annotates
+qualifying one-cell props with deterministic
+<code>propPlacementMode</code>, <code>propEdgeDirectionKey</code> and
+<code>propEdgeFraction</code> fields after the existing
+building-ingress/structural precedence pass.</li>
+<li><code>tacticalThreeCoverWorldAnchor(...)</code> consumes that saved
+edge spec, so the persistent Three.js tactical presentation used by 3D
+Iso / FPV / TPV offsets the prop without changing its owning tactical
+cell.</li>
+<li>Slender poles/signs move nearest the owning-hex edge; trees,
+machines/benches and broader hard cover use progressively smaller
+offsets. Fractions remain below 0.5 center-to-neighbor distance so the
+prop stays visually inside its owning hex.</li>
+<li>Curb fixtures prefer adjacent road/lane/path edges when legal.
+Natural props prefer non-road edges. Building ingress protected cells,
+building cells and occupied neighboring cover cells are
+penalized/avoided.</li>
+<li>Multihex vehicles, civic landmarks, building structural pieces and
+interior furnishings retain their existing footprint/centroid
+presentation.</li>
+</ul>
+<h2 id="shared-solid-prop-navigation-authority">Shared solid-prop
+navigation authority</h2>
+<ul>
+<li><code>tacticalCoverBlocksMovement(...)</code> is now the single
+movement-blocking predicate consumed by
+<code>tacticalHardCoverFootprintKeySet(...)</code>,
+<code>isHardCoverAt(...)</code>, and
+<code>tacticalPathBlockerIndex(...)</code>.</li>
+<li>Trees, lamp posts, traffic/stop signs, vending/news machines, bus
+stops, benches, rocks, concrete, crates, wrecks, fences and hay block
+their owning tactical cell while alive. Bushes, brush and crops remain
+passable.</li>
+<li>Because manual reachable-cell/path search, AI pathing,
+spawn/open-cell repair, AEGIS, alien and civilian/VIP movement converge
+on those authorities, they route around the same solid props rather than
+walking/stopping through them.</li>
+<li>Destroyed props immediately cease blocking. Closed unlocked doors
+remain traversable/auto-open capable; locked doors remain blockers.</li>
+<li>Movement blocking does not independently promote a prop to a full
+LOS wall. Existing cover/visibility authority remains responsible for
+LOS and ballistic semantics.</li>
+</ul>
+<h2 id="preserve--roadmap">Preserve / roadmap</h2>
+<ul>
+<li>Browser 1036 Fire Team Assist shared objective execution is
+unchanged.</li>
+<li>Browser 0953 window shell, Browser 2245 door/corner shell, Browser
+2146 physical shelter/furnishings and Browser 2051 Call Out remain
+intact.</li>
+<li>Save format stays <strong>4</strong>.</li>
+<li>Next queued work: unique living-soldier nickname ownership; alien
+forced-entry / door breaching; shielded-beacon immunity rings with no
+explanatory in-game text.</li>
+</ul>
+<p>Focused regression:
+<code>tools/test-hex-edge-prop-placement-and-solid-prop-navigation.cjs</code>.</p>
+<p>--- Previous handoff ---</p>
+<h1
+id="codex-handoff--v02609171036_fire_team_assist_shared_objective_execution_patch">CODEX
+HANDOFF —
+v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH</h1>
+<p>Browser 1036 upgrades <strong>Assist Fire Team</strong> from
+formation-only support into shared execution of the supported team's
+current VIP/civilian or Alien Field Beacon objective. Save format
+remains 4.</p>
 <h2 id="shared-beacon-execution">Shared Beacon execution</h2>
 <ul>
-<li><code>tacticalFireTeamBeaconAssaultState(...)</code> recognizes a beacon inherited through the assist relationship while preserving assignment mode <code>assist</code>.</li>
-<li>The assisting team selects its own legal/effective beacon breacher and can use normal beacon approach/fire authority against the supported team’s authoritative beacon once higher Default AI priorities clear.</li>
-<li>Only direct Beacon assignments enter the explicit blocked-assignment hold/error path. An incapable assist team continues follow/support behavior rather than wasting ineffective fire.</li>
+<li><code>tacticalFireTeamBeaconAssaultState(...)</code> now recognizes
+a beacon inherited through
+<code>tacticalFireTeamObjectiveAssistState(...)</code> while preserving
+the team's assignment mode as <code>assist</code>.</li>
+<li>The assisting team selects its <strong>own</strong> legal/effective
+beacon breacher. A capable assist team suppresses generic
+leader-following long enough to use the normal beacon approach/fire
+authority against the supported team's authoritative beacon.</li>
+<li>A direct Beacon assignment and a Beacon assist remain
+distinguishable. Only a direct assignment enters the existing explicit
+blocked-assignment hold/error path; an incapable assist team continues
+following/supporting the primary team rather than wasting ineffective
+fire.</li>
+<li>Beacon completion still uses the existing authoritative
+objective-completion release transaction for the primary assignment and
+dependent assist teams.</li>
 </ul>
-<h2 id="vip-civilian-first-contact-handoff">VIP/civilian first-contact handoff</h2>
+<h2 id="vipcivilian-first-contact-handoff">VIP/civilian first-contact
+handoff</h2>
 <ul>
-<li>The assisting team inherits the supported team’s exact active civilian target without creating a second independent VIP claim.</li>
-<li>Assignment override is permitted only when that unescorted target is explicitly owned by the team being assisted; unrelated autonomous teams still cannot steal a reserved VIP.</li>
-<li>If the assisting team reaches first, normal Contact sets the real <code>escortId</code> and the existing displaced-assignment release clears the stale primary/assist planning race while physical escort ownership continues through extraction.</li>
+<li><code>tacticalFireTeamAssistCivilianObjectiveState(...)</code>
+exposes the supported team's active civilian target to the assisting
+team without creating a second independent VIP claim.</li>
+<li><code>tacticalVipRescueAssignmentPlan(...)</code> may therefore give
+the assisting fire team the same target while ordinary Default AI teams
+remain deconflicted onto other available VIPs.</li>
+<li><code>tacticalFireTeamAssistCivilianClaimAllowed(...)</code> permits
+assignment override <strong>only</strong> when the target is unescorted
+and is explicitly owned by the team being assisted. Unrelated autonomous
+teams remain unable to steal a reserved VIP.</li>
+<li>If the assisting team reaches the target first, normal Contact sets
+the real <code>escortId</code>; the existing displaced-assignment
+release clears the stale primary/assist planning race while physical
+escort ownership continues through extraction.</li>
 </ul>
-<h2 id="priority-and-compatibility-rules">Priority and compatibility rules</h2>
+<h2 id="priority-and-compatibility-rules">Priority and compatibility
+rules</h2>
 <ul>
-<li>Medical priorities, active escort duty, visible-alien combat and Last Known Contact remain higher authority.</li>
-<li>VIP Priority Lock, shelter/Call Out, closed/unlocked doors, furnishing cover and Browser 0953 shell fixes remain intact.</li>
-<li>Save format remains <strong>4</strong>.</li>
+<li>Shared-objective execution remains below all higher categories in
+the authoritative Default AI hierarchy. Medical priorities, active
+escort duty, visible-alien combat and Last Known Contact behavior are
+not bypassed.</li>
+<li>Manual player authority, VIP Priority Lock, shelter/Call Out,
+closed/unlocked doors, furnishing cover and Browser 0953 building-shell
+fixes remain intact.</li>
+<li>Save format stays <strong>4</strong>.</li>
 </ul>
-<h2 id="roadmap-queued-after-browser-1036">Roadmap queued after Browser 1036</h2>
+<h2 id="roadmap-queued-after-browser-1036">Roadmap queued after Browser
+1036</h2>
 <ul>
 <li>Unique living-soldier nickname ownership.</li>
-<li>Hex-edge prop placement / unit-prop center clearance.</li>
-<li>Shielded-beacon immunity rings with no explanatory in-game text.</li>
+<li>Hex-edge prop placement / unit-prop center clearance for trees,
+poles, signs, rocks and similar props.</li>
+<li>Shielded-beacon immunity rings with no explanatory in-game
+text.</li>
 <li>Alien forced-entry / door breaching.</li>
 </ul>
-<p>Focused regression: <code>tools/test-fire-team-assist-shared-objective-execution.cjs</code>.</p>
-<hr>
-<p><strong>Previous handoff</strong></p>
+<p>Focused regression:
+<code>tools/test-fire-team-assist-shared-objective-execution.cjs</code>.</p>
+<p>--- Previous handoff ---</p>
 <h1
 id="codex-handoff--v02609170953_window_aperture_seam_closure_and_procedural_building_shell_polish_patch">CODEX
 HANDOFF —
@@ -1721,8 +1829,6 @@ VIP/casualty exceptions, persistent player assignments and save format
 Fire-Team Reassembly and Mission Continuation</strong> for full
 acceptance criteria.</li>
 </ul>
-
-      
 
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>

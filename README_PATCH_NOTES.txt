@@ -1,3 +1,19 @@
+BUILD: v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH
+PROJECT AEGIS — BROWSER 1145 PATCH NOTES
+Build: v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH
+Save format: 4
+
+Hex-Edge Prop Placement + Solid Prop Navigation
+- Builds directly on Browser 1036 and makes prop presentation agree with tactical movement authority instead of allowing units to stop at the same visual center as trees, poles, signs and machines.
+- Qualifying one-cell props receive deterministic edge-placement metadata (`propEdgeDirectionKey` / `propEdgeFraction`) and render toward a safe edge of their owning hex while the tactical cell itself remains authoritative.
+- Roadside fixtures such as lamp posts, traffic lights, stop signs, bus stops and benches prefer road/lane/path-facing edges when legal. Natural props avoid road-facing edges when alternatives exist.
+- Trees, lamp posts, traffic lights, stop signs, vending/news machines, bus stops, benches, rocks, concrete, crates, wrecks, fences and hay are now solid movement obstacles while alive, even when their existing cover presentation is soft. Bushes, brush and crops remain passable.
+- Manual movement/open-cell checks, AI route search, aliens, civilians/VIPs and spawn/repair placement consume the same `tacticalCoverBlocksMovement(...)` authority. Destroyed props stop blocking automatically.
+- Existing LOS/cover semantics are not promoted merely because a prop blocks movement; visibility remains owned by the existing cover/LOS system.
+- Multihex vehicles, civic landmarks, building structures and interior furniture keep their established footprint/centroid placement instead of receiving an edge shift.
+- Browser 1036 shared Assist execution, Browser 0953 shell fixes, Browser 2245 doors and Browser 2146 shelter/furnishing behavior remain intact. Save format remains 4.
+- New focused regression: tools/test-hex-edge-prop-placement-and-solid-prop-navigation.cjs.
+
 BUILD: v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH
 PROJECT AEGIS — BROWSER 1036 PATCH NOTES
 Build: v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH

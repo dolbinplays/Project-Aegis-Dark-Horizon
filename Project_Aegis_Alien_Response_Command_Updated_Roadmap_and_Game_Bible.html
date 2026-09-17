@@ -45,7 +45,7 @@
 id="project-aegis--alien-response-command--updated-roadmap-and-game-bible">PROJECT
 AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE</h1>
 <p>Current browser build:
-<code>v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH</code></p>
+<code>v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH</code></p>
 <p>Current save format: <code>4</code></p>
 <h2
 id="window-aperture-seam-closure--procedural-building-shell-polish--implemented-in-browser-0953">Window
@@ -121,21 +121,49 @@ daylight slits, inspect concave turns from Iso/FPV/TPV, breach a door
 and confirm the opening stays open, then recheck Browser 2146 shelter
 securing/furniture, Browser 2051 Call Out, LOS/pathing and
 save/reload.</p>
-<h2 id="fire-team-assist-shared-objective-execution--implemented-in-browser-1036">Fire Team Assist Shared Objective Execution — Implemented in Browser 1036</h2>
-<p><strong>September 17, 2026. Status: implemented; live field acceptance required.</strong></p>
+<h2
+id="fire-team-assist-shared-objective-execution--implemented-in-browser-1036">Fire
+Team Assist Shared Objective Execution — Implemented in Browser
+1036</h2>
+<p><strong>September 17, 2026. Status: implemented; live field
+acceptance required.</strong></p>
 <ul>
-<li>A fire team assigned to <strong>Assist</strong> another fire team now actively shares supported <strong>Alien Field Beacon</strong> and <strong>VIP/civilian rescue</strong> execution instead of only following the primary formation.</li>
-<li>For a known Beacon objective, the assisting team keeps its Assist assignment but selects its own legal/effective breacher, approaches for range/LOS when appropriate and contributes fire to the same authoritative beacon after higher Default AI priorities clear.</li>
-<li>An assisting team with no effective anti-beacon attack remains in follow/support behavior rather than wasting turns or entering the direct Beacon-assignment failure/hold path.</li>
-<li>For a VIP/civilian rescue, the assisting team inherits the supported team’s exact target without consuming a separate default rescue claim. If it reaches first, it may make Contact and the successful soldier becomes the single authoritative <code>escortId</code>.</li>
-<li>First Contact releases the stale primary/assist planning race. Unrelated AI teams cannot steal explicitly reserved targets and an existing physical escort cannot be stolen.</li>
-<li>The authoritative Default AI hierarchy remains unchanged and save format remains <strong>4</strong>.</li>
+<li>A fire team assigned to <strong>Assist</strong> another fire team
+now actively shares supported <strong>Alien Field Beacon</strong> and
+<strong>VIP/civilian rescue</strong> execution instead of only following
+the primary formation.</li>
+<li>For a known Beacon objective, the assisting team keeps its Assist
+assignment but selects its own legal/effective breacher, approaches for
+range/LOS when appropriate and contributes fire to the same
+authoritative beacon after higher Default AI priorities clear.</li>
+<li>An assisting team with no effective anti-beacon attack does not
+waste turns or enter the direct Beacon-assignment failure/hold path; it
+remains in follow/support behavior.</li>
+<li>For a VIP/civilian rescue, the assisting team inherits the supported
+team's exact target without consuming a separate default rescue claim.
+If the assisting team reaches the target first, it may make Contact and
+the successful soldier becomes the single authoritative
+<code>escortId</code>.</li>
+<li>First Contact releases the stale primary/assist planning race so the
+originally assigned team does not continue chasing an already escorted
+VIP. An unrelated AI team still cannot steal an explicitly reserved
+target, and an existing physical escort cannot be stolen.</li>
+<li>The nine-level Default AI hierarchy remains authoritative; shared
+assist execution does not bypass stabilization, casualty recovery,
+active escort duty, visible-alien combat, Last Known Contact or other
+higher priorities.</li>
+<li>Save format remains <strong>4</strong>.</li>
 </ul>
-<p><strong>Acceptance:</strong> use <code>FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_FIELD_ACCEPTANCE.txt</code> and test capable/incapable Beacon assist, VIP first Contact, ownership rejection, priority preemption, continuation and save/reload.</p>
+<p><strong>Acceptance:</strong> use
+<code>FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_FIELD_ACCEPTANCE.txt</code>.
+Test a capable and incapable Beacon assist team, a closer VIP assist
+team making first Contact, unrelated-team ownership rejection, existing
+physical escort ownership, priority preemption, streamed/offline
+continuation and save/reload.</p>
 <h2 id="roadmap-addition--unique-living-soldier-nicknames">Roadmap
 Addition — Unique Living-Soldier Nicknames</h2>
 <p><strong>Requested September 17, 2026. Status: roadmap / not part of
-Browser 0953.</strong></p>
+Browser 1036.</strong></p>
 <ul>
 <li>A nickname may be assigned to <strong>only one living AEGIS soldier
 at a time</strong>.</li>
@@ -158,15 +186,55 @@ assignment through every nickname entry path, verify normalization/case
 handling, verify living non-active soldiers still reserve names, confirm
 a KIA releases the nickname, and load a legacy duplicate save without
 corruption.</p>
-<h2 id="roadmap-addition--hex-edge-prop-placement--unit-prop-separation">Roadmap Addition — Hex-Edge Prop Placement / Unit-Prop Separation</h2>
-<p><strong>Requested September 17, 2026. Status: roadmap / not part of Browser 1036.</strong></p>
+<h2
+id="hex-edge-prop-placement--solid-prop-navigation--implemented-in-browser-1145">Hex-Edge
+Prop Placement + Solid Prop Navigation — Implemented in Browser
+1145</h2>
+<p><strong>September 17, 2026. Status: implemented; live field
+acceptance required.</strong></p>
 <ul>
-<li>Trees, small rocks, streetlights, utility poles, signs, parking meters, hydrants and similar narrow scenery should spawn near a deterministic edge/corner of their owning hex instead of the unit-standing center.</li>
-<li>Preserve a clear center radius so units do not visually stand inside props; edge choice must respect roads, curbs, walls, doors, sidewalks, neighboring blocked geometry and existing prop occupancy.</li>
-<li>Large props with true blocking/cover footprints keep their footprint rules, while existing collision, cover and LOS authority stays aligned with the visual offset.</li>
-<li>Avoid stacking multiple edge props at one point and verify the result in 3D Iso, FPV and TPV.</li>
+<li>Qualifying one-cell props no longer render at the exact
+unit-standing center of their tactical hex. Generated props persist
+deterministic <code>propEdgeDirectionKey</code> and
+<code>propEdgeFraction</code> metadata and the shared Three.js cover
+anchor applies that offset in 3D Iso / FPV / TPV.</li>
+<li>Edge placement stays inside the owning hex. Slender poles/signs sit
+nearest the edge, trees use a moderate offset, and broader
+machines/cover use a smaller offset. Multihex vehicles, civic landmarks,
+building structure and interior furniture retain their established
+footprint/centroid rules.</li>
+<li>Roadside fixtures prefer road/lane/path-facing edges when legal;
+natural props avoid road-facing edges where possible. Candidate edges
+are screened against building ingress protection, building cells and
+neighboring occupied cover.</li>
+<li>One shared <code>tacticalCoverBlocksMovement(...)</code> contract
+now classifies physically solid props for navigation. Trees, lamp posts,
+traffic lights, stop signs, vending/news machines, bus stops, benches,
+rocks, concrete, crates, wrecks, fences and hay block movement while
+alive even when their prior cover presentation was soft.</li>
+<li>Bushes, brush and crops remain passable low foliage. Destroyed props
+cease blocking without a special-case migration.</li>
+<li><code>tacticalHardCoverFootprintKeySet(...)</code>,
+<code>isHardCoverAt(...)</code> and
+<code>tacticalPathBlockerIndex(...)</code> consume the same movement
+predicate. Manual movement previews/path search, Default/Hybrid AI,
+alien movement, civilian/VIP routing and open-cell/spawn repair
+therefore agree about solid scenery.</li>
+<li>The patch deliberately separates movement solidity from LOS
+solidity. Existing cover/visibility/ballistic rules remain
+authoritative, so a slim lamp post can block occupying its tactical cell
+without becoming an artificial full-height vision wall.</li>
+<li>Closed unlocked doors remain legal traversal/auto-open routes and
+locked doors remain blockers. Save format remains
+<strong>4</strong>.</li>
 </ul>
-<p><strong>Acceptance when implemented:</strong> sample generated maps and confirm qualifying props maintain a deterministic minimum clearance radius around their owning hex center without wall/door/road overlap.</p>
+<p><strong>Acceptance:</strong> use
+<code>HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_FIELD_ACCEPTANCE.txt</code>.
+Generate city/small-town/farm/nature maps, inspect edge offsets in
+Iso/FPV/TPV, route AEGIS/aliens/civilians around trees/poles/machines,
+destroy a blocking prop and cross its cell, verify bushes/brush/crops
+remain passable, confirm doors/vehicles/buildings keep prior authority,
+and save/reload to verify stable placement.</p>
 <h2
 id="physical-shelter-securing--interior-furnishingcover-overhaul--implemented-in-browser-2146">Physical
 Shelter Securing + Interior Furnishing/Cover Overhaul — Implemented in
@@ -41056,8 +41124,6 @@ home hangars.</li>
 <code>v0.26.07.12.1630_FERRY_AIRCRAFT_REBASE_AND_HOMEWARD_RECOVERY_CONTROLS_INDEX_ONLY_PATCH</code>:
 explicit Send Home/Rebase commands now let Ready aircraft leave remote
 staging bases without requiring an active UFO.</p>
-
-      
 
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>

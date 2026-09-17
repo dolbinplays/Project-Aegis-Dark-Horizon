@@ -9,6 +9,7 @@ ctx.tacticalIsSkyrangerInteriorRampCover=()=>false;ctx.tacticalIsFireHazard=()=>
 ctx.tacticalCoverIsWindow=(cover)=>String(cover?.buildingPart||'').toLowerCase()==='window';
 function evalSlice(startNeedle,endNeedle){const a=runtime.indexOf(startNeedle),b=runtime.indexOf(endNeedle,a+startNeedle.length);assert.ok(a>=0,startNeedle);assert.ok(b>a,endNeedle);vm.runInContext(runtime.slice(a,b),ctx);}
 evalSlice('const TACTICAL_INTERACTIVE_BUILDING_DOOR_STATE_AND_PATHING_FOUNDATION_PATCH=true;','function tacticalBuildingCovers');
+evalSlice('const TACTICAL_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH=true;','function tacticalLiveLandVehicleFootprintKeySet');
 evalSlice('function tacticalPathBlockerIndex','function tacticalAuthoritativeMovementPlan');
 evalSlice('function tacticalCoverAllowsVision','function tacticalCoverIsSolidBuildingBarrier');
 const door=(state='closed',locked=false)=>({id:'door-1',x:5,y:5,hp:70,maxHp:70,kind:'hard',block:state==='open'?0:1,structural:true,buildingPart:'door',buildingId:'house',buildingLabel:'House',doorMaterial:'brick',doorOrientation:'ew',doorState:state,doorLocked:locked,visual:`building-door-brick-${state}-ew`});

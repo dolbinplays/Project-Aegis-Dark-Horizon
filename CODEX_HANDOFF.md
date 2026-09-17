@@ -1,3 +1,31 @@
+# CODEX HANDOFF — v0.26.09.17.1145_HEX_EDGE_PROP_PLACEMENT_AND_SOLID_PROP_NAVIGATION_PATCH
+
+Browser 1145 moves qualifying tactical scenery off the unit-standing center of its hex and gives physically solid props one shared navigation authority across manual movement and AI. Save format remains 4.
+
+## Hex-edge presentation authority
+- `tacticalApplyHexEdgePropPlacement(...)` annotates qualifying one-cell props with deterministic `propPlacementMode`, `propEdgeDirectionKey` and `propEdgeFraction` fields after the existing building-ingress/structural precedence pass.
+- `tacticalThreeCoverWorldAnchor(...)` consumes that saved edge spec, so the persistent Three.js tactical presentation used by 3D Iso / FPV / TPV offsets the prop without changing its owning tactical cell.
+- Slender poles/signs move nearest the owning-hex edge; trees, machines/benches and broader hard cover use progressively smaller offsets. Fractions remain below 0.5 center-to-neighbor distance so the prop stays visually inside its owning hex.
+- Curb fixtures prefer adjacent road/lane/path edges when legal. Natural props prefer non-road edges. Building ingress protected cells, building cells and occupied neighboring cover cells are penalized/avoided.
+- Multihex vehicles, civic landmarks, building structural pieces and interior furnishings retain their existing footprint/centroid presentation.
+
+## Shared solid-prop navigation authority
+- `tacticalCoverBlocksMovement(...)` is now the single movement-blocking predicate consumed by `tacticalHardCoverFootprintKeySet(...)`, `isHardCoverAt(...)`, and `tacticalPathBlockerIndex(...)`.
+- Trees, lamp posts, traffic/stop signs, vending/news machines, bus stops, benches, rocks, concrete, crates, wrecks, fences and hay block their owning tactical cell while alive. Bushes, brush and crops remain passable.
+- Because manual reachable-cell/path search, AI pathing, spawn/open-cell repair, AEGIS, alien and civilian/VIP movement converge on those authorities, they route around the same solid props rather than walking/stopping through them.
+- Destroyed props immediately cease blocking. Closed unlocked doors remain traversable/auto-open capable; locked doors remain blockers.
+- Movement blocking does not independently promote a prop to a full LOS wall. Existing cover/visibility authority remains responsible for LOS and ballistic semantics.
+
+## Preserve / roadmap
+- Browser 1036 Fire Team Assist shared objective execution is unchanged.
+- Browser 0953 window shell, Browser 2245 door/corner shell, Browser 2146 physical shelter/furnishings and Browser 2051 Call Out remain intact.
+- Save format stays **4**.
+- Next queued work: unique living-soldier nickname ownership; alien forced-entry / door breaching; shielded-beacon immunity rings with no explanatory in-game text.
+
+Focused regression: `tools/test-hex-edge-prop-placement-and-solid-prop-navigation.cjs`.
+
+--- Previous handoff ---
+
 # CODEX HANDOFF — v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH
 
 Browser 1036 upgrades **Assist Fire Team** from formation-only support into shared execution of the supported team's current VIP/civilian or Alien Field Beacon objective. Save format remains 4.
