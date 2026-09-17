@@ -1,3 +1,18 @@
+BUILD: v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH
+PROJECT AEGIS — BROWSER 2146 PATCH NOTES
+Build: v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH
+Save format: 4
+
+Physical Shelter Securing + Interior Furnishing/Cover Overhaul
+- Builds directly on Browser 2051's shelter/Call Out authority. Threatened civilians/VIPs no longer remotely close and lock exterior doors from arbitrary positions inside a building.
+- A suitable unescorted, non-panicked civilian/VIP is assigned to each unsecured entrance, walks toward an interior-adjacent door position, and only closes/locks the authoritative door after physically reaching it. Streamed/offline AI playback carries a movement trail for this securing movement.
+- Once a shelter is secured, civilians/VIPs can retreat deeper inside toward useful furnishing cover rather than remaining exposed beside the entrance.
+- Procedural business and dwelling interiors now use archetype-aware furniture catalogs rather than generic primitive-like furnishings. Businesses gain counters, registers, shelves, filing/gear storage, booths, workbenches and appliances; dwellings gain couches, chairs, tables, beds, dressers, bookcases and kitchen counters.
+- Larger furniture now participates in tactical cover authority (typically 0.5 or 0.75 cover) so civilians/VIPs, AEGIS and aliens can use it meaningfully. Small props such as cash registers remain non-blocking.
+- Furniture placement preserves wider door/swing clearance and sparse walking lanes. Both Three.js tactical renderers use the same compound low-cost furnishing models built from shared cached primitives.
+- Browser 2051 Call Out, VIP Priority Lock, nearest-first objective sorting and save format 4 are retained. Alien forced-entry remains deferred.
+- New focused regression: tools/test-physical-shelter-securing-and-interior-furnishing.cjs.
+
 BUILD: v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH
 PROJECT AEGIS — BROWSER 2051
 Build: v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH

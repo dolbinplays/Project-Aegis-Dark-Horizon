@@ -43,9 +43,25 @@
 
       <h1 id="project-aegis--alien-response-command--updated-roadmap-and-game-bible">PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE</h1>
 
-<p>Current browser build: <code class="language-plaintext highlighter-rouge">v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH</code></p>
+<p>Current browser build: <code class="language-plaintext highlighter-rouge">v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH</code></p>
 
 <p>Current save format: <code class="language-plaintext highlighter-rouge">4</code></p>
+
+<h2 id="physical-shelter-securing--interior-furnishingcover-overhaul--implemented-in-browser-2146">Physical Shelter Securing + Interior Furnishing/Cover Overhaul — Implemented in Browser 2146</h2>
+
+<p><strong>September 16, 2026. Status: implemented; live field acceptance required.</strong></p>
+<ul>
+  <li>Threatened civilians/VIPs inside a building no longer lock exterior doors remotely. A suitable unescorted/non-panicked occupant is assigned to an unsecured entrance, physically moves to an interior-adjacent door position, and only then closes/locks the authoritative door.</li>
+  <li>Multiple entrances can receive separate securers when enough eligible occupants exist. Movement is bounded and participates in streamed/offline tactical movement trails.</li>
+  <li>After viable exterior doors are secured, civilians/VIPs can retreat deeper inside toward cells adjacent to useful furnishing cover instead of lingering at the entrance.</li>
+  <li>Procedural interiors now use building-type furnishing sets. <strong>Businesses</strong> can generate checkout/public counters, cash registers, store/display shelves, filing cabinets, waiting chairs, booths, refrigerators, gear lockers, workbenches and equipment racks. <strong>Dwellings</strong> can generate couches, armchairs, coffee/dining tables, chairs, beds, dressers, bookcases, kitchen counters and pantry shelving.</li>
+  <li>Large furniture becomes meaningful tactical cover (typically 0.5 or 0.75) usable by civilians/VIPs, AEGIS and aliens. Small detail props such as cash registers remain non-blocking.</li>
+  <li>Furnishing generation keeps a wider door/swing buffer and sparse circulation lanes so furniture does not seal entrances or make interiors unusable.</li>
+  <li>Both Three.js tactical renderers use shared compound furnishing models built from cached primitive geometry, replacing the generic rock/block-like presentation while keeping draw/memory cost bounded.</li>
+  <li>Browser 2051 shelter/Call Out authority, Browser 1102 VIP Priority Lock, nearest-to-farthest objective sorting and save format 4 remain intact.</li>
+  <li><strong>Alien forced-entry/breach doctrine remains deferred.</strong> Shielded-beacon immunity color rings and the remaining door-jamb/neighboring-wall seam issue remain roadmap items.</li>
+</ul>
+<p><strong>Acceptance:</strong> place an unescorted civilian/VIP several hexes inside a threatened building and confirm they physically move toward an exterior door before it locks. Recheck multi-door deconfliction, Browser 2051 safety guards, retreat toward useful furniture cover, recognizable business/dwelling furnishing sets, furniture cover values, door/swing clearance, Call Out, VIP Priority Lock, nearest-first objective sorting, save/reload and Mobile/PWA behavior.</p>
 
 <h2 id="civilianvip-shelter-locking--aegis-call-out--objective-distance-sorting--implemented-in-browser-2051">Civilian/VIP Shelter Locking + AEGIS Call Out + Objective Distance Sorting — Implemented in Browser 2051</h2>
 

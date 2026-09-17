@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>CODEX HANDOFF — v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH | Project-Aegis-Dark-Horizon</title>
+<title>CODEX HANDOFF — v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH | Project-Aegis-Dark-Horizon</title>
 <meta name="generator" content="Jekyll v3.10.0" />
-<meta property="og:title" content="CODEX HANDOFF — v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH" />
+<meta property="og:title" content="CODEX HANDOFF — v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Current builds of any projects I’m working on" />
 <meta property="og:description" content="Current builds of any projects I’m working on" />
@@ -17,9 +17,9 @@
 <meta property="og:site_name" content="Project-Aegis-Dark-Horizon" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="CODEX HANDOFF — v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH" />
+<meta property="twitter:title" content="CODEX HANDOFF — v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","description":"Current builds of any projects I’m working on","headline":"CODEX HANDOFF — v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH","url":"https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/CODEX_HANDOFF.html"}</script>
+{"@context":"https://schema.org","@type":"WebPage","description":"Current builds of any projects I’m working on","headline":"CODEX HANDOFF — v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH","url":"https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/CODEX_HANDOFF.html"}</script>
 <!-- End Jekyll SEO tag -->
 
     <link rel="stylesheet" href="/Project-Aegis-Dark-Horizon/assets/css/style.css?v=4208bcc12de53e34da659f4c6c573d02a0e5740f">
@@ -41,7 +41,31 @@
       <h1><a href="https://dolbinplays.github.io/Project-Aegis-Dark-Horizon/">Project-Aegis-Dark-Horizon</a></h1>
       
 
-      <h1 id="codex-handoff--v02609162051_civilian_vip_shelter_locking_aegis_callout_and_objective_distance_sort_patch">CODEX HANDOFF — v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH</h1>
+      <h1 id="codex-handoff--v02609162146_physical_shelter_securing_and_interior_furnishing_cover_overhaul_patch">CODEX HANDOFF — v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH</h1>
+<p>Browser 2146 turns Browser 2051 shelter security into physical civilian behavior and replaces generic interior primitives with archetype-aware furnishing cover. Save format remains 4.</p>
+<h2 id="shelter-movement-authority">Shelter movement authority</h2>
+<ul>
+  <li><strong>No remote door locking.</strong> A threatened unescorted/non-panicked civilian or VIP must reach an interior-adjacent position at the assigned exterior door before that door can close and lock.</li>
+  <li><strong>One securer per entrance where possible.</strong> Nearby occupants are deconflicted across unsecured doors; movement is bounded and emitted as a tactical movement trail for streamed/offline playback.</li>
+  <li><strong>Retreat after securing.</strong> Once all viable entrances are secured, shelter occupants can move deeper inside toward adjacent cells beside useful furnishing cover.</li>
+  <li><strong>2051 authority is preserved.</strong> The same door record remains collision/pathing/LOS/save truth, and AEGIS Call Out still opens civilian-secured doors.</li>
+</ul>
+<h2 id="interior-furnishing--cover-authority">Interior furnishing + cover authority</h2>
+<ul>
+  <li><strong>Archetype-aware interiors.</strong> Markets/offices/diners/workshops/fire stations use counters, registers, shelving, files, booths, racks and workbenches; residences/farmhouses use couches, armchairs, dining furniture, beds, dressers, bookcases and kitchen counters.</li>
+  <li><strong>Furniture is gameplay geometry.</strong> Large furnishings carry 0.5/0.75 tactical cover and block their occupied cell; small detail items remain non-blocking.</li>
+  <li><strong>Door/swing lanes stay clear.</strong> Furnishing candidates keep a wider buffer from authoritative doors and remain sparse enough to preserve interior circulation.</li>
+  <li><strong>Shared presentation.</strong> Both Three.js tactical render paths call <code class="language-plaintext highlighter-rouge">tacticalThreeAddInteriorFurnishingModel(...)</code>, using cached primitive geometry rather than unrelated rock/ball stand-ins.</li>
+</ul>
+<h2 id="still-deferred">Still deferred</h2>
+<ul>
+  <li>Alien forced-entry/breach decision doctrine.</li>
+  <li>Shielded-beacon immunity color rings (no explanatory in-game text).</li>
+  <li>Remaining door-jamb-to-neighboring-wall seam continuity issue reported after Browser 1726.</li>
+</ul>
+<p>Focused regression: <code class="language-plaintext highlighter-rouge">tools/test-physical-shelter-securing-and-interior-furnishing.cjs</code> (<strong>7/7</strong>).</p>
+<p>— Previous handoff —</p>
+<h1 id="codex-handoff--v02609162051_civilian_vip_shelter_locking_aegis_callout_and_objective_distance_sort_patch">CODEX HANDOFF — v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH</h1>
 <p>Browser 2051 adds civilian/VIP shelter locking, friendly AEGIS Call Out ingress, and per-fire-team nearest-first Assign Objectives sorting on top of Browser 1726. Save format remains 4.</p>
 <h2 id="shelter-and-rescue-authority">Shelter and rescue authority</h2>
 <ul>

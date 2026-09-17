@@ -1,0 +1,14 @@
+PROJECT AEGIS — BROWSER 2146 FIELD ACCEPTANCE
+Build: v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH
+Save format: 4
+
+1. In a mission with an unescorted VIP/civilian several hexes inside a building and a visible nearby alien, confirm the shelter occupant physically moves toward an exterior door instead of the door locking remotely.
+2. Confirm the door remains open/unlocked until the selected civilian/VIP reaches an interior-adjacent door position; then confirm that same authoritative door closes/locks.
+3. In a multi-door building with multiple eligible occupants, confirm securing work can distribute across entrances without two civilians stacking on the same door task.
+4. Confirm panicked/escorted civilians, a building already occupied by AEGIS/aliens, and immediate fire/dense-smoke hazards retain Browser 2051 safeguards.
+5. After entrances are secured, confirm civilians/VIPs can move deeper inside toward useful furniture cover rather than standing beside the door.
+6. Generate business interiors (market, records office, diner, workshop/fire station) and verify recognizable counters/registers/shelves/files/booths/racks/workbenches/appliances.
+7. Generate dwelling interiors (residence/farmhouse) and verify recognizable couches/chairs/tables/beds/dressers/bookcases/kitchen counters.
+8. Confirm large furniture provides tactical cover while small details such as cash registers do not become impassable obstacles.
+9. Confirm furniture does not block door swing/approach lanes or seal the only viable route through a building.
+10. Recheck AEGIS Call Out, VIP Priority Lock, nearest-first Assign Objectives sorting, door LOS/pathing, save/reload, Mobile/PWA and AI Command continuation. Save format must remain 4.

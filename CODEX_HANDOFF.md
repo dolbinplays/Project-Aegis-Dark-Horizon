@@ -1,3 +1,28 @@
+# CODEX HANDOFF — v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH
+
+Browser 2146 turns Browser 2051 shelter security into physical civilian behavior and replaces generic interior primitives with archetype-aware furnishing cover. Save format remains 4.
+
+## Shelter movement authority
+- **No remote door locking.** A threatened unescorted/non-panicked civilian or VIP must reach an interior-adjacent position at the assigned exterior door before that door can close and lock.
+- **One securer per entrance where possible.** Nearby occupants are deconflicted across unsecured doors; movement is bounded and emitted as a tactical movement trail for streamed/offline playback.
+- **Retreat after securing.** Once all viable entrances are secured, shelter occupants can move deeper inside toward adjacent cells beside useful furnishing cover.
+- **2051 authority is preserved.** The same door record remains collision/pathing/LOS/save truth, and AEGIS Call Out still opens civilian-secured doors.
+
+## Interior furnishing + cover authority
+- **Archetype-aware interiors.** Markets/offices/diners/workshops/fire stations use counters, registers, shelving, files, booths, racks and workbenches; residences/farmhouses use couches, armchairs, dining furniture, beds, dressers, bookcases and kitchen counters.
+- **Furniture is gameplay geometry.** Large furnishings carry 0.5/0.75 tactical cover and block their occupied cell; small detail items remain non-blocking.
+- **Door/swing lanes stay clear.** Furnishing candidates keep a wider buffer from authoritative doors and remain sparse enough to preserve interior circulation.
+- **Shared presentation.** Both Three.js tactical render paths call `tacticalThreeAddInteriorFurnishingModel(...)`, using cached primitive geometry rather than unrelated rock/ball stand-ins.
+
+## Still deferred
+- Alien forced-entry/breach decision doctrine.
+- Shielded-beacon immunity color rings (no explanatory in-game text).
+- Remaining door-jamb-to-neighboring-wall seam continuity issue reported after Browser 1726.
+
+Focused regression: `tools/test-physical-shelter-securing-and-interior-furnishing.cjs`.
+
+--- Previous handoff ---
+
 # CODEX HANDOFF — v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH
 
 Browser 2051 adds civilian/VIP shelter locking, friendly AEGIS Call Out ingress, and per-fire-team nearest-first Assign Objectives sorting on top of Browser 1726. Save format remains 4.

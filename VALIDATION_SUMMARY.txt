@@ -1,3 +1,27 @@
+BUILD: v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH
+PROJECT AEGIS — BROWSER 2146 VALIDATION SUMMARY
+Build: v0.26.09.16.2146_PHYSICAL_SHELTER_SECURING_AND_INTERIOR_FURNISHING_COVER_OVERHAUL_PATCH
+Save format: 4
+
+Physical Shelter Securing + Interior Furnishing/Cover Overhaul
+- Authoritative source baseline: Browser 2051 GitHub main commit `70afd9dcde0d2f44d44fe67d92da44482077510d` / successful Pages artifact.
+- Threatened, unescorted/non-panicked civilians and VIPs no longer secure exterior doors remotely. They are assigned to viable unsecured entrances, physically move to an interior-adjacent door position, and only then close/lock the same authoritative door record.
+- Multi-door shelter work can distribute across eligible occupants. Securing movement is bounded and emitted through the existing tactical movement-trail authority for streamed/offline playback.
+- After viable entrances are secured, shelter occupants can retreat deeper inside toward cells adjacent to useful furnishing cover instead of lingering at the entrance.
+- Procedural interiors now use archetype-aware business/dwelling furnishing catalogs with recognizable counters, registers, shelving, files, booths, workbenches, racks, couches, chairs, tables, beds, dressers, bookcases and kitchen fixtures.
+- Large furnishing records provide meaningful tactical cover (typically 0.5/0.75) and block their occupied cell; small detail props remain non-blocking. Door/swing buffers and sparse circulation are retained.
+- Both Three.js tactical cover render paths use the shared `tacticalThreeAddInteriorFurnishingModel(...)` presentation helper backed by cached primitive geometry.
+- Browser 2051 Call Out, Browser 1102 VIP Priority Lock, nearest-first Assign Objectives sorting, door authority, save/load and save format 4 are retained. Alien forced-entry doctrine remains deferred.
+- New focused regression `tools/test-physical-shelter-securing-and-interior-furnishing.cjs`: **7/7 passed**.
+- Retained Browser 2051 shelter/Call Out/objective sorting: **9/9 passed**.
+- Interactive door foundation: **11/11 passed**. Browser 1726 door aperture/hinge: **6/6 passed**.
+- Default AI central objective authority: **23/23 passed**. VIP Priority Lock: **10/10 passed**. Global contact/VIP priority: **6/6 passed**.
+- Mobile/PWA: **9/9 passed**.
+- Full retained test/smoke sweep: **41/41 entrypoint files passed, 0 failed**.
+- `tools/check-aegis-build.cjs`, embedded JavaScript syntax, and `service-worker.js` syntax all pass.
+- Packaged runtime: **7,304,131 bytes**, SHA-256 `746d4b35a1f911aec4d0966bfd0012bf685ecbf93b8b34927ad532b3eae40293`; generated host SHA-256 `e5d070375c7267f6e88aaffadf26af23e9dbc98a470120b6c09727756850c939`.
+- Roadmap retains shielded-beacon immunity color rings with no explanatory in-game text and the remaining door-jamb/adjacent-wall seam continuity issue as future work.
+
 BUILD: v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH
 PROJECT AEGIS — BROWSER 2051 VALIDATION SUMMARY
 Build: v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH
