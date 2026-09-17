@@ -1,0 +1,16 @@
+PROJECT AEGIS — BROWSER 2051 FIELD ACCEPTANCE
+Build: v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH
+Save format: 4
+
+1. Start several VIP/civilian rescue missions with civilians inside procedural buildings and a visible alien threat nearby. Confirm an unescorted civilian/VIP may close and lock suitable intact exterior doors rather than remaining exposed at an open entrance.
+2. Confirm shelter locking does not occur when an AEGIS soldier is already inside that building, when an alien is already inside, when the civilian is already actively escorted, or when the civilian cell is in an immediately unsafe fire/dense-smoke condition.
+3. Approach a civilian-secured locked door with an active AEGIS soldier. Confirm Call Out / Identify AEGIS appears on both desktop and Mobile tactical controls, costs 8 TU, and opens/unlocks the same authoritative door.
+4. Confirm Call Out does not reveal a magical interior occupancy state through unrelated ordinary locked doors and is not offered when there is no civilian shelter-lock authority behind that adjacent door.
+5. Assign a fire team to a sheltered VIP with VIP Priority Lock enabled. Confirm the committed rescuer approaches the outside of the locked entrance, recognizes Call Out as legal rescue ingress instead of declaring the VIP unreachable, opens it, and continues toward Contact/escort.
+6. Repeat in Default Simulation AI and Hybrid/AI Command handoff. Confirm rescue continuation does not deadlock and lower-priority visible-contact/search behavior does not steal the committed rescuer except where existing higher medical priorities apply.
+7. Open Assign Objectives for multiple fire teams at different map positions. Confirm each fire team sees spatial objectives ordered nearest-to-farthest from its own leader, so the ordering can differ between teams.
+8. Confirm equal-distance objectives use deterministic tie ordering and the Default AI Doctrine / non-spatial choices stay in their fixed logical locations rather than being mixed into distance sorting.
+9. Save/reload with one or more shelter doors locked and occupants sheltering. Confirm door and shelter metadata remain coherent, Call Out still works after reload, and save format remains 4.
+10. Recheck ordinary Browser 1356/1726 door behavior: open/close TU, unlocked auto-open traversal, locked blocking, LOS, breach/damage, true-hinge rendering and aperture alignment remain intact.
+11. Confirm aliens do NOT gain new forced-entry/breach decision doctrine in Browser 2051. Alien forced entry remains a follow-on patch.
+12. Confirm the roadmap contains the shielded-beacon top-ring immunity clue with no tutorial/tooltip/combat-log explanation, and the remaining door-jamb-to-wall seam continuity item stays roadmap-only.

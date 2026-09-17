@@ -1,3 +1,22 @@
+BUILD: v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH
+PROJECT AEGIS — BROWSER 2051 VALIDATION SUMMARY
+Build: v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH
+Save format: 4
+
+Civilian/VIP Shelter Locking + AEGIS Call Out + Objective Distance Sorting
+- Exact Browser 1726 GitHub main / Pages artifact was used as the authoritative baseline.
+- Threatened living unrescued/unescorted civilians/VIPs inside procedural buildings can secure suitable intact exterior doors through the existing authoritative door-state system while safeguards reject AEGIS/alien occupancy and immediate fire/dense-smoke hazards.
+- Adjacent AEGIS Call Out / Identify AEGIS costs 8 TU and opens/unlocks the same civilian-secured door; desktop and Mobile use the same authority.
+- Rescue ingress recognizes civilian-secured locked doors as Call Out-ready rather than unreachable, preserving Default/Hybrid continuation and Browser 1102 VIP Priority Lock behavior.
+- Assign Objectives spatial entries sort nearest-to-farthest separately for each fire team from its current leader, with deterministic ties and fixed non-spatial doctrine choices.
+- Shelter state is additive to existing tactical unit snapshots/cover records. Save format remains 4. Alien forced-entry doctrine remains deliberately absent.
+- New focused regression `tools/test-civilian-shelter-callout-objective-distance.cjs`: **9/9 passed**.
+- Retained focused validation: VIP Priority Lock **10/10**; interactive door foundation **11/11**; Browser 1726 aperture/hinge **6/6**; central objective authority **23/23**; casualty response ownership **13/13**; global contact/VIP priority **6/6**; Mobile/PWA **9/9**.
+- Full retained test/smoke sweep: **40/40 entrypoint files passed, 0 failed**.
+- `tools/check-aegis-build.cjs`, embedded JavaScript syntax, and `service-worker.js` syntax all pass.
+- Packaged runtime: **7,290,250 bytes**, SHA-256 `58d3832f9af29b49bb5e59ec7c77061a8f4da9f057dadcea2e36bdaf1f9b0dea`; generated host SHA-256 `a50addf2eff0c1be15ac942af455f6ed7d501157d19cbf09a9037b398fde5df6`.
+- Roadmap documentation also records the shielded-beacon immunity color rings (with no explanatory in-game text) and remaining door-jamb/adjacent-wall seam continuity as future work.
+
 PROJECT AEGIS — BROWSER 1726 VALIDATION SUMMARY
 Build: v0.26.09.16.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX
 Save format: 4

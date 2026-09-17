@@ -1,3 +1,18 @@
+BUILD: v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH
+PROJECT AEGIS — BROWSER 2051
+Build: v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH
+Save format: 4
+
+Civilian/VIP Shelter Locking + AEGIS Call Out + Objective Distance Sorting
+- Civilians/VIPs sheltering inside a procedural building may now secure suitable intact exterior doors when a nearby visible alien creates a credible threat, using the existing Browser 1356/1726 authoritative door state.
+- Shelter logic avoids locking AEGIS or aliens inside, skips already escorted civilians/VIPs and rejects immediately unsafe fire/dense-smoke shelter cells.
+- Adjacent AEGIS soldiers gain Call Out / Identify AEGIS for civilian-secured shelter doors. The action costs 8 TU and opens/unlocks the same authoritative door; desktop and Mobile expose the same action.
+- Default/Hybrid rescue AI recognizes a civilian-secured locked ingress as Call Out-ready rather than treating the assigned VIP as unreachable, allowing the existing Contact/escort chain and Browser 1102 VIP Priority Lock to continue.
+- Assign Objectives now sorts spatial objectives nearest-to-farthest separately for each fire team from that team's leader, with deterministic ties; Default AI Doctrine remains fixed outside the distance-sorted objective list.
+- Shelter occupant/lock state is additive to existing tactical snapshots and cover state. Save format remains 4.
+- Alien forced-entry/breach decision doctrine is intentionally deferred.
+- Roadmap additions retained: subtle colored top rings on shielded beacons to communicate weapon immunities without any explanatory in-game text; remaining door-jamb/adjacent-wall seam continuity.
+
 BUILD: v0.26.09.16.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX
 
 PROJECT AEGIS — BROWSER 1726 PATCH NOTES

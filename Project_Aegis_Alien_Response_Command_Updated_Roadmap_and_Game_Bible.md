@@ -1,8 +1,21 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.16.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX`
+Current browser build: `v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH`
 
 Current save format: `4`
+
+## Civilian/VIP Shelter Locking + AEGIS Call Out + Objective Distance Sorting — Implemented in Browser 2051
+
+**September 16, 2026. Status: implemented; live field acceptance required.**
+
+- Civilians/VIPs sheltering inside a building can secure suitable exterior doors when a nearby visible alien creates a credible threat. Shelter decisions reuse the authoritative Browser 1356/1726 door state and avoid locking around AEGIS, aliens, active escorts or immediate fire/dense-smoke hazards.
+- An adjacent active AEGIS soldier can use **Call Out / Identify AEGIS** at a civilian-secured locked door for **8 TU**. A successful response unlocks/opens that same authoritative door on desktop and Mobile.
+- Default/Hybrid rescue logic treats a civilian-secured locked ingress as a legal **Call Out** interaction rather than an unreachable VIP. Browser 1102 VIP Priority Lock can therefore keep its committed rescuer on the rescue chain through the locked entrance.
+- Shelter unit state is included in tactical snapshots and shelter door ownership rides on existing cover records. **Save format remains 4.**
+- The **Assign Objectives** screen now sorts each fire team's spatial objective dropdown **nearest-to-farthest from that team's current leader**, with deterministic ties. Default AI Doctrine and other non-spatial choices remain in fixed logical positions.
+- **Alien forced-entry/breach doctrine is not part of Browser 2051** and remains follow-on work so shelter decisions can be field-tested independently.
+
+**Acceptance:** exercise threatened and safe civilians/VIPs inside buildings, manual and AI Call Out, VIP Priority Lock through a secured ingress, save/reload, Mobile controls and per-fire-team objective ordering from different map positions. Confirm ordinary 1356/1726 door pathing/LOS/hinge behavior is unchanged and aliens do not gain new forced-entry logic.
 
 ## Door Aperture Alignment + True-Hinge Open Pose Hotfix — Implemented in Browser 1726
 
@@ -153,11 +166,34 @@ Additional authority rules implemented with this consolidation:
 - No campaign-state migration is required. Save format remains 4.
 - **Acceptance:** load the supplied Browser 1426 campaign, send both available squads to the North America Alien Abduction Site, confirm Farah/Echo begins with nearby deconflicted search rather than a remote northwest edge sector, and verify newly spotted aliens at long range cause Default AI soldiers to close visibly toward contact until normal ranged engagement distance is reached. Then verify cover/standoff behavior resumes and post-contact reassembly still occurs after contact is cleared.
 
-## Roadmap Follow-On — Locked Shelter, Forced Entry and AEGIS Callout
+## Roadmap Addition — Shielded Beacon Immunity Color Rings
 
-**Foundation implemented in Browser 1356. Remaining behavior: roadmap / not yet implemented.**
+**Requested September 16, 2026. Status: roadmap / not yet implemented.**
 
-Browser 1356 supplies the authoritative door entity/state, movement/pathing, LOS, structural damage, rendering and persistence foundation. The following behaviors remain intentionally separate follow-on work:
+- Shielded Alien Field Beacons should show subtle **colored rings around the top of the beacon** indicating the weapon/damage type or types to which that beacon is currently immune.
+- A beacon with multiple immunities may show multiple distinct rings. Ring colors should remain consistent for the same damage type across missions.
+- This is intentionally a player-discovery visual language: **do not explain, label, tutorialize, tooltip, objective-callout, combat-log, or otherwise draw explicit in-game text attention to the rings or what they mean.** Players should infer the relationship through observation and experimentation.
+- The rings are presentation of existing shield/immunity authority only; they must not create a second immunity state.
+
+**Acceptance:** spawn shielded beacons with different immunity combinations, verify the correct stable ring set appears in 3D views without revealing hidden shield information beyond what the beacon itself is visually presenting, and confirm no game text explains the rings.
+
+## Roadmap Addition — Door Frame / Adjacent Wall Seam Continuity
+
+**Reported September 16, 2026 after Browser 1726. Status: roadmap / not yet implemented.**
+
+- Some generated doors can still show a narrow visible gap between a door-frame jamb and the neighboring procedural wall segment even though the door aperture itself and hinge pose are improved.
+- Door jambs must terminate flush against neighboring wall geometry on both sides with no daylight/background slit through an otherwise intact facade.
+- Use the same authoritative aperture/wall dimensions and procedural adjacency data rather than masking the issue with oversized decorative trim.
+- Cover rectangular and T/L/J/S/Z buildings, corners and staggered connectors; preserve intentional doorway clearance, windows, breaches, concave outdoor recesses and the Browser 1726 true-hinge pose.
+- Do not regress the earlier pillar-only, oversized-aperture, micro-gap, overlap or false-doorway fixes. Add dedicated door-jamb-to-wall procedural continuity regression coverage.
+
+**Acceptance:** inspect doors across every procedural footprint family in 3D Iso/FPV/TPV and renderer modes, confirming both jambs visually meet intact neighboring walls while open/closed door behavior, pathing, LOS, breach state and save/reload remain unchanged.
+
+## Roadmap Follow-On — Alien Forced Entry / Door Breaching
+
+**Door foundation implemented in Browser 1356/1726; civilian shelter locking and AEGIS Call Out implemented in Browser 2051. Remaining alien forced-entry behavior: roadmap / not yet implemented.**
+
+Browser 2051 now supplies the civilian shelter and friendly rescue-access layer on the authoritative door state. The remaining intentionally separate follow-on work is:
 
 - **Civilian/VIP shelter locking:** civilians and VIPs hiding inside a building may close and lock suitable exterior doors when that improves shelter without trapping them in a worse hazard.
 - **Alien forced entry:** hostile AI must treat a locked door as a real delay, choose among alternate entrances/breach points, or spend tactical time damaging/breaching the door rather than pathing through it magically.
@@ -172,9 +208,9 @@ Browser 1356 supplies the authoritative door entity/state, movement/pathing, LOS
 
 ## Roadmap Addition — Locked-Shelter Callouts and Civilian/VIP Casualty Triage
 
-**Requested September 15, 2026. Status: roadmap / not yet implemented.**
+**Requested September 15, 2026. Call Out / shelter-access foundation implemented in Browser 2051; civilian/VIP casualty assessment remains roadmap / not yet implemented.**
 
-### Adjacent locked-door callout / rescue access
+### Adjacent locked-door callout / rescue access — foundation implemented in Browser 2051
 
 - When an AEGIS soldier is **adjacent to a closed, locked authoritative door**, provide a deliberate tactical action such as **Call Out / Identify AEGIS** instead of forcing the player to breach immediately. The action should consume an appropriate TU/action cost and should be available only when the soldier can physically address that doorway.
 - If living VIPs/civilians are sheltering inside and can reasonably hear the soldier, they may choose to **unlock and open the door from the inside**. A successful response should transition the same authoritative door state used by movement, LOS, pathfinding, rendering and save/load rather than creating a special rescue-only bypass.

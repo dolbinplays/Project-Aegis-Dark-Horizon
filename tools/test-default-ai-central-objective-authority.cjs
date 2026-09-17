@@ -97,7 +97,7 @@ function actor(id='leader') {
 }
 
 test('build/save identity and central authority marker are current', () => {
-  assert.match(source, /const CURRENT_GAME_BUILD="v0\.26\.09\.16\.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX"/);
+  assert.match(source, /const CURRENT_GAME_BUILD="v0\.26\.09\.16\.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH"/);
   assert.match(source, /const TACTICAL_DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_AND_ROUTE_INVALIDATION_PATCH=true/);
   assert.match(source, /const TACTICAL_AI_COMMAND_STREAM_HANDOFF_AND_ESCORT_LOCK_RUNTIME_HOTFIX=true/);
   assert.match(source, /const CURRENT_SAVE_FORMAT_VERSION=4/);

@@ -1,3 +1,27 @@
+# CODEX HANDOFF — v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH
+
+Browser 2051 adds civilian/VIP shelter locking, friendly AEGIS Call Out ingress, and per-fire-team nearest-first Assign Objectives sorting on top of Browser 1726. Save format remains 4.
+
+## Shelter and rescue authority
+- **Existing door state remains truth.** Shelter logic mutates the Browser 1356/1726 door record; there is no rescue-only collision or LOS bypass.
+- **Threat-bounded shelter locking.** Living unrescued/unescorted civilians or VIPs inside a building can close/lock suitable intact doors when a visible alien is nearby. The pass refuses to secure a building around an AEGIS soldier or alien and skips immediate fire/dense-smoke hazards.
+- **Call Out / Identify AEGIS.** An adjacent active AEGIS soldier can spend 8 TU at a civilian-secured locked door. Cooperative occupants respond by unlocking/opening the same authoritative door; desktop and Mobile share this action.
+- **Rescue AI understands the interaction.** A locked shelter ingress can resolve as `shelter-callout-ready`; Default/Hybrid rescue logic can call out and continue Contact/escort instead of declaring the VIP unreachable. VIP Priority Lock remains compatible.
+- **Persistence is additive.** Shelter unit fields are included in tactical snapshots and shelter ownership rides on existing cover state. Save format remains 4.
+
+## Assign Objectives ordering
+- Spatial objectives in each fire team's Own an objective dropdown are sorted nearest-to-farthest from that team's current leader.
+- Equal-distance ties are deterministic; Default AI Doctrine and non-spatial choices remain in fixed logical positions.
+
+## Deferred / roadmap-only
+- Alien forced-entry/breach decision doctrine remains the next door-system behavioral layer.
+- Shielded beacons should eventually show subtle colored top rings matching weapon/damage immunities with **no explanatory in-game text**.
+- Remaining door-frame-to-adjacent-wall seam gaps require a dedicated continuity fix.
+
+Focused regression: `tools/test-civilian-shelter-callout-objective-distance.cjs` (**9/9** before release packaging).
+
+--- Previous handoff ---
+
 # CODEX HANDOFF — v0.26.09.16.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX
 
 Browser 1726 is a narrow visual/layout hotfix on top of Browser 1356. Save format remains 4.

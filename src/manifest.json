@@ -1,11 +1,11 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.09.16.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX",
+  "currentBuild": "v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
-  "status": "door-aperture-alignment-and-true-hinge-open-pose-hotfix-complete",
+  "status": "civilian-vip-shelter-locking-aegis-callout-objective-distance-sort-complete",
   "preserveSingleFileArtifact": true,
   "sourceAreas": [
     "data",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.09.16.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX",
+  "lastInspectedBuild": "v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -47,7 +47,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.09.16.1726_DOOR_APERTURE_ALIGNMENT_AND_TRUE_HINGE_OPEN_POSE_HOTFIX",
+    "browserBuild": "v0.26.09.16.2051_CIVILIAN_VIP_SHELTER_LOCKING_AEGIS_CALLOUT_AND_OBJECTIVE_DISTANCE_SORT_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -243,7 +243,15 @@
       "last-known-over-beacon-priority",
       "ai-command-stream-handoff-runtime-integrity",
       "default-ai-casualty-stabilization-recovery-extraction-ownership",
-      "player-selectable-vip-rescue-commitment-priority-lock"
+      "player-selectable-vip-rescue-commitment-priority-lock",
+      {
+        "system": "civilian-vip-shelter-locking-aegis-callout",
+        "reason": "Browser civilians/VIPs may secure suitable building doors under nearby visible alien threat, and adjacent AEGIS can spend tactical time to identify themselves and reopen the same authoritative door; rescue AI recognizes this as a valid ingress interaction rather than an unreachable VIP. Native Godot requires equivalent shelter and friendly-entry authority."
+      },
+      {
+        "system": "fire-team-objective-nearest-first-sorting",
+        "reason": "Browser Assign Objectives sorts each fire team's spatial objective choices nearest-to-farthest from that team's current leader with deterministic ties while keeping non-spatial doctrine choices fixed. Native Godot requires equivalent per-team objective-board ordering where applicable."
+      }
     ],
     "temporaryExceptions": [
       {
@@ -644,7 +652,7 @@
       },
       {
         "system": "civic-landmark-multihex-footprints",
-        "reason": "Browser civic statues and fountains now use deterministic connected 1\u20137 hex footprints, shared collision/visibility/placement authority and footprint-scaled presentation. Native Godot needs equivalent engine-native landmark footprints and presentation."
+        "reason": "Browser civic statues and fountains now use deterministic connected 1–7 hex footprints, shared collision/visibility/placement authority and footprint-scaled presentation. Native Godot needs equivalent engine-native landmark footprints and presentation."
       },
       {
         "system": "tetromino-procedural-building-wall-continuity",
