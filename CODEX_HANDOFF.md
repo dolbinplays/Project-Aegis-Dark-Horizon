@@ -1,3 +1,34 @@
+# CODEX HANDOFF — v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH
+
+Browser 1036 upgrades **Assist Fire Team** from formation-only support into shared execution of the supported team's current VIP/civilian or Alien Field Beacon objective. Save format remains 4.
+
+## Shared Beacon execution
+- `tacticalFireTeamBeaconAssaultState(...)` now recognizes a beacon inherited through `tacticalFireTeamObjectiveAssistState(...)` while preserving the team's assignment mode as `assist`.
+- The assisting team selects its **own** legal/effective beacon breacher. A capable assist team suppresses generic leader-following long enough to use the normal beacon approach/fire authority against the supported team's authoritative beacon.
+- A direct Beacon assignment and a Beacon assist remain distinguishable. Only a direct assignment enters the existing explicit blocked-assignment hold/error path; an incapable assist team continues following/supporting the primary team rather than wasting ineffective fire.
+- Beacon completion still uses the existing authoritative objective-completion release transaction for the primary assignment and dependent assist teams.
+
+## VIP/civilian first-contact handoff
+- `tacticalFireTeamAssistCivilianObjectiveState(...)` exposes the supported team's active civilian target to the assisting team without creating a second independent VIP claim.
+- `tacticalVipRescueAssignmentPlan(...)` may therefore give the assisting fire team the same target while ordinary Default AI teams remain deconflicted onto other available VIPs.
+- `tacticalFireTeamAssistCivilianClaimAllowed(...)` permits assignment override **only** when the target is unescorted and is explicitly owned by the team being assisted. Unrelated autonomous teams remain unable to steal a reserved VIP.
+- If the assisting team reaches the target first, normal Contact sets the real `escortId`; the existing displaced-assignment release clears the stale primary/assist planning race while physical escort ownership continues through extraction.
+
+## Priority and compatibility rules
+- Shared-objective execution remains below all higher categories in the authoritative Default AI hierarchy. Medical priorities, active escort duty, visible-alien combat and Last Known Contact behavior are not bypassed.
+- Manual player authority, VIP Priority Lock, shelter/Call Out, closed/unlocked doors, furnishing cover and Browser 0953 building-shell fixes remain intact.
+- Save format stays **4**.
+
+## Roadmap queued after Browser 1036
+- Unique living-soldier nickname ownership.
+- Hex-edge prop placement / unit-prop center clearance for trees, poles, signs, rocks and similar props.
+- Shielded-beacon immunity rings with no explanatory in-game text.
+- Alien forced-entry / door breaching.
+
+Focused regression: `tools/test-fire-team-assist-shared-objective-execution.cjs`.
+
+--- Previous handoff ---
+
 # CODEX HANDOFF — v0.26.09.17.0953_WINDOW_APERTURE_SEAM_CLOSURE_AND_PROCEDURAL_BUILDING_SHELL_POLISH_PATCH
 
 Browser 0953 finishes the next procedural shell cleanup pass by making window apertures occupy the same vertical facade envelope as neighboring solid wall panels. Save format remains 4.

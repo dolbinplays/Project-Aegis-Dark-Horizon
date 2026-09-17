@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.17.0953_WINDOW_APERTURE_SEAM_CLOSURE_AND_PROCEDURAL_BUILDING_SHELL_POLISH_PATCH`
+Current browser build: `v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH`
 
 Current save format: `4`
 
@@ -34,21 +34,23 @@ Current save format: `4`
 
 **Acceptance:** generate rectangular and T/L/J/S/Z structures; verify fresh exterior doors are closed/unlocked and auto-open on legal traversal, inspect both sides of door frames for zero daylight slits, inspect concave turns from Iso/FPV/TPV, breach a door and confirm the opening stays open, then recheck Browser 2146 shelter securing/furniture, Browser 2051 Call Out, LOS/pathing and save/reload.
 
-## Roadmap Addition — Assisting Fire Teams Share Beacon Fire
+## Fire Team Assist Shared Objective Execution — Implemented in Browser 1036
 
-**Requested September 16, 2026. Status: roadmap / not part of Browser 2245.**
+**September 17, 2026. Status: implemented; live field acceptance required.**
 
-- When a fire team is explicitly assigned to **assist another fire team whose current objective is an Alien Field Beacon**, the assisting team should inherit that beacon as a coordinated support target rather than merely following the primary team.
-- Once an assisting soldier has a legal shot under normal range/LOS/TU/ammunition rules and no higher Default AI priority applies, the soldier should **fire on the same beacon** until it is destroyed or the assist relationship/objective changes.
-- The accepted Default AI hierarchy remains authoritative: stabilization, casualty recovery, active escort duty and visible-alien combat continue to preempt beacon fire as defined by doctrine.
-- Assist behavior should work for manual and AI-created assist assignments, avoid duplicate/stale target ownership, and avoid wasting attacks with a weapon/damage type the beacon is known to be immune to.
-- The shared target must remain the authoritative beacon record; do not create an assist-only beacon state.
+- A fire team assigned to **Assist** another fire team now actively shares supported **Alien Field Beacon** and **VIP/civilian rescue** execution instead of only following the primary formation.
+- For a known Beacon objective, the assisting team keeps its Assist assignment but selects its own legal/effective breacher, approaches for range/LOS when appropriate and contributes fire to the same authoritative beacon after higher Default AI priorities clear.
+- An assisting team with no effective anti-beacon attack does not waste turns or enter the direct Beacon-assignment failure/hold path; it remains in follow/support behavior.
+- For a VIP/civilian rescue, the assisting team inherits the supported team's exact target without consuming a separate default rescue claim. If the assisting team reaches the target first, it may make Contact and the successful soldier becomes the single authoritative `escortId`.
+- First Contact releases the stale primary/assist planning race so the originally assigned team does not continue chasing an already escorted VIP. An unrelated AI team still cannot steal an explicitly reserved target, and an existing physical escort cannot be stolen.
+- The nine-level Default AI hierarchy remains authoritative; shared assist execution does not bypass stabilization, casualty recovery, active escort duty, visible-alien combat, Last Known Contact or other higher priorities.
+- Save format remains **4**.
 
-**Acceptance when implemented:** assign Team B to assist Team A on a known beacon, give both teams legal firing opportunities, and confirm both contribute fire after higher priorities clear. Recheck target loss, beacon destruction, immunity-aware weapon choice, assignment changes, save/reload and Default AI priority ordering.
+**Acceptance:** use `FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_FIELD_ACCEPTANCE.txt`. Test a capable and incapable Beacon assist team, a closer VIP assist team making first Contact, unrelated-team ownership rejection, existing physical escort ownership, priority preemption, streamed/offline continuation and save/reload.
 
 ## Roadmap Addition — Unique Living-Soldier Nicknames
 
-**Requested September 17, 2026. Status: roadmap / not part of Browser 0953.**
+**Requested September 17, 2026. Status: roadmap / not part of Browser 1036.**
 
 - A nickname may be assigned to **only one living AEGIS soldier at a time**.
 - Comparison should be case-insensitive and trim harmless leading/trailing whitespace, so `Ghost`, `ghost`, and ` Ghost ` are the same reserved nickname.
@@ -58,6 +60,19 @@ Current save format: `4`
 - Existing saves with accidental duplicate living nicknames must still load safely; any cleanup/migration should be deterministic and preserve save format **4** if possible.
 
 **Acceptance when implemented:** attempt duplicate assignment through every nickname entry path, verify normalization/case handling, verify living non-active soldiers still reserve names, confirm a KIA releases the nickname, and load a legacy duplicate save without corruption.
+
+## Roadmap Addition — Hex-Edge Prop Placement / Unit-Prop Separation
+
+**Requested September 17, 2026. Status: roadmap / not part of Browser 1036.**
+
+- Qualifying props such as trees, small rocks, streetlights, utility poles, signs, parking meters, hydrants and similar narrow/vertical scenery should spawn near a deterministic **edge or corner of their owning hex** instead of at the unit-standing center.
+- Preserve a clear center radius so soldiers, aliens, VIPs and civilians do not visually stand inside scenery when occupying the hex.
+- Edge choice must be deterministic across save/reload and must respect roads, curbs, walls, doors, sidewalks, neighboring blocked geometry and existing prop occupancy.
+- Large props that already own a true blocking/cover footprint retain their explicit footprint rules. Existing collision, cover and LOS authority must stay aligned with the visual offset.
+- Avoid stacking multiple edge props into the same presentation point; roadside props should prefer believable curb/edge positions where possible.
+- Verify presentation in 3D Iso, FPV and TPV.
+
+**Acceptance when implemented:** sample generated urban/rural maps and confirm qualifying props maintain a minimum clearance radius around their owning hex center while remaining deterministic, tactically aligned and free of wall/door/road overlap.
 
 ## Physical Shelter Securing + Interior Furnishing/Cover Overhaul — Implemented in Browser 2146
 

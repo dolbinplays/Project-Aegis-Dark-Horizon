@@ -45,7 +45,7 @@
 id="project-aegis--alien-response-command--updated-roadmap-and-game-bible">PROJECT
 AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE</h1>
 <p>Current browser build:
-<code>v0.26.09.17.0953_WINDOW_APERTURE_SEAM_CLOSURE_AND_PROCEDURAL_BUILDING_SHELL_POLISH_PATCH</code></p>
+<code>v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH</code></p>
 <p>Current save format: <code>4</code></p>
 <h2
 id="window-aperture-seam-closure--procedural-building-shell-polish--implemented-in-browser-0953">Window
@@ -121,35 +121,17 @@ daylight slits, inspect concave turns from Iso/FPV/TPV, breach a door
 and confirm the opening stays open, then recheck Browser 2146 shelter
 securing/furniture, Browser 2051 Call Out, LOS/pathing and
 save/reload.</p>
-<h2
-id="roadmap-addition--assisting-fire-teams-share-beacon-fire">Roadmap
-Addition — Assisting Fire Teams Share Beacon Fire</h2>
-<p><strong>Requested September 16, 2026. Status: roadmap / not part of
-Browser 2245.</strong></p>
+<h2 id="fire-team-assist-shared-objective-execution--implemented-in-browser-1036">Fire Team Assist Shared Objective Execution — Implemented in Browser 1036</h2>
+<p><strong>September 17, 2026. Status: implemented; live field acceptance required.</strong></p>
 <ul>
-<li>When a fire team is explicitly assigned to <strong>assist another
-fire team whose current objective is an Alien Field Beacon</strong>, the
-assisting team should inherit that beacon as a coordinated support
-target rather than merely following the primary team.</li>
-<li>Once an assisting soldier has a legal shot under normal
-range/LOS/TU/ammunition rules and no higher Default AI priority applies,
-the soldier should <strong>fire on the same beacon</strong> until it is
-destroyed or the assist relationship/objective changes.</li>
-<li>The accepted Default AI hierarchy remains authoritative:
-stabilization, casualty recovery, active escort duty and visible-alien
-combat continue to preempt beacon fire as defined by doctrine.</li>
-<li>Assist behavior should work for manual and AI-created assist
-assignments, avoid duplicate/stale target ownership, and avoid wasting
-attacks with a weapon/damage type the beacon is known to be immune
-to.</li>
-<li>The shared target must remain the authoritative beacon record; do
-not create an assist-only beacon state.</li>
+<li>A fire team assigned to <strong>Assist</strong> another fire team now actively shares supported <strong>Alien Field Beacon</strong> and <strong>VIP/civilian rescue</strong> execution instead of only following the primary formation.</li>
+<li>For a known Beacon objective, the assisting team keeps its Assist assignment but selects its own legal/effective breacher, approaches for range/LOS when appropriate and contributes fire to the same authoritative beacon after higher Default AI priorities clear.</li>
+<li>An assisting team with no effective anti-beacon attack remains in follow/support behavior rather than wasting turns or entering the direct Beacon-assignment failure/hold path.</li>
+<li>For a VIP/civilian rescue, the assisting team inherits the supported team’s exact target without consuming a separate default rescue claim. If it reaches first, it may make Contact and the successful soldier becomes the single authoritative <code>escortId</code>.</li>
+<li>First Contact releases the stale primary/assist planning race. Unrelated AI teams cannot steal explicitly reserved targets and an existing physical escort cannot be stolen.</li>
+<li>The authoritative Default AI hierarchy remains unchanged and save format remains <strong>4</strong>.</li>
 </ul>
-<p><strong>Acceptance when implemented:</strong> assign Team B to assist
-Team A on a known beacon, give both teams legal firing opportunities,
-and confirm both contribute fire after higher priorities clear. Recheck
-target loss, beacon destruction, immunity-aware weapon choice,
-assignment changes, save/reload and Default AI priority ordering.</p>
+<p><strong>Acceptance:</strong> use <code>FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_FIELD_ACCEPTANCE.txt</code> and test capable/incapable Beacon assist, VIP first Contact, ownership rejection, priority preemption, continuation and save/reload.</p>
 <h2 id="roadmap-addition--unique-living-soldier-nicknames">Roadmap
 Addition — Unique Living-Soldier Nicknames</h2>
 <p><strong>Requested September 17, 2026. Status: roadmap / not part of
@@ -176,6 +158,15 @@ assignment through every nickname entry path, verify normalization/case
 handling, verify living non-active soldiers still reserve names, confirm
 a KIA releases the nickname, and load a legacy duplicate save without
 corruption.</p>
+<h2 id="roadmap-addition--hex-edge-prop-placement--unit-prop-separation">Roadmap Addition — Hex-Edge Prop Placement / Unit-Prop Separation</h2>
+<p><strong>Requested September 17, 2026. Status: roadmap / not part of Browser 1036.</strong></p>
+<ul>
+<li>Trees, small rocks, streetlights, utility poles, signs, parking meters, hydrants and similar narrow scenery should spawn near a deterministic edge/corner of their owning hex instead of the unit-standing center.</li>
+<li>Preserve a clear center radius so units do not visually stand inside props; edge choice must respect roads, curbs, walls, doors, sidewalks, neighboring blocked geometry and existing prop occupancy.</li>
+<li>Large props with true blocking/cover footprints keep their footprint rules, while existing collision, cover and LOS authority stays aligned with the visual offset.</li>
+<li>Avoid stacking multiple edge props at one point and verify the result in 3D Iso, FPV and TPV.</li>
+</ul>
+<p><strong>Acceptance when implemented:</strong> sample generated maps and confirm qualifying props maintain a deterministic minimum clearance radius around their owning hex center without wall/door/road overlap.</p>
 <h2
 id="physical-shelter-securing--interior-furnishingcover-overhaul--implemented-in-browser-2146">Physical
 Shelter Securing + Interior Furnishing/Cover Overhaul — Implemented in

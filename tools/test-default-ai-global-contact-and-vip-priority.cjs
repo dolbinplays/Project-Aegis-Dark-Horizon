@@ -46,7 +46,7 @@ function extractFunction(name) {
 }
 
 test('successor build preserves global contact and VIP priority hotfix under save format four', () => {
-  assert.match(source, /const CURRENT_GAME_BUILD="v0\.26\.09\.17\.0953_WINDOW_APERTURE_SEAM_CLOSURE_AND_PROCEDURAL_BUILDING_SHELL_POLISH_PATCH"/);
+  assert.match(source, /const CURRENT_GAME_BUILD="v0\.26\.09\.17\.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH"/);
   assert.match(source, /const TACTICAL_DEFAULT_AI_GLOBAL_CONTACT_AND_VIP_PRIORITY_HOTFIX=true/);
   assert.match(source, /const CURRENT_SAVE_FORMAT_VERSION=4/);
 });
@@ -93,6 +93,7 @@ test('tracked VIP activates autonomous fire-team assignment even for a non-manda
     tacticalFireTeamIsLeader: unit => unit.fireTeamRole === 'leader',
     tacticalEscortFollowers: () => [],
     tacticalFireTeamCommandOrderForUnit: () => null,
+    tacticalFireTeamAssistCivilianObjectiveState: () => null,
     tacticalDistance: (a, b) => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y)),
   };
   vm.createContext(context);

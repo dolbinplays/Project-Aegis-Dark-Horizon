@@ -1,0 +1,32 @@
+PROJECT AEGIS — BROWSER 1036 FIELD ACCEPTANCE
+Build: v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH
+Save format: 4
+
+FIRE TEAM ASSIST — SHARED OBJECTIVE EXECUTION
+
+1. BEACON ASSIST CONTRIBUTION
+- Assign Fire Team Alpha directly to a known Alien Field Beacon.
+- Assign Fire Team Bravo to Assist Alpha.
+- Give Bravo at least one living soldier with a loaded/effective weapon or usable grenade against the beacon's current shield state.
+- Confirm Bravo remains formally assigned to Assist Alpha but independently moves for a legal beacon shot and contributes fire once higher Default AI priorities are clear.
+- Confirm Alpha and Bravo attack the same authoritative beacon; there is no duplicate beacon entity/objective.
+
+2. INEFFECTIVE BEACON ASSIST
+- Repeat with Bravo lacking any effective anti-beacon attack.
+- Confirm Bravo continues follow/support behavior instead of wasting shots or entering the direct Beacon-assignment blocked/failure state.
+
+3. VIP FIRST-CONTACT HANDOFF
+- Assign Alpha directly to a known VIP/civilian.
+- Assign Bravo to Assist Alpha and position Bravo closer to the target.
+- Confirm Bravo inherits the same rescue target and may make Contact first.
+- Confirm the first successful Bravo contact makes that soldier the single authoritative escort and the VIP follows Bravo toward extraction.
+- Confirm Alpha stops racing toward a VIP who is already physically escorted and returns to normal support/default authority.
+
+4. OWNERSHIP SAFETY
+- Confirm an unrelated Fire Team Charlie cannot steal Alpha's reserved VIP merely by arriving first.
+- Confirm a VIP already carrying a living escortId cannot be stolen by Alpha, Bravo, or Charlie.
+- Confirm save/reload and streamed/offline AI continuation preserve the physical escort and do not recreate stale assignment competition.
+
+5. PRIORITY AUTHORITY
+- During both Beacon and VIP assist scenarios, introduce bleeding/downed AEGIS personnel, active escort duty, visible aliens, and Last Known Contact states.
+- Confirm the authoritative Default AI hierarchy still preempts shared-objective execution where required.

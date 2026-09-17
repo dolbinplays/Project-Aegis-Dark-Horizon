@@ -1,3 +1,24 @@
+BUILD: v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH
+PROJECT AEGIS — BROWSER 1036 VALIDATION SUMMARY
+Build: v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH
+Save format: 4
+
+Fire Team Assist Shared Objective Execution
+- Authoritative source baseline: Browser 0953 GitHub main commit `cd8138de3d251f0cf3a35c5f6c24b406aefb2ef6` / successful Pages run `35252012027` / artifact `10510425341`.
+- Beacon assist teams preserve Assist assignment ownership while inheriting the supported team's authoritative beacon for legal/effective contribution. Capable assist teams select their own breacher; incapable teams remain in ordinary follow/support rather than entering direct-assignment failure/hold behavior.
+- VIP/civilian assist teams inherit the supported team's exact target without consuming a separate Default AI rescue claim. A valid assisting team that arrives first may make Contact, become the authoritative physical `escortId`, and release stale primary/assist planning competition.
+- Unrelated autonomous teams still cannot steal explicitly reserved VIPs, and an existing physical escort remains exclusive ownership.
+- Default AI priority authority remains unchanged and save format stays 4.
+- New focused regression `tools/test-fire-team-assist-shared-objective-execution.cjs`: **8/8 passed**.
+- VIP Priority Lock: **10/10 passed**. Shelter/Call Out/objective sorting: **9/9 passed**. Default AI central authority: **23/23 passed**. Global contact/VIP priority: **6/6 passed**.
+- Mobile/PWA after canonical host packaging: **9/9 passed**.
+- AI command-stream handoff: **2/2 passed**.
+- Full frozen-tree test/smoke sweep: **44/44 entrypoint files passed, 0 failed**.
+- `tools/check-aegis-build.cjs`, embedded JavaScript syntax, and `service-worker.js` syntax all pass.
+- Packaged runtime: **7,322,176 bytes**, SHA-256 `4f7f0ff731dfe8ee203833ebbd1d0183dde4c4208d49c52eb5f88c60c8682ed4`; generated host SHA-256 `42cd24719a14785a7d8724b38bbe828e7d766356e7d241694d381a0c41a4f1df`.
+- Final install-style verification: the 15-file replacement ZIP was applied over a fresh copy of the exact Browser 0953 GitHub Pages baseline; build seam, embedded-JS/service-worker syntax, Mobile/PWA **9/9**, all 43 short/medium retained entrypoints, and AI command-stream handoff **2/2** passed for a complete **44/44** overlay matrix.
+- Roadmap retains unique living-soldier nickname ownership, deterministic hex-edge prop placement, unexplained shield-immunity rings, and alien forced entry/breaching as follow-on work.
+
 BUILD: v0.26.09.17.0953_WINDOW_APERTURE_SEAM_CLOSURE_AND_PROCEDURAL_BUILDING_SHELL_POLISH_PATCH
 PROJECT AEGIS — BROWSER 0953 VALIDATION SUMMARY
 Build: v0.26.09.17.0953_WINDOW_APERTURE_SEAM_CLOSURE_AND_PROCEDURAL_BUILDING_SHELL_POLISH_PATCH

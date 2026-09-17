@@ -1,3 +1,19 @@
+BUILD: v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH
+PROJECT AEGIS — BROWSER 1036 PATCH NOTES
+Build: v0.26.09.17.1036_FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_PATCH
+Save format: 4
+
+Fire Team Assist Shared Objective Execution
+- Builds directly on Browser 0953 and turns Assist Fire Team from formation-only support into coordinated execution of the supported team's current VIP/civilian or Alien Field Beacon objective.
+- A fire team assisting a team assigned to a known Alien Field Beacon now inherits that same authoritative beacon as a support target. The assisting team selects its own legal/effective breacher and can move into range/LOS and contribute fire once higher Default AI priorities clear.
+- The assist assignment remains an Assist assignment; no duplicate beacon objective record or competing destination-cell ownership is created.
+- If the assisting team has no effective anti-beacon attack, it remains in normal follow/support behavior instead of entering the direct Beacon-assignment blocked/failed state or wasting ineffective shots.
+- A fire team assisting a VIP/civilian rescue inherits the supported team's specific rescue target. If the assisting team reaches that target first, a valid assisting soldier may make Contact and become the single authoritative escort.
+- Successful first Contact releases the stale primary/assist planning race while the civilian/VIP's real escortId remains physical ownership for the extraction chain. Unrelated AI teams still cannot steal a VIP explicitly reserved to another team, and an existing physical escort cannot be stolen.
+- Default AI priority authority is unchanged: stabilization, casualty recovery, active escort duty, visible-alien combat, Last Known Contact and other higher-priority states continue to preempt lower-priority shared-objective execution according to doctrine.
+- Save format remains 4; no schema migration is required.
+- New focused regression: tools/test-fire-team-assist-shared-objective-execution.cjs.
+
 BUILD: v0.26.09.17.0953_WINDOW_APERTURE_SEAM_CLOSURE_AND_PROCEDURAL_BUILDING_SHELL_POLISH_PATCH
 PROJECT AEGIS — BROWSER 0953 PATCH NOTES
 Build: v0.26.09.17.0953_WINDOW_APERTURE_SEAM_CLOSURE_AND_PROCEDURAL_BUILDING_SHELL_POLISH_PATCH
