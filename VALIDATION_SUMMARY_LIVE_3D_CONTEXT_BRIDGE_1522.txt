@@ -1,0 +1,34 @@
+Project Aegis 1522 validation summary
+
+Baseline verified against GitHub main commit:
+35b8c05147ac184fcca52f477206a74f92d11332
+
+PASS: outer editor JavaScript parses with node --check
+PASS: injected Three.js bridge/bootstrap JavaScript parses with node --check
+PASS: 20/20 static hotfix integration contracts
+PASS: 1358 live 3D road/building/reference mechanisms remain present
+PASS: startup watchdog begins even when iframe load event may already have been missed
+PASS: iframe load event independently restarts bridge watchdog
+PASS: child bootstrap waits for scene/root/renderer/camera/editor readiness
+PASS: opaque-origin postMessage fallback is present
+PASS: failed bridge bootstrap clears retry guards
+PASS: manual Reconnect 3D Context path is present
+PASS: Roadside Straight/Any auto-selects Straight road
+PASS: T-only Roadside authority auto-selects T-intersection
+PASS: Building-Adjacent authority auto-selects Building-adjacent
+PASS: manual 3D reference override remains available
+PASS: save format remains 4
+
+Automated browser integration harness (Chromium, opaque-origin srcdoc):
+PASS: bridge attached without page errors
+PASS: Bus Stop reached live Straight-road context
+PASS: Building prop switched automatically to Building-adjacent
+PASS: T-only Roadside prop switched automatically to T-intersection
+PASS: manual Four-way override remained selectable
+PASS: Reconnect 3D Context completed successfully
+
+Environment limitation:
+The execution sandbox blocks direct browser navigation to file:// URLs, so an actual Windows local-file launch still requires field testing. The automated harness intentionally used an opaque-origin embedded document to exercise the file-origin message fallback and fast-load/missed-event recovery paths.
+
+Game/runtime field testing:
+Not required for logic changed here because the tactical runtime and placement resolver are unchanged. Confirm visually on the user's Windows launch that selecting Bus Stop immediately produces visible Straight-road geometry in the real Three.js viewport.

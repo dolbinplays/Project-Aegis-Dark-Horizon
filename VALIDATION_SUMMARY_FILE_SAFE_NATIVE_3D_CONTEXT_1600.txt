@@ -1,0 +1,28 @@
+Project Aegis 1600 validation summary
+
+AUTOMATED / STATIC
+PASS: main contextual editor inline JavaScript parses with node --check
+PASS: 18/18 focused 1600 native-fallback integration contracts
+PASS: 7/7 retained 1522 bridge/auto-reference contracts
+PASS: parent document loads Three.js directly
+PASS: file:// path activates native same-document placement preview immediately
+PASS: hosted path retains bridge and uses native fallback after timeout
+PASS: Straight/T/Four-way road reference builders are present
+PASS: Building-Adjacent reference includes visible protected ingress area
+PASS: PROP FORWARD / SPAWN FACING helper is present
+PASS: ground-plane placement drag writes distance/lateral authoring values
+PASS: Roadside/Building-Adjacent automatic reference selection remains wired
+PASS: manual 3D reference override remains wired
+PASS: parent placement override storage key remains aegis-prop-placement-overrides-v1
+PASS: full 0835 geometry editor remains embedded for geometry/damage/variant/anchor editing
+PASS: save format remains 4
+
+NOT AUTOMATED / FIELD TEST REQUIRED
+- Windows Chrome/Edge direct file:// launch: confirm native placement viewport appears instead of a permanent Connecting message.
+- Bus Stop: confirm Straight road / curb / sidewalk are visible and prop placement updates live.
+- T-intersection and Four-way references: visually inspect scale/orientation.
+- Building-Adjacent: visually inspect wall, door, window and red ingress-protection region.
+- Drag prop to place in 3D: confirm mouse behavior feels natural on the user's display.
+- Confirm geometry changes that have been saved/published are reflected by the native placement preview.
+
+Environment limitation: this execution environment blocks browser navigation to both file:// URLs and localhost HTTP pages, so a true local-browser visual launch could not be automated here.
