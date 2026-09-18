@@ -1,0 +1,23 @@
+AEGIS 0835 GENERATED DAMAGE / DESTROYED STATE VALIDATION
+
+PASS — Baseline confirmed as pushed 2358 release (commit 3dd741b8cff22d8cd56d303eef9f52633b605653).
+PASS — Canonical shared library still contains 57 unique props.
+PASS — All 57 current shared props have positive HP and now contain explicit editable Damaged and Destroyed presentation models.
+PASS — 114 generated state models total (57 Damaged + 57 Destroyed).
+PASS — Every generated model has components, root transform, collision data, finite transforms, positive scale, supported primitives, and valid colors.
+PASS — Generated state component IDs do not reuse intact component IDs.
+PASS — Every generated state differs from its intact model.
+PASS — Organic, roadside/pole, structural, stone/rubble, machine, vehicle, and interior-furniture profiles receive category-aware deformation/collapse rules.
+PASS — All four shared vehicles carry state-specific headlight / beam / taillight anchors for Damaged and Destroyed states.
+PASS — Runtime JS and canonical JSON library payloads are byte-equivalent after parsing.
+PASS — Runtime live-library migration fills missing generated state models from the project file while preserving user-authored damage states already present in browser storage.
+PASS — Editor labels generated Damaged / Destroyed targets for review and allows normal component/root/collision editing.
+PASS — Editor exported Runtime Library JS carries the same 0835 bridge and generated-state migration logic as the project library file.
+PASS — Editor inline JavaScript parses successfully.
+PASS — Runtime Test Gallery inline JavaScript parses successfully.
+PASS — Canonical runtime library JavaScript parses successfully.
+PASS — Pre-generation 2358 JSON and JS library backups are included.
+PASS — Immutable 0835 generated-state JSON baseline is included.
+PASS — Save format remains 4.
+
+Field validation still required for actual tactical rendering, particularly zero-HP cover persistence and nighttime vehicle light placement after a prop enters a damaged/destroyed model.

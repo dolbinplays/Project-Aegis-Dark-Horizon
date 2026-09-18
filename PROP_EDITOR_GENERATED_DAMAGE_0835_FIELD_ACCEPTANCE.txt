@@ -1,0 +1,13 @@
+AEGIS 0835 FIELD ACCEPTANCE
+
+[ ] Editor opens and reports 57 editable shared props.
+[ ] Every prop exposes Damaged · generated and Destroyed · generated targets.
+[ ] Generated states can be selected and edited with the normal component/root/collision controls.
+[ ] Runtime Test Gallery can switch each prop between Intact / Damaged / Destroyed.
+[ ] Representative organic prop (tree) shows bent/damaged and fallen/destroyed geometry.
+[ ] Representative roadside prop (lamp post or stop sign) bends then collapses.
+[ ] Representative hard prop (concrete/rock) breaks into rubble.
+[ ] Sedan/van/utility/bus damaged/destroyed states remain visually aligned with light anchors.
+[ ] Interior furniture has visibly distinct damaged and collapsed/destroyed forms.
+[ ] A zero-HP shared prop uses Destroyed model in actual tactical play where the runtime still renders that cover.
+[ ] Save/load remains compatible; save format is 4.
