@@ -1,8 +1,10 @@
 {
-  "build": "v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH",
-  "package_filename": "Project_Aegis_v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH.zip",
+  "build": "v0.26.09.18.1215_CONTEXTUAL_PROP_PLACEMENT_AND_ORIENTATION_PREVIEW_PATCH",
+  "package_filename": "Project_Aegis_v0.26.09.18.1215_CONTEXTUAL_PROP_PLACEMENT_AND_ORIENTATION_PREVIEW_DIRECT_COPY.zip",
   "save_format": 4,
   "runtime_bytes": 7335051,
   "runtime_sha256": "ee36f2c2433bca106e3ab51ec90bb911d610909c5be2b2fdaadd8ace2fda7332",
-  "host_sha256": "3d11994c2c9ce276d1f4693d84cb8e8316b5b15185adfa8caa34318b8674185a"
+  "host_sha256": "3d11994c2c9ce276d1f4693d84cb8e8316b5b15185adfa8caa34318b8674185a",
+  "runtime_extension": "assets/runtime/aegis-contextual-prop-placement-runtime.js",
+  "runtime_extension_build": "v0.26.09.18.1215_CONTEXTUAL_PROP_PLACEMENT_AND_ORIENTATION_PREVIEW_PATCH"
 }

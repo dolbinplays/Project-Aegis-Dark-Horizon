@@ -1,0 +1,45 @@
+AEGIS 1215 CONTEXTUAL PROP PLACEMENT / ORIENTATION PREVIEW VALIDATION
+
+BUILD
+v0.26.09.18.1215_CONTEXTUAL_PROP_PLACEMENT_AND_ORIENTATION_PREVIEW_PATCH
+
+AUTHORITATIVE BASELINE
+PASS — GitHub main verified at 13cb9b461a3f0f8aae28a0f1577822a170a92080 before construction.
+PASS — Baseline release is v0.26.09.18.0835_GENERATED_PROP_DAMAGE_AND_DESTROYED_STATES_DIRECT_COPY.
+PASS — Current shared library schema remains aegis-prop-library-v1 with 57 props on the authoritative baseline.
+PASS — Save format remains 4.
+
+AUTOMATED / STATIC VALIDATION PERFORMED
+PASS — All new runtime/data/service-worker JavaScript passes `node --check`.
+PASS — Free-placement fallback remains available for old/unconfigured prop definitions.
+PASS — Required Roadside stop-sign test rejects a straight-road-only context.
+PASS — Required Roadside stop-sign test accepts T-intersection context.
+PASS — Required Roadside stop-sign test accepts four-way-intersection context.
+PASS — Preferred Roadside bench test retains legacy fallback when no road context exists.
+PASS — Opposite-side bus-stop test resolves different road sides, opposite-facing orientation, and deterministic mirrored handedness.
+PASS — Building-adjacent vending-machine test relocates away from a protected entrance approach cell and remains wall-adjacent.
+PASS — Re-running contextual placement with the same mission/cover identity produces byte-identical placement/orientation output.
+PASS — Contextual placement is idempotent once a cover is stamped with the 1215 placement authority.
+PASS — Parent placement authority is not duplicated into Damaged, Destroyed, or cosmetic variant model payloads; inheritance remains parent-driven.
+PASS — Old prop definition with no placement metadata remains functional as Free Placement.
+PASS — Editor contract includes all three modes, both strictness choices, road context eligibility, building controls, mirroring, project sidecar write, live-library merge, and PROP FORWARD / SPAWN FACING preview.
+PASS — Runtime Gallery contract includes Free/Straight/T/Four-way/Building contexts, mirroring and facing visualization while retaining the complete 0835 gallery in-page.
+PASS — Invert Vertical Camera default/persistence test uses only `project-aegis-invert-vertical-camera-v1` local storage.
+PASS — Camera-extension static contract gates manual look to firstPersonCamera/thirdPersonCamera and excludes cinematicCamera, boarding cinematic and incoming-fire reaction camera state.
+PASS — Camera-extension code contains no mutation of the existing Iso `panOffset` path.
+PASS — Updated service-worker contract preserves the existing navigation/cache architecture and transforms only the external prop-library response to merge contextual rules and load the runtime extension.
+PASS — Direct-copy package contains no BAT/installer files.
+PASS — HTML wrapper files parse and CURRENT redirect targets resolve to the packaged 1215 editor/gallery filenames.
+
+NOT AUTOMATED / FIELD TESTING STILL REQUIRED
+NOT RUN — Full browser execution against the 7.3 MB current game runtime. The current environment can inspect GitHub source but cannot launch the authoritative hosted runtime with its full repository asset tree.
+NOT RUN — Actual generated urban mission verification for straight/T/four-way visual placement density and map aesthetics.
+NOT RUN — Actual door/ramp/pathfinding traversal with relocated building-adjacent props.
+NOT RUN — Vehicle multi-hex collision, cover, LOS and nighttime headlights after the contextual post-pass.
+NOT RUN — Save/export/reload of a real tactical mission confirming contextual cover fields survive the complete production serialization path.
+NOT RUN — Browser/PWA service-worker activation/update behavior on Android/desktop after deployment.
+NOT RUN — Hands-on mouse/touch FPV/TPV look feel with Invert Vertical Camera On/Off.
+NOT RUN — Scripted incoming-fire, boarding, victory, reinforcement and other cinematic camera regressions in real play.
+
+FIELD-TESTING NOTE
+Runtime generator/camera integration is delivered as a reversible extension loaded through the existing service-worker-managed external prop-library request. The canonical 0835 geometry library and 2145 factory/revert data are deliberately not overwritten by this patch.

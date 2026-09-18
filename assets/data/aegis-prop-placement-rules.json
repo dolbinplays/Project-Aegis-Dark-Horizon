@@ -1,0 +1,77 @@
+{
+  "schema": "aegis-prop-placement-catalog-v1",
+  "build": "v0.26.09.18.1215_CONTEXTUAL_PROP_PLACEMENT_AND_ORIENTATION_PREVIEW_PATCH",
+  "placementSchema": "aegis-prop-placement-v1",
+  "defaultPlacement": {
+    "schema": "aegis-prop-placement-v1",
+    "mode": "free",
+    "strictness": "preferred",
+    "forwardAxis": "+Z",
+    "spawnFacingDeg": 0,
+    "allowMirroring": false
+  },
+  "rules": {
+    "lamp-post": {
+      "mode": "roadside",
+      "strictness": "preferred",
+      "contexts": [
+        "straight-road",
+        "t-intersection",
+        "four-way-intersection"
+      ]
+    },
+    "bus-stop": {
+      "mode": "roadside",
+      "strictness": "preferred",
+      "contexts": [
+        "straight-road",
+        "t-intersection"
+      ]
+    },
+    "street-bench": {
+      "mode": "roadside",
+      "strictness": "preferred",
+      "contexts": [
+        "straight-road",
+        "t-intersection",
+        "four-way-intersection"
+      ]
+    },
+    "stop-sign": {
+      "mode": "roadside",
+      "strictness": "required",
+      "contexts": [
+        "t-intersection",
+        "four-way-intersection"
+      ]
+    },
+    "traffic-light": {
+      "mode": "roadside",
+      "strictness": "required",
+      "contexts": [
+        "t-intersection",
+        "four-way-intersection"
+      ]
+    },
+    "vehicle-*": {
+      "mode": "roadside",
+      "strictness": "preferred",
+      "allowRoadSurface": true
+    },
+    "vending-machine": {
+      "mode": "building-adjacent",
+      "strictness": "preferred",
+      "respectIngressProtection": true
+    },
+    "newspaper-machine": {
+      "mode": "building-adjacent",
+      "strictness": "preferred",
+      "respectIngressProtection": true
+    },
+    "playground": {
+      "mode": "building-adjacent",
+      "strictness": "preferred",
+      "respectIngressProtection": true
+    }
+  }
+}

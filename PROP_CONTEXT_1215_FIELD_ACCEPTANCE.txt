@@ -1,0 +1,17 @@
+AEGIS 1215 FIELD ACCEPTANCE
+
+[ ] Editor lists all current shared props and can switch Free / Roadside / Building-Adjacent.
+[ ] Editor context preview shows Straight, T, Four-way, Building wall and a clear PROP FORWARD / SPAWN FACING arrow.
+[ ] Saving a placement rule survives editor reload on the same browser/device.
+[ ] Runtime gallery retains 0835 Intact/Damaged/Destroyed/variant/Day/Night/vehicle-light/anchor controls in the embedded full gallery.
+[ ] Stop signs and traffic lights do not appear as unconstrained free props.
+[ ] Roadside bench/bus-stop/lamp generation still succeeds when an eligible curb exists.
+[ ] Opposite-side bus stops face the road correctly and mirrored presentation is not backward.
+[ ] Vending/newspaper machines do not occupy door, doorway-approach, ramp, or required traversal cells.
+[ ] Road vehicles keep multi-hex collision/navigation and nighttime lighting behavior.
+[ ] Save and reload the same mission: prop placement and mirrored orientation remain unchanged.
+[ ] Old mission/save made before 1215 loads normally (save format 4).
+[ ] Invert Vertical Camera defaults Off and remains set after browser/app restart.
+[ ] Invert Vertical Camera reverses only manual vertical FPV/TPV look; horizontal look is unchanged.
+[ ] 3D Iso drag pan remains unchanged.
+[ ] Incoming-fire, boarding, victory and other scripted/AI camera motion remains non-inverted.
