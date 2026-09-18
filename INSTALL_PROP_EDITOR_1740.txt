@@ -1,0 +1,14 @@
+AEGIS Prop Editor 1740 — installation
+
+Copy these two HTML files to the Project-Aegis-Dark-Horizon repository root:
+- AEGIS_Prop_Editor_CURRENT.html
+- AEGIS_Prop_Editor_v0.26.09.17.1740_GAME_PROP_INVENTORY_AND_MIGRATION_VISIBILITY_PATCH.html
+
+Keep the existing project files in place, especially:
+- assets/vendor/three.min.js
+- assets/data/aegis-prop-library.js
+- src/browser-runtime.html
+
+Open AEGIS_Prop_Editor_CURRENT.html. The Game Prop Inventory works immediately from the embedded current-main scan. When served over HTTP/GitHub Pages, Scan Current Runtime can read src/browser-runtime.html directly. When opened via file://, use Import Runtime HTML and select src/browser-runtime.html for a fresh scan.
+
+No playable-runtime files or save schema changes are required. Save format remains 4.

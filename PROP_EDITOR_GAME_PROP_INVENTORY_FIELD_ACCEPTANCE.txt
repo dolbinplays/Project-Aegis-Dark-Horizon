@@ -1,0 +1,22 @@
+AEGIS PROP EDITOR 1740 — GAME PROP INVENTORY FIELD ACCEPTANCE
+
+Build:
+v0.26.09.17.1740_GAME_PROP_INVENTORY_AND_MIGRATION_VISIBILITY_PATCH
+
+Acceptance criteria:
+1. Canonical shared library still loads from assets/data/aegis-prop-library.js and remains editable.
+2. Game Prop Inventory panel is visible in the left column.
+3. Inventory summary separately counts Shared / Editable, Legacy migration targets, and Special / System visuals.
+4. Status filter supports All, Shared / Editable, Legacy Exact, Legacy Family, and Special / System.
+5. Text filter searches visual key, display name, and inventory description.
+6. Clicking a Shared / Editable inventory row opens that prop in the editor.
+7. Legacy exact visuals such as traffic-light, civic-statue, playground, water-fountain, and interior-power-panel are visible without pretending they are already editable shared definitions.
+8. Legacy matcher families such as vehicle-, building-wall, building-window, building-door, interior-, brush, crop, and hay are visible as migration targets.
+9. Special/system visuals (alien beacon families, Skyranger, crash/UFO, tactical hazards/flare, linked insertion structures) are visible separately and are not labeled ordinary migration props.
+10. Embedded inventory snapshot reflects the current main runtime at commit 4d223a5957 / browser-runtime blob 0b908738c2, so the inventory works when the editor is opened directly from file://.
+11. Scan Current Runtime refreshes from src/browser-runtime.html when same-origin file access is available.
+12. Import Runtime HTML supports a fresh local scan when browser file:// restrictions block direct fetch.
+13. 1705 shared runtime authority remains intact, including Download Game Runtime Library JS.
+14. 1650 Three.js r128 startup compatibility remains intact; CapsuleGeometry is not reintroduced.
+15. 1620 continuous live transform sliders and natural orbit drag remain intact.
+16. Browser runtime is unchanged by this editor patch. Save format remains 4.
