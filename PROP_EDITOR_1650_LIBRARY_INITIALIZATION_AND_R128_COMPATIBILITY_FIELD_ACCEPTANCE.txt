@@ -1,0 +1,26 @@
+AEGIS PROP EDITOR 1650 — LIBRARY INITIALIZATION + THREE.JS R128 COMPATIBILITY HOTFIX
+
+Build:
+v0.26.09.17.1650_PROP_EDITOR_LIBRARY_INITIALIZATION_AND_R128_COMPATIBILITY_HOTFIX
+
+Root cause:
+- The editor built the white unit scale reference with THREE.CapsuleGeometry.
+- Project Aegis currently bundles Three.js r128.
+- r128 does not expose CapsuleGeometry, so startup stopped during buildUnitReference() before refreshAll() populated the prop library and editor fields.
+- Visible symptoms matched the failure: empty Prop Library, blank metadata/component controls, default Ready status, and a small default-size black WebGL canvas.
+
+Acceptance criteria:
+1. Prop Library populates on editor startup.
+2. First prop metadata and component selection populate normally.
+3. Preview initializes using geometry supported by bundled Three.js r128.
+4. White unit scale reference remains visible when enabled.
+5. If unit-reference preview construction fails, the failure is contained and does not intentionally abort the editor startup path.
+6. Position / Rotation / Scale sliders retain continuous drag behavior from 1620.
+7. Slider changes remain visible in real time and retain one undo checkpoint per gesture.
+8. View orbit retains natural drag direction from 1620.
+9. No tactical runtime or save-format change. Save format remains 4.
+
+Implementation:
+- Uses CapsuleGeometry only when the loaded Three.js build actually provides it.
+- Falls back to CylinderGeometry + SphereGeometry for the mannequin torso/shoulder silhouette on r128.
+- Wraps unit-reference creation in a defensive try/catch so this optional scale aid cannot be the reason the whole editor fails to initialize.

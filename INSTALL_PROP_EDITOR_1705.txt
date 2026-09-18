@@ -1,0 +1,14 @@
+AEGIS Prop Editor 1705 install
+
+Copy these files into the Project-Aegis-Dark-Horizon repository root:
+- AEGIS_Prop_Editor_CURRENT.html
+- AEGIS_Prop_Editor_v0.26.09.17.1705_SHARED_PROP_LIBRARY_EDITOR_RUNTIME_AUTHORITY_PATCH.html
+
+Optional QA/development files:
+- PROP_EDITOR_SHARED_RUNTIME_AUTHORITY_FIELD_ACCEPTANCE.txt
+- tools/test-prop-editor-shared-runtime-authority.cjs
+
+This patch expects the existing Browser 1320 canonical file at:
+assets/data/aegis-prop-library.js
+
+Do not replace src/browser-runtime.html, index.html, service-worker.js, or save data for this editor-only consolidation patch.

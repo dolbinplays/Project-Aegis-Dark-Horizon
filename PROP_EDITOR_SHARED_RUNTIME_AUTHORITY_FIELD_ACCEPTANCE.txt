@@ -1,0 +1,23 @@
+AEGIS PROP EDITOR — SHARED RUNTIME AUTHORITY FIELD ACCEPTANCE
+Build: v0.26.09.17.1705_SHARED_PROP_LIBRARY_EDITOR_RUNTIME_AUTHORITY_PATCH
+
+Baseline / authority
+- Editor baseline: validated 1650 startup/R128 hotfix plus 1620 live-transform/orbit fixes.
+- Game baseline: Browser 1320 shared prop runtime integration already present on main.
+- Save format remains 4.
+
+Acceptance checks
+1. Open the versioned editor from the repository root.
+2. Prop Library populates on startup and the source line says "Working copy of canonical game library" when assets/data/aegis-prop-library.js is present.
+3. Existing canonical props (tree, lamp post, stop sign, vending machine, newspaper machine, bus stop, street bench, crates, concrete barrier, fence, rock, bush) are selectable.
+4. Position, Rotation and Scale X/Y/Z sliders drag continuously and update the selected component in real time.
+5. View orbit follows horizontal/vertical pointer drag direction naturally.
+6. The unit reference renders under bundled Three.js r128; no CapsuleGeometry startup error occurs.
+7. "Reload Game Library" restores the working library from window.AEGIS_PROP_LIBRARY after confirmation when edits exist.
+8. Restored drafts and imported libraries are visibly identified as draft/imported working sources rather than canonical.
+9. "Download Library JSON" produces aegis-prop-library.json from the same working payload used for runtime JS export.
+10. "Download Game Runtime Library JS" produces aegis-prop-library.js defining window.AEGIS_PROP_LIBRARY.
+11. Replacing assets/data/aegis-prop-library.js with the exported JS and reloading the editor shows the edited canonical model definitions.
+12. Browser 1320 consumes matching shared visual definitions first and retains its legacy renderer fallback when no definition exists.
+
+No playable-runtime or save-schema file is changed by this editor consolidation patch.
