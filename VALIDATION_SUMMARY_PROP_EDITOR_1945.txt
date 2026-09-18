@@ -1,0 +1,31 @@
+AEGIS PROP EDITOR 1945 — VALIDATION SUMMARY
+
+Build: v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH
+
+PASS — Editor application JavaScript parses successfully.
+PASS — Canonical shared library JS and JSON mirrors deserialize to the same payload.
+PASS — Library grows from 12 to 15 shared/editable definitions.
+PASS — Tree generic legacy geometry migrated: cylinder trunk + cone canopy.
+PASS — Lamp Post, Stop Sign, Vending Machine, Newspaper Machine, Bus Stop, Street Bench, Crates, Concrete, Fence migrated to legacy renderer sizes/transforms/material baselines.
+PASS — Bush generic legacy baseline migrated and regional-variation limitation is explicit.
+PASS — Traffic Light, Playground, and Hay promoted from legacy-only runtime visuals to shared/editable game-derived definitions.
+PASS — Rock is explicitly marked approximate/pending instead of falsely labeled exact.
+PASS — Game Model Source provenance UI added.
+PASS — Game Prop Inventory distinguishes game-derived shared definitions from remaining legacy targets.
+PASS — 1620 live transform/orbit corrections retained.
+PASS — 1650 r128 startup compatibility retained; CapsuleGeometry is absent.
+PASS — 1705 canonical runtime-library import/export path retained.
+PASS — 1740 runtime inventory functionality retained.
+PASS — Focused Node regression suite: 5 passed, 0 failed; repository-runtime assertion intentionally skips outside the full repo.
+
+Runtime continuity:
+- Current authoritative browser runtime on main remains v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH.
+- It already attempts shared-library model construction before legacy fallback in both Three.js cover render paths.
+- No browser-runtime code is changed by this patch.
+- Save format remains 4.
+
+Known intentional boundaries:
+- Regional tree/bush scale/color variants are not yet data-driven in the shared schema.
+- Rock exact legacy fidelity awaits DodecahedronGeometry support.
+- Civic Statue / Water Fountain await cover-driven landmark root-scale support.
+- Vehicles, building structures, interiors and special mission structures remain on the migration roadmap.

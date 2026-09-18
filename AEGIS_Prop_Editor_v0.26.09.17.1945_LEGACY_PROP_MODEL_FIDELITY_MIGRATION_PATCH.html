@@ -1,0 +1,1972 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AEGIS Prop Editor — Legacy Model Fidelity Migration</title>
+<style>
+:root{--bg:#020617;--panel:#0f172a;--panel2:#111827;--line:#334155;--line2:#1e293b;--text:#e2e8f0;--muted:#94a3b8;--cyan:#22d3ee;--green:#22c55e;--amber:#f59e0b;--red:#ef4444;--purple:#a78bfa}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;background:radial-gradient(circle at top,#0f172a,#020617 55%);color:var(--text);font:14px/1.4 system-ui,Segoe UI,Roboto,sans-serif;overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit;background:#020617;border:1px solid var(--line);border-radius:9px;padding:7px 9px}button{cursor:pointer;font-weight:750}button:hover{border-color:var(--cyan)}button.danger:hover{border-color:var(--red);color:#fecaca}button.primary{border-color:#0891b2;background:#083344}button.good{border-color:#166534;background:#052e16}button:disabled{opacity:.45;cursor:not-allowed}
+.app{height:100%;display:grid;grid-template-columns:330px minmax(420px,1fr) 390px;grid-template-rows:auto 1fr}
+.topbar{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--line2);background:rgba(2,6,23,.96)}
+.brand{font-weight:900;letter-spacing:.04em}.badge{display:inline-flex;border:1px solid #0e7490;background:#083344;color:#a5f3fc;border-radius:999px;padding:3px 8px;font-size:11px;font-weight:900;text-transform:uppercase}.topbar .spacer{flex:1}.status{color:var(--muted);font-size:12px}
+.panel{min-height:0;overflow:auto;background:rgba(15,23,42,.94);padding:12px}.left{border-right:1px solid var(--line2)}.right{border-left:1px solid var(--line2)}
+.viewer{position:relative;min-height:0;background:linear-gradient(#07111f,#0b1424)}#mount{position:absolute;inset:0}.viewerOverlay{position:absolute;left:12px;bottom:12px;max-width:520px;background:rgba(2,6,23,.82);border:1px solid var(--line);border-radius:12px;padding:9px 11px;color:#cbd5e1;font-size:12px;pointer-events:none}.axisHint{position:absolute;right:12px;bottom:12px;background:rgba(2,6,23,.76);border:1px solid var(--line);border-radius:10px;padding:7px 9px;font-size:11px;color:#cbd5e1;pointer-events:none}
+.card{background:rgba(2,6,23,.58);border:1px solid var(--line2);border-radius:14px;padding:11px;margin-bottom:10px}.card h2{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:#67e8f9;margin:0 0 8px}.muted{color:var(--muted);font-size:12px}.small{font-size:11px}.row{display:grid;grid-template-columns:120px 1fr;gap:7px;align-items:center;margin:6px 0}.row.compact{grid-template-columns:90px 1fr}.row input,.row select{min-width:0;width:100%}.buttonRow{display:flex;gap:7px;flex-wrap:wrap}.buttonRow>*{flex:0 0 auto}.full{width:100%}.separator{height:1px;background:var(--line2);margin:9px 0}
+.list{display:grid;gap:5px;max-height:260px;overflow:auto;padding-right:2px}.listItem{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;border:1px solid var(--line2);background:#07101f;border-radius:9px;padding:7px 8px;cursor:pointer}.listItem:hover{border-color:#155e75}.listItem.active{border-color:var(--cyan);background:#082f49}.listItem .name{font-weight:750}.listItem .meta{font-size:10px;color:var(--muted)}
+.componentItem{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:7px 8px;border:1px solid var(--line2);border-radius:9px;background:#07101f;cursor:pointer}.componentItem.active{border-color:var(--purple);background:#1e1b4b}.componentItem code{font-size:10px;color:#c4b5fd}
+.grid3{display:grid;grid-template-columns:18px 1fr 70px;gap:5px;align-items:center;margin:4px 0}.grid3 input[type=range]{padding:0;width:100%}.grid3 input[type=number]{width:70px}.axis{font-weight:900;color:#cbd5e1}.sectionLabel{font-size:11px;color:#cbd5e1;font-weight:850;margin:8px 0 4px}
+textarea{width:100%;min-height:210px;resize:vertical;font:11px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre}.validation{display:grid;gap:5px}.check{border-left:3px solid var(--green);background:#052e16;padding:6px 8px;border-radius:6px}.check.warn{border-color:var(--amber);background:#451a03}.check.bad{border-color:var(--red);background:#450a0a}
+.toggle{display:flex;align-items:center;gap:7px}.toggle input{width:auto}.colorInput{padding:2px;height:34px}.numberPair{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.kbd{display:inline-block;padding:1px 5px;border:1px solid #475569;border-bottom-width:2px;border-radius:5px;background:#0f172a;color:#e2e8f0;font-size:10px}
+.inventoryStats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:8px 0}.inventoryStat{border:1px solid var(--line2);border-radius:9px;background:#07101f;padding:7px;text-align:center}.inventoryStat strong{display:block;font-size:16px;color:#e2e8f0}.inventoryStat span{display:block;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.inventoryList{display:grid;gap:5px;max-height:390px;overflow:auto;padding-right:2px}.inventoryItem{display:grid;grid-template-columns:1fr auto;gap:7px;align-items:center;border:1px solid var(--line2);background:#07101f;border-radius:9px;padding:7px 8px}.inventoryItem.clickable{cursor:pointer}.inventoryItem.clickable:hover{border-color:var(--cyan);background:#082f49}.inventoryName{font-weight:800;word-break:break-word}.inventoryMeta{font-size:10px;color:var(--muted);margin-top:2px;word-break:break-word}.inventoryBadge{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:3px 7px;font-size:9px;font-weight:900;white-space:nowrap;text-transform:uppercase;letter-spacing:.04em}.inventoryBadge.shared{border:1px solid #166534;background:#052e16;color:#bbf7d0}.inventoryBadge.legacy{border:1px solid #92400e;background:#451a03;color:#fde68a}.inventoryBadge.family{border:1px solid #7c2d12;background:#431407;color:#fed7aa}.inventoryBadge.special{border:1px solid #475569;background:#111827;color:#cbd5e1}.inventoryEmpty{border:1px dashed var(--line);border-radius:9px;padding:10px;color:var(--muted);text-align:center;font-size:11px}
+@media(max-width:1200px){body{overflow:auto}.app{height:auto;min-height:100%;grid-template-columns:310px 1fr;grid-template-rows:auto minmax(560px,70vh) auto}.right{grid-column:1/-1;border-left:0;border-top:1px solid var(--line2)}.viewer{min-height:560px}}
+@media(max-width:760px){.app{grid-template-columns:1fr;grid-template-rows:auto auto 60vh auto}.topbar{position:sticky;top:0;z-index:10;flex-wrap:wrap}.left,.right{border:0;border-bottom:1px solid var(--line2)}.viewer{min-height:520px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">AEGIS Prop Editor</div><span class="badge">Legacy Fidelity 1945</span>
+    <button id="undoBtn">Undo</button><button id="redoBtn">Redo</button>
+    <button id="saveDraftBtn">Save Draft</button><button id="restoreDraftBtn">Restore Draft</button>
+    <div class="spacer"></div><div class="status" id="statusText">Ready</div>
+  </header>
+
+  <aside class="panel left">
+    <div class="card">
+      <h2>Prop Library</h2>
+      <div class="muted">Loads the canonical AEGIS game prop library when available. Game-derived entries are migrated from the existing hard-coded Three.js renderer, so the editable component model is now tied back to scenery AEGIS already used in missions.</div>
+      <div id="librarySourceText" class="muted small" style="margin-top:6px"></div>
+      <div class="row"><label>Filter</label><input id="propFilter" placeholder="tree, vending..." /></div>
+      <div id="propList" class="list"></div>
+      <div class="buttonRow" style="margin-top:8px">
+        <button id="newPropBtn">New Prop</button><button id="duplicatePropBtn">Duplicate</button><button class="danger" id="deletePropBtn">Delete</button><button id="reloadGameLibraryBtn">Reload Game Library</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Game Prop Inventory</h2>
+      <div class="muted">Cross-checks the editable shared library against prop/scenery visual keys still detected in the current game runtime. Common legacy scenery is being promoted into editable shared definitions; remaining legacy entries stay visible as the migration queue.</div>
+      <div id="inventorySourceText" class="muted small" style="margin-top:6px"></div>
+      <div id="inventoryStats" class="inventoryStats"></div>
+      <div class="row"><label>Filter</label><input id="inventoryFilter" placeholder="traffic, vehicle, wall..." /></div>
+      <div class="row"><label>Status</label><select id="inventoryStatus"><option value="all">All runtime props</option><option value="shared">Shared / editable</option><option value="legacy">Legacy exact visuals</option><option value="legacy-family">Legacy visual families</option><option value="special">Special / system</option></select></div>
+      <div class="buttonRow" style="margin:8px 0"><button id="scanRuntimeBtn">Scan Current Runtime</button><button id="importRuntimeBtn">Import Runtime HTML</button><input id="runtimeFileInput" type="file" accept="text/html,.html,.htm" hidden /></div>
+      <div id="inventoryList" class="inventoryList"></div>
+      <div class="muted small" style="margin-top:7px">Shared rows open the editable definition. Legacy rows identify migration targets; structural, vehicle, mission-special, and hazard families stay visible without pretending they are ordinary props.</div>
+    </div>
+
+    <div class="card">
+      <h2>Prop Metadata</h2>
+      <div class="row"><label>Display name</label><input id="propName" /></div>
+      <div class="row"><label>Visual key</label><input id="visualKey" /></div>
+      <div class="row"><label>Navigation</label><select id="navigationClass"><option value="solid">Solid / route around</option><option value="passable">Passable</option><option value="decorative">Decorative</option></select></div>
+      <div class="row"><label>Cover kind</label><select id="coverKind"><option value="hard">Hard</option><option value="soft">Soft</option><option value="none">None</option></select></div>
+      <div class="row"><label>Cover block</label><input id="coverBlock" type="number" min="0" max="1" step="0.05" /></div>
+      <div class="row"><label>Max HP</label><input id="maxHp" type="number" min="1" step="1" /></div>
+      <div class="row"><label>LOS class</label><select id="losClass"><option value="existing-cover">Use existing cover authority</option><option value="none">No LOS block</option><option value="partial">Partial</option><option value="solid">Solid</option></select></div>
+      <div class="row"><label>Edge placement</label><select id="edgePlacement"><option value="hex-edge">Hex edge</option><option value="center">Center</option><option value="special">Special/custom</option></select></div>
+      <div class="row"><label>Edge fraction</label><input id="edgeFraction" type="number" min="0" max="0.49" step="0.01" /></div>
+      <div class="toggle"><input id="curbLike" type="checkbox" /><label for="curbLike">Prefer curb / road-facing edge</label></div>
+      <div class="toggle"><input id="naturalProp" type="checkbox" /><label for="naturalProp">Natural prop (avoid roads)</label></div>
+      <div class="row"><label>Notes</label><textarea id="propNotes" style="min-height:80px"></textarea></div>
+    </div>
+
+    <div class="card">
+      <h2>Game Model Source</h2>
+      <div id="migrationInfo" class="muted small"></div>
+    </div>
+
+    <div class="card">
+      <h2>Preview Controls</h2>
+      <div class="toggle"><input id="snapToggle" type="checkbox" checked /><label for="snapToggle">Snap transforms</label></div>
+      <div class="row"><label>Position snap</label><input id="positionSnap" type="number" step="0.01" min="0.01" value="0.05" /></div>
+      <div class="row"><label>Rotation snap</label><input id="rotationSnap" type="number" step="1" min="1" value="5" /></div>
+      <div class="toggle"><input id="showUnitToggle" type="checkbox" checked /><label for="showUnitToggle">Show unit scale reference</label></div>
+      <div class="toggle"><input id="showCollisionToggle" type="checkbox" checked /><label for="showCollisionToggle">Show collision envelope</label></div>
+      <div class="buttonRow" style="margin-top:8px"><button id="frontViewBtn">Front</button><button id="sideViewBtn">Side</button><button id="isoViewBtn">Iso</button><button id="topViewBtn">Top</button></div>
+    </div>
+  </aside>
+
+  <main class="viewer">
+    <div id="mount"></div>
+    <div class="viewerOverlay">Drag empty space to orbit, mouse wheel to zoom, click a component to select it. Keyboard: <span class="kbd">←↑→↓</span> moves selected component on X/Z; <span class="kbd">PgUp</span>/<span class="kbd">PgDn</span> moves Y; hold <span class="kbd">Shift</span> for 5× movement. The white mannequin marks the normal unit-standing area at the center of the owning hex.</div>
+    <div class="axisHint">X = red · Y = green · Z = blue</div>
+  </main>
+
+  <aside class="panel right">
+    <div class="card">
+      <h2>Components</h2>
+      <div id="componentList" class="list"></div>
+      <div class="buttonRow" style="margin-top:8px"><button id="addComponentBtn">Add</button><button id="duplicateComponentBtn">Duplicate</button><button class="danger" id="deleteComponentBtn">Delete</button></div>
+    </div>
+
+    <div class="card" id="componentEditorCard">
+      <h2>Selected Component</h2>
+      <div id="noSelection" class="muted">Select a component to edit it.</div>
+      <div id="componentEditor" hidden>
+        <div class="row compact"><label>Name</label><input id="componentName" /></div>
+        <div class="row compact"><label>Primitive</label><select id="primitiveType"><option value="box">Box</option><option value="cylinder">Cylinder</option><option value="sphere">Sphere</option><option value="cone">Cone</option><option value="torus">Torus</option></select></div>
+        <div id="geometryFields"></div>
+        <div class="sectionLabel">Position (meters)</div><div id="positionControls"></div>
+        <div class="sectionLabel">Rotation (degrees)</div><div id="rotationControls"></div>
+        <div class="sectionLabel">Scale</div><div id="scaleControls"></div>
+        <div class="separator"></div>
+        <div class="row compact"><label>Color</label><input class="colorInput" id="componentColor" type="color" /></div>
+        <div class="row compact"><label>Roughness</label><input id="roughness" type="number" min="0" max="1" step="0.05" /></div>
+        <div class="row compact"><label>Metalness</label><input id="metalness" type="number" min="0" max="1" step="0.05" /></div>
+        <div class="row compact"><label>Opacity</label><input id="opacity" type="number" min="0.05" max="1" step="0.05" /></div>
+        <div class="row compact"><label>Emissive</label><input class="colorInput" id="emissiveColor" type="color" /></div>
+        <div class="row compact"><label>Emissive strength</label><input id="emissiveStrength" type="number" min="0" max="3" step="0.05" /></div>
+        <div class="toggle"><input id="castShadow" type="checkbox" /><label for="castShadow">Cast shadow</label></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Collision Envelope</h2>
+      <div class="row compact"><label>Shape</label><select id="collisionShape"><option value="box">Box</option><option value="cylinder">Cylinder</option><option value="none">None</option></select></div>
+      <div id="collisionEditor"></div>
+      <div class="muted">Browser 1320 consumes this shared library for live Three.js prop models, navigation class, and hex-edge placement. Tactical cells remain authoritative for movement collision; this envelope remains authoring metadata for finer future presentation/occupancy checks.</div>
+    </div>
+
+    <div class="card">
+      <h2>Validation</h2><div id="validationList" class="validation"></div>
+    </div>
+
+    <div class="card">
+      <h2>Import / Export</h2>
+      <div class="buttonRow"><button class="primary" id="exportPropBtn">Download Prop JSON</button><button id="copyPropBtn">Copy JSON</button><button id="exportLibraryBtn">Download Library JSON</button><button class="primary" id="exportRuntimeLibraryBtn">Download Game Runtime Library JS</button></div>
+      <div class="buttonRow" style="margin-top:7px"><button id="loadTextBtn">Load JSON Text</button><button id="importFileBtn">Import JSON File</button><input type="file" id="fileInput" accept="application/json,.json" hidden /></div>
+      <textarea id="jsonOutput"></textarea>
+      <div class="muted">Schema: <code>aegis-prop-definition-v1</code>. The game loads <code>assets/data/aegis-prop-library.js</code>. After editing, use <b>Download Game Runtime Library JS</b> and replace that file in the project; the game and editor will then consume the same definitions.</div>
+    </div>
+  </aside>
+</div>
+<script src="assets/vendor/three.min.js"></script>
+<script src="assets/data/aegis-prop-library.js"></script>
+<script>
+'use strict';
+const PROP_EDITOR_BUILD='v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH';
+const PROP_SCHEMA='aegis-prop-definition-v1';
+const LIBRARY_SCHEMA='aegis-prop-library-v1';
+const DRAFT_KEY='aegis-prop-editor-draft-v1';
+const RUNTIME_INVENTORY_SNAPSHOT_COMMIT='7cb0cd15c1';
+const RUNTIME_INVENTORY_SNAPSHOT_BLOB='0b908738c25a1ef2dbcb1c479c9e8d52a320bfe3';
+const RUNTIME_INVENTORY_SNAPSHOT={"exact":[["aegis-alien-elevator-pad",2],["aegis-linked-insertion-beacon",2],["alien-beacon",1],["alien-dropship-hull",1],["alien-dropship-ramp",1],["alien-field-beacon",12],["alien-field-beacon-command-core",1],["alien-field-beacon-shield-impact",2],["alien-field-beacon-wreck",6],["breach-rubble",6],["building-partition-brick-ns",1],["building-wall-brick-ew",7],["building-wall-brick-ns",2],["building-wall-concrete",1],["building-wall-solid-ew",1],["building-wall-test",1],["building-window-brick-ew",3],["building-window-brick-ns",1],["bus-stop",1],["civic-statue",3],["concrete",2],["crash-broken-tree",2],["crash-building-debris",2],["crash-impact-scar",3],["crashed-ufo-core",4],["crashed-ufo-hull",2],["crates",1],["interior-power-panel",5],["lamp-post",3],["newspaper-machine",1],["playground",1],["skyranger-hull",4],["skyranger-ramp",5],["stop-sign",1],["street-bench",1],["tactical-fire",2],["tactical-flare",3],["tactical-smoke",3],["traffic-light",1],["tree",6],["vehicle-bus",2],["vehicle-sedan",1],["vending-machine",3],["water-fountain",2],["wreck",1]],"families":[["alien-dropship-",2],["alien-field-beacon",6],["breach-rubble",5],["brush",4],["building-door",6],["building-partition",1],["building-partition-timber",1],["building-wall",5],["building-wall-timber",1],["building-window",7],["building-window-shattered",1],["bush",4],["concrete",2],["crash-",2],["crashed-ufo-",4],["crate",4],["crop",4],["fence",2],["hay",3],["interior-",3],["rock",2],["skyranger",1],["tree",4],["ufo-",1],["vehicle-",7],["wreck",22]]};
+const RUNTIME_INVENTORY_IGNORE=new Set(['wall','building','building-','interior','brick','metal','timber','window','utility','van','command-core']);
+const deepClone=value=>JSON.parse(JSON.stringify(value));
+const clamp=(n,min,max)=>Math.max(min,Math.min(max,Number(n)||0));
+const colorHex=value=>/^#[0-9a-f]{6}$/i.test(String(value||''))?String(value):'#94a3b8';
+const degToRad=n=>(Number(n)||0)*Math.PI/180;
+const uid=prefix=>`${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,7)}`;
+function comp(name,primitive,size,position=[0,0,0],rotation=[0,0,0],scale=[1,1,1],color='#94a3b8',material={}){return{id:uid('cmp'),name,primitive,size,position,rotation,scale,material:{color,roughness:.75,metalness:.05,opacity:1,emissive:'#000000',emissiveStrength:0,castShadow:true,...material}};}
+function propDef(name,visualKey,meta,components,collision){return{schema:PROP_SCHEMA,id:uid('prop'),name,visualKey,metadata:{navigationClass:'solid',coverKind:'soft',coverBlock:0,maxHp:30,losClass:'existing-cover',edgePlacement:'hex-edge',edgeFraction:.33,curbLike:false,natural:false,notes:'',...meta},collision:collision||{shape:'box',size:[.7,1,.7],offset:[0,.5,0]},components};}
+const DEFAULT_PROPS=[
+  {
+    "schema": "aegis-prop-definition-v1",
+    "id": "prop-mu6cwa6g-qniq2",
+    "name": "Tree",
+    "visualKey": "tree",
+    "metadata": {
+      "navigationClass": "solid",
+      "coverKind": "soft",
+      "coverBlock": 0,
+      "maxHp": 30,
+      "losClass": "existing-cover",
+      "edgePlacement": "hex-edge",
+      "edgeFraction": 0.35,
+      "curbLike": false,
+      "natural": true,
+      "notes": "Migrated from the original generic AEGIS Three.js tree model. Regional tree color/scale variants remain a future shared-library extension."
+    },
+    "collision": {
+      "shape": "cylinder",
+      "radius": 0.22,
+      "height": 0.85,
+      "offset": [
+        0,
+        0.425,
+        0
+      ]
+    },
+    "components": [
+      {
+        "id": "cmp-tree-legacy-trunk",
+        "name": "Trunk",
+        "primitive": "cylinder",
+        "size": {
+          "radiusTop": 0.08,
+          "radiusBottom": 0.12,
+          "height": 0.58,
+          "segments": 7
+        },
+        "position": [
+          0,
+          0.35,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": {
+          "color": "#6b4423",
+          "roughness": 0.9,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      },
+      {
+        "id": "cmp-tree-legacy-canopy",
+        "name": "Canopy",
+        "primitive": "cone",
+        "size": {
+          "radius": 0.42,
+          "height": 0.92,
+          "segments": 8
+        },
+        "position": [
+          0,
+          0.98,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": {
+          "color": "#1f7a45",
+          "roughness": 0.98,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      }
+    ],
+    "migration": {
+      "status": "game-derived",
+      "source": "legacy-three-renderer",
+      "sourcePath": "src/browser-runtime.html",
+      "runtimeCommit": "7cb0cd15c1",
+      "runtimeBlob": "0b908738c2",
+      "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+      "fidelity": "baseline-regional",
+      "limitations": "Generic legacy geometry is exact; biome-specific tree scale/color variation is not yet data-driven in the shared schema."
+    }
+  },
+  {
+    "schema": "aegis-prop-definition-v1",
+    "id": "prop-mu6cwa6g-fn4f7",
+    "name": "Lamp Post",
+    "visualKey": "lamp-post",
+    "metadata": {
+      "navigationClass": "solid",
+      "coverKind": "soft",
+      "coverBlock": 0,
+      "maxHp": 24,
+      "losClass": "existing-cover",
+      "edgePlacement": "hex-edge",
+      "edgeFraction": 0.42,
+      "curbLike": true,
+      "natural": false,
+      "notes": "Migrated directly from the legacy AEGIS lamp-post renderer geometry/material values."
+    },
+    "collision": {
+      "shape": "cylinder",
+      "radius": 0.11,
+      "height": 2.28,
+      "offset": [
+        0,
+        1.14,
+        0
+      ]
+    },
+    "components": [
+      {
+        "id": "cmp-lamp-post-legacy-pole",
+        "name": "Pole",
+        "primitive": "cylinder",
+        "size": {
+          "radiusTop": 0.05,
+          "radiusBottom": 0.07,
+          "height": 2.1,
+          "segments": 8
+        },
+        "position": [
+          0,
+          1.1,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": {
+          "color": "#334155",
+          "roughness": 0.66,
+          "metalness": 0.55,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      },
+      {
+        "id": "cmp-lamp-post-legacy-bulb",
+        "name": "Bulb",
+        "primitive": "sphere",
+        "size": {
+          "radius": 0.14,
+          "widthSegments": 10,
+          "heightSegments": 8
+        },
+        "position": [
+          0,
+          2.15,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": {
+          "color": "#ffdc8a",
+          "roughness": 0.75,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#ffc85c",
+          "emissiveStrength": 1,
+          "castShadow": false
+        }
+      }
+    ],
+    "migration": {
+      "status": "game-derived",
+      "source": "legacy-three-renderer",
+      "sourcePath": "src/browser-runtime.html",
+      "runtimeCommit": "7cb0cd15c1",
+      "runtimeBlob": "0b908738c2",
+      "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+      "fidelity": "exact-static",
+      "limitations": ""
+    }
+  },
+  {
+    "schema": "aegis-prop-definition-v1",
+    "id": "prop-traffic-light",
+    "name": "Traffic Light",
+    "visualKey": "traffic-light",
+    "metadata": {
+      "navigationClass": "solid",
+      "coverKind": "hard",
+      "coverBlock": 0.5,
+      "maxHp": 48,
+      "losClass": "existing-cover",
+      "edgePlacement": "hex-edge",
+      "edgeFraction": 0.42,
+      "curbLike": true,
+      "natural": false,
+      "notes": "Migrated directly from the legacy AEGIS traffic-light renderer and intersection-control placement behavior."
+    },
+    "collision": {
+      "shape": "cylinder",
+      "radius": 0.18,
+      "height": 2.25,
+      "offset": [
+        0,
+        1.125,
+        0
+      ]
+    },
+    "components": [
+      {
+        "id": "cmp-traffic-light-pole",
+        "name": "Pole",
+        "primitive": "cylinder",
+        "size": {
+          "radiusTop": 0.045,
+          "radiusBottom": 0.055,
+          "height": 2.05,
+          "segments": 8
+        },
+        "position": [
+          0,
+          1.03,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": {
+          "color": "#334155",
+          "roughness": 0.6,
+          "metalness": 0.45,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      },
+      {
+        "id": "cmp-traffic-light-head",
+        "name": "Signal head",
+        "primitive": "box",
+        "size": {
+          "width": 0.64,
+          "height": 0.45,
+          "depth": 0.64
+        },
+        "position": [
+          0,
+          1.9,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.34,
+          0.78,
+          0.3
+        ],
+        "material": {
+          "color": "#111827",
+          "roughness": 0.7,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      },
+      {
+        "id": "cmp-traffic-light-red",
+        "name": "Red lamp",
+        "primitive": "sphere",
+        "size": {
+          "radius": 0.08,
+          "widthSegments": 8,
+          "heightSegments": 6
+        },
+        "position": [
+          0,
+          2.1,
+          0.17
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": {
+          "color": "#ef4444",
+          "roughness": 0.75,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#ef4444",
+          "emissiveStrength": 0.55,
+          "castShadow": false
+        }
+      },
+      {
+        "id": "cmp-traffic-light-yellow",
+        "name": "Yellow lamp",
+        "primitive": "sphere",
+        "size": {
+          "radius": 0.08,
+          "widthSegments": 8,
+          "heightSegments": 6
+        },
+        "position": [
+          0,
+          1.9,
+          0.17
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": {
+          "color": "#facc15",
+          "roughness": 0.75,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#facc15",
+          "emissiveStrength": 0.55,
+          "castShadow": false
+        }
+      },
+      {
+        "id": "cmp-traffic-light-green",
+        "name": "Green lamp",
+        "primitive": "sphere",
+        "size": {
+          "radius": 0.08,
+          "widthSegments": 8,
+          "heightSegments": 6
+        },
+        "position": [
+          0,
+          1.7,
+          0.17
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": {
+          "color": "#22c55e",
+          "roughness": 0.75,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#22c55e",
+          "emissiveStrength": 0.55,
+          "castShadow": false
+        }
+      }
+    ],
+    "migration": {
+      "status": "game-derived",
+      "source": "legacy-three-renderer",
+      "sourcePath": "src/browser-runtime.html",
+      "runtimeCommit": "7cb0cd15c1",
+      "runtimeBlob": "0b908738c2",
+      "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+      "fidelity": "exact-static",
+      "limitations": ""
+    }
+  },
+  {
+    "schema": "aegis-prop-definition-v1",
+    "id": "prop-mu6cwa6g-101kw",
+    "name": "Stop Sign",
+    "visualKey": "stop-sign",
+    "metadata": {
+      "navigationClass": "solid",
+      "coverKind": "soft",
+      "coverBlock": 0,
+      "maxHp": 20,
+      "losClass": "existing-cover",
+      "edgePlacement": "hex-edge",
+      "edgeFraction": 0.42,
+      "curbLike": true,
+      "natural": false,
+      "notes": "Migrated directly from the legacy AEGIS stop-sign renderer."
+    },
+    "collision": {
+      "shape": "cylinder",
+      "radius": 0.08,
+      "height": 1.85,
+      "offset": [
+        0,
+        0.925,
+        0
+      ]
+    },
+    "components": [
+      {
+        "id": "cmp-stop-sign-legacy-pole",
+        "name": "Pole",
+        "primitive": "cylinder",
+        "size": {
+          "radiusTop": 0.035,
+          "radiusBottom": 0.045,
+          "height": 1.35,
+          "segments": 8
+        },
+        "position": [
+          0,
+          0.68,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": {
+          "color": "#64748b",
+          "roughness": 0.75,
+          "metalness": 0.45,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      },
+      {
+        "id": "cmp-stop-sign-legacy-sign",
+        "name": "Octagonal sign",
+        "primitive": "cylinder",
+        "size": {
+          "radiusTop": 0.31,
+          "radiusBottom": 0.31,
+          "height": 0.055,
+          "segments": 8
+        },
+        "position": [
+          0,
+          1.38,
+          0
+        ],
+        "rotation": [
+          90,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": {
+          "color": "#b91c1c",
+          "roughness": 0.7,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      }
+    ],
+    "migration": {
+      "status": "game-derived",
+      "source": "legacy-three-renderer",
+      "sourcePath": "src/browser-runtime.html",
+      "runtimeCommit": "7cb0cd15c1",
+      "runtimeBlob": "0b908738c2",
+      "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+      "fidelity": "exact-static",
+      "limitations": ""
+    }
+  },
+  {
+    "schema": "aegis-prop-definition-v1",
+    "id": "prop-mu6cwa6g-ml3fk",
+    "name": "Vending Machine",
+    "visualKey": "vending-machine",
+    "metadata": {
+      "navigationClass": "solid",
+      "coverKind": "hard",
+      "coverBlock": 0.5,
+      "maxHp": 48,
+      "losClass": "existing-cover",
+      "edgePlacement": "hex-edge",
+      "edgeFraction": 0.33,
+      "curbLike": false,
+      "natural": false,
+      "notes": "Migrated directly from the legacy AEGIS vending-machine renderer (crate + wall primitives and original scales)."
+    },
+    "collision": {
+      "shape": "box",
+      "size": [
+        0.78,
+        1.48,
+        0.54
+      ],
+      "offset": [
+        0,
+        0.74,
+        0
+      ]
+    },
+    "components": [
+      {
+        "id": "cmp-vending-legacy-body",
+        "name": "Machine body",
+        "primitive": "box",
+        "size": {
+          "width": 0.64,
+          "height": 0.45,
+          "depth": 0.64
+        },
+        "position": [
+          0,
+          0.56,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.82,
+          1.65,
+          0.64
+        ],
+        "material": {
+          "color": "#0f766e",
+          "roughness": 0.66,
+          "metalness": 0.15,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      },
+      {
+        "id": "cmp-vending-legacy-panel",
+        "name": "Front panel",
+        "primitive": "box",
+        "size": {
+          "width": 0.92,
+          "height": 0.62,
+          "depth": 0.54
+        },
+        "position": [
+          0,
+          0.65,
+          0.34
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.55,
+          0.72,
+          0.08
+        ],
+        "material": {
+          "color": "#99f6e4",
+          "roughness": 0.78,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#67e8f9",
+          "emissiveStrength": 0.12,
+          "castShadow": true
+        }
+      }
+    ],
+    "migration": {
+      "status": "game-derived",
+      "source": "legacy-three-renderer",
+      "sourcePath": "src/browser-runtime.html",
+      "runtimeCommit": "7cb0cd15c1",
+      "runtimeBlob": "0b908738c2",
+      "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+      "fidelity": "exact-static",
+      "limitations": ""
+    }
+  },
+  {
+    "schema": "aegis-prop-definition-v1",
+    "id": "prop-mu6cwa6g-bm196",
+    "name": "Newspaper Machine",
+    "visualKey": "newspaper-machine",
+    "metadata": {
+      "navigationClass": "solid",
+      "coverKind": "soft",
+      "coverBlock": 0.25,
+      "maxHp": 28,
+      "losClass": "existing-cover",
+      "edgePlacement": "hex-edge",
+      "edgeFraction": 0.33,
+      "curbLike": false,
+      "natural": false,
+      "notes": "Migrated directly from the legacy AEGIS newspaper-machine renderer."
+    },
+    "collision": {
+      "shape": "box",
+      "size": [
+        0.65,
+        1.04,
+        0.5
+      ],
+      "offset": [
+        0,
+        0.52,
+        0
+      ]
+    },
+    "components": [
+      {
+        "id": "cmp-news-legacy-body",
+        "name": "Machine body",
+        "primitive": "box",
+        "size": {
+          "width": 0.64,
+          "height": 0.45,
+          "depth": 0.64
+        },
+        "position": [
+          0,
+          0.38,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.64,
+          1.1,
+          0.54
+        ],
+        "material": {
+          "color": "#1d4ed8",
+          "roughness": 0.66,
+          "metalness": 0.15,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      },
+      {
+        "id": "cmp-news-legacy-panel",
+        "name": "Front panel",
+        "primitive": "box",
+        "size": {
+          "width": 0.92,
+          "height": 0.62,
+          "depth": 0.54
+        },
+        "position": [
+          0,
+          0.42,
+          0.34
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.55,
+          0.72,
+          0.08
+        ],
+        "material": {
+          "color": "#e2e8f0",
+          "roughness": 0.75,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      }
+    ],
+    "migration": {
+      "status": "game-derived",
+      "source": "legacy-three-renderer",
+      "sourcePath": "src/browser-runtime.html",
+      "runtimeCommit": "7cb0cd15c1",
+      "runtimeBlob": "0b908738c2",
+      "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+      "fidelity": "exact-static",
+      "limitations": ""
+    }
+  },
+  {
+    "schema": "aegis-prop-definition-v1",
+    "id": "prop-mu6cwa6g-wlsyq",
+    "name": "Bus Stop",
+    "visualKey": "bus-stop",
+    "metadata": {
+      "navigationClass": "solid",
+      "coverKind": "hard",
+      "coverBlock": 0.5,
+      "maxHp": 42,
+      "losClass": "existing-cover",
+      "edgePlacement": "hex-edge",
+      "edgeFraction": 0.33,
+      "curbLike": true,
+      "natural": false,
+      "notes": "Migrated directly from the legacy AEGIS bus-stop renderer. The old renderer also set depthWrite=false on shelter glass; shared material schema does not expose that flag yet."
+    },
+    "collision": {
+      "shape": "box",
+      "size": [
+        1.22,
+        1.78,
+        0.65
+      ],
+      "offset": [
+        0,
+        0.89,
+        0
+      ]
+    },
+    "components": [
+      {
+        "id": "cmp-bus-stop-legacy-post",
+        "name": "Post",
+        "primitive": "cylinder",
+        "size": {
+          "radiusTop": 0.04,
+          "radiusBottom": 0.05,
+          "height": 1.65,
+          "segments": 8
+        },
+        "position": [
+          -0.45,
+          0.83,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": {
+          "color": "#475569",
+          "roughness": 0.6,
+          "metalness": 0.4,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      },
+      {
+        "id": "cmp-bus-stop-legacy-sign",
+        "name": "Sign",
+        "primitive": "box",
+        "size": {
+          "width": 0.64,
+          "height": 0.45,
+          "depth": 0.64
+        },
+        "position": [
+          -0.45,
+          1.55,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.28,
+          0.38,
+          0.12
+        ],
+        "material": {
+          "color": "#2563eb",
+          "roughness": 0.78,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#60a5fa",
+          "emissiveStrength": 0.1,
+          "castShadow": true
+        }
+      },
+      {
+        "id": "cmp-bus-stop-legacy-shelter",
+        "name": "Glass shelter",
+        "primitive": "box",
+        "size": {
+          "width": 0.92,
+          "height": 0.62,
+          "depth": 0.54
+        },
+        "position": [
+          0.2,
+          0.8,
+          0.35
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1.05,
+          1.55,
+          0.12
+        ],
+        "material": {
+          "color": "#7dd3fc",
+          "roughness": 0.1,
+          "metalness": 0.05,
+          "opacity": 0.18,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      },
+      {
+        "id": "cmp-bus-stop-legacy-seat",
+        "name": "Seat",
+        "primitive": "box",
+        "size": {
+          "width": 0.08,
+          "height": 0.08,
+          "depth": 1
+        },
+        "position": [
+          0.1,
+          0.35,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          90
+        ],
+        "scale": [
+          4.6,
+          0.9,
+          1.2
+        ],
+        "material": {
+          "color": "#64748b",
+          "roughness": 0.8,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      }
+    ],
+    "migration": {
+      "status": "game-derived",
+      "source": "legacy-three-renderer",
+      "sourcePath": "src/browser-runtime.html",
+      "runtimeCommit": "7cb0cd15c1",
+      "runtimeBlob": "0b908738c2",
+      "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+      "fidelity": "exact-static",
+      "limitations": "Shelter geometry/material values are migrated; legacy depthWrite=false is not represented by the current shared material schema."
+    }
+  },
+  {
+    "schema": "aegis-prop-definition-v1",
+    "id": "prop-playground",
+    "name": "Playground",
+    "visualKey": "playground",
+    "metadata": {
+      "navigationClass": "solid",
+      "coverKind": "hard",
+      "coverBlock": 0.5,
+      "maxHp": 48,
+      "losClass": "existing-cover",
+      "edgePlacement": "center",
+      "edgeFraction": 0,
+      "curbLike": false,
+      "natural": false,
+      "notes": "Migrated directly from the legacy AEGIS playground renderer. Keeps center placement used by residence-adjacent scene generation."
+    },
+    "collision": {
+      "shape": "box",
+      "size": [
+        1.35,
+        1.4,
+        1.4
+      ],
+      "offset": [
+        0,
+        0.7,
+        0
+      ]
+    },
+    "components": [
+      {
+        "id": "cmp-playground-left-post",
+        "name": "Left post",
+        "primitive": "cylinder",
+        "size": {
+          "radiusTop": 0.035,
+          "radiusBottom": 0.045,
+          "height": 1.35,
+          "segments": 8
+        },
+        "position": [
+          -0.45,
+          0.68,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": {
+          "color": "#f59e0b",
+          "roughness": 0.68,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      },
+      {
+        "id": "cmp-playground-right-post",
+        "name": "Right post",
+        "primitive": "cylinder",
+        "size": {
+          "radiusTop": 0.035,
+          "radiusBottom": 0.045,
+          "height": 1.35,
+          "segments": 8
+        },
+        "position": [
+          0.45,
+          0.68,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": {
+          "color": "#f59e0b",
+          "roughness": 0.68,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      },
+      {
+        "id": "cmp-playground-bar",
+        "name": "Top bar",
+        "primitive": "box",
+        "size": {
+          "width": 0.08,
+          "height": 0.08,
+          "depth": 1
+        },
+        "position": [
+          0,
+          1.32,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          90
+        ],
+        "scale": [
+          5.6,
+          0.8,
+          0.9
+        ],
+        "material": {
+          "color": "#f59e0b",
+          "roughness": 0.68,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      },
+      {
+        "id": "cmp-playground-slide",
+        "name": "Slide",
+        "primitive": "box",
+        "size": {
+          "width": 0.92,
+          "height": 0.62,
+          "depth": 0.54
+        },
+        "position": [
+          0.55,
+          0.55,
+          0.2
+        ],
+        "rotation": [
+          -27.501974,
+          0,
+          0
+        ],
+        "scale": [
+          0.55,
+          0.12,
+          1.5
+        ],
+        "material": {
+          "color": "#2563eb",
+          "roughness": 0.55,
+          "metalness": 0.12,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      }
+    ],
+    "migration": {
+      "status": "game-derived",
+      "source": "legacy-three-renderer",
+      "sourcePath": "src/browser-runtime.html",
+      "runtimeCommit": "7cb0cd15c1",
+      "runtimeBlob": "0b908738c2",
+      "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+      "fidelity": "exact-static",
+      "limitations": ""
+    }
+  },
+  {
+    "schema": "aegis-prop-definition-v1",
+    "id": "prop-mu6cwa6g-ounkz",
+    "name": "Street Bench",
+    "visualKey": "street-bench",
+    "metadata": {
+      "navigationClass": "solid",
+      "coverKind": "soft",
+      "coverBlock": 0.25,
+      "maxHp": 32,
+      "losClass": "existing-cover",
+      "edgePlacement": "hex-edge",
+      "edgeFraction": 0.33,
+      "curbLike": true,
+      "natural": false,
+      "notes": "Migrated directly from the legacy AEGIS street-bench renderer."
+    },
+    "collision": {
+      "shape": "box",
+      "size": [
+        1.12,
+        0.92,
+        0.48
+      ],
+      "offset": [
+        0,
+        0.46,
+        0
+      ]
+    },
+    "components": [
+      {
+        "id": "cmp-bench-legacy-seat",
+        "name": "Seat",
+        "primitive": "box",
+        "size": {
+          "width": 0.08,
+          "height": 0.08,
+          "depth": 1
+        },
+        "position": [
+          0,
+          0.34,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          90
+        ],
+        "scale": [
+          5.8,
+          0.95,
+          1.5
+        ],
+        "material": {
+          "color": "#8b5a2b",
+          "roughness": 0.9,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      },
+      {
+        "id": "cmp-bench-legacy-back",
+        "name": "Back",
+        "primitive": "box",
+        "size": {
+          "width": 0.08,
+          "height": 0.08,
+          "depth": 1
+        },
+        "position": [
+          0,
+          0.62,
+          0.24
+        ],
+        "rotation": [
+          0,
+          0,
+          90
+        ],
+        "scale": [
+          5.8,
+          0.9,
+          1.1
+        ],
+        "material": {
+          "color": "#8b5a2b",
+          "roughness": 0.9,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      }
+    ],
+    "migration": {
+      "status": "game-derived",
+      "source": "legacy-three-renderer",
+      "sourcePath": "src/browser-runtime.html",
+      "runtimeCommit": "7cb0cd15c1",
+      "runtimeBlob": "0b908738c2",
+      "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+      "fidelity": "exact-static",
+      "limitations": ""
+    }
+  },
+  {
+    "schema": "aegis-prop-definition-v1",
+    "id": "prop-mu6cwa6g-ghune",
+    "name": "Crates",
+    "visualKey": "crates",
+    "metadata": {
+      "navigationClass": "solid",
+      "coverKind": "hard",
+      "coverBlock": 0.5,
+      "maxHp": 44,
+      "losClass": "existing-cover",
+      "edgePlacement": "hex-edge",
+      "edgeFraction": 0.3,
+      "curbLike": false,
+      "natural": false,
+      "notes": "Migrated directly from the legacy AEGIS crate renderer."
+    },
+    "collision": {
+      "shape": "box",
+      "size": [
+        0.64,
+        0.45,
+        0.64
+      ],
+      "offset": [
+        0,
+        0.34,
+        0
+      ]
+    },
+    "components": [
+      {
+        "id": "cmp-crates-legacy-body",
+        "name": "Crate",
+        "primitive": "box",
+        "size": {
+          "width": 0.64,
+          "height": 0.45,
+          "depth": 0.64
+        },
+        "position": [
+          0,
+          0.34,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": {
+          "color": "#8b5a2b",
+          "roughness": 0.82,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      }
+    ],
+    "migration": {
+      "status": "game-derived",
+      "source": "legacy-three-renderer",
+      "sourcePath": "src/browser-runtime.html",
+      "runtimeCommit": "7cb0cd15c1",
+      "runtimeBlob": "0b908738c2",
+      "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+      "fidelity": "exact-static",
+      "limitations": ""
+    }
+  },
+  {
+    "schema": "aegis-prop-definition-v1",
+    "id": "prop-mu6cwa6g-qclz7",
+    "name": "Concrete Barrier",
+    "visualKey": "concrete",
+    "metadata": {
+      "navigationClass": "solid",
+      "coverKind": "hard",
+      "coverBlock": 0.75,
+      "maxHp": 70,
+      "losClass": "existing-cover",
+      "edgePlacement": "hex-edge",
+      "edgeFraction": 0.3,
+      "curbLike": false,
+      "natural": false,
+      "notes": "Migrated directly from the legacy AEGIS concrete cover renderer."
+    },
+    "collision": {
+      "shape": "box",
+      "size": [
+        0.92,
+        0.62,
+        0.54
+      ],
+      "offset": [
+        0,
+        0.38,
+        0
+      ]
+    },
+    "components": [
+      {
+        "id": "cmp-concrete-legacy-body",
+        "name": "Concrete block",
+        "primitive": "box",
+        "size": {
+          "width": 0.92,
+          "height": 0.62,
+          "depth": 0.54
+        },
+        "position": [
+          0,
+          0.38,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": {
+          "color": "#94a3b8",
+          "roughness": 0.94,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      }
+    ],
+    "migration": {
+      "status": "game-derived",
+      "source": "legacy-three-renderer",
+      "sourcePath": "src/browser-runtime.html",
+      "runtimeCommit": "7cb0cd15c1",
+      "runtimeBlob": "0b908738c2",
+      "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+      "fidelity": "exact-static",
+      "limitations": ""
+    }
+  },
+  {
+    "schema": "aegis-prop-definition-v1",
+    "id": "prop-mu6cwa6g-oob0z",
+    "name": "Fence Segment",
+    "visualKey": "fence",
+    "metadata": {
+      "navigationClass": "solid",
+      "coverKind": "hard",
+      "coverBlock": 0.5,
+      "maxHp": 34,
+      "losClass": "existing-cover",
+      "edgePlacement": "hex-edge",
+      "edgeFraction": 0.3,
+      "curbLike": false,
+      "natural": false,
+      "notes": "Migrated directly from the legacy AEGIS fence renderer."
+    },
+    "collision": {
+      "shape": "box",
+      "size": [
+        0.92,
+        0.279,
+        0.1512
+      ],
+      "offset": [
+        0,
+        0.25,
+        0
+      ]
+    },
+    "components": [
+      {
+        "id": "cmp-fence-legacy-body",
+        "name": "Fence body",
+        "primitive": "box",
+        "size": {
+          "width": 0.92,
+          "height": 0.62,
+          "depth": 0.54
+        },
+        "position": [
+          0,
+          0.25,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          0.45,
+          0.28
+        ],
+        "material": {
+          "color": "#76512e",
+          "roughness": 0.92,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      }
+    ],
+    "migration": {
+      "status": "game-derived",
+      "source": "legacy-three-renderer",
+      "sourcePath": "src/browser-runtime.html",
+      "runtimeCommit": "7cb0cd15c1",
+      "runtimeBlob": "0b908738c2",
+      "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+      "fidelity": "exact-static",
+      "limitations": ""
+    }
+  },
+  {
+    "schema": "aegis-prop-definition-v1",
+    "id": "prop-hay",
+    "name": "Hay Bale",
+    "visualKey": "hay",
+    "metadata": {
+      "navigationClass": "solid",
+      "coverKind": "hard",
+      "coverBlock": 0.5,
+      "maxHp": 48,
+      "losClass": "existing-cover",
+      "edgePlacement": "hex-edge",
+      "edgeFraction": 0.3,
+      "curbLike": false,
+      "natural": true,
+      "notes": "Migrated directly from the legacy AEGIS farm hay renderer. Mission generation may still assign stronger cover blocks/HP to individual hay cells; tactical cell data remains authoritative."
+    },
+    "collision": {
+      "shape": "box",
+      "size": [
+        0.672,
+        0.351,
+        0.5888
+      ],
+      "offset": [
+        0,
+        0.3,
+        0
+      ]
+    },
+    "components": [
+      {
+        "id": "cmp-hay-legacy-body",
+        "name": "Hay bale",
+        "primitive": "box",
+        "size": {
+          "width": 0.64,
+          "height": 0.45,
+          "depth": 0.64
+        },
+        "position": [
+          0,
+          0.3,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1.05,
+          0.78,
+          0.92
+        ],
+        "material": {
+          "color": "#b88935",
+          "roughness": 1,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      }
+    ],
+    "migration": {
+      "status": "game-derived",
+      "source": "legacy-three-renderer",
+      "sourcePath": "src/browser-runtime.html",
+      "runtimeCommit": "7cb0cd15c1",
+      "runtimeBlob": "0b908738c2",
+      "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+      "fidelity": "exact-static",
+      "limitations": ""
+    }
+  },
+  {
+    "schema": "aegis-prop-definition-v1",
+    "id": "prop-mu6cwa6g-ydvah",
+    "name": "Rock",
+    "visualKey": "rock",
+    "metadata": {
+      "navigationClass": "solid",
+      "coverKind": "hard",
+      "coverBlock": 0.5,
+      "maxHp": 55,
+      "losClass": "existing-cover",
+      "edgePlacement": "hex-edge",
+      "edgeFraction": 0.3,
+      "curbLike": false,
+      "natural": true,
+      "notes": "Editable shared approximation. Exact legacy rock migration is pending DodecahedronGeometry support in both editor and runtime shared renderer."
+    },
+    "collision": {
+      "shape": "box",
+      "size": [
+        0.95,
+        0.76,
+        0.82
+      ],
+      "offset": [
+        0,
+        0.38,
+        0
+      ]
+    },
+    "components": [
+      {
+        "id": "cmp-mu6cwa6g-0ay58",
+        "name": "Rock mass",
+        "primitive": "sphere",
+        "size": {
+          "radius": 0.52,
+          "widthSegments": 7,
+          "heightSegments": 5
+        },
+        "position": [
+          0,
+          0.38,
+          0
+        ],
+        "rotation": [
+          0,
+          16,
+          5
+        ],
+        "scale": [
+          1.1,
+          0.72,
+          0.92
+        ],
+        "material": {
+          "color": "#64748b",
+          "roughness": 0.99,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      }
+    ],
+    "migration": {
+      "status": "pending-primitive",
+      "source": "legacy-three-renderer",
+      "sourcePath": "src/browser-runtime.html",
+      "runtimeCommit": "7cb0cd15c1",
+      "runtimeBlob": "0b908738c2",
+      "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+      "fidelity": "approximation",
+      "limitations": "Legacy rock uses THREE.DodecahedronGeometry; current shared prop primitive schema supports box/cylinder/sphere/cone/torus only."
+    }
+  },
+  {
+    "schema": "aegis-prop-definition-v1",
+    "id": "prop-mu6cwa6g-ckyw7",
+    "name": "Bush",
+    "visualKey": "bush",
+    "metadata": {
+      "navigationClass": "passable",
+      "coverKind": "soft",
+      "coverBlock": 0,
+      "maxHp": 20,
+      "losClass": "existing-cover",
+      "edgePlacement": "center",
+      "edgeFraction": 0,
+      "curbLike": false,
+      "natural": true,
+      "notes": "Migrated from the generic legacy AEGIS bush renderer. Regional bush scale/color variation remains a future shared-library extension."
+    },
+    "collision": {
+      "shape": "none",
+      "size": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        0,
+        0,
+        0
+      ]
+    },
+    "components": [
+      {
+        "id": "cmp-bush-legacy-body",
+        "name": "Foliage",
+        "primitive": "sphere",
+        "size": {
+          "radius": 0.36,
+          "widthSegments": 8,
+          "heightSegments": 6
+        },
+        "position": [
+          0,
+          0.32,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1.18,
+          0.58,
+          0.92
+        ],
+        "material": {
+          "color": "#2f8f4e",
+          "roughness": 0.95,
+          "metalness": 0.05,
+          "opacity": 1,
+          "emissive": "#000000",
+          "emissiveStrength": 0,
+          "castShadow": true
+        }
+      }
+    ],
+    "migration": {
+      "status": "game-derived",
+      "source": "legacy-three-renderer",
+      "sourcePath": "src/browser-runtime.html",
+      "runtimeCommit": "7cb0cd15c1",
+      "runtimeBlob": "0b908738c2",
+      "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+      "fidelity": "baseline-regional",
+      "limitations": "Generic legacy geometry is exact; biome/id-based bush variation is not yet data-driven in the shared schema."
+    }
+  }
+];
+
+const GAME_LIBRARY_PAYLOAD=(window.AEGIS_PROP_LIBRARY?.schema===LIBRARY_SCHEMA&&Array.isArray(window.AEGIS_PROP_LIBRARY.props))?window.AEGIS_PROP_LIBRARY:null;
+const GAME_LIBRARY=GAME_LIBRARY_PAYLOAD?.props||null;
+const state={library:(GAME_LIBRARY||DEFAULT_PROPS).map(deepClone),librarySource:GAME_LIBRARY?'canonical':'fallback',activePropId:null,selectedComponentId:null,history:[],future:[],dirty:false,runtimeInventory:deepClone(RUNTIME_INVENTORY_SNAPSHOT),runtimeInventorySource:'snapshot'};
+state.activePropId=state.library[0]?.id||null;state.selectedComponentId=state.library[0]?.components?.[0]?.id||null;
+let suppressHistory=false;
+function activeProp(){return state.library.find(p=>p.id===state.activePropId)||state.library[0]||null;}
+function selectedComponent(){const p=activeProp();return p?.components.find(c=>c.id===state.selectedComponentId)||null;}
+function snapshot(){return JSON.stringify({library:state.library,librarySource:state.librarySource,activePropId:state.activePropId,selectedComponentId:state.selectedComponentId});}
+function pushHistory(){if(suppressHistory)return;state.history.push(snapshot());if(state.history.length>80)state.history.shift();state.future.length=0;state.dirty=true;updateUndoRedo();}
+function restoreSnapshot(text){const data=JSON.parse(text);suppressHistory=true;state.library=data.library||[];state.librarySource=data.librarySource||state.librarySource;state.activePropId=data.activePropId;state.selectedComponentId=data.selectedComponentId;suppressHistory=false;refreshAll();}
+function undo(){if(!state.history.length)return;state.future.push(snapshot());restoreSnapshot(state.history.pop());updateUndoRedo();setStatus('Undo');}
+function redo(){if(!state.future.length)return;state.history.push(snapshot());restoreSnapshot(state.future.pop());updateUndoRedo();setStatus('Redo');}
+function updateUndoRedo(){document.getElementById('undoBtn').disabled=!state.history.length;document.getElementById('redoBtn').disabled=!state.future.length;}
+function setStatus(text){document.getElementById('statusText').textContent=text;}
+function normalizeProp(p){p.schema=PROP_SCHEMA;p.id=p.id||uid('prop');p.name=p.name||p.visualKey||'Unnamed Prop';p.visualKey=String(p.visualKey||'custom-prop').trim().toLowerCase().replace(/\s+/g,'-');p.metadata={navigationClass:'decorative',coverKind:'soft',coverBlock:0,maxHp:30,losClass:'existing-cover',edgePlacement:'center',edgeFraction:0,curbLike:false,natural:false,notes:'',...(p.metadata||{})};if(p.migration&&typeof p.migration==='object')p.migration={status:'game-derived',source:'legacy-three-renderer',fidelity:'exact-static',limitations:'',...p.migration};p.collision=p.collision||{shape:'none',size:[0,0,0],offset:[0,0,0]};p.components=Array.isArray(p.components)?p.components:[];p.components.forEach(c=>{c.id=c.id||uid('cmp');c.name=c.name||c.primitive||'Component';c.primitive=['box','cylinder','sphere','cone','torus'].includes(c.primitive)?c.primitive:'box';c.position=Array.isArray(c.position)?c.position.map(Number):[0,0,0];c.rotation=Array.isArray(c.rotation)?c.rotation.map(Number):[0,0,0];c.scale=Array.isArray(c.scale)?c.scale.map(Number):[1,1,1];c.size=c.size||{width:.5,height:.5,depth:.5};c.material={color:'#94a3b8',roughness:.75,metalness:.05,opacity:1,emissive:'#000000',emissiveStrength:0,castShadow:true,...(c.material||{})};});return p;}
+
+const mount=document.getElementById('mount');
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x07111f);scene.fog=new THREE.Fog(0x07111f,8,18);
+const camera=new THREE.PerspectiveCamera(45,1,.02,80);const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;mount.appendChild(renderer.domElement);
+const hemi=new THREE.HemisphereLight(0xbfe8ff,0x19202e,1.55);scene.add(hemi);const keyLight=new THREE.DirectionalLight(0xffffff,1.55);keyLight.position.set(4,7,5);keyLight.castShadow=true;scene.add(keyLight);const fill=new THREE.DirectionalLight(0x8ec5ff,.55);fill.position.set(-4,3,-3);scene.add(fill);
+const worldRoot=new THREE.Group();scene.add(worldRoot);const propRoot=new THREE.Group();worldRoot.add(propRoot);let collisionHelper=null,unitRef=null;
+const floor=new THREE.Mesh(new THREE.CircleGeometry(2.4,6),new THREE.MeshStandardMaterial({color:0x172033,roughness:.96,metalness:0}));floor.rotation.x=-Math.PI/2;floor.position.y=-.012;floor.receiveShadow=true;worldRoot.add(floor);
+const hexEdge=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(Array.from({length:6},(_,i)=>{const a=Math.PI/3*i+Math.PI/6;return new THREE.Vector3(Math.cos(a)*2.4,.005,Math.sin(a)*2.4);})),new THREE.LineBasicMaterial({color:0x22d3ee,transparent:true,opacity:.5}));worldRoot.add(hexEdge);
+const grid=new THREE.GridHelper(6,12,0x334155,0x1e293b);grid.position.y=-.006;worldRoot.add(grid);
+const axes=new THREE.AxesHelper(1.2);axes.position.set(-2.15,.02,-2.15);worldRoot.add(axes);
+function buildUnitReference(){if(unitRef)worldRoot.remove(unitRef);unitRef=new THREE.Group();const mat=new THREE.MeshStandardMaterial({color:0xf8fafc,roughness:.8,transparent:true,opacity:.45});const torso=new THREE.Mesh(new THREE.CylinderGeometry(.15,.18,.62,10),mat);torso.position.y=.96;unitRef.add(torso);const shoulder=new THREE.Mesh(new THREE.SphereGeometry(.16,10,8),mat);shoulder.scale.set(1,1.15,1);shoulder.position.y=1.23;unitRef.add(shoulder);const head=new THREE.Mesh(new THREE.SphereGeometry(.16,10,8),mat);head.position.y=1.47;unitRef.add(head);[-.1,.1].forEach(x=>{const leg=new THREE.Mesh(new THREE.CylinderGeometry(.06,.07,.62,8),mat);leg.position.set(x,.35,0);unitRef.add(leg);});unitRef.userData.reference=true;worldRoot.add(unitRef);unitRef.visible=document.getElementById('showUnitToggle').checked;}
+try{buildUnitReference();}catch(err){unitRef=null;console.warn('AEGIS Prop Editor: unit scale reference disabled because preview geometry could not be created.',err);}
+let orbit={yaw:.72,pitch:.42,distance:5.2,targetY:.75};
+const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();let dragging=false,moved=false,lastX=0,lastY=0;
+renderer.domElement.addEventListener('pointerdown',e=>{dragging=true;moved=false;lastX=e.clientX;lastY=e.clientY;try{renderer.domElement.setPointerCapture(e.pointerId);}catch{}});
+renderer.domElement.addEventListener('pointermove',e=>{if(!dragging)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;if(Math.abs(dx)+Math.abs(dy)>2)moved=true;if(moved){orbit.yaw-=dx*.009;orbit.pitch=clamp(orbit.pitch-dy*.008,-1.35,1.35);}lastX=e.clientX;lastY=e.clientY;});
+renderer.domElement.addEventListener('pointerup',e=>{dragging=false;if(!moved)pickAt(e);});
+renderer.domElement.addEventListener('wheel',e=>{e.preventDefault();orbit.distance=clamp(orbit.distance+e.deltaY*.004,2.2,12);},{passive:false});
+function pickAt(e){const rect=renderer.domElement.getBoundingClientRect();pointer.x=((e.clientX-rect.left)/rect.width)*2-1;pointer.y=-((e.clientY-rect.top)/rect.height)*2+1;raycaster.setFromCamera(pointer,camera);const hits=raycaster.intersectObjects(propRoot.children,true);const hit=hits.find(h=>h.object?.userData?.componentId);if(hit){state.selectedComponentId=hit.object.userData.componentId;refreshComponentList();refreshComponentEditor();highlightSelection();}}
+function geometryFor(c){const s=c.size||{};switch(c.primitive){case'cylinder':return new THREE.CylinderGeometry(Math.max(.005,Number(s.radiusTop)||.1),Math.max(.005,Number(s.radiusBottom)||.1),Math.max(.005,Number(s.height)||.5),Math.max(3,Math.floor(Number(s.segments)||8)));case'sphere':return new THREE.SphereGeometry(Math.max(.005,Number(s.radius)||.25),Math.max(4,Math.floor(Number(s.widthSegments)||10)),Math.max(3,Math.floor(Number(s.heightSegments)||7)));case'cone':return new THREE.ConeGeometry(Math.max(.005,Number(s.radius)||.25),Math.max(.005,Number(s.height)||.5),Math.max(3,Math.floor(Number(s.segments)||8)));case'torus':return new THREE.TorusGeometry(Math.max(.01,Number(s.radius)||.3),Math.max(.005,Number(s.tube)||.05),Math.max(3,Math.floor(Number(s.radialSegments)||8)),Math.max(6,Math.floor(Number(s.tubularSegments)||16)));default:return new THREE.BoxGeometry(Math.max(.005,Number(s.width)||.5),Math.max(.005,Number(s.height)||.5),Math.max(.005,Number(s.depth)||.5));}}
+function materialFor(c){const m=c.material||{};return new THREE.MeshStandardMaterial({color:new THREE.Color(colorHex(m.color)),roughness:clamp(m.roughness,0,1),metalness:clamp(m.metalness,0,1),transparent:Number(m.opacity)<1,opacity:clamp(m.opacity||1,.05,1),emissive:new THREE.Color(colorHex(m.emissive||'#000000')),emissiveIntensity:clamp(m.emissiveStrength||0,0,3)});}
+function clearRoot(root){while(root.children.length){const child=root.children.pop();child.traverse(o=>{if(o.geometry)o.geometry.dispose?.();if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>m.dispose?.());else o.material.dispose?.();}});}}
+function buildPropPreview(){clearRoot(propRoot);const p=activeProp();if(!p)return;p.components.forEach(c=>{const mesh=new THREE.Mesh(geometryFor(c),materialFor(c));mesh.name=c.name;mesh.position.set(...c.position.map(Number));mesh.rotation.set(...c.rotation.map(degToRad));mesh.scale.set(...c.scale.map(Number));mesh.castShadow=Boolean(c.material?.castShadow);mesh.receiveShadow=true;mesh.userData.componentId=c.id;propRoot.add(mesh);});buildCollisionHelper();highlightSelection();}
+function applySelectedComponentTransform(){const c=selectedComponent();if(!c)return;const mesh=propRoot.children.find(o=>o?.userData?.componentId===c.id);if(!mesh)return;mesh.position.set(...c.position.map(Number));mesh.rotation.set(...c.rotation.map(degToRad));mesh.scale.set(...c.scale.map(Number));}
+function buildCollisionHelper(){if(collisionHelper){worldRoot.remove(collisionHelper);collisionHelper.traverse(o=>{o.geometry?.dispose?.();o.material?.dispose?.();});collisionHelper=null;}if(!document.getElementById('showCollisionToggle').checked)return;const c=activeProp()?.collision;if(!c||c.shape==='none')return;let geo;if(c.shape==='cylinder')geo=new THREE.CylinderGeometry(Number(c.radius)||.3,Number(c.radius)||.3,Number(c.height)||1,20);else{const size=Array.isArray(c.size)?c.size:[.6,1,.6];geo=new THREE.BoxGeometry(...size.map(v=>Math.max(.01,Number(v)||.01)));}const mat=new THREE.MeshBasicMaterial({color:0xf59e0b,wireframe:true,transparent:true,opacity:.7});collisionHelper=new THREE.Mesh(geo,mat);const off=Array.isArray(c.offset)?c.offset:[0,0,0];collisionHelper.position.set(...off.map(Number));collisionHelper.userData.reference=true;worldRoot.add(collisionHelper);}
+function highlightSelection(){propRoot.traverse(o=>{if(o.isMesh&&o.userData.componentId){if(!o.userData.baseEmissive)o.userData.baseEmissive=o.material.emissive?.clone?.()||new THREE.Color(0);o.material.emissive.copy(o.userData.baseEmissive);o.material.emissiveIntensity=Number(selectedComponent()?.material?.emissiveStrength)||0;if(o.userData.componentId===state.selectedComponentId){o.material.emissive.set(0x7c3aed);o.material.emissiveIntensity=Math.max(0.45,o.material.emissiveIntensity);}}});}
+function resize(){const w=mount.clientWidth||800,h=mount.clientHeight||600;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}window.addEventListener('resize',resize);
+function animate(){requestAnimationFrame(animate);camera.position.set(Math.sin(orbit.yaw)*Math.cos(orbit.pitch)*orbit.distance,orbit.targetY+Math.sin(orbit.pitch)*orbit.distance,Math.cos(orbit.yaw)*Math.cos(orbit.pitch)*orbit.distance);camera.lookAt(0,orbit.targetY,0);renderer.render(scene,camera);}resize();animate();
+
+function refreshPropList(){const filter=document.getElementById('propFilter').value.trim().toLowerCase();const list=document.getElementById('propList');list.innerHTML='';state.library.filter(p=>!filter||p.name.toLowerCase().includes(filter)||p.visualKey.toLowerCase().includes(filter)).forEach(p=>{const item=document.createElement('div');item.className='listItem'+(p.id===state.activePropId?' active':'');item.innerHTML=`<div><div class="name"></div><div class="meta"></div></div><div>${p.components.length}</div>`;item.querySelector('.name').textContent=p.name;const source=p.migration?.status==='game-derived'?(p.migration?.fidelity==='baseline-regional'?'game-derived baseline':'game-derived'):p.migration?.status==='pending-primitive'?'shared approximation':'shared';item.querySelector('.meta').textContent=`${p.visualKey} · ${p.metadata.navigationClass} · ${source}`;item.addEventListener('click',()=>{state.activePropId=p.id;state.selectedComponentId=p.components[0]?.id||null;refreshAll();});list.appendChild(item);});}
+function refreshMetadata(){const p=activeProp();if(!p)return;document.getElementById('propName').value=p.name;document.getElementById('visualKey').value=p.visualKey;document.getElementById('navigationClass').value=p.metadata.navigationClass;document.getElementById('coverKind').value=p.metadata.coverKind;document.getElementById('coverBlock').value=p.metadata.coverBlock;document.getElementById('maxHp').value=p.metadata.maxHp;document.getElementById('losClass').value=p.metadata.losClass;document.getElementById('edgePlacement').value=p.metadata.edgePlacement;document.getElementById('edgeFraction').value=p.metadata.edgeFraction;document.getElementById('curbLike').checked=Boolean(p.metadata.curbLike);document.getElementById('naturalProp').checked=Boolean(p.metadata.natural);document.getElementById('propNotes').value=p.metadata.notes||'';}
+function refreshMigrationInfo(){const el=document.getElementById('migrationInfo'),p=activeProp();if(!el||!p)return;const m=p.migration;if(!m){el.textContent='Shared/editor-authored definition. No legacy renderer migration provenance is attached.';return;}if(m.status==='pending-primitive'){el.textContent=`Shared approximation · exact legacy migration pending. ${m.limitations||''}`;return;}const fidelity=m.fidelity==='baseline-regional'?'Game-derived baseline':'Game-derived exact static model';el.textContent=`${fidelity} · source ${m.sourcePath||'src/browser-runtime.html'} @ ${m.runtimeCommit||'current runtime'}${m.limitations?` · ${m.limitations}`:''}`;}
+function refreshComponentList(){const list=document.getElementById('componentList');list.innerHTML='';const p=activeProp();(p?.components||[]).forEach((c,i)=>{const item=document.createElement('div');item.className='componentItem'+(c.id===state.selectedComponentId?' active':'');item.innerHTML='<div><div class="name"></div><code></code></div><span></span>';item.querySelector('.name').textContent=c.name;item.querySelector('code').textContent=c.primitive;item.querySelector('span').textContent=String(i+1);item.addEventListener('click',()=>{state.selectedComponentId=c.id;refreshComponentList();refreshComponentEditor();highlightSelection();});list.appendChild(item);});document.getElementById('duplicateComponentBtn').disabled=!selectedComponent();document.getElementById('deleteComponentBtn').disabled=!selectedComponent();}
+function axisControls(containerId,values,min,max,step,onChange){const el=document.getElementById(containerId);el.innerHTML='';['X','Y','Z'].forEach((axis,index)=>{const row=document.createElement('div');row.className='grid3';row.innerHTML=`<div class="axis">${axis}</div>`;const range=document.createElement('input');range.type='range';range.min=min;range.max=max;range.step=step;range.value=values[index];const num=document.createElement('input');num.type='number';num.min=min;num.max=max;num.step=step;num.value=values[index];let interactionActive=false;const begin=()=>{if(!interactionActive){pushHistory();interactionActive=true;}};const end=()=>{interactionActive=false;};const update=v=>{const n=Number(v)||0;const applied=onChange(index,n);const shown=Number.isFinite(Number(applied))?Number(applied):n;range.value=shown;num.value=shown;};range.addEventListener('pointerdown',begin);range.addEventListener('input',e=>{begin();update(e.target.value);});range.addEventListener('change',e=>{update(e.target.value);end();});range.addEventListener('pointerup',end);range.addEventListener('pointercancel',end);range.addEventListener('blur',end);num.addEventListener('change',e=>{pushHistory();update(e.target.value);});row.append(range,num);el.appendChild(row);});}
+function geometrySpecFields(c){const wrap=document.getElementById('geometryFields');wrap.innerHTML='<div class="sectionLabel">Primitive dimensions</div>';const specs={box:[['width',.01,4,.01],['height',.01,4,.01],['depth',.01,4,.01]],cylinder:[['radiusTop',.005,2,.005],['radiusBottom',.005,2,.005],['height',.01,5,.01],['segments',3,32,1]],sphere:[['radius',.005,2,.005],['widthSegments',4,32,1],['heightSegments',3,24,1]],cone:[['radius',.005,2,.005],['height',.01,5,.01],['segments',3,32,1]],torus:[['radius',.01,2,.01],['tube',.005,1,.005],['radialSegments',3,24,1],['tubularSegments',6,48,1]]}[c.primitive]||[];specs.forEach(([key,min,max,step])=>{const row=document.createElement('div');row.className='row compact';const label=document.createElement('label');label.textContent=key;const input=document.createElement('input');input.type='number';input.min=min;input.max=max;input.step=step;input.value=c.size?.[key]??step;input.addEventListener('change',()=>{pushHistory();c.size[key]=Number(input.value)||step;buildPropPreview();refreshJsonAndValidation();});row.append(label,input);wrap.appendChild(row);});}
+function refreshComponentEditor(){const c=selectedComponent(),editor=document.getElementById('componentEditor'),none=document.getElementById('noSelection');editor.hidden=!c;none.hidden=Boolean(c);if(!c)return;document.getElementById('componentName').value=c.name;document.getElementById('primitiveType').value=c.primitive;geometrySpecFields(c);axisControls('positionControls',c.position,-3,3,.01,(i,v)=>{c.position[i]=snapPos(v);applySelectedComponentTransform();refreshJsonAndValidation();return c.position[i];});axisControls('rotationControls',c.rotation,-180,180,1,(i,v)=>{c.rotation[i]=snapRot(v);applySelectedComponentTransform();refreshJsonAndValidation();return c.rotation[i];});axisControls('scaleControls',c.scale,.05,5,.01,(i,v)=>{c.scale[i]=Math.max(.05,v);applySelectedComponentTransform();refreshJsonAndValidation();return c.scale[i];});document.getElementById('componentColor').value=colorHex(c.material.color);document.getElementById('roughness').value=c.material.roughness;document.getElementById('metalness').value=c.material.metalness;document.getElementById('opacity').value=c.material.opacity;document.getElementById('emissiveColor').value=colorHex(c.material.emissive);document.getElementById('emissiveStrength').value=c.material.emissiveStrength;document.getElementById('castShadow').checked=Boolean(c.material.castShadow);}
+function collisionFields(){const p=activeProp(),c=p?.collision;if(!c)return;document.getElementById('collisionShape').value=c.shape||'none';const wrap=document.getElementById('collisionEditor');wrap.innerHTML='';if(c.shape==='box'){c.size=Array.isArray(c.size)?c.size:[.6,1,.6];['Width','Height','Depth'].forEach((label,i)=>{const row=document.createElement('div');row.className='row compact';const l=document.createElement('label');l.textContent=label;const input=document.createElement('input');input.type='number';input.min=.01;input.step=.01;input.value=c.size[i];input.addEventListener('change',()=>{pushHistory();c.size[i]=Math.max(.01,Number(input.value)||.01);buildCollisionHelper();refreshJsonAndValidation();});row.append(l,input);wrap.appendChild(row);});}else if(c.shape==='cylinder'){for(const key of ['radius','height']){const row=document.createElement('div');row.className='row compact';const l=document.createElement('label');l.textContent=key;const input=document.createElement('input');input.type='number';input.min=.01;input.step=.01;input.value=Number(c[key])||.3;input.addEventListener('change',()=>{pushHistory();c[key]=Math.max(.01,Number(input.value)||.01);buildCollisionHelper();refreshJsonAndValidation();});row.append(l,input);wrap.appendChild(row);}}if(c.shape!=='none'){c.offset=Array.isArray(c.offset)?c.offset:[0,0,0];const label=document.createElement('div');label.className='sectionLabel';label.textContent='Offset';wrap.appendChild(label);['X','Y','Z'].forEach((axis,i)=>{const row=document.createElement('div');row.className='row compact';const l=document.createElement('label');l.textContent=axis;const input=document.createElement('input');input.type='number';input.step=.01;input.value=c.offset[i];input.addEventListener('change',()=>{pushHistory();c.offset[i]=Number(input.value)||0;buildCollisionHelper();refreshJsonAndValidation();});row.append(l,input);wrap.appendChild(row);});}}
+function validateProp(p){const out=[];if(!p) return [{level:'bad',text:'No active prop.'}];if(!p.visualKey.trim())out.push({level:'bad',text:'Visual key is required.'});if(!p.components.length)out.push({level:'bad',text:'Prop has no visible components.'});const names=new Set();for(const c of p.components){if(names.has(c.name.trim().toLowerCase()))out.push({level:'warn',text:`Duplicate component name: ${c.name}`});names.add(c.name.trim().toLowerCase());if(c.scale.some(v=>!Number.isFinite(Number(v))||Number(v)<=0))out.push({level:'bad',text:`${c.name}: invalid scale.`});if(c.position.some(v=>Math.abs(Number(v)||0)>3.5))out.push({level:'warn',text:`${c.name}: unusually far from prop origin.`});}
+ if(p.metadata.navigationClass==='solid'&&p.collision.shape==='none')out.push({level:'warn',text:'Solid navigation prop has no authoring collision envelope.'});if(p.metadata.edgePlacement==='hex-edge'&&(Number(p.metadata.edgeFraction)<=0||Number(p.metadata.edgeFraction)>=.5))out.push({level:'bad',text:'Hex-edge fraction must be greater than 0 and below 0.5.'});if(p.metadata.coverKind==='none'&&Number(p.metadata.coverBlock)>0)out.push({level:'warn',text:'Cover kind is None but cover block is non-zero.'});if(!out.length)out.push({level:'ok',text:'Prop definition passes foundation validation.'});return out;}
+function refreshValidation(){const list=document.getElementById('validationList');list.innerHTML='';validateProp(activeProp()).forEach(v=>{const div=document.createElement('div');div.className='check'+(v.level==='warn'?' warn':v.level==='bad'?' bad':'');div.textContent=v.text;list.appendChild(div);});}
+function exportableProp(p){const out=deepClone(p);out.schema=PROP_SCHEMA;out.editorBuild=PROP_EDITOR_BUILD;return out;}
+function libraryPayload(){return{schema:LIBRARY_SCHEMA,libraryVersion:PROP_EDITOR_BUILD,sourceEditorBuild:PROP_EDITOR_BUILD,editorBuild:PROP_EDITOR_BUILD,props:state.library.map(exportableProp)};}
+function refreshLibrarySource(){const el=document.getElementById('librarySourceText');if(!el)return;const version=GAME_LIBRARY_PAYLOAD?.libraryVersion||GAME_LIBRARY_PAYLOAD?.sourceEditorBuild||'unversioned';if(state.librarySource==='canonical')el.textContent=`Working copy of canonical game library · ${state.library.length} props · ${version}`;else if(state.librarySource==='draft')el.textContent=`Local draft restored · ${state.library.length} props${GAME_LIBRARY?' · Reload Game Library returns to canonical source':''}`;else if(state.librarySource==='imported')el.textContent=`Imported working library · ${state.library.length} props${GAME_LIBRARY?' · canonical game library still available via Reload Game Library':''}`;else el.textContent=`Canonical game library not found · using ${DEFAULT_PROPS.length} embedded fallback templates`; }
+function runtimeInventoryFromSource(source){const exact=new Map(),families=new Map();const collect=(regex,target)=>{let match;while((match=regex.exec(source))){const key=String(match[1]||'').trim().toLowerCase();if(!key||key.includes('${')||RUNTIME_INVENTORY_IGNORE.has(key))continue;target.set(key,(target.get(key)||0)+1);}};collect(/\bvisual\s*={2,3}\s*["'`]([^"'`]+)["'`]/g,exact);collect(/\bvisual\s*:\s*["'`]([^"'`]+)["'`]/g,exact);collect(/\bvisual\.includes\(["'`]([^"'`]+)["'`]\)/g,families);collect(/\bvisual\.startsWith\(["'`]([^"'`]+)["'`]\)/g,families);return{exact:[...exact].sort((a,b)=>a[0].localeCompare(b[0])),families:[...families].sort((a,b)=>a[0].localeCompare(b[0]))};}
+function runtimeInventoryIsSpecial(key){return /^(?:tactical-|alien-|skyranger|crash-|crashed-|aegis-)/.test(key)||key==='breach-rubble'||key==='wreck'||key.startsWith('ufo-');}
+function runtimeInventoryFamilyIsSpecial(key){return /^(?:alien-|skyranger|crash-|crashed-|ufo-)/.test(key)||key==='breach-rubble'||key==='wreck';}
+function runtimeInventoryPatternMatchesVisual(pattern,visualKey){const p=String(pattern||''),v=String(visualKey||'');if(!p||!v)return false;if(p.endsWith('-'))return v.startsWith(p);return v===p||v.includes(p);}
+function gamePropInventoryRows(){const exact=new Map(state.runtimeInventory?.exact||[]),families=new Map(state.runtimeInventory?.families||[]),rows=[],sharedKeys=new Set(state.library.map(p=>p.visualKey));state.library.forEach(p=>{let refs=exact.get(p.visualKey)||0;for(const [pattern,count] of families)if(runtimeInventoryPatternMatchesVisual(pattern,p.visualKey))refs+=Number(count)||0;const provenance=p.migration?.status==='game-derived'?(p.migration?.fidelity==='baseline-regional'?'Game-derived baseline':'Game-derived exact model'):p.migration?.status==='pending-primitive'?'Shared approximation':'Shared/editor definition';rows.push({key:p.visualKey,name:p.name,status:'shared',refs,detail:refs?`${provenance} · editable · ${refs} runtime reference${refs===1?'':'s'}`:`${provenance} · editable · no direct runtime visual reference detected`});});for(const [key,refs] of exact){if(sharedKeys.has(key))continue;const special=runtimeInventoryIsSpecial(key);rows.push({key,name:key,status:special?'special':'legacy',refs:Number(refs)||0,detail:special?'Special/system runtime visual · kept visible for completeness':`Legacy exact runtime visual · ${refs} reference${refs===1?'':'s'} · migration candidate`});}const exactKeys=new Set((state.runtimeInventory?.exact||[]).map(row=>row[0]));for(const [key,refs] of families){if([...sharedKeys].some(shared=>runtimeInventoryPatternMatchesVisual(key,shared)))continue;if(exactKeys.has(key))continue;const special=runtimeInventoryFamilyIsSpecial(key);rows.push({key,name:key.endsWith('-')?`${key}*`:`${key} family`,status:special?'special':'legacy-family',refs:Number(refs)||0,detail:special?'Special/system matcher family':`Legacy renderer matcher family · ${refs} reference${refs===1?'':'s'} · migration visibility only`});}const order={shared:0,legacy:1,'legacy-family':2,special:3};return rows.sort((a,b)=>(order[a.status]-order[b.status])||a.key.localeCompare(b.key));}
+function refreshInventory(){const source=document.getElementById('inventorySourceText'),stats=document.getElementById('inventoryStats'),list=document.getElementById('inventoryList');if(!source||!stats||!list)return;const rows=gamePropInventoryRows(),counts={shared:0,legacy:0,'legacy-family':0,special:0};rows.forEach(row=>counts[row.status]=(counts[row.status]||0)+1);const migration=counts.legacy+counts['legacy-family'];stats.innerHTML=`<div class="inventoryStat"><strong>${counts.shared}</strong><span>Shared editable</span></div><div class="inventoryStat"><strong>${migration}</strong><span>Legacy targets</span></div><div class="inventoryStat"><strong>${counts.special}</strong><span>Special/system</span></div>`;source.textContent=state.runtimeInventorySource==='live'?`Live scan of src/browser-runtime.html · ${state.runtimeInventory.exact.length} exact keys · ${state.runtimeInventory.families.length} matcher families`:state.runtimeInventorySource.startsWith('file:')?`Imported runtime scan · ${state.runtimeInventorySource.slice(5)} · ${state.runtimeInventory.exact.length} exact keys`:`Embedded current-main scan · commit ${RUNTIME_INVENTORY_SNAPSHOT_COMMIT} · runtime ${RUNTIME_INVENTORY_SNAPSHOT_BLOB.slice(0,10)}`;const filter=document.getElementById('inventoryFilter').value.trim().toLowerCase(),status=document.getElementById('inventoryStatus').value;const visible=rows.filter(row=>(status==='all'||row.status===status)&&(!filter||row.key.includes(filter)||String(row.name||'').toLowerCase().includes(filter)||row.detail.toLowerCase().includes(filter)));list.innerHTML='';if(!visible.length){const empty=document.createElement('div');empty.className='inventoryEmpty';empty.textContent='No inventory entries match this filter.';list.appendChild(empty);return;}visible.forEach(row=>{const item=document.createElement('div');item.className='inventoryItem'+(row.status==='shared'?' clickable':'');const left=document.createElement('div'),name=document.createElement('div'),meta=document.createElement('div'),badge=document.createElement('span');name.className='inventoryName';name.textContent=row.name||row.key;meta.className='inventoryMeta';meta.textContent=`${row.key} · ${row.detail}`;left.append(name,meta);badge.className=`inventoryBadge ${row.status==='legacy-family'?'family':row.status}`;if(row.status==='shared'){const p=state.library.find(prop=>prop.visualKey===row.key);badge.textContent=p?.migration?.status==='game-derived'?'Game-derived':'Editable';}else badge.textContent=row.status==='legacy'?'Legacy':row.status==='legacy-family'?'Family':'Special';item.append(left,badge);if(row.status==='shared')item.addEventListener('click',()=>{const p=state.library.find(prop=>prop.visualKey===row.key);if(!p)return;state.activePropId=p.id;state.selectedComponentId=p.components[0]?.id||null;refreshAll();setStatus(`Opened shared game prop: ${p.name}`);});else item.addEventListener('click',()=>setStatus(`${row.key}: ${row.detail}`));list.appendChild(item);});}
+async function scanCurrentRuntime({silent=false}={}){try{const response=await fetch('src/browser-runtime.html',{cache:'no-store'});if(!response.ok)throw new Error(`HTTP ${response.status}`);const source=await response.text();if(!source.includes('CURRENT_GAME_BUILD')||!source.includes('visual'))throw new Error('File did not look like the AEGIS browser runtime');state.runtimeInventory=runtimeInventoryFromSource(source);state.runtimeInventorySource='live';refreshInventory();if(!silent)setStatus(`Scanned current runtime · ${state.runtimeInventory.exact.length} exact visuals`);return true;}catch(err){if(!silent){setStatus('Direct runtime scan unavailable — use Import Runtime HTML for a local file');alert(`Could not read src/browser-runtime.html directly (${err.message}). The embedded current-main inventory remains available. If you opened the editor as a local file, use Import Runtime HTML and select src/browser-runtime.html.`);}return false;}}
+function refreshJsonAndValidation(){const p=activeProp();document.getElementById('jsonOutput').value=p?JSON.stringify(exportableProp(p),null,2):'';refreshValidation();}
+function refreshAll(){normalizeLibrary();refreshLibrarySource();refreshPropList();refreshInventory();refreshMetadata();refreshMigrationInfo();refreshComponentList();refreshComponentEditor();collisionFields();buildPropPreview();refreshJsonAndValidation();updateUndoRedo();}
+function normalizeLibrary(){state.library=state.library.map(normalizeProp);if(!state.library.some(p=>p.id===state.activePropId))state.activePropId=state.library[0]?.id||null;const p=activeProp();if(p&&!p.components.some(c=>c.id===state.selectedComponentId))state.selectedComponentId=p.components[0]?.id||null;}
+function snapPos(v){if(!document.getElementById('snapToggle').checked)return Number(v)||0;const step=Math.max(.01,Number(document.getElementById('positionSnap').value)||.05);return Math.round((Number(v)||0)/step)*step;}
+function snapRot(v){if(!document.getElementById('snapToggle').checked)return Number(v)||0;const step=Math.max(1,Number(document.getElementById('rotationSnap').value)||5);return Math.round((Number(v)||0)/step)*step;}
+function mutateMetadata(key,value){const p=activeProp();if(!p)return;pushHistory();p.metadata[key]=value;refreshPropList();buildPropPreview();refreshJsonAndValidation();}
+function bind(id,event,fn){document.getElementById(id).addEventListener(event,fn);}
+bind('propFilter','input',refreshPropList);
+bind('inventoryFilter','input',refreshInventory);bind('inventoryStatus','change',refreshInventory);bind('scanRuntimeBtn','click',()=>scanCurrentRuntime());bind('importRuntimeBtn','click',()=>document.getElementById('runtimeFileInput').click());bind('runtimeFileInput','change',async e=>{const file=e.target.files?.[0];if(!file)return;try{const source=await file.text();if(!source.includes('CURRENT_GAME_BUILD')||!source.includes('visual'))throw new Error('Selected file did not look like the AEGIS browser runtime');state.runtimeInventory=runtimeInventoryFromSource(source);state.runtimeInventorySource=`file:${file.name}`;refreshInventory();setStatus(`Imported runtime inventory from ${file.name}`);}catch(err){alert('Could not scan runtime HTML: '+err.message);}e.target.value='';});
+bind('propName','change',e=>{const p=activeProp();if(!p)return;pushHistory();p.name=e.target.value.trim()||'Unnamed Prop';refreshPropList();refreshInventory();refreshJsonAndValidation();});
+bind('visualKey','change',e=>{const p=activeProp();if(!p)return;pushHistory();p.visualKey=e.target.value.trim().toLowerCase().replace(/\s+/g,'-')||'custom-prop';refreshPropList();refreshInventory();refreshJsonAndValidation();});
+bind('navigationClass','change',e=>mutateMetadata('navigationClass',e.target.value));bind('coverKind','change',e=>mutateMetadata('coverKind',e.target.value));bind('coverBlock','change',e=>mutateMetadata('coverBlock',clamp(e.target.value,0,1)));bind('maxHp','change',e=>mutateMetadata('maxHp',Math.max(1,Math.round(Number(e.target.value)||1))));bind('losClass','change',e=>mutateMetadata('losClass',e.target.value));bind('edgePlacement','change',e=>mutateMetadata('edgePlacement',e.target.value));bind('edgeFraction','change',e=>mutateMetadata('edgeFraction',clamp(e.target.value,0,.49)));bind('curbLike','change',e=>mutateMetadata('curbLike',e.target.checked));bind('naturalProp','change',e=>mutateMetadata('natural',e.target.checked));bind('propNotes','change',e=>mutateMetadata('notes',e.target.value));
+bind('newPropBtn','click',()=>{pushHistory();const p=propDef('New Prop','custom-prop',{navigationClass:'decorative',coverKind:'soft',coverBlock:0,maxHp:30,edgePlacement:'center',edgeFraction:0},[comp('Body','box',{width:.5,height:.5,depth:.5},[0,.25,0])],{shape:'box',size:[.5,.5,.5],offset:[0,.25,0]});state.library.push(p);state.activePropId=p.id;state.selectedComponentId=p.components[0].id;refreshAll();setStatus('New prop created');});
+bind('duplicatePropBtn','click',()=>{const p=activeProp();if(!p)return;pushHistory();const copy=deepClone(p);copy.id=uid('prop');copy.name+= ' Copy';copy.visualKey+= '-variant';copy.components.forEach(c=>c.id=uid('cmp'));state.library.push(copy);state.activePropId=copy.id;state.selectedComponentId=copy.components[0]?.id||null;refreshAll();setStatus('Prop duplicated');});
+bind('deletePropBtn','click',()=>{if(state.library.length<=1){alert('Keep at least one prop in the working library.');return;}const p=activeProp();if(!p||!confirm(`Delete ${p.name} from this editor draft?`))return;pushHistory();state.library=state.library.filter(x=>x.id!==p.id);state.activePropId=state.library[0]?.id||null;state.selectedComponentId=activeProp()?.components[0]?.id||null;refreshAll();setStatus('Prop removed from draft library');});
+bind('reloadGameLibraryBtn','click',()=>{if(!GAME_LIBRARY){alert('The canonical game prop library is not available. Check that assets/data/aegis-prop-library.js exists beside the editor project path.');return;}if(state.dirty&&!confirm('Discard the current working edits and reload the canonical game prop library?'))return;pushHistory();state.library=GAME_LIBRARY.map(deepClone);state.librarySource='canonical';state.activePropId=state.library[0]?.id||null;state.selectedComponentId=state.library[0]?.components?.[0]?.id||null;state.dirty=false;refreshAll();setStatus(`Reloaded canonical game library · ${state.library.length} props`);});
+bind('addComponentBtn','click',()=>{const p=activeProp();if(!p)return;pushHistory();const c=comp('New Component','box',{width:.3,height:.3,depth:.3},[0,.15,0]);p.components.push(c);state.selectedComponentId=c.id;refreshAll();setStatus('Component added');});
+bind('duplicateComponentBtn','click',()=>{const p=activeProp(),c=selectedComponent();if(!p||!c)return;pushHistory();const copy=deepClone(c);copy.id=uid('cmp');copy.name+=' Copy';copy.position=[copy.position[0]+.1,copy.position[1],copy.position[2]+.1];p.components.push(copy);state.selectedComponentId=copy.id;refreshAll();setStatus('Component duplicated');});
+bind('deleteComponentBtn','click',()=>{const p=activeProp(),c=selectedComponent();if(!p||!c)return;pushHistory();p.components=p.components.filter(x=>x.id!==c.id);state.selectedComponentId=p.components[0]?.id||null;refreshAll();setStatus('Component deleted');});
+bind('componentName','change',e=>{const c=selectedComponent();if(!c)return;pushHistory();c.name=e.target.value.trim()||'Component';refreshComponentList();refreshJsonAndValidation();});
+bind('primitiveType','change',e=>{const c=selectedComponent();if(!c)return;pushHistory();c.primitive=e.target.value;const defaults={box:{width:.4,height:.4,depth:.4},cylinder:{radiusTop:.15,radiusBottom:.15,height:.5,segments:10},sphere:{radius:.3,widthSegments:10,heightSegments:7},cone:{radius:.25,height:.5,segments:10},torus:{radius:.3,tube:.06,radialSegments:8,tubularSegments:18}};c.size=defaults[c.primitive];refreshComponentEditor();buildPropPreview();refreshJsonAndValidation();});
+for(const [id,key,min,max] of [['componentColor','color'],['roughness','roughness',0,1],['metalness','metalness',0,1],['opacity','opacity',.05,1],['emissiveColor','emissive'],['emissiveStrength','emissiveStrength',0,3]])bind(id,'change',e=>{const c=selectedComponent();if(!c)return;pushHistory();c.material[key]=key==='color'||key==='emissive'?e.target.value:clamp(e.target.value,min,max);buildPropPreview();refreshJsonAndValidation();});
+bind('castShadow','change',e=>{const c=selectedComponent();if(!c)return;pushHistory();c.material.castShadow=e.target.checked;buildPropPreview();refreshJsonAndValidation();});
+bind('collisionShape','change',e=>{const p=activeProp();if(!p)return;pushHistory();const shape=e.target.value;p.collision={shape,...(shape==='box'?{size:[.6,1,.6],offset:[0,.5,0]}:shape==='cylinder'?{radius:.3,height:1,offset:[0,.5,0]}:{size:[0,0,0],offset:[0,0,0]})};collisionFields();buildCollisionHelper();refreshJsonAndValidation();});
+bind('showUnitToggle','change',()=>{if(unitRef)unitRef.visible=document.getElementById('showUnitToggle').checked;});bind('showCollisionToggle','change',buildCollisionHelper);
+bind('frontViewBtn','click',()=>{orbit={yaw:0,pitch:0,distance:5,targetY:.75};});bind('sideViewBtn','click',()=>{orbit={yaw:Math.PI/2,pitch:0,distance:5,targetY:.75};});bind('isoViewBtn','click',()=>{orbit={yaw:.72,pitch:.42,distance:5.2,targetY:.75};});bind('topViewBtn','click',()=>{orbit={yaw:0,pitch:1.45,distance:6,targetY:.4};});
+bind('undoBtn','click',undo);bind('redoBtn','click',redo);
+bind('saveDraftBtn','click',()=>{localStorage.setItem(DRAFT_KEY,JSON.stringify(libraryPayload()));state.dirty=false;setStatus('Draft saved locally');});
+bind('restoreDraftBtn','click',()=>{const raw=localStorage.getItem(DRAFT_KEY);if(!raw){alert('No saved Prop Editor draft exists in this browser.');return;}try{const data=JSON.parse(raw);if(data.schema!==LIBRARY_SCHEMA||!Array.isArray(data.props))throw new Error('Not an AEGIS prop library');pushHistory();state.library=data.props.map(normalizeProp);state.librarySource='draft';state.activePropId=state.library[0]?.id||null;state.selectedComponentId=activeProp()?.components[0]?.id||null;refreshAll();setStatus('Draft restored');}catch(err){alert('Could not restore draft: '+err.message);}});
+function downloadJson(filename,data){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),500);}
+function downloadText(filename,text,mime='text/plain'){const blob=new Blob([text],{type:mime}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),500);}
+function runtimeLibraryScript(){return `/* Project Aegis shared tactical prop library. Generated by AEGIS Prop Editor. */\nwindow.AEGIS_PROP_LIBRARY=${JSON.stringify(libraryPayload(),null,2)};\n`;}
+bind('exportPropBtn','click',()=>{const p=activeProp();if(!p)return;downloadJson(`AEGIS_Prop_${p.visualKey}.json`,exportableProp(p));setStatus('Prop JSON downloaded');});
+bind('exportLibraryBtn','click',()=>{downloadJson('aegis-prop-library.json',libraryPayload());setStatus('Library JSON downloaded');});
+bind('exportRuntimeLibraryBtn','click',()=>{downloadText('aegis-prop-library.js',runtimeLibraryScript(),'text/javascript');setStatus('Game runtime library JS downloaded — replace assets/data/aegis-prop-library.js');});
+bind('copyPropBtn','click',async()=>{refreshJsonAndValidation();try{await navigator.clipboard.writeText(document.getElementById('jsonOutput').value);setStatus('Prop JSON copied');}catch{setStatus('Clipboard unavailable; JSON is in the text box');}});
+bind('loadTextBtn','click',()=>{try{const data=JSON.parse(document.getElementById('jsonOutput').value);importPayload(data);}catch(err){alert('Could not parse JSON: '+err.message);}});bind('importFileBtn','click',()=>document.getElementById('fileInput').click());bind('fileInput','change',async e=>{const file=e.target.files?.[0];if(!file)return;try{importPayload(JSON.parse(await file.text()));}catch(err){alert('Could not import JSON: '+err.message);}e.target.value='';});
+function importPayload(data){pushHistory();state.librarySource='imported';if(data?.schema===LIBRARY_SCHEMA&&Array.isArray(data.props)){state.library=data.props.map(normalizeProp);state.activePropId=state.library[0]?.id||null;state.selectedComponentId=activeProp()?.components[0]?.id||null;setStatus(`Imported ${state.library.length} props`);}else{const p=normalizeProp(deepClone(data));if(data?.schema&&data.schema!==PROP_SCHEMA)throw new Error(`Unsupported schema: ${data.schema}`);const existing=state.library.findIndex(x=>x.visualKey===p.visualKey);if(existing>=0)state.library.splice(existing,1,p);else state.library.push(p);state.activePropId=p.id;state.selectedComponentId=p.components[0]?.id||null;setStatus(`Imported ${p.name}`);}refreshAll();}
+window.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName))return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo();return;}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();redo();return;}const c=selectedComponent();if(!c)return;const step=(Number(document.getElementById('positionSnap').value)||.05)*(e.shiftKey?5:1);let changed=true;pushHistory();if(e.key==='ArrowLeft')c.position[0]-=step;else if(e.key==='ArrowRight')c.position[0]+=step;else if(e.key==='ArrowUp')c.position[2]-=step;else if(e.key==='ArrowDown')c.position[2]+=step;else if(e.key==='PageUp')c.position[1]+=step;else if(e.key==='PageDown')c.position[1]-=step;else changed=false;if(!changed){state.history.pop();return;}e.preventDefault();c.position=c.position.map(snapPos);refreshComponentEditor();buildPropPreview();refreshJsonAndValidation();});
+window.addEventListener('beforeunload',e=>{if(state.dirty){e.preventDefault();e.returnValue='';}});
+refreshAll();setStatus(GAME_LIBRARY?`Legacy fidelity editor ready · ${state.library.length} shared editable props`:`Legacy fidelity editor ready · migrated fallback templates in use`);if(location.protocol!=='file:')scanCurrentRuntime({silent:true});
+</script>
+</body>
+</html>

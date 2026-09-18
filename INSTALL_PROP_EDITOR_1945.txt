@@ -1,0 +1,18 @@
+AEGIS Prop Editor 1945 — installation
+
+This patch updates BOTH the editor and the canonical shared prop library.
+
+Copy these files/folders into the Project-Aegis-Dark-Horizon repository, preserving paths:
+- AEGIS_Prop_Editor_CURRENT.html
+- AEGIS_Prop_Editor_v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH.html
+- assets/data/aegis-prop-library.js
+- assets/data/aegis-prop-library.json
+
+Keep the existing project files in place, especially:
+- assets/vendor/three.min.js
+- src/browser-runtime.html
+
+Why the library files matter:
+1945 migrates legacy in-game model geometry into the shared library. Installing only the HTML editor would leave the game on the old 1320 library definitions. Installing the updated assets/data/aegis-prop-library.js makes Browser 1320 render the migrated definitions in tactical missions.
+
+No browser-runtime or save-schema changes are required. Save format remains 4.

@@ -1,12 +1,12 @@
-/* Project Aegis shared tactical prop library. Generated/exportable by AEGIS Prop Editor. */
+/* Project Aegis shared tactical prop library. Generated/migrated by AEGIS Prop Editor. */
 window.AEGIS_PROP_LIBRARY={
   "schema": "aegis-prop-library-v1",
-  "libraryVersion": "v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH",
-  "sourceEditorBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+  "libraryVersion": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+  "sourceEditorBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
   "props": [
     {
       "schema": "aegis-prop-definition-v1",
-      "id": "prop-tree",
+      "id": "prop-mu6cwa6g-qniq2",
       "name": "Tree",
       "visualKey": "tree",
       "metadata": {
@@ -19,7 +19,7 @@ window.AEGIS_PROP_LIBRARY={
         "edgeFraction": 0.35,
         "curbLike": false,
         "natural": true,
-        "notes": ""
+        "notes": "Migrated from the original generic AEGIS Three.js tree model. Regional tree color/scale variants remain a future shared-library extension."
       },
       "collision": {
         "shape": "cylinder",
@@ -33,18 +33,18 @@ window.AEGIS_PROP_LIBRARY={
       },
       "components": [
         {
-          "id": "cmp-tree-1",
+          "id": "cmp-tree-legacy-trunk",
           "name": "Trunk",
           "primitive": "cylinder",
           "size": {
-            "radiusTop": 0.12,
-            "radiusBottom": 0.17,
-            "height": 0.78,
-            "segments": 10
+            "radiusTop": 0.08,
+            "radiusBottom": 0.12,
+            "height": 0.58,
+            "segments": 7
           },
           "position": [
             0,
-            0.39,
+            0.35,
             0
           ],
           "rotation": [
@@ -59,7 +59,7 @@ window.AEGIS_PROP_LIBRARY={
           ],
           "material": {
             "color": "#6b4423",
-            "roughness": 0.92,
+            "roughness": 0.9,
             "metalness": 0.05,
             "opacity": 1,
             "emissive": "#000000",
@@ -68,17 +68,17 @@ window.AEGIS_PROP_LIBRARY={
           }
         },
         {
-          "id": "cmp-tree-2",
+          "id": "cmp-tree-legacy-canopy",
           "name": "Canopy",
-          "primitive": "sphere",
+          "primitive": "cone",
           "size": {
-            "radius": 0.58,
-            "widthSegments": 10,
-            "heightSegments": 7
+            "radius": 0.42,
+            "height": 0.92,
+            "segments": 8
           },
           "position": [
             0,
-            1.05,
+            0.98,
             0
           ],
           "rotation": [
@@ -87,12 +87,12 @@ window.AEGIS_PROP_LIBRARY={
             0
           ],
           "scale": [
-            1.05,
-            0.82,
+            1,
+            1,
             1
           ],
           "material": {
-            "color": "#397c43",
+            "color": "#1f7a45",
             "roughness": 0.98,
             "metalness": 0.05,
             "opacity": 1,
@@ -101,11 +101,21 @@ window.AEGIS_PROP_LIBRARY={
             "castShadow": true
           }
         }
-      ]
+      ],
+      "migration": {
+        "status": "game-derived",
+        "source": "legacy-three-renderer",
+        "sourcePath": "src/browser-runtime.html",
+        "runtimeCommit": "7cb0cd15c1",
+        "runtimeBlob": "0b908738c2",
+        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+        "fidelity": "baseline-regional",
+        "limitations": "Generic legacy geometry is exact; biome-specific tree scale/color variation is not yet data-driven in the shared schema."
+      }
     },
     {
       "schema": "aegis-prop-definition-v1",
-      "id": "prop-lamp-post",
+      "id": "prop-mu6cwa6g-fn4f7",
       "name": "Lamp Post",
       "visualKey": "lamp-post",
       "metadata": {
@@ -118,7 +128,7 @@ window.AEGIS_PROP_LIBRARY={
         "edgeFraction": 0.42,
         "curbLike": true,
         "natural": false,
-        "notes": ""
+        "notes": "Migrated directly from the legacy AEGIS lamp-post renderer geometry/material values."
       },
       "collision": {
         "shape": "cylinder",
@@ -132,18 +142,18 @@ window.AEGIS_PROP_LIBRARY={
       },
       "components": [
         {
-          "id": "cmp-lamp-post-1",
-          "name": "Base",
+          "id": "cmp-lamp-post-legacy-pole",
+          "name": "Pole",
           "primitive": "cylinder",
           "size": {
-            "radiusTop": 0.1,
-            "radiusBottom": 0.13,
-            "height": 0.18,
-            "segments": 10
+            "radiusTop": 0.05,
+            "radiusBottom": 0.07,
+            "height": 2.1,
+            "segments": 8
           },
           "position": [
             0,
-            0.09,
+            1.1,
             0
           ],
           "rotation": [
@@ -158,7 +168,7 @@ window.AEGIS_PROP_LIBRARY={
           ],
           "material": {
             "color": "#334155",
-            "roughness": 0.7,
+            "roughness": 0.66,
             "metalness": 0.55,
             "opacity": 1,
             "emissive": "#000000",
@@ -167,18 +177,92 @@ window.AEGIS_PROP_LIBRARY={
           }
         },
         {
-          "id": "cmp-lamp-post-2",
-          "name": "Pole",
-          "primitive": "cylinder",
+          "id": "cmp-lamp-post-legacy-bulb",
+          "name": "Bulb",
+          "primitive": "sphere",
           "size": {
-            "radiusTop": 0.05,
-            "radiusBottom": 0.07,
-            "height": 2.1,
-            "segments": 10
+            "radius": 0.14,
+            "widthSegments": 10,
+            "heightSegments": 8
           },
           "position": [
             0,
-            1.13,
+            2.15,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#ffdc8a",
+            "roughness": 0.75,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#ffc85c",
+            "emissiveStrength": 1,
+            "castShadow": false
+          }
+        }
+      ],
+      "migration": {
+        "status": "game-derived",
+        "source": "legacy-three-renderer",
+        "sourcePath": "src/browser-runtime.html",
+        "runtimeCommit": "7cb0cd15c1",
+        "runtimeBlob": "0b908738c2",
+        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+        "fidelity": "exact-static",
+        "limitations": ""
+      }
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-traffic-light",
+      "name": "Traffic Light",
+      "visualKey": "traffic-light",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "hard",
+        "coverBlock": 0.5,
+        "maxHp": 48,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.42,
+        "curbLike": true,
+        "natural": false,
+        "notes": "Migrated directly from the legacy AEGIS traffic-light renderer and intersection-control placement behavior."
+      },
+      "collision": {
+        "shape": "cylinder",
+        "radius": 0.18,
+        "height": 2.25,
+        "offset": [
+          0,
+          1.125,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-traffic-light-pole",
+          "name": "Pole",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.045,
+            "radiusBottom": 0.055,
+            "height": 2.05,
+            "segments": 8
+          },
+          "position": [
+            0,
+            1.03,
             0
           ],
           "rotation": [
@@ -193,8 +277,8 @@ window.AEGIS_PROP_LIBRARY={
           ],
           "material": {
             "color": "#334155",
-            "roughness": 0.65,
-            "metalness": 0.58,
+            "roughness": 0.6,
+            "metalness": 0.45,
             "opacity": 1,
             "emissive": "#000000",
             "emissiveStrength": 0,
@@ -202,18 +286,52 @@ window.AEGIS_PROP_LIBRARY={
           }
         },
         {
-          "id": "cmp-lamp-post-3",
-          "name": "Lamp",
-          "primitive": "sphere",
+          "id": "cmp-traffic-light-head",
+          "name": "Signal head",
+          "primitive": "box",
           "size": {
-            "radius": 0.14,
-            "widthSegments": 12,
-            "heightSegments": 8
+            "width": 0.64,
+            "height": 0.45,
+            "depth": 0.64
           },
           "position": [
             0,
-            2.18,
+            1.9,
             0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            0.34,
+            0.78,
+            0.3
+          ],
+          "material": {
+            "color": "#111827",
+            "roughness": 0.7,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-traffic-light-red",
+          "name": "Red lamp",
+          "primitive": "sphere",
+          "size": {
+            "radius": 0.08,
+            "widthSegments": 8,
+            "heightSegments": 6
+          },
+          "position": [
+            0,
+            2.1,
+            0.17
           ],
           "rotation": [
             0,
@@ -226,20 +344,98 @@ window.AEGIS_PROP_LIBRARY={
             1
           ],
           "material": {
-            "color": "#ffe09a",
-            "roughness": 0.25,
+            "color": "#ef4444",
+            "roughness": 0.75,
             "metalness": 0.05,
             "opacity": 1,
-            "emissive": "#ffc85c",
-            "emissiveStrength": 1.2,
+            "emissive": "#ef4444",
+            "emissiveStrength": 0.55,
+            "castShadow": false
+          }
+        },
+        {
+          "id": "cmp-traffic-light-yellow",
+          "name": "Yellow lamp",
+          "primitive": "sphere",
+          "size": {
+            "radius": 0.08,
+            "widthSegments": 8,
+            "heightSegments": 6
+          },
+          "position": [
+            0,
+            1.9,
+            0.17
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#facc15",
+            "roughness": 0.75,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#facc15",
+            "emissiveStrength": 0.55,
+            "castShadow": false
+          }
+        },
+        {
+          "id": "cmp-traffic-light-green",
+          "name": "Green lamp",
+          "primitive": "sphere",
+          "size": {
+            "radius": 0.08,
+            "widthSegments": 8,
+            "heightSegments": 6
+          },
+          "position": [
+            0,
+            1.7,
+            0.17
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#22c55e",
+            "roughness": 0.75,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#22c55e",
+            "emissiveStrength": 0.55,
             "castShadow": false
           }
         }
-      ]
+      ],
+      "migration": {
+        "status": "game-derived",
+        "source": "legacy-three-renderer",
+        "sourcePath": "src/browser-runtime.html",
+        "runtimeCommit": "7cb0cd15c1",
+        "runtimeBlob": "0b908738c2",
+        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+        "fidelity": "exact-static",
+        "limitations": ""
+      }
     },
     {
       "schema": "aegis-prop-definition-v1",
-      "id": "prop-stop-sign",
+      "id": "prop-mu6cwa6g-101kw",
       "name": "Stop Sign",
       "visualKey": "stop-sign",
       "metadata": {
@@ -252,7 +448,7 @@ window.AEGIS_PROP_LIBRARY={
         "edgeFraction": 0.42,
         "curbLike": true,
         "natural": false,
-        "notes": ""
+        "notes": "Migrated directly from the legacy AEGIS stop-sign renderer."
       },
       "collision": {
         "shape": "cylinder",
@@ -266,931 +462,14 @@ window.AEGIS_PROP_LIBRARY={
       },
       "components": [
         {
-          "id": "cmp-stop-sign-1",
+          "id": "cmp-stop-sign-legacy-pole",
           "name": "Pole",
           "primitive": "cylinder",
           "size": {
             "radiusTop": 0.035,
             "radiusBottom": 0.045,
-            "height": 1.65,
+            "height": 1.35,
             "segments": 8
-          },
-          "position": [
-            0,
-            0.825,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#94a3b8",
-            "roughness": 0.45,
-            "metalness": 0.65,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-stop-sign-2",
-          "name": "Octagonal sign",
-          "primitive": "cylinder",
-          "size": {
-            "radiusTop": 0.3,
-            "radiusBottom": 0.3,
-            "height": 0.055,
-            "segments": 8
-          },
-          "position": [
-            0,
-            1.62,
-            0
-          ],
-          "rotation": [
-            90,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#b91c1c",
-            "roughness": 0.55,
-            "metalness": 0.08,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-stop-sign-3",
-          "name": "Center plate",
-          "primitive": "cylinder",
-          "size": {
-            "radiusTop": 0.22,
-            "radiusBottom": 0.22,
-            "height": 0.061,
-            "segments": 8
-          },
-          "position": [
-            0,
-            1.62,
-            -0.003
-          ],
-          "rotation": [
-            90,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#dc2626",
-            "roughness": 0.55,
-            "metalness": 0.05,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        }
-      ]
-    },
-    {
-      "schema": "aegis-prop-definition-v1",
-      "id": "prop-vending-machine",
-      "name": "Vending Machine",
-      "visualKey": "vending-machine",
-      "metadata": {
-        "navigationClass": "solid",
-        "coverKind": "hard",
-        "coverBlock": 0.5,
-        "maxHp": 48,
-        "losClass": "existing-cover",
-        "edgePlacement": "hex-edge",
-        "edgeFraction": 0.33,
-        "curbLike": false,
-        "natural": false,
-        "notes": ""
-      },
-      "collision": {
-        "shape": "box",
-        "size": [
-          0.78,
-          1.48,
-          0.54
-        ],
-        "offset": [
-          0,
-          0.74,
-          0
-        ]
-      },
-      "components": [
-        {
-          "id": "cmp-vending-machine-1",
-          "name": "Cabinet",
-          "primitive": "box",
-          "size": {
-            "width": 0.72,
-            "height": 1.48,
-            "depth": 0.48
-          },
-          "position": [
-            0,
-            0.74,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#1d4ed8",
-            "roughness": 0.62,
-            "metalness": 0.18,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-vending-machine-2",
-          "name": "Front inset",
-          "primitive": "box",
-          "size": {
-            "width": 0.58,
-            "height": 0.82,
-            "depth": 0.035
-          },
-          "position": [
-            0,
-            0.91,
-            0.255
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#0f172a",
-            "roughness": 0.4,
-            "metalness": 0.12,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-vending-machine-3",
-          "name": "Product glass",
-          "primitive": "box",
-          "size": {
-            "width": 0.49,
-            "height": 0.52,
-            "depth": 0.025
-          },
-          "position": [
-            -0.02,
-            1.03,
-            0.277
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#164e63",
-            "roughness": 0.18,
-            "metalness": 0.05,
-            "opacity": 0.72,
-            "emissive": "#0ea5e9",
-            "emissiveStrength": 0.1,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-vending-machine-4",
-          "name": "Control panel",
-          "primitive": "box",
-          "size": {
-            "width": 0.11,
-            "height": 0.36,
-            "depth": 0.045
-          },
-          "position": [
-            0.245,
-            0.82,
-            0.29
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#111827",
-            "roughness": 0.55,
-            "metalness": 0.3,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-vending-machine-5",
-          "name": "Dispense slot",
-          "primitive": "box",
-          "size": {
-            "width": 0.38,
-            "height": 0.14,
-            "depth": 0.04
-          },
-          "position": [
-            -0.05,
-            0.32,
-            0.28
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#020617",
-            "roughness": 0.75,
-            "metalness": 0.05,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        }
-      ]
-    },
-    {
-      "schema": "aegis-prop-definition-v1",
-      "id": "prop-newspaper-machine",
-      "name": "Newspaper Machine",
-      "visualKey": "newspaper-machine",
-      "metadata": {
-        "navigationClass": "solid",
-        "coverKind": "soft",
-        "coverBlock": 0.25,
-        "maxHp": 28,
-        "losClass": "existing-cover",
-        "edgePlacement": "hex-edge",
-        "edgeFraction": 0.33,
-        "curbLike": false,
-        "natural": false,
-        "notes": ""
-      },
-      "collision": {
-        "shape": "box",
-        "size": [
-          0.65,
-          1.04,
-          0.5
-        ],
-        "offset": [
-          0,
-          0.52,
-          0
-        ]
-      },
-      "components": [
-        {
-          "id": "cmp-newspaper-machine-1",
-          "name": "Body",
-          "primitive": "box",
-          "size": {
-            "width": 0.62,
-            "height": 0.82,
-            "depth": 0.46
-          },
-          "position": [
-            0,
-            0.52,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#f59e0b",
-            "roughness": 0.68,
-            "metalness": 0.08,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-newspaper-machine-2",
-          "name": "Window",
-          "primitive": "box",
-          "size": {
-            "width": 0.47,
-            "height": 0.37,
-            "depth": 0.025
-          },
-          "position": [
-            0,
-            0.62,
-            0.244
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#164e63",
-            "roughness": 0.2,
-            "metalness": 0.05,
-            "opacity": 0.76,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-newspaper-machine-3",
-          "name": "Base",
-          "primitive": "box",
-          "size": {
-            "width": 0.38,
-            "height": 0.22,
-            "depth": 0.34
-          },
-          "position": [
-            0,
-            0.11,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#475569",
-            "roughness": 0.8,
-            "metalness": 0.15,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        }
-      ]
-    },
-    {
-      "schema": "aegis-prop-definition-v1",
-      "id": "prop-bus-stop",
-      "name": "Bus Stop",
-      "visualKey": "bus-stop",
-      "metadata": {
-        "navigationClass": "solid",
-        "coverKind": "hard",
-        "coverBlock": 0.5,
-        "maxHp": 42,
-        "losClass": "existing-cover",
-        "edgePlacement": "hex-edge",
-        "edgeFraction": 0.33,
-        "curbLike": true,
-        "natural": false,
-        "notes": ""
-      },
-      "collision": {
-        "shape": "box",
-        "size": [
-          1.22,
-          1.78,
-          0.65
-        ],
-        "offset": [
-          0,
-          0.89,
-          0
-        ]
-      },
-      "components": [
-        {
-          "id": "cmp-bus-stop-1",
-          "name": "Left post",
-          "primitive": "cylinder",
-          "size": {
-            "radiusTop": 0.04,
-            "radiusBottom": 0.05,
-            "height": 1.75,
-            "segments": 8
-          },
-          "position": [
-            -0.48,
-            0.875,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#475569",
-            "roughness": 0.55,
-            "metalness": 0.62,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-bus-stop-2",
-          "name": "Right post",
-          "primitive": "cylinder",
-          "size": {
-            "radiusTop": 0.04,
-            "radiusBottom": 0.05,
-            "height": 1.75,
-            "segments": 8
-          },
-          "position": [
-            0.48,
-            0.875,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#475569",
-            "roughness": 0.55,
-            "metalness": 0.62,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-bus-stop-3",
-          "name": "Roof",
-          "primitive": "box",
-          "size": {
-            "width": 1.18,
-            "height": 0.08,
-            "depth": 0.58
-          },
-          "position": [
-            0,
-            1.73,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#64748b",
-            "roughness": 0.5,
-            "metalness": 0.45,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-bus-stop-4",
-          "name": "Back glass",
-          "primitive": "box",
-          "size": {
-            "width": 0.98,
-            "height": 1.15,
-            "depth": 0.025
-          },
-          "position": [
-            0,
-            0.92,
-            -0.23
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#164e63",
-            "roughness": 0.15,
-            "metalness": 0.05,
-            "opacity": 0.45,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-bus-stop-5",
-          "name": "Bench seat",
-          "primitive": "box",
-          "size": {
-            "width": 0.82,
-            "height": 0.1,
-            "depth": 0.28
-          },
-          "position": [
-            0,
-            0.43,
-            0.04
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#7c4a2d",
-            "roughness": 0.82,
-            "metalness": 0.05,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-bus-stop-6",
-          "name": "Bench back",
-          "primitive": "box",
-          "size": {
-            "width": 0.82,
-            "height": 0.34,
-            "depth": 0.08
-          },
-          "position": [
-            0,
-            0.67,
-            -0.09
-          ],
-          "rotation": [
-            -8,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#7c4a2d",
-            "roughness": 0.82,
-            "metalness": 0.05,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        }
-      ]
-    },
-    {
-      "schema": "aegis-prop-definition-v1",
-      "id": "prop-street-bench",
-      "name": "Street Bench",
-      "visualKey": "street-bench",
-      "metadata": {
-        "navigationClass": "solid",
-        "coverKind": "soft",
-        "coverBlock": 0.25,
-        "maxHp": 32,
-        "losClass": "existing-cover",
-        "edgePlacement": "hex-edge",
-        "edgeFraction": 0.33,
-        "curbLike": true,
-        "natural": false,
-        "notes": ""
-      },
-      "collision": {
-        "shape": "box",
-        "size": [
-          1.12,
-          0.92,
-          0.48
-        ],
-        "offset": [
-          0,
-          0.46,
-          0
-        ]
-      },
-      "components": [
-        {
-          "id": "cmp-street-bench-1",
-          "name": "Seat",
-          "primitive": "box",
-          "size": {
-            "width": 1.05,
-            "height": 0.11,
-            "depth": 0.34
-          },
-          "position": [
-            0,
-            0.48,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#7c4a2d",
-            "roughness": 0.86,
-            "metalness": 0.05,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-street-bench-2",
-          "name": "Back",
-          "primitive": "box",
-          "size": {
-            "width": 1.05,
-            "height": 0.38,
-            "depth": 0.09
-          },
-          "position": [
-            0,
-            0.72,
-            -0.13
-          ],
-          "rotation": [
-            -10,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#7c4a2d",
-            "roughness": 0.86,
-            "metalness": 0.05,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-street-bench-3",
-          "name": "Left leg",
-          "primitive": "box",
-          "size": {
-            "width": 0.1,
-            "height": 0.44,
-            "depth": 0.18
-          },
-          "position": [
-            -0.38,
-            0.22,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#334155",
-            "roughness": 0.6,
-            "metalness": 0.55,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-street-bench-4",
-          "name": "Right leg",
-          "primitive": "box",
-          "size": {
-            "width": 0.1,
-            "height": 0.44,
-            "depth": 0.18
-          },
-          "position": [
-            0.38,
-            0.22,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#334155",
-            "roughness": 0.6,
-            "metalness": 0.55,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        }
-      ]
-    },
-    {
-      "schema": "aegis-prop-definition-v1",
-      "id": "prop-crates",
-      "name": "Crates",
-      "visualKey": "crates",
-      "metadata": {
-        "navigationClass": "solid",
-        "coverKind": "hard",
-        "coverBlock": 0.5,
-        "maxHp": 44,
-        "losClass": "existing-cover",
-        "edgePlacement": "hex-edge",
-        "edgeFraction": 0.3,
-        "curbLike": false,
-        "natural": false,
-        "notes": ""
-      },
-      "collision": {
-        "shape": "box",
-        "size": [
-          0.78,
-          0.72,
-          0.78
-        ],
-        "offset": [
-          0,
-          0.36,
-          0
-        ]
-      },
-      "components": [
-        {
-          "id": "cmp-crates-1",
-          "name": "Main crate",
-          "primitive": "box",
-          "size": {
-            "width": 0.72,
-            "height": 0.66,
-            "depth": 0.72
-          },
-          "position": [
-            0,
-            0.33,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#8b5a2b",
-            "roughness": 0.88,
-            "metalness": 0.05,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-crates-2",
-          "name": "Top slat",
-          "primitive": "box",
-          "size": {
-            "width": 0.76,
-            "height": 0.07,
-            "depth": 0.12
           },
           "position": [
             0,
@@ -1208,9 +487,9 @@ window.AEGIS_PROP_LIBRARY={
             1
           ],
           "material": {
-            "color": "#5b371f",
-            "roughness": 0.92,
-            "metalness": 0.05,
+            "color": "#64748b",
+            "roughness": 0.75,
+            "metalness": 0.45,
             "opacity": 1,
             "emissive": "#000000",
             "emissiveStrength": 0,
@@ -1218,18 +497,319 @@ window.AEGIS_PROP_LIBRARY={
           }
         },
         {
-          "id": "cmp-crates-3",
-          "name": "Front slat",
-          "primitive": "box",
+          "id": "cmp-stop-sign-legacy-sign",
+          "name": "Octagonal sign",
+          "primitive": "cylinder",
           "size": {
-            "width": 0.76,
-            "height": 0.08,
-            "depth": 0.08
+            "radiusTop": 0.31,
+            "radiusBottom": 0.31,
+            "height": 0.055,
+            "segments": 8
           },
           "position": [
             0,
-            0.36,
-            0.4
+            1.38,
+            0
+          ],
+          "rotation": [
+            90,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#b91c1c",
+            "roughness": 0.7,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ],
+      "migration": {
+        "status": "game-derived",
+        "source": "legacy-three-renderer",
+        "sourcePath": "src/browser-runtime.html",
+        "runtimeCommit": "7cb0cd15c1",
+        "runtimeBlob": "0b908738c2",
+        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+        "fidelity": "exact-static",
+        "limitations": ""
+      }
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-mu6cwa6g-ml3fk",
+      "name": "Vending Machine",
+      "visualKey": "vending-machine",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "hard",
+        "coverBlock": 0.5,
+        "maxHp": 48,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.33,
+        "curbLike": false,
+        "natural": false,
+        "notes": "Migrated directly from the legacy AEGIS vending-machine renderer (crate + wall primitives and original scales)."
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          0.78,
+          1.48,
+          0.54
+        ],
+        "offset": [
+          0,
+          0.74,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-vending-legacy-body",
+          "name": "Machine body",
+          "primitive": "box",
+          "size": {
+            "width": 0.64,
+            "height": 0.45,
+            "depth": 0.64
+          },
+          "position": [
+            0,
+            0.56,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            0.82,
+            1.65,
+            0.64
+          ],
+          "material": {
+            "color": "#0f766e",
+            "roughness": 0.66,
+            "metalness": 0.15,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-vending-legacy-panel",
+          "name": "Front panel",
+          "primitive": "box",
+          "size": {
+            "width": 0.92,
+            "height": 0.62,
+            "depth": 0.54
+          },
+          "position": [
+            0,
+            0.65,
+            0.34
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            0.55,
+            0.72,
+            0.08
+          ],
+          "material": {
+            "color": "#99f6e4",
+            "roughness": 0.78,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#67e8f9",
+            "emissiveStrength": 0.12,
+            "castShadow": true
+          }
+        }
+      ],
+      "migration": {
+        "status": "game-derived",
+        "source": "legacy-three-renderer",
+        "sourcePath": "src/browser-runtime.html",
+        "runtimeCommit": "7cb0cd15c1",
+        "runtimeBlob": "0b908738c2",
+        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+        "fidelity": "exact-static",
+        "limitations": ""
+      }
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-mu6cwa6g-bm196",
+      "name": "Newspaper Machine",
+      "visualKey": "newspaper-machine",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "soft",
+        "coverBlock": 0.25,
+        "maxHp": 28,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.33,
+        "curbLike": false,
+        "natural": false,
+        "notes": "Migrated directly from the legacy AEGIS newspaper-machine renderer."
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          0.65,
+          1.04,
+          0.5
+        ],
+        "offset": [
+          0,
+          0.52,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-news-legacy-body",
+          "name": "Machine body",
+          "primitive": "box",
+          "size": {
+            "width": 0.64,
+            "height": 0.45,
+            "depth": 0.64
+          },
+          "position": [
+            0,
+            0.38,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            0.64,
+            1.1,
+            0.54
+          ],
+          "material": {
+            "color": "#1d4ed8",
+            "roughness": 0.66,
+            "metalness": 0.15,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-news-legacy-panel",
+          "name": "Front panel",
+          "primitive": "box",
+          "size": {
+            "width": 0.92,
+            "height": 0.62,
+            "depth": 0.54
+          },
+          "position": [
+            0,
+            0.42,
+            0.34
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            0.55,
+            0.72,
+            0.08
+          ],
+          "material": {
+            "color": "#e2e8f0",
+            "roughness": 0.75,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ],
+      "migration": {
+        "status": "game-derived",
+        "source": "legacy-three-renderer",
+        "sourcePath": "src/browser-runtime.html",
+        "runtimeCommit": "7cb0cd15c1",
+        "runtimeBlob": "0b908738c2",
+        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+        "fidelity": "exact-static",
+        "limitations": ""
+      }
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-mu6cwa6g-wlsyq",
+      "name": "Bus Stop",
+      "visualKey": "bus-stop",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "hard",
+        "coverBlock": 0.5,
+        "maxHp": 42,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.33,
+        "curbLike": true,
+        "natural": false,
+        "notes": "Migrated directly from the legacy AEGIS bus-stop renderer. The old renderer also set depthWrite=false on shelter glass; shared material schema does not expose that flag yet."
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          1.22,
+          1.78,
+          0.65
+        ],
+        "offset": [
+          0,
+          0.89,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-bus-stop-legacy-post",
+          "name": "Post",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.04,
+            "radiusBottom": 0.05,
+            "height": 1.65,
+            "segments": 8
+          },
+          "position": [
+            -0.45,
+            0.83,
+            0
           ],
           "rotation": [
             0,
@@ -1242,8 +822,110 @@ window.AEGIS_PROP_LIBRARY={
             1
           ],
           "material": {
-            "color": "#5b371f",
-            "roughness": 0.92,
+            "color": "#475569",
+            "roughness": 0.6,
+            "metalness": 0.4,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-bus-stop-legacy-sign",
+          "name": "Sign",
+          "primitive": "box",
+          "size": {
+            "width": 0.64,
+            "height": 0.45,
+            "depth": 0.64
+          },
+          "position": [
+            -0.45,
+            1.55,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            0.28,
+            0.38,
+            0.12
+          ],
+          "material": {
+            "color": "#2563eb",
+            "roughness": 0.78,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#60a5fa",
+            "emissiveStrength": 0.1,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-bus-stop-legacy-shelter",
+          "name": "Glass shelter",
+          "primitive": "box",
+          "size": {
+            "width": 0.92,
+            "height": 0.62,
+            "depth": 0.54
+          },
+          "position": [
+            0.2,
+            0.8,
+            0.35
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1.05,
+            1.55,
+            0.12
+          ],
+          "material": {
+            "color": "#7dd3fc",
+            "roughness": 0.1,
+            "metalness": 0.05,
+            "opacity": 0.18,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-bus-stop-legacy-seat",
+          "name": "Seat",
+          "primitive": "box",
+          "size": {
+            "width": 0.08,
+            "height": 0.08,
+            "depth": 1
+          },
+          "position": [
+            0.1,
+            0.35,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            90
+          ],
+          "scale": [
+            4.6,
+            0.9,
+            1.2
+          ],
+          "material": {
+            "color": "#64748b",
+            "roughness": 0.8,
             "metalness": 0.05,
             "opacity": 1,
             "emissive": "#000000",
@@ -1251,11 +933,390 @@ window.AEGIS_PROP_LIBRARY={
             "castShadow": true
           }
         }
-      ]
+      ],
+      "migration": {
+        "status": "game-derived",
+        "source": "legacy-three-renderer",
+        "sourcePath": "src/browser-runtime.html",
+        "runtimeCommit": "7cb0cd15c1",
+        "runtimeBlob": "0b908738c2",
+        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+        "fidelity": "exact-static",
+        "limitations": "Shelter geometry/material values are migrated; legacy depthWrite=false is not represented by the current shared material schema."
+      }
     },
     {
       "schema": "aegis-prop-definition-v1",
-      "id": "prop-concrete",
+      "id": "prop-playground",
+      "name": "Playground",
+      "visualKey": "playground",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "hard",
+        "coverBlock": 0.5,
+        "maxHp": 48,
+        "losClass": "existing-cover",
+        "edgePlacement": "center",
+        "edgeFraction": 0,
+        "curbLike": false,
+        "natural": false,
+        "notes": "Migrated directly from the legacy AEGIS playground renderer. Keeps center placement used by residence-adjacent scene generation."
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          1.35,
+          1.4,
+          1.4
+        ],
+        "offset": [
+          0,
+          0.7,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-playground-left-post",
+          "name": "Left post",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.035,
+            "radiusBottom": 0.045,
+            "height": 1.35,
+            "segments": 8
+          },
+          "position": [
+            -0.45,
+            0.68,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#f59e0b",
+            "roughness": 0.68,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-playground-right-post",
+          "name": "Right post",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.035,
+            "radiusBottom": 0.045,
+            "height": 1.35,
+            "segments": 8
+          },
+          "position": [
+            0.45,
+            0.68,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#f59e0b",
+            "roughness": 0.68,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-playground-bar",
+          "name": "Top bar",
+          "primitive": "box",
+          "size": {
+            "width": 0.08,
+            "height": 0.08,
+            "depth": 1
+          },
+          "position": [
+            0,
+            1.32,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            90
+          ],
+          "scale": [
+            5.6,
+            0.8,
+            0.9
+          ],
+          "material": {
+            "color": "#f59e0b",
+            "roughness": 0.68,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-playground-slide",
+          "name": "Slide",
+          "primitive": "box",
+          "size": {
+            "width": 0.92,
+            "height": 0.62,
+            "depth": 0.54
+          },
+          "position": [
+            0.55,
+            0.55,
+            0.2
+          ],
+          "rotation": [
+            -27.501974,
+            0,
+            0
+          ],
+          "scale": [
+            0.55,
+            0.12,
+            1.5
+          ],
+          "material": {
+            "color": "#2563eb",
+            "roughness": 0.55,
+            "metalness": 0.12,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ],
+      "migration": {
+        "status": "game-derived",
+        "source": "legacy-three-renderer",
+        "sourcePath": "src/browser-runtime.html",
+        "runtimeCommit": "7cb0cd15c1",
+        "runtimeBlob": "0b908738c2",
+        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+        "fidelity": "exact-static",
+        "limitations": ""
+      }
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-mu6cwa6g-ounkz",
+      "name": "Street Bench",
+      "visualKey": "street-bench",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "soft",
+        "coverBlock": 0.25,
+        "maxHp": 32,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.33,
+        "curbLike": true,
+        "natural": false,
+        "notes": "Migrated directly from the legacy AEGIS street-bench renderer."
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          1.12,
+          0.92,
+          0.48
+        ],
+        "offset": [
+          0,
+          0.46,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-bench-legacy-seat",
+          "name": "Seat",
+          "primitive": "box",
+          "size": {
+            "width": 0.08,
+            "height": 0.08,
+            "depth": 1
+          },
+          "position": [
+            0,
+            0.34,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            90
+          ],
+          "scale": [
+            5.8,
+            0.95,
+            1.5
+          ],
+          "material": {
+            "color": "#8b5a2b",
+            "roughness": 0.9,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-bench-legacy-back",
+          "name": "Back",
+          "primitive": "box",
+          "size": {
+            "width": 0.08,
+            "height": 0.08,
+            "depth": 1
+          },
+          "position": [
+            0,
+            0.62,
+            0.24
+          ],
+          "rotation": [
+            0,
+            0,
+            90
+          ],
+          "scale": [
+            5.8,
+            0.9,
+            1.1
+          ],
+          "material": {
+            "color": "#8b5a2b",
+            "roughness": 0.9,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ],
+      "migration": {
+        "status": "game-derived",
+        "source": "legacy-three-renderer",
+        "sourcePath": "src/browser-runtime.html",
+        "runtimeCommit": "7cb0cd15c1",
+        "runtimeBlob": "0b908738c2",
+        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+        "fidelity": "exact-static",
+        "limitations": ""
+      }
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-mu6cwa6g-ghune",
+      "name": "Crates",
+      "visualKey": "crates",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "hard",
+        "coverBlock": 0.5,
+        "maxHp": 44,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.3,
+        "curbLike": false,
+        "natural": false,
+        "notes": "Migrated directly from the legacy AEGIS crate renderer."
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          0.64,
+          0.45,
+          0.64
+        ],
+        "offset": [
+          0,
+          0.34,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-crates-legacy-body",
+          "name": "Crate",
+          "primitive": "box",
+          "size": {
+            "width": 0.64,
+            "height": 0.45,
+            "depth": 0.64
+          },
+          "position": [
+            0,
+            0.34,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#8b5a2b",
+            "roughness": 0.82,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ],
+      "migration": {
+        "status": "game-derived",
+        "source": "legacy-three-renderer",
+        "sourcePath": "src/browser-runtime.html",
+        "runtimeCommit": "7cb0cd15c1",
+        "runtimeBlob": "0b908738c2",
+        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+        "fidelity": "exact-static",
+        "limitations": ""
+      }
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-mu6cwa6g-qclz7",
       "name": "Concrete Barrier",
       "visualKey": "concrete",
       "metadata": {
@@ -1268,34 +1329,34 @@ window.AEGIS_PROP_LIBRARY={
         "edgeFraction": 0.3,
         "curbLike": false,
         "natural": false,
-        "notes": ""
+        "notes": "Migrated directly from the legacy AEGIS concrete cover renderer."
       },
       "collision": {
         "shape": "box",
         "size": [
-          1.18,
-          0.65,
-          0.5
+          0.92,
+          0.62,
+          0.54
         ],
         "offset": [
           0,
-          0.325,
+          0.38,
           0
         ]
       },
       "components": [
         {
-          "id": "cmp-concrete-1",
-          "name": "Barrier",
+          "id": "cmp-concrete-legacy-body",
+          "name": "Concrete block",
           "primitive": "box",
           "size": {
-            "width": 1.04,
+            "width": 0.92,
             "height": 0.62,
-            "depth": 0.32
+            "depth": 0.54
           },
           "position": [
             0,
-            0.31,
+            0.38,
             0
           ],
           "rotation": [
@@ -1310,41 +1371,7 @@ window.AEGIS_PROP_LIBRARY={
           ],
           "material": {
             "color": "#94a3b8",
-            "roughness": 0.96,
-            "metalness": 0.05,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-concrete-2",
-          "name": "Base",
-          "primitive": "box",
-          "size": {
-            "width": 1.18,
-            "height": 0.12,
-            "depth": 0.48
-          },
-          "position": [
-            0,
-            0.06,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#64748b",
-            "roughness": 0.98,
+            "roughness": 0.94,
             "metalness": 0.05,
             "opacity": 1,
             "emissive": "#000000",
@@ -1352,11 +1379,21 @@ window.AEGIS_PROP_LIBRARY={
             "castShadow": true
           }
         }
-      ]
+      ],
+      "migration": {
+        "status": "game-derived",
+        "source": "legacy-three-renderer",
+        "sourcePath": "src/browser-runtime.html",
+        "runtimeCommit": "7cb0cd15c1",
+        "runtimeBlob": "0b908738c2",
+        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+        "fidelity": "exact-static",
+        "limitations": ""
+      }
     },
     {
       "schema": "aegis-prop-definition-v1",
-      "id": "prop-fence",
+      "id": "prop-mu6cwa6g-oob0z",
       "name": "Fence Segment",
       "visualKey": "fence",
       "metadata": {
@@ -1369,34 +1406,34 @@ window.AEGIS_PROP_LIBRARY={
         "edgeFraction": 0.3,
         "curbLike": false,
         "natural": false,
-        "notes": ""
+        "notes": "Migrated directly from the legacy AEGIS fence renderer."
       },
       "collision": {
         "shape": "box",
         "size": [
-          1.08,
-          0.94,
-          0.18
+          0.92,
+          0.279,
+          0.1512
         ],
         "offset": [
           0,
-          0.47,
+          0.25,
           0
         ]
       },
       "components": [
         {
-          "id": "cmp-fence-1",
-          "name": "Left post",
+          "id": "cmp-fence-legacy-body",
+          "name": "Fence body",
           "primitive": "box",
           "size": {
-            "width": 0.1,
-            "height": 0.92,
-            "depth": 0.1
+            "width": 0.92,
+            "height": 0.62,
+            "depth": 0.54
           },
           "position": [
-            -0.47,
-            0.46,
+            0,
+            0.25,
             0
           ],
           "rotation": [
@@ -1406,114 +1443,12 @@ window.AEGIS_PROP_LIBRARY={
           ],
           "scale": [
             1,
-            1,
-            1
+            0.45,
+            0.28
           ],
           "material": {
             "color": "#76512e",
-            "roughness": 0.94,
-            "metalness": 0.05,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-fence-2",
-          "name": "Right post",
-          "primitive": "box",
-          "size": {
-            "width": 0.1,
-            "height": 0.92,
-            "depth": 0.1
-          },
-          "position": [
-            0.47,
-            0.46,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#76512e",
-            "roughness": 0.94,
-            "metalness": 0.05,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-fence-3",
-          "name": "Top rail",
-          "primitive": "box",
-          "size": {
-            "width": 1,
-            "height": 0.1,
-            "depth": 0.09
-          },
-          "position": [
-            0,
-            0.72,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#76512e",
-            "roughness": 0.94,
-            "metalness": 0.05,
-            "opacity": 1,
-            "emissive": "#000000",
-            "emissiveStrength": 0,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-fence-4",
-          "name": "Low rail",
-          "primitive": "box",
-          "size": {
-            "width": 1,
-            "height": 0.1,
-            "depth": 0.09
-          },
-          "position": [
-            0,
-            0.36,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ],
-          "material": {
-            "color": "#76512e",
-            "roughness": 0.94,
+            "roughness": 0.92,
             "metalness": 0.05,
             "opacity": 1,
             "emissive": "#000000",
@@ -1521,11 +1456,98 @@ window.AEGIS_PROP_LIBRARY={
             "castShadow": true
           }
         }
-      ]
+      ],
+      "migration": {
+        "status": "game-derived",
+        "source": "legacy-three-renderer",
+        "sourcePath": "src/browser-runtime.html",
+        "runtimeCommit": "7cb0cd15c1",
+        "runtimeBlob": "0b908738c2",
+        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+        "fidelity": "exact-static",
+        "limitations": ""
+      }
     },
     {
       "schema": "aegis-prop-definition-v1",
-      "id": "prop-rock",
+      "id": "prop-hay",
+      "name": "Hay Bale",
+      "visualKey": "hay",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "hard",
+        "coverBlock": 0.5,
+        "maxHp": 48,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.3,
+        "curbLike": false,
+        "natural": true,
+        "notes": "Migrated directly from the legacy AEGIS farm hay renderer. Mission generation may still assign stronger cover blocks/HP to individual hay cells; tactical cell data remains authoritative."
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          0.672,
+          0.351,
+          0.5888
+        ],
+        "offset": [
+          0,
+          0.3,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-hay-legacy-body",
+          "name": "Hay bale",
+          "primitive": "box",
+          "size": {
+            "width": 0.64,
+            "height": 0.45,
+            "depth": 0.64
+          },
+          "position": [
+            0,
+            0.3,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1.05,
+            0.78,
+            0.92
+          ],
+          "material": {
+            "color": "#b88935",
+            "roughness": 1,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ],
+      "migration": {
+        "status": "game-derived",
+        "source": "legacy-three-renderer",
+        "sourcePath": "src/browser-runtime.html",
+        "runtimeCommit": "7cb0cd15c1",
+        "runtimeBlob": "0b908738c2",
+        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+        "fidelity": "exact-static",
+        "limitations": ""
+      }
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-mu6cwa6g-ydvah",
       "name": "Rock",
       "visualKey": "rock",
       "metadata": {
@@ -1538,7 +1560,7 @@ window.AEGIS_PROP_LIBRARY={
         "edgeFraction": 0.3,
         "curbLike": false,
         "natural": true,
-        "notes": ""
+        "notes": "Editable shared approximation. Exact legacy rock migration is pending DodecahedronGeometry support in both editor and runtime shared renderer."
       },
       "collision": {
         "shape": "box",
@@ -1555,7 +1577,7 @@ window.AEGIS_PROP_LIBRARY={
       },
       "components": [
         {
-          "id": "cmp-rock-1",
+          "id": "cmp-mu6cwa6g-0ay58",
           "name": "Rock mass",
           "primitive": "sphere",
           "size": {
@@ -1588,11 +1610,21 @@ window.AEGIS_PROP_LIBRARY={
             "castShadow": true
           }
         }
-      ]
+      ],
+      "migration": {
+        "status": "pending-primitive",
+        "source": "legacy-three-renderer",
+        "sourcePath": "src/browser-runtime.html",
+        "runtimeCommit": "7cb0cd15c1",
+        "runtimeBlob": "0b908738c2",
+        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+        "fidelity": "approximation",
+        "limitations": "Legacy rock uses THREE.DodecahedronGeometry; current shared prop primitive schema supports box/cylinder/sphere/cone/torus only."
+      }
     },
     {
       "schema": "aegis-prop-definition-v1",
-      "id": "prop-bush",
+      "id": "prop-mu6cwa6g-ckyw7",
       "name": "Bush",
       "visualKey": "bush",
       "metadata": {
@@ -1605,7 +1637,7 @@ window.AEGIS_PROP_LIBRARY={
         "edgeFraction": 0,
         "curbLike": false,
         "natural": true,
-        "notes": ""
+        "notes": "Migrated from the generic legacy AEGIS bush renderer. Regional bush scale/color variation remains a future shared-library extension."
       },
       "collision": {
         "shape": "none",
@@ -1622,11 +1654,11 @@ window.AEGIS_PROP_LIBRARY={
       },
       "components": [
         {
-          "id": "cmp-bush-1",
+          "id": "cmp-bush-legacy-body",
           "name": "Foliage",
           "primitive": "sphere",
           "size": {
-            "radius": 0.56,
+            "radius": 0.36,
             "widthSegments": 8,
             "heightSegments": 6
           },
@@ -1641,13 +1673,13 @@ window.AEGIS_PROP_LIBRARY={
             0
           ],
           "scale": [
-            1.15,
-            0.52,
+            1.18,
+            0.58,
             0.92
           ],
           "material": {
-            "color": "#4d7c0f",
-            "roughness": 1,
+            "color": "#2f8f4e",
+            "roughness": 0.95,
             "metalness": 0.05,
             "opacity": 1,
             "emissive": "#000000",
@@ -1655,7 +1687,17 @@ window.AEGIS_PROP_LIBRARY={
             "castShadow": true
           }
         }
-      ]
+      ],
+      "migration": {
+        "status": "game-derived",
+        "source": "legacy-three-renderer",
+        "sourcePath": "src/browser-runtime.html",
+        "runtimeCommit": "7cb0cd15c1",
+        "runtimeBlob": "0b908738c2",
+        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
+        "fidelity": "baseline-regional",
+        "limitations": "Generic legacy geometry is exact; biome/id-based bush variation is not yet data-driven in the shared schema."
+      }
     }
   ]
 };

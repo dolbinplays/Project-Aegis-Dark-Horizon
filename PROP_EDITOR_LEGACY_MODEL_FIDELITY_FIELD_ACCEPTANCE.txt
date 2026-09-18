@@ -1,0 +1,25 @@
+AEGIS PROP EDITOR 1945 — LEGACY MODEL FIDELITY MIGRATION FIELD ACCEPTANCE
+
+Build:
+v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH
+
+Acceptance criteria:
+1. Editor loads the canonical assets/data/aegis-prop-library.js and reports 15 shared editable props.
+2. Tree uses the legacy generic cylinder trunk + cone canopy model (not the previous sphere canopy approximation).
+3. Lamp Post uses the legacy pole + bulb model and no longer includes the editor-only base component.
+4. Stop Sign uses the legacy pole + octagonal sign model and no longer includes the editor-only center plate.
+5. Vending Machine and Newspaper Machine use the legacy crate/wall primitive sizes and original transform scales.
+6. Bus Stop uses the legacy post/sign/shelter/seat construction.
+7. Street Bench uses the legacy beam-based seat/back construction.
+8. Crates, Concrete Barrier, and Fence use the legacy single-mesh renderer shapes/scales.
+9. Bush uses the generic legacy sphere/scale model; regional runtime variation is explicitly identified as a limitation.
+10. Traffic Light is now a shared/editable game-derived prop and includes pole, head, and three emissive signal lamps.
+11. Playground is now a shared/editable game-derived prop.
+12. Hay Bale is now a shared/editable game-derived prop.
+13. Game Prop Inventory marks migrated definitions as Game-derived rather than generic Editor-only entries.
+14. Selecting a shared prop shows its Game Model Source/provenance and fidelity note.
+15. Rock remains editable but is explicitly marked as an approximation pending DodecahedronGeometry support.
+16. Civic Statue and Water Fountain remain legacy because their model scale is runtime-driven by landmark footprint size.
+17. Existing live transform sliders, natural orbit direction, runtime-library export, and r128 startup compatibility remain intact.
+18. Browser 1320 runtime code is unchanged; it consumes the updated shared library through the existing runtime integration path.
+19. Save format remains 4.
