@@ -1,0 +1,17 @@
+Project Aegis 1358 validation summary
+
+PASS: main editor JavaScript parses with node --check
+PASS: injected same-document Three.js bridge JavaScript parses with node --check
+PASS: 16/16 1358 static integration contracts
+PASS: existing 1215 contextual placement/runtime contract suite unchanged
+PASS: 2D proxy context canvas removed from current editor
+PASS: live road/building context, forward arrow, mirrored preview, ground-plane placement drag, and bidirectional prop selection are wired
+PASS: save format remains 4
+
+Field acceptance still recommended:
+- visually inspect Straight/T/Four-way contexts against representative props
+- drag roadside props and confirm curb/lateral values feel intuitive
+- drag building-adjacent props around the protected door approach
+- switch props from both left placement selector and embedded 0835 prop list
+- verify orbit/picking returns immediately after placement-drag mode is disabled
+- verify Damage/Destroyed/Variant editing preserves the same parent placement context
