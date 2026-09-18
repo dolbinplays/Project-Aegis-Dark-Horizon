@@ -1,0 +1,15 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),{test}=require('node:test');
+const root=path.join(__dirname,'..');
+const target='v0.26.09.17.2030_FULL_EDITABLE_SCENERY_PROP_MIGRATION_PATCH';
+const lib=JSON.parse(fs.readFileSync(path.join(root,'assets/data/aegis-prop-library.json'),'utf8'));
+const libJs=fs.readFileSync(path.join(root,'assets/data/aegis-prop-library.js'),'utf8');
+const editor=fs.readFileSync(path.join(root,'AEGIS_Prop_Editor_v0.26.09.17.2030_FULL_EDITABLE_SCENERY_PROP_MIGRATION_PATCH.html'),'utf8');
+const current=fs.readFileSync(path.join(root,'AEGIS_Prop_Editor_CURRENT.html'),'utf8');
+const keys=lib.props.map(p=>p.visualKey),set=new Set(keys);
+test('library identity and continuity',()=>{assert.equal(lib.schema,'aegis-prop-library-v1');assert.equal(lib.libraryVersion,target);assert.equal(lib.props.length,57);assert.equal(set.size,57);});
+test('1945 shared visual set is retained',()=>{for(const k of ['tree','lamp-post','traffic-light','stop-sign','vending-machine','newspaper-machine','bus-stop','playground','street-bench','crates','concrete','fence','hay','rock','bush'])assert.ok(set.has(k),k);});
+test('2030 ordinary scenery coverage is present',()=>{for(const k of ['brush','crop','wreck','civic-statue','water-fountain','interior-power-panel','vehicle-bus','vehicle-sedan','vehicle-van','vehicle-utility','interior-office-desk','interior-filing-cabinet','interior-cash-register','interior-couch','interior-bed','interior-radio-console'])assert.ok(set.has(k),k);});
+test('runtime overlay carries new renderer capabilities',()=>{assert.match(libJs,/AEGIS_PROP_SCENERY_RUNTIME_OVERLAY_BUILD/);assert.match(libJs,/DodecahedronGeometry/);assert.match(libJs,/visualMatchMode/);assert.match(libJs,/runtimeScaleMode/);assert.match(libJs,/tacticalThreeAddLandVehicle2030/);assert.match(libJs,/tacticalVehicleHeadlightLayout/);});
+test('editor exposes migrated library authoring controls',()=>{assert.match(editor,/Editable Scenery 2030/);assert.match(editor,/value="dodecahedron"/);assert.match(editor,/pointerdown/);assert.match(editor,/orbit\.yaw-=dx\*\.009/);assert.match(editor,/visualMatchMode/);assert.match(editor,/runtimeScaleMode/);assert.match(editor,/Download Runtime Library JS/);assert.match(current,/2030_FULL_EDITABLE_SCENERY_PROP_MIGRATION_PATCH/);});
+test('direct package needs no installer baseline',()=>{assert.doesNotMatch(libJs,/requires the pushed 1945 Prop Editor baseline/);});

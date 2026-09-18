@@ -1,0 +1,23 @@
+AEGIS 2058 — PROP RUNTIME FIDELITY & TEST GALLERY VALIDATION SUMMARY
+
+Build: v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH
+Save format: 4
+
+PASS — Prop Editor inline JavaScript parses successfully with Node --check.
+PASS — Runtime Test Gallery inline JavaScript parses successfully with Node --check.
+PASS — Canonical shared library JavaScript parses successfully with Node --check.
+PASS — Canonical library JS payload and JSON mirror are identical.
+PASS — Canonical library remains 57 shared/editable prop definitions.
+PASS — All 57 definitions carry rootTransform position/rotation/scale arrays.
+PASS — Editor exposes whole-prop Position, Rotation, Scale, reset, and runtime-authority status.
+PASS — Editor preview applies root transforms above component transforms.
+PASS — Runtime bridge applies root transforms before civic-landmark scaling.
+PASS — Dodecahedron support remains present.
+PASS — Runtime bridge preserves editor-driven vehicle geometry while retaining vehicle runtime behavior.
+PASS — Gallery loads the canonical library and exposes Iso / TPV / FPV / Top presets.
+PASS — Gallery exercises landmark scale, power panel state, and vehicle-light context.
+PASS — Runtime Ctrl+Shift+G gallery shortcut and optional ?propqa=1 button are present.
+PASS — Focused Node regression suite: 5 passed, 0 failed; 1 full-repository runtime scan intentionally skipped in the isolated direct-copy package because src/browser-runtime.html is not included. That scan will execute automatically when the test is run after extraction into the full repository.
+
+Continuity note:
+GitHub main was still at the pushed 1945 Prop Editor commit while this package was built. This 2058 direct-copy patch therefore builds on the previously delivered local 2030 direct-copy overlay. Push 2030/2058 files when ready so GitHub becomes authoritative again.

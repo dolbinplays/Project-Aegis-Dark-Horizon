@@ -1,0 +1,17 @@
+AEGIS 2058 — PROP RUNTIME FIDELITY AND TEST GALLERY FIELD ACCEPTANCE
+
+1. Current Prop Editor launcher opens AEGIS_Prop_Editor_v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH.html.
+2. Canonical library remains 57 shared/editable props and save format remains 4.
+3. Every shared definition has an identity whole-prop rootTransform by default.
+4. Editor exposes live whole-prop Position / Rotation / Scale sliders plus reset.
+5. Editor preview applies rootTransform above component-local transforms.
+6. Runtime bridge applies the same root transform before civic landmark scaling.
+7. Editor shows Game Runtime Authority status for the active prop.
+8. Runtime gallery launcher opens AEGIS_Prop_Runtime_Test_Gallery_v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH.html.
+9. Gallery loads the canonical shared library and exposes all 57 props.
+10. Gallery supports Iso, TPV, FPV and Top camera presets.
+11. Gallery can exercise civic landmark size, power panel online/offline state and vehicle lights.
+12. Runtime Ctrl+Shift+G opens the gallery; index.html?propqa=1 exposes a Prop QA button.
+13. Dodecahedron support remains present.
+14. Vehicle road rotation/footprint/headlight authority remains retained by the game.
+15. No save-schema change. Save format remains 4.

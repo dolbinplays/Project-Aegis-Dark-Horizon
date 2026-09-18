@@ -1,0 +1,15 @@
+AEGIS 2030 DIRECT-COPY VALIDATION SUMMARY
+
+PASS — Canonical JSON parses successfully.
+PASS — Canonical library contains 57 unique editable visual keys.
+PASS — All 15 pushed 1945 visual keys remain present.
+PASS — Expanded coverage includes exact rock, brush/crop, wreck, civic landmarks, power panel, four road vehicles, and the procedural interior furnishing catalog.
+PASS — Shared runtime bridge contains DodecahedronGeometry support.
+PASS — Runtime-bridge smoke test resolves family visual keys and exact vehicle keys against the 57-prop library.
+PASS — Shared runtime bridge contains exact-first family visual matching.
+PASS — Shared runtime bridge preserves civic landmark root scaling.
+PASS — Shared runtime bridge delegates non-shared vehicles to the legacy renderer and retains headlamp geometry for shared vehicles.
+PASS — 2030 editor JavaScript parses successfully and exposes Dodecahedron, continuous transform sliders, natural orbit drag, metadata rules, collision editing, and runtime-library export.
+PASS — AEGIS_Prop_Editor_CURRENT.html redirects to the 2030 editor.
+PASS — Direct package has no BAT installer and no dependency on a locally present 1945 editor file.
+PASS — Save format remains 4.

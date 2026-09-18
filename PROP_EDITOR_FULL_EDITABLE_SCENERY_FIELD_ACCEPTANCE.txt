@@ -1,0 +1,18 @@
+AEGIS FULL EDITABLE SCENERY PROP MIGRATION — FIELD ACCEPTANCE
+
+Build: v0.26.09.17.2030_FULL_EDITABLE_SCENERY_PROP_MIGRATION_PATCH
+Save format: 4
+
+1. AEGIS_Prop_Editor_CURRENT.html redirects to the 2030 editor.
+2. Canonical shared library contains 57 editable definitions and retains all 15 pushed 1945 definitions.
+3. Rock uses editable DodecahedronGeometry.
+4. Brush and crop families use shared family matching.
+5. Civic Statue and Water Fountain use shared editable models while preserving tacticalCivicLandmarkVisualScale behavior.
+6. vehicle-bus, vehicle-sedan, vehicle-van, and vehicle-utility use shared editable models while existing road rotation, occupied footprint, and headlight systems remain authoritative.
+7. interior-power-panel is shared/editable while cover HP and power-circuit gameplay data remain authoritative.
+8. The current procedural interior furnishing catalog is represented by individual editable shared definitions.
+9. Existing 1945 shared models remain in the canonical library.
+10. The direct package does not require the 1945 editor HTML to exist locally and does not run a patch script.
+11. Existing index.html and src/browser-runtime.html can remain in place; the shared library applies the 2030 renderer bridge after runtime initialization.
+12. Interactive doors, structural walls/windows, UFO/Skyranger, alien beacon, and tactical hazard renderers remain dedicated/stateful.
+13. Save format remains 4.
