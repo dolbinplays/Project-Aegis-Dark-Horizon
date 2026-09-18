@@ -1,0 +1,12 @@
+AEGIS 2205 FIELD ACCEPTANCE
+
+1. Open AEGIS_Prop_Editor_CURRENT.html and verify 57 props load.
+2. Confirm Auto-apply is ON.
+3. Open Runtime Test Gallery, focus one prop, then change that prop in editor.
+4. After the editor's debounce, the gallery should reload and show the changed live model.
+5. Verify the editor reports Runtime Active for the changed prop.
+6. Use Restore Last Backup; verify prior model returns.
+7. Use Revert Model to Factory; verify factory model returns. For the 12 Foundation props this must be the original 1155 editor model.
+8. Make an invalid zero/negative scale edit via imported JSON and verify live publishing is blocked.
+9. Connect the Project-Aegis-Dark-Horizon root folder, enable project mirroring, make a valid edit, and verify assets/data/aegis-prop-library.js/json update while last-known-good files contain the previous versions.
+10. Launch/reload the normal game and verify edited props render without changing tactical rules or save format.

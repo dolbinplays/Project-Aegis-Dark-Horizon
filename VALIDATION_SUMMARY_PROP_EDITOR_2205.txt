@@ -1,0 +1,47 @@
+AEGIS 2205 LIVE PROP PUBLISHING & SAFE REVERT — VALIDATION SUMMARY
+
+BUILD
+v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH
+
+PASS — Canonical shared library parses as JSON and contains 57 unique factory-backed editable prop definitions.
+PASS — Full immutable 2145 factory snapshot contains the same 57 visual keys.
+PASS — The 12 restored Foundation props still match their original 1155 model geometry/root/collision signatures.
+PASS — 2058 pre-restoration full-library backup remains present.
+PASS — Same-origin live override bridge loads a valid browser-stored library before runtime model lookup.
+PASS — BroadcastChannel/storage synchronization hooks are present.
+PASS — Editor exposes Apply to Game, auto-apply, project-folder connection/mirroring, 10-revision history, Restore Last Backup, Restore Selected Revision, Revert Model to Factory, and Reset All Models to Factory.
+PASS — Project writes preserve prior canonical JS/JSON as aegis-prop-last-known-good.js/json before replacement.
+PASS — Publish validator blocks malformed primitive geometry, non-positive scales, duplicate/invalid visual keys, and invalid collision envelopes.
+PASS — Installed-app Prop Runtime Test Gallery URL resolution fix from 2120 remains in runtime export.
+PASS — Runtime Test Gallery listens for live-library publications and reloads to show updated models.
+PASS — Shared runtime JS and factory-library JS pass node syntax checks.
+PASS — 2205 editor/gallery inline JavaScript parses successfully.
+PASS — Save format remains 4.
+
+FOCUSED TEST OUTPUT
+ok - canonical/factory continuity
+ok - all props have stable factory identity
+ok - live bridge loads same-origin override before runtime
+ok - editor exposes live publishing/recovery/project mirror
+ok - runtime export preserves live support and installed-app gallery fix
+ok - gallery listens for live library updates
+ok - current redirects point at 2205 artifacts
+1..7
+# pass 7
+# fail 0
+
+FOUNDATION REGRESSION OUTPUT
+ok 1 - library build and count
+ok 2 - all twelve foundation originals remain restored
+ok 3 - full 2145 factory snapshot matches live model shapes at patch baseline
+ok 4 - pre-restore 2058 backup preserved
+ok 5 - runtime JS parses and carries live + installed-app fixes
+1..5
+
+INLINE JS PARSE OUTPUT
+ok - parsed 2 inline script blocks across 2 2205 HTML artifacts
+
+FIELD VALIDATION STILL REQUIRED
+- Verify a hosted/same-origin editor edit appears in the installed/browser game after the tactical renderer rebuilds or the tactical view is re-entered.
+- Verify File System Access project-folder mirroring in the user's Chrome/Edge environment and confirm last-known-good disk backup rotation.
+- Verify revision restore and factory revert visually in the Runtime Test Gallery.
