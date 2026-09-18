@@ -1,0 +1,18 @@
+AEGIS 2358 PROP VARIANTS / DAMAGE STATES / ATTACHMENT ANCHORS — VALIDATION SUMMARY
+
+PASS — Canonical JSON parses and remains aegis-prop-library-v1.
+PASS — Canonical library still contains 57 props and save format remains 4.
+PASS — Every prop now carries backward-compatible presentation metadata for damage threshold, damage states, variants, and attachments.
+PASS — Sedan, van, utility pickup, and bus have model-aligned editable headlight, beam, and taillight anchors.
+PASS — Vehicle beams now point toward the modeled front (-X) for the current editable vehicle geometry.
+PASS — Runtime bridge resolves Intact / Damaged / Destroyed with safe fallback to Intact when an authored state is absent.
+PASS — Cosmetic variant selection is deterministic for the same stable cover identity.
+PASS — Target-specific vehicle lighting-anchor overrides are supported for damaged/destroyed/variant models, with base-anchor inheritance otherwise.
+PASS — Prior 2205 same-origin live-library overrides are upgraded in memory to the 2358 presentation schema instead of suppressing the new runtime features.
+PASS — Runtime bridge continues to preserve game-authoritative road rotation and multi-hex vehicle footprint behavior.
+PASS — Editor inline JavaScript parses successfully and exposes model-target authoring, damage threshold, variants, and vehicle anchor editing.
+PASS — Runtime Test Gallery inline JavaScript parses successfully and exposes HP/damage-state, variant, day/night, lighting, and anchor QA controls.
+PASS — Current redirect files point to the 2358 editor and gallery.
+PASS — Immutable 2145 factory files remain present; direct-copy Last Known Good files preserve the 2205 canonical library.
+
+NOT YET FIELD-VALIDATED — Actual installed-app/browser visual QA, tactical destroyed-cover persistence, and night-mission light placement must still be checked in the full game after installation.

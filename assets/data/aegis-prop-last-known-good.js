@@ -1,8 +1,8 @@
-/* Project Aegis shared tactical prop library. Original Foundation models restored + immutable backups. */
+/* Project Aegis shared tactical prop library. 2205 live publishing + safe revert. */
 window.AEGIS_PROP_LIBRARY={
   "schema": "aegis-prop-library-v1",
-  "libraryVersion": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
-  "sourceEditorBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+  "libraryVersion": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+  "sourceEditorBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
   "props": [
     {
       "schema": "aegis-prop-definition-v1",
@@ -22,11 +22,14 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
         "foundationOriginal": true,
         "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
         "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
-        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "factoryVisualKey": "tree",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "cylinder",
@@ -155,11 +158,14 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
         "foundationOriginal": true,
         "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
         "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
-        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "factoryVisualKey": "lamp-post",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "cylinder",
@@ -323,7 +329,10 @@ window.AEGIS_PROP_LIBRARY={
         "notes": "Migrated directly from the legacy AEGIS traffic-light renderer and intersection-control placement behavior.",
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "traffic-light",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "cylinder",
@@ -554,11 +563,14 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
         "foundationOriginal": true,
         "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
         "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
-        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "factoryVisualKey": "stop-sign",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "cylinder",
@@ -723,11 +735,14 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
         "foundationOriginal": true,
         "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
         "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
-        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "factoryVisualKey": "vending-machine",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -960,11 +975,14 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
         "foundationOriginal": true,
         "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
         "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
-        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "factoryVisualKey": "newspaper-machine",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -1129,11 +1147,14 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
         "foundationOriginal": true,
         "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
         "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
-        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "factoryVisualKey": "bus-stop",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -1402,7 +1423,10 @@ window.AEGIS_PROP_LIBRARY={
         "notes": "Migrated directly from the legacy AEGIS playground renderer. Keeps center placement used by residence-adjacent scene generation.",
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "playground",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -1603,11 +1627,14 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
         "foundationOriginal": true,
         "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
         "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
-        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "factoryVisualKey": "street-bench",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -1806,11 +1833,14 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
         "foundationOriginal": true,
         "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
         "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
-        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "factoryVisualKey": "crates",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -1975,11 +2005,14 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
         "foundationOriginal": true,
         "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
         "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
-        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "factoryVisualKey": "concrete",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -2110,11 +2143,14 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
         "foundationOriginal": true,
         "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
         "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
-        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "factoryVisualKey": "fence",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -2313,7 +2349,10 @@ window.AEGIS_PROP_LIBRARY={
         "notes": "Migrated directly from the legacy AEGIS farm hay renderer. Mission generation may still assign stronger cover blocks/HP to individual hay cells; tactical cell data remains authoritative.",
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "hay",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -2410,11 +2449,14 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
         "foundationOriginal": true,
         "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
         "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
-        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "factoryVisualKey": "rock",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -2511,11 +2553,14 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
         "foundationOriginal": true,
         "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
         "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
-        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "factoryVisualKey": "bush",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "none",
@@ -2612,7 +2657,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "includes",
         "runtimeScaleMode": "none",
         "notes": "Shared editable brush-family replacement.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "brush",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "none",
@@ -2777,7 +2825,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "includes",
         "runtimeScaleMode": "none",
         "notes": "Shared editable crop-family replacement.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "crop",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "none",
@@ -2979,7 +3030,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Updated editable wreck replacement.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "wreck",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -3144,7 +3198,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "civic-landmark",
         "notes": "Editable civic statue. Runtime keeps the existing 1\u20137 hex landmark scale rule.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "civic-statue",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "cylinder",
@@ -3412,7 +3469,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "civic-landmark",
         "notes": "Editable water fountain. Runtime keeps the existing 1\u20137 hex landmark scale rule.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "water-fountain",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "cylinder",
@@ -3682,7 +3742,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Updated editable building power-control panel. Gameplay power-circuit authority remains on the cover object.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-power-panel",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -3915,7 +3978,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable road-vehicle visual. Runtime keeps authoritative multi-hex footprint, road rotation, and headlights.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "vehicle-sedan",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -4220,7 +4286,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable road-vehicle visual. Runtime keeps authoritative multi-hex footprint, road rotation, and headlights.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "vehicle-van",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -4525,7 +4594,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable road-vehicle visual. Runtime keeps authoritative multi-hex footprint, road rotation, and headlights.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "vehicle-utility",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -4898,7 +4970,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable road-vehicle visual. Runtime keeps authoritative multi-hex footprint, road rotation, and headlights.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "vehicle-bus",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -5237,7 +5312,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-office-desk",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -5436,7 +5514,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-filing-cabinet",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -5567,7 +5648,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-public-counter",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -5698,7 +5782,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-waiting-chair",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -5897,7 +5984,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-bookshelf",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -6096,7 +6186,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-checkout-counter",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -6227,7 +6320,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-cash-register",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -6392,7 +6488,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-store-shelf",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -6591,7 +6690,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-display-shelf",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -6790,7 +6892,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-refrigerator",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -6989,7 +7094,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-storage",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -7086,7 +7194,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-workbench",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -7285,7 +7396,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-tool-cabinet",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -7416,7 +7530,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-parts-rack",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -7615,7 +7732,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-diner-counter",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -7746,7 +7866,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-booth",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -7877,7 +8000,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-dining-table",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -8042,7 +8168,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-dining-chair",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -8241,7 +8370,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-kitchen-counter",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -8372,7 +8504,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-couch",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -8571,7 +8706,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-armchair",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -8770,7 +8908,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-coffee-table",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -8935,7 +9076,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-bed",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -9134,7 +9278,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-dresser",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -9231,7 +9378,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-bookcase",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -9430,7 +9580,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-gear-locker",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -9561,7 +9714,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-equipment-rack",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -9760,7 +9916,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-pantry-shelf",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -9959,7 +10118,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-hay-bale",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -10124,7 +10286,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-storage-crates",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -10221,7 +10386,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-radio-console",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -10421,7 +10589,10 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH",
+        "factoryVisualKey": "interior-chair",
+        "factoryBaselineBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "livePublishingBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -10603,13 +10774,37 @@ window.AEGIS_PROP_LIBRARY={
       }
     }
   ],
-  "editorBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
+  "editorBuild": "v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH"
 };
+
+/* AEGIS 2205 live prop publishing bridge. Applies a same-origin editor override before the tactical runtime resolves prop models. */
+;(function aegis2205LivePropLibrarySync(){
+  'use strict';
+  const W=typeof window!=='undefined'?window:null;
+  if(!W||!W.AEGIS_PROP_LIBRARY)return;
+  const LIVE_KEY='aegis-prop-live-library-v1';
+  const CHANNEL='aegis-prop-library-live-v1';
+  const SCHEMA='aegis-prop-library-v1';
+  W.AEGIS_PROP_FILE_LIBRARY=W.AEGIS_PROP_LIBRARY;
+  function validLibrary(value){return Boolean(value&&value.schema===SCHEMA&&Array.isArray(value.props)&&value.props.length);}
+  function notify(source){
+    W.AEGIS_PROP_LIVE_STATUS={active:source!=='project-file',source,libraryVersion:String(W.AEGIS_PROP_LIBRARY?.libraryVersion||''),propCount:Number(W.AEGIS_PROP_LIBRARY?.props?.length||0)};
+    try{W.dispatchEvent(new CustomEvent('aegis-prop-library-updated',{detail:{source,status:W.AEGIS_PROP_LIVE_STATUS}}));}catch{}
+  }
+  function apply(value,source){if(!validLibrary(value))return false;W.AEGIS_PROP_LIBRARY=value;notify(source);return true;}
+  function readStored(){try{const raw=W.localStorage?.getItem(LIVE_KEY);if(!raw)return null;const value=JSON.parse(raw);return validLibrary(value)?value:null;}catch{return null;}}
+  const stored=readStored();if(stored)apply(stored,'live-editor');else notify('project-file');
+  try{W.addEventListener('storage',event=>{if(event.key!==LIVE_KEY)return;const next=readStored();if(next)apply(next,'storage-sync');else{W.AEGIS_PROP_LIBRARY=W.AEGIS_PROP_FILE_LIBRARY;notify('project-file');}});}catch{}
+  try{
+    const channel=new BroadcastChannel(CHANNEL);W.AEGIS_PROP_LIVE_CHANNEL=channel;
+    channel.addEventListener('message',event=>{const message=event?.data||{};if(message.type==='clear'){W.AEGIS_PROP_LIBRARY=W.AEGIS_PROP_FILE_LIBRARY;notify('project-file');return;}if(message.type==='publish'&&validLibrary(message.library))apply(message.library,'broadcast-live');});
+  }catch{}
+})();
 
 /* AEGIS 2058 runtime-fidelity overlay. The game already loads this library before its browser runtime. */
 ;(function aegis2058PropRuntimeFidelityBridge(){
   'use strict';
-  const BUILD='v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH';
+  const BUILD='v0.26.09.17.2205_LIVE_PROP_PUBLISHING_AND_SAFE_REVERT_PATCH';
   const DEFINITION_SCHEMA='aegis-prop-definition-v1';
   const clampLocal=(n,min,max)=>Math.max(min,Math.min(max,Number(n)||0));
   if(typeof location!=='undefined'&&/AEGIS_Prop_(?:Editor|Runtime_Test_Gallery)/i.test(String(location.pathname||'')))return;
@@ -10653,7 +10848,7 @@ window.AEGIS_PROP_LIBRARY={
       });group.userData.aegisPropLibraryVisual=String(definition.visualKey||visual);group.userData.aegisPropLibrarySchema=DEFINITION_SCHEMA;group.userData.aegisPropRuntimeFidelityBuild=BUILD;return true;
     };
     const legacyVehicle=W.tacticalThreeAddLandVehicle;const vehicle2058=function tacticalThreeAddLandVehicle2058(THREE,group,cover,geoCache,mat,qualitySettings={},lit=false){const visual=String(cover?.visual||'').toLowerCase(),shared=W.tacticalThreeAddRuntimePropDefinitionModel({THREE,group,cover,visual,materialFor:mat,qualitySettings});if(!shared)return legacyVehicle(THREE,group,cover,geoCache,mat,qualitySettings,lit);if(typeof W.tacticalVehicleHeadlightLayout==='function'){const layout=W.tacticalVehicleHeadlightLayout(cover||{});(layout?.lamps||[]).forEach(position=>{const lamp=new THREE.Mesh(new THREE.SphereGeometry(.11,8,6),mat(lit?'vehicle-live-headlamp':'vehicle-unlit-headlamp',lit?0xfff7d6:0x94a3b8,{roughness:.18,emissive:lit?1.8:0,emissiveColor:0xffe6a6}));lamp.name='vehicle-headlamp';lamp.position.set(position.x,position.y,position.z);group.add(lamp);});}};vehicle2058.aegis2058Original=legacyVehicle;W.tacticalThreeAddLandVehicle=vehicle2058;
-    W.AEGIS_PROP_RUNTIME_FIDELITY_STATUS={build:BUILD,editablePropCount:W.AEGIS_PROP_LIBRARY.props.length,saveFormat:4,rootTransformAuthority:true,sharedVisualAuthority:true,testGallery:'AEGIS_Prop_Runtime_Test_Gallery_CURRENT.html'};
+    W.AEGIS_PROP_RUNTIME_FIDELITY_STATUS={build:BUILD,editablePropCount:W.AEGIS_PROP_LIBRARY.props.length,saveFormat:4,rootTransformAuthority:true,sharedVisualAuthority:true,livePublishing:true,safeRevert:true,testGallery:'AEGIS_Prop_Runtime_Test_Gallery_CURRENT.html',liveSource:String(W.AEGIS_PROP_LIVE_STATUS?.source||'project-file')};
     W.AEGIS_OPEN_PROP_TEST_GALLERY=()=>{
       const galleryName='AEGIS_Prop_Runtime_Test_Gallery_CURRENT.html';
       let href='';

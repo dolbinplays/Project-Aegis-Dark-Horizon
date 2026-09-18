@@ -1,0 +1,14 @@
+AEGIS PROP PRESENTATION 2358 — FIELD ACCEPTANCE
+
+1. Extract this ZIP into the repository root and allow merge/replace.
+2. Open AEGIS_Prop_Editor_CURRENT.html.
+3. Select a prop; switch Editing between Intact / Damaged / Destroyed.
+4. Create a Damaged model from Intact, move one component, and verify the preview/edit controls target only Damaged.
+5. Add a cosmetic Variant; verify it appears in the target list and Runtime Test Gallery.
+6. For a vehicle, adjust a headlight anchor and verify the editor marker moves.
+7. Open Runtime Test Gallery; focus the same prop and switch Damage State / HP / Variant.
+8. For a vehicle, switch Time to Night and Vehicle Lights to Auto; verify headlamp/beam placement follows anchors.
+9. Verify live publishing, revision recovery, and factory revert still function.
+10. Run a normal tactical mission and verify road vehicle footprint/pathing and save/load are unchanged.
+
+Save format must remain 4.
