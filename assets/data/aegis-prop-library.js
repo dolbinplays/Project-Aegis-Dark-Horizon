@@ -10013,7 +10013,7 @@ window.AEGIS_PROP_LIBRARY={
 /* AEGIS 2058 runtime-fidelity overlay. The game already loads this library before its browser runtime. */
 ;(function aegis2058PropRuntimeFidelityBridge(){
   'use strict';
-  const BUILD='v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH';
+  const BUILD='v0.26.09.17.2120_PROP_TEST_GALLERY_INSTALLED_APP_URL_HOTFIX';
   const DEFINITION_SCHEMA='aegis-prop-definition-v1';
   const clampLocal=(n,min,max)=>Math.max(min,Math.min(max,Number(n)||0));
   if(typeof location!=='undefined'&&/AEGIS_Prop_(?:Editor|Runtime_Test_Gallery)/i.test(String(location.pathname||'')))return;
@@ -10058,7 +10058,25 @@ window.AEGIS_PROP_LIBRARY={
     };
     const legacyVehicle=W.tacticalThreeAddLandVehicle;const vehicle2058=function tacticalThreeAddLandVehicle2058(THREE,group,cover,geoCache,mat,qualitySettings={},lit=false){const visual=String(cover?.visual||'').toLowerCase(),shared=W.tacticalThreeAddRuntimePropDefinitionModel({THREE,group,cover,visual,materialFor:mat,qualitySettings});if(!shared)return legacyVehicle(THREE,group,cover,geoCache,mat,qualitySettings,lit);if(typeof W.tacticalVehicleHeadlightLayout==='function'){const layout=W.tacticalVehicleHeadlightLayout(cover||{});(layout?.lamps||[]).forEach(position=>{const lamp=new THREE.Mesh(new THREE.SphereGeometry(.11,8,6),mat(lit?'vehicle-live-headlamp':'vehicle-unlit-headlamp',lit?0xfff7d6:0x94a3b8,{roughness:.18,emissive:lit?1.8:0,emissiveColor:0xffe6a6}));lamp.name='vehicle-headlamp';lamp.position.set(position.x,position.y,position.z);group.add(lamp);});}};vehicle2058.aegis2058Original=legacyVehicle;W.tacticalThreeAddLandVehicle=vehicle2058;
     W.AEGIS_PROP_RUNTIME_FIDELITY_STATUS={build:BUILD,editablePropCount:W.AEGIS_PROP_LIBRARY.props.length,saveFormat:4,rootTransformAuthority:true,sharedVisualAuthority:true,testGallery:'AEGIS_Prop_Runtime_Test_Gallery_CURRENT.html'};
-    W.AEGIS_OPEN_PROP_TEST_GALLERY=()=>{const href=new URL('./AEGIS_Prop_Runtime_Test_Gallery_CURRENT.html',location.href).href;window.open(href,'_blank','noopener');};
+    W.AEGIS_OPEN_PROP_TEST_GALLERY=()=>{
+      const galleryName='AEGIS_Prop_Runtime_Test_Gallery_CURRENT.html';
+      let href='';
+      try{
+        const scripts=Array.from(document?.scripts||[]);
+        const libraryScript=scripts.find(script=>/\/assets\/data\/aegis-prop-library\.js(?:[?#].*)?$/i.test(String(script?.src||'')))||scripts.find(script=>/aegis-prop-library\.js(?:[?#].*)?$/i.test(String(script?.src||'')));
+        if(libraryScript?.src)href=new URL('../../'+galleryName,libraryScript.src).href;
+      }catch{}
+      if(!href){
+        const bases=[];
+        try{if(W.top?.location?.href)bases.push(W.top.location.href);}catch{}
+        try{if(document?.baseURI)bases.push(document.baseURI);}catch{}
+        try{if(typeof location!=='undefined'&&location.href)bases.push(location.href);}catch{}
+        for(const base of bases){try{const candidate=new URL('./'+galleryName,base);if(candidate.protocol==='http:'||candidate.protocol==='https:'||candidate.protocol==='file:'){href=candidate.href;break;}}catch{}}
+      }
+      if(!href){console.error('[AEGIS] Unable to resolve Prop Runtime Test Gallery URL.');return false;}
+      W.open(href,'_blank','noopener');
+      return true;
+    };
     if(!W.__AEGIS_PROP_GALLERY_SHORTCUT_INSTALLED){W.__AEGIS_PROP_GALLERY_SHORTCUT_INSTALLED=true;window.addEventListener('keydown',event=>{if(event.ctrlKey&&event.shiftKey&&String(event.key).toLowerCase()==='g'){event.preventDefault();W.AEGIS_OPEN_PROP_TEST_GALLERY();}});}
     try{const params=new URLSearchParams(location.search);if(params.has('propqa')&&!document.getElementById('aegis-prop-qa-button')){const btn=document.createElement('button');btn.id='aegis-prop-qa-button';btn.textContent='Prop QA';btn.title='Open the AEGIS runtime prop test gallery (Ctrl+Shift+G)';Object.assign(btn.style,{position:'fixed',left:'12px',bottom:'12px',zIndex:'2147483646',padding:'8px 12px',borderRadius:'9px',border:'1px solid #0891b2',background:'#083344',color:'#cffafe',font:'700 12px system-ui',cursor:'pointer'});btn.onclick=W.AEGIS_OPEN_PROP_TEST_GALLERY;document.body.appendChild(btn);}}catch{}
     return true;

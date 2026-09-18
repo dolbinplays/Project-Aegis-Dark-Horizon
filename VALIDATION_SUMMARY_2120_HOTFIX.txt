@@ -1,0 +1,11 @@
+AEGIS 2120 PROP TEST GALLERY INSTALLED APP URL HOTFIX — VALIDATION
+
+PASS — Patched assets/data/aegis-prop-library.js parses with node --check.
+PASS — Hosted GitHub Pages script URL resolves the gallery to the repository root.
+PASS — Installed-app/about:srcdoc context no longer needs location.href as the URL base.
+PASS — Local file:// script URL resolves the gallery to the local project root.
+PASS — Top-page fallback resolves correctly when the script URL is unavailable.
+PASS — 2058 Runtime Fidelity/Test Gallery regression suite: 5 passed, 0 failed, 1 full-runtime-only test skipped in isolated package validation.
+PASS — Save format remains 4.
+
+Field validation still required in the installed app after GitHub Pages/PWA update.
