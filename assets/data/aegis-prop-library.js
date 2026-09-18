@@ -1,8 +1,8 @@
-/* Project Aegis shared tactical prop library. Runtime-fidelity authority + QA gallery. */
+/* Project Aegis shared tactical prop library. Original Foundation models restored + immutable backups. */
 window.AEGIS_PROP_LIBRARY={
   "schema": "aegis-prop-library-v1",
-  "libraryVersion": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH",
-  "sourceEditorBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH",
+  "libraryVersion": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+  "sourceEditorBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
   "props": [
     {
       "schema": "aegis-prop-definition-v1",
@@ -19,10 +19,14 @@ window.AEGIS_PROP_LIBRARY={
         "edgeFraction": 0.35,
         "curbLike": false,
         "natural": true,
-        "notes": "Migrated from the original generic AEGIS Three.js tree model. Regional tree color/scale variants remain a future shared-library extension.",
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
       },
       "collision": {
         "shape": "cylinder",
@@ -36,18 +40,18 @@ window.AEGIS_PROP_LIBRARY={
       },
       "components": [
         {
-          "id": "cmp-tree-legacy-trunk",
+          "id": "cmp-1155-tree-trunk",
           "name": "Trunk",
           "primitive": "cylinder",
           "size": {
-            "radiusTop": 0.08,
-            "radiusBottom": 0.12,
-            "height": 0.58,
-            "segments": 7
+            "radiusTop": 0.12,
+            "radiusBottom": 0.17,
+            "height": 0.78,
+            "segments": 10
           },
           "position": [
             0,
-            0.35,
+            0.39,
             0
           ],
           "rotation": [
@@ -62,7 +66,7 @@ window.AEGIS_PROP_LIBRARY={
           ],
           "material": {
             "color": "#6b4423",
-            "roughness": 0.9,
+            "roughness": 0.92,
             "metalness": 0.05,
             "opacity": 1,
             "emissive": "#000000",
@@ -71,17 +75,17 @@ window.AEGIS_PROP_LIBRARY={
           }
         },
         {
-          "id": "cmp-tree-legacy-canopy",
+          "id": "cmp-1155-tree-canopy",
           "name": "Canopy",
-          "primitive": "cone",
+          "primitive": "sphere",
           "size": {
-            "radius": 0.42,
-            "height": 0.92,
-            "segments": 8
+            "radius": 0.58,
+            "widthSegments": 10,
+            "heightSegments": 7
           },
           "position": [
             0,
-            0.98,
+            1.05,
             0
           ],
           "rotation": [
@@ -90,12 +94,12 @@ window.AEGIS_PROP_LIBRARY={
             0
           ],
           "scale": [
-            1,
-            1,
+            1.05,
+            0.82,
             1
           ],
           "material": {
-            "color": "#1f7a45",
+            "color": "#397c43",
             "roughness": 0.98,
             "metalness": 0.05,
             "opacity": 1,
@@ -106,14 +110,14 @@ window.AEGIS_PROP_LIBRARY={
         }
       ],
       "migration": {
-        "status": "game-derived",
-        "source": "legacy-three-renderer",
-        "sourcePath": "src/browser-runtime.html",
-        "runtimeCommit": "7cb0cd15c1",
-        "runtimeBlob": "0b908738c2",
-        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
-        "fidelity": "baseline-regional",
-        "limitations": "Generic legacy geometry is exact; biome-specific tree scale/color variation is not yet data-driven in the shared schema."
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
       },
       "rootTransform": {
         "position": [
@@ -148,10 +152,14 @@ window.AEGIS_PROP_LIBRARY={
         "edgeFraction": 0.42,
         "curbLike": true,
         "natural": false,
-        "notes": "Migrated directly from the legacy AEGIS lamp-post renderer geometry/material values.",
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
       },
       "collision": {
         "shape": "cylinder",
@@ -165,18 +173,18 @@ window.AEGIS_PROP_LIBRARY={
       },
       "components": [
         {
-          "id": "cmp-lamp-post-legacy-pole",
-          "name": "Pole",
+          "id": "cmp-1155-lamp-base",
+          "name": "Base",
           "primitive": "cylinder",
           "size": {
-            "radiusTop": 0.05,
-            "radiusBottom": 0.07,
-            "height": 2.1,
-            "segments": 8
+            "radiusTop": 0.1,
+            "radiusBottom": 0.13,
+            "height": 0.18,
+            "segments": 10
           },
           "position": [
             0,
-            1.1,
+            0.09,
             0
           ],
           "rotation": [
@@ -191,7 +199,7 @@ window.AEGIS_PROP_LIBRARY={
           ],
           "material": {
             "color": "#334155",
-            "roughness": 0.66,
+            "roughness": 0.7,
             "metalness": 0.55,
             "opacity": 1,
             "emissive": "#000000",
@@ -200,17 +208,18 @@ window.AEGIS_PROP_LIBRARY={
           }
         },
         {
-          "id": "cmp-lamp-post-legacy-bulb",
-          "name": "Bulb",
-          "primitive": "sphere",
+          "id": "cmp-1155-lamp-pole",
+          "name": "Pole",
+          "primitive": "cylinder",
           "size": {
-            "radius": 0.14,
-            "widthSegments": 10,
-            "heightSegments": 8
+            "radiusTop": 0.05,
+            "radiusBottom": 0.07,
+            "height": 2.1,
+            "segments": 10
           },
           "position": [
             0,
-            2.15,
+            1.13,
             0
           ],
           "rotation": [
@@ -224,25 +233,59 @@ window.AEGIS_PROP_LIBRARY={
             1
           ],
           "material": {
-            "color": "#ffdc8a",
-            "roughness": 0.75,
+            "color": "#334155",
+            "roughness": 0.65,
+            "metalness": 0.58,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-lamp-head",
+          "name": "Lamp",
+          "primitive": "sphere",
+          "size": {
+            "radius": 0.14,
+            "widthSegments": 12,
+            "heightSegments": 8
+          },
+          "position": [
+            0,
+            2.18,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#ffe09a",
+            "roughness": 0.25,
             "metalness": 0.05,
             "opacity": 1,
             "emissive": "#ffc85c",
-            "emissiveStrength": 1,
+            "emissiveStrength": 1.2,
             "castShadow": false
           }
         }
       ],
       "migration": {
-        "status": "game-derived",
-        "source": "legacy-three-renderer",
-        "sourcePath": "src/browser-runtime.html",
-        "runtimeCommit": "7cb0cd15c1",
-        "runtimeBlob": "0b908738c2",
-        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
-        "fidelity": "exact-static",
-        "limitations": ""
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
       },
       "rootTransform": {
         "position": [
@@ -280,7 +323,7 @@ window.AEGIS_PROP_LIBRARY={
         "notes": "Migrated directly from the legacy AEGIS traffic-light renderer and intersection-control placement behavior.",
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "cylinder",
@@ -508,10 +551,14 @@ window.AEGIS_PROP_LIBRARY={
         "edgeFraction": 0.42,
         "curbLike": true,
         "natural": false,
-        "notes": "Migrated directly from the legacy AEGIS stop-sign renderer.",
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
       },
       "collision": {
         "shape": "cylinder",
@@ -525,18 +572,18 @@ window.AEGIS_PROP_LIBRARY={
       },
       "components": [
         {
-          "id": "cmp-stop-sign-legacy-pole",
+          "id": "cmp-1155-stop-pole",
           "name": "Pole",
           "primitive": "cylinder",
           "size": {
             "radiusTop": 0.035,
             "radiusBottom": 0.045,
-            "height": 1.35,
+            "height": 1.65,
             "segments": 8
           },
           "position": [
             0,
-            0.68,
+            0.825,
             0
           ],
           "rotation": [
@@ -550,9 +597,9 @@ window.AEGIS_PROP_LIBRARY={
             1
           ],
           "material": {
-            "color": "#64748b",
-            "roughness": 0.75,
-            "metalness": 0.45,
+            "color": "#94a3b8",
+            "roughness": 0.45,
+            "metalness": 0.65,
             "opacity": 1,
             "emissive": "#000000",
             "emissiveStrength": 0,
@@ -560,18 +607,18 @@ window.AEGIS_PROP_LIBRARY={
           }
         },
         {
-          "id": "cmp-stop-sign-legacy-sign",
+          "id": "cmp-1155-stop-octagon",
           "name": "Octagonal sign",
           "primitive": "cylinder",
           "size": {
-            "radiusTop": 0.31,
-            "radiusBottom": 0.31,
+            "radiusTop": 0.3,
+            "radiusBottom": 0.3,
             "height": 0.055,
             "segments": 8
           },
           "position": [
             0,
-            1.38,
+            1.62,
             0
           ],
           "rotation": [
@@ -586,7 +633,42 @@ window.AEGIS_PROP_LIBRARY={
           ],
           "material": {
             "color": "#b91c1c",
-            "roughness": 0.7,
+            "roughness": 0.55,
+            "metalness": 0.08,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-stop-center",
+          "name": "Center plate",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.22,
+            "radiusBottom": 0.22,
+            "height": 0.061,
+            "segments": 8
+          },
+          "position": [
+            0,
+            1.62,
+            -0.003
+          ],
+          "rotation": [
+            90,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#dc2626",
+            "roughness": 0.55,
             "metalness": 0.05,
             "opacity": 1,
             "emissive": "#000000",
@@ -596,14 +678,14 @@ window.AEGIS_PROP_LIBRARY={
         }
       ],
       "migration": {
-        "status": "game-derived",
-        "source": "legacy-three-renderer",
-        "sourcePath": "src/browser-runtime.html",
-        "runtimeCommit": "7cb0cd15c1",
-        "runtimeBlob": "0b908738c2",
-        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
-        "fidelity": "exact-static",
-        "limitations": ""
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
       },
       "rootTransform": {
         "position": [
@@ -638,10 +720,14 @@ window.AEGIS_PROP_LIBRARY={
         "edgeFraction": 0.33,
         "curbLike": false,
         "natural": false,
-        "notes": "Migrated directly from the legacy AEGIS vending-machine renderer (crate + wall primitives and original scales).",
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
       },
       "collision": {
         "shape": "box",
@@ -658,17 +744,17 @@ window.AEGIS_PROP_LIBRARY={
       },
       "components": [
         {
-          "id": "cmp-vending-legacy-body",
-          "name": "Machine body",
+          "id": "cmp-1155-vending-cabinet",
+          "name": "Cabinet",
           "primitive": "box",
           "size": {
-            "width": 0.64,
-            "height": 0.45,
-            "depth": 0.64
+            "width": 0.72,
+            "height": 1.48,
+            "depth": 0.48
           },
           "position": [
             0,
-            0.56,
+            0.74,
             0
           ],
           "rotation": [
@@ -677,14 +763,14 @@ window.AEGIS_PROP_LIBRARY={
             0
           ],
           "scale": [
-            0.82,
-            1.65,
-            0.64
+            1,
+            1,
+            1
           ],
           "material": {
-            "color": "#0f766e",
-            "roughness": 0.66,
-            "metalness": 0.15,
+            "color": "#1d4ed8",
+            "roughness": 0.62,
+            "metalness": 0.18,
             "opacity": 1,
             "emissive": "#000000",
             "emissiveStrength": 0,
@@ -692,18 +778,18 @@ window.AEGIS_PROP_LIBRARY={
           }
         },
         {
-          "id": "cmp-vending-legacy-panel",
-          "name": "Front panel",
+          "id": "cmp-1155-vending-front",
+          "name": "Front inset",
           "primitive": "box",
           "size": {
-            "width": 0.92,
-            "height": 0.62,
-            "depth": 0.54
+            "width": 0.58,
+            "height": 0.82,
+            "depth": 0.035
           },
           "position": [
             0,
-            0.65,
-            0.34
+            0.91,
+            0.255
           ],
           "rotation": [
             0,
@@ -711,30 +797,132 @@ window.AEGIS_PROP_LIBRARY={
             0
           ],
           "scale": [
-            0.55,
-            0.72,
-            0.08
+            1,
+            1,
+            1
           ],
           "material": {
-            "color": "#99f6e4",
-            "roughness": 0.78,
+            "color": "#0f172a",
+            "roughness": 0.4,
+            "metalness": 0.12,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-vending-glass",
+          "name": "Product glass",
+          "primitive": "box",
+          "size": {
+            "width": 0.49,
+            "height": 0.52,
+            "depth": 0.025
+          },
+          "position": [
+            -0.02,
+            1.03,
+            0.277
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#164e63",
+            "roughness": 0.18,
+            "metalness": 0.05,
+            "opacity": 0.72,
+            "emissive": "#0ea5e9",
+            "emissiveStrength": 0.1,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-vending-control",
+          "name": "Control panel",
+          "primitive": "box",
+          "size": {
+            "width": 0.11,
+            "height": 0.36,
+            "depth": 0.045
+          },
+          "position": [
+            0.245,
+            0.82,
+            0.29
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#111827",
+            "roughness": 0.55,
+            "metalness": 0.3,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-vending-slot",
+          "name": "Dispense slot",
+          "primitive": "box",
+          "size": {
+            "width": 0.38,
+            "height": 0.14,
+            "depth": 0.04
+          },
+          "position": [
+            -0.05,
+            0.32,
+            0.28
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#020617",
+            "roughness": 0.75,
             "metalness": 0.05,
             "opacity": 1,
-            "emissive": "#67e8f9",
-            "emissiveStrength": 0.12,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
             "castShadow": true
           }
         }
       ],
       "migration": {
-        "status": "game-derived",
-        "source": "legacy-three-renderer",
-        "sourcePath": "src/browser-runtime.html",
-        "runtimeCommit": "7cb0cd15c1",
-        "runtimeBlob": "0b908738c2",
-        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
-        "fidelity": "exact-static",
-        "limitations": ""
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
       },
       "rootTransform": {
         "position": [
@@ -769,10 +957,14 @@ window.AEGIS_PROP_LIBRARY={
         "edgeFraction": 0.33,
         "curbLike": false,
         "natural": false,
-        "notes": "Migrated directly from the legacy AEGIS newspaper-machine renderer.",
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
       },
       "collision": {
         "shape": "box",
@@ -789,17 +981,17 @@ window.AEGIS_PROP_LIBRARY={
       },
       "components": [
         {
-          "id": "cmp-news-legacy-body",
-          "name": "Machine body",
+          "id": "cmp-1155-news-body",
+          "name": "Body",
           "primitive": "box",
           "size": {
-            "width": 0.64,
-            "height": 0.45,
-            "depth": 0.64
+            "width": 0.62,
+            "height": 0.82,
+            "depth": 0.46
           },
           "position": [
             0,
-            0.38,
+            0.52,
             0
           ],
           "rotation": [
@@ -808,14 +1000,14 @@ window.AEGIS_PROP_LIBRARY={
             0
           ],
           "scale": [
-            0.64,
-            1.1,
-            0.54
+            1,
+            1,
+            1
           ],
           "material": {
-            "color": "#1d4ed8",
-            "roughness": 0.66,
-            "metalness": 0.15,
+            "color": "#f59e0b",
+            "roughness": 0.68,
+            "metalness": 0.08,
             "opacity": 1,
             "emissive": "#000000",
             "emissiveStrength": 0,
@@ -823,18 +1015,18 @@ window.AEGIS_PROP_LIBRARY={
           }
         },
         {
-          "id": "cmp-news-legacy-panel",
-          "name": "Front panel",
+          "id": "cmp-1155-news-window",
+          "name": "Window",
           "primitive": "box",
           "size": {
-            "width": 0.92,
-            "height": 0.62,
-            "depth": 0.54
+            "width": 0.47,
+            "height": 0.37,
+            "depth": 0.025
           },
           "position": [
             0,
-            0.42,
-            0.34
+            0.62,
+            0.244
           ],
           "rotation": [
             0,
@@ -842,14 +1034,48 @@ window.AEGIS_PROP_LIBRARY={
             0
           ],
           "scale": [
-            0.55,
-            0.72,
-            0.08
+            1,
+            1,
+            1
           ],
           "material": {
-            "color": "#e2e8f0",
-            "roughness": 0.75,
+            "color": "#164e63",
+            "roughness": 0.2,
             "metalness": 0.05,
+            "opacity": 0.76,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-news-base",
+          "name": "Base",
+          "primitive": "box",
+          "size": {
+            "width": 0.38,
+            "height": 0.22,
+            "depth": 0.34
+          },
+          "position": [
+            0,
+            0.11,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#475569",
+            "roughness": 0.8,
+            "metalness": 0.15,
             "opacity": 1,
             "emissive": "#000000",
             "emissiveStrength": 0,
@@ -858,14 +1084,14 @@ window.AEGIS_PROP_LIBRARY={
         }
       ],
       "migration": {
-        "status": "game-derived",
-        "source": "legacy-three-renderer",
-        "sourcePath": "src/browser-runtime.html",
-        "runtimeCommit": "7cb0cd15c1",
-        "runtimeBlob": "0b908738c2",
-        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
-        "fidelity": "exact-static",
-        "limitations": ""
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
       },
       "rootTransform": {
         "position": [
@@ -900,10 +1126,14 @@ window.AEGIS_PROP_LIBRARY={
         "edgeFraction": 0.33,
         "curbLike": true,
         "natural": false,
-        "notes": "Migrated directly from the legacy AEGIS bus-stop renderer. The old renderer also set depthWrite=false on shelter glass; shared material schema does not expose that flag yet.",
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
       },
       "collision": {
         "shape": "box",
@@ -920,18 +1150,18 @@ window.AEGIS_PROP_LIBRARY={
       },
       "components": [
         {
-          "id": "cmp-bus-stop-legacy-post",
-          "name": "Post",
+          "id": "cmp-1155-busstop-left",
+          "name": "Left post",
           "primitive": "cylinder",
           "size": {
             "radiusTop": 0.04,
             "radiusBottom": 0.05,
-            "height": 1.65,
+            "height": 1.75,
             "segments": 8
           },
           "position": [
-            -0.45,
-            0.83,
+            -0.48,
+            0.875,
             0
           ],
           "rotation": [
@@ -946,8 +1176,8 @@ window.AEGIS_PROP_LIBRARY={
           ],
           "material": {
             "color": "#475569",
-            "roughness": 0.6,
-            "metalness": 0.4,
+            "roughness": 0.55,
+            "metalness": 0.62,
             "opacity": 1,
             "emissive": "#000000",
             "emissiveStrength": 0,
@@ -955,17 +1185,18 @@ window.AEGIS_PROP_LIBRARY={
           }
         },
         {
-          "id": "cmp-bus-stop-legacy-sign",
-          "name": "Sign",
-          "primitive": "box",
+          "id": "cmp-1155-busstop-right",
+          "name": "Right post",
+          "primitive": "cylinder",
           "size": {
-            "width": 0.64,
-            "height": 0.45,
-            "depth": 0.64
+            "radiusTop": 0.04,
+            "radiusBottom": 0.05,
+            "height": 1.75,
+            "segments": 8
           },
           "position": [
-            -0.45,
-            1.55,
+            0.48,
+            0.875,
             0
           ],
           "rotation": [
@@ -974,81 +1205,149 @@ window.AEGIS_PROP_LIBRARY={
             0
           ],
           "scale": [
-            0.28,
-            0.38,
-            0.12
+            1,
+            1,
+            1
           ],
           "material": {
-            "color": "#2563eb",
-            "roughness": 0.78,
-            "metalness": 0.05,
+            "color": "#475569",
+            "roughness": 0.55,
+            "metalness": 0.62,
             "opacity": 1,
-            "emissive": "#60a5fa",
-            "emissiveStrength": 0.1,
-            "castShadow": true
-          }
-        },
-        {
-          "id": "cmp-bus-stop-legacy-shelter",
-          "name": "Glass shelter",
-          "primitive": "box",
-          "size": {
-            "width": 0.92,
-            "height": 0.62,
-            "depth": 0.54
-          },
-          "position": [
-            0.2,
-            0.8,
-            0.35
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            1.05,
-            1.55,
-            0.12
-          ],
-          "material": {
-            "color": "#7dd3fc",
-            "roughness": 0.1,
-            "metalness": 0.05,
-            "opacity": 0.18,
             "emissive": "#000000",
             "emissiveStrength": 0,
             "castShadow": true
           }
         },
         {
-          "id": "cmp-bus-stop-legacy-seat",
-          "name": "Seat",
+          "id": "cmp-1155-busstop-roof",
+          "name": "Roof",
           "primitive": "box",
           "size": {
-            "width": 0.08,
+            "width": 1.18,
             "height": 0.08,
-            "depth": 1
+            "depth": 0.58
           },
           "position": [
-            0.1,
-            0.35,
+            0,
+            1.73,
             0
           ],
           "rotation": [
             0,
             0,
-            90
+            0
           ],
           "scale": [
-            4.6,
-            0.9,
-            1.2
+            1,
+            1,
+            1
           ],
           "material": {
             "color": "#64748b",
-            "roughness": 0.8,
+            "roughness": 0.5,
+            "metalness": 0.45,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-busstop-glass",
+          "name": "Back glass",
+          "primitive": "box",
+          "size": {
+            "width": 0.98,
+            "height": 1.15,
+            "depth": 0.025
+          },
+          "position": [
+            0,
+            0.92,
+            -0.23
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#164e63",
+            "roughness": 0.15,
+            "metalness": 0.05,
+            "opacity": 0.45,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-busstop-seat",
+          "name": "Bench seat",
+          "primitive": "box",
+          "size": {
+            "width": 0.82,
+            "height": 0.1,
+            "depth": 0.28
+          },
+          "position": [
+            0,
+            0.43,
+            0.04
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#7c4a2d",
+            "roughness": 0.82,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-busstop-back",
+          "name": "Bench back",
+          "primitive": "box",
+          "size": {
+            "width": 0.82,
+            "height": 0.34,
+            "depth": 0.08
+          },
+          "position": [
+            0,
+            0.67,
+            -0.09
+          ],
+          "rotation": [
+            -8,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#7c4a2d",
+            "roughness": 0.82,
             "metalness": 0.05,
             "opacity": 1,
             "emissive": "#000000",
@@ -1058,14 +1357,14 @@ window.AEGIS_PROP_LIBRARY={
         }
       ],
       "migration": {
-        "status": "game-derived",
-        "source": "legacy-three-renderer",
-        "sourcePath": "src/browser-runtime.html",
-        "runtimeCommit": "7cb0cd15c1",
-        "runtimeBlob": "0b908738c2",
-        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
-        "fidelity": "exact-static",
-        "limitations": "Shelter geometry/material values are migrated; legacy depthWrite=false is not represented by the current shared material schema."
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
       },
       "rootTransform": {
         "position": [
@@ -1103,7 +1402,7 @@ window.AEGIS_PROP_LIBRARY={
         "notes": "Migrated directly from the legacy AEGIS playground renderer. Keeps center placement used by residence-adjacent scene generation.",
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -1301,10 +1600,14 @@ window.AEGIS_PROP_LIBRARY={
         "edgeFraction": 0.33,
         "curbLike": true,
         "natural": false,
-        "notes": "Migrated directly from the legacy AEGIS street-bench renderer.",
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
       },
       "collision": {
         "shape": "box",
@@ -1321,32 +1624,32 @@ window.AEGIS_PROP_LIBRARY={
       },
       "components": [
         {
-          "id": "cmp-bench-legacy-seat",
+          "id": "cmp-1155-bench-seat",
           "name": "Seat",
           "primitive": "box",
           "size": {
-            "width": 0.08,
-            "height": 0.08,
-            "depth": 1
+            "width": 1.05,
+            "height": 0.11,
+            "depth": 0.34
           },
           "position": [
             0,
-            0.34,
+            0.48,
             0
           ],
           "rotation": [
             0,
             0,
-            90
+            0
           ],
           "scale": [
-            5.8,
-            0.95,
-            1.5
+            1,
+            1,
+            1
           ],
           "material": {
-            "color": "#8b5a2b",
-            "roughness": 0.9,
+            "color": "#7c4a2d",
+            "roughness": 0.86,
             "metalness": 0.05,
             "opacity": 1,
             "emissive": "#000000",
@@ -1355,33 +1658,101 @@ window.AEGIS_PROP_LIBRARY={
           }
         },
         {
-          "id": "cmp-bench-legacy-back",
+          "id": "cmp-1155-bench-back",
           "name": "Back",
           "primitive": "box",
           "size": {
-            "width": 0.08,
-            "height": 0.08,
-            "depth": 1
+            "width": 1.05,
+            "height": 0.38,
+            "depth": 0.09
           },
           "position": [
             0,
-            0.62,
-            0.24
+            0.72,
+            -0.13
+          ],
+          "rotation": [
+            -10,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#7c4a2d",
+            "roughness": 0.86,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-bench-left",
+          "name": "Left leg",
+          "primitive": "box",
+          "size": {
+            "width": 0.1,
+            "height": 0.44,
+            "depth": 0.18
+          },
+          "position": [
+            -0.38,
+            0.22,
+            0
           ],
           "rotation": [
             0,
             0,
-            90
+            0
           ],
           "scale": [
-            5.8,
-            0.9,
-            1.1
+            1,
+            1,
+            1
           ],
           "material": {
-            "color": "#8b5a2b",
-            "roughness": 0.9,
-            "metalness": 0.05,
+            "color": "#334155",
+            "roughness": 0.6,
+            "metalness": 0.55,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-bench-right",
+          "name": "Right leg",
+          "primitive": "box",
+          "size": {
+            "width": 0.1,
+            "height": 0.44,
+            "depth": 0.18
+          },
+          "position": [
+            0.38,
+            0.22,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#334155",
+            "roughness": 0.6,
+            "metalness": 0.55,
             "opacity": 1,
             "emissive": "#000000",
             "emissiveStrength": 0,
@@ -1390,14 +1761,14 @@ window.AEGIS_PROP_LIBRARY={
         }
       ],
       "migration": {
-        "status": "game-derived",
-        "source": "legacy-three-renderer",
-        "sourcePath": "src/browser-runtime.html",
-        "runtimeCommit": "7cb0cd15c1",
-        "runtimeBlob": "0b908738c2",
-        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
-        "fidelity": "exact-static",
-        "limitations": ""
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
       },
       "rootTransform": {
         "position": [
@@ -1432,37 +1803,41 @@ window.AEGIS_PROP_LIBRARY={
         "edgeFraction": 0.3,
         "curbLike": false,
         "natural": false,
-        "notes": "Migrated directly from the legacy AEGIS crate renderer.",
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
       },
       "collision": {
         "shape": "box",
         "size": [
-          0.64,
-          0.45,
-          0.64
+          0.78,
+          0.72,
+          0.78
         ],
         "offset": [
           0,
-          0.34,
+          0.36,
           0
         ]
       },
       "components": [
         {
-          "id": "cmp-crates-legacy-body",
-          "name": "Crate",
+          "id": "cmp-1155-crates-main",
+          "name": "Main crate",
           "primitive": "box",
           "size": {
-            "width": 0.64,
-            "height": 0.45,
-            "depth": 0.64
+            "width": 0.72,
+            "height": 0.66,
+            "depth": 0.72
           },
           "position": [
             0,
-            0.34,
+            0.33,
             0
           ],
           "rotation": [
@@ -1477,7 +1852,75 @@ window.AEGIS_PROP_LIBRARY={
           ],
           "material": {
             "color": "#8b5a2b",
-            "roughness": 0.82,
+            "roughness": 0.88,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-crates-top",
+          "name": "Top slat",
+          "primitive": "box",
+          "size": {
+            "width": 0.76,
+            "height": 0.07,
+            "depth": 0.12
+          },
+          "position": [
+            0,
+            0.68,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#5b371f",
+            "roughness": 0.92,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-crates-front",
+          "name": "Front slat",
+          "primitive": "box",
+          "size": {
+            "width": 0.76,
+            "height": 0.08,
+            "depth": 0.08
+          },
+          "position": [
+            0,
+            0.36,
+            0.4
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#5b371f",
+            "roughness": 0.92,
             "metalness": 0.05,
             "opacity": 1,
             "emissive": "#000000",
@@ -1487,14 +1930,14 @@ window.AEGIS_PROP_LIBRARY={
         }
       ],
       "migration": {
-        "status": "game-derived",
-        "source": "legacy-three-renderer",
-        "sourcePath": "src/browser-runtime.html",
-        "runtimeCommit": "7cb0cd15c1",
-        "runtimeBlob": "0b908738c2",
-        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
-        "fidelity": "exact-static",
-        "limitations": ""
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
       },
       "rootTransform": {
         "position": [
@@ -1529,37 +1972,41 @@ window.AEGIS_PROP_LIBRARY={
         "edgeFraction": 0.3,
         "curbLike": false,
         "natural": false,
-        "notes": "Migrated directly from the legacy AEGIS concrete cover renderer.",
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
       },
       "collision": {
         "shape": "box",
         "size": [
-          0.92,
-          0.62,
-          0.54
+          1.18,
+          0.65,
+          0.5
         ],
         "offset": [
           0,
-          0.38,
+          0.325,
           0
         ]
       },
       "components": [
         {
-          "id": "cmp-concrete-legacy-body",
-          "name": "Concrete block",
+          "id": "cmp-1155-concrete-barrier",
+          "name": "Barrier",
           "primitive": "box",
           "size": {
-            "width": 0.92,
+            "width": 1.04,
             "height": 0.62,
-            "depth": 0.54
+            "depth": 0.32
           },
           "position": [
             0,
-            0.38,
+            0.31,
             0
           ],
           "rotation": [
@@ -1574,7 +2021,41 @@ window.AEGIS_PROP_LIBRARY={
           ],
           "material": {
             "color": "#94a3b8",
-            "roughness": 0.94,
+            "roughness": 0.96,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-concrete-base",
+          "name": "Base",
+          "primitive": "box",
+          "size": {
+            "width": 1.18,
+            "height": 0.12,
+            "depth": 0.48
+          },
+          "position": [
+            0,
+            0.06,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#64748b",
+            "roughness": 0.98,
             "metalness": 0.05,
             "opacity": 1,
             "emissive": "#000000",
@@ -1584,14 +2065,14 @@ window.AEGIS_PROP_LIBRARY={
         }
       ],
       "migration": {
-        "status": "game-derived",
-        "source": "legacy-three-renderer",
-        "sourcePath": "src/browser-runtime.html",
-        "runtimeCommit": "7cb0cd15c1",
-        "runtimeBlob": "0b908738c2",
-        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
-        "fidelity": "exact-static",
-        "limitations": ""
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
       },
       "rootTransform": {
         "position": [
@@ -1626,37 +2107,41 @@ window.AEGIS_PROP_LIBRARY={
         "edgeFraction": 0.3,
         "curbLike": false,
         "natural": false,
-        "notes": "Migrated directly from the legacy AEGIS fence renderer.",
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
       },
       "collision": {
         "shape": "box",
         "size": [
-          0.92,
-          0.279,
-          0.1512
+          1.08,
+          0.94,
+          0.18
         ],
         "offset": [
           0,
-          0.25,
+          0.47,
           0
         ]
       },
       "components": [
         {
-          "id": "cmp-fence-legacy-body",
-          "name": "Fence body",
+          "id": "cmp-1155-fence-left",
+          "name": "Left post",
           "primitive": "box",
           "size": {
-            "width": 0.92,
-            "height": 0.62,
-            "depth": 0.54
+            "width": 0.1,
+            "height": 0.92,
+            "depth": 0.1
           },
           "position": [
-            0,
-            0.25,
+            -0.47,
+            0.46,
             0
           ],
           "rotation": [
@@ -1666,12 +2151,114 @@ window.AEGIS_PROP_LIBRARY={
           ],
           "scale": [
             1,
-            0.45,
-            0.28
+            1,
+            1
           ],
           "material": {
             "color": "#76512e",
-            "roughness": 0.92,
+            "roughness": 0.94,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-fence-right",
+          "name": "Right post",
+          "primitive": "box",
+          "size": {
+            "width": 0.1,
+            "height": 0.92,
+            "depth": 0.1
+          },
+          "position": [
+            0.47,
+            0.46,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#76512e",
+            "roughness": 0.94,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-fence-top",
+          "name": "Top rail",
+          "primitive": "box",
+          "size": {
+            "width": 1,
+            "height": 0.1,
+            "depth": 0.09
+          },
+          "position": [
+            0,
+            0.72,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#76512e",
+            "roughness": 0.94,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-fence-low",
+          "name": "Low rail",
+          "primitive": "box",
+          "size": {
+            "width": 1,
+            "height": 0.1,
+            "depth": 0.09
+          },
+          "position": [
+            0,
+            0.36,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#76512e",
+            "roughness": 0.94,
             "metalness": 0.05,
             "opacity": 1,
             "emissive": "#000000",
@@ -1681,14 +2268,14 @@ window.AEGIS_PROP_LIBRARY={
         }
       ],
       "migration": {
-        "status": "game-derived",
-        "source": "legacy-three-renderer",
-        "sourcePath": "src/browser-runtime.html",
-        "runtimeCommit": "7cb0cd15c1",
-        "runtimeBlob": "0b908738c2",
-        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
-        "fidelity": "exact-static",
-        "limitations": ""
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
       },
       "rootTransform": {
         "position": [
@@ -1726,7 +2313,7 @@ window.AEGIS_PROP_LIBRARY={
         "notes": "Migrated directly from the legacy AEGIS farm hay renderer. Mission generation may still assign stronger cover blocks/HP to individual hay cells; tactical cell data remains authoritative.",
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -1822,45 +2409,50 @@ window.AEGIS_PROP_LIBRARY={
         "natural": true,
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
-        "notes": "Exact shared DodecahedronGeometry rock; replaces the 1945 sphere approximation.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
       },
       "collision": {
         "shape": "box",
         "size": [
-          0.94,
-          0.72,
-          0.84
+          0.95,
+          0.76,
+          0.82
         ],
         "offset": [
           0,
-          0.36,
+          0.38,
           0
         ]
       },
       "components": [
         {
-          "id": "cmp-rock-Rock-mass-1",
+          "id": "cmp-1155-rock-mass",
           "name": "Rock mass",
-          "primitive": "dodecahedron",
+          "primitive": "sphere",
           "size": {
-            "radius": 0.42,
-            "detail": 0
+            "radius": 0.52,
+            "widthSegments": 7,
+            "heightSegments": 5
           },
           "position": [
             0,
-            0.36,
+            0.38,
             0
           ],
           "rotation": [
             0,
-            0,
-            0
+            16,
+            5
           ],
           "scale": [
-            1.12,
-            0.78,
-            1
+            1.1,
+            0.72,
+            0.92
           ],
           "material": {
             "color": "#64748b",
@@ -1874,14 +2466,14 @@ window.AEGIS_PROP_LIBRARY={
         }
       ],
       "migration": {
-        "status": "game-derived",
-        "source": "shared-editable-scenery-migration",
-        "sourcePath": "src/browser-runtime.html",
-        "runtimeCommit": "ae258ea29b",
-        "runtimeBlob": "0b908738c2",
-        "migratedBuild": "v0.26.09.17.2030_FULL_EDITABLE_SCENERY_PROP_MIGRATION_PATCH",
-        "fidelity": "exact-static",
-        "limitations": ""
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
       },
       "rootTransform": {
         "position": [
@@ -1916,10 +2508,14 @@ window.AEGIS_PROP_LIBRARY={
         "edgeFraction": 0,
         "curbLike": false,
         "natural": true,
-        "notes": "Migrated from the generic legacy AEGIS bush renderer. Regional bush scale/color variation remains a future shared-library extension.",
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
       },
       "collision": {
         "shape": "none",
@@ -1936,11 +2532,11 @@ window.AEGIS_PROP_LIBRARY={
       },
       "components": [
         {
-          "id": "cmp-bush-legacy-body",
+          "id": "cmp-1155-bush-foliage",
           "name": "Foliage",
           "primitive": "sphere",
           "size": {
-            "radius": 0.36,
+            "radius": 0.56,
             "widthSegments": 8,
             "heightSegments": 6
           },
@@ -1955,13 +2551,13 @@ window.AEGIS_PROP_LIBRARY={
             0
           ],
           "scale": [
-            1.18,
-            0.58,
+            1.15,
+            0.52,
             0.92
           ],
           "material": {
-            "color": "#2f8f4e",
-            "roughness": 0.95,
+            "color": "#4d7c0f",
+            "roughness": 1,
             "metalness": 0.05,
             "opacity": 1,
             "emissive": "#000000",
@@ -1971,14 +2567,14 @@ window.AEGIS_PROP_LIBRARY={
         }
       ],
       "migration": {
-        "status": "game-derived",
-        "source": "legacy-three-renderer",
-        "sourcePath": "src/browser-runtime.html",
-        "runtimeCommit": "7cb0cd15c1",
-        "runtimeBlob": "0b908738c2",
-        "migratedBuild": "v0.26.09.17.1945_LEGACY_PROP_MODEL_FIDELITY_MIGRATION_PATCH",
-        "fidelity": "baseline-regional",
-        "limitations": "Generic legacy geometry is exact; biome/id-based bush variation is not yet data-driven in the shared schema."
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
       },
       "rootTransform": {
         "position": [
@@ -2016,7 +2612,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "includes",
         "runtimeScaleMode": "none",
         "notes": "Shared editable brush-family replacement.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "none",
@@ -2181,7 +2777,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "includes",
         "runtimeScaleMode": "none",
         "notes": "Shared editable crop-family replacement.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "none",
@@ -2383,7 +2979,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Updated editable wreck replacement.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -2548,7 +3144,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "civic-landmark",
         "notes": "Editable civic statue. Runtime keeps the existing 1\u20137 hex landmark scale rule.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "cylinder",
@@ -2816,7 +3412,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "civic-landmark",
         "notes": "Editable water fountain. Runtime keeps the existing 1\u20137 hex landmark scale rule.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "cylinder",
@@ -3086,7 +3682,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Updated editable building power-control panel. Gameplay power-circuit authority remains on the cover object.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -3319,7 +3915,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable road-vehicle visual. Runtime keeps authoritative multi-hex footprint, road rotation, and headlights.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -3624,7 +4220,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable road-vehicle visual. Runtime keeps authoritative multi-hex footprint, road rotation, and headlights.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -3929,7 +4525,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable road-vehicle visual. Runtime keeps authoritative multi-hex footprint, road rotation, and headlights.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -4302,7 +4898,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable road-vehicle visual. Runtime keeps authoritative multi-hex footprint, road rotation, and headlights.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -4641,7 +5237,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -4840,7 +5436,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -4971,7 +5567,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -5102,7 +5698,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -5301,7 +5897,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -5500,7 +6096,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -5631,7 +6227,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -5796,7 +6392,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -5995,7 +6591,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -6194,7 +6790,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -6393,7 +6989,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -6490,7 +7086,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -6689,7 +7285,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -6820,7 +7416,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -7019,7 +7615,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -7150,7 +7746,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -7281,7 +7877,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -7446,7 +8042,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -7645,7 +8241,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -7776,7 +8372,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -7975,7 +8571,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -8174,7 +8770,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -8339,7 +8935,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -8538,7 +9134,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -8635,7 +9231,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -8834,7 +9430,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -8965,7 +9561,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -9164,7 +9760,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -9363,7 +9959,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -9528,7 +10124,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -9625,7 +10221,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -9825,7 +10421,7 @@ window.AEGIS_PROP_LIBRARY={
         "visualMatchMode": "exact",
         "runtimeScaleMode": "none",
         "notes": "Editable replacement for the current hard-coded interior furnishing renderer.",
-        "qaGalleryBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
       },
       "collision": {
         "shape": "box",
@@ -10007,13 +10603,13 @@ window.AEGIS_PROP_LIBRARY={
       }
     }
   ],
-  "editorBuild": "v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH"
+  "editorBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH"
 };
 
 /* AEGIS 2058 runtime-fidelity overlay. The game already loads this library before its browser runtime. */
 ;(function aegis2058PropRuntimeFidelityBridge(){
   'use strict';
-  const BUILD='v0.26.09.17.2120_PROP_TEST_GALLERY_INSTALLED_APP_URL_HOTFIX';
+  const BUILD='v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH';
   const DEFINITION_SCHEMA='aegis-prop-definition-v1';
   const clampLocal=(n,min,max)=>Math.max(min,Math.min(max,Number(n)||0));
   if(typeof location!=='undefined'&&/AEGIS_Prop_(?:Editor|Runtime_Test_Gallery)/i.test(String(location.pathname||'')))return;

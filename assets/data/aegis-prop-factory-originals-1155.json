@@ -1,0 +1,2070 @@
+{
+  "schema": "aegis-prop-factory-originals-v1",
+  "libraryVersion": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+  "sourceEditorBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+  "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+  "immutable": true,
+  "props": [
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-mu6cwa6g-qniq2",
+      "name": "Tree",
+      "visualKey": "tree",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "soft",
+        "coverBlock": 0,
+        "maxHp": 30,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.35,
+        "curbLike": false,
+        "natural": true,
+        "visualMatchMode": "exact",
+        "runtimeScaleMode": "none",
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+      },
+      "collision": {
+        "shape": "cylinder",
+        "radius": 0.22,
+        "height": 0.85,
+        "offset": [
+          0,
+          0.425,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-1155-tree-trunk",
+          "name": "Trunk",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.12,
+            "radiusBottom": 0.17,
+            "height": 0.78,
+            "segments": 10
+          },
+          "position": [
+            0,
+            0.39,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#6b4423",
+            "roughness": 0.92,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-tree-canopy",
+          "name": "Canopy",
+          "primitive": "sphere",
+          "size": {
+            "radius": 0.58,
+            "widthSegments": 10,
+            "heightSegments": 7
+          },
+          "position": [
+            0,
+            1.05,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1.05,
+            0.82,
+            1
+          ],
+          "material": {
+            "color": "#397c43",
+            "roughness": 0.98,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ],
+      "migration": {
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
+      },
+      "rootTransform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-mu6cwa6g-fn4f7",
+      "name": "Lamp Post",
+      "visualKey": "lamp-post",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "soft",
+        "coverBlock": 0,
+        "maxHp": 24,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.42,
+        "curbLike": true,
+        "natural": false,
+        "visualMatchMode": "exact",
+        "runtimeScaleMode": "none",
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+      },
+      "collision": {
+        "shape": "cylinder",
+        "radius": 0.11,
+        "height": 2.28,
+        "offset": [
+          0,
+          1.14,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-1155-lamp-base",
+          "name": "Base",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.1,
+            "radiusBottom": 0.13,
+            "height": 0.18,
+            "segments": 10
+          },
+          "position": [
+            0,
+            0.09,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#334155",
+            "roughness": 0.7,
+            "metalness": 0.55,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-lamp-pole",
+          "name": "Pole",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.05,
+            "radiusBottom": 0.07,
+            "height": 2.1,
+            "segments": 10
+          },
+          "position": [
+            0,
+            1.13,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#334155",
+            "roughness": 0.65,
+            "metalness": 0.58,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-lamp-head",
+          "name": "Lamp",
+          "primitive": "sphere",
+          "size": {
+            "radius": 0.14,
+            "widthSegments": 12,
+            "heightSegments": 8
+          },
+          "position": [
+            0,
+            2.18,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#ffe09a",
+            "roughness": 0.25,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#ffc85c",
+            "emissiveStrength": 1.2,
+            "castShadow": false
+          }
+        }
+      ],
+      "migration": {
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
+      },
+      "rootTransform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-mu6cwa6g-101kw",
+      "name": "Stop Sign",
+      "visualKey": "stop-sign",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "soft",
+        "coverBlock": 0,
+        "maxHp": 20,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.42,
+        "curbLike": true,
+        "natural": false,
+        "visualMatchMode": "exact",
+        "runtimeScaleMode": "none",
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+      },
+      "collision": {
+        "shape": "cylinder",
+        "radius": 0.08,
+        "height": 1.85,
+        "offset": [
+          0,
+          0.925,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-1155-stop-pole",
+          "name": "Pole",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.035,
+            "radiusBottom": 0.045,
+            "height": 1.65,
+            "segments": 8
+          },
+          "position": [
+            0,
+            0.825,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#94a3b8",
+            "roughness": 0.45,
+            "metalness": 0.65,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-stop-octagon",
+          "name": "Octagonal sign",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.3,
+            "radiusBottom": 0.3,
+            "height": 0.055,
+            "segments": 8
+          },
+          "position": [
+            0,
+            1.62,
+            0
+          ],
+          "rotation": [
+            90,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#b91c1c",
+            "roughness": 0.55,
+            "metalness": 0.08,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-stop-center",
+          "name": "Center plate",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.22,
+            "radiusBottom": 0.22,
+            "height": 0.061,
+            "segments": 8
+          },
+          "position": [
+            0,
+            1.62,
+            -0.003
+          ],
+          "rotation": [
+            90,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#dc2626",
+            "roughness": 0.55,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ],
+      "migration": {
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
+      },
+      "rootTransform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-mu6cwa6g-ml3fk",
+      "name": "Vending Machine",
+      "visualKey": "vending-machine",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "hard",
+        "coverBlock": 0.5,
+        "maxHp": 48,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.33,
+        "curbLike": false,
+        "natural": false,
+        "visualMatchMode": "exact",
+        "runtimeScaleMode": "none",
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          0.78,
+          1.48,
+          0.54
+        ],
+        "offset": [
+          0,
+          0.74,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-1155-vending-cabinet",
+          "name": "Cabinet",
+          "primitive": "box",
+          "size": {
+            "width": 0.72,
+            "height": 1.48,
+            "depth": 0.48
+          },
+          "position": [
+            0,
+            0.74,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#1d4ed8",
+            "roughness": 0.62,
+            "metalness": 0.18,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-vending-front",
+          "name": "Front inset",
+          "primitive": "box",
+          "size": {
+            "width": 0.58,
+            "height": 0.82,
+            "depth": 0.035
+          },
+          "position": [
+            0,
+            0.91,
+            0.255
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#0f172a",
+            "roughness": 0.4,
+            "metalness": 0.12,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-vending-glass",
+          "name": "Product glass",
+          "primitive": "box",
+          "size": {
+            "width": 0.49,
+            "height": 0.52,
+            "depth": 0.025
+          },
+          "position": [
+            -0.02,
+            1.03,
+            0.277
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#164e63",
+            "roughness": 0.18,
+            "metalness": 0.05,
+            "opacity": 0.72,
+            "emissive": "#0ea5e9",
+            "emissiveStrength": 0.1,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-vending-control",
+          "name": "Control panel",
+          "primitive": "box",
+          "size": {
+            "width": 0.11,
+            "height": 0.36,
+            "depth": 0.045
+          },
+          "position": [
+            0.245,
+            0.82,
+            0.29
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#111827",
+            "roughness": 0.55,
+            "metalness": 0.3,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-vending-slot",
+          "name": "Dispense slot",
+          "primitive": "box",
+          "size": {
+            "width": 0.38,
+            "height": 0.14,
+            "depth": 0.04
+          },
+          "position": [
+            -0.05,
+            0.32,
+            0.28
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#020617",
+            "roughness": 0.75,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ],
+      "migration": {
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
+      },
+      "rootTransform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-mu6cwa6g-bm196",
+      "name": "Newspaper Machine",
+      "visualKey": "newspaper-machine",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "soft",
+        "coverBlock": 0.25,
+        "maxHp": 28,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.33,
+        "curbLike": false,
+        "natural": false,
+        "visualMatchMode": "exact",
+        "runtimeScaleMode": "none",
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          0.65,
+          1.04,
+          0.5
+        ],
+        "offset": [
+          0,
+          0.52,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-1155-news-body",
+          "name": "Body",
+          "primitive": "box",
+          "size": {
+            "width": 0.62,
+            "height": 0.82,
+            "depth": 0.46
+          },
+          "position": [
+            0,
+            0.52,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#f59e0b",
+            "roughness": 0.68,
+            "metalness": 0.08,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-news-window",
+          "name": "Window",
+          "primitive": "box",
+          "size": {
+            "width": 0.47,
+            "height": 0.37,
+            "depth": 0.025
+          },
+          "position": [
+            0,
+            0.62,
+            0.244
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#164e63",
+            "roughness": 0.2,
+            "metalness": 0.05,
+            "opacity": 0.76,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-news-base",
+          "name": "Base",
+          "primitive": "box",
+          "size": {
+            "width": 0.38,
+            "height": 0.22,
+            "depth": 0.34
+          },
+          "position": [
+            0,
+            0.11,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#475569",
+            "roughness": 0.8,
+            "metalness": 0.15,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ],
+      "migration": {
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
+      },
+      "rootTransform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-mu6cwa6g-wlsyq",
+      "name": "Bus Stop",
+      "visualKey": "bus-stop",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "hard",
+        "coverBlock": 0.5,
+        "maxHp": 42,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.33,
+        "curbLike": true,
+        "natural": false,
+        "visualMatchMode": "exact",
+        "runtimeScaleMode": "none",
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          1.22,
+          1.78,
+          0.65
+        ],
+        "offset": [
+          0,
+          0.89,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-1155-busstop-left",
+          "name": "Left post",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.04,
+            "radiusBottom": 0.05,
+            "height": 1.75,
+            "segments": 8
+          },
+          "position": [
+            -0.48,
+            0.875,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#475569",
+            "roughness": 0.55,
+            "metalness": 0.62,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-busstop-right",
+          "name": "Right post",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.04,
+            "radiusBottom": 0.05,
+            "height": 1.75,
+            "segments": 8
+          },
+          "position": [
+            0.48,
+            0.875,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#475569",
+            "roughness": 0.55,
+            "metalness": 0.62,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-busstop-roof",
+          "name": "Roof",
+          "primitive": "box",
+          "size": {
+            "width": 1.18,
+            "height": 0.08,
+            "depth": 0.58
+          },
+          "position": [
+            0,
+            1.73,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#64748b",
+            "roughness": 0.5,
+            "metalness": 0.45,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-busstop-glass",
+          "name": "Back glass",
+          "primitive": "box",
+          "size": {
+            "width": 0.98,
+            "height": 1.15,
+            "depth": 0.025
+          },
+          "position": [
+            0,
+            0.92,
+            -0.23
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#164e63",
+            "roughness": 0.15,
+            "metalness": 0.05,
+            "opacity": 0.45,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-busstop-seat",
+          "name": "Bench seat",
+          "primitive": "box",
+          "size": {
+            "width": 0.82,
+            "height": 0.1,
+            "depth": 0.28
+          },
+          "position": [
+            0,
+            0.43,
+            0.04
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#7c4a2d",
+            "roughness": 0.82,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-busstop-back",
+          "name": "Bench back",
+          "primitive": "box",
+          "size": {
+            "width": 0.82,
+            "height": 0.34,
+            "depth": 0.08
+          },
+          "position": [
+            0,
+            0.67,
+            -0.09
+          ],
+          "rotation": [
+            -8,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#7c4a2d",
+            "roughness": 0.82,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ],
+      "migration": {
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
+      },
+      "rootTransform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-mu6cwa6g-ounkz",
+      "name": "Street Bench",
+      "visualKey": "street-bench",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "soft",
+        "coverBlock": 0.25,
+        "maxHp": 32,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.33,
+        "curbLike": true,
+        "natural": false,
+        "visualMatchMode": "exact",
+        "runtimeScaleMode": "none",
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          1.12,
+          0.92,
+          0.48
+        ],
+        "offset": [
+          0,
+          0.46,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-1155-bench-seat",
+          "name": "Seat",
+          "primitive": "box",
+          "size": {
+            "width": 1.05,
+            "height": 0.11,
+            "depth": 0.34
+          },
+          "position": [
+            0,
+            0.48,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#7c4a2d",
+            "roughness": 0.86,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-bench-back",
+          "name": "Back",
+          "primitive": "box",
+          "size": {
+            "width": 1.05,
+            "height": 0.38,
+            "depth": 0.09
+          },
+          "position": [
+            0,
+            0.72,
+            -0.13
+          ],
+          "rotation": [
+            -10,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#7c4a2d",
+            "roughness": 0.86,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-bench-left",
+          "name": "Left leg",
+          "primitive": "box",
+          "size": {
+            "width": 0.1,
+            "height": 0.44,
+            "depth": 0.18
+          },
+          "position": [
+            -0.38,
+            0.22,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#334155",
+            "roughness": 0.6,
+            "metalness": 0.55,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-bench-right",
+          "name": "Right leg",
+          "primitive": "box",
+          "size": {
+            "width": 0.1,
+            "height": 0.44,
+            "depth": 0.18
+          },
+          "position": [
+            0.38,
+            0.22,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#334155",
+            "roughness": 0.6,
+            "metalness": 0.55,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ],
+      "migration": {
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
+      },
+      "rootTransform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-mu6cwa6g-ghune",
+      "name": "Crates",
+      "visualKey": "crates",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "hard",
+        "coverBlock": 0.5,
+        "maxHp": 44,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.3,
+        "curbLike": false,
+        "natural": false,
+        "visualMatchMode": "exact",
+        "runtimeScaleMode": "none",
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          0.78,
+          0.72,
+          0.78
+        ],
+        "offset": [
+          0,
+          0.36,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-1155-crates-main",
+          "name": "Main crate",
+          "primitive": "box",
+          "size": {
+            "width": 0.72,
+            "height": 0.66,
+            "depth": 0.72
+          },
+          "position": [
+            0,
+            0.33,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#8b5a2b",
+            "roughness": 0.88,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-crates-top",
+          "name": "Top slat",
+          "primitive": "box",
+          "size": {
+            "width": 0.76,
+            "height": 0.07,
+            "depth": 0.12
+          },
+          "position": [
+            0,
+            0.68,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#5b371f",
+            "roughness": 0.92,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-crates-front",
+          "name": "Front slat",
+          "primitive": "box",
+          "size": {
+            "width": 0.76,
+            "height": 0.08,
+            "depth": 0.08
+          },
+          "position": [
+            0,
+            0.36,
+            0.4
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#5b371f",
+            "roughness": 0.92,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ],
+      "migration": {
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
+      },
+      "rootTransform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-mu6cwa6g-qclz7",
+      "name": "Concrete Barrier",
+      "visualKey": "concrete",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "hard",
+        "coverBlock": 0.75,
+        "maxHp": 70,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.3,
+        "curbLike": false,
+        "natural": false,
+        "visualMatchMode": "exact",
+        "runtimeScaleMode": "none",
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          1.18,
+          0.65,
+          0.5
+        ],
+        "offset": [
+          0,
+          0.325,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-1155-concrete-barrier",
+          "name": "Barrier",
+          "primitive": "box",
+          "size": {
+            "width": 1.04,
+            "height": 0.62,
+            "depth": 0.32
+          },
+          "position": [
+            0,
+            0.31,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#94a3b8",
+            "roughness": 0.96,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-concrete-base",
+          "name": "Base",
+          "primitive": "box",
+          "size": {
+            "width": 1.18,
+            "height": 0.12,
+            "depth": 0.48
+          },
+          "position": [
+            0,
+            0.06,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#64748b",
+            "roughness": 0.98,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ],
+      "migration": {
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
+      },
+      "rootTransform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-mu6cwa6g-oob0z",
+      "name": "Fence Segment",
+      "visualKey": "fence",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "hard",
+        "coverBlock": 0.5,
+        "maxHp": 34,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.3,
+        "curbLike": false,
+        "natural": false,
+        "visualMatchMode": "exact",
+        "runtimeScaleMode": "none",
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          1.08,
+          0.94,
+          0.18
+        ],
+        "offset": [
+          0,
+          0.47,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-1155-fence-left",
+          "name": "Left post",
+          "primitive": "box",
+          "size": {
+            "width": 0.1,
+            "height": 0.92,
+            "depth": 0.1
+          },
+          "position": [
+            -0.47,
+            0.46,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#76512e",
+            "roughness": 0.94,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-fence-right",
+          "name": "Right post",
+          "primitive": "box",
+          "size": {
+            "width": 0.1,
+            "height": 0.92,
+            "depth": 0.1
+          },
+          "position": [
+            0.47,
+            0.46,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#76512e",
+            "roughness": 0.94,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-fence-top",
+          "name": "Top rail",
+          "primitive": "box",
+          "size": {
+            "width": 1,
+            "height": 0.1,
+            "depth": 0.09
+          },
+          "position": [
+            0,
+            0.72,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#76512e",
+            "roughness": 0.94,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "cmp-1155-fence-low",
+          "name": "Low rail",
+          "primitive": "box",
+          "size": {
+            "width": 1,
+            "height": 0.1,
+            "depth": 0.09
+          },
+          "position": [
+            0,
+            0.36,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#76512e",
+            "roughness": 0.94,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ],
+      "migration": {
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
+      },
+      "rootTransform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-rock",
+      "name": "Rock",
+      "visualKey": "rock",
+      "metadata": {
+        "navigationClass": "solid",
+        "coverKind": "hard",
+        "coverBlock": 0.5,
+        "maxHp": 55,
+        "losClass": "existing-cover",
+        "edgePlacement": "hex-edge",
+        "edgeFraction": 0.3,
+        "curbLike": false,
+        "natural": true,
+        "visualMatchMode": "exact",
+        "runtimeScaleMode": "none",
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          0.95,
+          0.76,
+          0.82
+        ],
+        "offset": [
+          0,
+          0.38,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-1155-rock-mass",
+          "name": "Rock mass",
+          "primitive": "sphere",
+          "size": {
+            "radius": 0.52,
+            "widthSegments": 7,
+            "heightSegments": 5
+          },
+          "position": [
+            0,
+            0.38,
+            0
+          ],
+          "rotation": [
+            0,
+            16,
+            5
+          ],
+          "scale": [
+            1.1,
+            0.72,
+            0.92
+          ],
+          "material": {
+            "color": "#64748b",
+            "roughness": 0.99,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ],
+      "migration": {
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
+      },
+      "rootTransform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-mu6cwa6g-ckyw7",
+      "name": "Bush",
+      "visualKey": "bush",
+      "metadata": {
+        "navigationClass": "passable",
+        "coverKind": "soft",
+        "coverBlock": 0,
+        "maxHp": 20,
+        "losClass": "existing-cover",
+        "edgePlacement": "center",
+        "edgeFraction": 0,
+        "curbLike": false,
+        "natural": true,
+        "visualMatchMode": "exact",
+        "runtimeScaleMode": "none",
+        "notes": "Restored from the original 1155 Prop Editor Foundation model. This definition is now the canonical live game model. The pre-restore 2058 definition is preserved in assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json.",
+        "qaGalleryBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "foundationOriginal": true,
+        "factoryOriginalBuild": "v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL",
+        "factoryOriginalCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "preRestoreBackup": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json"
+      },
+      "collision": {
+        "shape": "none",
+        "size": [
+          0,
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0,
+          0
+        ]
+      },
+      "components": [
+        {
+          "id": "cmp-1155-bush-foliage",
+          "name": "Foliage",
+          "primitive": "sphere",
+          "size": {
+            "radius": 0.56,
+            "widthSegments": 8,
+            "heightSegments": 6
+          },
+          "position": [
+            0,
+            0.32,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1.15,
+            0.52,
+            0.92
+          ],
+          "material": {
+            "color": "#4d7c0f",
+            "roughness": 1,
+            "metalness": 0.05,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ],
+      "migration": {
+        "status": "foundation-original-restored",
+        "source": "AEGIS Prop Editor Foundation Tool 1155",
+        "sourcePath": "AEGIS_Prop_Editor_v0.26.09.17.1155_PROP_EDITOR_FOUNDATION_TOOL.html",
+        "sourceCommit": "efb9cf4dada88cb258f9d723d3d609b73301ffa6",
+        "restoredBuild": "v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH",
+        "backupPath": "assets/data/aegis-prop-library-2058-pre-foundation-restore-backup.json",
+        "fidelity": "exact-foundation-authoring-definition",
+        "limitations": "Runtime-owned behavior remains layered on top of editor-authored geometry where applicable."
+      },
+      "rootTransform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      }
+    }
+  ]
+}

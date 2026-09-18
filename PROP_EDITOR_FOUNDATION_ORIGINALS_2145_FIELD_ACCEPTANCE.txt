@@ -1,0 +1,10 @@
+AEGIS 2145 FIELD ACCEPTANCE
+
+1. Open AEGIS_Prop_Editor_CURRENT.html and verify the badge reads Foundation Originals 2145.
+2. Inspect each restored prop in the editor: Tree, Lamp Post, Stop Sign, Vending Machine, Newspaper Machine, Bus Stop, Street Bench, Crates, Concrete Barrier, Fence Segment, Rock, Bush.
+3. Confirm the shapes match the original early Prop Editor look (for example: Tree has a rounded sphere canopy, Vending Machine has the product window/control panel/dispense slot, Crates has visible slats, Fence has two posts + two rails).
+4. Launch the game and use Ctrl+Shift+G to open the Runtime Test Gallery.
+5. Confirm the same 12 models appear there with matching geometry/orientation.
+6. Run a normal tactical mission containing several of these props and confirm movement/cover/pathing behavior still functions.
+7. Confirm the installed-app gallery shortcut no longer throws Invalid URL.
+8. Confirm old campaign saves load normally; save format remains 4.

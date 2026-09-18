@@ -1,13 +1,13 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict'),{test}=require('node:test');
 const root=path.join(__dirname,'..');
-const BUILD="v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH";
-const editorName="AEGIS_Prop_Editor_v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH.html",galleryName="AEGIS_Prop_Runtime_Test_Gallery_v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH.html";
+const BUILD="v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH";
+const editorName="AEGIS_Prop_Editor_v0.26.09.17.2145_ORIGINAL_PROP_MODEL_RESTORATION_AND_FACTORY_BACKUP_PATCH.html",galleryName="AEGIS_Prop_Runtime_Test_Gallery_v0.26.09.17.2058_PROP_RUNTIME_FIDELITY_AND_TEST_GALLERY_PATCH.html";
 const libJs=fs.readFileSync(path.join(root,'assets','data','aegis-prop-library.js'),'utf8');
 const libJson=JSON.parse(fs.readFileSync(path.join(root,'assets','data','aegis-prop-library.json'),'utf8'));
 const editor=fs.readFileSync(path.join(root,editorName),'utf8'),gallery=fs.readFileSync(path.join(root,galleryName),'utf8');
 const current=fs.readFileSync(path.join(root,'AEGIS_Prop_Editor_CURRENT.html'),'utf8'),galleryCurrent=fs.readFileSync(path.join(root,'AEGIS_Prop_Runtime_Test_Gallery_CURRENT.html'),'utf8');
 function matches(def,key){const mode=String(def?.metadata?.visualMatchMode||'exact'),v=String(def?.visualKey||'');return mode==='prefix'?key.startsWith(v):mode==='includes'?key.includes(v):key===v;}
-test('2058 identity and launchers',()=>{assert.ok(editor.includes(BUILD));assert.ok(current.includes(editorName));assert.ok(galleryCurrent.includes(galleryName));});
+test('current identity and launchers',()=>{assert.ok(editor.includes(BUILD));assert.ok(current.includes(editorName));assert.ok(galleryCurrent.includes(galleryName));});
 test('57 canonical props carry root transforms',()=>{assert.equal(libJson.props.length,57);assert.equal(libJson.libraryVersion,BUILD);for(const p of libJson.props){assert.deepEqual(p.rootTransform?.position?.length,3,p.visualKey);assert.deepEqual(p.rootTransform?.rotation?.length,3,p.visualKey);assert.deepEqual(p.rootTransform?.scale?.length,3,p.visualKey);}});
 test('editor exposes whole-prop transforms and runtime authority',()=>{for(const token of ['Whole Prop Transform','rootPositionFields','rootRotationFields','rootScaleFields','resetRootBtn','Game Runtime Authority','runtimeAuthority(','refreshRootEditor(','Open Runtime Test Gallery'])assert.ok(editor.includes(token),token);assert.ok(editor.includes('Dodecahedron'));});
 test('runtime bridge applies root transform and QA shortcut',()=>{for(const token of ['rootTransform','modelRoot.position.set','modelRoot.rotation.set','modelRoot.scale.set','multiplyScalar','AEGIS_PROP_RUNTIME_FIDELITY_STATUS','AEGIS_OPEN_PROP_TEST_GALLERY','Ctrl+Shift+G'.replace('Ctrl+Shift+G','event.ctrlKey&&event.shiftKey')])assert.ok(libJs.includes(token),token);assert.ok(libJs.includes("primitive==='dodecahedron'"));});

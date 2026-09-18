@@ -1,0 +1,18 @@
+AEGIS 2145 ORIGINAL PROP MODEL RESTORATION + FACTORY BACKUP — VALIDATION SUMMARY
+
+PASS — Canonical shared library contains 57 unique editable visual keys.
+PASS — Exactly 12 matching props were restored from the 1155 Foundation Tool source definitions.
+PASS — Restored set: tree, lamp-post, stop-sign, vending-machine, newspaper-machine, bus-stop, street-bench, crates, concrete, fence, rock, bush.
+PASS — Signature geometry checks confirm the early-editor designs (rounded tree canopy, detailed vending-machine face, bus-stop bench/glass, crate slats, fence rails, low-poly sphere rock).
+PASS — The previous 2058 full 57-prop library is preserved unchanged in aegis-prop-library-2058-pre-foundation-restore-backup.json.
+PASS — An immutable 12-prop factory-original snapshot is present in aegis-prop-factory-originals-1155.json.
+PASS — Runtime library JavaScript parses successfully.
+PASS — 2120 installed-app gallery URL resolution regression checks pass for GitHub Pages, local file mode, and about:srcdoc fallback behavior.
+PASS — 2145 Prop Editor JavaScript parses successfully and CURRENT redirects to the 2145 editor.
+PASS — Runtime fidelity/gallery regression suite: 5 passed, 0 failed, 1 skipped because the direct-copy validation folder does not include src/browser-runtime.html.
+PASS — Save format remains 4.
+
+FIELD VALIDATION STILL REQUIRED
+- Visual inspection in the actual installed app / browser renderer.
+- Normal tactical mission with restored props to confirm presentation, collision, cover, pathing, and any lighting behavior.
+- Ctrl+Shift+G gallery launch in the installed PWA after deployment.
