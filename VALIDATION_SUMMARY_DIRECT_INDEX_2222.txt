@@ -1,0 +1,10 @@
+build: v0.26.09.18.2222_NATIVE_TOOLS_EDITORS_RUNTIME_PAYLOAD_PATCH
+save_format: 4
+payload_bytes: 7335564
+payload_sha256: 4a568c08daff0dff468ba52a1912bc09399d1a6ff0a23eb9fd78a7aa35e965cc
+tools_marker_count: 1
+tools_label_count: 1
+sfx_before_tools_before_patch_notes: True
+old_build_remaining_in_output: 0
+new_build_occurrences_outer_text: 3
+companion_hub: AEGIS_Tools_Editors.html

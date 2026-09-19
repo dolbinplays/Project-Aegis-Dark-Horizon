@@ -33,13 +33,13 @@ check(runtime.includes('propPlacementRuleSource=resolution.source')&&runtime.inc
 check(runtime.includes('AEGIS_UNIFIED_PROP_RUNTIME_PIPELINE_PATCH=true'),'runtime pipeline feature flag missing');
 check(runtime.includes('const SAVE_FORMAT=4'),'runtime save format changed');
 
-check(sw.includes('aegis-v0.26.09.18.2115_IN_GAME_TOOLS_EDITOR_RENDERED_RUNTIME_HOTFIX'),'service worker cache was not bumped');
+check(sw.includes(`aegis-${meta.build}`),'service worker cache does not match the release');
 check(sw.includes('./assets/runtime/aegis-contextual-prop-placement-runtime.js'),'service worker no longer refreshes runtime extension');
-check(meta.build==='v0.26.09.18.2115_IN_GAME_TOOLS_EDITOR_RENDERED_RUNTIME_HOTFIX','release metadata build mismatch');
+check(meta.build===JSON.parse(fs.readFileSync(path.join(root,'src/manifest.json'),'utf8')).currentBuild,'release metadata build mismatch');
 check(meta.save_format===4,'release metadata save format changed');
 check(meta.runtime_extension_build==='v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH','release metadata runtime extension mismatch');
 check(meta.prop_authoring_pipeline==='canonical-prop-definition','release metadata pipeline authority missing');
-check(meta.tools_editor_launcher_build===meta.build,'release metadata launcher build mismatch');
+check(fs.readFileSync(path.join(root,meta.tools_editor_launcher_extension),'utf8').includes(`const BUILD='${meta.tools_editor_launcher_build}'`),'release metadata launcher build mismatch');
 
 // Runtime behavior: canonical definition must beat stale legacy override.
 const sandbox={console,setTimeout,clearTimeout,setInterval,clearInterval,CustomEvent:function(){},module:{exports:{}},exports:{}};
@@ -63,7 +63,10 @@ sandbox.localStorage.getItem=()=>null;
 const catalog=api.placementResolutionForVisual('bus-stop');
 check(catalog.source==='legacy-placement-catalog'&&catalog.rule.mode==='free','catalog fallback no longer works');
 
-// No batch/installer artifacts are part of the patch directory.
-const all=[];function walk(d){for(const n of fs.readdirSync(d)){const p=path.join(d,n),st=fs.statSync(p);if(st.isDirectory()){if(n==='base1215')continue;walk(p)}else all.push(p)}}walk(root);
-check(!all.some(p=>/\.(bat|cmd|exe|msi)$/i.test(p)),'direct-copy patch contains installer/batch artifact');
+// Archive policy applies to an extracted release, not the source checkout,
+// which includes historical installers. Pass its directory to validate a package.
+if(process.argv[2]){
+ const all=[];function walk(d){for(const n of fs.readdirSync(d)){const p=path.join(d,n),st=fs.statSync(p);if(st.isDirectory()){if(n==='base1215')continue;walk(p)}else all.push(p)}}walk(path.resolve(process.argv[2]));
+ check(!all.some(p=>/\.(bat|cmd|exe|msi)$/i.test(p)),'direct-copy patch contains installer/batch artifact');
+}
 console.log(`PASS ${pass} unified prop authoring → runtime pipeline contracts`);

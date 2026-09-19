@@ -198,6 +198,7 @@ if ([...workerSource.matchAll(cacheDeclaration)].length !== 2) {
 const worker = workerSource.replace(cacheDeclaration, (_, name) =>
   `const ${name} = "${name === "AEGIS_PWA_CACHE" ? "aegis-" : "aegis-runtime-"}${build}";`);
 const releaseMetadata = {
+  ...JSON.parse(fs.readFileSync(path.join(root, "release-metadata.json"), "utf8")),
   build,
   package_filename: `Project_Aegis_${build}.zip`,
   save_format: manifest.saveFormat,

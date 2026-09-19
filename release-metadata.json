@@ -1,6 +1,6 @@
 {
-  "build": "v0.26.09.18.2222_NATIVE_TOOLS_EDITORS_RUNTIME_PAYLOAD_PATCH",
-  "package_filename": "Project_Aegis_v0.26.09.18.2222_NATIVE_TOOLS_EDITORS_RUNTIME_PAYLOAD_PATCH_DIRECT_COPY.zip",
+  "build": "v0.26.09.19.0001_TOOLS_RUNTIME_RELIABILITY_PATCH",
+  "package_filename": "Project_Aegis_v0.26.09.19.0001_TOOLS_RUNTIME_RELIABILITY_PATCH.zip",
   "save_format": 4,
   "base_game_runtime_build": "v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH",
   "editor": "AEGIS_Prop_Editor_v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH.html",
@@ -9,9 +9,12 @@
   "tools_editor_launcher_extension": "assets/runtime/aegis-tools-editor-launcher-runtime.js",
   "tools_editor_launcher_build": "v0.26.09.18.2115_IN_GAME_TOOLS_EDITOR_RENDERED_RUNTIME_HOTFIX",
   "tools_editor_access": "native-react-button-via-pre-render-embedded-runtime-payload-transform",
-  "launch_cache": "aegis-launch-shell-v4-native-tools-editors-payload",
+  "launch_cache": "aegis-launch-shell-v5-tools-reliability",
   "hotfix_reason": "The prior DOM-injection launcher executed outside the authoritative rendered React runtime and did not reliably surface on the Save / Load screen. This build patches the embedded runtime source payload before the game iframe is created, adding the Tools / Editors button directly to the React Save / Load header.",
   "runtime_extension": "assets/runtime/aegis-contextual-prop-placement-runtime.js",
   "runtime_extension_build": "v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH",
-  "prop_authoring_pipeline": "canonical-prop-definition"
+  "prop_authoring_pipeline": "canonical-prop-definition",
+  "runtime_bytes": 7335622,
+  "runtime_sha256": "8bc56d81683737c37d4a596634986637f94c0359bb091a27f8cc1edddb19c7a7",
+  "host_sha256": "fed2556200b8ec2db44ac68f6790910c57785520dbef7e5feb486b5b1e932ace"
 }

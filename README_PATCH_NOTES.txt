@@ -1,3 +1,12 @@
+BUILD: v0.26.09.19.0001_TOOLS_RUNTIME_RELIABILITY_PATCH
+PROJECT AEGIS — TOOLS RUNTIME RELIABILITY REVIEW
+Save format: 4
+
+- Preserve the campaign when tool popups are blocked.
+- Batch fallback launcher scans and recognize native buttons.
+- Cache query-bearing tool navigation for offline use.
+- Reconcile direct-index changes with canonical source and preserve release metadata on packaging.
+
 BUILD: v0.26.09.17.1340_PROP_EDITOR_STARTUP_AND_LIBRARY_LIST_HOTFIX
 PROJECT AEGIS — PROP EDITOR 1340 HOTFIX NOTES
 Game baseline: v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH
