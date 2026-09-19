@@ -1,0 +1,25 @@
+Project Aegis v0.26.09.18.2115_IN_GAME_TOOLS_EDITOR_RENDERED_RUNTIME_HOTFIX
+
+Field issue reproduced from screenshot evidence:
+- Save / Load top row had no Tools / Editors button.
+- Running Patch Notes reported browser runtime build v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH.
+
+Hotfix design:
+- launcher injected into navigation shell by service worker;
+- launcher recursively observes same-origin/srcdoc iframe documents;
+- persistent launch cache bumped to v3 to avoid stale shell masking;
+- old prop-library bootstrap retained as secondary path;
+- separate-window editor/gallery behavior retained;
+- save format remains 4.
+
+Validation:
+- node --check launcher: PASS
+- node --check service worker: PASS
+- Tools/Editors access contracts: 16/16 PASS
+- Unified prop pipeline contracts: 34 PASS
+- Contextual runtime regression: 18 PASS
+- Editor Return to Project Aegis control: PASS
+- Gallery Return to Project Aegis control: PASS
+- ZIP integrity: PASS (after packaging)
+
+Field test still required in the installed PWA/hosted build after a full close/relaunch.

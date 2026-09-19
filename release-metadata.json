@@ -1,16 +1,16 @@
 {
-  "build": "v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH",
-  "package_filename": "Project_Aegis_v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH_DIRECT_COPY.zip",
+  "build": "v0.26.09.18.2115_IN_GAME_TOOLS_EDITOR_RENDERED_RUNTIME_HOTFIX",
+  "package_filename": "Project_Aegis_v0.26.09.18.2115_IN_GAME_TOOLS_EDITOR_RENDERED_RUNTIME_HOTFIX_DIRECT_COPY.zip",
   "save_format": 4,
-  "runtime_bytes": 7335051,
-  "runtime_sha256": "ee36f2c2433bca106e3ab51ec90bb911d610909c5be2b2fdaadd8ace2fda7332",
-  "host_sha256": "3d11994c2c9ce276d1f4693d84cb8e8316b5b15185adfa8caa34318b8674185a",
-  "runtime_extension": "assets/runtime/aegis-contextual-prop-placement-runtime.js",
-  "runtime_extension_build": "v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH",
-  "prop_authoring_pipeline": "canonical-prop-definition",
+  "base_game_runtime_build": "v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH",
   "editor": "AEGIS_Prop_Editor_v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH.html",
   "runtime_test_gallery": "AEGIS_Prop_Runtime_Test_Gallery_v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH.html",
   "tools_editor_launcher_extension": "assets/runtime/aegis-tools-editor-launcher-runtime.js",
-  "tools_editor_launcher_build": "v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH",
-  "tools_editor_access": "separate-window-safe-launcher"
+  "tools_editor_launcher_build": "v0.26.09.18.2115_IN_GAME_TOOLS_EDITOR_RENDERED_RUNTIME_HOTFIX",
+  "tools_editor_access": "navigation-shell-plus-rendered-runtime-dom-injection",
+  "launch_cache": "aegis-launch-shell-v3-tools-editor-hotfix",
+  "hotfix_reason": "2051 launcher was available in cached support assets but was not guaranteed to execute in the rendered Project Aegis runtime document.",
+  "runtime_extension": "assets/runtime/aegis-contextual-prop-placement-runtime.js",
+  "runtime_extension_build": "v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH",
+  "prop_authoring_pipeline": "canonical-prop-definition"
 }
