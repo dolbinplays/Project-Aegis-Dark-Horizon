@@ -1,0 +1,23 @@
+Project Aegis v0.26.09.18.2222_NATIVE_TOOLS_EDITORS_RUNTIME_PAYLOAD_PATCH
+
+STATIC / SYNTHETIC VALIDATION
+- service-worker.js JavaScript syntax: PASS
+- Tools / Editors hub inline JavaScript syntax: PASS
+- Native embedded-runtime payload transform test: 19/19 PASS
+- Save format metadata remains 4: PASS
+- New launch cache generation: PASS
+- Tools / Editors hub cached by service worker: PASS
+- Runtime byte-count regeneration: PASS
+- Runtime SHA-256 regeneration: PASS
+- Native button insertion after Enhanced SFX Library: PASS
+- Patch idempotence: PASS
+- 2115 fallback launcher retained: PASS
+- Prop Editor current link: PASS
+- Runtime Test Gallery current link: PASS
+
+FIELD TEST REQUIRED
+The sandbox cannot run the user's installed Project Aegis PWA. After copying the patch, launch once to allow the 2222 service worker to install/activate, then fully close and reopen the installed app. Open Menu / Save and verify:
+
+Enhanced SFX Library | Tools / Editors | Patch Notes / Version History
+
+The Tools / Editors button should open AEGIS_Tools_Editors.html and the hub should open both current tools.

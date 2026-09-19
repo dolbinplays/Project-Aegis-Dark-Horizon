@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Project Aegis — Tools / Editors</title>
+<style>
+:root{color-scheme:dark;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#020617;color:#e2e8f0}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 0,#083344 0,#020617 48%);display:flex;align-items:center;justify-content:center;padding:24px}.card{width:min(760px,100%);border:1px solid rgba(34,211,238,.38);border-radius:28px;background:rgba(2,6,23,.94);box-shadow:0 24px 80px rgba(0,0,0,.55);padding:28px}.eyebrow{font-size:12px;font-weight:900;letter-spacing:.24em;text-transform:uppercase;color:#67e8f9}.title{margin:8px 0 0;font-size:clamp(28px,6vw,44px);font-weight:950;color:#f8fafc}.copy{margin:10px 0 24px;color:#94a3b8;line-height:1.55}.grid{display:grid;gap:14px}.tool{width:100%;text-align:left;border:1px solid rgba(103,232,249,.34);border-radius:20px;background:#0f172a;color:#e2e8f0;padding:18px 20px;cursor:pointer}.tool:hover,.tool:focus-visible{border-color:#67e8f9;outline:none;background:#164e63}.tool strong{display:block;font-size:17px;color:#f8fafc}.tool span{display:block;margin-top:5px;font-size:13px;color:#94a3b8}.footer{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;padding-top:20px;border-top:1px solid #1e293b}.footer button{border:1px solid #475569;border-radius:14px;background:#0f172a;color:#e2e8f0;padding:10px 14px;font-weight:800;cursor:pointer}.build{margin-top:18px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#64748b;word-break:break-all}
+</style>
+</head>
+<body>
+<main class="card" data-aegis-tools-editors-hub="v0.26.09.18.2222_NATIVE_TOOLS_EDITORS_RUNTIME_PAYLOAD_PATCH">
+  <div class="eyebrow">Project Aegis Development</div>
+  <h1 class="title">Tools / Editors</h1>
+  <p class="copy">Open the current authoring and validation tools in their own browser page. These tools do not alter campaign save format 4.</p>
+  <div class="grid">
+    <button class="tool" id="open-prop-editor" type="button"><strong>Prop Editor</strong><span>Edit the shared Project Aegis prop library, damage states, placement rules, and live authoring data.</span></button>
+    <button class="tool" id="open-runtime-gallery" type="button"><strong>Runtime Test Gallery</strong><span>Inspect runtime prop presentation and authored state behavior without entering a campaign mission.</span></button>
+  </div>
+  <div class="footer">
+    <button id="return-game" type="button">Return to Game</button>
+  </div>
+  <div class="build">v0.26.09.18.2222_NATIVE_TOOLS_EDITORS_RUNTIME_PAYLOAD_PATCH</div>
+</main>
+<script>
+(()=>{
+  const go=path=>{window.location.href=new URL(path,document.baseURI).href;};
+  document.getElementById('open-prop-editor').addEventListener('click',()=>go('./AEGIS_Prop_Editor_CURRENT.html'));
+  document.getElementById('open-runtime-gallery').addEventListener('click',()=>go('./AEGIS_Prop_Runtime_Test_Gallery_CURRENT.html'));
+  document.getElementById('return-game').addEventListener('click',()=>{
+    try{if(window.opener&&!window.opener.closed){window.opener.focus();window.close();return;}}catch{}
+    go('./index.html');
+  });
+})();
+</script>
+</body>
+</html>

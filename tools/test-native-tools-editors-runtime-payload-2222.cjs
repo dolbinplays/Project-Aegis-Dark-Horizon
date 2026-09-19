@@ -1,0 +1,62 @@
+const fs=require('fs');
+const vm=require('vm');
+const crypto=require('crypto');
+const path=require('path');
+const root=path.resolve(__dirname,'..');
+const sw=fs.readFileSync(path.join(root,'service-worker.js'),'utf8');
+const metadata=JSON.parse(fs.readFileSync(path.join(root,'release-metadata.json'),'utf8'));
+const hub=fs.readFileSync(path.join(root,'AEGIS_Tools_Editors.html'),'utf8');
+const checks=[];
+const check=(name,pass,detail='')=>checks.push({name,pass:Boolean(pass),detail});
+const context={
+  console,URL,Request,Response,Headers,TextEncoder,TextDecoder,Uint8Array,AbortController,
+  setTimeout,clearTimeout,atob,btoa,crypto:crypto.webcrypto,
+  self:{registration:{scope:'https://example.test/aegis/'},location:{origin:'https://example.test'},addEventListener(){}},
+};
+vm.createContext(context);
+vm.runInContext(sw,context,{filename:'service-worker.js'});
+const build=vm.runInContext('AEGIS_BUILD',context);
+const anchor=vm.runInContext('AEGIS_NATIVE_TOOLS_ANCHOR',context);
+const marker=vm.runInContext('AEGIS_NATIVE_TOOLS_BUTTON_MARKER',context);
+const patchEmbedded=vm.runInContext('patchEmbeddedRuntimePayload',context);
+const patchRuntime=vm.runInContext('patchNativeToolsButton',context);
+const transform=vm.runInContext('transformLaunchShell',context);
+(async()=>{
+  const runtime='<!doctype html><script>const SAVE_FORMAT=4;'+anchor+'const after=true;</script>';
+  const bytes=Buffer.from(runtime,'utf8');
+  const shell=`<!doctype html><html><body><script id="aegis-runtime-payload" type="application/octet-stream" data-source-bytes="${bytes.length}" data-sha256="old">${bytes.toString('base64')}</script><script>window.shellBoot=true</script></body></html>`;
+  const patched=await patchEmbedded(shell);
+  const m=patched.shellText.match(/<script\b([^>]*\bid="aegis-runtime-payload"[^>]*)>([\s\S]*?)<\/script>/i);
+  const decoded=m?Buffer.from(m[2].replace(/\s+/g,''),'base64').toString('utf8'):'';
+  const expectedHash=crypto.createHash('sha256').update(decoded,'utf8').digest('hex');
+  const attrs=m?.[1]||'';
+  check('Build marker is 2222 native payload patch',build==='v0.26.09.18.2222_NATIVE_TOOLS_EDITORS_RUNTIME_PAYLOAD_PATCH',build);
+  check('Synthetic embedded runtime payload is patched',patched.changed&&patched.reason==='patched',patched.reason);
+  check('Native React Tools / Editors marker is in decoded runtime',decoded.includes(marker));
+  check('Native button is after Enhanced SFX Library',decoded.indexOf('Enhanced SFX Library')>=0&&decoded.indexOf('Tools / Editors')>decoded.indexOf('Enhanced SFX Library'));
+  check('Native button is before following runtime content',decoded.indexOf('Tools / Editors')<decoded.indexOf('const after=true'));
+  check('Save format contract is untouched in synthetic runtime',decoded.includes('const SAVE_FORMAT=4;'));
+  const attrBytes=Number((attrs.match(/data-source-bytes="(\d+)"/)||[])[1]);
+  const attrSha=(attrs.match(/data-sha256="([0-9a-f]{64})"/)||[])[1];
+  check('Embedded payload byte count is regenerated',attrBytes===Buffer.byteLength(decoded,'utf8'),`${attrBytes}`);
+  check('Embedded payload SHA-256 is regenerated',attrSha===expectedHash,`${attrSha}`);
+  check('Embedded payload carries native tools build marker',attrs.includes(`data-aegis-native-tools-build="${build}"`));
+  const again=patchRuntime(decoded);
+  check('Runtime patch is idempotent',!again.changed&&again.reason==='already-patched',again.reason);
+  const response=new Response(shell,{status:200,headers:{'content-type':'text/html; charset=utf-8'}});
+  const transformed=await transform(response);
+  const transformedText=await transformed.text();
+  check('Launch-shell transform reports native payload patch',transformed.headers.get('x-aegis-native-tools-editor-runtime')==='patched',transformed.headers.get('x-aegis-native-tools-editor-runtime'));
+  check('Fallback launcher remains injected',transformedText.includes('data-aegis-tools-editor-runtime'));
+  check('Service worker caches Tools / Editors hub',sw.includes('"./AEGIS_Tools_Editors.html"'));
+  check('Service worker uses new launch-cache generation',sw.includes('aegis-launch-shell-v4-native-tools-editors-payload'));
+  check('Hub opens current Prop Editor',hub.includes('./AEGIS_Prop_Editor_CURRENT.html'));
+  check('Hub opens current Runtime Test Gallery',hub.includes('./AEGIS_Prop_Runtime_Test_Gallery_CURRENT.html'));
+  check('Hub can return to index.html',hub.includes("go('./index.html')"));
+  check('Release metadata keeps save format 4',metadata.save_format===4,String(metadata.save_format));
+  check('Release metadata identifies native React payload access',metadata.tools_editor_access==='native-react-button-via-pre-render-embedded-runtime-payload-transform',metadata.tools_editor_access);
+  const failed=checks.filter(c=>!c.pass);
+  for(const c of checks) console.log(`${c.pass?'PASS':'FAIL'} | ${c.name}${c.detail?` | ${c.detail}`:''}`);
+  console.log(`\n${checks.length-failed.length}/${checks.length} PASS`);
+  process.exitCode=failed.length?1:0;
+})().catch(error=>{console.error(error);process.exitCode=1;});
