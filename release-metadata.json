@@ -1,10 +1,16 @@
 {
-  "build": "v0.26.09.18.1215_CONTEXTUAL_PROP_PLACEMENT_AND_ORIENTATION_PREVIEW_PATCH",
-  "package_filename": "Project_Aegis_v0.26.09.18.1215_CONTEXTUAL_PROP_PLACEMENT_AND_ORIENTATION_PREVIEW_DIRECT_COPY.zip",
+  "build": "v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH",
+  "package_filename": "Project_Aegis_v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH_DIRECT_COPY.zip",
   "save_format": 4,
   "runtime_bytes": 7335051,
   "runtime_sha256": "ee36f2c2433bca106e3ab51ec90bb911d610909c5be2b2fdaadd8ace2fda7332",
   "host_sha256": "3d11994c2c9ce276d1f4693d84cb8e8316b5b15185adfa8caa34318b8674185a",
   "runtime_extension": "assets/runtime/aegis-contextual-prop-placement-runtime.js",
-  "runtime_extension_build": "v0.26.09.18.1215_CONTEXTUAL_PROP_PLACEMENT_AND_ORIENTATION_PREVIEW_PATCH"
+  "runtime_extension_build": "v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH",
+  "prop_authoring_pipeline": "canonical-prop-definition",
+  "editor": "AEGIS_Prop_Editor_v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH.html",
+  "runtime_test_gallery": "AEGIS_Prop_Runtime_Test_Gallery_v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH.html",
+  "tools_editor_launcher_extension": "assets/runtime/aegis-tools-editor-launcher-runtime.js",
+  "tools_editor_launcher_build": "v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH",
+  "tools_editor_access": "separate-window-safe-launcher"
 }

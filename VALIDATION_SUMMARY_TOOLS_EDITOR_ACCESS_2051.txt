@@ -1,0 +1,24 @@
+Project Aegis 2051 validation
+=============================
+
+PASS — tools/editor access contracts: 23
+PASS — inherited unified prop pipeline contracts: 33
+PASS — inherited contextual placement runtime regressions: 18
+PASS — Node syntax: tools launcher runtime
+PASS — Node syntax: contextual placement runtime
+PASS — Node syntax: service worker
+PASS — editor inline JavaScript syntax
+PASS — gallery inline JavaScript syntax
+PASS — duplicate HTML IDs: none in editor/gallery
+PASS — Save format remains 4
+PASS — no BAT/CMD/EXE/MSI artifacts
+
+Field validation still recommended:
+- GitHub Pages / hosted game: Tools / Editors on expanded System, minimized header, Save / Load, Command Settings.
+- Installed PWA: same controls and offline cached tool opening after service-worker update.
+- Tactical mini-header launcher during a manual tactical mission.
+- Popup-blocked path leaves current campaign window untouched.
+- Prop Editor Return button focuses the original game window.
+- Live Apply to Game / BroadcastChannel update while game and editor are both open.
+
+Known browser limitation: service workers do not run from file:// game launches.
