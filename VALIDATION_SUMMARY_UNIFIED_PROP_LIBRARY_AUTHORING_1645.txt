@@ -1,0 +1,35 @@
+Project Aegis 1645 validation summary
+
+Baseline verified before packaging:
+  GitHub main = 0b39b8a7bcdf6af162eed83a1472ad85b8396212
+  v0.26.09.18.1600_FILE_SAFE_NATIVE_3D_CONTEXT_FALLBACK_HOTFIX
+
+AUTOMATED / STATIC VALIDATION
+PASS: editor inline JavaScript parses with Node --check
+PASS: 27/27 focused unified-editor contracts
+PASS: one and only one normal prop selector (#prop)
+PASS: no duplicate HTML element IDs
+PASS: no iframe dependency in the normal authoring workflow
+PASS: Placement and Model / Components modes share loadSelectedProp()
+PASS: whole-prop Position / Rotation / Scale controls present
+PASS: component list, viewport picking, CRUD, transforms, geometry and material controls present
+PASS: road / T / four-way / building context renderers retained
+PASS: protected ingress and PROP FORWARD visualization retained
+PASS: direct placement drag retained
+PASS: automatic road/building context selection retained
+PASS: parent placement strictness and override key retained
+PASS: project placement-sidecar writer retained
+PASS: browser live model publishing uses aegis-prop-live-library-v1
+PASS: revision snapshots use aegis-prop-revision-history-v1
+PASS: model Undo / Redo present
+PASS: advanced/recovery 0835 editor remains reachable
+PASS: Runtime Test Gallery remains reachable
+PASS: save format remains 4
+
+NOT CLAIMED AS AUTOMATED BROWSER/GAMEPLAY VALIDATION
+- Actual Windows local-file UI interaction still requires field testing.
+- Actual mouse component picking and slider feel should be checked in the user's browser.
+- Live publish -> reload -> game/gallery propagation should be field tested.
+- Advanced/recovery editor interoperability should be field tested after a 1645 model edit.
+
+No tactical/game runtime files were changed by this editor-only patch.
