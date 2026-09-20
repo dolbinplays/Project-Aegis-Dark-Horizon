@@ -1,3 +1,13 @@
+BUILD: v0.26.09.19.0002_BUILDING_LAYOUT_EDITOR_FOUNDATION_PATCH
+PROJECT AEGIS — BUILDING LAYOUT EDITOR FOUNDATION
+Save format: 4
+
+- Standalone 9x8 dwelling editor with shared furnishings, structural brushes, undo/redo and JSON import/export.
+- Actual tactical renderer, pathfinder, automatic door opening and door interaction in an isolated preview fixture.
+- Shared validation rejects shell gaps, missing doors, overlaps, blocked approaches and inaccessible rooms.
+- Validated browser publishing is captured when new battlefields are generated; existing saved battles retain their snapshot.
+- Building tool and scripts are included in PWA caching and the Tools / Editors hub.
+
 BUILD: v0.26.09.19.0001_TOOLS_RUNTIME_RELIABILITY_PATCH
 PROJECT AEGIS — TOOLS RUNTIME RELIABILITY REVIEW
 Save format: 4

@@ -1,9 +1,17 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.19.0001_TOOLS_RUNTIME_RELIABILITY_PATCH`
+Current browser build: `v0.26.09.19.0002_BUILDING_LAYOUT_EDITOR_FOUNDATION_PATCH`
 
 Current save format: `4`
 
+
+## Building Layout Editor Foundation — Implemented in Browser 0002
+
+- First supported archetype: the existing 9 × 8 residence, using a fixed footprint and shared-library furnishings.
+- Structural/furnishing editing, undo/redo, JSON import/export, validation and browser-local publication are implemented.
+- The isolated preview uses the actual tactical renderer, pathfinder and door interactions.
+- Authored layout data is captured on newly generated mission records and remains additive under save format 4.
+- Remaining roadmap scope: arbitrary footprint painting, other dwelling/business archetypes, project-folder layout libraries, multi-template selection, and broader campaign/PWA field acceptance.
 
 ## Prop Editor 1340 Startup / Library List Hotfix — Implemented
 
@@ -33,7 +41,7 @@ Current save format: `4`
 
 ## Developer Tool Roadmap — Prop Editor + Building Layout Editor
 
-**Requested September 17, 2026. Status: Prop Editor runtime bridge implemented in Browser 1320; Building Layout Editor remains roadmap.**
+**Requested September 17, 2026. Status: Prop Editor runtime bridge implemented in Browser 1320; Building Layout Editor residence foundation implemented in Browser 0002; broader archetypes and footprint editing remain roadmap.**
 
 - **Prop Editor:** continue expanding the standalone downloadable editor so common and newly authored props can be built from selectable components, moved/rotated/scaled, duplicated, added/removed, assigned materials, and given collision/navigation/cover/LOS/hex-edge metadata. Runtime handoff now uses the canonical shared prop library rather than bespoke Three.js edits.
 - **Building Layout Editor:** create a separate downloadable editor that can place/remove walls, doors, windows, furnishings and shared-library props; edit dwelling/business archetypes; maintain walking lanes and door-swing clearance; add/remove inappropriate props; create new layouts; and export deterministic layout data for the game.

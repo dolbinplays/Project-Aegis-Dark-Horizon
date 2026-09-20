@@ -1,7 +1,7 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.09.19.0001_TOOLS_RUNTIME_RELIABILITY_PATCH",
+  "currentBuild": "v0.26.09.19.0002_BUILDING_LAYOUT_EDITOR_FOUNDATION_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.09.19.0001_TOOLS_RUNTIME_RELIABILITY_PATCH",
+  "lastInspectedBuild": "v0.26.09.19.0002_BUILDING_LAYOUT_EDITOR_FOUNDATION_PATCH",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -42,6 +42,13 @@
       "schema": "aegis-prop-definition-v1",
       "library": "assets/data/aegis-prop-library.js",
       "runtimeIntegrated": true
+    },
+    "buildingLayoutEditor": {
+      "launcher": "AEGIS_Building_Layout_Editor_CURRENT.html",
+      "schema": "aegis-building-layout-v1",
+      "scope": "9x8 residence foundation",
+      "runtimeAuthority": "shared compiler and tactical renderer",
+      "saveFormat": 4
     }
   },
   "nativePrototype": {
@@ -54,7 +61,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.09.19.0001_TOOLS_RUNTIME_RELIABILITY_PATCH",
+    "browserBuild": "v0.26.09.19.0002_BUILDING_LAYOUT_EDITOR_FOUNDATION_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
