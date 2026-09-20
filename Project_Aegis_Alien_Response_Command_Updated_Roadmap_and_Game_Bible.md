@@ -1,9 +1,15 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.19.0002_BUILDING_LAYOUT_EDITOR_FOUNDATION_PATCH`
+Current browser build: `v0.26.09.19.0003_FIRE_TV_PHONE_CONTROLLER_PATCH`
 
 Current save format: `4`
 
+
+## TV / Phone Controller — Browser Foundation Implemented in 0003
+
+- Static TV and phone pages support direct WebRTC controller input, with internet signaling and no computer during play.
+- Actual Fire TV Stick/phone compatibility, audio activation, tactical performance and mission-transition acceptance remain field tests.
+- Save format stays 4; campaigns remain on the TV browser. See TV_PHONE_CONTROLLER_SETUP.md.
 
 ## Building Layout Editor Foundation — Implemented in Browser 0002
 

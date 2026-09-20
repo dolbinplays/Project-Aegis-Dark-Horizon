@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.19.0002_BUILDING_LAYOUT_EDITOR_FOUNDATION_PATCH";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.19.0002_BUILDING_LAYOUT_EDITOR_FOUNDATION_PATCH";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v6-building-layout-editor";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.19.0003_FIRE_TV_PHONE_CONTROLLER_PATCH";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.19.0003_FIRE_TV_PHONE_CONTROLLER_PATCH";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v7-tv-phone-controller";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;
@@ -10,6 +10,8 @@ const AEGIS_PLACEMENT_OVERRIDES_URL = new URL("./assets/data/aegis-prop-placemen
 const AEGIS_CONTEXT_RUNTIME_URL = new URL("./assets/runtime/aegis-contextual-prop-placement-runtime.js", self.registration.scope).href;
 const AEGIS_TOOLS_EDITOR_RUNTIME_URL = new URL("./assets/runtime/aegis-tools-editor-launcher-runtime.js", self.registration.scope).href;
 const AEGIS_TOOL_NAV_URLS = new Set([
+  new URL("./AEGIS_TV.html", self.registration.scope).href,
+  new URL("./AEGIS_Phone_Controller.html", self.registration.scope).href,
   new URL("./AEGIS_Building_Layout_Editor_CURRENT.html", self.registration.scope).href,
   new URL("./AEGIS_Tools_Editors.html", self.registration.scope).href,
   new URL("./AEGIS_Prop_Editor_CURRENT.html", self.registration.scope).href,
@@ -19,6 +21,13 @@ const AEGIS_TOOL_NAV_URLS = new Set([
 ]);
 const AEGIS_BOOT_PROBE_TIMEOUT_MS = 1800;
 const AEGIS_SMALL_SHELL = [
+  "./AEGIS_TV.html",
+  "./AEGIS_Phone_Controller.html",
+  "./assets/vendor/peerjs-1.5.5.min.js",
+  "./assets/runtime/aegis-tv-protocol.js",
+  "./assets/runtime/aegis-tv-input.js",
+  "./assets/runtime/aegis-tv-host.js",
+  "./assets/runtime/aegis-tv-phone.js",
   "./AEGIS_Building_Layout_Editor_CURRENT.html",
   "./assets/runtime/aegis-building-layouts.js",
   "./assets/runtime/aegis-building-editor-runtime.js",

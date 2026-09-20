@@ -1,3 +1,13 @@
+BUILD: v0.26.09.19.0003_FIRE_TV_PHONE_CONTROLLER_PATCH
+PROJECT AEGIS — TV AND PHONE CONTROLLER
+Save format: 4
+
+- Adds TV play and a browser phone controller with direct WebRTC pairing.
+- Supports pointer, click, drag, scroll, keyboard, text, and dropdown input in the existing game.
+- Uses PeerServer Cloud for signaling; no computer or custom server is required during play.
+- Guards pairing with a secret, single-controller ownership, bounded inputs, and disconnect release.
+- Browser tested; physical Fire TV compatibility and performance still require field acceptance.
+
 BUILD: v0.26.09.19.0002_BUILDING_LAYOUT_EDITOR_FOUNDATION_PATCH
 PROJECT AEGIS — BUILDING LAYOUT EDITOR FOUNDATION
 Save format: 4

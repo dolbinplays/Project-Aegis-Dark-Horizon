@@ -1,0 +1,28 @@
+const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path'),assert=require('node:assert/strict'),{test}=require('node:test');
+const base=path.resolve(__dirname,'..'),P=require('../assets/runtime/aegis-tv-protocol.js');
+test('pairing codes are random, normalized and validated; IDs omit the secret',()=>{const codes=new Set();for(let i=0;i<100;i++){const c=P.makeCode();codes.add(c);assert.ok(P.validCode(c));assert.equal(P.cleanCode(c.slice(0,6)+'-'+c.slice(6)),c);assert.ok(!P.peerId(c).includes(c.slice(6)));}assert.equal(codes.size,100);assert.equal(P.validCode('AAAAAA-AAAAA!'),false);assert.equal(P.validCode('AAAA'),false);});
+test('only bounded controller commands pass validation',()=>{assert.deepEqual(P.normalize({kind:'move',dx:Infinity,dy:1e6}),{kind:'move',dx:0,dy:150});assert.equal(P.normalize({kind:'text',text:'x'.repeat(201)}),null);assert.equal(P.normalize({kind:'select',index:-1}),null);assert.equal(P.normalize({kind:'key',key:'F5'}),null);assert.equal(P.normalize({kind:'navigate',url:'https://example.com'}),null);assert.equal(P.normalize({kind:'eval',code:'alert(1)'}),null);assert.deepEqual(P.normalize({kind:'text',text:'Fort Aegis'}),{kind:'text',text:'Fort Aegis'});});
+function host(){
+ let now=0;const intervals=[],peers=[],events={},nodes=new Map(),inputs=[];let releases=0;
+ class Emitter{constructor(){this.handlers={};this.open=true;this.sent=[];}on(n,f){this.handlers[n]=f;return this;}emit(n,x){this.handlers[n]?.(x);}send(m){this.sent.push(m);}close(){this.open=false;this.emit('close');}destroy(){this.destroyed=true;}}
+ class Peer extends Emitter{constructor(id,options){super();this.id=id;this.options=options;peers.push(this);}}
+ const get=id=>{if(!nodes.has(id))nodes.set(id,{hidden:false,disabled:false,checked:true,textContent:'',style:{}});return nodes.get(id);};
+ const document={getElementById:get,addEventListener:(n,f)=>events[n]=f,documentElement:{requestFullscreen:()=>Promise.resolve()}};
+ const window={RTCPeerConnection:function(){},Peer,AEGIS_TV_PROTOCOL:P,AEGIS_CREATE_TV_INPUT:()=>({input:a=>inputs.push(a),release:()=>releases++}),addEventListener:(n,f)=>events[n]=f};
+ vm.runInNewContext(fs.readFileSync(path.join(base,'assets/runtime/aegis-tv-host.js'),'utf8'),{window,document,Peer,URL,location:{href:'https://example.test/AEGIS_TV.html'},Date:{now:()=>now},setTimeout:()=>1,clearTimeout(){},setInterval:f=>intervals.push(f),localStorage:{setItem(){}}});
+ get('pair').onclick();const peer=peers[0];peer.emit('open');const code=P.cleanCode(get('code').textContent);
+ return{get,peer,code,inputs,Emitter,releases:()=>releases,tick:ms=>{now+=ms;intervals.forEach(f=>f());}};
+}
+test('TV rejects incorrect secrets before forwarding any input',()=>{const h=host(),c=new h.Emitter();h.peer.emit('connection',c);c.emit('data',{type:'hello',version:1,secret:'WRONG!'});assert.equal(c.open,false);assert.equal(h.inputs.length,0);assert.equal(h.get('start').disabled,true);});
+test('authenticated phone controls the started game; second phones cannot replace it',()=>{const h=host(),c=new h.Emitter();h.peer.emit('connection',c);c.emit('data',{type:'hello',version:1,secret:h.code.slice(6)});assert.equal(c.sent[0].type,'ready');c.emit('data',{type:'input',action:{kind:'click'}});assert.equal(h.inputs.length,0);h.get('start').onclick();c.emit('data',{type:'input',action:{kind:'click'}});assert.equal(h.inputs.length,1);const other=new h.Emitter();h.peer.emit('connection',other);other.emit('open');assert.equal(other.open,false);});
+test('missing heartbeats and disconnect release held controls; input is rate bounded',()=>{const h=host(),c=new h.Emitter();h.peer.emit('connection',c);c.emit('data',{type:'hello',version:1,secret:h.code.slice(6)});h.get('start').onclick();for(let i=0;i<200;i++)c.emit('data',{type:'input',action:{kind:'move',dx:1,dy:0}});assert.equal(h.inputs.length,120);const before=h.releases();h.tick(4000);assert.ok(h.releases()>before);assert.match(h.get('status').textContent,/interrupted/);c.close();assert.match(h.get('status').textContent,/disconnected/);});
+test('TV and phone pages are packaged as tools, including their local dependency',()=>{const sw=fs.readFileSync(path.join(base,'service-worker.js'),'utf8');for(const name of ['AEGIS_TV.html','AEGIS_Phone_Controller.html','assets/vendor/peerjs-1.5.5.min.js','assets/runtime/aegis-tv-input.js'])assert.ok(sw.includes(name));});
+test('release commands remain effective when motion rate limiting is active',()=>{const h=host(),c=new h.Emitter();h.peer.emit('connection',c);c.emit('data',{type:'hello',version:1,secret:h.code.slice(6)});h.get('start').onclick();for(let i=0;i<200;i++)c.emit('data',{type:'input',action:{kind:'move',dx:1,dy:0}});c.emit('data',{type:'input',action:{kind:'up'}});assert.equal(h.inputs.at(-1).kind,'up');});
+test('held input is safely released if the disposable game iframe was destroyed',()=>{
+ const emitted=[];class Mouse{constructor(type,options){this.type=type;Object.assign(this,options);}}
+ const root={innerWidth:1000,innerHeight:600,AEGIS_TV_PROTOCOL:P,PointerEvent:Mouse,MouseEvent:Mouse};
+ const doc={defaultView:root},canvas={ownerDocument:doc,isConnected:true,dispatchEvent:e=>emitted.push(e)};doc.elementFromPoint=()=>canvas;
+ const frame={contentDocument:doc,getBoundingClientRect:()=>({left:0,top:0})},cursor={style:{}};
+ vm.runInNewContext(fs.readFileSync(path.join(base,'assets/runtime/aegis-tv-input.js'),'utf8'),{window:root});
+ const adapter=root.AEGIS_CREATE_TV_INPUT(frame,cursor);adapter.input({kind:'down'});assert.ok(emitted.some(e=>e.type==='pointerdown'));doc.defaultView=null;canvas.isConnected=false;assert.doesNotThrow(()=>adapter.release());
+});

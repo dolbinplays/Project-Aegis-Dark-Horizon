@@ -1,7 +1,7 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.09.19.0002_BUILDING_LAYOUT_EDITOR_FOUNDATION_PATCH",
+  "currentBuild": "v0.26.09.19.0003_FIRE_TV_PHONE_CONTROLLER_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.09.19.0002_BUILDING_LAYOUT_EDITOR_FOUNDATION_PATCH",
+  "lastInspectedBuild": "v0.26.09.19.0003_FIRE_TV_PHONE_CONTROLLER_PATCH",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -61,7 +61,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.09.19.0002_BUILDING_LAYOUT_EDITOR_FOUNDATION_PATCH",
+    "browserBuild": "v0.26.09.19.0003_FIRE_TV_PHONE_CONTROLLER_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -684,5 +684,12 @@
         "reason": "Browser procedural buildings now use deterministic I/O/T/L/J/S/Z footprints with authoritative interiors, perimeter walls/windows, doors, roofs, pathing/egress and legacy live-save compatibility. Native Godot requires equivalent engine-native nonrectangular building footprint generation and presentation."
       }
     ]
+  },
+  "tvPhoneController": {
+    "tv": "AEGIS_TV.html",
+    "phone": "AEGIS_Phone_Controller.html",
+    "transport": "direct-webrtc",
+    "signaling": "PeerServer Cloud",
+    "physicalFireTvTested": false
   }
 }

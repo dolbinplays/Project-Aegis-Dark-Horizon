@@ -1,6 +1,6 @@
 {
-  "build": "v0.26.09.19.0002_BUILDING_LAYOUT_EDITOR_FOUNDATION_PATCH",
-  "package_filename": "Project_Aegis_v0.26.09.19.0002_BUILDING_LAYOUT_EDITOR_FOUNDATION_PATCH.zip",
+  "build": "v0.26.09.19.0003_FIRE_TV_PHONE_CONTROLLER_PATCH",
+  "package_filename": "Project_Aegis_v0.26.09.19.0003_FIRE_TV_PHONE_CONTROLLER_PATCH.zip",
   "save_format": 4,
   "base_game_runtime_build": "v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH",
   "editor": "AEGIS_Prop_Editor_v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH.html",
@@ -9,14 +9,16 @@
   "tools_editor_launcher_extension": "assets/runtime/aegis-tools-editor-launcher-runtime.js",
   "tools_editor_launcher_build": "v0.26.09.18.2115_IN_GAME_TOOLS_EDITOR_RENDERED_RUNTIME_HOTFIX",
   "tools_editor_access": "native-react-button-via-pre-render-embedded-runtime-payload-transform",
-  "launch_cache": "aegis-launch-shell-v6-building-layout-editor",
+  "launch_cache": "aegis-launch-shell-v7-tv-phone-controller",
   "hotfix_reason": "The prior DOM-injection launcher executed outside the authoritative rendered React runtime and did not reliably surface on the Save / Load screen. This build patches the embedded runtime source payload before the game iframe is created, adding the Tools / Editors button directly to the React Save / Load header.",
   "runtime_extension": "assets/runtime/aegis-contextual-prop-placement-runtime.js",
   "runtime_extension_build": "v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH",
   "prop_authoring_pipeline": "canonical-prop-definition",
-  "runtime_bytes": 7339172,
-  "runtime_sha256": "9a68498d7e3717f59b4b27fd3f9eca5509f172391710720acb0406aaa883f992",
-  "host_sha256": "4effc8c077c66ea0aaaf54df25b0feb6407d8f64985361a07eb30b87e687cc78",
+  "runtime_bytes": 7339163,
+  "runtime_sha256": "6fe6954b8cad7f87b10d3568e22cba833eefcb20059e8077ef9f06631a054d69",
+  "host_sha256": "e220701980b4fc62ee4b1fe96b630afc2f4b3cd5210106dd6e0bb500e1967859",
   "building_layout_editor": "AEGIS_Building_Layout_Editor_CURRENT.html",
-  "building_layout_schema": "aegis-building-layout-v1"
+  "building_layout_schema": "aegis-building-layout-v1",
+  "tv_play": "AEGIS_TV.html",
+  "phone_controller": "AEGIS_Phone_Controller.html"
 }
