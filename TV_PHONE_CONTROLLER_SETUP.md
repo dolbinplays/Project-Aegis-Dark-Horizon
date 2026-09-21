@@ -20,9 +20,10 @@ keep internet access available for pairing. Guest-network isolation, VPNs, restr
 networks, or a browser without WebRTC may prevent a direct connection. The UI reports
 unsupported browsers and connection failures rather than promising compatibility.
 
-This has been tested between desktop browser sessions, **not on a physical Fire TV
-Stick or phone**. Silk support/performance varies by device; the physical-device
-acceptance run below remains necessary. Amazon documents Silk for Fire TV:
+Developer validation used desktop browser sessions. A user hardware report describes
+slow gameplay, unusable FPV/TPV, and menu-related disconnects on a Fire TV Stick
+whose model is not yet known. Physical-device acceptance remains incomplete.
+Amazon documents Silk for Fire TV:
 [Amazon Silk documentation](https://docs.aws.amazon.com/silk/).
 
 ## Phone controls
@@ -58,6 +59,15 @@ signaling peer ID. Keep it private. Only one authenticated phone controls a sess
 New pairing code revokes the prior session; closing the TV page destroys it.
 Disconnects, hidden phone pages and missing heartbeats release held pointer input.
 They do not reload the game or automatically pause campaign time.
+
+A missing TV heartbeat now pauses new controller actions without destroying the
+pairing. Controls resume when the TV replies; an actual channel closure still
+requires reconnection. This addresses the previous six-second timeout that could
+disconnect a phone during a slow menu render. It does not fix the underlying stall.
+
+Performance graphics selects the existing tactical Performance preset; it is not
+a device-wide TV graphics mode. Use 2D tactical view on struggling devices. FPV/TPV
+performance needs profiling on the target hardware before it can be considered supported.
 
 Pairing requires internet even though the UI assets are cached by the PWA.
 
