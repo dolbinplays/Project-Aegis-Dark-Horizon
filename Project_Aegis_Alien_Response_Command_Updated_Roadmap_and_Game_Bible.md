@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.20.0002_QR_PAIRING_AND_CONTROLLER_RESILIENCE_PATCH`
+Current browser build: `v0.26.09.20.0003_UNIQUE_LIVING_SOLDIER_CALLSIGNS_PATCH`
 
 Current save format: `4`
 
@@ -116,18 +116,18 @@ Current save format: `4`
 
 **Acceptance:** use `FIRE_TEAM_ASSIST_SHARED_OBJECTIVE_EXECUTION_FIELD_ACCEPTANCE.txt`. Test a capable and incapable Beacon assist team, a closer VIP assist team making first Contact, unrelated-team ownership rejection, existing physical escort ownership, priority preemption, streamed/offline continuation and save/reload.
 
-## Roadmap Addition — Unique Living-Soldier Nicknames
+## Unique Living-Soldier Nicknames — Implemented in Browser 0003
 
-**Requested September 17, 2026. Status: roadmap / not part of Browser 1036.**
+**September 20, 2026. Status: implemented; automated regression checks pass; live field acceptance pending.**
 
-- A nickname may be assigned to **only one living AEGIS soldier at a time**.
-- Comparison should be case-insensitive and trim harmless leading/trailing whitespace, so `Ghost`, `ghost`, and ` Ghost ` are the same reserved nickname.
-- Manual rename/edit, recruitment/character generation, imports and any future random nickname assignment must all use one authoritative uniqueness check rather than UI-only validation.
-- Wounded, unconscious, hospitalized, downed, missing/recoverable or otherwise living soldiers continue to reserve the nickname.
-- Once a soldier is **confirmed dead**, that nickname becomes available for another soldier.
-- Existing saves with accidental duplicate living nicknames must still load safely; any cleanup/migration should be deterministic and preserve save format **4** if possible.
-
-**Acceptance when implemented:** attempt duplicate assignment through every nickname entry path, verify normalization/case handling, verify living non-active soldiers still reserve names, confirm a KIA releases the nickname, and load a legacy duplicate save without corruption.
+- One living AEGIS soldier per callsign across all bases, using case-insensitive comparison and normalized whitespace.
+- Manual edits identify the current owner when rejecting a duplicate. Clearing or changing a callsign releases the previous name.
+- Wounded, unconscious, hospitalized, downed and missing soldiers retain ownership. Only confirmed KIA releases a name; memorial records retain their callsigns.
+- Random assignment and mission awards share the same ownership checks, including reservations for each award within a mission batch. Exhausted pools use numbered suffixes within the 22-character limit.
+- Recruitment boundaries use the same roster repair authority; recruits continue to start unnamed.
+- Legacy/imported campaigns retain the first living owner in saved roster order. Later duplicates receive the next free numbered suffix, preserving names already held by other soldiers. A campaign report identifies repairs; repeated loads are idempotent.
+- Save format remains **4**. See UNIQUE_LIVING_SOLDIER_CALLSIGNS_VALIDATION.md for automated coverage and field checks.
+- Next planned patch: **Fire TV Performance & Field-Test Fixes**.
 
 ## Hex-Edge Prop Placement + Solid Prop Navigation — Implemented in Browser 1145
 

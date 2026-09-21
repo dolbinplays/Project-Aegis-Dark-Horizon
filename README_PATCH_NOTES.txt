@@ -1,3 +1,14 @@
+BUILD: v0.26.09.20.0003_UNIQUE_LIVING_SOLDIER_CALLSIGNS_PATCH
+PROJECT AEGIS — UNIQUE LIVING-SOLDIER CALLSIGNS
+Save format: 4
+
+- Living soldiers reserve callsigns campaign-wide, ignoring case and extra whitespace. Duplicate edits identify the owner.
+- Recoverable soldiers retain names; confirmed KIA releases them without changing memorial records.
+- Randomization and mission awards avoid collisions, including within a batch; exhausted pools use numbered suffixes.
+- Older/imported campaigns keep the first living roster owner and repair later duplicates deterministically without stealing existing numbered names.
+- Repairs appear in the campaign report. New recruits remain unnamed; save format stays 4.
+- Fire TV Performance & Field-Test Fixes is the next separate patch.
+
 BUILD: v0.26.09.20.0002_QR_PAIRING_AND_CONTROLLER_RESILIENCE_PATCH
 PROJECT AEGIS — QR PAIRING & CONTROLLER RESILIENCE
 Save format: 4
