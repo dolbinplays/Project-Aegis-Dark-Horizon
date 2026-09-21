@@ -3,7 +3,7 @@ const root=path.resolve(__dirname,'..'),source=fs.readFileSync(path.join(root,'s
 function harness(enabled=true){
  let now=0,id=0;const timers=new Map(),events={},sizes=[],draws=[],options=[];
  const host={AEGIS_TV_PROFILE:enabled?'lite':'standard'};host.parent=host;
- const document={hidden:false,createElement:()=>({}),head:{append(){}},addEventListener(){}};
+ const document={hidden:false,createElement:()=>({}),head:{append(){}},addEventListener:(name,fn)=>events["document:"+name]=fn};
  const window={parent:host,addEventListener:(name,fn)=>events[name]=fn};
  class Renderer{constructor(o){options.push(o);this.domElement={style:{}};}setPixelRatio(value){this.ratio=value;}setSize(...args){sizes.push(args);}render(...args){draws.push(args);}dispose(){this.disposed=true;}getRenderTarget(){return null;}}
  const context={window,document,performance:{now:()=>now},setTimeout:(fn,delay)=>{timers.set(++id,{fn,at:now+delay});return id;},clearTimeout:key=>timers.delete(key),setInterval:()=>1,clearInterval(){}};
@@ -54,4 +54,14 @@ test('patch-history initialization does not repeatedly wrap the test runner on m
  const first=context.renderHistory(),registered=registrations;assert.ok(registered>0);assert.ok(first.length>200);
  for(let i=0;i<50;i++)assert.equal(context.renderHistory(),first);
  assert.equal(registrations,registered);assert.equal(first.filter(entry=>entry.build==='test-build').length,1);
+});
+test('hidden TV draws are coalesced without timers and resume with the latest scene',()=>{
+ const h=harness(),r=h.api.createRenderer({WebGLRenderer:h.Renderer},{});r.render('first');r.render('queued');h.document.hidden=true;h.events['document:visibilitychange']();assert.equal(h.timers.size,0);
+ h.advance(1000);r.render('hidden-one');r.render('hidden-latest');assert.equal(h.draws.length,1);assert.equal(h.timers.size,0);
+ h.document.hidden=false;h.events['document:visibilitychange']();assert.deepEqual(h.draws.map(args=>args[0]),['first','hidden-latest']);
+ h.api.setSuspended(true);r.render('pairing');h.advance(1000);assert.equal(h.draws.length,2);assert.equal(h.api.frameDue({},10000),false);
+ h.api.setSuspended(false);assert.equal(h.draws.at(-1)[0],'pairing');r.dispose();h.api.setSuspended(true);h.api.setSuspended(false);assert.equal(h.api.snapshot().renderers,0);
+});
+test('30 FPS animation cadence tolerates fractional 60 Hz timestamps without falling to 20 FPS',()=>{
+ const h=harness(),state={};let frames=0;for(let i=0;i<120;i++)if(h.api.frameDue(state,i*1000/60))frames++;assert.ok(frames>=59&&frames<=61,`got ${frames} updates in two seconds`);
 });

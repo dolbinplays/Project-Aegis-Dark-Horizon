@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.20.0001_FIRE_TV_STABILITY_AND_LITE_MODE_PATCH";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.20.0001_FIRE_TV_STABILITY_AND_LITE_MODE_PATCH";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v9-tv-lite";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.20.0002_QR_PAIRING_AND_CONTROLLER_RESILIENCE_PATCH";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.20.0002_QR_PAIRING_AND_CONTROLLER_RESILIENCE_PATCH";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v10-qr-controller-resilience";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;
@@ -24,6 +24,7 @@ const AEGIS_SMALL_SHELL = [
   "./AEGIS_TV.html",
   "./AEGIS_Phone_Controller.html",
   "./assets/vendor/peerjs-1.5.5.min.js",
+  "./assets/vendor/qrcode-generator-2.0.4.js",
   "./assets/runtime/aegis-tv-protocol.js",
   "./assets/runtime/aegis-tv-input.js",
   "./assets/runtime/aegis-tv-host.js",

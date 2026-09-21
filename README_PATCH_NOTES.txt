@@ -1,3 +1,15 @@
+BUILD: v0.26.09.20.0002_QR_PAIRING_AND_CONTROLLER_RESILIENCE_PATCH
+PROJECT AEGIS — QR PAIRING & CONTROLLER RESILIENCE
+Save format: 4
+
+- Scan a locally generated TV QR code to open and automatically connect the phone controller. Manual entry remains available.
+- Pairing secrets stay in URL fragments, which the controller removes after reading; no external QR image service is used.
+- Expiring TV input leases reject commands queued during stalls. Late heartbeats and network backpressure cannot reactivate input.
+- Healthy direct controller sessions survive signaling-server errors. Enter and disabled controls now honor game event handling.
+- Hidden TV Lite views and the pairing overlay suspend drawing and retain only the newest pending frame; fixes fractional 30 FPS pacing.
+- Adds headless menu-transition, real AI streaming, QR and controller regression coverage. Physical Fire TV acceptance remains pending.
+- Reload both TV and phone pages after updating to controller protocol 2.
+
 BUILD: v0.26.09.20.0001_FIRE_TV_STABILITY_AND_LITE_MODE_PATCH
 PROJECT AEGIS — FIRE TV STABILITY & LITE MODE
 Save format: 4

@@ -97,7 +97,7 @@ function actor(id='leader') {
 }
 
 test('build/save identity and central authority marker are current', () => {
-  assert.match(source, /const CURRENT_GAME_BUILD="v0\.26\.09\.17\.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH"/);
+  assert.equal(source.match(/const CURRENT_GAME_BUILD="([^"]+)"/)?.[1], JSON.parse(fs.readFileSync(path.join(root,"src","manifest.json"),"utf8")).currentBuild);
   assert.match(source, /const TACTICAL_DEFAULT_AI_CENTRAL_OBJECTIVE_AUTHORITY_AND_ROUTE_INVALIDATION_PATCH=true/);
   assert.match(source, /const TACTICAL_AI_COMMAND_STREAM_HANDOFF_AND_ESCORT_LOCK_RUNTIME_HOTFIX=true/);
   assert.match(source, /const CURRENT_SAVE_FORMAT_VERSION=4/);

@@ -8,9 +8,10 @@
 2. On Fire TV, open the game website in **Amazon Silk**. Open
    **Tools / Editors → Play on TV**, or navigate directly to `AEGIS_TV.html`.
 3. Press **Pair phone** using the Fire TV remote.
-4. On your phone, open the controller address shown on the TV. You can also open
-   the same game website, then **Tools / Editors → Phone Controller**.
-5. Enter the 12-character TV code and tap **Connect to TV**.
+4. On your phone, scan the TV's QR code with the phone camera and open its link.
+   The controller fills in the code and connects automatically.
+5. Alternatively, open the controller address shown on the TV (or **Tools / Editors
+   → Phone Controller**), enter the 12-character TV code and tap **Connect to TV**.
 6. Use the Fire TV remote to press **Start game on TV** once. Leave
    **TV Lite (recommended)** checked for the first hardware test. This choice is
    locked for the session; reload the TV page to choose a different profile.
@@ -20,6 +21,19 @@ Both devices need compatible WebRTC data-channel support. Use the same Wi-Fi and
 keep internet access available for pairing. Guest-network isolation, VPNs, restrictive
 networks, or a browser without WebRTC may prevent a direct connection. The UI reports
 unsupported browsers and connection failures rather than promising compatibility.
+
+After installing the QR pairing/resilience patch, reload **both** TV and phone
+pages. Controller protocol 2 rejects old controller versions. New pairing code
+invalidates the old session and replaces the QR after the new ID is registered.
+Scanning an old screenshot will not bypass that change.
+
+The QR is generated locally with the vendored MIT-licensed
+[qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator). No remote QR
+image service receives the secret. The link carries the code in its fragment,
+which is not part of the controller HTTP request; the phone removes that fragment
+from history after reading it. Keep the QR private just like the typed code.
+The game does not request camera permission: use the phone's normal camera app,
+or use manual entry. QR display needs a hosted HTTP(S) controller address.
 
 Developer validation used desktop browser sessions. A user hardware report describes
 slow gameplay, unusable FPV/TPV, and menu-related disconnects on a Fire TV Stick
@@ -66,12 +80,21 @@ pairing. Controls resume when the TV replies; an actual channel closure still
 requires reconnection. This addresses the previous six-second timeout that could
 disconnect a phone during a slow menu render. It does not fix the underlying stall.
 
+Controller protocol 2 also requires a short-lived input lease issued by the TV.
+Clicks queued for more than 2.5 seconds are discarded rather than executed against
+a later screen. Device clocks need not be synchronized. Releases bypass the lease
+so a held pointer can always be released. Old heartbeat replies and congested send
+queues cannot reactivate normal input. A pairing-server error alone no longer
+destroys an otherwise healthy direct connection.
+
 TV Lite starts each tactical view mount in 2D, including returning from menus.
 You can select 3D, but FPV/TPV are explicitly experimental. The TV profile caps
 game WebGL drawing buffers at 1280 × 720 and targets at most 30 FPS, disables
 antialiasing and backdrop blur, and reduces tactical model and globe detail.
 It does not change campaign simulation timing or desktop graphics preferences.
 These are ceilings, not a promise that the device can reach 30 FPS.
+Opening the TV pairing overlay or hiding the TV page suspends TV Lite drawing;
+only the latest pending frame is drawn on return. Campaign time is not paused.
 
 Patch history initializes once per app mount instead of rebuilding the history
 and extending the self-test runner on every update. In TV Lite, history displays
@@ -116,6 +139,9 @@ Pairing requires internet even though the UI assets are cached by the PWA.
 6. Complete a full mission with diagnostics visible. Open Save/Load, patch notes,
    the sound library, and other campaign menus repeatedly; confirm pagination,
    recovery after stalls, and stable renderer counts after closing 3D views.
+7. Scan the QR from the TV with a real phone camera. Confirm automatic connection,
+   then choose New pairing code and verify the old screenshot no longer connects.
+   Repeat with manual code entry and after reloading both pages.
 
 This patch has automated coverage for render limits, frame scheduling/disposal,
 pagination, one-time history initialization, and controller recovery. Live browser

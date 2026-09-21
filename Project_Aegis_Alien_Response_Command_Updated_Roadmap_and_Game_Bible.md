@@ -1,9 +1,17 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.20.0001_FIRE_TV_STABILITY_AND_LITE_MODE_PATCH`
+Current browser build: `v0.26.09.20.0002_QR_PAIRING_AND_CONTROLLER_RESILIENCE_PATCH`
 
 Current save format: `4`
 
+
+## QR Pairing & Controller Resilience — Implemented in Browser 0002
+
+- Local QR generation opens the phone controller with automatic pairing; manual code entry remains supported.
+- Expiring input permission from the TV drops queued commands after stalls. Input recovery requires a fresh heartbeat.
+- Hidden TV Lite views stop drawing; rendering resumes with the latest pending frame.
+- Automated menu-transition and real AI-stream tests pass; physical Fire Stick/phone acceptance remains pending.
+- Reload both pages after deployment to upgrade the controller protocol together.
 
 ## Fire TV Stability & Lite Mode — Implemented, Hardware Acceptance Pending
 
