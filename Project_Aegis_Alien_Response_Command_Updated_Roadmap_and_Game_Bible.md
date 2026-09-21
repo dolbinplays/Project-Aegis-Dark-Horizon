@@ -1,9 +1,17 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.19.0003_FIRE_TV_PHONE_CONTROLLER_PATCH`
+Current browser build: `v0.26.09.20.0001_FIRE_TV_STABILITY_AND_LITE_MODE_PATCH`
 
 Current save format: `4`
 
+
+## Fire TV Stability & Lite Mode — Implemented, Hardware Acceptance Pending
+
+- TV Lite provides a 2D default, bounded optional 3D, menu pagination, and runtime diagnostics.
+- Patch-history construction and test registration no longer repeat on every main-screen render.
+- Long TV stalls preserve pairing. Actual channel loss still requires reconnection.
+- The exact Fire Stick model and a complete on-device mission/save/menu/sleep-wake run remain required before claiming playable performance.
+- See TV_PHONE_CONTROLLER_SETUP.md for setup and diagnostic interpretation.
 
 ## TV / Phone Controller — Browser Foundation Implemented in 0003
 

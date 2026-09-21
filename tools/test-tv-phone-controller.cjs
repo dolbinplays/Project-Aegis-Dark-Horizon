@@ -35,8 +35,16 @@ function host(){
  const window={RTCPeerConnection:function(){},Peer,AEGIS_TV_PROTOCOL:P,AEGIS_CREATE_TV_INPUT:()=>({input:a=>inputs.push(a),release:()=>releases++}),addEventListener:(n,f)=>events[n]=f};
  vm.runInNewContext(fs.readFileSync(path.join(base,'assets/runtime/aegis-tv-host.js'),'utf8'),{window,document,Peer,URL,location:{href:'https://example.test/AEGIS_TV.html'},Date:{now:()=>now},setTimeout:()=>1,clearTimeout(){},setInterval:f=>intervals.push(f),localStorage:{setItem(){}}});
  get('pair').onclick();const peer=peers[0];peer.emit('open');const code=P.cleanCode(get('code').textContent);
- return{get,peer,code,inputs,Emitter,releases:()=>releases,tick:ms=>{now+=ms;intervals.forEach(f=>f());}};
+ return{get,peer,code,inputs,Emitter,window,releases:()=>releases,tick:ms=>{now+=ms;intervals.forEach(f=>f());}};
 }
+test('TV Lite is established before loading the game, with an explicit standard opt-out',()=>{
+ const lite=host();lite.get('start').onclick();assert.equal(lite.window.AEGIS_TV_PROFILE,'lite');assert.equal(lite.get('game').src,'./index.html');assert.equal(lite.get('performance').disabled,true);
+ const standard=host();standard.get('performance').checked=false;standard.get('start').onclick();assert.equal(standard.window.AEGIS_TV_PROFILE,'standard');
+});
+test('heartbeat echoes the phone timestamp and reports round-trip processing delay',()=>{
+ const tv=host(),channel=new tv.Emitter();tv.peer.emit('connection',channel);channel.emit('data',{type:'hello',version:1,secret:tv.code.slice(6)});channel.emit('data',{type:'ping',at:2000});assert.equal(channel.sent.at(-1).at,2000);
+ const h=phone();h.tick(1000);const ping=h.channel.sent.at(-1);assert.equal(ping.type,'ping');h.tick(300);h.channel.emit('data',{type:'pong',at:ping.at});assert.equal(h.get('latency').textContent,'TV response: 300 ms');
+});
 test('TV rejects incorrect secrets before forwarding any input',()=>{const h=host(),c=new h.Emitter();h.peer.emit('connection',c);c.emit('data',{type:'hello',version:1,secret:'WRONG!'});assert.equal(c.open,false);assert.equal(h.inputs.length,0);assert.equal(h.get('start').disabled,true);});
 test('authenticated phone controls the started game; second phones cannot replace it',()=>{const h=host(),c=new h.Emitter();h.peer.emit('connection',c);c.emit('data',{type:'hello',version:1,secret:h.code.slice(6)});assert.equal(c.sent[0].type,'ready');c.emit('data',{type:'input',action:{kind:'click'}});assert.equal(h.inputs.length,0);h.get('start').onclick();c.emit('data',{type:'input',action:{kind:'click'}});assert.equal(h.inputs.length,1);const other=new h.Emitter();h.peer.emit('connection',other);other.emit('open');assert.equal(other.open,false);});
 test('missing heartbeats and disconnect release held controls; input is rate bounded',()=>{const h=host(),c=new h.Emitter();h.peer.emit('connection',c);c.emit('data',{type:'hello',version:1,secret:h.code.slice(6)});h.get('start').onclick();for(let i=0;i<200;i++)c.emit('data',{type:'input',action:{kind:'move',dx:1,dy:0}});assert.equal(h.inputs.length,120);const before=h.releases();h.tick(4000);assert.ok(h.releases()>before);assert.match(h.get('status').textContent,/interrupted/);c.close();assert.match(h.get('status').textContent,/disconnected/);});

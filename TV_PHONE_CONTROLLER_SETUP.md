@@ -12,7 +12,8 @@
    the same game website, then **Tools / Editors → Phone Controller**.
 5. Enter the 12-character TV code and tap **Connect to TV**.
 6. Use the Fire TV remote to press **Start game on TV** once. Leave
-   **Performance graphics** checked for the first hardware test.
+   **TV Lite (recommended)** checked for the first hardware test. This choice is
+   locked for the session; reload the TV page to choose a different profile.
 7. Use the phone touchpad to move the on-screen cursor; tap to select.
 
 Both devices need compatible WebRTC data-channel support. Use the same Wi-Fi and
@@ -65,9 +66,31 @@ pairing. Controls resume when the TV replies; an actual channel closure still
 requires reconnection. This addresses the previous six-second timeout that could
 disconnect a phone during a slow menu render. It does not fix the underlying stall.
 
-Performance graphics selects the existing tactical Performance preset; it is not
-a device-wide TV graphics mode. Use 2D tactical view on struggling devices. FPV/TPV
-performance needs profiling on the target hardware before it can be considered supported.
+TV Lite starts each tactical view mount in 2D, including returning from menus.
+You can select 3D, but FPV/TPV are explicitly experimental. The TV profile caps
+game WebGL drawing buffers at 1280 × 720 and targets at most 30 FPS, disables
+antialiasing and backdrop blur, and reduces tactical model and globe detail.
+It does not change campaign simulation timing or desktop graphics preferences.
+These are ceilings, not a promise that the device can reach 30 FPS.
+
+Patch history initializes once per app mount instead of rebuilding the history
+and extending the self-test runner on every update. In TV Lite, history displays
+12 entries per page and the sound library displays one group per page. Build
+Health runs its full checks only when requested; those checks can still block
+the TV temporarily. Ordinary menus no longer incur that startup suite.
+
+## Performance diagnostics
+
+Use the TV remote's **Diagnostics** button in the TV overlay. It reports the
+current screen, busiest WebGL renderer's measured FPS, renderer count, event-loop
+delay, and long-task count/duration when Silk supports the Long Tasks API. Zero
+FPS is normal in 2D and idle scenes. The action near the longest stall is a clue,
+not proof that the action caused it. The phone reports round-trip TV response
+latency, which includes both network delay and TV processing delays.
+
+Reports reset when the disposable game runtime is replaced. No performance data
+is uploaded. Memory usage is not estimated because browser APIs cannot reliably
+report the Fire Stick's total available memory.
 
 Pairing requires internet even though the UI assets are cached by the PWA.
 
@@ -84,10 +107,19 @@ Pairing requires internet even though the UI assets are cached by the PWA.
 
 1. Pair your phone with Silk on the exact Fire TV model you use.
 2. Check UI readability, scroll behavior, audio activation, and a tactical mission
-   in 2D and Performance 3D. Check selecting units/hexes, map dragging and zoom.
+   in default 2D and optional TV Lite 3D. Check selecting units/hexes, map dragging
+   and zoom. Record the Fire Stick model, busiest-view FPS, worst stall, and menu.
 3. Put the phone to sleep during a drag: the held input must release. Wake it and
    reconnect if necessary; the TV game must remain open.
 4. Complete a mission transition and verify control of the newly created runtime.
 5. Verify save/reload on the TV and repeat after a browser restart.
+6. Complete a full mission with diagnostics visible. Open Save/Load, patch notes,
+   the sound library, and other campaign menus repeatedly; confirm pagination,
+   recovery after stalls, and stable renderer counts after closing 3D views.
+
+This patch has automated coverage for render limits, frame scheduling/disposal,
+pagination, one-time history initialization, and controller recovery. Live browser
+automation was unavailable during this patch; hardware acceptance is still pending.
 
 Run `node --test tools/test-tv-phone-controller.cjs` for protocol/session regressions.
+Run `node --test tools/test-tv-lite.cjs` for the TV presentation regressions.

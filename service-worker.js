@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.19.0003_FIRE_TV_PHONE_CONTROLLER_PATCH";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.19.0003_FIRE_TV_PHONE_CONTROLLER_PATCH";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v8-tv-controller-stall-recovery";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.20.0001_FIRE_TV_STABILITY_AND_LITE_MODE_PATCH";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.20.0001_FIRE_TV_STABILITY_AND_LITE_MODE_PATCH";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v9-tv-lite";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;
@@ -27,6 +27,7 @@ const AEGIS_SMALL_SHELL = [
   "./assets/runtime/aegis-tv-protocol.js",
   "./assets/runtime/aegis-tv-input.js",
   "./assets/runtime/aegis-tv-host.js",
+  "./assets/runtime/aegis-tv-runtime.js",
   "./assets/runtime/aegis-tv-phone.js",
   "./AEGIS_Building_Layout_Editor_CURRENT.html",
   "./assets/runtime/aegis-building-layouts.js",

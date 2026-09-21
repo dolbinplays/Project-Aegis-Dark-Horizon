@@ -20,15 +20,24 @@ function pair(){
    if(peer!==owner)return;
    if(!authenticated){const now=Date.now();if(now-attemptWindow>10000){attemptWindow=now;attempts=0;}if(++attempts>5||connection?.open||message?.type!=='hello'||message.version!==1||message.secret!==code.slice(6)){candidate.close();return;}authenticated=true;clearTimeout(deadline);connection=candidate;last=Date.now();stale=false;$('start').disabled=false;status(started?'Phone connected':'Phone connected. Start game on TV.');candidate.send({type:'ready',version:1});return;}
    if(candidate!==connection)return;last=Date.now();if(stale){stale=false;status('Phone connected');}
-   if(message?.type==='ping'){candidate.send({type:'pong'});return;}
+   if(message?.type==='ping'){candidate.send({type:'pong',at:Number.isFinite(message.at)?message.at:null});return;}
    if(message?.type==='input'&&started&&$('setup').hidden){const now=Date.now();if(now-rateWindow>1000){rateWindow=now;rate=0;}if(message.action?.kind==='release'||message.action?.kind==='up'||++rate<=120)input.input(message.action);}
   });
   candidate.on('close',()=>{clearTimeout(deadline);if(connection===candidate)lost();});candidate.on('error',()=>{if(connection===candidate)lost();});
  });
 }
 $('pair').onclick=pair;
-$('start').onclick=()=>{if(!started){try{if($('performance').checked)localStorage.setItem('project-aegis-tactical-three-quality-v1','performance');}catch{}$('game').src='./index.html';started=true;}$('game').hidden=false;$('setup').hidden=true;$('hud').hidden=false;$('cursor').hidden=false;status(connection?.open?'Phone connected':'Waiting for phone');notify({type:'notice',message:'Game ready. Slide to move the pointer; tap to select.'});$('start').textContent='Return to game';document.documentElement.requestFullscreen?.().catch(()=>{});};
+$('start').onclick=()=>{if(!started){window.AEGIS_TV_PROFILE=$('performance').checked?'lite':'standard';$('performance').disabled=true;$('game').src='./index.html';started=true;}$('game').hidden=false;$('setup').hidden=true;$('hud').hidden=false;$('cursor').hidden=false;status(connection?.open?'Phone connected':'Waiting for phone');notify({type:'notice',message:'Game ready. Slide to move the pointer; tap to select.'});$('start').textContent='Return to game';document.documentElement.requestFullscreen?.().catch(()=>{});};
 $('showPair').onclick=()=>{input.release();$('setup').hidden=false;$('cursor').hidden=true;};
+$('diagnosticsToggle').onclick=()=>{$('diagnostics').hidden=!$('diagnostics').hidden;};
+setInterval(()=>{if($('diagnostics').hidden)return;const report=window.AEGIS_TV_ACTIVE_RUNTIME?.snapshot();$('diagnostics').textContent=report?[
+ 'TV Lite · '+report.screen,
+ '3D FPS (busiest view): '+report.fps+' · active renderers: '+report.renderers+' (0 FPS is normal when idle or in 2D)',
+ 'Event-loop delay: '+report.loopDelayMs+' ms',
+ report.longTasksSupported?'Long tasks: '+report.longTasks+' · longest: '+report.longestTaskMs+' ms':'Long-task reporting unavailable in this browser',
+ 'Action near longest stall: '+report.lastStallAction,
+ 'Phone: '+(connection?.open?(stale?'waiting':'connected'):'disconnected')
+].join('\n'):'TV Lite diagnostics become available after starting in TV Lite mode.';},1000);
 $('fullscreen').onclick=()=>document.documentElement.requestFullscreen?.().catch(()=>status('Use the TV browser full-screen control.'));
 setInterval(()=>{if(connection?.open&&Date.now()-last>3500&&!stale){stale=true;input.release();status('Phone paused or connection interrupted. Return to its controller page.');}},1000);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)input.release();});

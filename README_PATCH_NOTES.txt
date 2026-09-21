@@ -1,3 +1,14 @@
+BUILD: v0.26.09.20.0001_FIRE_TV_STABILITY_AND_LITE_MODE_PATCH
+PROJECT AEGIS — FIRE TV STABILITY & LITE MODE
+Save format: 4
+
+- TV Lite defaults to 2D, caps optional 3D at 1280x720 and 30 FPS, and reduces presentation detail.
+- Slow TV replies pause controller input without destroying pairing.
+- Patch history and test registration initialize once per app mount, avoiding repeated work and retained closures.
+- TV menus paginate history and sound groups; Build Health tests run on demand.
+- Adds TV render/stall/connection diagnostics and phone response latency.
+- Automated validation only for this patch; physical Fire TV acceptance remains pending.
+
 BUILD: v0.26.09.19.0003_FIRE_TV_PHONE_CONTROLLER_PATCH
 PROJECT AEGIS — TV AND PHONE CONTROLLER
 Save format: 4
