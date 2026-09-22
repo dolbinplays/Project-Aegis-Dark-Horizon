@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.22.0001_STABILIZATION_RECOGNITION_PATCH`
+Current browser build: `v0.26.09.20.0003_UNIQUE_LIVING_SOLDIER_CALLSIGNS_PATCH`
 
 Current save format: `4`
 
@@ -127,7 +127,7 @@ Current save format: `4`
 - Recruitment boundaries use the same roster repair authority; recruits continue to start unnamed.
 - Legacy/imported campaigns retain the first living owner in saved roster order. Later duplicates receive the next free numbered suffix, preserving names already held by other soldiers. A campaign report identifies repairs; repeated loads are idempotent.
 - Save format remains **4**. See UNIQUE_LIVING_SOLDIER_CALLSIGNS_VALIDATION.md for automated coverage and field checks.
-- **Fire TV Performance & Field-Test Fixes** deferred at the player’s request; focus returns to core game features.
+- Next planned patch: **Fire TV Performance & Field-Test Fixes**.
 
 ## Hex-Edge Prop Placement + Solid Prop Navigation — Implemented in Browser 1145
 
@@ -580,18 +580,18 @@ Shared marker state drives 2D, persistent/fallback 3D and perspective/minimap pr
 
 **Planned, not implemented.** Review mandatory rescue quotas, including the reported experience of three-VIP incidents appearing to require all three rescues for victory. Verify displayed counts against the actual mission-specific quota before adjusting balance. Consider a more forgiving threshold while retaining meaningful consequences and partial rescue credit for losses. Decide the final threshold through balance testing; this patch does not change rescue requirements.
 
-## Successful Stabilization Marker and Repeatable Medkit Commendation — Implemented
+## Roadmap Addition — Rescued Soldier Vitals Marker and Repeatable Medkit Achievement
 
-**September 22, 2026. Status: implemented; automated coverage complete, live field acceptance pending.**
+**Requested September 13, 2026. Status: planned, not implemented.**
 
-- Player-approved revision: **successful teammate stabilization** qualifies. A casualty need not get back up; existing medical rules deliberately leave stabilized soldiers downed.
-- A small red upward arrow appears immediately after the casualty's vitals name indicator, with an accessible explanation that it records teammate stabilization this battle and does not mean revival or current survival.
-- The responder earns **Field Lifesaver**, a repeatable commendation with a persistent cumulative count. Mission reports identify responder, patient and treatment round.
-- The shared Manual/AI treatment authority records confirmed events. Self-treatment, ordinary healing, rejected attempts and extraction-only stabilization do not count.
-- Distinct events count once, including multiple patients and a future separate injury/stabilization of the same patient. Replayed frames, repeated mission results and save/load cannot duplicate credit.
-- Recognition persists through later injury/KIA and fire-team changes while current health/status remains visible. Battle markers reset with new tactical units; campaign commendations persist. Old saves receive no inferred retroactive awards.
-- Save format remains **4**. See STABILIZATION_RECOGNITION_VALIDATION.md for tests and remaining field checks.
+- Show a small **red upward-pointing arrow immediately to the right of the soldier's name indicator in their vitals card** after another soldier has stabilized them and helped them get back up using a medkit. The marker belongs to the rescued soldier; the achievement credit belongs to their rescuer.
+- Trigger the marker from a confirmed successful assisted recovery, not merely a medkit attempt, ordinary healing, self-treatment or stabilization that leaves the casualty down. Reveal it when the recovery is shown in playback, keeping it synchronized with the vitals presentation.
+- Treat the arrow as a record of assisted recovery during the current battle, separate from current health/status. Keep subsequent wounds, downed states and KIA clearly visible. Retain the marker through fire-team reassignment and tactical save/reload; reset it for a new battle. Include an accessible label or tooltip explaining its meaning without relying on color alone.
+- Add a **repeatable achievement for saving another soldier in battle with a medkit**. Credit the soldier responsible for each successful qualifying rescue, using the same confirmed assisted-recovery event as the vitals marker. Track repeat awards in the rescuer's persistent soldier record and surface them through the achievement display and mission report; the achievement name is a future presentation decision.
+- Count each distinct rescue once. Playback replay, repeated treatment of the same recovery, control-mode changes and save/reload must not duplicate credit. A later distinct downing followed by another successful rescue can earn another award, including when the same soldier is rescued again.
+- **Acceptance:** verify marker placement beside short/long names and in mobile vitals, correct recipient/rescuer attribution, multiple legitimate rescues and repeat awards, no award for failed treatment/self-treatment/ordinary healing or a still-downed casualty, and no duplicate awards after replay or save/reload. Check recovery timing, later injury/KIA, fire-team transfers and parity across Manual, Hybrid and Simulation.
 
+This is a roadmap-only update; the runtime, build identifier and save format are unchanged.
 
 ## Roadmap Addition — Incident-Defined VIP Counts and Incomplete Rescue Reports
 
