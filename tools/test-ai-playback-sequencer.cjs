@@ -215,7 +215,8 @@ function missionFixture({ terminal = false, speed = 100 } = {}) {
   const i = source.indexOf('function tacticalCommittedPlaybackFrameUnits(', h);
   const a = source.indexOf('function applyAiFrameToMap('), b = source.indexOf('function estimateAiFrameMovementDelay', a);
   const d = source.indexOf('function takeBackAiCommand()'), e = source.indexOf('function finishAiPlayback()', d);
-  vm.runInContext(source.slice(h, i) + '\n' + source.slice(a, b) + '\n' + source.slice(d, e), vm.createContext(scope));
+  const medicalStart=source.indexOf('function tacticalPlaybackMedicalState('),medicalEnd=source.indexOf('function TacticalStabilizationMarker(',medicalStart);
+  vm.runInContext(source.slice(medicalStart,medicalEnd) + '\n' + source.slice(h, i) + '\n' + source.slice(a, b) + '\n' + source.slice(d, e), vm.createContext(scope));
   return { c, q, scope, states, human, vip };
 }
 
@@ -269,6 +270,15 @@ test('Shipped Take Back Control retains the current authoritative frame and canc
   assert.equal(scope.unitsRef.current[0].x, 8);
   assert.equal(scope.coversRef.current[0].hp, 0);
   assert.equal(scope.aiPlayback, null); assert.equal(q.pendingCount, 0);
+});
+
+test('Shipped frame hydration preserves stabilization recognition and current casualty state through control handoff',()=>{
+ const {scope,human}=missionFixture();const event={id:'lead:1',targetId:'lead',rescuerId:'medic',round:2};
+ const treated={...human,hp:1,tu:0,downed:true,unconscious:true,bleeding:false,stabilized:true,stabilizationEvents:[event]};
+ const frame={soldiers:[treated],civilians:[],aliens:[],covers:[],movementTrails:{}};
+ scope.applyAiFrameToMap(frame,{animate:false});assert.equal(scope.unitsRef.current[0].downed,true);assert.equal(scope.unitsRef.current[0].stabilizationEvents[0].rescuerId,'medic');
+ scope.aiPlayback={frames:[frame],frameIndex:0};scope.takeBackAiCommand();assert.equal(scope.unitsRef.current[0].stabilizationEvents.length,1);
+ scope.applyAiFrameToMap({...frame,soldiers:[{...treated,hp:0,alive:false,downed:false}]},{animate:false});assert.equal(scope.unitsRef.current[0].alive,false);assert.equal(scope.unitsRef.current[0].stabilizationEvents.length,1);
 });
 
 console.log(`Playback sequencer: ${tests.filter(t => t.pass).length}/${tests.length} behavioral tests passed.`);

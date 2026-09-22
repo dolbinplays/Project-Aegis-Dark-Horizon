@@ -1,3 +1,15 @@
+BUILD: v0.26.09.22.0001_STABILIZATION_RECOGNITION_PATCH
+PROJECT AEGIS — BATTLEFIELD STABILIZATION RECOGNITION
+Save format: 4
+
+- Successful teammate Field Medkit stabilization earns the responder a repeatable Field Lifesaver commendation.
+- A red arrow beside the casualty's vitals name records treatment this battle, with accessible text clarifying that it does not mean revival.
+- Mission reports identify the responder, patient and treatment round. Dossiers show cumulative award counts.
+- Replay, repeated mission completion and save/load cannot duplicate credit. Later wounds/KIA do not erase successful treatment.
+- Ordinary healing, self-treatment, failed attempts and extraction-only stabilization do not count; older saves receive no inferred awards.
+- Playback carries treatment and casualty state together. New battles reset the marker; medical costs, health and incapacitation are unchanged.
+- Fire TV work is deferred at the player's request.
+
 BUILD: v0.26.09.20.0003_UNIQUE_LIVING_SOLDIER_CALLSIGNS_PATCH
 PROJECT AEGIS — UNIQUE LIVING-SOLDIER CALLSIGNS
 Save format: 4
