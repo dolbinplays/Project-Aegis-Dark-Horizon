@@ -1,3 +1,11 @@
+BUILD: v0.26.09.22.0005_MISSION_LAUNCH_SIMPLIFICATION_PATCH
+PROJECT AEGIS — MISSION LAUNCH SIMPLIFICATION
+Save format: 4
+
+- Mission planning offers Play Tactical Mission and Classic Lineup View in Standard and Mobile / Adaptive layouts.
+- Removes Watch AI Team Leader and Simulate Encounter from planning launch choices.
+- Preserves launch review and deployment callbacks, in-mission AI / Hybrid controls and saved mission continuations.
+
 BUILD: v0.26.09.22.0004_MOBILE_MISSION_VIP_LAYOUT_HOTFIX
 PROJECT AEGIS — MOBILE MISSION VIP BRIEFING LAYOUT HOTFIX
 Save format: 4

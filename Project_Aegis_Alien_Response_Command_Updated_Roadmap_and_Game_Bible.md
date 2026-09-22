@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.22.0004_MOBILE_MISSION_VIP_LAYOUT_HOTFIX`
+Current browser build: `v0.26.09.22.0005_MISSION_LAUNCH_SIMPLIFICATION_PATCH`
 
 Current save format: `4`
 
@@ -330,11 +330,11 @@ Additional authority rules implemented with this consolidation:
 - No campaign-state migration is required. Save format remains 4.
 - **Acceptance:** load the supplied Browser 1426 campaign, send both available squads to the North America Alien Abduction Site, confirm Farah/Echo begins with nearby deconflicted search rather than a remote northwest edge sector, and verify newly spotted aliens at long range cause Default AI soldiers to close visibly toward contact until normal ranged engagement distance is reached. Then verify cover/standoff behavior resumes and post-contact reassembly still occurs after contact is cleared.
 
-## Roadmap Addition — Simplify Mission Planning Launch Options
+## Mission Planning Launch Simplification — Implemented in Browser 0005
 
-**Requested September 22, 2026. Status: planned / not yet implemented.**
+**Requested and implemented September 22, 2026. Status: automated validation complete; live field acceptance pending.**
 
-- Remove **Watch AI Team Leader** and **Simulate Encounter** from the Launch section of mission-planning screens in both Standard and Mobile / Adaptive layouts.
+- Removed **Watch AI Team Leader** and **Simulate Encounter** from the Launch section of mission-planning screens in both Standard and Mobile / Adaptive layouts.
 - Retain **Play Tactical Mission** and **Classic Lineup View** as launch choices.
 - Scope this change to mission-planning launch choices; preserve in-mission AI / Hybrid controls and existing save compatibility.
 - Acceptance: both planning layouts show only the retained launch choices, with working launch review and deployment callbacks and no empty option spacing.
