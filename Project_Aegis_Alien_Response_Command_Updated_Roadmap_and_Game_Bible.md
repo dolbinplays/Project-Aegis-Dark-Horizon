@@ -1,9 +1,18 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.22.0001_STABILIZATION_RECOGNITION_PATCH`
+Current browser build: `v0.26.09.22.0003_INCIDENT_VIP_COUNTS_AND_INCOMPLETE_REPORTS_PATCH`
 
 Current save format: `4`
 
+
+## Automatic Save Backup & Recovery — Implemented in Browser 0002
+
+- Primary save writes retain current/previous recovery generations and a best-effort local fallback. Startup merges valid slots by revision rather than always preferring the primary database.
+- Explicit slot deletions carry revision markers; older backups do not restore deliberately cleared slots.
+- Backup Manager offers **Choose / Reconnect Backup Folder** on supporting browsers. Manual and autosave collections each retain current/previous external JSON files. Permission is granted by the browser; reconnect may be necessary after site-data clearing.
+- Completed mission checkpoints and opening a debrief without a checkpoint use automatic backup storage. Startup restores available slots without choosing/loading a campaign over the player's current session.
+- Browser persistence is requested where supported. Browser-local copies cannot survive complete site-data deletion; external files are the independent recovery layer.
+- Save format remains **4**. See SAVE_BACKUP_RECOVERY_VALIDATION.md for setup, tests and limitations. Fire TV work remains deferred.
 
 ## QR Pairing & Controller Resilience — Implemented in Browser 0002
 
@@ -17852,3 +17861,8 @@ Manual validation:
 - Confirm both aircraft ultimately return to their original Fort Aegis home hangars.
 
 Completed next in `v0.26.07.12.1630_FERRY_AIRCRAFT_REBASE_AND_HOMEWARD_RECOVERY_CONTROLS_INDEX_ONLY_PATCH`: explicit Send Home/Rebase commands now let Ready aircraft leave remote staging bases without requiring an active UFO.
+
+
+### Incident-Defined VIP Counts & Incomplete Rescue Reports — implemented September 22, 2026
+
+Incident creation now fixes VIP population independently of response size. A deterministic quarter of eligible rescue reports withhold the count until landing establishes tracker contact. Trackers confirm population without changing visual contact or enemy knowledge. Migration preserves existing tactical civilians, counts and knowledge through travel and saves. Existing rescue quotas remain unchanged. Automated coverage is in tools/test-incident-vip-reports.cjs; live browser acceptance remains pending.

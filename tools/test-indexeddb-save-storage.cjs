@@ -35,13 +35,13 @@ test('autosaves and post-mission reboot checkpoints share durable storage author
   assert.match(source, /useEffect\(\(\)=>\{if\(postMissionRuntimeResumeAttemptedRef\.current\)[\s\S]*?await readDurableAutoSaveSlots\(\)/);
 });
 
-test('legacy localStorage data remains a fallback and is reclaimed only after a successful IndexedDB write', () => {
+test('fallback copies are retained and startup compares all recovery sources', () => {
   assert.match(source, /const legacy=normalizeManualSaveSlotCollection\(readSaveSlots\(\)\)/);
   assert.match(source, /const legacy=normalizeAutoSaveSlotCollection\(readAutoSaveSlots\(\)\)/);
-  assert.match(source, /await writeAegisIndexedDbSlotCollection\(AEGIS_SAVE_DATABASE_MANUAL_KEY,normalized\);[\s\S]*?localStorage\.removeItem\(SAVE_STORAGE_KEY\)/);
-  assert.match(source, /await writeAegisIndexedDbSlotCollection\(AEGIS_SAVE_DATABASE_AUTOSAVE_KEY,normalized\);[\s\S]*?localStorage\.removeItem\(AUTO_SAVE_STORAGE_KEY\)/);
-  assert.match(source, /return writeSaveSlots\(normalized\)/);
-  assert.match(source, /return writeAutoSaveSlots\(normalized\)/);
+  assert.match(source, /aegisMergeRecoverySlots\(key,\[primary,legacy,current,folder,previous,folderPrevious\]\)/);
+  assert.match(source, /writeSaveSlots\(normalized\):writeAutoSaveSlots\(normalized\)/);
+  const body=source.slice(source.indexOf('async function aegisWriteRecoverableSlots('),source.indexOf('function readAutoSaveIntervalMinutes('));
+  assert.ok(!body.includes('localStorage.removeItem'), 'successful writes retain the fallback');
 });
 
 test('campaign save format remains version 4', () => {
