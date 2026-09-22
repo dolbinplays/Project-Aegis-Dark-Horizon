@@ -1,23 +1,3 @@
-BUILD: v0.26.09.22.0003_INCIDENT_VIP_COUNTS_AND_INCOMPLETE_REPORTS_PATCH
-September 22, 2026 — Incident-Defined VIP Counts & Incomplete Rescue Reports
-- Squad and transport selection no longer increases the number of VIPs. Existing rescue quota ratios are unchanged.
-- One quarter of eligible rescue incident IDs receive an interrupted distress report with an unknown count. The population is still recorded immediately.
-- Landing confirms the count through local trackers, without revealing hostile positions or granting visual contact. Incident Details and Mission Control show the current report.
-- Saved incidents and travel retain their population and report knowledge. Legacy active battles retain their existing civilians; save format remains 4.
-
-BUILD: v0.26.09.22.0002_AUTOMATIC_SAVE_BACKUP_AND_RECOVERY_PATCH
-PROJECT AEGIS — AUTOMATIC SAVE BACKUP & RECOVERY
-Save format: 4
-
-- Retains current/previous save recovery generations and best-effort local fallback copies.
-- Startup restores the newest valid available slots, including newer fallback saves after database write failures.
-- Deliberate deletions retain revision markers; older backups do not resurrect cleared slots.
-- Backup Manager adds Choose / Reconnect Backup Folder for automatic external current/previous manual and autosave JSON files.
-- Completed mission checkpoints and debrief entry without a checkpoint trigger the same backup path.
-- Folder recovery is checked before writing; unreadable backup files are preserved and failures are visible.
-- Site-data clearing requires reconnecting the folder or importing a file. Browser-only copies cannot protect against all site data being cleared.
-- Requests persistent browser storage where supported. Startup restores slots, not an unsolicited campaign session.
-
 BUILD: v0.26.09.22.0001_STABILIZATION_RECOGNITION_PATCH
 PROJECT AEGIS — BATTLEFIELD STABILIZATION RECOGNITION
 Save format: 4
