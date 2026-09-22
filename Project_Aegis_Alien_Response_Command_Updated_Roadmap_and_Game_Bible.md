@@ -1,9 +1,18 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.20.0003_UNIQUE_LIVING_SOLDIER_CALLSIGNS_PATCH`
+Current browser build: `v0.26.09.22.0004_MOBILE_MISSION_VIP_LAYOUT_HOTFIX`
 
 Current save format: `4`
 
+
+## Automatic Save Backup & Recovery — Implemented in Browser 0002
+
+- Primary save writes retain current/previous recovery generations and a best-effort local fallback. Startup merges valid slots by revision rather than always preferring the primary database.
+- Explicit slot deletions carry revision markers; older backups do not restore deliberately cleared slots.
+- Backup Manager offers **Choose / Reconnect Backup Folder** on supporting browsers. Manual and autosave collections each retain current/previous external JSON files. Permission is granted by the browser; reconnect may be necessary after site-data clearing.
+- Completed mission checkpoints and opening a debrief without a checkpoint use automatic backup storage. Startup restores available slots without choosing/loading a campaign over the player's current session.
+- Browser persistence is requested where supported. Browser-local copies cannot survive complete site-data deletion; external files are the independent recovery layer.
+- Save format remains **4**. See SAVE_BACKUP_RECOVERY_VALIDATION.md for setup, tests and limitations. Fire TV work remains deferred.
 
 ## QR Pairing & Controller Resilience — Implemented in Browser 0002
 
@@ -127,7 +136,7 @@ Current save format: `4`
 - Recruitment boundaries use the same roster repair authority; recruits continue to start unnamed.
 - Legacy/imported campaigns retain the first living owner in saved roster order. Later duplicates receive the next free numbered suffix, preserving names already held by other soldiers. A campaign report identifies repairs; repeated loads are idempotent.
 - Save format remains **4**. See UNIQUE_LIVING_SOLDIER_CALLSIGNS_VALIDATION.md for automated coverage and field checks.
-- Next planned patch: **Fire TV Performance & Field-Test Fixes**.
+- **Fire TV Performance & Field-Test Fixes** deferred at the player’s request; focus returns to core game features.
 
 ## Hex-Edge Prop Placement + Solid Prop Navigation — Implemented in Browser 1145
 
@@ -320,6 +329,15 @@ Additional authority rules implemented with this consolidation:
 - The direct-contact bridge also applies when a soldier acquires personal sight during a same-turn movement reassessment. It does not override explicit player/hybrid orders, VIP/civilian rescue authority, Last Known Contact, Beacon assault authority, covered-fire holds or Browser 1426 post-contact fire-team recovery.
 - No campaign-state migration is required. Save format remains 4.
 - **Acceptance:** load the supplied Browser 1426 campaign, send both available squads to the North America Alien Abduction Site, confirm Farah/Echo begins with nearby deconflicted search rather than a remote northwest edge sector, and verify newly spotted aliens at long range cause Default AI soldiers to close visibly toward contact until normal ranged engagement distance is reached. Then verify cover/standoff behavior resumes and post-contact reassembly still occurs after contact is cleared.
+
+## Roadmap Addition — Simplify Mission Planning Launch Options
+
+**Requested September 22, 2026. Status: planned / not yet implemented.**
+
+- Remove **Watch AI Team Leader** and **Simulate Encounter** from the Launch section of mission-planning screens in both Standard and Mobile / Adaptive layouts.
+- Retain **Play Tactical Mission** and **Classic Lineup View** as launch choices.
+- Scope this change to mission-planning launch choices; preserve in-mission AI / Hybrid controls and existing save compatibility.
+- Acceptance: both planning layouts show only the retained launch choices, with working launch review and deployment callbacks and no empty option spacing.
 
 ## Roadmap Addition — Shielded Beacon Immunity Color Rings
 
@@ -580,18 +598,18 @@ Shared marker state drives 2D, persistent/fallback 3D and perspective/minimap pr
 
 **Planned, not implemented.** Review mandatory rescue quotas, including the reported experience of three-VIP incidents appearing to require all three rescues for victory. Verify displayed counts against the actual mission-specific quota before adjusting balance. Consider a more forgiving threshold while retaining meaningful consequences and partial rescue credit for losses. Decide the final threshold through balance testing; this patch does not change rescue requirements.
 
-## Roadmap Addition — Rescued Soldier Vitals Marker and Repeatable Medkit Achievement
+## Successful Stabilization Marker and Repeatable Medkit Commendation — Implemented
 
-**Requested September 13, 2026. Status: planned, not implemented.**
+**September 22, 2026. Status: implemented; automated coverage complete, live field acceptance pending.**
 
-- Show a small **red upward-pointing arrow immediately to the right of the soldier's name indicator in their vitals card** after another soldier has stabilized them and helped them get back up using a medkit. The marker belongs to the rescued soldier; the achievement credit belongs to their rescuer.
-- Trigger the marker from a confirmed successful assisted recovery, not merely a medkit attempt, ordinary healing, self-treatment or stabilization that leaves the casualty down. Reveal it when the recovery is shown in playback, keeping it synchronized with the vitals presentation.
-- Treat the arrow as a record of assisted recovery during the current battle, separate from current health/status. Keep subsequent wounds, downed states and KIA clearly visible. Retain the marker through fire-team reassignment and tactical save/reload; reset it for a new battle. Include an accessible label or tooltip explaining its meaning without relying on color alone.
-- Add a **repeatable achievement for saving another soldier in battle with a medkit**. Credit the soldier responsible for each successful qualifying rescue, using the same confirmed assisted-recovery event as the vitals marker. Track repeat awards in the rescuer's persistent soldier record and surface them through the achievement display and mission report; the achievement name is a future presentation decision.
-- Count each distinct rescue once. Playback replay, repeated treatment of the same recovery, control-mode changes and save/reload must not duplicate credit. A later distinct downing followed by another successful rescue can earn another award, including when the same soldier is rescued again.
-- **Acceptance:** verify marker placement beside short/long names and in mobile vitals, correct recipient/rescuer attribution, multiple legitimate rescues and repeat awards, no award for failed treatment/self-treatment/ordinary healing or a still-downed casualty, and no duplicate awards after replay or save/reload. Check recovery timing, later injury/KIA, fire-team transfers and parity across Manual, Hybrid and Simulation.
+- Player-approved revision: **successful teammate stabilization** qualifies. A casualty need not get back up; existing medical rules deliberately leave stabilized soldiers downed.
+- A small red upward arrow appears immediately after the casualty's vitals name indicator, with an accessible explanation that it records teammate stabilization this battle and does not mean revival or current survival.
+- The responder earns **Field Lifesaver**, a repeatable commendation with a persistent cumulative count. Mission reports identify responder, patient and treatment round.
+- The shared Manual/AI treatment authority records confirmed events. Self-treatment, ordinary healing, rejected attempts and extraction-only stabilization do not count.
+- Distinct events count once, including multiple patients and a future separate injury/stabilization of the same patient. Replayed frames, repeated mission results and save/load cannot duplicate credit.
+- Recognition persists through later injury/KIA and fire-team changes while current health/status remains visible. Battle markers reset with new tactical units; campaign commendations persist. Old saves receive no inferred retroactive awards.
+- Save format remains **4**. See STABILIZATION_RECOGNITION_VALIDATION.md for tests and remaining field checks.
 
-This is a roadmap-only update; the runtime, build identifier and save format are unchanged.
 
 ## Roadmap Addition — Incident-Defined VIP Counts and Incomplete Rescue Reports
 
@@ -17852,3 +17870,13 @@ Manual validation:
 - Confirm both aircraft ultimately return to their original Fort Aegis home hangars.
 
 Completed next in `v0.26.07.12.1630_FERRY_AIRCRAFT_REBASE_AND_HOMEWARD_RECOVERY_CONTROLS_INDEX_ONLY_PATCH`: explicit Send Home/Rebase commands now let Ready aircraft leave remote staging bases without requiring an active UFO.
+
+
+### Incident-Defined VIP Counts & Incomplete Rescue Reports — implemented September 22, 2026
+
+Incident creation now fixes VIP population independently of response size. A deterministic quarter of eligible rescue reports withhold the count until landing establishes tracker contact. Trackers confirm population without changing visual contact or enemy knowledge. Migration preserves existing tactical civilians, counts and knowledge through travel and saves. Existing rescue quotas remain unchanged. Automated coverage is in tools/test-incident-vip-reports.cjs; live browser acceptance remains pending.
+
+
+### Mobile mission VIP briefing layout hotfix — September 22, 2026
+
+Fixed the adaptive Mission Control fallback caused by adding the VIP report between existing planning elements. The adapter isolates the marked VIP briefing before identifying the original planning sections and displays it in Briefing. Squad selection, orders, launch controls, Standard layout and save format are preserved. Regression tests: tools/test-mobile-mission-vip-layout.cjs.
