@@ -1,3 +1,12 @@
+BUILD: v0.26.09.23.0001_SYNCHRONIZED_ESCORT_MOVEMENT_PATCH
+September 23, 2026 - Synchronized Escort Movement
+Save format: 4
+
+- VIPs, civilians and dragged casualties share their escort's movement action.
+- Recorded follower routes can enter vacated escort cells without a playback detour.
+- Unconscious soldiers retain prone state and remain visible until extraction animation completes.
+- Manual movement and single-file ramp boarding remain supported.
+
 BUILD: v0.26.09.22.0008_FENCE_ENCLOSURES_AND_ACCESS_GAPS_PATCH
 PROJECT AEGIS — FENCE ENCLOSURES & ACCESS GAPS
 Save format: 4

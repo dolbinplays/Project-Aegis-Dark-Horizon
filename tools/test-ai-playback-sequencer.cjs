@@ -216,9 +216,26 @@ function missionFixture({ terminal = false, speed = 100 } = {}) {
   const a = source.indexOf('function applyAiFrameToMap('), b = source.indexOf('function estimateAiFrameMovementDelay', a);
   const d = source.indexOf('function takeBackAiCommand()'), e = source.indexOf('function finishAiPlayback()', d);
   const medicalStart=source.indexOf('function tacticalPlaybackMedicalState('),medicalEnd=source.indexOf('function TacticalStabilizationMarker(',medicalStart);
-  vm.runInContext(source.slice(medicalStart,medicalEnd) + '\n' + source.slice(h, i) + '\n' + source.slice(a, b) + '\n' + source.slice(d, e), vm.createContext(scope));
+  const dragStart=source.indexOf('function tacticalPlaybackCasualtyRescuerId('),dragEnd=source.indexOf('function tacticalAiSequentialPlaybackFrames(',dragStart);
+  vm.runInContext(source.slice(dragStart,dragEnd) + '\n' + source.slice(medicalStart,medicalEnd) + '\n' + source.slice(h, i) + '\n' + source.slice(a, b) + '\n' + source.slice(d, e), vm.createContext(scope));
   return { c, q, scope, states, human, vip };
 }
+
+test('Extracted unconscious patient moves with carrier and stays visible until final hydration', () => {
+  const {c,scope,human}=missionFixture();
+  const patient={id:'patient',team:'human',hp:1,maxHp:40,alive:true,x:4,y:5,downed:true,unconscious:true,prone:true,draggedById:'lead'};
+  scope.unitsRef.current=[human,patient];
+  scope.applyAiFrameToMap({round:1,soldiers:[{...human,x:7,y:5},{...patient,x:6,y:5,draggedById:null,casualtyExtractionRescuerId:'lead',rescued:true,extracted:true,casualtyExtracted:true}],aliens:[],civilians:[],shots:[],movementTrails:{lead:[{x:6,y:5},{x:7,y:5}],patient:[{x:5,y:5},{x:6,y:5}]}});
+  let live=scope.unitsRef.current.find(u=>u.id==='patient');
+  assert.equal(live.casualtyExtracted,false);assert.equal(live.extracted,false);
+  c.advanceTo(400);
+  assert.equal(scope.unitsRef.current.find(u=>u.id==='lead').x,6);
+  live=scope.unitsRef.current.find(u=>u.id==='patient');
+  assert.equal(live.x,5);assert.equal(live.unconscious,true);assert.equal(live.prone,true);assert.equal(live.extracted,false);
+  c.advanceTo(1500);
+  live=scope.unitsRef.current.find(u=>u.id==='patient');
+  assert.equal(live.x,6);assert.equal(live.casualtyExtracted,true);assert.equal(live.unconscious,true);
+});
 
 test('Shipped movement callback preserves destination, TU, ammo, damage, and final hydration', () => {
   const { c, q, scope, human } = missionFixture();

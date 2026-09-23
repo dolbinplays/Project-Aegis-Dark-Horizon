@@ -1,8 +1,16 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.22.0008_FENCE_ENCLOSURES_AND_ACCESS_GAPS_PATCH`
+Current browser build: `v0.26.09.23.0001_SYNCHRONIZED_ESCORT_MOVEMENT_PATCH`
 
 Current save format: `4`
+
+## Roadmap Addition — Objective-Based Team Distance Sorting
+
+Requested September 23, 2026. Status: planned. Clicking an objective at the top of the objective assignment screen sorts the team list vertically from closest to farthest from that objective. Preserve assignment controls and clearly show the selected sorting objective.
+
+## Synchronized Escort Movement — Implemented September 23, 2026
+
+VIPs, civilians and unconscious dragged soldiers share their escort movement during AI/Hybrid playback, including escorts who also fire. Recorded follower trails use vacated escort cells. Casualties retain medical state and remain visible through extraction animation. Manual step movement and single-file ramp boarding are preserved.
 
 
 ## Automatic Save Backup & Recovery — Implemented in Browser 0002
