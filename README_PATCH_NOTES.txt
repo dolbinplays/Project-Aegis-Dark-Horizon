@@ -1,3 +1,12 @@
+BUILD: v0.26.09.22.0008_FENCE_ENCLOSURES_AND_ACCESS_GAPS_PATCH
+PROJECT AEGIS — FENCE ENCLOSURES & ACCESS GAPS
+Save format: 4
+
+- New town/farm maps place fences as connected yards/fields instead of loose clusters.
+- Each safe plot has two two-hex access gaps; roads, waterways, building entrances and existing props remain clear.
+- Up to one yard or two farm plots; unsafe or crowded locations are skipped.
+- Uses the canonical fence model in both Three.js renderers and preserves saved battle covers.
+
 BUILD: v0.26.09.22.0007_OPTIONAL_SOLDIER_RECOVERY_AND_NO_ONE_LEFT_BEHIND_PATCH
 PROJECT AEGIS — OPTIONAL SOLDIER RECOVERY & NO ONE LEFT BEHIND
 Save format: 4

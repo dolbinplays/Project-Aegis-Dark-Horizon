@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.22.0007_OPTIONAL_SOLDIER_RECOVERY_AND_NO_ONE_LEFT_BEHIND_PATCH";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.22.0007_OPTIONAL_SOLDIER_RECOVERY_AND_NO_ONE_LEFT_BEHIND_PATCH";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v18-optional-soldier-recovery";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.22.0008_FENCE_ENCLOSURES_AND_ACCESS_GAPS_PATCH";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.22.0008_FENCE_ENCLOSURES_AND_ACCESS_GAPS_PATCH";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v19-fence-enclosures";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;

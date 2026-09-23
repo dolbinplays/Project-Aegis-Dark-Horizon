@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.22.0007_OPTIONAL_SOLDIER_RECOVERY_AND_NO_ONE_LEFT_BEHIND_PATCH`
+Current browser build: `v0.26.09.22.0008_FENCE_ENCLOSURES_AND_ACCESS_GAPS_PATCH`
 
 Current save format: `4`
 
@@ -70,9 +70,11 @@ Current save format: `4`
 
 **Acceptance:** edit a runtime-integrated prop in the editor, export the game runtime library JS, replace `assets/data/aegis-prop-library.js`, reload, and confirm both Three.js tactical views use the edited component model while Browser 1145 solid/passable navigation and edge placement remain correct. Remove/corrupt one definition and confirm the legacy renderer fallback remains safe. Test installed/PWA reload with the library precached.
 
-## Roadmap Addition — Fence Enclosures with Access Gaps
+## Fence Enclosures with Access Gaps — Implemented in Browser 0008
 
-**Requested September 22, 2026. Status: planned / not yet implemented.**
+**Requested and implemented September 22, 2026. Status: automated checks passing; live field acceptance pending.**
+
+New farm and town maps use deterministic connected plots with two two-hex gaps. Town plots prefer proximity to buildings. Placement requires a clear plot plus access apron and skips unsafe locations; dense maps may have fewer or no enclosures. Existing tactical saves retain their cover arrays. The canonical fence model supplies connected render segments; normal damage and collision authority remain in effect.
 
 - Place fence segment props in coordinated runs that enclose recognizable areas such as residential yards and agricultural fields, rather than scattering isolated segments.
 - Align and connect neighboring segments, including corners, to form a coherent boundary suited to the terrain and nearby buildings.
