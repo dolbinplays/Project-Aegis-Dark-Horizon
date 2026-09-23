@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.22.0005_MISSION_LAUNCH_SIMPLIFICATION_PATCH`
+Current browser build: `v0.26.09.22.0006_POST_CONTACT_RECOVERY_RELIABILITY_PATCH`
 
 Current save format: `4`
 
@@ -490,9 +490,11 @@ Save format remains 4. Native Godot parity remains a separate engine-port task.
 
 This Command-screen item remains roadmap-only; Browser 1050 does not implement it. Save format remains 4.
 
-## Roadmap Addition — Post-Contact Fire-Team Reassembly and Mission Continuation
+## Post-Contact Fire-Team Reassembly and Mission Continuation — Existing Foundation Audited
 
-**Requested September 15, 2026. Status: planned, not implemented.**
+**Audited September 22, 2026: team reassembly, leader succession and objective resumption already exist. Browser 0006 fixes recovery timing and unavailable-member handling; live field acceptance remains pending.**
+
+Current behavior lets leaders advance their authoritative objective while supports reform around them. This patch preserves that behavior, refreshes the recovery timer after renewed/resolved contact, excludes unavailable actors from the readiness check, and defers fallback reachability searches until the three-round timeout. The original requested behavior below remains the field-acceptance checklist; detailed regroup-count UI is not added by this patch.
 
 - Re-establish strong **fire-team cohesion after alien contact ends**. During an active firefight, soldiers may legitimately spread for cover, firing positions, casualty response or other higher-priority tactical needs; once the immediate contact is resolved and no higher-priority danger is holding them apart, autonomous soldiers should stop behaving like independent agents and begin rebuilding their assigned fire team.
 - Use the **fire-team leader as the normal post-contact movement anchor**. Supporting soldiers should route back toward their authoritative formation slots around that leader instead of independently choosing unrelated search, rescue, beacon, cover or exploration destinations while formation recovery is active.

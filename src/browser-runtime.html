@@ -1512,7 +1512,7 @@ function aegisTacticalViewportDimensions(mount,fallback={},layout=AEGIS_INTERFAC
 }
 // AEGIS_MOBILE_INTERFACE_END
 
-const CURRENT_GAME_BUILD="v0.26.09.22.0005_MISSION_LAUNCH_SIMPLIFICATION_PATCH";
+const CURRENT_GAME_BUILD="v0.26.09.22.0006_POST_CONTACT_RECOVERY_RELIABILITY_PATCH";
 const BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH=true;
 const TACTICAL_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH=true;
 const TACTICAL_OBSERVED_BEACON_REINFORCEMENT_CINEMATIC_DURATION_MS=2300;
@@ -9801,7 +9801,7 @@ function tacticalMarkFireTeamPostContactRecoveryInPlace(units=[],teamId=null,rou
   (Array.isArray(units)?units:[]).forEach(unit=>{
     if(unit?.team!=="human"||unit.hp<=0||unit.alive===false||unit.rescued||unit.fireTeamId!==teamId)return;
     const existing=tacticalPostContactRecoveryRoundValue(unit);
-    const nextRound=existing===null?currentRound:Math.min(existing,currentRound);
+    const nextRound=existing===null?currentRound:Math.max(existing,currentRound);
     if(Number(unit.aiPostContactRecoveryRound)!==nextRound){unit.aiPostContactRecoveryRound=nextRound;changed=true;}
   });
   return changed;
@@ -9822,7 +9822,7 @@ function tacticalResetAlienSearchAfterResolvedContact(units=[],round=1){
     unit.aiRescueTargetId=null;unit.aiRescueVisited=[];unit.aiRescueStalls=0;
     // Dedicated team-wide latch survives leader death/reassignment. The legacy split-search
     // marker stays leader-only so support soldiers remain formation followers.
-    const existing=tacticalPostContactRecoveryRoundValue(unit);unit.aiPostContactRecoveryRound=existing===null?currentRound:Math.min(existing,currentRound);
+    const existing=tacticalPostContactRecoveryRoundValue(unit);unit.aiPostContactRecoveryRound=existing===null?currentRound:Math.max(existing,currentRound);
     if(isAuthority){unit.aiSearchRecoveryEpoch=Math.max(0,Number(unit.aiSearchRecoveryEpoch)||0)+1;unit.aiPostContactSplitRound=currentRound;unit.aiPostContactSplitSlot=slot.slot;}
     else{unit.aiPostContactSplitRound=null;unit.aiPostContactSplitSlot=null;}
   });
@@ -9838,8 +9838,8 @@ function tacticalArmFireTeamPostCombatFormationRecovery(units=[],round=1){
   return units;
 }
 function tacticalFireTeamPostContactRecoveryState({unit=null,units=[],covers=[],mission=null,round=null,liveCombatPriority=false,lastKnownContactPriority=false,civilianDutyIds=null}={}){
-  if(!unit||unit.team!=="human"||unit.hp<=0||unit.alive===false)return{active:false,pending:false,needsFormation:false,leaderHold:false,supportReform:false,formationReady:true,leader:null,assignment:{mode:"default",objectiveId:TACTICAL_FIRE_TEAM_OBJECTIVE_DEFAULT}};
-  const living=(Array.isArray(units)?units:[]).filter(candidate=>candidate?.team==="human"&&candidate.hp>0&&candidate.alive!==false&&!candidate.rescued);
+  if(!tacticalHumanCombatActive(unit)||unit.rescued||unit.fearState==="override")return{active:false,pending:false,needsFormation:false,leaderHold:false,supportReform:false,formationReady:true,leader:null,assignment:{mode:"default",objectiveId:TACTICAL_FIRE_TEAM_OBJECTIVE_DEFAULT}};
+  const living=(Array.isArray(units)?units:[]).filter(candidate=>tacticalHumanCombatActive(candidate)&&!candidate.rescued&&candidate.fearState!=="override");
   const leader=tacticalFireTeamLeaderForUnit(unit,living)||unit;
   const teamMembers=living.filter(candidate=>candidate.fireTeamId===unit.fireTeamId);
   const recoveryRounds=teamMembers.map(tacticalPostContactRecoveryRoundValue).filter(value=>value!==null);
@@ -9850,11 +9850,11 @@ function tacticalFireTeamPostContactRecoveryState({unit=null,units=[],covers=[],
   if(!pending||blocked)return{active:false,pending,blocked,teamEscort,needsFormation:false,leaderHold:false,supportReform:false,formationReady:!pending,leader,assignment};
   const pace=tacticalFireTeamFormationPaceState(living,leader,covers,mission,{maxMoveSteps:TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS,leaderReserveTu:leader.reserveTu,memberReserveTuById:Object.fromEntries(teamMembers.map(member=>[member.id,Math.max(0,Number(member.reserveTu)||0)]))});
   const currentRound=round!==null&&round!==undefined&&Number.isFinite(Number(round))?Math.max(1,Number(round)):null;
-  const startedRound=recoveryRounds.length?Math.min(...recoveryRounds):null;
+  const startedRound=recoveryRounds.length?Math.max(...recoveryRounds):null;
   const recoveryAge=currentRound!==null&&startedRound!==null?Math.max(0,currentRound-startedRound):0;
   const reachability=pace.applies?pace.supports.map(state=>{
     const member=teamMembers.find(candidate=>candidate.id===state.id)||null;
-    if(!member||state.inPosition)return{...state,reachable:true};
+    if(!member||state.inPosition||recoveryAge<3)return{...state,reachable:true};
     if(!state.target)return{...state,reachable:false};
     const gridSize=tacticalGridSizeFrom(member,state.target,living,covers,mission),routeLimit=Math.min(TACTICAL_AI_MAX_CANDIDATES,Math.max(16,gridSize*2));
     const route=tacticalAiHazardAwarePath(member,state.target,covers,living.filter(other=>other.id!==member.id),routeLimit,null,mission);
@@ -17313,7 +17313,8 @@ PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.12.1226_TACTICAL_CASUALTY_CARE_PHAS
  PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.22.0002_AUTOMATIC_SAVE_BACKUP_AND_RECOVERY_PATCH",date:"September 22, 2026",title:"Automatic Save Backup & Recovery",summary:"Retain recovery copies, restore missing slots at startup, and optionally back up outside browser storage.",items:["Manual saves, autosaves and completed mission checkpoints retain current/previous recovery generations. Successful database writes no longer delete fallback storage.","Startup chooses the newest valid available slot, including a newer fallback after a failed database write. Deliberate deletions retain revision markers so old backups do not resurrect cleared slots.","Backup Manager can connect a folder on supporting browsers. Manual and autosave collections receive separate current/previous JSON backups; mission debrief checkpoints use the same path.","Available folder backups are checked before new files are written. Invalid backup files are preserved and errors are shown in Backup Manager.","If browser data is cleared, reconnect the backup folder or restore its JSON files. Folder permissions may need renewal; browser-only copies cannot survive all site data being removed.","Startup restores save slots without silently replacing the current campaign. Save format remains 4; no historical saves can be reconstructed if every copy is gone."]});
  PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.22.0003_INCIDENT_VIP_COUNTS_AND_INCOMPLETE_REPORTS_PATCH",date:"September 22, 2026","title":"Incident-Defined VIP Counts & Incomplete Rescue Reports","summary":"VIP populations are fixed when incidents appear; interrupted rescue reports reveal their recorded count on landing.","items":["Squad and transport selection no longer increases the number of VIPs. Existing rescue quota ratios are unchanged.","One quarter of eligible rescue incident IDs receive an interrupted distress report with an unknown count. The population is still recorded immediately.","Landing confirms the count through local trackers, without revealing hostile positions or granting visual contact. Incident Details and Mission Control show the current report.","Saved incidents and travel retain their population and report knowledge. Legacy active battles retain their existing civilians; save format remains 4."]});
  PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.22.0004_MOBILE_MISSION_VIP_LAYOUT_HOTFIX",date:"September 22, 2026",title:"Mobile Mission VIP Briefing Layout Hotfix",summary:"Restores adaptive Mission Control after the VIP report addition.",items:["The VIP report is handled separately from the existing planning sections, preventing fallback to the Standard layout.","Briefing retains the VIP report; Squads and Launch retain their roster, selection, orders and launch callbacks.","Standard layout and tactical missions remain unchanged. Save format remains 4."]});
- PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"September 22, 2026",title:"Mission Launch Simplification",summary:"Mission planning now offers Play Tactical Mission and Classic Lineup View.",items:["Removed Watch AI Team Leader and Simulate Encounter launch choices from Standard and Mobile / Adaptive mission planning.","Both retained choices use the existing launch review, transport and deployment flow.","In-mission AI / Hybrid controls, existing mission continuations and save format 4 are preserved."]});
+ PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.22.0005_MISSION_LAUNCH_SIMPLIFICATION_PATCH",date:"September 22, 2026",title:"Mission Launch Simplification",summary:"Mission planning now offers Play Tactical Mission and Classic Lineup View.",items:["Removed Watch AI Team Leader and Simulate Encounter launch choices from Standard and Mobile / Adaptive mission planning.","Both retained choices use the existing launch review, transport and deployment flow.","In-mission AI / Hybrid controls, existing mission continuations and save format 4 are preserved."]});
+ PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"September 22, 2026",title:"Post-Contact Recovery Reliability",summary:"Tightens existing regroup behavior after confirming that team reassembly and objective resumption are already implemented.",items:["Renewed combat and resolved contact refresh the recovery timer, so fighting time does not consume the three-round unreachable-support grace period.","Downed, unconscious, extracted and panic-override soldiers no longer delay the post-contact formation readiness check.","Reachability searches are deferred until the degraded-recovery timeout can apply.","Existing objective continuation, Beacon forward reform, medical and escort priorities, Hybrid commands and save format 4 remain unchanged."]});
  PATCH_NOTES_HISTORY.sort((left,right)=>String(right.build||"").localeCompare(String(left.build||""),undefined,{numeric:true,sensitivity:"base"}));
  return PATCH_NOTES_HISTORY;},[]);
 function PatchNotesLibraryScreen(){

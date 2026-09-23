@@ -1,3 +1,13 @@
+BUILD: v0.26.09.22.0006_POST_CONTACT_RECOVERY_RELIABILITY_PATCH
+PROJECT AEGIS — POST-CONTACT RECOVERY RELIABILITY
+Save format: 4
+
+- Audited existing reassembly and objective continuation; no duplicate regroup system added.
+- Refreshes recovery timing after renewed/resolved contact.
+- Excludes downed, unconscious, extracted and panic-override soldiers from post-contact formation readiness.
+- Skips fallback path searches before the recovery timeout.
+- Preserves combat, medical, escort, Beacon and Hybrid command priorities.
+
 BUILD: v0.26.09.22.0005_MISSION_LAUNCH_SIMPLIFICATION_PATCH
 PROJECT AEGIS — MISSION LAUNCH SIMPLIFICATION
 Save format: 4

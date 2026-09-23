@@ -77,6 +77,8 @@ function makeContext({ unreachableId = null, inPositionIds = new Set() } = {}) {
   };
   vm.createContext(context);
   for (const name of [
+    'tacticalHumanIsDowned',
+    'tacticalHumanCombatActive',
     'tacticalPostContactRecoveryRoundValue',
     'tacticalMarkFireTeamPostContactRecoveryInPlace',
     'tacticalArmFireTeamPostCombatFormationRecovery',
@@ -156,4 +158,31 @@ test('completion clears dedicated and legacy recovery scratch state without chan
     assert.equal(unit.aiContactSearchTargetX, null);
     assert.equal(unit.aiRescueTargetId, null);
   }
+});
+
+test('renewed contact restarts the grace period instead of counting combat rounds as recovery',()=>{
+ const ctx=makeContext({unreachableId:'right',inPositionIds:new Set(['left'])}),units=fixture();
+ ctx.tacticalArmFireTeamPostCombatFormationRecovery(units,18);
+ ctx.tacticalArmFireTeamPostCombatFormationRecovery(units,25);
+ const early=ctx.tacticalFireTeamPostContactRecoveryState({unit:units[0],units,round:26});
+ assert.equal(early.recoveryAge,1);assert.equal(early.degradedReady,false);
+ assert.equal(ctx.tacticalFireTeamPostContactRecoveryState({unit:units[0],units,round:28}).degradedReady,true);
+});
+test('unavailable teammates do not delay the remaining formation',()=>{
+ for(const flags of [{downed:true},{unconscious:true},{extracted:true},{casualtyExtracted:true},{fearState:'override'}]){
+ const ctx=makeContext({inPositionIds:new Set(['left'])}),units=fixture();
+ ctx.tacticalArmFireTeamPostCombatFormationRecovery(units,18);Object.assign(units[2],flags);
+ const state=ctx.tacticalFireTeamPostContactRecoveryState({unit:units[0],units,round:19});
+ assert.equal(state.formationReady,true,JSON.stringify(flags));
+ assert.equal(ctx.tacticalFireTeamPostContactRecoveryState({unit:units[2],units,round:19}).active,false);
+ }
+});
+test('formation recovery avoids path searches before degraded fallback can apply',()=>{
+ const ctx=makeContext(),units=fixture();let searches=0;
+ ctx.tacticalAiHazardAwarePath=()=>{searches++;return null;};
+ ctx.tacticalArmFireTeamPostCombatFormationRecovery(units,18);
+ ctx.tacticalFireTeamPostContactRecoveryState({unit:units[0],units,round:19});
+ assert.equal(searches,0);
+ ctx.tacticalFireTeamPostContactRecoveryState({unit:units[0],units,round:21});
+ assert.equal(searches,2);
 });
