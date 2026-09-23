@@ -1,7 +1,7 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.09.22.0006_POST_CONTACT_RECOVERY_RELIABILITY_PATCH",
+  "currentBuild": "v0.26.09.22.0007_OPTIONAL_SOLDIER_RECOVERY_AND_NO_ONE_LEFT_BEHIND_PATCH",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.09.22.0006_POST_CONTACT_RECOVERY_RELIABILITY_PATCH",
+  "lastInspectedBuild": "v0.26.09.22.0007_OPTIONAL_SOLDIER_RECOVERY_AND_NO_ONE_LEFT_BEHIND_PATCH",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -61,7 +61,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.09.22.0006_POST_CONTACT_RECOVERY_RELIABILITY_PATCH",
+    "browserBuild": "v0.26.09.22.0007_OPTIONAL_SOLDIER_RECOVERY_AND_NO_ONE_LEFT_BEHIND_PATCH",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [

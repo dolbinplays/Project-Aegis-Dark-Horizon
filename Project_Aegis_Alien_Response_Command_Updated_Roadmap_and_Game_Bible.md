@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.22.0006_POST_CONTACT_RECOVERY_RELIABILITY_PATCH`
+Current browser build: `v0.26.09.22.0007_OPTIONAL_SOLDIER_RECOVERY_AND_NO_ONE_LEFT_BEHIND_PATCH`
 
 Current save format: `4`
 
@@ -69,6 +69,17 @@ Current save format: `4`
 - **Boundary:** adding a completely new visual key to the editor/library makes the renderer capable of building it when referenced, but does not automatically make procedural generation spawn it. New prop categories still need appropriate content/spawn rules before they appear naturally on missions.
 
 **Acceptance:** edit a runtime-integrated prop in the editor, export the game runtime library JS, replace `assets/data/aegis-prop-library.js`, reload, and confirm both Three.js tactical views use the edited component model while Browser 1145 solid/passable navigation and edge placement remain correct. Remove/corrupt one definition and confirm the legacy renderer fallback remains safe. Test installed/PWA reload with the library precached.
+
+## Roadmap Addition — Fence Enclosures with Access Gaps
+
+**Requested September 22, 2026. Status: planned / not yet implemented.**
+
+- Place fence segment props in coordinated runs that enclose recognizable areas such as residential yards and agricultural fields, rather than scattering isolated segments.
+- Align and connect neighboring segments, including corners, to form a coherent boundary suited to the terrain and nearby buildings.
+- Leave a few intentional access gaps so soldiers, civilians and other ground units can enter and leave the enclosed area. Keep gaps wide enough for the existing movement and collision rules.
+- Respect roads, building entrances, Skyranger access and required mission routes. Avoid placing enclosed areas or gaps where terrain, other props or map edges make access impossible.
+- Keep rendered fences and authoritative collision consistent; verify that access gaps are traversable by the actual tactical pathfinder.
+- Acceptance: inspect generated yards and fields across relevant map types and sizes; confirm recognizable enclosures, connected segments, usable entry/exit gaps and stable placement after save/load.
 
 ## Developer Tool Roadmap — Prop Editor + Building Layout Editor
 
@@ -599,6 +610,21 @@ Shared marker state drives 2D, persistent/fallback 3D and perspective/minimap pr
 ## Roadmap Addition — Review VIP Rescue Victory Thresholds
 
 **Planned, not implemented.** Review mandatory rescue quotas, including the reported experience of three-VIP incidents appearing to require all three rescues for victory. Verify displayed counts against the actual mission-specific quota before adjusting balance. Consider a more forgiving threshold while retaining meaningful consequences and partial rescue credit for losses. Decide the final threshold through balance testing; this patch does not change rescue requirements.
+
+## Optional Stabilized Soldier Recovery & No One Left Behind — Implemented in Browser 0007
+
+**Requested and implemented September 22, 2026. Status: automated verification complete; live field acceptance pending.**
+
+Recognition is a repeatable commendation credited to the soldier who completes physical Skyranger extraction. Prior drag helpers and team membership alone do not earn shared credit. Mission/event deduplication prevents replayed awards. Existing automatic aftermath recovery and mandatory objectives remain unchanged.
+
+- A stabilized AEGIS soldier who remains unconscious becomes an **optional recovery objective** that the player can assign to a fire team through the existing team-objective controls.
+- The assigned team can reach the casualty and use the existing dragging and extraction systems to bring the soldier back to a Skyranger. Identify the casualty and show recovery progress through assignment, dragging and confirmed extraction.
+- Preserve current medical rules: stabilization does not revive the casualty. Use authoritative casualty status to determine eligibility; update or end the recovery objective if the soldier dies, regains consciousness or is extracted.
+- Keep this objective optional. Leaving it incomplete must not itself add a new mandatory victory requirement or change existing mission rescue quotas. Existing casualty aftermath rules still apply.
+- Soldiers who successfully recover a stabilized unconscious teammate to a Skyranger can earn the **No One Left Behind** achievement. Award recognition on confirmed recovery/extraction, rather than assignment or starting a drag. Track actual rescuers so merely belonging to the assigned team does not grant unsupported credit; the extracting soldier receives credit once per casualty per mission, with a cumulative count across recoveries.
+- Reuse existing casualty, team-assignment, dragging and Skyranger extraction authority. Preserve urgent stabilization, combat response and direct player orders, and prevent conflicting team assignments to the same casualty.
+- Persist the assigned objective, casualty status and recovery credit across save/load and control-mode handoffs. Replayed extraction events or repeated debrief processing must not duplicate the achievement.
+- Acceptance: assign an eligible casualty to a team, drag and extract them, verify optional-objective completion and rescuer recognition, and repeat across save/load, interrupted dragging, rescuer handoff and changed casualty status. Confirm stabilization alone awards no recovery achievement.
 
 ## Successful Stabilization Marker and Repeatable Medkit Commendation — Implemented
 

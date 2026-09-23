@@ -1,3 +1,13 @@
+BUILD: v0.26.09.22.0007_OPTIONAL_SOLDIER_RECOVERY_AND_NO_ONE_LEFT_BEHIND_PATCH
+PROJECT AEGIS — OPTIONAL SOLDIER RECOVERY & NO ONE LEFT BEHIND
+Save format: 4
+
+- Assign stabilized unconscious soldiers as optional recovery objectives through the existing team objective board.
+- Assigned responders drag casualties to a Skyranger using existing recovery authority; objectives clear when extracted or no longer eligible.
+- Confirmed extraction earns the actual rescuer a repeatable No One Left Behind commendation and mission-report attribution.
+- Persist assignment and event records through tactical saves/playback; deduplicate campaign credit.
+- Medical rules and victory quotas remain unchanged. Live field acceptance pending.
+
 BUILD: v0.26.09.22.0006_POST_CONTACT_RECOVERY_RELIABILITY_PATCH
 PROJECT AEGIS — POST-CONTACT RECOVERY RELIABILITY
 Save format: 4
