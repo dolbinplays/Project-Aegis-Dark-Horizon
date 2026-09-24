@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.24.0003_VIP_ONLY_BRIEFING_COUNTS_PATCH`
+Current browser build: `v0.26.09.24.0004_SHARED_3D_COLOR_AND_BRIGHTNESS_PATCH`
 
 Current save format: `4`
 
@@ -21,12 +21,12 @@ The runtime stores VIP and ordinary civilian counts separately while preserving 
 
 ## Roadmap Addition — Shared 3D Color and Brightness Controls
 
-Requested September 24, 2026. Status: planned, not implemented.
+Requested September 24, 2026. Status: implemented in v0.26.09.24.0004_SHARED_3D_COLOR_AND_BRIGHTNESS_PATCH.
 
 - Have the existing 3D Iso Color and Night Brightness sliders also control color and brightness in FPV and TPV, using the same selected values across all three views.
 - Switching camera views should retain the selected settings. Keep existing reset and preference-persistence behavior consistent across views, and update labels/help text to reflect their shared scope.
 - This request supersedes the earlier Iso-only restrictions for these controls. Adjust presentation without changing tactical visibility, fog, line of sight, combat rules or AI.
-- Verify live slider changes and view switching in day/night scenes, including saved preference reloads.
+- Automated checks cover color/brightness changes, camera switches, night/twilight/day transitions, neutral resets and saved preference reloads. Live visual playtesting remains pending.
 
 ## Objective-Based Team Distance Sorting — Implemented September 24, 2026
 

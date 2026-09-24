@@ -1,3 +1,10 @@
+BUILD: v0.26.09.24.0004_SHARED_3D_COLOR_AND_BRIGHTNESS_PATCH
+September 24, 2026 — Shared 3D Color and Brightness
+- Existing color and night/twilight brightness sliders now affect Iso, FPV, TPV and incoming-fire cameras.
+- Camera switches retain values; existing saved preferences and resets are preserved.
+- 100% retains each view's normal lighting. Daylight brightness and tactical visibility rules are unchanged.
+- Updated labels/help; save format remains 4.
+
 BUILD: v0.26.09.24.0003_VIP_ONLY_BRIEFING_COUNTS_PATCH
 September 24, 2026 - VIP-Only Briefing Counts
 Save format: 4
