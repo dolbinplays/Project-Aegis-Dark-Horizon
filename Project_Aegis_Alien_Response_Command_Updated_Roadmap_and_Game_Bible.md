@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.24.0004_SHARED_3D_COLOR_AND_BRIGHTNESS_PATCH`
+Current browser build: `v0.26.09.24.0005_NIGHT_SHOT_TARGET_VISIBILITY_PATCH`
 
 Current save format: `4`
 
@@ -18,6 +18,28 @@ Requested September 24, 2026. Status: implemented in Browser 0003.
 - Validate mixed VIP/civilian, VIP-only, civilian-only and zero-VIP missions. This counting correction does not itself authorize changing rescue quotas or rewards.
 
 The runtime stores VIP and ordinary civilian counts separately while preserving total spawned population. Legacy active battles use explicit VIP flags (with mission-type fallback for unmarked legacy units); normalized counts remain stable after casualties and extractions. Existing rescue thresholds and rewards are unchanged.
+
+## Roadmap Addition — Night Shot and Rendered Target Consistency
+
+Requested September 24, 2026. Status: implemented in v0.26.09.24.0005_NIGHT_SHOT_TARGET_VISIBILITY_PATCH.
+
+Implementation: reproduced the dropped shotPresentationVisible flag in the actual playback-to-map conversion and visibility-only renderer invalidation failures. Fixed both, included flashlight state in visibility invalidation, aligned target markers and legacy rendering, and scoped last-known marker suppression to presentation so AI contact memory is preserved. Four new behavioral tests pass; existing visibility and sequential playback checks pass. Live night mission visual verification remains pending. The investigation notes below record the pre-patch findings.
+
+Reported behavior: soldiers sometimes fire at a last-known-location circle or an apparently empty space during night battles. A last-known contact is information for searching, not permission to shoot. A legitimate current shot must show the actual alien at its shot-time position; an unobserved alien must not be targeted.
+
+Initial source review (shared 3D controls build 0004):
+- Firing already routes through tacticalShotCommitVisibilityState, which checks shooter/target state, level, weapon range and hasLineOfSight. The latter includes facing, smoke, obstructions and tacticalVisionRangeForCell: night vision, directional flashlight coverage and local illumination. This is not simply a missing night-range check.
+- tacticalVerifiedHumanShotRecord and tacticalShotPresentationFrame already record verified shots and request shot-time target rendering through shotPresentationVisible. tacticalUnitVisibleOnMap honors that flag during AI map playback.
+- Rendering is not governed by a single rule: tacticalVisibleTargetMarkers separately requires current visible cells, while the persistent unit renderer accepts shotPresentationVisible. The legacy renderer's outer visible-cell filter does not include that exception. These paths can disagree about an otherwise valid shot-time target.
+- The persistent renderer's unitsKey omits shotPresentationVisible, and tacticalThreePersistentInvalidationPlan does not make a visibility-only change invalidate units. Other changes, including shot-pose keys, can trigger updates, so this is a suspected stale-presentation path rather than proof of the reported incident's cause.
+- Current Build Health coverage verifies a simple clear/wall/level example and a synthetic presentation frame. It does not reproduce the full night lighting, contact-memory, sequential playback and renderer lifecycle involved in this report. No live reproduction has yet established the exact trigger.
+
+Patch requirements:
+- Reproduce a night encounter with previously observed aliens, flashlight turns, movement, local-light changes and loss/reacquisition of contact. Trace the shooter, target, visibility decision, recorded shot and rendered frame together.
+- Use the same authoritative shot-time state for target legality, alien model visibility and live-target markers across 2D, 3D Iso, FPV and TPV. Preserve visibility through the shot and impact, then return to normal contact-memory rules.
+- Reject shots when the shooter lacks valid current sight; do not bypass darkness, smoke, walls or fog by revealing an otherwise illegal target. Last-known markers remain search-only information.
+- Correct visibility/shot-presentation invalidation and frame-state propagation where necessary. Prevent live and last-known markers from contradicting each other during a verified shot.
+- Add behavioral regression coverage for hidden and last-known targets, flashlight/lighting changes without movement, misses and lethal hits, reaction fire, and sequential playback. Keep save format and medical/rescue rules unchanged.
 
 ## Roadmap Addition — Shared 3D Color and Brightness Controls
 

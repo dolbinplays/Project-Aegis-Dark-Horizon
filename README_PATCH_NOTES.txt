@@ -1,3 +1,10 @@
+BUILD: v0.26.09.24.0005_NIGHT_SHOT_TARGET_VISIBILITY_PATCH
+September 24, 2026 — Night Shot Target Visibility
+- Preserves verified shot target visibility through playback-to-map conversion and clears it on subsequent frames.
+- Visibility and flashlight changes refresh rendered aliens. Live target markers and legacy 3D rendering honor shot presentation.
+- Temporarily hides conflicting last-known markers during shot playback without changing AI contact memory.
+- Night sight and shot legality remain unchanged; save format 4.
+
 BUILD: v0.26.09.24.0004_SHARED_3D_COLOR_AND_BRIGHTNESS_PATCH
 September 24, 2026 — Shared 3D Color and Brightness
 - Existing color and night/twilight brightness sliders now affect Iso, FPV, TPV and incoming-fire cameras.
