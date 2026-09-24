@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.23.0001_SYNCHRONIZED_ESCORT_MOVEMENT_PATCH`
+Current browser build: `v0.26.09.23.0002_CIVILIAN_VIP_EMERGENCY_AID_PATCH`
 
 Current save format: `4`
 
@@ -402,7 +402,7 @@ Browser 2051 now supplies the civilian shelter and friendly rescue-access layer 
 
 ## Roadmap Addition — Locked-Shelter Callouts and Civilian/VIP Casualty Triage
 
-**Requested September 15, 2026. Call Out / shelter-access foundation implemented in Browser 2051; civilian/VIP casualty assessment remains roadmap / not yet implemented.**
+**Requested September 15, 2026. Call Out / shelter-access foundation implemented in Browser 2051; civilian/VIP emergency aid implemented in Browser 2026-09-23 0002.**
 
 ### Adjacent locked-door callout / rescue access — foundation implemented in Browser 2051
 
@@ -414,7 +414,11 @@ Browser 2051 now supplies the civilian shelter and friendly rescue-access layer 
 - The interaction creates a tactical tradeoff: calling out is slower and potentially noisy but preserves the door and avoids an unnecessary breach. If sound/noise awareness is active in the current tactical rules, the callout should use that same authority rather than inventing a separate alert system.
 - AI/Hybrid rescue logic may use the same callout when it reaches a locked civilian/VIP shelter, but it must remain bounded and may fall back to alternate entry or breach after reasonable failed attempts so rescue behavior cannot deadlock.
 
-### Civilian/VIP casualty assessment and emergency aid
+### Civilian/VIP casualty assessment and emergency aid — implemented foundation
+
+Browser 2026-09-23 0002 adds a 5–15% survival chance for noncatastrophic fatal alien gunfire on unarmored civilians/VIPs, scaled by overkill severity (20–30% with actual equipped armor). Survivors require an 8-TU assessment, then existing stabilization costs and physical drag extraction. AI uses shared responder ownership. Bleeding, medical state, playback and reports are integrated; no instant revival or rescue credit from stabilization. Explosive/fire lethality remains unchanged. See CIVILIAN_EMERGENCY_AID_VALIDATION.md.
+
+Original design intent:
 
 - A civilian or VIP who is hit should not always resolve instantly to a binary living/dead state when the wound could plausibly be survivable. Add an **incapacitated / condition unknown** path for some severe hits so an apparently fallen noncombatant may still be alive for a short rescue window.
 - **Unarmored civilians/VIPs should have only a slim chance of surviving a potentially fatal hit**, while any actual body armor/protection, lower injury severity and other already-modeled protective factors can improve that chance. Clearly unsurvivable/overkill outcomes should still resolve directly to dead rather than generating false hope. Exact probabilities are a balance item for implementation; the roadmap intent is low but non-zero survival for an unarmored casualty.

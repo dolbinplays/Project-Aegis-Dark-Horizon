@@ -1,3 +1,13 @@
+BUILD: v0.26.09.23.0002_CIVILIAN_VIP_EMERGENCY_AID_PATCH
+September 23, 2026 - Civilian & VIP Emergency Aid
+Save format: 4
+
+- Some noncatastrophic fatal alien shots leave a civilian/VIP unconscious and bleeding.
+- Assess for 8 TU without using a charge; stabilize using existing Field Medkit costs.
+- Drag unconscious survivors to a Skyranger; stabilization alone does not grant rescue credit.
+- AI uses shared medical ownership; unconscious civilians cannot walk, panic-run, answer callouts or board themselves.
+- Debriefs distinguish stabilized, extracted and lost casualties.
+
 BUILD: v0.26.09.23.0001_SYNCHRONIZED_ESCORT_MOVEMENT_PATCH
 September 23, 2026 - Synchronized Escort Movement
 Save format: 4
