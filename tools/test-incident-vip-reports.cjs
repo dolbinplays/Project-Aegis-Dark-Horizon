@@ -73,7 +73,7 @@ test('unknown reports persist through campaign migration and outbound travel',()
 test('battlefields place the recorded population regardless of transport count',()=>{
  const game=context.makeNewGameData({openingIncidentSeed:12345});
  for(const count of [2,4,8])for(const transports of [1,2]){
- const mission={...game.missions[0],id:'deployment-'+count,kind:'Alien Abduction Site',threat:2,incidentVipCount:count,transportCount:transports};
+ const mission={...game.missions[0],id:'deployment-'+count,kind:'Alien Abduction Site',threat:2,incidentVipCount:count,incidentCivilianCount:0,transportCount:transports};
  const deployment=context.tacticalDeployment({squad:game.soldiers.slice(0,transports*4),mission});
  assert.equal(deployment.civilianPositions.length,count);assert.equal(new Set(deployment.civilianPositions.map(p=>p.x+','+p.y)).size,count);
  assert.equal(context.tacticalCivilianObjectiveForMission(mission,count).required,Math.ceil(count*2/3));
@@ -89,4 +89,32 @@ test('AI Command first-round handoff preserves the incident population', {timeou
  assert.equal(units.filter(unit=>unit.team==='civilian').length,4);
  const data=context.migrateCampaignData({...game,skyrangerTravels:[],missions:[mission],activeMission:{...mission,manual:true},activeTacticalState:{missionId:mission.id,liveState:{units}}});
  assert.equal(data.activeMission.incidentVipCount,4);assert.equal(data.activeMission.incidentVipCountKnown,true);
+});
+
+test('ordinary civilians keep their population but are excluded from the briefing VIP count',()=>{
+ const m=context.normalizeIncidentVipReport({id:'optional',kind:'UFO Crash Site',threat:2,incidentVipCount:5,incidentVipCountKnown:true});
+ assert.equal(m.incidentVipCount,0);assert.equal(m.incidentCivilianCount,5);assert.equal(context.incidentNoncombatantCount(m),5);assert.match(context.incidentVipBriefing(m),/VIP count: 0/);
+ assert.equal(context.tacticalCivilianPositions(m,[]).length,5);
+ assert.equal(context.tacticalCivilianObjectiveForMission(m,5).required,0);
+});
+test('mixed saved units count actual VIP flags including casualties and rescued VIPs',()=>{
+ const units=[{team:'civilian',vipTracker:true,hp:0},{team:'civilian',isVip:true,rescued:true},{team:'civilian',vipTracker:false},{team:'civilian',vipTracker:false}];
+ const m=context.normalizeIncidentVipReport({id:'mixed',kind:'Alien Abduction Site',incidentVipCount:4},units);
+ assert.equal(m.incidentVipCount,2);assert.equal(m.incidentCivilianCount,2);assert.equal(context.incidentNoncombatantCount(m),4);
+ assert.match(context.incidentVipBriefing(m),/VIP count: 2/);
+ const again=context.normalizeIncidentVipReport(JSON.parse(JSON.stringify(m)),units.slice(2));assert.equal(again.incidentVipCount,2);
+ const tracked=context.tacticalAssignVipTrackers(units,m);assert.deepEqual([...tracked.map(u=>u.vipTracker)],[true,true,false,false]);
+});
+test('mixed counts survive mission list and aircraft travel copies without leaking unknown reports',()=>{
+ const m={id:'mixed-trip',kind:'Alien Abduction Site',incidentRescueCountVersion:2,incidentVipCount:2,incidentCivilianCount:3,incidentVipCountKnown:false};
+ const data=context.normalizeCampaignIncidentVipReports({missions:[m],activeMission:m,skyrangerTravels:[{mission:m}],skyrangerTravel:{mission:m}});
+ for(const v of [data.missions[0],data.activeMission,data.skyrangerTravel.mission,data.skyrangerTravels[0].mission]){assert.equal(context.incidentNoncombatantCount(v),5);assert.equal(v.incidentVipCount,2);assert.match(context.incidentVipBriefing(v),/VIP count: unknown/);}
+ const landed=context.confirmIncidentVipTrackers(m);assert.match(landed.message,/2 VIPs confirmed/);assert.equal(landed.mission.incidentCivilianCount,3);
+});
+test('new mixed rosters assign only the recorded VIP portion, with explicit civilian identity preserved',()=>{
+ const m={kind:'Alien Abduction Site',incidentRescueCountVersion:2,incidentVipCount:2,incidentCivilianCount:3};
+ const units=Array.from({length:5},(_,i)=>({id:'v'+i,team:'civilian'}));
+ assert.deepEqual([...context.tacticalAssignVipTrackers(units,m).map(u=>u.vipTracker)],[true,true,false,false,false]);
+ assert.deepEqual([...context.tacticalAssignVipTrackers([{team:'civilian',vipTracker:false},{team:'civilian'},{team:'civilian'},{team:'civilian'}],m).map(u=>u.vipTracker)],[false,true,true,false]);
+ assert.equal(context.incidentVipCount({kind:'Alien Base',alienBaseId:'a'}),0);
 });

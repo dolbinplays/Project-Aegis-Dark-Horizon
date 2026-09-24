@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.24.0002_ADAPTIVE_BASE_CONFIRMATION_HOTFIX`
+Current browser build: `v0.26.09.24.0003_VIP_ONLY_BRIEFING_COUNTS_PATCH`
 
 Current save format: `4`
 
@@ -8,14 +8,16 @@ Current save format: `4`
 
 The adaptive Geoscape base drawer forces a single-column form at all viewport widths. This prevents desktop grid breakpoints from pushing Confirm Site outside the clipped drawer. Site text and button labels wrap; existing construction validation and vertical scrolling remain in place.
 
-## Roadmap Addition — VIP-Only Mission Briefing Counts
+## VIP-Only Mission Briefing Counts — Implemented September 24, 2026
 
-Requested September 24, 2026. Status: planned, not implemented.
+Requested September 24, 2026. Status: implemented in Browser 0003.
 
-- Reported issue: mission briefings appear to include ordinary civilians in the displayed VIP count.
+- Fixed issue: mission briefings appear to include ordinary civilians in the displayed VIP count.
 - The VIP count in mission information and briefings must reflect only actual VIPs in that mission. Exclude ordinary civilians; if civilian numbers are shown, label them separately.
 - Audit the underlying VIP/civilian classification and count calculation, including standard and mobile/adaptive planning layouts, confirmed tracker counts and saved missions. Preserve unknown/incomplete-report behavior without exposing unrevealed counts.
 - Validate mixed VIP/civilian, VIP-only, civilian-only and zero-VIP missions. This counting correction does not itself authorize changing rescue quotas or rewards.
+
+The runtime stores VIP and ordinary civilian counts separately while preserving total spawned population. Legacy active battles use explicit VIP flags (with mission-type fallback for unmarked legacy units); normalized counts remain stable after casualties and extractions. Existing rescue thresholds and rewards are unchanged.
 
 ## Roadmap Addition — Shared 3D Color and Brightness Controls
 

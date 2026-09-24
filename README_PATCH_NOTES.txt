@@ -1,3 +1,11 @@
+BUILD: v0.26.09.24.0003_VIP_ONLY_BRIEFING_COUNTS_PATCH
+September 24, 2026 - VIP-Only Briefing Counts
+Save format: 4
+
+- Separate actual VIP count from ordinary civilian population in mission information.
+- Preserve population, identity flags, unknown reports, rescue quotas and rewards.
+- Migrate legacy mission/travel counts and use saved unit identities for mixed active battles.
+
 BUILD: v0.26.09.24.0002_ADAPTIVE_BASE_CONFIRMATION_HOTFIX
 September 24, 2026 - Adaptive Base Placement Confirmation
 Save format: 4
