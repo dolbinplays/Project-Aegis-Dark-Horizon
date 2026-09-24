@@ -1,8 +1,30 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.24.0001_OBJECTIVE_TEAM_DISTANCE_SORT_PATCH`
+Current browser build: `v0.26.09.24.0002_ADAPTIVE_BASE_CONFIRMATION_HOTFIX`
 
 Current save format: `4`
+
+## Adaptive Base Placement Confirmation — Fixed September 24, 2026
+
+The adaptive Geoscape base drawer forces a single-column form at all viewport widths. This prevents desktop grid breakpoints from pushing Confirm Site outside the clipped drawer. Site text and button labels wrap; existing construction validation and vertical scrolling remain in place.
+
+## Roadmap Addition — VIP-Only Mission Briefing Counts
+
+Requested September 24, 2026. Status: planned, not implemented.
+
+- Reported issue: mission briefings appear to include ordinary civilians in the displayed VIP count.
+- The VIP count in mission information and briefings must reflect only actual VIPs in that mission. Exclude ordinary civilians; if civilian numbers are shown, label them separately.
+- Audit the underlying VIP/civilian classification and count calculation, including standard and mobile/adaptive planning layouts, confirmed tracker counts and saved missions. Preserve unknown/incomplete-report behavior without exposing unrevealed counts.
+- Validate mixed VIP/civilian, VIP-only, civilian-only and zero-VIP missions. This counting correction does not itself authorize changing rescue quotas or rewards.
+
+## Roadmap Addition — Shared 3D Color and Brightness Controls
+
+Requested September 24, 2026. Status: planned, not implemented.
+
+- Have the existing 3D Iso Color and Night Brightness sliders also control color and brightness in FPV and TPV, using the same selected values across all three views.
+- Switching camera views should retain the selected settings. Keep existing reset and preference-persistence behavior consistent across views, and update labels/help text to reflect their shared scope.
+- This request supersedes the earlier Iso-only restrictions for these controls. Adjust presentation without changing tactical visibility, fog, line of sight, combat rules or AI.
+- Verify live slider changes and view switching in day/night scenes, including saved preference reloads.
 
 ## Objective-Based Team Distance Sorting — Implemented September 24, 2026
 

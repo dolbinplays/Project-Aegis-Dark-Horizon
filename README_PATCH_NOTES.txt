@@ -1,3 +1,10 @@
+BUILD: v0.26.09.24.0002_ADAPTIVE_BASE_CONFIRMATION_HOTFIX
+September 24, 2026 - Adaptive Base Placement Confirmation
+Save format: 4
+
+- Keep the adaptive base-placement drawer single-column at every viewport width so Confirm Site remains reachable.
+- Wrap site details and controls inside the drawer; retain vertical scrolling and existing construction checks.
+
 BUILD: v0.26.09.24.0001_OBJECTIVE_TEAM_DISTANCE_SORT_PATCH
 September 24, 2026 - Objective-Based Team Distance Sorting
 Save format: 4
