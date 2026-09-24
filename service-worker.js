@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.23.0002_CIVILIAN_VIP_EMERGENCY_AID_PATCH";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.23.0002_CIVILIAN_VIP_EMERGENCY_AID_PATCH";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v21-civilian-medical";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.24.0001_OBJECTIVE_TEAM_DISTANCE_SORT_PATCH";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.24.0001_OBJECTIVE_TEAM_DISTANCE_SORT_PATCH";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v22-objective-sort";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;

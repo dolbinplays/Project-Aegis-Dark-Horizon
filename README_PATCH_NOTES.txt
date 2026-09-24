@@ -1,3 +1,12 @@
+BUILD: v0.26.09.24.0001_OBJECTIVE_TEAM_DISTANCE_SORT_PATCH
+September 24, 2026 - Objective-Based Team Distance Sorting
+Save format: 4
+
+- Click an objective card to sort teams from closest to farthest and show direct hex distances.
+- Leader position anchors distance, with an active-member fallback; equal distances retain original order.
+- Reset team order restores the original list. Assignment choices remain unchanged.
+- Restores canonical medical-patch source/tests omitted from the prior commit; recovered source hash matches that release's packaged runtime.
+
 BUILD: v0.26.09.23.0002_CIVILIAN_VIP_EMERGENCY_AID_PATCH
 September 23, 2026 - Civilian & VIP Emergency Aid
 Save format: 4

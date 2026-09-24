@@ -1,12 +1,12 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.23.0002_CIVILIAN_VIP_EMERGENCY_AID_PATCH`
+Current browser build: `v0.26.09.24.0001_OBJECTIVE_TEAM_DISTANCE_SORT_PATCH`
 
 Current save format: `4`
 
-## Roadmap Addition — Objective-Based Team Distance Sorting
+## Objective-Based Team Distance Sorting — Implemented September 24, 2026
 
-Requested September 23, 2026. Status: planned. Clicking an objective at the top of the objective assignment screen sorts the team list vertically from closest to farthest from that objective. Preserve assignment controls and clearly show the selected sorting objective.
+Requested September 23, 2026. Implemented: selecting an objective card sorts teams nearest-first by direct hex distance from the leader (active-member fallback), displays distances and highlights the selected objective. Equal-distance teams retain original order; missing positions sort last. Reset and reopening restore original order. Assignment controls, assist selections and VIP Priority Lock retain their values.
 
 ## Synchronized Escort Movement — Implemented September 23, 2026
 
