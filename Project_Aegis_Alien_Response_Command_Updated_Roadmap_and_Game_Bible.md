@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.25.0002_VIP_ESCORT_OBSTACLE_ROUTING_HOTFIX`
+Current browser build: `v0.26.09.25.0003_UFO_DISEMBARKATION_SAFETY_PATCH`
 
 Current save format: `4`
 
@@ -5117,6 +5117,8 @@ Implemented alien-pathing regression follow-up (Browser 0845, 2026-08-24): **Ali
 - The flyover remains a presentation and knowledge-gating upgrade. The UFO-to-beacon handoff below intentionally consolidates reinforcement-source ownership, but does not otherwise change alien counts, fog authority, TU, movement, LOS, damage, civilian/VIP behavior, fire-team formations, or unrelated mission objectives.
 
 ### Approved unified UFO-delivery-to-Field-Beacon reinforcement lifecycle
+
+**Browser September 25 / 0003 disembarkation safety:** arrival cells now come from a bounded search connected to the transport ramps, checking all live movement blockers and occupied cells. Unique ramp/perimeter cells are committed only when the entire wave fits; otherwise the existing next-round retry applies. Sealed enclosures cannot produce arrivals on the far side of a wall. Fifteen focused arrival/landing/handoff tests pass. Flight approach and animated departure remain pending.
 
 **Browser September 25 / 0001 handoff slice:** newly landed reinforcement UFOs now receive version-2 records. Arrival during R remains through complete round R+1; the shared Manual/AI reinforcement phase in R+2 atomically removes only that craft's covers and plants one beacon at its reserved hull anchor. Pending transfers block victory and repeated arrivals. Save/load preserves the deadline; repeated handoff processing does not duplicate or restore a destroyed beacon. Blocked anchors retry. Ordinary beacon LOS and knowledge rules apply. Legacy/version-1 arrivals remain unchanged. Initial/replacement beacon routing, exact geometric-center reservation, observed flight approach and animated takeoff remain queued. Current departure is a state transition, not the final cinematic.
 

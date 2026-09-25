@@ -1,3 +1,11 @@
+BUILD: v0.26.09.25.0003_UFO_DISEMBARKATION_SAFETY_PATCH
+UFO DISEMBARKATION SAFETY
+Save format: 4
+
+- Incoming UFO waves use unique, obstacle-free cells connected to the ramps.
+- Blocked landing areas retry rather than spawning across enclosing walls.
+- Existing timing, visibility and beacon handoff rules are preserved. Flight animations remain pending.
+
 BUILD: v0.26.09.25.0002_VIP_ESCORT_OBSTACLE_ROUTING_HOTFIX
 VIP ESCORT OBSTACLE ROUTING HOTFIX
 Save format: 4
