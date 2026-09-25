@@ -1,3 +1,10 @@
+BUILD: v0.26.09.25.0001_UFO_BEACON_HANDOFF_PATCH
+September 25, 2026 — UFO-to-Beacon Handoff
+- New version-2 UFO delivery records remain through one complete subsequent tactical round, then transfer to one beacon.
+- Shared Manual/AI transition preserves wave counts, blocks premature victory and duplicate arrivals, and survives save/load.
+- Hidden planting does not reveal the beacon or grant research knowledge. Occupied anchors delay handoff safely.
+- Flight animation and initial/replacement beacon routing remain follow-up work; legacy deliveries retain previous behavior. Save format 4.
+
 BUILD: v0.26.09.24.0010_UFO_DELIVERY_LANDING_FOUNDATION_PATCH
 September 24, 2026 — UFO Delivery Landing Foundation
 - Full UFO hull/ramp footprints now reject all hard-cover overlaps.

@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.24.0010_UFO_DELIVERY_LANDING_FOUNDATION_PATCH`
+Current browser build: `v0.26.09.25.0001_UFO_BEACON_HANDOFF_PATCH`
 
 Current save format: `4`
 
@@ -5113,6 +5113,9 @@ Implemented alien-pathing regression follow-up (Browser 0845, 2026-08-24): **Ali
 - The flyover remains a presentation and knowledge-gating upgrade. The UFO-to-beacon handoff below intentionally consolidates reinforcement-source ownership, but does not otherwise change alien counts, fog authority, TU, movement, LOS, damage, civilian/VIP behavior, fire-team formations, or unrelated mission objectives.
 
 ### Approved unified UFO-delivery-to-Field-Beacon reinforcement lifecycle
+
+**Browser September 25 / 0001 handoff slice:** newly landed reinforcement UFOs now receive version-2 records. Arrival during R remains through complete round R+1; the shared Manual/AI reinforcement phase in R+2 atomically removes only that craft's covers and plants one beacon at its reserved hull anchor. Pending transfers block victory and repeated arrivals. Save/load preserves the deadline; repeated handoff processing does not duplicate or restore a destroyed beacon. Blocked anchors retry. Ordinary beacon LOS and knowledge rules apply. Legacy/version-1 arrivals remain unchanged. Initial/replacement beacon routing, exact geometric-center reservation, observed flight approach and animated takeoff remain queued. Current departure is a state transition, not the final cinematic.
+
 
 **Browser 0010 foundation (September 24, 2026):** existing dropship arrivals now reject hard props anywhere in the hull/ramp footprint and persist a delivery landing record (source/wave identity, landing round, detached footprint arrays, delivered unit IDs and reserved hull anchor nearest the footprint center). Legacy craft are not retrofitted. This is preparatory work only: initial/replacement beacons retain existing behavior. Observation-gated approach, one-full-round residency, animated departure, exact center reservation and atomic beacon/source handoff remain unimplemented. The full lifecycle below is still queued.
 
