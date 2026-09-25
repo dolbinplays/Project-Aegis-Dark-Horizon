@@ -1517,7 +1517,7 @@ function aegisTacticalViewportDimensions(mount,fallback={},layout=AEGIS_INTERFAC
 }
 // AEGIS_MOBILE_INTERFACE_END
 
-const CURRENT_GAME_BUILD="v0.26.09.25.0006_UFO_SOURCE_ISOLATION_PATCH";
+const CURRENT_GAME_BUILD="v0.26.09.25.0007_UFO_SNAPSHOT_ISOLATION_PATCH";
 const BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH=true;
 const TACTICAL_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH=true;
 const TACTICAL_OBSERVED_BEACON_REINFORCEMENT_CINEMATIC_DURATION_MS=2300;
@@ -2867,7 +2867,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
   let beaconBreachImpossible=false;
   let aiRescueDustOff=false;
   let aiRescueDustOffProgress=null;
-  const currentFrameBase = () => ({ gridSize: battlefieldGridSize, covers:tacticalAiFrameCoverSnapshot(covers), beaconPresentationSnapshot:tacticalBeaconActiveFramePresentationSnapshot(covers), explored: Array.from(exploredCells), alienHuntMode:lastAlienHuntMode, alienReinforcement: { ...alienReinforcementState }, alienDropship: alienReinforcementState.dropship ? { ...alienReinforcementState.dropship } : null });
+  const currentFrameBase = () => ({ gridSize: battlefieldGridSize, covers:tacticalAiFrameCoverSnapshot(covers), beaconPresentationSnapshot:tacticalBeaconActiveFramePresentationSnapshot(covers), explored: Array.from(exploredCells), alienHuntMode:lastAlienHuntMode, alienReinforcement: { ...alienReinforcementState, dropship:tacticalAlienDropshipSnapshot(alienReinforcementState.dropship) }, alienDropship:tacticalAlienDropshipSnapshot(alienReinforcementState.dropship) });
   const frames = [{ ...currentFrameBase(), round: initialRound, label: continuing ? `AI inherited round ${initialRound}` : "Contact confirmed", shots: [], soldiers: snapshotUnits(humans), aliens: snapshotUnits(aliens), civilians: snapshotUnits(civilians) }];
   const aiTurnAudits = [];
   let round = 0;
@@ -9435,7 +9435,7 @@ function tacticalAlienReinforcementState(mission = null, units = [], previous = 
     arrivalRound: tacticalOptionalRound(previous?.arrivalRound), callRound: tacticalOptionalRound(previous?.callRound), callReason: previous?.callReason || null,
     commanderDeathRound: tacticalOptionalRound(previous?.commanderDeathRound), missedCheckinDelay: tacticalOptionalRound(previous?.missedCheckinDelay), missedCheckinRound: tacticalOptionalRound(previous?.missedCheckinRound),
     rallyX: rally?.x ?? null, rallyY: rally?.y ?? null, rallySource: previous?.rallySource || null,
-    dropship: previous?.dropship ? { ...previous.dropship, ...(previous.dropship.deliveryLanding?{deliveryLanding:tacticalSerializableClone(previous.dropship.deliveryLanding)}:{}) } : null, missionId: mission?.id || previous?.missionId || null,
+    dropship: tacticalAlienDropshipSnapshot(previous?.dropship), missionId: mission?.id || previous?.missionId || null,
     waveCount: priorWaveCount, callEligibleRound: tacticalOptionalRound(previous?.callEligibleRound), lastArrivalRound: tacticalOptionalRound(previous?.lastArrivalRound), lastArrivalReason: previous?.lastArrivalReason || null,
     arrivalUnitIds, arrivalCommitPending,
     arrivalTotalCount: Math.max(0, Math.floor(Number(previous?.arrivalTotalCount) || 0)),
@@ -9709,6 +9709,9 @@ function tacticalAlienReinforcementArrival({ state = null, units = [], covers = 
   const nextState = repeatWaves ? { ...arrivedState, commanderId: reinforcements[0]?.id || null, contactRounds: 0, alienCasualties: 0, cycleAlienIds: reinforcements.map((unit) => unit.id), called: false, arrived: false, arrivalRound: null, callRound: null, callReason: null, commanderDeathRound: null, missedCheckinDelay: null, missedCheckinRound: null, callEligibleRound: Number(round) + tacticalAlienVipWaveCooldown(mission, waveNumber), legacyOneWaveState: false } : { ...arrivedState, alienCasualties: 0, cycleAlienIds: reinforcements.map((unit) => unit.id), called: true, arrived: true, legacyOneWaveState: false };
   const retainedUnits = units.filter((unit) => !(unit.team === "alien" && unit.isReinforcement && unit.hp <= 0 && Number(unit.reinforcementWave || 0) < waveNumber - 1));
   return { landed: true, deploymentKind: "dropship", waveNumber, state: nextState, units: [...retainedUnits, ...reinforcements], covers: tacticalPreserveReinforcementLandmarks(covers, revealed.covers), placement: nextState.dropship, reinforcements, arrivalObserved };
+}
+function tacticalAlienDropshipSnapshot(craft=null){
+  return craft?tacticalSerializableClone(craft):null;
 }
 function tacticalSameAlienDropship(left=null,right=null){
   if(!left?.alienCraft||!right?.alienCraft||left.crashedUfo||right.crashedUfo)return false;
@@ -15051,7 +15054,7 @@ function applyAiFrameToMap(frame, options = {}) {
 	  if(frame.reinforcementLanding)queueTacticalCinematic(tacticalReinforcementCinematicEvent(frame.reinforcementLanding,mission));
   if (Number.isFinite(Number(frame.round))) setTacticalRound(Math.max(1, Number(frame.round)));
   if (frame.alienReinforcement) TACTICAL_REINFORCEMENT_STATE_CACHE.set(mission.id, tacticalAlienReinforcementState(mission, [...(frame.soldiers || []), ...(frame.aliens || [])], frame.alienReinforcement));
-  if (frame.alienDropship) tacticalRegisterAlienDropship(initialDeployment.skyranger, frame.alienDropship);
+  if (frame.alienDropship) tacticalRegisterAlienDropship(initialDeployment.skyranger, tacticalAlienDropshipSnapshot(frame.alienDropship));
   const animate = options.animate !== false;
   const deferDeaths = Boolean(options.deferDeaths);
   if(animate&&deferDeaths){const injuryIds=new Set(tacticalPhysioFrameInjuryIds(frame));holdPhysioVitals(unitsRef.current.filter(unit=>injuryIds.has(unit.id)));}else releasePhysioVitals();
@@ -17645,7 +17648,8 @@ PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.12.1226_TACTICAL_CASUALTY_CARE_PHAS
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.25.0003_UFO_DISEMBARKATION_SAFETY_PATCH",date:"September 25, 2026",title:"UFO Disembarkation Safety",summary:"Incoming aliens deploy into connected, unobstructed space around their transport ramps.",items:["Bounded exit routing checks surrounding terrain, hard props, vehicles and occupied cells before assigning unique arrival positions.","A sealed landing area delays the complete wave instead of placing aliens through its walls. Existing retry timing, observation, beacon handoff and save format 4 remain unchanged."]});
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.25.0004_UFO_OBSERVATION_MEMORY_PATCH",date:"September 25, 2026",title:"UFO Observation Memory",summary:"Each delivery remembers its confirmed craft sighting without revealing its planted beacon.",items:["Arrival and later landed sightings persist per transport through saves and streamed tactical rounds.","Manual and AI handoff processing retain sightings even before departure is due or while planting is blocked.","Departure observation is separate from beacon knowledge; unseen devices and unrelated craft remain hidden. Flight animations remain pending. Save format stays 4."]});
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.25.0005_UFO_CENTER_RESERVATION_PATCH",date:"September 25, 2026",title:"UFO Center Reservation",summary:"New deliveries plant their beacon at the reserved central hull hex.",items:["The central hull cell is reserved during placement and blocks units and props while the transport is landed; its ramps remain open.","Delivery records retain that exact center through save/load and beacon handoff. Older saved deliveries keep their original committed location.","Save format remains 4. Animated approach and takeoff remain pending."]});
-PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"September 25, 2026",title:"UFO Source Isolation",summary:"One delivery can no longer erase another landed transport.",items:["Craft registration, updates and departure match the delivery identity instead of replacing every alien transport.","Later waves preserve unrelated hull covers and avoid existing landing footprints. Cover retirement requires explicit departure and matches only that craft.","Older transports use their stable ID or landing anchor; crashed UFOs and player craft are preserved. Save format remains 4. Flight animation remains pending."]});
+PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.25.0006_UFO_SOURCE_ISOLATION_PATCH",date:"September 25, 2026",title:"UFO Source Isolation",summary:"One delivery can no longer erase another landed transport.",items:["Craft registration, updates and departure match the delivery identity instead of replacing every alien transport.","Later waves preserve unrelated hull covers and avoid existing landing footprints. Cover retirement requires explicit departure and matches only that craft.","Older transports use their stable ID or landing anchor; crashed UFOs and player craft are preserved. Save format remains 4. Flight animation remains pending."]});
+PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"September 25, 2026",title:"UFO Snapshot Isolation",summary:"Saved and streamed UFO state owns independent craft coordinates and delivery records.",items:["State normalization detaches hull, ramp, center and delivery data instead of sharing nested objects with the input.","AI frames keep separate craft and reinforcement snapshots; playback registration cannot mutate stored frame data.","Two regression tests reproduce the previous sharing failures. Save format remains 4; flight animation remains pending."]});
 PATCH_NOTES_HISTORY.sort((left,right)=>String(right.build||"").localeCompare(String(left.build||""),undefined,{numeric:true,sensitivity:"base"}));
  return PATCH_NOTES_HISTORY;},[]);
 function PatchNotesLibraryScreen(){

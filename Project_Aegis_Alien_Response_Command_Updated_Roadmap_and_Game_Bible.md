@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.25.0006_UFO_SOURCE_ISOLATION_PATCH`
+Current browser build: `v0.26.09.25.0007_UFO_SNAPSHOT_ISOLATION_PATCH`
 
 Current save format: `4`
 
@@ -5117,6 +5117,8 @@ Implemented alien-pathing regression follow-up (Browser 0845, 2026-08-24): **Ali
 - The flyover remains a presentation and knowledge-gating upgrade. The UFO-to-beacon handoff below intentionally consolidates reinforcement-source ownership, but does not otherwise change alien counts, fog authority, TU, movement, LOS, damage, civilian/VIP behavior, fire-team formations, or unrelated mission objectives.
 
 ### Approved unified UFO-delivery-to-Field-Beacon reinforcement lifecycle
+
+**Browser September 25 / 0007 snapshot isolation:** normalized craft state and AI frame snapshots now detach all nested placement/delivery data. Playback registers an independent craft copy. Two reproduced regression cases verify input coordinates cannot change through normalization and earlier frames cannot rewrite later frame or reinforcement state. All thirty focused UFO tests pass. This hardens saved/streamed state ownership; flight animations remain pending.
 
 **Browser September 25 / 0006 source isolation:** craft registration/update/departure now matches one delivery source, with stable-ID/landing-anchor fallback for older transports. Broad later-wave hull retirement is removed; only an explicitly departed matching craft can retire its covers. Other transports, crashed UFOs and player craft remain registered and retain their footprints. Twenty-eight focused UFO tests pass, including an actual later-wave arrival beside an existing transport. This preserves source objects; it does not introduce a multi-source reinforcement scheduler. Flight animations remain pending.
 

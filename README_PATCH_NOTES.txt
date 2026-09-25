@@ -1,3 +1,11 @@
+BUILD: v0.26.09.25.0007_UFO_SNAPSHOT_ISOLATION_PATCH
+UFO SNAPSHOT ISOLATION
+Save format: 4
+
+- Normalized delivery state owns independent hull, ramp, center and observation data.
+- AI playback frames and live craft registration no longer share nested craft objects.
+- Prevents later mutations from rewriting prior UFO snapshots. Flight animations remain pending.
+
 BUILD: v0.26.09.25.0006_UFO_SOURCE_ISOLATION_PATCH
 UFO SOURCE ISOLATION
 Save format: 4
