@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.24.0007_TACTICAL_HELMET_IDENTITY_PATCH`
+Current browser build: `v0.26.09.24.0008_TACTICAL_HEAD_IDENTITY_PATCH`
 
 Current save format: `4`
 
@@ -787,6 +787,8 @@ Implementation: new civic landmarks choose deterministic connected footprints of
 Implementation: Browser 0904 adds deterministic tetromino family/rotation metadata and a shared footprint-cell authority. Walls/windows, doors, furnishings, roofs, seams, civilian placement, structure-distance logic and building egress consume the footprint; T/L/J/S/Z recesses remain open. Pre-patch live tactical saves lacking shape metadata retain legacy rectangular geometry for that saved battle. Save format remains 4.
 
 ### 6. Match battle-model faces and equipment markings to soldier identity
+
+**Head proportion slice implemented in Browser 0008 (September 24, 2026).** Portrait and tactical head widths/heights now share the existing appearance definition for narrow, round, square, strong and soft heads. Classic and full/mid articulated models use it; mid-detail geometry cache keys and persistent model signatures include head shape. This is proportion matching, not new facial anatomy: eyes, mouths, hair, facial accessories and uniform/armor insignia remain future work. No additional draw calls or save fields. Eight focused identity tests pass; live visual acceptance and native parity remain pending.
 
 **Helmet marking slice implemented in Browser 0007 (September 24, 2026).** Saved stripe/star/chevron/red/blue markings use shared portrait/3D definitions and appear on classic, full articulated and mid-detail helmets. Geometry follows helmet facing and head animation; appearance changes invalidate persistent models. Four automated tests pass using bundled Three.js. Live visual acceptance remains pending. Face, hair, facial accessories and uniform/armor insignia remain roadmap work; native parity is deferred.
 

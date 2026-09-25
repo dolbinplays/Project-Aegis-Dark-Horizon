@@ -1,3 +1,10 @@
+BUILD: v0.26.09.24.0008_TACTICAL_HEAD_IDENTITY_PATCH
+September 24, 2026 — Tactical Head Identity
+- Saved portrait head proportions now apply to classic, detailed articulated and performance tactical soldiers.
+- Portrait and tactical presentation share width/height definitions; performance geometry caches distinguish head shapes.
+- Existing meshes are reused with no extra draw calls. Appearance changes refresh persistent models.
+- Hair, face accessories and uniform insignia remain follow-up work. Save format 4 and combat unchanged.
+
 BUILD: v0.26.09.24.0007_TACTICAL_HELMET_IDENTITY_PATCH
 September 24, 2026 — Tactical Helmet Identity
 - Tactical helmets match the soldier's saved stripe, star, chevron, red or blue portrait marking.
