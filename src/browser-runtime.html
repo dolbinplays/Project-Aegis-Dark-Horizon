@@ -1517,7 +1517,7 @@ function aegisTacticalViewportDimensions(mount,fallback={},layout=AEGIS_INTERFAC
 }
 // AEGIS_MOBILE_INTERFACE_END
 
-const CURRENT_GAME_BUILD="v0.26.09.24.0009_TACTICAL_FACE_IDENTITY_PATCH";
+const CURRENT_GAME_BUILD="v0.26.09.24.0010_UFO_DELIVERY_LANDING_FOUNDATION_PATCH";
 const BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH=true;
 const TACTICAL_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH=true;
 const TACTICAL_OBSERVED_BEACON_REINFORCEMENT_CINEMATIC_DURATION_MS=2300;
@@ -9425,7 +9425,7 @@ function tacticalAlienReinforcementState(mission = null, units = [], previous = 
     arrivalRound: tacticalOptionalRound(previous?.arrivalRound), callRound: tacticalOptionalRound(previous?.callRound), callReason: previous?.callReason || null,
     commanderDeathRound: tacticalOptionalRound(previous?.commanderDeathRound), missedCheckinDelay: tacticalOptionalRound(previous?.missedCheckinDelay), missedCheckinRound: tacticalOptionalRound(previous?.missedCheckinRound),
     rallyX: rally?.x ?? null, rallyY: rally?.y ?? null, rallySource: previous?.rallySource || null,
-    dropship: previous?.dropship ? { ...previous.dropship } : null, missionId: mission?.id || previous?.missionId || null,
+    dropship: previous?.dropship ? { ...previous.dropship, ...(previous.dropship.deliveryLanding?{deliveryLanding:tacticalSerializableClone(previous.dropship.deliveryLanding)}:{}) } : null, missionId: mission?.id || previous?.missionId || null,
     waveCount: priorWaveCount, callEligibleRound: tacticalOptionalRound(previous?.callEligibleRound), lastArrivalRound: tacticalOptionalRound(previous?.lastArrivalRound), lastArrivalReason: previous?.lastArrivalReason || null,
     arrivalUnitIds, arrivalCommitPending,
     arrivalTotalCount: Math.max(0, Math.floor(Number(previous?.arrivalTotalCount) || 0)),
@@ -9529,6 +9529,19 @@ function tacticalCraftFootprintsSeparated(left = null, right = null, clearance =
   const rightCells = tacticalSkyrangerFootprintCells(right);
   return tacticalSkyrangerFootprintCells(left).every((cell) => rightCells.every((other) => tacticalDistance(cell, other) > clearance));
 }
+function tacticalAlienDeliveryLandingRecord({mission=null,placement=null,waveNumber=1,round=1,unitIds=[]}={}){
+  if(!placement?.hullCells?.length)return null;
+  const cells=placement.hullCells.filter(cell=>Number.isFinite(cell?.x)&&Number.isFinite(cell?.y));if(!cells.length)return null;
+  const center={x:cells.reduce((sum,cell)=>sum+cell.x,0)/cells.length,y:cells.reduce((sum,cell)=>sum+cell.y,0)/cells.length};
+  const anchor=[...cells].sort((a,b)=>(a.x-center.x)**2+(a.y-center.y)**2-((b.x-center.x)**2+(b.y-center.y)**2)||a.y-b.y||a.x-b.x)[0];
+  const wave=Math.max(1,Math.floor(Number(waveNumber)||1)),landedRound=Math.max(1,Math.floor(Number(round)||1));
+  return{version:1,sourceId:String(mission?.id||"mission")+":ufo-delivery:"+wave,waveNumber:wave,landedRound,beaconCenter:{x:anchor.x,y:anchor.y},hullCells:cells.map(cell=>({x:cell.x,y:cell.y})),rampCells:(placement.rampCells||[]).map(cell=>({x:cell.x,y:cell.y})),arrivalUnitIds:[...new Set(unitIds.filter(Boolean))]};
+}
+function tacticalAlienDeliveryPlacementClear(placement=null,covers=[],units=[]){
+  if(!placement)return false;
+  const footprint=tacticalSkyrangerFootprintCells(placement),occupied=new Set((units||[]).filter(unit=>Number(unit?.hp)>0&&!unit.rescued&&!unit.extracted&&!unit.casualtyExtracted).map(unit=>tacticalKey(unit.x,unit.y)));
+  return footprint.length>0&&footprint.every(cell=>!occupied.has(tacticalKey(cell.x,cell.y))&&!isHardCoverAt(covers,cell.x,cell.y));
+}
 function tacticalAlienDropshipPlacement({ mission = null, covers = [], skyranger = null, units = [], round = 1 } = {}) {
   const gridSize = tacticalGridSizeFrom(mission, units, covers, skyranger);
   const structures = covers.filter((cover) => cover.hp > 0 && cover.buildingId);
@@ -9549,7 +9562,7 @@ function tacticalAlienDropshipPlacement({ mission = null, covers = [], skyranger
     const clearBuildings = clearVehicles && footprint.every((cell) => structures.every((structure) => tacticalDistance(cell, structure) > 1));
     const clearSkyrangers = clearBuildings && existingCrafts.every((existing) => tacticalCraftFootprintsSeparated(craft, existing, 1));
     const clearUnits = clearSkyrangers && footprint.every((cell) => occupied.every((unit) => cell.x !== unit.x || cell.y !== unit.y));
-    if (clearUnits) return craft;
+    if (clearUnits && tacticalAlienDeliveryPlacementClear(craft,covers,units)) return craft;
   }
   return null;
 }
@@ -9619,7 +9632,7 @@ function tacticalAlienReinforcementArrival({ state = null, units = [], covers = 
   const revealed = tacticalRevealReinforcementArrival(units, reinforcements, combinedCovers, mission);
   reinforcements = revealed.reinforcements.map((unit) => ({ ...unit, alive: unit.alive !== false && Number(unit.hp) > 0 }));
   const arrivalObserved = tacticalAlienArrivalObserved(units, placement, revealed.visible);
-  const arrivedState = { ...state, difficulty, waveCount: waveNumber, lastArrivalRound: Number(round), lastArrivalReason: state?.callReason || null, rallyX, rallyY, dropship: { ...placement, revealed: arrivalObserved || revealed.visible.has(tacticalKey(placement.rampCenter.x, placement.rampCenter.y)), reinforcementWave: waveNumber }, arrivalUnitIds: reinforcements.map((unit) => unit.id), arrivalCommitPending: true, arrivalTotalCount: 0, arrivalDeployedCount: 0, arrivalWaveNumber: null };
+  const arrivedState = { ...state, difficulty, waveCount: waveNumber, lastArrivalRound: Number(round), lastArrivalReason: state?.callReason || null, rallyX, rallyY, dropship: { ...placement, deliveryLanding:tacticalAlienDeliveryLandingRecord({mission,placement,waveNumber,round,unitIds:reinforcements.map(unit=>unit.id)}), revealed: arrivalObserved || revealed.visible.has(tacticalKey(placement.rampCenter.x, placement.rampCenter.y)), reinforcementWave: waveNumber }, arrivalUnitIds: reinforcements.map((unit) => unit.id), arrivalCommitPending: true, arrivalTotalCount: 0, arrivalDeployedCount: 0, arrivalWaveNumber: null };
   const nextState = repeatWaves ? { ...arrivedState, commanderId: reinforcements[0]?.id || null, contactRounds: 0, alienCasualties: 0, cycleAlienIds: reinforcements.map((unit) => unit.id), called: false, arrived: false, arrivalRound: null, callRound: null, callReason: null, commanderDeathRound: null, missedCheckinDelay: null, missedCheckinRound: null, callEligibleRound: Number(round) + tacticalAlienVipWaveCooldown(mission, waveNumber), legacyOneWaveState: false } : { ...arrivedState, alienCasualties: 0, cycleAlienIds: reinforcements.map((unit) => unit.id), called: true, arrived: true, legacyOneWaveState: false };
   const retainedUnits = units.filter((unit) => !(unit.team === "alien" && unit.isReinforcement && unit.hp <= 0 && Number(unit.reinforcementWave || 0) < waveNumber - 1));
   return { landed: true, deploymentKind: "dropship", waveNumber, state: nextState, units: [...retainedUnits, ...reinforcements], covers: tacticalPreserveReinforcementLandmarks(covers, revealed.covers), placement: nextState.dropship, reinforcements, arrivalObserved };
@@ -17514,7 +17527,8 @@ PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.12.1226_TACTICAL_CASUALTY_CARE_PHAS
  PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.24.0006_RESCUE_QUOTA_BRIEFING_CLARITY_PATCH",date:"September 24, 2026",title:"Rescue Quota Briefing Clarity",summary:"Mission planning explains the minimum rescue quota and remaining evacuation duties.",items:["Standard and adaptive briefings display the authoritative minimum rescue count, with VIPs and ordinary civilians labeled separately.","Explains that meeting the quota does not finish a mandatory rescue mission while survivors remain to evacuate.","Incomplete reports conceal quota and population until tracker confirmation. Optional and zero-population missions have distinct explanations.","Existing rescue ratios, rewards, terminal mission rules and save format 4 are unchanged."]});
  PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.24.0007_TACTICAL_HELMET_IDENTITY_PATCH",date:"September 24, 2026",title:"Tactical Helmet Identity",summary:"Tactical helmets display each soldier's saved portrait marking.",items:["Stripe, star, chevron, red and blue helmet markings share identity/color definitions with portraits and Classic Lineup.","Classic, detailed articulated and performance articulated models retain markings through facing changes and head animation.","Unmarked or unequipped soldiers receive no marking. Each marked helmet adds one small mesh; no textures or external assets are required.","Face, hair and uniform detail remain future identity work. Combat rules and save format 4 are unchanged."]});
  PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.24.0008_TACTICAL_HEAD_IDENTITY_PATCH",date:"September 24, 2026",title:"Tactical Head Identity",summary:"Saved portrait head proportions now carry into tactical soldier models.",items:["Portraits, classic tactical models and both articulated detail levels share head width/height definitions.","Narrow, round, square, strong and soft appearance settings use their established portrait proportions without creating another identity.","Performance head geometry caches distinguish shapes; appearance changes refresh persistent models. No additional meshes or draw calls.","Hair, facial accessories and uniform insignia remain follow-up work. Combat and save format 4 are unchanged."]});
- PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"September 24, 2026",title:"Tactical Face Identity",summary:"Tactical soldiers display facial features and their saved facial accessories.",items:["Adds eyes and mouths plus saved scars, glasses, mustaches and bandages to classic and full/mid articulated soldier models.","Mustaches use saved hair color. Features follow head proportions, turns and animation with one small vertex-colored mesh.","Appearance changes refresh persistent models; owned geometry and materials use normal subtree disposal.","Hair styles, comms headsets and uniform insignia remain follow-up work. Combat rules and save format 4 are unchanged."]});
+ PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.24.0009_TACTICAL_FACE_IDENTITY_PATCH",date:"September 24, 2026",title:"Tactical Face Identity",summary:"Tactical soldiers display facial features and their saved facial accessories.",items:["Adds eyes and mouths plus saved scars, glasses, mustaches and bandages to classic and full/mid articulated soldier models.","Mustaches use saved hair color. Features follow head proportions, turns and animation with one small vertex-colored mesh.","Appearance changes refresh persistent models; owned geometry and materials use normal subtree disposal.","Hair styles, comms headsets and uniform insignia remain follow-up work. Combat rules and save format 4 are unchanged."]});
+ PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"September 24, 2026",title:"UFO Delivery Landing Foundation",summary:"Safer reinforcement UFO landings and persistent delivery records prepare the beacon handoff rework.",items:["The complete UFO hull and ramp must be clear of hard props as well as existing placement restrictions.","New UFO arrivals record a stable source identity, wave, landing round, hull/ramp cells, delivered unit IDs and a reserved hull anchor nearest the footprint center.","Delivery records survive save/load without sharing mutable snapshot arrays. Legacy arrivals are not retroactively assigned delivery records.","Existing beacon deployment and reinforcement timing remain active. The observed approach, full landed round, animated takeoff and beacon handoff are still pending."]});
  PATCH_NOTES_HISTORY.sort((left,right)=>String(right.build||"").localeCompare(String(left.build||""),undefined,{numeric:true,sensitivity:"base"}));
  return PATCH_NOTES_HISTORY;},[]);
 function PatchNotesLibraryScreen(){

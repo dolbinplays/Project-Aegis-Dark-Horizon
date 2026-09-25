@@ -1,3 +1,10 @@
+BUILD: v0.26.09.24.0010_UFO_DELIVERY_LANDING_FOUNDATION_PATCH
+September 24, 2026 — UFO Delivery Landing Foundation
+- Full UFO hull/ramp footprints now reject all hard-cover overlaps.
+- New dropship arrivals retain delivery identity, wave, landing round, footprint, unit IDs and a reserved hull anchor.
+- Records survive save/load without snapshot aliasing; legacy craft are not retrofitted.
+- Preparatory patch: observed flight, landed-round timing, takeoff and beacon source handoff are not enabled yet. Existing beacon behavior and save format 4 remain unchanged.
+
 BUILD: v0.26.09.24.0009_TACTICAL_FACE_IDENTITY_PATCH
 September 24, 2026 — Tactical Face Identity
 - Soldiers display eyes, mouths and saved scars/glasses/mustaches/bandages in classic and both articulated detail levels.
