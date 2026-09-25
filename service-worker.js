@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.25.0003_UFO_DISEMBARKATION_SAFETY_PATCH";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.25.0003_UFO_DISEMBARKATION_SAFETY_PATCH";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v34-ufo-disembarkation";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.25.0004_UFO_OBSERVATION_MEMORY_PATCH";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.25.0004_UFO_OBSERVATION_MEMORY_PATCH";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v35-ufo-observation";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;

@@ -1,3 +1,12 @@
+BUILD: v0.26.09.25.0004_UFO_OBSERVATION_MEMORY_PATCH
+UFO OBSERVATION MEMORY
+Save format: 4
+
+- Each landed delivery retains confirmed craft sightings through save/load and tactical continuation.
+- AI departure labels distinguish a seen UFO from a seen planted device.
+- Unseen beacons remain hidden; unrelated craft sightings do not grant knowledge.
+- Foundation for observation-gated flight presentation; landing/takeoff animation remains pending.
+
 BUILD: v0.26.09.25.0003_UFO_DISEMBARKATION_SAFETY_PATCH
 UFO DISEMBARKATION SAFETY
 Save format: 4
