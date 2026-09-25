@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.24.0006_RESCUE_QUOTA_BRIEFING_CLARITY_PATCH`
+Current browser build: `v0.26.09.24.0007_TACTICAL_HELMET_IDENTITY_PATCH`
 
 Current save format: `4`
 
@@ -787,6 +787,8 @@ Implementation: new civic landmarks choose deterministic connected footprints of
 Implementation: Browser 0904 adds deterministic tetromino family/rotation metadata and a shared footprint-cell authority. Walls/windows, doors, furnishings, roofs, seams, civilian placement, structure-distance logic and building egress consume the footprint; T/L/J/S/Z recesses remain open. Pre-patch live tactical saves lacking shape metadata retain legacy rectangular geometry for that saved battle. Save format remains 4.
 
 ### 6. Match battle-model faces and equipment markings to soldier identity
+
+**Helmet marking slice implemented in Browser 0007 (September 24, 2026).** Saved stripe/star/chevron/red/blue markings use shared portrait/3D definitions and appear on classic, full articulated and mid-detail helmets. Geometry follows helmet facing and head animation; appearance changes invalidate persistent models. Four automated tests pass using bundled Three.js. Live visual acceptance remains pending. Face, hair, facial accessories and uniform/armor insignia remain roadmap work; native parity is deferred.
 
 - Give tactical soldier models recognizable faces matching the same soldier's card portrait: derive skin tone, facial features and applicable hair/facial-hair details from the existing identity/appearance data rather than generating a separate battle identity.
 - Add uniform, armor and helmet markings matching those already used on the Classic Lineup paper-doll models. Share the appearance/marking definitions so equipment changes, colors, insignia and personalized details stay consistent across presentations.

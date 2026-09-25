@@ -1,3 +1,10 @@
+BUILD: v0.26.09.24.0007_TACTICAL_HELMET_IDENTITY_PATCH
+September 24, 2026 — Tactical Helmet Identity
+- Tactical helmets match the soldier's saved stripe, star, chevron, red or blue portrait marking.
+- Shared marking/color definition across portraits and 3D; classic, detailed and performance articulated models supported.
+- Markings follow turns and head animation. One small mesh per marked helmet; none for unmarked/unequipped soldiers.
+- Face/hair/uniform identity work remains planned. Save format 4 and combat rules unchanged.
+
 BUILD: v0.26.09.24.0006_RESCUE_QUOTA_BRIEFING_CLARITY_PATCH
 September 24, 2026 — Rescue Quota Briefing Clarity
 - Standard/adaptive planning shows the exact existing rescue minimum and explains remaining evacuation duties.
