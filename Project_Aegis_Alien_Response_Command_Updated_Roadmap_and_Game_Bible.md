@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.25.0005_UFO_CENTER_RESERVATION_PATCH`
+Current browser build: `v0.26.09.25.0006_UFO_SOURCE_ISOLATION_PATCH`
 
 Current save format: `4`
 
@@ -5117,6 +5117,8 @@ Implemented alien-pathing regression follow-up (Browser 0845, 2026-08-24): **Ali
 - The flyover remains a presentation and knowledge-gating upgrade. The UFO-to-beacon handoff below intentionally consolidates reinforcement-source ownership, but does not otherwise change alien counts, fog authority, TU, movement, LOS, damage, civilian/VIP behavior, fire-team formations, or unrelated mission objectives.
 
 ### Approved unified UFO-delivery-to-Field-Beacon reinforcement lifecycle
+
+**Browser September 25 / 0006 source isolation:** craft registration/update/departure now matches one delivery source, with stable-ID/landing-anchor fallback for older transports. Broad later-wave hull retirement is removed; only an explicitly departed matching craft can retire its covers. Other transports, crashed UFOs and player craft remain registered and retain their footprints. Twenty-eight focused UFO tests pass, including an actual later-wave arrival beside an existing transport. This preserves source objects; it does not introduce a multi-source reinforcement scheduler. Flight animations remain pending.
 
 **Browser September 25 / 0005 center reservation:** new transports declare their central hull hex (three hex rows behind the exterior ramp anchor, in either heading) and reserve it as solid hull. Landing validation, disembarkation and beacon handoff therefore share a protected center. Existing saved delivery records retain their original anchors. Twenty-four focused UFO tests pass, including both headings, edge-clamped placement, blocked center, save/load and handoff. Animated approach/takeoff remain pending.
 

@@ -1,3 +1,12 @@
+BUILD: v0.26.09.25.0006_UFO_SOURCE_ISOLATION_PATCH
+UFO SOURCE ISOLATION
+Save format: 4
+
+- Registering or departing one delivery no longer removes another alien transport.
+- Later arrivals preserve unrelated hull covers and avoid their footprints.
+- Explicit departure retires only matching covers, including a scoped legacy fallback.
+- Flight animations remain pending.
+
 BUILD: v0.26.09.25.0005_UFO_CENTER_RESERVATION_PATCH
 UFO CENTER RESERVATION
 Save format: 4
