@@ -1,8 +1,21 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.25.0007_UFO_SNAPSHOT_ISOLATION_PATCH`
+Current browser build: `v0.26.09.25.0008_SICKBAY_BED_CAPACITY_AUTHORITY_HOTFIX`
 
 Current save format: `4`
+
+## Sickbay Bed Capacity Authority — Fixed September 25, 2026
+
+Reported from live play: Fort Aegis displayed **Beds (8/4)**, proving that full-speed patient status could exceed the physical Sickbay bed count. The root cause was mixed scope: mission aftermath and refill logic could compare a base-scoped roster with campaign-wide Sickbay capacity.
+
+- Each base now owns its own Sickbay capacity: **4 beds per Sickbay facility**.
+- Existing bed occupants retain priority when a mission returns wounded soldiers; newly wounded personnel beyond that base's free beds enter Barracks recovery at half speed.
+- Existing over-cap saves, facility demolition/capacity loss, and wounded-transfer arrival are repaired by demoting only excess full-speed patients.
+- Daily and fast-forward refill logic is base-local, so an empty bed at one base cannot admit an overflow patient stationed at another base.
+- Manual **Move to Barracks** remains a deliberate choice and is not instantly undone by the cap repair.
+- Save format remains **4**.
+
+**Acceptance:** with one Sickbay at a base, create or load five or more `Wounded` soldiers stationed there and confirm only four remain in Beds while the rest appear under Barracks. Repeat with two bases of different Sickbay capacity, mission-return wounds, a Sickbay facility removal, manual Barracks movement, day advance, and save/reload.
 
 ## VIP Escort Obstacle Routing — September 25, 2026
 

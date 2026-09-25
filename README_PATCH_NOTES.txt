@@ -1,3 +1,13 @@
+BUILD: v0.26.09.25.0008_SICKBAY_BED_CAPACITY_AUTHORITY_HOTFIX
+SICKBAY BED CAPACITY AUTHORITY HOTFIX
+Save format: 4
+
+- Enforces four full-speed recovery beds per Sickbay independently at each base.
+- Mission aftermath preserves existing bed occupants; newly wounded soldiers beyond local capacity go to Barracks recovery at half speed.
+- Existing over-cap saves and reduced-capacity bases are repaired by demoting only excess bed patients.
+- Daily / fast-forward refill logic now admits Barracks patients only into free beds at their own stationed base.
+- Manual Move to Barracks remains respected until a normal refill cycle or explicit admission.
+
 BUILD: v0.26.09.25.0007_UFO_SNAPSHOT_ISOLATION_PATCH
 UFO SNAPSHOT ISOLATION
 Save format: 4
