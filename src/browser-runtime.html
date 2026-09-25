@@ -1517,7 +1517,7 @@ function aegisTacticalViewportDimensions(mount,fallback={},layout=AEGIS_INTERFAC
 }
 // AEGIS_MOBILE_INTERFACE_END
 
-const CURRENT_GAME_BUILD="v0.26.09.25.0004_UFO_OBSERVATION_MEMORY_PATCH";
+const CURRENT_GAME_BUILD="v0.26.09.25.0005_UFO_CENTER_RESERVATION_PATCH";
 const BUILD_AUDIT_AND_TERMINAL_PLAYBACK_INTEGRITY_PATCH=true;
 const TACTICAL_OBSERVED_BEACON_REINFORCEMENT_ARRIVAL_CINEMATIC_PATCH=true;
 const TACTICAL_OBSERVED_BEACON_REINFORCEMENT_CINEMATIC_DURATION_MS=2300;
@@ -9523,11 +9523,12 @@ function tacticalAlienDropshipCraft(anchor = { x: 32, y: 8 }, gridSize = TACTICA
   for (let distance = 1; distance <= 5; distance += 1) {
     const halfWidth = distance >= 5 ? 1 : 2;
     for (let dx = -halfWidth; dx <= halfWidth; dx += 1) {
-      if (dx === 0 && distance <= 3) continue;
+      if (dx === 0 && distance <= 2) continue;
       hullCells.push({ x: rampCenter.x + dx, y: rampCenter.y + sign * distance, nose: distance >= 5 });
     }
   }
-  return { rampCenter, rampCells, hullCells, bodySign: sign, deploymentCenter: { x: rampCenter.x, y: rampCenter.y - sign * 2 }, alienCraft: true, gridSize: size };
+  const deliveryCenter={x:rampCenter.x,y:rampCenter.y+sign*3};
+  return { rampCenter, rampCells, hullCells, deliveryCenter, bodySign: sign, deploymentCenter: { x: rampCenter.x, y: rampCenter.y - sign * 2 }, alienCraft: true, gridSize: size };
 }
 function tacticalCraftFootprintsSeparated(left = null, right = null, clearance = 1) {
   const rightCells = tacticalSkyrangerFootprintCells(right);
@@ -9576,7 +9577,8 @@ function tacticalAlienDeliveryLandingRecord({mission=null,placement=null,waveNum
   if(!placement?.hullCells?.length)return null;
   const cells=placement.hullCells.filter(cell=>Number.isFinite(cell?.x)&&Number.isFinite(cell?.y));if(!cells.length)return null;
   const center={x:cells.reduce((sum,cell)=>sum+cell.x,0)/cells.length,y:cells.reduce((sum,cell)=>sum+cell.y,0)/cells.length};
-  const anchor=[...cells].sort((a,b)=>(a.x-center.x)**2+(a.y-center.y)**2-((b.x-center.x)**2+(b.y-center.y)**2)||a.y-b.y||a.x-b.x)[0];
+  const reserved=placement.deliveryCenter;
+  const anchor=cells.find(cell=>cell.x===reserved?.x&&cell.y===reserved?.y)||[...cells].sort((a,b)=>(a.x-center.x)**2+(a.y-center.y)**2-((b.x-center.x)**2+(b.y-center.y)**2)||a.y-b.y||a.x-b.x)[0];
   const wave=Math.max(1,Math.floor(Number(waveNumber)||1)),landedRound=Math.max(1,Math.floor(Number(round)||1));
   return{version:2,phase:"landed",handoffRound:landedRound+2,sourceId:String(mission?.id||"mission")+":ufo-delivery:"+wave,waveNumber:wave,landedRound,beaconCenter:{x:anchor.x,y:anchor.y},hullCells:cells.map(cell=>({x:cell.x,y:cell.y})),rampCells:(placement.rampCells||[]).map(cell=>({x:cell.x,y:cell.y})),arrivalUnitIds:[...new Set(unitIds.filter(Boolean))]};
 }
@@ -17627,7 +17629,8 @@ PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.12.1226_TACTICAL_CASUALTY_CARE_PHAS
  PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.25.0001_UFO_BEACON_HANDOFF_PATCH",date:"September 25, 2026",title:"UFO-to-Beacon Handoff",summary:"New recorded reinforcement UFOs transfer to a single beacon after a complete landed round.",items:["Version-2 deliveries arriving during round R remain through all of round R+1 and hand off at the reinforcement phase of R+2.","Manual and AI rounds share atomic craft-cover removal and beacon planting, preserving wave counts and source identity.","Pending handoffs block premature victory and duplicate arrivals; save/load retains the deadline and completed handoffs cannot plant twice.","Legacy craft, initial/replacement beacon routing and flight animation remain unchanged. Animated approach/takeoff and wider delivery routing are follow-ups."]});
  PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.25.0002_VIP_ESCORT_OBSTACLE_ROUTING_HOTFIX",date:"2026-09-25","title":"VIP Escort Obstacle Routing","items":["Escorted VIPs and civilians use bounded pathfinding to get around walls and props instead of stalling at a nearby formation slot.","Blocked formation slots fall back to reachable space near the escort. Occupancy, Skyranger interior-ramp and building-reentry restrictions remain enforced.","Save format 4 and rescue/medical rules are unchanged."]});
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.25.0003_UFO_DISEMBARKATION_SAFETY_PATCH",date:"September 25, 2026",title:"UFO Disembarkation Safety",summary:"Incoming aliens deploy into connected, unobstructed space around their transport ramps.",items:["Bounded exit routing checks surrounding terrain, hard props, vehicles and occupied cells before assigning unique arrival positions.","A sealed landing area delays the complete wave instead of placing aliens through its walls. Existing retry timing, observation, beacon handoff and save format 4 remain unchanged."]});
-PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"September 25, 2026",title:"UFO Observation Memory",summary:"Each delivery remembers its confirmed craft sighting without revealing its planted beacon.",items:["Arrival and later landed sightings persist per transport through saves and streamed tactical rounds.","Manual and AI handoff processing retain sightings even before departure is due or while planting is blocked.","Departure observation is separate from beacon knowledge; unseen devices and unrelated craft remain hidden. Flight animations remain pending. Save format stays 4."]});
+PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.25.0004_UFO_OBSERVATION_MEMORY_PATCH",date:"September 25, 2026",title:"UFO Observation Memory",summary:"Each delivery remembers its confirmed craft sighting without revealing its planted beacon.",items:["Arrival and later landed sightings persist per transport through saves and streamed tactical rounds.","Manual and AI handoff processing retain sightings even before departure is due or while planting is blocked.","Departure observation is separate from beacon knowledge; unseen devices and unrelated craft remain hidden. Flight animations remain pending. Save format stays 4."]});
+PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"September 25, 2026",title:"UFO Center Reservation",summary:"New deliveries plant their beacon at the reserved central hull hex.",items:["The central hull cell is reserved during placement and blocks units and props while the transport is landed; its ramps remain open.","Delivery records retain that exact center through save/load and beacon handoff. Older saved deliveries keep their original committed location.","Save format remains 4. Animated approach and takeoff remain pending."]});
 PATCH_NOTES_HISTORY.sort((left,right)=>String(right.build||"").localeCompare(String(left.build||""),undefined,{numeric:true,sensitivity:"base"}));
  return PATCH_NOTES_HISTORY;},[]);
 function PatchNotesLibraryScreen(){

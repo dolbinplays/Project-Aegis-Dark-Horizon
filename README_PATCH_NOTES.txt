@@ -1,3 +1,12 @@
+BUILD: v0.26.09.25.0005_UFO_CENTER_RESERVATION_PATCH
+UFO CENTER RESERVATION
+Save format: 4
+
+- New deliveries reserve the central hull hex and plant their beacon there.
+- Arrival units cannot occupy that center; landing validation rejects obstacles there.
+- Ramps remain open, and saved deliveries retain their originally committed beacon location.
+- Animated flight remains pending.
+
 BUILD: v0.26.09.25.0004_UFO_OBSERVATION_MEMORY_PATCH
 UFO OBSERVATION MEMORY
 Save format: 4
