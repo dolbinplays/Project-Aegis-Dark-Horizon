@@ -1,3 +1,10 @@
+BUILD: v0.26.09.24.0009_TACTICAL_FACE_IDENTITY_PATCH
+September 24, 2026 — Tactical Face Identity
+- Soldiers display eyes, mouths and saved scars/glasses/mustaches/bandages in classic and both articulated detail levels.
+- Mustaches use saved hair color. One bounded vertex-colored mesh follows head shape and animation.
+- Persistent model keys include accessories/hair color; disposal follows normal unit resource ownership.
+- Hairstyles, comms and uniform insignia remain planned. Save format 4 and gameplay unchanged.
+
 BUILD: v0.26.09.24.0008_TACTICAL_HEAD_IDENTITY_PATCH
 September 24, 2026 — Tactical Head Identity
 - Saved portrait head proportions now apply to classic, detailed articulated and performance tactical soldiers.
