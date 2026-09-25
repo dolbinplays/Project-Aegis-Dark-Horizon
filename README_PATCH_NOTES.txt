@@ -1,3 +1,11 @@
+BUILD: v0.26.09.25.0002_VIP_ESCORT_OBSTACLE_ROUTING_HOTFIX
+VIP ESCORT OBSTACLE ROUTING HOTFIX
+Save format: 4
+
+- Fixes a reproduced case where an escorted VIP stays still beside a wall instead of taking a detour.
+- Uses bounded hazard-aware routing with reachable alternatives for obstructed formation slots.
+- Retains occupancy, ramp restrictions and medical/rescue rules. Exact reported live mission remains unverified.
+
 BUILD: v0.26.09.25.0001_UFO_BEACON_HANDOFF_PATCH
 September 25, 2026 — UFO-to-Beacon Handoff
 - New version-2 UFO delivery records remain through one complete subsequent tactical round, then transfer to one beacon.

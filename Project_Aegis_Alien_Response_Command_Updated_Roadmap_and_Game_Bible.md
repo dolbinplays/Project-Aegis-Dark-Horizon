@@ -1,8 +1,12 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.25.0001_UFO_BEACON_HANDOFF_PATCH`
+Current browser build: `v0.26.09.25.0002_VIP_ESCORT_OBSTACLE_ROUTING_HOTFIX`
 
 Current save format: `4`
+
+## VIP Escort Obstacle Routing — September 25, 2026
+
+Reproduced an escorted VIP remaining stationary beside a wall because greedy formation following could not take a detour. Followers now use bounded hazard-aware tactical routing and reachable alternative slots, while respecting occupied cells, Skyranger interior ramps and building reentry restrictions. The reported live mission has not been captured, so its exact cause and installed-game acceptance remain unverified.
 
 ## Adaptive Base Placement Confirmation — Fixed September 24, 2026
 
