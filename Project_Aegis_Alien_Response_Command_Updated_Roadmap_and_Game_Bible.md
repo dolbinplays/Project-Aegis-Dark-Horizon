@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.24.0005_NIGHT_SHOT_TARGET_VISIBILITY_PATCH`
+Current browser build: `v0.26.09.24.0006_RESCUE_QUOTA_BRIEFING_CLARITY_PATCH`
 
 Current save format: `4`
 
@@ -669,7 +669,9 @@ Shared marker state drives 2D, persistent/fallback 3D and perspective/minimap pr
 
 ## Roadmap Addition — Review VIP Rescue Victory Thresholds
 
-**Planned, not implemented.** Review mandatory rescue quotas, including the reported experience of three-VIP incidents appearing to require all three rescues for victory. Verify displayed counts against the actual mission-specific quota before adjusting balance. Consider a more forgiving threshold while retaining meaningful consequences and partial rescue credit for losses. Decide the final threshold through balance testing; this patch does not change rescue requirements.
+**Review and briefing clarity implemented in Browser 0006; balance changes remain deferred.** The current critical-rescue rule requires ceil(2/3 of the population), so three people require two rescues. The mission still requires remaining survivors to be resolved, which can make the minimum appear to require everyone. Standard and adaptive briefings now explain both conditions, show separate VIP/civilian populations, and conceal quota details for incomplete reports. Existing quotas, rewards and terminal rules are unchanged. Four behavioral tests cover mission profiles, small populations, mixed populations and incomplete reports; adaptive layout regression checks pass. Live visual acceptance remains pending.
+
+Further balance scope: review mandatory rescue quotas, including the reported experience of three-VIP incidents appearing to require all three rescues for victory. Verify displayed counts against the actual mission-specific quota before adjusting balance. Consider a more forgiving threshold while retaining meaningful consequences and partial rescue credit for losses. Decide the final threshold through balance testing; this patch does not change rescue requirements.
 
 ## Optional Stabilized Soldier Recovery & No One Left Behind — Implemented in Browser 0007
 

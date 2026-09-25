@@ -1,3 +1,10 @@
+BUILD: v0.26.09.24.0006_RESCUE_QUOTA_BRIEFING_CLARITY_PATCH
+September 24, 2026 — Rescue Quota Briefing Clarity
+- Standard/adaptive planning shows the exact existing rescue minimum and explains remaining evacuation duties.
+- VIPs and ordinary civilians remain separately labeled; optional and zero-population missions have distinct text.
+- Incomplete reports conceal quota and population until tracker confirmation.
+- Rescue thresholds, rewards, terminal conditions and save format 4 are unchanged.
+
 BUILD: v0.26.09.24.0005_NIGHT_SHOT_TARGET_VISIBILITY_PATCH
 September 24, 2026 — Night Shot Target Visibility
 - Preserves verified shot target visibility through playback-to-map conversion and clears it on subsequent frames.

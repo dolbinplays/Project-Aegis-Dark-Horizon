@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.24.0005_NIGHT_SHOT_TARGET_VISIBILITY_PATCH";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.24.0005_NIGHT_SHOT_TARGET_VISIBILITY_PATCH";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v26-night-targets";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.24.0006_RESCUE_QUOTA_BRIEFING_CLARITY_PATCH";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.24.0006_RESCUE_QUOTA_BRIEFING_CLARITY_PATCH";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v27-rescue-briefing";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;
