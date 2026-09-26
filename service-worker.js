@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.25.0011_BEACON_BUILDING_EXCLUSION_AND_BASE_FACILITY_DEMOLITION_HOTFIX";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.25.0011_BEACON_BUILDING_EXCLUSION_AND_BASE_FACILITY_DEMOLITION_HOTFIX";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v42-beacon-facility-demolition";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.26.0012_BANDAGE_EARLY_GAME_FIRST_AID_AND_MEDKIT_RESEARCH_PROGRESSION_PATCH";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.26.0012_BANDAGE_EARLY_GAME_FIRST_AID_AND_MEDKIT_RESEARCH_PROGRESSION_PATCH";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v43-bandage-medkit-progression";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;

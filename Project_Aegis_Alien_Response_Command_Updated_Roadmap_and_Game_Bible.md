@@ -1,8 +1,38 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.25.0011_BEACON_BUILDING_EXCLUSION_AND_BASE_FACILITY_DEMOLITION_HOTFIX`
+Current browser build: `v0.26.09.26.0012_BANDAGE_EARLY_GAME_FIRST_AID_AND_MEDKIT_RESEARCH_PROGRESSION_PATCH`
 
 Current save format: `4`
+
+## Bandage Early-Game First Aid + Medkit Research Progression — Implemented September 26, 2026
+
+Browser 0012 establishes the requested early medical progression. **Bandages** are the default cheap field first-aid supply: ordinary soldiers carry 4 and Medics carry 10. A Bandage can stop bleeding during stabilization but restores **0 HP**. Stabilization prefers Bandages and can fall back to a Medkit charge only when no Bandage remains. Routine HP healing still requires a Medkit.
+
+- Bandages cost 2k through Quartermaster and may be restocked from the soldier's stationed base.
+- Campaigns do not receive purchasable starting Medkits. **Field Medkits** is a new research topic; completion unlocks Workshop Medkit manufacturing and Quartermaster Medical Supplies.
+- Manufactured Medkits retain 4 charges for ordinary soldiers and 10 for Medics.
+- Existing saves with Medkits retain them for compatibility. Existing living soldiers without a saved Bandage field normalize to their role-based 4/10 allotment.
+- Manual first aid, Simulation/Hybrid triage, tactical snapshots, streamed playback, mission aftermath, KIA recovery, Quartermaster stock, research and Workshop manufacturing share the same supply authority.
+- Save format remains **4**.
+
+**Acceptance:** start a new campaign and confirm no Medkit can be purchased before research; verify every ordinary soldier begins with 4 Bandages and every Medic with 10; stabilize a bleeding casualty with a Bandage and confirm bleeding stops while HP is unchanged; exhaust Bandages and confirm a Medkit can stabilize as fallback; confirm Bandages cannot heal ordinary HP damage; research Field Medkits, manufacture a Medkit, issue/refill it, save/load, and verify all remaining charges/counts persist.
+
+## Roadmap — TPV AI Observer Persistent Relative Camera
+
+**Status: planned.** While observing an AI-controlled soldier in Third Person View, right-click-drag should rotate/orbit the camera around the current soldier without changing AI control. The player's chosen relative TPV camera offset must persist as playback advances to different AI-controlled soldiers: each newly observed soldier receives the same relative angle/distance instead of resetting to the default camera. The preference remains active until the player moves/orbits the camera again or presses an on-screen **Reset Camera** control. Temporary higher-priority cinematic/incoming-fire cameras may interrupt it, but TPV must return to the saved relative observer offset afterward. Switching actors must recompute from the stored relative offset rather than accumulating drift.
+
+**Acceptance:** rotate around one AI-controlled soldier, advance through several acting soldiers and verify the same relative view; change the view and verify the new offset becomes authoritative; interrupt with a reaction/cinematic camera and verify return; press Reset Camera and verify the default TPV offset is restored and remains the new carried view.
+
+## Roadmap — Unified Exterior-Only Alien Field Beacon Placement Authority
+
+**Status: planned follow-up after live 0011 field reproduction.** A September 26 field screenshot showed a Beacon still appearing inside a dwelling after Browser 0011. Therefore Browser 0011's building-exclusion work is not considered fully field-closed. The follow-up must route **initial mission Beacons, replacement Beacons, and UFO-planted Beacons** through one shared exterior-only deployment authority.
+
+- The Beacon center and all six adjacent reinforcement cells must be outside every authored/procedural building footprint, even when an interior floor cell is otherwise passable and empty.
+- Continue rejecting living-unit occupancy, live cover/vehicle footprints, Skyranger hull/ramp cells, invalid terrain and other established blockers.
+- UFO delivery landing/center commitment must satisfy the same building-aware authority so the later handoff cannot inherit an interior center.
+- If a live/saved mission already contains an invalid inside-building Beacon, deterministically relocate it to the nearest legal exterior seven-cell footprint without changing source identity, wave timing, shield state, knowledge or mission authority.
+
+**Acceptance:** stress initial/replacement/UFO-planted Beacons on dense dwelling, office, market and irregular-building maps; assert center + six-ring have zero building-footprint intersection; save/load immediately before and after each creation path; confirm hidden-location rules, wave timing, source identity and mission completion remain unchanged.
 
 ## Beacon Building Exclusion + Base Facility Demolition — Fixed September 25, 2026
 

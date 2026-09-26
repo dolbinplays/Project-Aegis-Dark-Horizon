@@ -1,3 +1,22 @@
+BUILD: v0.26.09.26.0012_BANDAGE_EARLY_GAME_FIRST_AID_AND_MEDKIT_RESEARCH_PROGRESSION_PATCH
+BANDAGE EARLY-GAME FIRST AID + MEDKIT RESEARCH PROGRESSION
+Save format: 4
+
+- Bandages are now the campaign's basic first-aid consumable. They stop battlefield bleeding during stabilization but restore 0 HP.
+- Every ordinary living soldier carries a persistent 4-Bandage field allotment. Medics carry 10. Existing save records that predate the field normalize to the same specialization-based starter allotment without changing save format.
+- Bandages are deliberately inexpensive Quartermaster stock: 2k to buy / 1k to sell. Quartermaster Loadout shows each soldier's current allotment and can restock from that base's local Bandage inventory.
+- Stabilization prefers one Bandage. If the responder is out of Bandages but has a Medkit charge, the established Medkit can still stabilize as a fallback. Neither stabilization path restores HP.
+- Routine teammate healing and self-treatment still require a Medkit. AI triage may use Bandages for urgent bleeding control but cannot spend them as HP healing.
+- Medkits are no longer open-market starting equipment. New **Field Medkits** research unlocks Workshop manufacturing of reusable Medkits plus Quartermaster access to Medical Supplies.
+- Manufactured Medkits retain the existing 4-charge standard capacity and 10-charge Medic capacity. Existing campaign Medkits remain compatible rather than being deleted from old saves.
+- Tactical snapshots, streamed playback, mission aftermath, KIA equipment recovery and save/load now preserve remaining Bandage counts alongside Medkit state.
+- Save format remains 4.
+
+VALIDATION
+- All five executable embedded runtime JavaScript blocks pass `node --check`.
+- Focused static/behavioral checks cover 4/10 Bandage capacity, Bandage-only stabilization with 0 HP healing, Medkit-only HP restoration, research/manufacturing gates, Quartermaster pricing/restock wiring, tactical persistence, and save format 4.
+- Live browser campaign acceptance remains pending.
+
 BUILD: v0.26.09.25.0011_BEACON_BUILDING_EXCLUSION_AND_BASE_FACILITY_DEMOLITION_HOTFIX
 BEACON BUILDING EXCLUSION + BASE FACILITY DEMOLITION HOTFIX
 Save format: 4
