@@ -1,3 +1,21 @@
+BUILD: v0.26.09.26.0013_LAST_KNOWN_CONTACT_CLEARANCE_FEEDBACK_AND_PERSISTENCE_HOTFIX
+LAST KNOWN CONTACT CLEARANCE FEEDBACK + PERSISTENCE HOTFIX
+Save format: 4
+
+- Last Known Contact markers keep the established authority: they persist until the alien is legitimately reacquired, confirmed dead, or a living AEGIS soldier has valid LOS to the recorded cell and verifies that cell is empty.
+- Empty-cell verification now records a dedicated resolution reason plus the verifying soldier, fire team, round, level and recorded hex. It never consults or reveals the alien's current hidden position.
+- 2D Hex, 3D Iso, FPV and TPV share a brief player-facing banner: **LAST KNOWN POSITION CLEARED — AREA OBSERVED EMPTY**. The banner identifies the verifier/fire team when available and groups stacked reports on the same cell.
+- Streamed Simulation snapshots now carry the clearance attribution fields. Playback tombstones preserve a newer legitimate resolution against older frames that still contain the marker.
+- A later genuine sighting starts a fresh contact epoch and clears the previous resolution attribution. Confirmed death and malformed legacy-marker sanitation remain separate, non-banner cleanup reasons.
+- Hidden alien movement, elapsed time, camera changes, objective reassignment and stale playback omission do not gain marker-clearance authority.
+- Save format remains 4; LOS, fog, AI priorities, combat, alien knowledge and mission-result authority are unchanged.
+
+VALIDATION
+- All five executable embedded runtime JavaScript blocks pass `node --check`.
+- Focused executable contact-memory harness passes 7/7 cases covering valid empty-cell verification, verifier attribution, blocked/facing-away persistence, stale-frame tombstones, fresh-contact epochs and stacked-cell feedback grouping.
+- Static release checks verify snapshot persistence fields, all-view overlay wiring, explicit 0012 Patch History identity, in-scope 0013 history initialization, unchanged save format 4, host/runtime payload identity, service-worker syntax and package metadata.
+- Live field acceptance remains pending: reproduce a marker that clears from another soldier's LOS and confirm the banner names the verifier; also confirm genuinely unseen marker cells remain until verified/reacquired/death.
+
 BUILD: v0.26.09.26.0012_BANDAGE_EARLY_GAME_FIRST_AID_AND_MEDKIT_RESEARCH_PROGRESSION_PATCH
 BANDAGE EARLY-GAME FIRST AID + MEDKIT RESEARCH PROGRESSION
 Save format: 4

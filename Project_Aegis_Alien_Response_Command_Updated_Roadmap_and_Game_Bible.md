@@ -1,8 +1,21 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.26.0012_BANDAGE_EARLY_GAME_FIRST_AID_AND_MEDKIT_RESEARCH_PROGRESSION_PATCH`
+Current browser build: `v0.26.09.26.0013_LAST_KNOWN_CONTACT_CLEARANCE_FEEDBACK_AND_PERSISTENCE_HOTFIX`
 
 Current save format: `4`
+
+## Last Known Contact Clearance Feedback + Persistence — Implemented September 26, 2026
+
+Browser 0013 makes legitimate Last Known Contact resolution visible and hardens its streamed persistence. The underlying doctrine is unchanged: a marker remains unresolved until the alien is reacquired, confirmed dead, or a living AEGIS soldier legitimately sees the **recorded marker cell** and establishes that the alien is no longer there. Hidden alien movement itself never clears or updates the report.
+
+- Empty-cell verification records `empty-verified` resolution authority with the verifying soldier/fire team, round, map level and recorded hex. The alien's current hidden coordinates are not consulted for player feedback.
+- All tactical views receive a brief **LAST KNOWN POSITION CLEARED — AREA OBSERVED EMPTY** notification. When possible it identifies the AEGIS soldier and Fire Team that performed the verification. Multiple reports stacked on one cell are grouped into one notification.
+- Simulation snapshots carry the resolution reason and verifier metadata. A newer resolution tombstone survives an older streamed frame that still contains the marker, while a later legitimate sighting begins a clean new contact epoch.
+- Confirmed alien death remains a distinct cleanup reason and does not show the empty-area banner. Malformed legacy coordinates are likewise sanitized without pretending that a soldier verified the location.
+- Camera movement, elapsed rounds, objective reassignment, AI hidden knowledge and frame omission do not clear a valid unresolved marker. Existing LOS/facing/light/smoke/cover rules remain the only authority for empty-cell verification.
+- Save format remains **4**.
+
+**Acceptance:** create an observed alien contact, lose LOS and retain the marker; keep every AEGIS observer unable to see the recorded cell and verify the marker persists through several rounds and save/load; then let a different fire team gain legitimate LOS to that cell and confirm the marker clears with the named verifier banner. Repeat through a wall/smoke/facing obstruction and confirm no premature clear. Reacquire the alien later and confirm a new sighting/contact epoch works normally. Kill an alien without visibility to the corpse and confirm dead-contact sanitation does not falsely report an empty-cell observer verification.
 
 ## Bandage Early-Game First Aid + Medkit Research Progression — Implemented September 26, 2026
 
