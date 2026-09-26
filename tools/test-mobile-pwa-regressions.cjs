@@ -229,3 +229,10 @@ test('Audio continuity preserves mute and the host bridge cannot fade up while m
   context.fadeBridge(context.targetBridgeVolume(), 1000); tick(1000);
   assert.equal(bridge.volume, 0.65);
 });
+
+test('Packaging refuses a matching source/manifest pair older than the release without writing',()=>{
+ const current=JSON.parse(read('src/manifest.json')).currentBuild,stale='v0.26.01.01.0001_STALE_SOURCE';
+ const writes=new Map();
+ assert.throws(()=>packageInMemory({'src/browser-runtime.html':source.replaceAll(current,stale),'src/manifest.json':read('src/manifest.json').replaceAll(current,stale)},writes),/Refusing to overwrite newer release/);
+ assert.equal(writes.size,0);
+});

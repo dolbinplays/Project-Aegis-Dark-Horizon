@@ -17,6 +17,14 @@ const manifest = JSON.parse(fs.readFileSync(path.join(root, "src", "manifest.jso
 if ([manifest.currentBuild, manifest.lastInspectedBuild, manifest.gameplayParity?.browserBuild].some(value => value !== build)) {
   throw new Error("Synchronize src/manifest.json with CURRENT_GAME_BUILD before packaging.");
 }
+// A matching but stale source/manifest pair must not overwrite a newer release.
+const releasedBuild = JSON.parse(fs.readFileSync(path.join(root, "release-metadata.json"), "utf8")).build;
+const buildVersionParts = value => String(value || "").match(/^v([0-9.]+)_/)?.[1].split(".").map(Number);
+const sourceVersion = buildVersionParts(build), releasedVersion = buildVersionParts(releasedBuild);
+if (sourceVersion && releasedVersion) {
+  const difference = sourceVersion.map((part, index) => part - (releasedVersion[index] || 0)).find(value => value !== 0) || 0;
+  if (difference < 0) throw new Error("Refusing to overwrite newer release " + releasedBuild + " with stale source " + build + ". Synchronize canonical source first.");
+}
 const requiredLineageMarkers = [
   "TACTICAL_FIRST_CLASS_FIRE_TEAM_BEACON_ASSAULT_ORDERS_PATCH",
   "TACTICAL_FPV_TPV_ALIEN_CIRCULAR_CROSSHAIR_TARGET_MARKERS_PATCH",

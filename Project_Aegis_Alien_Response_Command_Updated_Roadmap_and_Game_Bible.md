@@ -1,8 +1,12 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.26.0013_LAST_KNOWN_CONTACT_CLEARANCE_FEEDBACK_AND_PERSISTENCE_HOTFIX`
+Current browser build: `v0.26.09.26.0014_UPDATE_REVIEW_AND_UFO_FLIGHT_LIFECYCLE_HOTFIX`
 
 Current save format: `4`
+
+## September 26 Update Review — Build 0014
+
+Recovered the verified build 0013 packaged runtime into canonical source and synchronized its manifest, preserving Sickbay, flight, beacon/building, demolition, Bandage and contact-clearance updates. Fixed UFO animation/static-model alignment, late-sighting rewind, and temporary flight-geometry cleanup on completion/replacement/teardown. Added real-Three.js behavioral regressions and updated medical harness dependencies. Live visual acceptance remains pending.
 
 ## Last Known Contact Clearance Feedback + Persistence — Implemented September 26, 2026
 

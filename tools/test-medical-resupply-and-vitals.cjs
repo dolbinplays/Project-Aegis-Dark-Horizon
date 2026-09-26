@@ -1,8 +1,8 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict'),{test}=require('node:test');
 const src=fs.readFileSync(path.join(__dirname,'../src/browser-runtime.html'),'utf8');
 function declaration(name){const a=src.indexOf('function '+name+'('),b=src.indexOf('function ',a+9);assert.ok(a>=0&&b>a,name);return src.slice(a,b);}
-function setup(){const ctx=vm.createContext({TACTICAL_MEDKIT_FIELD_CHARGES:4,TACTICAL_MEDIC_FIELD_CHARGES:10,normalizeGearInventory:x=>({...x}),tacticalAiAuthoritativeShotRecords:f=>f.shots||[]});
-  for(const name of ['soldierMedicalCharges','soldierMedicalLoadoutLabel','changeSoldierMedkitState','refillSoldierMedkitState','campaignMedicalLoadoutAfterMission','recoverKiaMedicalSupplies','tacticalFieldMedkitCapacity','tacticalInitialMedkitCharges','tacticalPhysioVisibleUnits','tacticalPhysioFrameInjuryIds'])vm.runInContext(declaration(name),ctx);return ctx;}
+function setup(){const ctx=vm.createContext({TACTICAL_BANDAGE_FIELD_COUNT:4,TACTICAL_MEDIC_BANDAGE_FIELD_COUNT:10,normalizeSoldierSpecialization:s=>s.specialization||"Generalist",TACTICAL_MEDKIT_FIELD_CHARGES:4,TACTICAL_MEDIC_FIELD_CHARGES:10,normalizeGearInventory:x=>({...x}),tacticalAiAuthoritativeShotRecords:f=>f.shots||[]});
+  for(const name of ['soldierBandageCapacity','soldierBandageCount','soldierMedicalCharges','soldierMedicalLoadoutLabel','changeSoldierMedkitState','refillSoldierMedkitState','campaignMedicalLoadoutAfterMission','recoverKiaMedicalSupplies','tacticalFieldMedkitCapacity','tacticalInitialMedkitCharges','tacticalPhysioVisibleUnits','tacticalPhysioFrameInjuryIds'])vm.runInContext(declaration(name),ctx);return ctx;}
 test('Charges survive mission return and reload, including an empty reusable kit',()=>{
   const c=setup(),soldier={id:'a',medkit:true,medicalCharges:4};
   const after={...soldier,...c.campaignMedicalLoadoutAfterMission(soldier,{state:'Ready',medkitCharges:1,medkitOwned:true})};

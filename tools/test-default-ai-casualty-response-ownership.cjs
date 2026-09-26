@@ -20,7 +20,9 @@ const ctx={console,Math,Set,Map,
   tacticalPlayerSkyrangerCrafts:p=>Array.isArray(p?.crafts)?p.crafts:p?[p]:[],
   tacticalSkyrangerRampTouchCellForCraft:c=>c?.rampCells?.[0]||null,
 };
-vm.createContext(ctx);vm.runInContext(block,ctx);
+vm.createContext(ctx);
+const supplyStart=src.indexOf("function tacticalStabilizationSupplyAvailable("),supplyEnd=src.indexOf("function ",supplyStart+9);
+vm.runInContext(src.slice(supplyStart,supplyEnd),ctx);vm.runInContext(block,ctx);
 const medic=(id,x,y,extra={})=>({id,name:id,team:'human',alive:true,hp:36,maxHp:36,tu:24,maxTu:48,x,y,medkitCharges:10,baseSoldier:{medkit:true,specialization:'Medic'},fearState:'steady',...extra});
 const casualty=(id,x,y,extra={})=>({id,name:id,team:'human',alive:true,hp:1,maxHp:40,tu:0,maxTu:48,x,y,downed:true,unconscious:true,prone:true,bleeding:true,stabilized:false,bleedOutRounds:3,fearState:'steady',...extra});
 const refresh=(units,tu=24)=>units.map(u=>u.team==='human'&&!ctx.tacticalHumanIsDowned(u)?{...u,tu}:u);

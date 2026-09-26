@@ -1,3 +1,14 @@
+BUILD: v0.26.09.26.0014_UPDATE_REVIEW_AND_UFO_FLIGHT_LIFECYCLE_HOTFIX
+UPDATE REVIEW AND UFO FLIGHT LIFECYCLE HOTFIX
+Save format: 4
+
+- Restores builds 0008–0013 to canonical source so repackaging cannot erase them.
+- Packaging refuses stale source/manifest versions before overwriting a newer release.
+- Aligns animated UFO touchdown/liftoff with the stationary model.
+- Prevents late observation from rewinding flight to an unseen approach segment.
+- Disposes temporary flight geometry on completion, replacement and runtime teardown.
+- Updates medical regression harnesses for Bandage helpers.
+
 BUILD: v0.26.09.26.0013_LAST_KNOWN_CONTACT_CLEARANCE_FEEDBACK_AND_PERSISTENCE_HOTFIX
 LAST KNOWN CONTACT CLEARANCE FEEDBACK + PERSISTENCE HOTFIX
 Save format: 4
