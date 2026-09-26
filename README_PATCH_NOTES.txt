@@ -1,3 +1,28 @@
+BUILD: v0.26.09.25.0010_UFO_FLIGHT_PATCH_NOTES_SCOPE_STARTUP_HOTFIX
+UFO FLIGHT PATCH NOTES SCOPE STARTUP HOTFIX
+Save format: 4
+
+- Fixes the startup-blocking `ReferenceError: PATCH_NOTES_HISTORY is not defined` introduced by Browser 0009.
+- Root cause: the 0009 in-game Patch Notes history entry was appended at module scope after `AlienResponseCommand` closed, while `PATCH_NOTES_HISTORY` is local to that component.
+- Moves the 0009 history entry into the existing Patch Notes `useMemo` before sorting/return, alongside all other historical entries.
+- Restores Browser 0008 Sickbay Bed Capacity Authority to its explicit build ID instead of letting it inherit the current build marker.
+- Observation-gated UFO approach/departure, source handoff, visibility rules, reinforcement behavior and all other Browser 0009 gameplay remain unchanged.
+- Save format remains 4. No campaign migration is required.
+- Static scope checks, embedded JavaScript parse checks, host/service-worker syntax, payload hash/byte metadata, and package integrity pass. Live startup acceptance remains pending.
+
+BUILD: v0.26.09.25.0009_OBSERVATION_GATED_UFO_FLIGHT_PRESENTATION_PATCH
+OBSERVATION-GATED UFO FLIGHT PRESENTATION
+Save format: 4
+
+- Version-2 reinforcement transports now receive one deterministic diagonal approach/departure route tied to the already committed landing footprint.
+- A transport remains completely presentation-hidden until a living active AEGIS soldier can legitimately observe a sampled in-bounds point on its route. Once seen, craft observation latches through touchdown and departure without revealing nearby aliens, terrain, or the planted beacon.
+- Observed 3D Iso / FPV / TPV arrivals animate one temporary purple saucer in the existing persistent Three.js scene; terrain, roofs, fog, units, and buildings are not rebuilt for the flyover.
+- Observed departure lifts from the stored footprint and exits along the same deterministic corridor. A visible planted beacon is masked beneath the departing hull until the craft clears it; an unobserved beacon remains hidden.
+- 2D Hex receives a bounded purple-craft sky overlay only for observed transports. Hidden transports produce no cinematic card, locator, camera focus, FPV objective entry, minimap extraction marker, or static 3D model.
+- Manual and streamed AI paths carry the same craft snapshot, source identity, observation latch, route, and departure presentation. Late observation of a landed craft reveals only that source's craft covers.
+- Existing UFO-to-beacon timing, wave counts, disembarkation safety, center reservation, source isolation, snapshot isolation, mission terminal authority, and save format 4 are unchanged.
+- Automated syntax/static contract checks pass. Live Manual / Hybrid / Simulation / 2D / 3D / installed-PWA visual acceptance remains pending.
+
 BUILD: v0.26.09.25.0008_SICKBAY_BED_CAPACITY_AUTHORITY_HOTFIX
 SICKBAY BED CAPACITY AUTHORITY HOTFIX
 Save format: 4

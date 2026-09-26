@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.25.0008_SICKBAY_BED_CAPACITY_AUTHORITY_HOTFIX";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.25.0008_SICKBAY_BED_CAPACITY_AUTHORITY_HOTFIX";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v39-sickbay-capacity";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.25.0010_UFO_FLIGHT_PATCH_NOTES_SCOPE_STARTUP_HOTFIX";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.25.0010_UFO_FLIGHT_PATCH_NOTES_SCOPE_STARTUP_HOTFIX";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v41-ufo-flight-scope-hotfix";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;

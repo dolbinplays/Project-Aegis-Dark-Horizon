@@ -1,8 +1,31 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.25.0008_SICKBAY_BED_CAPACITY_AUTHORITY_HOTFIX`
+Current browser build: `v0.26.09.25.0010_UFO_FLIGHT_PATCH_NOTES_SCOPE_STARTUP_HOTFIX`
 
 Current save format: `4`
+
+## UFO Flight Patch Notes Scope Startup Hotfix — September 25, 2026
+
+Browser 0010 fixes the startup-blocking `PATCH_NOTES_HISTORY is not defined` regression introduced during Browser 0009 packaging. The 0009 Patch Notes entry had been appended after `AlienResponseCommand` closed even though the history array is local to that component. The entry now initializes inside the owning Patch Notes `useMemo`, and Browser 0008 retains its explicit historical build identity.
+
+The Browser 0009 observation-gated UFO approach/departure implementation is otherwise unchanged. Reinforcement timing/counts, craft/beacon knowledge separation, source handoff, mission-terminal authority and **save format 4** are unchanged.
+
+**Acceptance:** launch Standard and Mobile/Adaptive game shells from a clean browser load and an installed/PWA update; confirm the main menu renders without a runtime error, Patch History opens with 0010 newest followed by 0009 and 0008, and one observed/unobserved reinforcement UFO case still follows Browser 0009 behavior. See `UFO_FLIGHT_PATCH_NOTES_SCOPE_STARTUP_HOTFIX_VALIDATION.md`.
+
+## Observation-Gated UFO Flight Presentation — Implemented September 25, 2026
+
+Browser 0009 turns the version-2 reinforcement-transport lifecycle into a visible flight only when AEGIS has earned that knowledge. The simulation and source handoff remain the authority; this patch adds presentation and closes UI leaks that could disclose a hidden transport.
+
+- Each newly landed version-2 transport stores one deterministic approach/exit plan derived from its committed landing footprint. The approach begins beyond the tactical boundary and is never rerolled by presentation.
+- Route observation is evaluated only against living, active AEGIS soldiers and in-bounds sampled positions. A valid sighting latches `craftObserved` and the first observed progress point; ordinary landing-footprint sight can still reveal the final descent without retroactively exposing the unseen part of the route.
+- In 3D Iso, FPV and TPV, an observed arrival uses one temporary purple saucer node in the persistent Three.js scene. The cinematic camera follows that node while the static tactical scene remains intact. An unobserved transport has no visible model, camera focus, locator or cinematic card.
+- The landed craft remains governed by the existing full-round residency and source identity. If it is discovered later, only that transport's craft covers become revealed; unrelated craft and beacon knowledge do not change.
+- At the established R+2 handoff, a previously observed craft lifts from the stored footprint and departs. If the planted beacon itself is already visible, its model is held beneath the hull until the saucer clears; otherwise beacon position remains undisclosed.
+- 2D Hex uses a bounded purple-craft sky overlay for an observed flight rather than the prior text-only craft announcement. FPV/TPV objective and minimap extraction markers now ignore alien transports so a hidden saucer cannot masquerade as a Skyranger extraction point.
+- Manual and streamed AI continuations carry the same detached craft snapshot, route and handoff data. Reinforcement aliens keep their independent visibility state; seeing the craft is never permission to reveal delivered aliens.
+- Existing reinforcement counts/timing, safe disembarkation, exact center reservation, source isolation, snapshot isolation, mission victory gating and **save format 4** are unchanged.
+
+**Acceptance:** observe and miss the same delivery from different squad positions; lose LOS after the first sighting; verify 3D Iso, FPV, TPV and 2D behavior; save/reload across landed and handoff states; run sequential transports beside a crashed UFO; and confirm hidden aliens/beacons/landing coordinates never leak. Live installed/PWA acceptance remains pending. See `UFO_FLIGHT_PRESENTATION_VALIDATION.md`.
 
 ## Sickbay Bed Capacity Authority — Fixed September 25, 2026
 
@@ -5114,7 +5137,7 @@ Implemented alien-pathing regression follow-up (Browser 0845, 2026-08-24): **Ali
 
 ## Roadmap Addition - Knowledge-Limited Reinforcement Craft Arrival Cinematic
 
-**Status:** First bounded implementation completed in Browser 1115. The current text-box/non-positional cutaway is superseded by the approved observation-gated Three.js purple-UFO flyover and unified UFO-to-Field-Beacon reinforcement lifecycle below. Until that replacement ships, observed arrivals may focus their authoritative landing position and unobserved arrivals retain the existing non-positional handling. Full reusable flight choreography, player skip/reduced-motion controls, source handoff, and native parity remain follow-up work.
+**Status:** Version-2 observation-gated approach and departure presentation implemented in Browser 0009; live visual acceptance remains pending. Browser 0009 replaces the version-2 text/non-positional craft announcement with the approved purple-UFO flight in 3D and a bounded observed 2D sky fallback, while preserving independent alien/beacon knowledge. Initial/replacement beacon conversion, broader reusable flight choreography, explicit player skip controls, and native parity remain follow-up work.
 
 ### Approved Three.js purple-UFO flyover replacement
 - Replace the box that states an alien craft is flying across the battlefield with an actual **purple Three.js UFO** entering from beyond the tactical boundary, crossing the sky, descending, and landing at the already-authoritative reinforcement landing location. Do not display a substitute text box that visually announces the craft's flight path or position.
@@ -5130,6 +5153,8 @@ Implemented alien-pathing regression follow-up (Browser 0845, 2026-08-24): **Ali
 - The flyover remains a presentation and knowledge-gating upgrade. The UFO-to-beacon handoff below intentionally consolidates reinforcement-source ownership, but does not otherwise change alien counts, fog authority, TU, movement, LOS, damage, civilian/VIP behavior, fire-team formations, or unrelated mission objectives.
 
 ### Approved unified UFO-delivery-to-Field-Beacon reinforcement lifecycle
+
+**Browser September 25 / 0009 observation-gated flight presentation:** version-2 transports now persist a deterministic outside-boundary approach/exit plan. Only a legitimate AEGIS sighting latches and presents the craft; observed 3D views animate one temporary purple saucer in the persistent Three.js scene, 2D receives a bounded sky fallback, and hidden transports no longer leak through static 3D craft rendering, cinematic cards, FPV objective entries or minimap extraction markers. Previously observed transports visibly lift away at the established handoff; beacon visibility remains separately authoritative. Reinforcement timing/counts and save format 4 are unchanged. Live visual acceptance remains pending.
 
 **Browser September 25 / 0007 snapshot isolation:** normalized craft state and AI frame snapshots now detach all nested placement/delivery data. Playback registers an independent craft copy. Two reproduced regression cases verify input coordinates cannot change through normalization and earlier frames cannot rewrite later frame or reinforcement state. All thirty focused UFO tests pass. This hardens saved/streamed state ownership; flight animations remain pending.
 
