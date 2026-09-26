@@ -1,8 +1,29 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.25.0010_UFO_FLIGHT_PATCH_NOTES_SCOPE_STARTUP_HOTFIX`
+Current browser build: `v0.26.09.25.0011_BEACON_BUILDING_EXCLUSION_AND_BASE_FACILITY_DEMOLITION_HOTFIX`
 
 Current save format: `4`
+
+## Beacon Building Exclusion + Base Facility Demolition — Fixed September 25, 2026
+
+Browser 0011 responds to a live report of an Alien Field Beacon appearing inside a normal dwelling and adds the requested ability to rebuild strategic bases by demolishing obsolete facilities.
+
+### Tactical placement authority
+- Initial mission Beacons no longer choose a center merely because the center cell lacks hard cover. The full Beacon center plus six adjacent reinforcement cells must be legal and outside procedural building geometry.
+- Replacement Beacons delegate to the same seven-cell authority, preserving the previously implemented clear-ring rule, safe-distance doctrine, deterministic retry behavior, and difficulty-scaled immediate wave.
+- Reinforcement UFO placement rejects its entire hull/ramp footprint when any cell belongs to an Earth building. The previous structural-cover-distance check remains as an additional separation guard.
+- Version-2 UFO-to-Beacon handoff repairs already-saved invalid centers: if the stored center is inside a building, the source keeps its identity/timing and selects the nearest deterministic legal Beacon footprint before planting. A temporarily blocked but otherwise valid center still follows the existing retry behavior.
+- Building exclusion is placement authority only. It does not reveal hidden buildings, change LOS/fog, change reinforcement counts/timing, or alter Beacon shields/health/knowledge.
+
+### Base facility demolition
+- Selecting a built facility in the Base view now exposes **Demolish Facility** with a confirmation step. Demolition clears the facility footprint for rebuilding and provides no refund.
+- **Access Lift is permanent and cannot be demolished.** Both the displayed control and the command-side preflight reject any attempt.
+- Empty 2x2 Hangars may be demolished, but an occupied/reserved Hangar must have its aircraft relocated first.
+- Base Stores may be demolished only if the selected base's loose inventory fits in the remaining local storage capacity after removal.
+- Sickbay may be demolished. The existing base-local Sickbay authority re-evaluates capacity and moves excess full-speed patients to Barracks recovery instead of leaving impossible bed occupancy.
+- Other facility effects/upkeep derive from the updated base grid immediately. Save format remains **4**.
+
+**Acceptance:** generate dense town/residential maps and confirm initial, replacement, and UFO-delivered Beacons never occupy a building footprint or reinforcement ring. Exercise an observed UFO delivery and handoff beside dwellings. In Base view, demolish/rebuild ordinary 1x1 facilities and an empty Hangar; confirm an occupied Hangar and over-capacity Stores are blocked; confirm Sickbay removal rebalances patients; and verify the Access Lift has no legal demolition path. Save/reload before and after demolition. See `BEACON_BUILDING_EXCLUSION_AND_BASE_FACILITY_DEMOLITION_VALIDATION.md`.
 
 ## UFO Flight Patch Notes Scope Startup Hotfix — September 25, 2026
 

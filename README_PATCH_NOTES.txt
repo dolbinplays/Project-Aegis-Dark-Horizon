@@ -1,3 +1,24 @@
+BUILD: v0.26.09.25.0011_BEACON_BUILDING_EXCLUSION_AND_BASE_FACILITY_DEMOLITION_HOTFIX
+BEACON BUILDING EXCLUSION + BASE FACILITY DEMOLITION HOTFIX
+Save format: 4
+
+- Fixes the live-reported Alien Field Beacon placement inside a normal Earth dwelling.
+- Initial mission Beacons now require the full center-plus-six-cell footprint to be outside building geometry and clear of units, live cover, and player Skyranger geometry.
+- Replacement Beacons use the same shared seven-cell legality authority while retaining their existing deterministic retry, safety-radius, difficulty-wave, and visibility rules.
+- Reinforcement UFO landing footprints now reject every procedural building cell, not merely nearby structural-cover pieces, preventing a transport from fitting inside a large open building interior.
+- If an already-saved version-2 UFO delivery reaches handoff with its committed Beacon center inside a building, the handoff deterministically relocates the Beacon to the nearest legal seven-cell footprint instead of planting it in the structure.
+- Base view: select an existing facility to expose **Demolish Facility**. Demolition requires confirmation, clears the grid space immediately, and gives no construction refund.
+- The **Access Lift cannot be demolished**. This is enforced by both the UI and demolition authority.
+- Hangars cannot be demolished while an aircraft occupies or reserves them. Base Stores cannot be demolished if doing so would leave local inventory over remaining storage capacity.
+- Sickbay demolition is allowed; existing per-base bed-capacity authority moves excess recovering soldiers to Barracks recovery automatically.
+- Save format remains 4; no campaign migration is required.
+
+VALIDATION
+- All five executable embedded runtime JavaScript blocks pass `node --check`.
+- Service worker JavaScript passes `node --check`.
+- Focused static contracts verify initial/replacement/UFO/handoff building exclusion, demolition controls, Access Lift protection, hangar/storage guards, patch-history scope, save format 4, and package metadata.
+- Live field acceptance remains required for a dwelling-heavy mission and base rebuild workflow. See `BEACON_BUILDING_EXCLUSION_AND_BASE_FACILITY_DEMOLITION_VALIDATION.md`.
+
 BUILD: v0.26.09.25.0010_UFO_FLIGHT_PATCH_NOTES_SCOPE_STARTUP_HOTFIX
 UFO FLIGHT PATCH NOTES SCOPE STARTUP HOTFIX
 Save format: 4
