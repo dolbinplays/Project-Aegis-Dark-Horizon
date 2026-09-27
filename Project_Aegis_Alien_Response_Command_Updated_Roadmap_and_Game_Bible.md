@@ -1,8 +1,12 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.27.0001_BEACON_IMMUNITY_COLOR_RINGS_PATCH`
+Current browser build: `v0.26.09.27.0002_STORAGE_CACHE_HYGIENE_HOTFIX`
 
 Current save format: `4`
+
+## September 27 Storage Cache Hygiene — Build 0002
+
+A live Chrome storage-pressure warning coincided with approximately 1.3 MB free on C:. The worker now refreshes precached resources in place, removes duplicate runtime entries, excludes installation archives/out-of-scope resources, and absorbs optional cache-write failures. Save storage is unchanged. This reduces redundant cache storage but cannot resolve a full system drive. External backups on E: remain recommended. See `STORAGE_CACHE_HYGIENE_VALIDATION.md`.
 
 ## September 26 Update Review — Build 0014
 

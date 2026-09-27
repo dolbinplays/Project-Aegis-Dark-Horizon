@@ -1,3 +1,12 @@
+BUILD: v0.26.09.27.0002_STORAGE_CACHE_HYGIENE_HOTFIX
+BROWSER CACHE STORAGE HYGIENE
+Save format: 4
+
+- Refresh precached assets in place and remove duplicate runtime copies.
+- Skip installer archives and resources outside the game path during runtime caching.
+- Optional asset-cache failures do not fail successful network downloads.
+- Saves, recovery generations and external backups remain intact. Low system-drive space still needs to be resolved outside the game.
+
 BUILD: v0.26.09.27.0001_BEACON_IMMUNITY_COLOR_RINGS_PATCH
 TACTICAL VISUAL POLISH
 Save format: 4
