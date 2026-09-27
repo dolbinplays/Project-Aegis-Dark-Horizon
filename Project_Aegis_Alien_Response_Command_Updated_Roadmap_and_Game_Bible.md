@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.26.0016_TPV_PERSISTENT_OBSERVER_CAMERA_PATCH`
+Current browser build: `v0.26.09.27.0001_BEACON_IMMUNITY_COLOR_RINGS_PATCH`
 
 Current save format: `4`
 
@@ -520,7 +520,7 @@ Additional authority rules implemented with this consolidation:
 
 ## Roadmap Addition — Shielded Beacon Immunity Color Rings
 
-**Requested September 16, 2026. Status: roadmap / not yet implemented.**
+**Requested September 16, 2026. Status: implemented in Browser 2026-09-27 0001; live visual acceptance pending.**
 
 - Shielded Alien Field Beacons should show subtle **colored rings around the top of the beacon** indicating the weapon/damage type or types to which that beacon is currently immune.
 - A beacon with multiple immunities may show multiple distinct rings. Ring colors should remain consistent for the same damage type across missions.
@@ -528,6 +528,8 @@ Additional authority rules implemented with this consolidation:
 - The rings are presentation of existing shield/immunity authority only; they must not create a second immunity state.
 
 **Acceptance:** spawn shielded beacons with different immunity combinations, verify the correct stable ring set appears in 3D views without revealing hidden shield information beyond what the beacon itself is visually presenting, and confirm no game text explains the rings.
+
+Implementation uses the existing damage-blocking authority for a stable cyan ballistic ring and magenta energy ring. Active combined shields show both; inactive/unshielded beacons show neither. Both 3D rendering paths use the same geometry helper, and persistent cover refresh tracks shield/state changes. No explanatory in-game text was added. See `BEACON_IMMUNITY_RINGS_VALIDATION.md`.
 
 ## Roadmap Addition — Door Frame / Adjacent Wall Seam Continuity
 

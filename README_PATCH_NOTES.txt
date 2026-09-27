@@ -1,3 +1,9 @@
+BUILD: v0.26.09.27.0001_BEACON_IMMUNITY_COLOR_RINGS_PATCH
+TACTICAL VISUAL POLISH
+Save format: 4
+
+- Refines tactical scenery detail while preserving visibility and combat rules.
+
 BUILD: v0.26.09.26.0016_TPV_PERSISTENT_OBSERVER_CAMERA_PATCH
 PERSISTENT TPV OBSERVER CAMERA
 Save format: 4
