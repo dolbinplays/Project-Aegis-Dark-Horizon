@@ -1,3 +1,12 @@
+BUILD: v0.26.09.27.0003_HYBRID_CONTROL_PERSISTENCE_HOTFIX
+HYBRID CONTROL PERSISTENCE
+Save format: 4
+
+- Preserve Hybrid AI mode in every live tactical snapshot.
+- Remember FPV/TPV across Hybrid rounds, Take Back Control and saves made during leader control.
+- Prevent ordinary selection, turn, playback and view changes from erasing the setting before a menu return or save/load.
+- Explicit On/Off selection remains authoritative; combat and AI rules are unchanged.
+
 BUILD: v0.26.09.27.0002_STORAGE_CACHE_HYGIENE_HOTFIX
 BROWSER CACHE STORAGE HYGIENE
 Save format: 4

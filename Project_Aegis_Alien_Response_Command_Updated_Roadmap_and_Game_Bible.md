@@ -1,8 +1,12 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.27.0002_STORAGE_CACHE_HYGIENE_HOTFIX`
+Current browser build: `v0.26.09.27.0003_HYBRID_CONTROL_PERSISTENCE_HOTFIX`
 
 Current save format: `4`
+
+## September 27 Hybrid Control Persistence — Build 0003
+
+Fixed an omitted Hybrid flag in the primary tactical snapshot writer. Its old supplemental effect ran only when the toggle changed, allowing later snapshot replacements to erase the choice. Hybrid now participates in the main snapshot and its dependencies. Explicit disable persists, and mission state stays isolated. FPV/TPV now carries between Hybrid rounds and through Take Back Control; pending camera choice also survives save/load during leader control. See `HYBRID_CONTROL_PERSISTENCE_VALIDATION.md`.
 
 ## September 27 Storage Cache Hygiene — Build 0002
 
