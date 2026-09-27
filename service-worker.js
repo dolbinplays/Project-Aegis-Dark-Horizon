@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.26.0014_UPDATE_REVIEW_AND_UFO_FLIGHT_LIFECYCLE_HOTFIX";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.26.0014_UPDATE_REVIEW_AND_UFO_FLIGHT_LIFECYCLE_HOTFIX";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v45-review-flight";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.26.0015_UNIFIED_EXTERIOR_BEACON_PLACEMENT_PATCH";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.26.0015_UNIFIED_EXTERIOR_BEACON_PLACEMENT_PATCH";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v46-exterior-beacon";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;

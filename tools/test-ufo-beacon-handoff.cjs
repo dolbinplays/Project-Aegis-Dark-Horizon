@@ -53,7 +53,8 @@ function seededRandom(context, seed=123456789) {
 const c=runtimeContext();
 const mission={id:'handoff',kind:'Alien Incident',region:'Europe',gridSize:64,threat:2,alienReinforcementDifficulty:'medium'};
 function arrival(){return c.tacticalAlienReinforcementArrival({state:{waveCount:0,called:true,arrivalRound:5,arrivalTotalCount:4},mission,round:5});}
-function advance(a,round,units=a.units,covers=a.covers){return c.tacticalAdvanceUfoBeaconDelivery({state:a.state,units,covers,mission,round});}
+// Handoff fixtures represent the squad having cleared the reserved seven-cell footprint.
+function advance(a,round,units=[],covers=a.covers){return c.tacticalAdvanceUfoBeaconDelivery({state:a.state,units,covers,mission,round});}
 test('new arrival holds a full subsequent round then plants exactly once without another wave',()=>{
  const a=arrival(),original=JSON.stringify(a),record=a.state.dropship.deliveryLanding;
  assert.equal(c.tacticalUfoBeaconDeliveryPending(a.state),true);
@@ -77,13 +78,13 @@ test('pending delivery prevents premature victory and another reinforcement call
 test('save/load preserves deadline; occupied center retries without removing the craft',()=>{
  const a=JSON.parse(JSON.stringify(arrival())),cell=a.state.dropship.deliveryLanding.beaconCenter;
  a.state=c.tacticalAlienReinforcementState(mission,a.units,a.state);
- const blocked=advance(a,7,[...a.units,{id:'block',team:'human',hp:20,...cell}]);assert.equal(blocked.changed,false);assert.equal(blocked.covers,a.covers);
+ const blocked=advance(a,7,[...a.units,{id:'block',team:'human',hp:20,...cell}]);assert.equal(blocked.changed,false);assert.equal(blocked.covers.length,a.covers.length);assert.ok(blocked.covers.every(cover=>cover.alienDropshipPart));
  assert.equal(advance(a,8).changed,true);
  const old=JSON.parse(JSON.stringify(a));old.state.dropship.deliveryLanding.version=1;assert.equal(advance(old,20).changed,false);
 });
 test('hidden handoff does not reveal a beacon or remove unrelated craft',()=>{
  const a=arrival(),unrelated={id:'other-craft',x:2,y:2,hp:999,alienDropshipPart:'hull',ufoDeliverySourceId:'other'};
- const out=advance(a,7,a.units,[...a.covers,unrelated]);assert.equal(out.observed,false);assert.equal(out.beacon.revealed,false);assert.ok(out.covers.includes(unrelated));
+ const out=advance(a,7,[],[...a.covers,unrelated]);assert.equal(out.observed,false);assert.equal(out.beacon.revealed,false);assert.ok(out.covers.includes(unrelated));
  const player={crafts:[{id:'player'},{deliveryLanding:{sourceId:'other'}},a.placement]};c.tacticalRegisterAlienDropship(player,out.craft);
  assert.equal(player.crafts.length,2);assert.ok(player.crafts.some(v=>v.id==='player'));
 });

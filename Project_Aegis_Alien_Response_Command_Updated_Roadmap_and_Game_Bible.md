@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.26.0014_UPDATE_REVIEW_AND_UFO_FLIGHT_LIFECYCLE_HOTFIX`
+Current browser build: `v0.26.09.26.0015_UNIFIED_EXTERIOR_BEACON_PLACEMENT_PATCH`
 
 Current save format: `4`
 
@@ -42,7 +42,7 @@ Browser 0012 establishes the requested early medical progression. **Bandages** a
 
 ## Roadmap — Unified Exterior-Only Alien Field Beacon Placement Authority
 
-**Status: planned follow-up after live 0011 field reproduction.** A September 26 field screenshot showed a Beacon still appearing inside a dwelling after Browser 0011. Therefore Browser 0011's building-exclusion work is not considered fully field-closed. The follow-up must route **initial mission Beacons, replacement Beacons, and UFO-planted Beacons** through one shared exterior-only deployment authority.
+**Status: implemented in Browser 0015; live field acceptance pending.**
 
 - The Beacon center and all six adjacent reinforcement cells must be outside every authored/procedural building footprint, even when an interior floor cell is otherwise passable and empty.
 - Continue rejecting living-unit occupancy, live cover/vehicle footprints, Skyranger hull/ramp cells, invalid terrain and other established blockers.
@@ -50,6 +50,8 @@ Browser 0012 establishes the requested early medical progression. **Bandages** a
 - If a live/saved mission already contains an invalid inside-building Beacon, deterministically relocate it to the nearest legal exterior seven-cell footprint without changing source identity, wave timing, shield state, knowledge or mission authority.
 
 **Acceptance:** stress initial/replacement/UFO-planted Beacons on dense dwelling, office, market and irregular-building maps; assert center + six-ring have zero building-footprint intersection; save/load immediately before and after each creation path; confirm hidden-location rules, wave timing, source identity and mission completion remain unchanged.
+
+Browser 0015 fixes the effective multi-transport override, validates UFO center + ring at landing and handoff, and repairs saved interior beacons and playback copies on restore. If no legal exterior site exists, placement defers and an existing saved beacon is retained for a later retry. Occupied handoff cells may delay departure until clear. See `BEACON_EXTERIOR_AUTHORITY_VALIDATION.md`.
 
 ## Beacon Building Exclusion + Base Facility Demolition — Fixed September 25, 2026
 

@@ -70,7 +70,7 @@ test('arrival through save and departure plants exactly on its reserved center',
  assert.equal(a.landed,true);const center=a.placement.deliveryCenter;
  assert.ok(a.reinforcements.every(unit=>unit.x!==center.x||unit.y!==center.y));
  const state=c.tacticalAlienReinforcementState(mission,a.units,JSON.parse(JSON.stringify(a.state)));
- const out=c.tacticalAdvanceUfoBeaconDelivery({state,units:a.units,covers:a.covers,mission,round:7});
+ const out=c.tacticalAdvanceUfoBeaconDelivery({state,units:[],covers:a.covers,mission,round:7});
  assert.equal(out.changed,true);assert.equal(out.beacon.x,center.x);assert.equal(out.beacon.y,center.y);
  assert.equal(out.covers.filter(cover=>cover.alienBeacon).length,1);
 });
@@ -79,6 +79,6 @@ test('older saved deliveries retain their previously committed anchor',()=>{
  const oldAnchor=a.placement.hullCells.find(cell=>cell.x!==a.placement.deliveryCenter.x);
  a.state.dropship.deliveryLanding.beaconCenter={x:oldAnchor.x,y:oldAnchor.y};delete a.state.dropship.deliveryCenter;
  const state=c.tacticalAlienReinforcementState(mission,a.units,JSON.parse(JSON.stringify(a.state)));
- const out=c.tacticalAdvanceUfoBeaconDelivery({state,units:a.units,covers:a.covers,mission,round:7});
+ const out=c.tacticalAdvanceUfoBeaconDelivery({state,units:[],covers:a.covers,mission,round:7});
  assert.equal(out.changed,true);assert.equal(out.beacon.x,oldAnchor.x);assert.equal(out.beacon.y,oldAnchor.y);
 });

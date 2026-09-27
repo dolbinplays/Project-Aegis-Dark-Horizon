@@ -1,3 +1,12 @@
+BUILD: v0.26.09.26.0015_UNIFIED_EXTERIOR_BEACON_PLACEMENT_PATCH
+UNIFIED EXTERIOR BEACON PLACEMENT
+Save format: 4
+
+- Fixes the multi-transport deployment override that bypassed exterior placement and cleared nearby cover.
+- UFO landing and handoff validate the complete seven-cell beacon footprint. Occupied cells defer planting.
+- Saved interior beacons relocate to the nearest legal exterior footprint on mission restore, including playback copies, preserving identity, health, shield, knowledge and wave timing.
+- Nearest-cell searches check candidates in deterministic distance order and stop at the first legal result.
+
 BUILD: v0.26.09.26.0014_UPDATE_REVIEW_AND_UFO_FLIGHT_LIFECYCLE_HOTFIX
 UPDATE REVIEW AND UFO FLIGHT LIFECYCLE HOTFIX
 Save format: 4
