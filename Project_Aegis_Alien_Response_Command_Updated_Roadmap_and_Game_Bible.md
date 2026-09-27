@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.26.0015_UNIFIED_EXTERIOR_BEACON_PLACEMENT_PATCH`
+Current browser build: `v0.26.09.26.0016_TPV_PERSISTENT_OBSERVER_CAMERA_PATCH`
 
 Current save format: `4`
 
@@ -36,9 +36,11 @@ Browser 0012 establishes the requested early medical progression. **Bandages** a
 
 ## Roadmap — TPV AI Observer Persistent Relative Camera
 
-**Status: planned.** While observing an AI-controlled soldier in Third Person View, right-click-drag should rotate/orbit the camera around the current soldier without changing AI control. The player's chosen relative TPV camera offset must persist as playback advances to different AI-controlled soldiers: each newly observed soldier receives the same relative angle/distance instead of resetting to the default camera. The preference remains active until the player moves/orbits the camera again or presses an on-screen **Reset Camera** control. Temporary higher-priority cinematic/incoming-fire cameras may interrupt it, but TPV must return to the saved relative observer offset afterward. Switching actors must recompute from the stored relative offset rather than accumulating drift.
+**Status: implemented in Browser 0016; live field acceptance pending.** While observing an AI-controlled soldier in Third Person View, right-click-drag should rotate/orbit the camera around the current soldier without changing AI control. The player's chosen relative TPV camera offset must persist as playback advances to different AI-controlled soldiers: each newly observed soldier receives the same relative angle/distance instead of resetting to the default camera. The preference remains active until the player moves/orbits the camera again or presses an on-screen **Reset Camera** control. Temporary higher-priority cinematic/incoming-fire cameras may interrupt it, but TPV must return to the saved relative observer offset afterward. Switching actors must recompute from the stored relative offset rather than accumulating drift.
 
 **Acceptance:** rotate around one AI-controlled soldier, advance through several acting soldiers and verify the same relative view; change the view and verify the new offset becomes authoritative; interrupt with a reaction/cinematic camera and verify return; press Reset Camera and verify the default TPV offset is restored and remains the new carried view.
+
+Controls: right-drag to orbit, scroll to adjust distance, and **Reset Camera** to restore the default view. The preference is retained for the mounted tactical view, including renderer quality changes; it is not a saved campaign setting. See `TPV_OBSERVER_CAMERA_VALIDATION.md`.
 
 ## Roadmap — Unified Exterior-Only Alien Field Beacon Placement Authority
 

@@ -1,3 +1,12 @@
+BUILD: v0.26.09.26.0016_TPV_PERSISTENT_OBSERVER_CAMERA_PATCH
+PERSISTENT TPV OBSERVER CAMERA
+Save format: 4
+
+- Right-drag in TPV to orbit around the observed soldier; scroll to adjust distance.
+- Carries the chosen relative angle and distance across AI actor changes and renderer quality changes.
+- Reaction/cinematic cameras temporarily retain priority without overwriting your view.
+- Reset Camera restores the default shoulder view. Camera input leaves AI orders unchanged.
+
 BUILD: v0.26.09.26.0015_UNIFIED_EXTERIOR_BEACON_PLACEMENT_PATCH
 UNIFIED EXTERIOR BEACON PLACEMENT
 Save format: 4
