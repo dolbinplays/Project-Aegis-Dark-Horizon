@@ -62,7 +62,7 @@ test('saved body types share portrait scale and retain identity across reload',(
 });
 test('classic torso and armor expand together without changing height or shared geometry',()=>{
  for(const body of ['lean','average','stocky']){
- const visual=c.soldierVisualData({id:'body',appearance:{body,trophy:'patch'}}),scale=visual.bodyScale;
+ const visual=c.soldierVisualData({id:'body',appearance:{body,gender:"male",trophy:'patch'}}),scale=visual.bodyScale;
  const geometry=new THREE.BoxGeometry(0.3,0.4,0.2),before=Array.from(geometry.attributes.position.array);
  const torso=new THREE.Mesh(geometry),plate=new THREE.Mesh(geometry),group=new THREE.Group();
  torso.position.y=0.44;plate.position.set(0,0.55,0.18);group.add(torso,plate);
@@ -85,7 +85,7 @@ test('body changes invalidate persistent models but HP and TU changes do not',()
 test('classic and articulated construction retain saved body scale through detail switches',()=>{
  for(const body of ['lean','average','stocky'])for(const detail of ['classic','full','mid','low']){
  const geometry=new THREE.BoxGeometry(0.3,0.4,0.2),runtime={THREE,qualitySettings:{shadows:false,standardMaterials:true},geoCache:new Proxy({}, {get:()=>geometry}),materialCache:new Map(),sharedMaterials:new Set(),sharedGeometries:new Set(),soldierModelStyle:detail==='classic'?'classic':'articulated',articulatedDetailMode:detail};
- const unit={id:'body',team:'human',hp:40,facing:'N',baseSoldier:{id:'body',armor:'Field Suit',appearance:{body,trophy:'patch'}}};
+ const unit={id:'body',team:'human',hp:40,facing:'N',baseSoldier:{id:'body',armor:'Field Suit',appearance:{body,gender:"male",trophy:'patch'}}};
  const node=c.tacticalThreePersistentCreateUnitNode(runtime,unit),expected=c.soldierVisualData(unit.baseSoldier).bodyScale;
  assert.equal(node.position.x,0);assert.equal(node.position.z,0);
  if(detail==='full'||detail==='mid'){
@@ -99,4 +99,22 @@ test('classic and articulated construction retain saved body scale through detai
  }
  c.tacticalThreePersistentDisposeSubtree(node,runtime);
  }
+});
+test('saved female soldier presentation reaches portrait, classic and both articulated tiers',()=>{
+ for(const gender of ['male','female'])for(const detail of ['classic','full','mid','low']){
+ const geometry=new THREE.BoxGeometry(0.3,0.4,0.2),r={THREE,qualitySettings:{shadows:false,standardMaterials:true},geoCache:new Proxy({}, {get:()=>geometry}),materialCache:new Map(),sharedMaterials:new Set(),sharedGeometries:new Set(),soldierModelStyle:detail==='classic'?'classic':'articulated',articulatedDetailMode:detail};
+ const soldier={id:'present',armor:'Field Suit',equipment:'Ballistic Rifle',appearance:{gender,body:'standard',hairStyle:'pony',trophy:'patch'}},unit={id:'present',team:'human',hp:40,baseSoldier:soldier},before=JSON.stringify(unit),v=c.soldierVisualData(soldier),node=c.tacticalThreePersistentCreateUnitNode(r,unit),width=gender==='female'?0.94:1;
+ assert.equal(v.appearance.gender,gender);assert.equal(v.appearance.hairStyle,'pony');assert.equal(v.weapon,'Ballistic Rifle');
+ assert.equal(c.soldierPresentationWidth(v.appearance),width);
+ if(detail==='full'||detail==='mid')assert.equal(node.userData.articulatedRoot.userData.joints.torso.scale.x,width);
+ else assert.equal(node.children.find(p=>p.geometry===geometry).scale.x,width);
+ assert.equal(JSON.stringify(unit),before);
+ assert.equal(c.soldierVisualData(JSON.parse(JSON.stringify(soldier))).appearance.gender,gender);
+ }
+ assert.ok(String(c.SoldierAvatar).includes('soldierPresentationWidth'));
+});
+test('gender appearance changes invalidate models without changing saved equipment or body identity',()=>{
+ const unit={id:'present',team:'human',appearance:{gender:'male',body:'stocky'}},a=c.tacticalThreePersistentUnitSignature(unit);
+ assert.notEqual(a,c.tacticalThreePersistentUnitSignature({...unit,appearance:{...unit.appearance,gender:'female'}}));
+ assert.equal(c.soldierBodyScale({body:'stocky',gender:'female'}),1.08);
 });

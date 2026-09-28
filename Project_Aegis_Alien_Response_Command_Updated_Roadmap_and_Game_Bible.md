@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.28.0002_TACTICAL_BODY_IDENTITY_PATCH`
+Current browser build: `v0.26.09.28.0003_VIP_AND_SOLDIER_PRESENTATION_PATCH`
 
 Current save format: `4`
 
@@ -3271,6 +3271,8 @@ Apply both changes to Standard and Mobile layouts. Verify that overlay controls 
 ## Roadmap Addition - Expanded VIP Identity and High-Value Security Details
 
 **Status:** Approved character-presentation and allied-security roadmap item. The ordinary VIP appearance expansion should build on Browser 0910's existing articulated civilian/VIP renderer; high-value security details remain dependent on the planned high-value principal mission system.
+
+**Wardrobe and female presentation slice implemented September 28, 2026 / Browser 0003.** Articulated VIPs now use six coordinated business palettes: navy, charcoal, gray, brown, muted blue and gray-green. Stable identity determines the outfit without gameplay changes. Head and torso cache keys include only the inputs used by each part, improving reuse across identities without adding meshes. Existing VIP suit colors change once on upgrading; thereafter saves and playback retain deterministic appearance. Female-presenting VIPs use a pantsuit/blouse and bob derived from stable identity. Soldier portraits and classic/full/mid/low models now honor the existing saved female appearance with subtly tailored torso proportions while preserving saved hair, face, body build and equipment. Existing pose hierarchies, gameplay and mesh counts are unchanged. Thirty-three targeted tests pass. Dresses, additional hair silhouettes and security details remain follow-ups; live visual acceptance and native parity are pending. See `VIP_BUSINESS_WARDROBE_VALIDATION.md`.
 
 ### Ordinary VIP appearance diversity
 - Replace the current mostly black/charcoal VIP wardrobe with a restrained deterministic business palette that can include navy, charcoal, medium gray, dark brown, muted blue, and other credible suit colors. Coordinate shirts, blouses, ties, and accessories so VIPs remain professional and visually distinct without becoming brightly randomized civilians.

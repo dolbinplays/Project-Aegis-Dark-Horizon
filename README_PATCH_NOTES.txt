@@ -1,3 +1,14 @@
+BUILD: v0.26.09.28.0003_VIP_AND_SOLDIER_PRESENTATION_PATCH
+September 28, 2026 — VIP and Soldier Presentation
+Save format: 4
+
+- Six coordinated business palettes replace the mostly charcoal VIP wardrobe in articulated views.
+- Stable identity keeps outfits consistent through movement, escorting and save/load. Existing VIPs adopt the new palette on upgrade.
+- Matching heads and torsos share cached geometry across appearance combinations; no additional meshes or draw calls.
+- Female-presenting VIPs gain a pantsuit/blouse and bob; presentation remains stable through save/load.
+- Soldier portraits and tactical models honor saved female appearance with subtly tailored proportions while preserving saved hair, faces and equipment.
+- Existing unarmed authority, gait, pose hierarchy and mesh counts are preserved. Dresses and further hair variants remain future work.
+
 BUILD: v0.26.09.28.0002_TACTICAL_BODY_IDENTITY_PATCH
 September 28, 2026 — Tactical Body Identity
 Save format: 4
