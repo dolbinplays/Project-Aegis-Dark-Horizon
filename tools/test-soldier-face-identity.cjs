@@ -61,7 +61,7 @@ test('all detail levels keep bounded finite face geometry in one owned mesh',()=
  for(const accessory of ['none','scar','glasses','mustache','bandage'])for(const mid of [false,true]){
   const parent=new THREE.Group(),visual=c.soldierVisualData({id:'s',appearance:{accessory,head:'narrow'}});
   const face=c.addTacticalSoldierFace(THREE,parent,visual,0.155,mid?0.115:0,mid?c.tacticalSoldierHeadScale(visual,true):[1,1,1]);
-  assert.equal(parent.children.length,1);assert.ok(face.geometry.attributes.position.count>=c.tacticalSoldierFaceFeatures(visual).length*6);assert.ok(face.geometry.attributes.position.count<=400);
+  assert.equal(parent.children.length,1);assert.ok(face.geometry.attributes.position.count>=c.tacticalSoldierFaceFeatures(visual).length*6);assert.ok(face.geometry.attributes.position.count<=1200);
   assert.ok([...face.geometry.attributes.position.array].every(Number.isFinite));
   let disposed=0;face.geometry.addEventListener('dispose',()=>disposed++);face.material.addEventListener('dispose',()=>disposed++);
   c.tacticalThreePersistentDisposeSubtree(parent,{sharedGeometries:new Set(),sharedMaterials:new Set()});assert.equal(disposed,2);

@@ -51,28 +51,35 @@ function seededRandom(context, seed=123456789) {
 
 
 const c=runtimeContext(),THREE=require('../assets/vendor/three.min.js');
-test('only saved comms appearance adds headset geometry, without changing identity',()=>{
- for(const accessory of ['none','comms','glasses','scar']){
-  const visual=c.soldierVisualData({id:'radio',appearance:{accessory}}),before=JSON.stringify(visual);
-  assert.equal(c.tacticalSoldierCommsSegments(visual).length,accessory==='comms'?4:0);
-  const group=new THREE.Group(),face=c.addTacticalSoldierFace(THREE,group,visual);
-  assert.equal(group.children.length,1);assert.equal(JSON.stringify(visual),before);
-  assert.equal(face.userData.soldierFaceAccessory,accessory);
+function visual(hairStyle,armor){return c.soldierVisualData({id:'hair',armor,appearance:{hairStyle,hair:'#92400e',accessory:'none'}});}
+test('all saved hair styles use distinct bounded geometry, with bald and helmet coverage respected',()=>{
+ const signatures=new Set();
+ for(const style of ['buzz','short','sweep','curly','pony','mohawk']){
+  const v=visual(style),surfaces=c.tacticalSoldierHairSurfaces(v);assert.ok(surfaces.length>0);signatures.add(JSON.stringify(surfaces));
+  const positions=[],colors=[];c.tacticalAppendSoldierHairGeometry(THREE,positions,colors,v,0.155,0,[1,1,1]);
+  assert.ok(positions.every(Number.isFinite));assert.ok(positions.length/3<=576);assert.equal(colors.length,positions.length);
+  assert.equal(c.tacticalSoldierHairSurfaces(visual(style,'Field Suit')).length,0);
  }
+ assert.equal(signatures.size,6);assert.equal(c.tacticalSoldierHairSurfaces(visual('bald')).length,0);
 });
-test('headset follows head transforms and stays finite across head proportions and detail levels',()=>{
- for(const head of ['narrow','round','square','strong','soft'])for(const mid of [false,true]){
-  const group=new THREE.Group(),visual=c.soldierVisualData({id:'radio',appearance:{head,accessory:'comms'}});
-  const face=c.addTacticalSoldierFace(THREE,group,visual,0.155,mid?0.115:0,c.tacticalSoldierHeadScale(visual,mid));
-  assert.ok(face.geometry.attributes.position.count<=1200);assert.ok([...face.geometry.attributes.position.array].every(Number.isFinite));
-  const local=new THREE.Vector3(0.16,-0.04,0.02),before=face.localToWorld(local.clone());group.rotation.y=Math.PI/2;group.position.set(4,2,3);group.updateMatrixWorld(true);
-  const after=face.localToWorld(local.clone());assert.ok(after.distanceTo(before)>1);
-  let disposed=0;face.geometry.addEventListener('dispose',()=>disposed++);face.material.addEventListener('dispose',()=>disposed++);
-  c.tacticalThreePersistentDisposeSubtree(group,{sharedGeometries:new Set(),sharedMaterials:new Set()});assert.equal(disposed,2);
- }
+test('unarmored classic heads do not gain a helmet; equipped heads still do',()=>{
+ const mat=new THREE.MeshStandardMaterial(),group=new THREE.Group();
+ assert.equal(c.addTacticalSoldierThreeHelmet(THREE,group,mat,false,visual('short')),null);
+ assert.ok(c.addTacticalSoldierThreeHelmet(THREE,group,mat,false,visual('short','Field Suit')));
 });
-test('save/reload and accessory changes retain or refresh model identity',()=>{
- const unit={id:'radio',team:'human',appearance:{head:'round',accessory:'comms'}};
- assert.equal(c.tacticalThreePersistentUnitSignature(unit),c.tacticalThreePersistentUnitSignature(JSON.parse(JSON.stringify(unit))));
- assert.notEqual(c.tacticalThreePersistentUnitSignature(unit),c.tacticalThreePersistentUnitSignature({...unit,appearance:{...unit.appearance,accessory:'none'}}));
+test('hair stays in the existing face mesh with saved color and normal disposal',()=>{
+ const group=new THREE.Group(),v=visual('pony'),face=c.addTacticalSoldierFace(THREE,group,v),before=JSON.stringify(v);
+ assert.equal(group.children.length,1);assert.ok(face.geometry.attributes.position.count<=1200);
+ const expected=new THREE.Color(v.hair),colors=face.geometry.attributes.color.array;
+ assert.ok(Math.abs(colors[colors.length-3]-expected.r)<1e-6);
+ group.rotation.y=1;group.updateMatrixWorld(true);assert.equal(JSON.stringify(v),before);
+ let count=0;face.geometry.addEventListener('dispose',()=>count++);face.material.addEventListener('dispose',()=>count++);
+ c.tacticalThreePersistentDisposeSubtree(group,{sharedGeometries:new Set(),sharedMaterials:new Set()});assert.equal(count,2);
+});
+test('hairstyle and armor changes invalidate model identity and survive save reload',()=>{
+ const unit={id:'hair',team:'human',appearance:{hairStyle:'short',hair:'#92400e'}};
+ const signature=c.tacticalThreePersistentUnitSignature(unit);
+ assert.equal(signature,c.tacticalThreePersistentUnitSignature(JSON.parse(JSON.stringify(unit))));
+ assert.notEqual(signature,c.tacticalThreePersistentUnitSignature({...unit,appearance:{...unit.appearance,hairStyle:'pony'}}));
+ assert.notEqual(signature,c.tacticalThreePersistentUnitSignature({...unit,armor:'Field Suit'}));
 });

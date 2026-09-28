@@ -1,3 +1,11 @@
+BUILD: v0.26.09.27.0007_TACTICAL_HAIR_IDENTITY_PATCH
+TACTICAL HAIR IDENTITY
+Save format: 4
+
+- Saved hairstyles and colors now appear on unhelmeted classic and full/mid articulated soldiers.
+- Unarmored heads no longer receive an unconditional helmet; equipped armor retains its helmet.
+- Hair shares the facial mesh, follows head transforms and refreshes with hairstyle changes.
+
 BUILD: v0.26.09.27.0006_TACTICAL_COMMS_IDENTITY_PATCH
 TACTICAL COMMS IDENTITY
 Save format: 4
