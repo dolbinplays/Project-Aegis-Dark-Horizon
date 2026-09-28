@@ -1,8 +1,24 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.27.0004_DOOR_JAMB_SEAM_GEOMETRY_HOTFIX`
+Current browser build: `v0.26.09.27.0005_STAND_BEFORE_MOVEMENT_PATCH`
 
 Current save format: `4`
+
+## Roadmap — AI Soldiers Must Stand Before Moving
+
+**Requested September 27, 2026. Status: implemented in Browser 0005; live field acceptance pending.**
+
+- Soldiers cannot move while kneeling. AI must perform an authoritative stand action before starting any movement path.
+- Apply consistently to Simulation AI, Hybrid support movement, formations, escort/rescue movement, retreats and other AI-directed soldier movement.
+- Use the existing stance-change rules and TU/action costs. If standing plus movement is unaffordable or otherwise blocked, defer movement rather than moving while kneeling or granting a free stance change.
+- Playback must show standing before the first movement step; unit state, movement snapshots and all tactical views must agree. Do not fix this only by changing the rendered walking pose.
+- Preserve legitimate stationary kneeling/aiming and casualty restrictions. Save/load and interrupted/resumed playback must retain the correct stance and spent TU.
+
+**Acceptance:** start AI and Hybrid turns with kneeling soldiers; verify they stand, pay the applicable cost, then move. Cover insufficient TU, formation following, VIP/civilian escort, casualty recovery, retreat, and save/load during the transition. Confirm no authoritative movement step begins with a kneeling soldier.
+
+
+
+Browser 0005 adds standing-cost movement preflight, budgets 4 TU for the first moving step, and fixes missing kneeling state in AI snapshots/playback. The standing pose is applied at the start cell before timed movement, without charging presentation a second time. See `STAND_BEFORE_MOVEMENT_VALIDATION.md`.
 
 ## September 27 Hybrid Control Persistence — Build 0003
 

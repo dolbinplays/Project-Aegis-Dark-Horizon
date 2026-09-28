@@ -1,3 +1,12 @@
+BUILD: v0.26.09.27.0005_STAND_BEFORE_MOVEMENT_PATCH
+STAND BEFORE MOVEMENT
+Save format: 4
+
+- Charge the existing 4 TU standing cost before soldier movement; defer unaffordable moves.
+- Include stance cost in AI movement budgets, escort/formation steps and manual route preflight.
+- Preserve kneeling in AI snapshots and show a standing pose before movement starts.
+- Retain stationary end-of-action stances and carried-casualty presentation.
+
 BUILD: v0.26.09.27.0004_DOOR_JAMB_SEAM_GEOMETRY_HOTFIX
 DOOR JAMB SEAM GEOMETRY
 Save format: 4

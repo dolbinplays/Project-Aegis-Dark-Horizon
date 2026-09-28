@@ -1202,7 +1202,7 @@ if (!html.includes('const isoFillLight=new THREE.AmbientLight(0x9fb7d5,0)') || !
 if (!html.includes('cover?.hp>0&&cover.kind==="hard"&&cover.solidVehicleFootprint') || !html.includes('tacticalCoverFootprintCells(cover).forEach(cell=>blocked.add(tacticalKey(cell.x,cell.y)))')) {
   missing.push("live land-vehicle authority must expand every intact hard-cover footprint cell");
 }
-if (!html.includes('let commitState=tacticalMovementCommitCellState(leader,nextCell,covers,workingUnits,{requireAdjacent:true})') || !html.includes('const commitState=tacticalMovementCommitCellState(human,plan.cell,covers,allUnits(),{requireAdjacent:false})') || !html.includes('const commitState=tacticalMovementCommitCellState(alien,step,covers,allUnits(),{requireAdjacent:true})')) {
+if (!html.includes('let commitState=tacticalMovementCommitCellState(leader,nextCell,covers,workingUnits,{requireAdjacent:true,movementTu:stepCost})') || !html.includes('const commitState=tacticalMovementCommitCellState(human,plan.cell,covers,allUnits(),{requireAdjacent:false,movementTu:plan.steps*4})') || !html.includes('const commitState=tacticalMovementCommitCellState(alien,step,covers,allUnits(),{requireAdjacent:true})')) {
   missing.push("manual/escort, human AI, and alien movement must recheck blockers at final commit time");
 }
 if (!html.includes('const base=tacticalThreeCoverWorldAnchor(runtime.worldFor,c)') || !html.includes('tacticalCoverFootprintCells(cover).some(cell => visible.has(tacticalKey(cell.x, cell.y)))')) {
