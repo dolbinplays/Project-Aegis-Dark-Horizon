@@ -1,3 +1,11 @@
+BUILD: v0.26.09.28.0001_TACTICAL_UNIFORM_IDENTITY_PATCH
+September 28, 2026 — Tactical Uniform Identity
+Save format: 4
+
+- Saved personal gold emblems now appear on classic and full/mid articulated tactical uniforms and armor.
+- Portrait and tactical markings share a definition and refresh when trophy appearance changes.
+- Markings follow the torso; unmarked soldiers add no geometry. No new achievement or save fields.
+
 BUILD: v0.26.09.27.0007_TACTICAL_HAIR_IDENTITY_PATCH
 TACTICAL HAIR IDENTITY
 Save format: 4

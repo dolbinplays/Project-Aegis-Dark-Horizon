@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.27.0007_TACTICAL_HAIR_IDENTITY_PATCH`
+Current browser build: `v0.26.09.28.0001_TACTICAL_UNIFORM_IDENTITY_PATCH`
 
 Current save format: `4`
 
@@ -927,6 +927,8 @@ Implementation: new civic landmarks choose deterministic connected footprints of
 Implementation: Browser 0904 adds deterministic tetromino family/rotation metadata and a shared footprint-cell authority. Walls/windows, doors, furnishings, roofs, seams, civilian placement, structure-distance logic and building egress consume the footprint; T/L/J/S/Z recesses remain open. Pre-patch live tactical saves lacking shape metadata retain legacy rectangular geometry for that saved battle. Save format remains 4.
 
 ### 6. Match battle-model faces and equipment markings to soldier identity
+
+**Personal uniform emblem slice implemented in Browser September 28, 2026 / 0001.** The existing portrait gold trophy emblem now shares its definition with classic and full/mid articulated uniforms and armor. Markings follow the torso; saved trophy changes invalidate the model. One bounded mesh per marked soldier; none for unmarked soldiers. Twenty-one identity tests pass. Live visual acceptance, broader uniform patterning and native parity remain follow-ups. See `TACTICAL_UNIFORM_IDENTITY_VALIDATION.md`.
 
 **Hair slice implemented in Browser 0007 (September 27, 2026).** Unhelmeted classic and full/mid articulated heads now use saved hairstyle/color. Buzz, short, sweep, curly, ponytail, mohawk and bald identities are supported; equipped armor conceals hair with its helmet. Unarmored heads follow the portrait equipment rule. Geometry shares the existing facial mesh; hairstyle and armor coverage participate in model invalidation. Eighteen identity tests pass. Live visual acceptance, uniform/armor insignia and native parity remain follow-ups. See `TACTICAL_HAIR_IDENTITY_VALIDATION.md`.
 
