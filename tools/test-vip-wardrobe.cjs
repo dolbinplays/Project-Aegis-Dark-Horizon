@@ -108,9 +108,41 @@ test('both VIP presentation variants are stable and share the walking rig withou
 });
 test('female VIP blouse and bob are separate cached geometry, without changing rescue authority',()=>{
  const r=runtime(),unit={id:'wardrobe',vip:true,hp:30},v=c.tacticalArticulatedCivilianAppearance(unit);
- const male=model(r,unit,{...v,presentation:'male'}),female=model(r,unit,{...v,presentation:'female'});
+ const male=model(r,unit,{...v,presentation:'male',hairStyle:'short'}),female=model(r,unit,{...v,presentation:'female',hairStyle:'bob'});
  assert.notEqual(part(male,'head-assembly').geometry,part(female,'head-assembly').geometry);
  assert.notEqual(part(male,'torso-assembly').geometry,part(female,'torso-assembly').geometry);
  assert.ok(part(female,'torso-assembly').geometry.attributes.position.count<part(male,'torso-assembly').geometry.attributes.position.count,'blouse omits tie');
  assert.ok(part(female,'head-assembly').geometry.attributes.position.count>part(male,'head-assembly').geometry.attributes.position.count,'bob joins existing head mesh');
+});
+test('five VIP hairstyles are deterministic and available across presentation variants',()=>{
+ const styles={male:new Set(),female:new Set()};
+ for(let i=0;i<500;i++){
+ const unit={id:'hair-'+i,vip:true,hp:30},v=c.tacticalArticulatedCivilianAppearance(unit);
+ styles[v.presentation].add(v.hairStyle);
+ assert.equal(c.tacticalArticulatedCivilianAppearance({...unit,panic:true,escortId:'escort',x:8}).hairStyle,v.hairStyle);
+ assert.equal(c.tacticalArticulatedCivilianAppearance(JSON.parse(JSON.stringify(unit))).hairStyle,v.hairStyle);
+ }
+ for(const set of Object.values(styles))assert.deepEqual([...set].sort(),['bald','bob','bun','short','swept']);
+ assert.equal(c.tacticalArticulatedCivilianAppearance({id:'ordinary',vip:false}).hairStyle,'short');
+});
+test('hairstyles have distinct bounded head geometry and reuse it between full and mid models',()=>{
+ const r=runtime(),unit={id:'hair',vip:true,hp:30},v=c.tacticalArticulatedCivilianAppearance(unit),shapes=new Set();
+ for(const hairStyle of ['short','swept','bob','bun','bald']){
+ const visual={...v,hairStyle},node=model(r,unit,visual),head=part(node,'head-assembly'),geometry=head.geometry;
+ shapes.add(Buffer.from(geometry.attributes.position.array.buffer).toString('base64'));
+ for(const x of geometry.attributes.position.array)assert.ok(Number.isFinite(x)&&Math.abs(x)<0.5);
+ assert.ok(geometry.attributes.position.count<1000);
+ const count=r.soldierGeometryCache.size,mid=model(r,unit,visual,'mid');
+ assert.equal(part(mid,'head-assembly').geometry,geometry);assert.equal(r.soldierGeometryCache.size,count);
+ let meshes=0;node.traverse(p=>{if(p.isMesh)meshes++;});assert.equal(meshes,10);
+ const parent=head.parent;parent.rotation.y=1;node.updateMatrixWorld(true);assert.ok(head.matrixWorld.elements.every(Number.isFinite));
+ }
+ assert.equal(shapes.size,5);
+ const empty=runtime();assert.equal(c.tacticalVipHairParts(empty,{hairStyle:'bald'}).length,0);assert.equal(empty.soldierGeometryCache,undefined);
+});
+test('hair geometry remains shared across gender and wardrobe and owned by runtime disposal',()=>{
+ const r=runtime(),unit={id:'hair',vip:true,hp:30},v=c.tacticalArticulatedCivilianAppearance(unit),a=model(r,unit,{...v,presentation:'male',hairStyle:'bun'}),b=model(r,unit,{...v,presentation:'female',hairStyle:'bun',top:0x123456});
+ const geo=part(a,'head-assembly').geometry;assert.equal(geo,part(b,'head-assembly').geometry);
+ let disposed=0;geo.addEventListener('dispose',()=>disposed++);c.tacticalThreePersistentDisposeSubtree(a,r);assert.equal(disposed,0,'removing one unit cannot dispose shared head');
+ assert.ok(r.sharedGeometries.has(geo));for(const g of r.sharedGeometries)g.dispose();assert.equal(disposed,1);
 });

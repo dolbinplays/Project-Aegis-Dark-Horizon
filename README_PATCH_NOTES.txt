@@ -1,3 +1,12 @@
+BUILD: v0.26.09.28.0004_VIP_HAIR_VARIETY_PATCH
+September 28, 2026 — VIP Hair Variety
+Save format: 4
+
+- Adds short, swept, bob, bun and bald hairstyles for both VIP presentation variants.
+- Styles derive from stable identity and retain existing natural hair colors; existing VIPs adopt the new style on upgrade.
+- Hair uses the existing cached head mesh across full/mid views without additional meshes or draw calls.
+- Clothing, unarmed authority, rescue rules and animation rigs are unchanged.
+
 BUILD: v0.26.09.28.0003_VIP_AND_SOLDIER_PRESENTATION_PATCH
 September 28, 2026 — VIP and Soldier Presentation
 Save format: 4
