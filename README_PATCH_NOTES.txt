@@ -1,3 +1,13 @@
+BUILD: v0.26.09.28.0005_VIP_BUSINESS_DRESS_PATCH
+September 28, 2026 — VIP Business Dress
+Save format: 4
+
+- Female-presenting VIPs now choose a deterministic pantsuit or coordinated business dress.
+- Pleated dress panels follow existing hip joints; exposed lower legs retain normal knee movement.
+- Full/mid detail reuse cached geometry without additional meshes or animation clocks.
+- Existing saves adopt the identity-derived outfit on upgrade; subsequent saves and playback retain it.
+- Live visual gait and clipping acceptance remains pending.
+
 BUILD: v0.26.09.28.0004_VIP_HAIR_VARIETY_PATCH
 September 28, 2026 — VIP Hair Variety
 Save format: 4

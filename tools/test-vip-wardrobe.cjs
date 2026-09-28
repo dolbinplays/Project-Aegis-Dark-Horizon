@@ -146,3 +146,30 @@ test('hair geometry remains shared across gender and wardrobe and owned by runti
  let disposed=0;geo.addEventListener('dispose',()=>disposed++);c.tacticalThreePersistentDisposeSubtree(a,r);assert.equal(disposed,0,'removing one unit cannot dispose shared head');
  assert.ok(r.sharedGeometries.has(geo));for(const g of r.sharedGeometries)g.dispose();assert.equal(disposed,1);
 });
+test('VIP dress and trousers choices remain deterministic and available',()=>{
+ const styles=new Set();for(let i=0;i<500;i++){
+ const unit={id:'dress-'+i,vip:true,hp:30},v=c.tacticalArticulatedCivilianAppearance(unit);
+ if(v.presentation==='female')styles.add(v.outfitStyle);else assert.equal(v.outfitStyle,'trousers');
+ assert.equal(c.tacticalArticulatedCivilianAppearance(JSON.parse(JSON.stringify(unit))).outfitStyle,v.outfitStyle);
+ assert.equal(c.tacticalArticulatedCivilianAppearance({...unit,panic:true,escortId:'escort'}).outfitStyle,v.outfitStyle);
+ }
+ assert.deepEqual([...styles].sort(),['dress','trousers']);
+});
+test('dress panels follow existing hip joints and preserve mesh budget across detail and poses',()=>{
+ const r=runtime(),unit={id:'dress',vip:true,hp:30},v={...c.tacticalArticulatedCivilianAppearance(unit),presentation:'female',outfitStyle:'dress'};
+ const node=model(r,unit,v),pants=model(r,unit,{...v,outfitStyle:'trousers'}),mid=model(r,unit,v,'mid');
+ const upper=part(node,'left-upper-leg'),lower=part(node,'left-lower-leg');
+ assert.notEqual(upper.geometry,part(pants,'left-upper-leg').geometry);assert.notEqual(lower.geometry,part(pants,'left-lower-leg').geometry);
+ assert.equal(upper.geometry,part(mid,'left-upper-leg').geometry);
+ assert.equal(upper.parent,node.userData.articulatedRoot.userData.joints.leftHip);
+ let meshes=0;node.traverse(p=>{if(p.isMesh)meshes++;});assert.equal(meshes,10);
+ const joints=node.userData.articulatedRoot.userData.joints;
+ for(const pose of ['attention','victory','civilianFearCover','proneDead']){
+ c.tacticalThreeApplyArticulatedCivilianPresentation(node,{pose});node.updateMatrixWorld(true);
+ assert.ok(upper.matrixWorld.elements.every(Number.isFinite));assert.ok(lower.matrixWorld.elements.every(Number.isFinite));
+ }
+ c.tacticalThreeApplyArticulatedCivilianPresentation(node,{pose:'attention'});node.updateMatrixWorld(true);
+ const before=upper.localToWorld(new THREE.Vector3(0,-0.27,0));joints.leftHip.rotation.x+=0.5;node.updateMatrixWorld(true);
+ assert.ok(upper.localToWorld(new THREE.Vector3(0,-0.27,0)).distanceTo(before)>0.05);
+ assert.equal(joints.rightHip.rotation.x,c.tacticalArticulatedSoldierPoseSpec('attention').rightHip[0]);
+});

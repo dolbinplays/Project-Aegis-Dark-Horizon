@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.28.0004_VIP_HAIR_VARIETY_PATCH`
+Current browser build: `v0.26.09.28.0005_VIP_BUSINESS_DRESS_PATCH`
 
 Current save format: `4`
 
@@ -3275,6 +3275,8 @@ Apply both changes to Standard and Mobile layouts. Verify that overlay controls 
 **Wardrobe and female presentation slice implemented September 28, 2026 / Browser 0003.** Articulated VIPs now use six coordinated business palettes: navy, charcoal, gray, brown, muted blue and gray-green. Stable identity determines the outfit without gameplay changes. Head and torso cache keys include only the inputs used by each part, improving reuse across identities without adding meshes. Existing VIP suit colors change once on upgrading; thereafter saves and playback retain deterministic appearance. Female-presenting VIPs use a pantsuit/blouse and bob derived from stable identity. Soldier portraits and classic/full/mid/low models now honor the existing saved female appearance with subtly tailored torso proportions while preserving saved hair, face, body build and equipment. Existing pose hierarchies, gameplay and mesh counts are unchanged. Thirty-three targeted tests pass. Dresses, additional hair silhouettes and security details remain follow-ups; live visual acceptance and native parity are pending. See `VIP_BUSINESS_WARDROBE_VALIDATION.md`.
 
 **Hair variety implemented September 28, 2026 / Browser 0004.** VIPs derive short, swept, bob, bun or bald hair from stable identity, with the existing natural color palette. All styles are available to both presentation variants. Geometry is merged into the existing cached head mesh and shared across matching full/mid models, without additional draw calls. Existing VIP hairstyles change once on upgrade; subsequent save/load and playback retain appearance. Ordinary civilian hairstyles and distant status presentation are unchanged. Thirty-six targeted identity tests pass; live visual acceptance and native parity remain pending. Dresses and security details remain follow-ups. See `VIP_HAIR_VARIETY_VALIDATION.md`.
+
+**Business-dress slice implemented September 28, 2026 / Browser 0005; visual acceptance pending.** Female-presenting VIPs derive a pantsuit or coordinated business dress from stable identity. Two pleated panels replace upper-leg presentation and follow existing hip joints; exposed lower legs retain normal knee motion. No additional meshes or animation clock. Full/mid views share cached geometry. Save format 4 and gameplay are unchanged. Thirty-eight targeted tests pass, covering outfit availability, persistence and joint attachment. Live gait/clipping validation is still required before calling the dress presentation visually accepted. Security details and native parity remain follow-ups. See `VIP_BUSINESS_DRESS_VALIDATION.md`.
 
 ### Ordinary VIP appearance diversity
 - Replace the current mostly black/charcoal VIP wardrobe with a restrained deterministic business palette that can include navy, charcoal, medium gray, dark brown, muted blue, and other credible suit colors. Coordinate shirts, blouses, ties, and accessories so VIPs remain professional and visually distinct without becoming brightly randomized civilians.
