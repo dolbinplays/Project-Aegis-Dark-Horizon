@@ -1,3 +1,11 @@
+BUILD: v0.26.09.27.0004_DOOR_JAMB_SEAM_GEOMETRY_HOTFIX
+DOOR JAMB SEAM GEOMETRY
+Save format: 4
+
+- Connect side jambs to actual adjacent wall faces instead of using projected spans.
+- Limit connector depth to the door frame and preserve front/back doorway clearance.
+- Existing door state, movement, LOS and breach rules remain unchanged.
+
 BUILD: v0.26.09.27.0003_HYBRID_CONTROL_PERSISTENCE_HOTFIX
 HYBRID CONTROL PERSISTENCE
 Save format: 4

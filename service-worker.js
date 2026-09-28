@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.27.0003_HYBRID_CONTROL_PERSISTENCE_HOTFIX";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.27.0003_HYBRID_CONTROL_PERSISTENCE_HOTFIX";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v50-hybrid-persistence";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.27.0004_DOOR_JAMB_SEAM_GEOMETRY_HOTFIX";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.27.0004_DOOR_JAMB_SEAM_GEOMETRY_HOTFIX";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v51-door-jambs";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;

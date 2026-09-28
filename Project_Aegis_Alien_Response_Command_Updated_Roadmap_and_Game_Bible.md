@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.27.0003_HYBRID_CONTROL_PERSISTENCE_HOTFIX`
+Current browser build: `v0.26.09.27.0004_DOOR_JAMB_SEAM_GEOMETRY_HOTFIX`
 
 Current save format: `4`
 
@@ -541,7 +541,7 @@ Implementation uses the existing damage-blocking authority for a stable cyan bal
 
 ## Roadmap Addition — Door Frame / Adjacent Wall Seam Continuity
 
-**Reported September 16, 2026 after Browser 1726. Status: roadmap / not yet implemented.**
+**Reported September 16, 2026 after Browser 1726. Status: geometry follow-up implemented in September 27 Browser 0004; visual field acceptance pending.**
 
 - Some generated doors can still show a narrow visible gap between a door-frame jamb and the neighboring procedural wall segment even though the door aperture itself and hinge pose are improved.
 - Door jambs must terminate flush against neighboring wall geometry on both sides with no daylight/background slit through an otherwise intact facade.
@@ -550,6 +550,8 @@ Implementation uses the existing damage-blocking authority for a stable cyan bal
 - Do not regress the earlier pillar-only, oversized-aperture, micro-gap, overlap or false-doorway fixes. Add dedicated door-jamb-to-wall procedural continuity regression coverage.
 
 **Acceptance:** inspect doors across every procedural footprint family in 3D Iso/FPV/TPV and renderer modes, confirming both jambs visually meet intact neighboring walls while open/closed door behavior, pathing, LOS, breach state and save/reload remain unchanged.
+
+Browser 0004 refines the existing seam renderer: connectors start at actual jamb endpoints, intersect wall faces rather than projected extents, and use frame depth to avoid blocking the aperture. Side-only adjacency excludes front/back door connections. See `DOOR_JAMB_SEAM_VALIDATION.md`.
 
 ## Roadmap Follow-On — Alien Forced Entry / Door Breaching
 

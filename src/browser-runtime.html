@@ -1517,7 +1517,7 @@ function aegisTacticalViewportDimensions(mount,fallback={},layout=AEGIS_INTERFAC
 }
 // AEGIS_MOBILE_INTERFACE_END
 
-const CURRENT_GAME_BUILD="v0.26.09.27.0003_HYBRID_CONTROL_PERSISTENCE_HOTFIX";
+const CURRENT_GAME_BUILD="v0.26.09.27.0004_DOOR_JAMB_SEAM_GEOMETRY_HOTFIX";
 const TACTICAL_LAST_KNOWN_CONTACT_CLEARANCE_FEEDBACK_AND_PERSISTENCE_HOTFIX=true;
 const BANDAGE_EARLY_GAME_FIRST_AID_AND_MEDKIT_RESEARCH_PROGRESSION_PATCH=true;
 const TACTICAL_OBSERVATION_GATED_UFO_FLIGHT_PRESENTATION_PATCH=true;
@@ -13455,14 +13455,25 @@ function tacticalThreeDoorWallSeamRecords({mission={},presentationCovers=[],disc
   return records;
 }
 function tacticalThreeDoorWallSeamGeometry(record=null,worldFor=null){
-  if(!record?.door||!record?.wall||typeof worldFor!=='function')return null;const doorWorld=tacticalThreeCoverWorldAnchor(worldFor,record.door),wallWorld=tacticalThreeCoverWorldAnchor(worldFor,record.wall),dx=wallWorld.x-doorWorld.x,dz=wallWorld.z-doorWorld.z,distance=Math.hypot(dx,dz);if(distance<=0.0001)return null;
-  const ux=dx/distance,uz=dz/distance,doorSpan=tacticalThreeDoorFrameProjectedHalfSpan(record.door,dx,dz),wallSpan=tacticalThreeFacadeProjectedHalfSpan(record.wall,-dx,-dz),overlap=0.14,gap=Math.max(0,distance-doorSpan-wallSpan+overlap);if(gap<=0.015)return null;
-  const startDistance=Math.max(0,doorSpan-overlap*0.5),endDistance=Math.min(distance,distance-wallSpan+overlap*0.5),centerDistance=(startDistance+endDistance)*0.5;
-  return{doorWorld,wallWorld,dx,dz,distance,gap,center:{x:doorWorld.x+ux*centerDistance,z:doorWorld.z+uz*centerDistance},rotation:-Math.atan2(dz,dx),scale:gap/0.92};
+  if(!record?.door||!record?.wall||typeof worldFor!=="function")return null;
+  const spec=tacticalThreeBuildingDoorGeometrySpec(record.door),ns=spec.orientationKey==="ns";
+  // A connector may leave a side jamb, never the front/back doorway opening.
+  if(ns?record.wall.x!==record.door.x||Math.abs(record.wall.y-record.door.y)!==1:record.wall.y!==record.door.y||Math.abs(record.wall.x-record.door.x)!==1)return null;
+  const doorWorld=tacticalThreeCoverWorldAnchor(worldFor,record.door),wallWorld=tacticalThreeCoverWorldAnchor(worldFor,record.wall);
+  const side=Math.sign(ns?wallWorld.z-doorWorld.z:wallWorld.x-doorWorld.x);
+  const jamb={x:doorWorld.x+(ns?0:side*spec.outerWidth/2),z:doorWorld.z+(ns?side*spec.outerWidth/2:0)};
+  const dx=wallWorld.x-jamb.x,dz=wallWorld.z-jamb.z,distance=Math.hypot(dx,dz);if(distance<=0.0001)return null;
+  const ux=dx/distance,uz=dz/distance,wallNs=String(record.wall.visual||"").toLowerCase().endsWith("-ns");
+  const halfX=wallNs?0.54*0.9/2:0.92*1.2/2,halfZ=wallNs?0.92*1.2/2:0.54*0.9/2;
+  // Intersect the actual wall rectangle rather than its projected bounding span.
+  const wallSpan=Math.min(Math.abs(ux)>0.0001?halfX/Math.abs(ux):Infinity,Math.abs(uz)>0.0001?halfZ/Math.abs(uz):Infinity);
+  const gap=distance-wallSpan;if(gap<=0)return null;
+  const overlap=0.04,start=-overlap/2,end=gap+overlap/2,length=end-start,centerDistance=(start+end)/2;
+  return{doorWorld,wallWorld,jamb,depth:spec.frameDepth,dx,dz,distance,gap:length,center:{x:jamb.x+ux*centerDistance,z:jamb.z+uz*centerDistance},rotation:-Math.atan2(dz,dx),scale:length/0.92};
 }
 function tacticalThreeBuildDoorWallSeams({THREE=null,root=null,worldFor=null,geoCache=null,materialFor=null,qualitySettings={},environment=null,mission={},presentationCovers=[],discoveredBuildingIds=new Set()}={}){
   if(!THREE||!root||typeof worldFor!=='function'||!geoCache?.wall||typeof materialFor!=='function')return[];const architecture=tacticalTraditionalArchitectureForEnvironment(environment||tacticalRegionalEnvironmentForMission(mission)),records=tacticalThreeDoorWallSeamRecords({mission,presentationCovers,discoveredBuildingIds});
-  records.forEach(record=>{const geometry=tacticalThreeDoorWallSeamGeometry(record,worldFor);if(!geometry)return;const visual=`${String(record.door?.visual||'').toLowerCase()} ${String(record.wall?.visual||'').toLowerCase()}`,sourceTone=visual.includes('brick')?architecture.facade:visual.includes('metal')?0x64748b:visual.includes('timber')?architecture.trim:architecture.facade,material=materialFor(`building-door-wall-seam-${architecture.key}-${sourceTone}`,sourceTone,{roughness:.9,metalness:visual.includes('metal')?.18:.03}),mesh=new THREE.Mesh(geoCache.wall,material);mesh.scale.set(geometry.scale,3.18,.9);mesh.rotation.y=geometry.rotation;mesh.position.set(geometry.center.x,1.0,geometry.center.z);mesh.castShadow=Boolean(qualitySettings.shadows);mesh.userData.aegisDoorWallSeamClosure=true;mesh.userData.aegisBuildingId=record.buildingId;root.add(mesh);});return records;
+  records.forEach(record=>{const geometry=tacticalThreeDoorWallSeamGeometry(record,worldFor);if(!geometry)return;const visual=`${String(record.door?.visual||'').toLowerCase()} ${String(record.wall?.visual||'').toLowerCase()}`,sourceTone=visual.includes('brick')?architecture.facade:visual.includes('metal')?0x64748b:visual.includes('timber')?architecture.trim:architecture.facade,material=materialFor(`building-door-wall-seam-${architecture.key}-${sourceTone}`,sourceTone,{roughness:.9,metalness:visual.includes('metal')?.18:.03}),mesh=new THREE.Mesh(geoCache.wall,material);mesh.scale.set(geometry.scale,3.18,geometry.depth/0.54);mesh.rotation.y=geometry.rotation;mesh.position.set(geometry.center.x,1.0,geometry.center.z);mesh.castShadow=Boolean(qualitySettings.shadows);mesh.userData.aegisDoorWallSeamClosure=true;mesh.userData.aegisBuildingId=record.buildingId;root.add(mesh);});return records;
 }
 function tacticalThreeConcaveCornerClosureRecords({mission={},presentationCovers=[],discoveredBuildingIds=new Set()}={}){
   const discovered=discoveredBuildingIds instanceof Set?discoveredBuildingIds:new Set(discoveredBuildingIds||[]);if(!discovered.size)return[];const structural=tacticalThreeStructuralPresentationCoverMap({mission,presentationCovers,discoveredBuildingIds:discovered}),records=[],seen=new Set();
@@ -17807,7 +17818,8 @@ PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.26.0015_UNIFIED_EXTERIOR_BEACON_PLA
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.26.0016_TPV_PERSISTENT_OBSERVER_CAMERA_PATCH",date:"September 26, 2026",title:"Persistent TPV Observer Camera",summary:"Orbit the AI observer camera and carry the chosen view between soldiers.",items:["Right-drag in TPV to orbit; scroll to change camera distance. The relative angle and distance follow subsequent AI soldiers without accumulating drift.","Reaction and cinematic cameras retain priority and return to the chosen observer view.","Reset Camera restores the default over-the-shoulder view. Camera controls do not change AI orders or tactical state. Save format remains 4."]});
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.27.0001_BEACON_IMMUNITY_COLOR_RINGS_PATCH",date:"September 27, 2026",title:"Tactical Visual Polish",summary:"Small 3D presentation refinements.",items:["Refines tactical scenery detail while preserving visibility and combat rules.","Save format remains 4."]});
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.27.0002_STORAGE_CACHE_HYGIENE_HOTFIX",date:"September 27, 2026",title:"Browser Cache Storage Hygiene",summary:"Reduces redundant asset storage while preserving campaign saves.",items:["Precached assets refresh in their existing cache instead of accumulating a second runtime copy.","Runtime caching skips installation archives and resources outside this game path. Optional cache writes tolerate full-disk failures.","Campaign saves and recovery copies are unchanged. Use Backup Manager to keep external backups when disk space is low."]});
-PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"September 27, 2026",title:"Hybrid Control Persistence",summary:"Keeps Hybrid AI and observer camera choices when the tactical view resumes.",items:["Every live battle snapshot now retains the Hybrid AI control setting through selection, turn, playback and view updates.","FPV/TPV choices carry across Hybrid support rounds, Take Back Control, and saved leader-control intervals.","Explicitly switching Hybrid off remains supported. Existing saves without the setting retain their default behavior. Save format remains 4."]});
+PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.27.0003_HYBRID_CONTROL_PERSISTENCE_HOTFIX",date:"September 27, 2026",title:"Hybrid Control Persistence",summary:"Keeps Hybrid AI and observer camera choices when the tactical view resumes.",items:["Every live battle snapshot now retains the Hybrid AI control setting through selection, turn, playback and view updates.","FPV/TPV choices carry across Hybrid support rounds, Take Back Control, and saved leader-control intervals.","Explicitly switching Hybrid off remains supported. Existing saves without the setting retain their default behavior. Save format remains 4."]});
+PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"September 27, 2026",title:"Door Jamb Seam Geometry",summary:"Connects procedural door jambs to adjacent wall faces while keeping doorways clear.",items:["Door seam connectors start at the actual side jamb and meet the adjacent wall rectangle, including staggered rows.","Connector depth follows the door frame and front/back neighbors cannot fill the doorway.","Door movement, locks, visibility rules and save format remain unchanged."]});
 PATCH_NOTES_HISTORY.sort((left,right)=>String(right.build||"").localeCompare(String(left.build||""),undefined,{numeric:true,sensitivity:"base"}));
  return PATCH_NOTES_HISTORY;},[]);
 function PatchNotesLibraryScreen(){
