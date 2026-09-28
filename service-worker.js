@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.28.0001_TACTICAL_UNIFORM_IDENTITY_PATCH";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.28.0001_TACTICAL_UNIFORM_IDENTITY_PATCH";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v55-uniform-identity";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.28.0002_TACTICAL_BODY_IDENTITY_PATCH";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.28.0002_TACTICAL_BODY_IDENTITY_PATCH";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v56-body-identity";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;

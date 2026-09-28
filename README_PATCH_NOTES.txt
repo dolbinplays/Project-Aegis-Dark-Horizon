@@ -1,3 +1,12 @@
+BUILD: v0.26.09.28.0002_TACTICAL_BODY_IDENTITY_PATCH
+September 28, 2026 — Tactical Body Identity
+Save format: 4
+
+- Classic and low-detail soldier torsos now use saved lean, average and stocky proportions.
+- Armor and personal emblems scale with the torso without changing height or map position.
+- Body appearance changes refresh persistent tactical models; existing full/mid articulated proportions are preserved.
+- No additional geometry, draw calls or save fields.
+
 BUILD: v0.26.09.28.0001_TACTICAL_UNIFORM_IDENTITY_PATCH
 September 28, 2026 — Tactical Uniform Identity
 Save format: 4
