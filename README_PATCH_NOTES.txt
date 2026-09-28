@@ -1,3 +1,13 @@
+BUILD: v0.26.09.28.0006_CHARACTER_POLISH_AND_ANIMATION_PERFORMANCE_PATCH
+September 28, 2026 — Character Polish and Animation Performance
+Save format: 4
+
+- Keeps frightened VIPs kneeling behind cover when walking ends.
+- Fixes scalp showing through VIP hair caps.
+- Caches immutable poses and skips idle walk lookups, reducing CPU animation work in a 60-character fixture.
+- Preserves gait timing, save compatibility and gameplay authority.
+- Browser model previews inspected; full installed-game performance acceptance remains pending.
+
 BUILD: v0.26.09.28.0005_VIP_BUSINESS_DRESS_PATCH
 September 28, 2026 — VIP Business Dress
 Save format: 4

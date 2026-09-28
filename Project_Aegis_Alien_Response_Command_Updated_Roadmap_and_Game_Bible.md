@@ -1,8 +1,12 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.28.0005_VIP_BUSINESS_DRESS_PATCH`
+Current browser build: `v0.26.09.28.0006_CHARACTER_POLISH_AND_ANIMATION_PERFORMANCE_PATCH`
 
 Current save format: `4`
+
+## Character Polish and Animation Performance — September 28 / Browser 0006
+
+Combined visual/performance slice: walk cleanup now preserves civilian fear-cover kneeling, VIP hair caps cover the crown, pose definitions are cached and frozen, and idle characters skip walk-pose lookups. Browser WebGL fixture renders inspected walking, stride, kneeling and fallen VIP models. A 48-soldier/12-VIP CPU animation benchmark measured median frame cost of 0.212 → 0.022 ms idle, 0.282 → 0.084 ms with 12 moving, and 0.544 → 0.456 ms with all moving. These are animation-only measurements, not total game FPS. Forty-two targeted tests pass. Full installed battles, GPU frame times, AI planner pauses, boarding and all camera/night combinations remain field/profiling work. See `CHARACTER_POLISH_PERFORMANCE_VALIDATION.md`.
 
 ## Roadmap — AI Soldiers Must Stand Before Moving
 
