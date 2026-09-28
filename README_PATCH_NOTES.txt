@@ -1,3 +1,11 @@
+BUILD: v0.26.09.27.0006_TACTICAL_COMMS_IDENTITY_PATCH
+TACTICAL COMMS IDENTITY
+Save format: 4
+
+- Saved comms accessories now appear as earpieces and microphone booms on classic and full/mid articulated tactical models.
+- Uses existing appearance, head proportions and animation; no additional draw call.
+- Combat, saves and other accessory identities remain unchanged.
+
 BUILD: v0.26.09.27.0005_STAND_BEFORE_MOVEMENT_PATCH
 STAND BEFORE MOVEMENT
 Save format: 4

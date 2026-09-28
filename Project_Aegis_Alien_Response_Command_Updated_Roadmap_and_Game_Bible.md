@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.27.0005_STAND_BEFORE_MOVEMENT_PATCH`
+Current browser build: `v0.26.09.27.0006_TACTICAL_COMMS_IDENTITY_PATCH`
 
 Current save format: `4`
 
@@ -927,6 +927,8 @@ Implementation: new civic landmarks choose deterministic connected footprints of
 Implementation: Browser 0904 adds deterministic tetromino family/rotation metadata and a shared footprint-cell authority. Walls/windows, doors, furnishings, roofs, seams, civilian placement, structure-distance logic and building egress consume the footprint; T/L/J/S/Z recesses remain open. Pre-patch live tactical saves lacking shape metadata retain legacy rectangular geometry for that saved battle. Save format remains 4.
 
 ### 6. Match battle-model faces and equipment markings to soldier identity
+
+**Comms accessory slice implemented in Browser 0006 (September 27, 2026).** Saved comms accessories now add an earpiece and microphone boom to the shared facial mesh used by classic and full/mid articulated models. Head proportions, facing and animation apply to the accessory; there is no extra mesh/draw call or save field. Fourteen soldier-identity tests pass; live visual acceptance remains pending. Hairstyles, uniform/armor insignia and native parity remain follow-up work. See `TACTICAL_COMMS_IDENTITY_VALIDATION.md`.
 
 **Facial feature slice implemented in Browser 0009 (September 24, 2026).** Classic and full/mid articulated soldiers receive eyes, mouths and saved scar/glasses/mustache/bandage details. Mustaches use saved hair color; features follow head proportions and animation. One bounded vertex-colored mesh per soldier; no textures. Geometry, disposal and save/model signature tests pass. Live visual acceptance remains pending. Hairstyles, comms headsets, uniform/armor insignia and native parity remain follow-up work. Earlier slice notes below describe their original boundaries.
 

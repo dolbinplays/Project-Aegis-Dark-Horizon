@@ -1517,7 +1517,7 @@ function aegisTacticalViewportDimensions(mount,fallback={},layout=AEGIS_INTERFAC
 }
 // AEGIS_MOBILE_INTERFACE_END
 
-const CURRENT_GAME_BUILD="v0.26.09.27.0005_STAND_BEFORE_MOVEMENT_PATCH";
+const CURRENT_GAME_BUILD="v0.26.09.27.0006_TACTICAL_COMMS_IDENTITY_PATCH";
 const TACTICAL_LAST_KNOWN_CONTACT_CLEARANCE_FEEDBACK_AND_PERSISTENCE_HOTFIX=true;
 const BANDAGE_EARLY_GAME_FIRST_AID_AND_MEDKIT_RESEARCH_PROGRESSION_PATCH=true;
 const TACTICAL_OBSERVATION_GATED_UFO_FLIGHT_PRESENTATION_PATCH=true;
@@ -13379,6 +13379,26 @@ function tacticalSoldierFaceFeatures(visual={}){
   if(accessory==="bandage")line(-0.42,0.02,0.42,0.12,0.12,0xf8fafc);
   return features;
 }
+function tacticalSoldierCommsSegments(visual={}){
+  if(visual.appearance?.accessory!=="comms")return [];
+  return [
+    {from:[1.02,-0.04,0.08],to:[1.02,-0.32,0.08],radius:0.13},
+    {from:[1.02,-0.25,0.08],to:[1.08,-0.49,0.48],radius:0.035},
+    {from:[1.08,-0.49,0.48],to:[0.47,-0.55,0.96],radius:0.035},
+    {from:[0.47,-0.55,0.96],to:[0.32,-0.55,0.98],radius:0.065}
+  ];
+}
+function tacticalAppendSoldierCommsGeometry(THREE,positions,colors,visual,radius,centerY,scale){
+  const color=new THREE.Color(0x111827);
+  for(const segment of tacticalSoldierCommsSegments(visual)){
+    const from=new THREE.Vector3(...segment.from),to=new THREE.Vector3(...segment.to),axis=to.clone().sub(from).normalize();
+    const reference=Math.abs(axis.y)<0.9?new THREE.Vector3(0,1,0):new THREE.Vector3(1,0,0);
+    const side=new THREE.Vector3().crossVectors(axis,reference).normalize(),up=new THREE.Vector3().crossVectors(axis,side).normalize();
+    const point=(origin,index)=>origin.clone().addScaledVector(side,Math.cos(index*Math.PI/3)*segment.radius).addScaledVector(up,Math.sin(index*Math.PI/3)*segment.radius);
+    const vertex=v=>{positions.push(v.x*radius*scale[0],centerY+v.y*radius*scale[1],v.z*radius*scale[2]);colors.push(color.r,color.g,color.b);};
+    for(let i=0;i<6;i++){const a=point(from,i),b=point(from,i+1),c=point(to,i+1),d=point(to,i);[a,b,c,a,c,d,from,b,a,to,d,c].forEach(vertex);}
+  }
+}
 function addTacticalSoldierFace(THREE,parent,visual,radius=0.155,centerY=0,scale=[1,1,1]){
   if(!THREE||!parent||!visual)return null;
   const positions=[],colors=[];
@@ -13387,6 +13407,7 @@ function addTacticalSoldierFace(THREE,parent,visual,radius=0.155,centerY=0,scale
     const steps=Math.max(1,Math.ceil(length/0.12)),color=new THREE.Color(feature.color);for(let step=0;step<steps;step++){const x1=feature.x1+dx*step/steps,y1=feature.y1+dy*step/steps,x2=feature.x1+dx*(step+1)/steps,y2=feature.y1+dy*(step+1)/steps;const corners=[[x1+ox,y1+oy],[x1-ox,y1-oy],[x2-ox,y2-oy],[x2+ox,y2+oy]];
     [0,1,2,0,2,3].forEach(index=>{const[x,y]=corners[index];positions.push(x*radius*scale[0],centerY+y*radius*scale[1],(Math.sqrt(Math.max(0,1-x*x-y*y))*radius+0.005)*scale[2]);colors.push(color.r,color.g,color.b);});}
   });
+  tacticalAppendSoldierCommsGeometry(THREE,positions,colors,visual,radius,centerY,scale);
   const geometry=new THREE.BufferGeometry();geometry.setAttribute("position",new THREE.Float32BufferAttribute(positions,3));geometry.setAttribute("color",new THREE.Float32BufferAttribute(colors,3));geometry.computeVertexNormals();
   const face=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({vertexColors:true,roughness:0.9,side:THREE.DoubleSide}));face.name="Soldier portrait facial features";face.userData.soldierFaceAccessory=visual.appearance?.accessory||"none";parent.add(face);return face;
 }
@@ -17825,7 +17846,8 @@ PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.27.0001_BEACON_IMMUNITY_COLOR_RINGS
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.27.0002_STORAGE_CACHE_HYGIENE_HOTFIX",date:"September 27, 2026",title:"Browser Cache Storage Hygiene",summary:"Reduces redundant asset storage while preserving campaign saves.",items:["Precached assets refresh in their existing cache instead of accumulating a second runtime copy.","Runtime caching skips installation archives and resources outside this game path. Optional cache writes tolerate full-disk failures.","Campaign saves and recovery copies are unchanged. Use Backup Manager to keep external backups when disk space is low."]});
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.27.0003_HYBRID_CONTROL_PERSISTENCE_HOTFIX",date:"September 27, 2026",title:"Hybrid Control Persistence",summary:"Keeps Hybrid AI and observer camera choices when the tactical view resumes.",items:["Every live battle snapshot now retains the Hybrid AI control setting through selection, turn, playback and view updates.","FPV/TPV choices carry across Hybrid support rounds, Take Back Control, and saved leader-control intervals.","Explicitly switching Hybrid off remains supported. Existing saves without the setting retain their default behavior. Save format remains 4."]});
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.27.0004_DOOR_JAMB_SEAM_GEOMETRY_HOTFIX",date:"September 27, 2026",title:"Door Jamb Seam Geometry",summary:"Connects procedural door jambs to adjacent wall faces while keeping doorways clear.",items:["Door seam connectors start at the actual side jamb and meet the adjacent wall rectangle, including staggered rows.","Connector depth follows the door frame and front/back neighbors cannot fill the doorway.","Door movement, locks, visibility rules and save format remain unchanged."]});
-PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"September 27, 2026",title:"Stand Before Movement",summary:"Soldiers stand before moving and AI playback preserves their stance.",items:["Movement accounts for the existing 4 TU standing cost; kneeling soldiers without enough TU to stand and step hold position.","AI, escort and formation movement share standing-cost checks. Manual routes include the standing cost before movement begins.","AI snapshots carry kneeling state; playback stands movers before the first step and restores the final stationary stance. Save format remains 4."]});
+PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.27.0005_STAND_BEFORE_MOVEMENT_PATCH",date:"September 27, 2026",title:"Stand Before Movement",summary:"Soldiers stand before moving and AI playback preserves their stance.",items:["Movement accounts for the existing 4 TU standing cost; kneeling soldiers without enough TU to stand and step hold position.","AI, escort and formation movement share standing-cost checks. Manual routes include the standing cost before movement begins.","AI snapshots carry kneeling state; playback stands movers before the first step and restores the final stationary stance. Save format remains 4."]});
+PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"September 27, 2026",title:"Tactical Comms Identity",summary:"Soldiers with saved comms accessories now wear them on tactical models.",items:["Adds an earpiece and microphone boom to classic and full/mid articulated soldier heads using existing appearance data.","Headsets follow head proportions and animation within the existing facial mesh, with no extra draw call.","Other accessories, combat rules and save format remain unchanged."]});
 PATCH_NOTES_HISTORY.sort((left,right)=>String(right.build||"").localeCompare(String(left.build||""),undefined,{numeric:true,sensitivity:"base"}));
  return PATCH_NOTES_HISTORY;},[]);
 function PatchNotesLibraryScreen(){
