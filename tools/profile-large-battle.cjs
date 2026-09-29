@@ -6,7 +6,7 @@ const vm = require('node:vm');
 const crypto = require('node:crypto');
 
 const root = path.resolve(__dirname, '..');
-const source = fs.readFileSync(path.join(root, 'src', 'browser-runtime.html'), 'utf8');
+const source = fs.readFileSync(process.env.AEGIS_PROFILE_RUNTIME || path.join(root, 'src', 'browser-runtime.html'), 'utf8');
 const scripts = [...source.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)].map(match => match[1]);
 assert.ok(scripts.length >= 7, 'canonical runtime should retain executable application script');
 const appScript = scripts.find(script => script.includes('const CURRENT_GAME_BUILD=') && script.includes('function resolveMissionAiStreamBatchAsync'));
@@ -42,6 +42,8 @@ function runtimeContext(options={}) {
 function seededRandom(context, seed=123456789) {
   let state=seed>>>0;
   context.Math.random=()=>((state=(Math.imul(state,1664525)+1013904223)>>>0)/4294967296);
+  let uuid=0;
+  context.crypto={randomUUID:()=>`00000000-0000-4000-8000-${(++uuid).toString(16).padStart(12,'0')}`,getRandomValues:crypto.webcrypto.getRandomValues.bind(crypto.webcrypto),subtle:crypto.webcrypto.subtle};
 }
 
 
@@ -52,5 +54,5 @@ function seededRandom(context, seed=123456789) {
 
 
 (async()=>{const c=runtimeContext();seededRandom(c,74123);const game=c.makeNewGameData({openingIncidentSeed:74123});const squad=Array.from({length:48},(_,i)=>({...game.soldiers[i%game.soldiers.length],id:'large-'+i,name:'Soldier '+i,squadId:i<24?'alpha':'bravo'}));const mission={...game.missions[0],id:'large-profile',kind:'Alien Abduction Site',threat:4,transportCount:2,responseSquadIds:['alpha','bravo'],incidentVipCount:6,incidentCivilianCount:0,incidentRescueCountVersion:2,incidentVipCountKnown:true};let state=null;const results=[];
-for(let i=0;i<3;i++){const start=performance.now();const batch=await c.resolveMissionAiStreamBatchAsync({squad,mission,tech:game.tech||[],leaderInstruction:'Profile large battle',weaponUpgrades:game.weaponUpgrades,initialBattleState:state,revealAllPlaybackActions:false,onProgress:()=>{},maxSimulationRounds:72,batchRounds:1,simulatedRounds:i,hadPriorPlaybackShots:false,alienFieldBeaconKnowledge:'unknown',fastHandoff:true});state=batch.continuation||batch.result?.tacticalChunkContinuation;results.push({round:i+1,ms:performance.now()-start,frames:batch.frames?.length,units:state?.units?.length,humans:state?.units?.filter(u=>u.team==='human').length,covers:state?.covers?.length,complete:batch.complete});if(!state)break;}
+for(let i=0;i<Math.max(1,Math.min(3,Number(process.env.AEGIS_PROFILE_ROUNDS)||3));i++){const start=performance.now();const batch=await c.resolveMissionAiStreamBatchAsync({squad,mission,tech:game.tech||[],leaderInstruction:'Profile large battle',weaponUpgrades:game.weaponUpgrades,initialBattleState:state,revealAllPlaybackActions:false,onProgress:()=>{},maxSimulationRounds:72,batchRounds:1,simulatedRounds:i,hadPriorPlaybackShots:false,alienFieldBeaconKnowledge:'unknown',fastHandoff:true});state=batch.continuation||batch.result?.tacticalChunkContinuation;if(process.env.AEGIS_PROFILE_OUTPUT_DIR){fs.mkdirSync(process.env.AEGIS_PROFILE_OUTPUT_DIR,{recursive:true});fs.writeFileSync(path.join(process.env.AEGIS_PROFILE_OUTPUT_DIR,"round-"+(i+1)+".json"),JSON.stringify({units:state?.units,covers:state?.covers,frames:batch.frames}));}results.push({round:i+1,ms:performance.now()-start,frames:batch.frames?.length,units:state?.units?.length,humans:state?.units?.filter(u=>u.team==='human').length,covers:state?.covers?.length,complete:batch.complete,stateFingerprint:crypto.createHash("sha256").update(JSON.stringify({units:state?.units,covers:state?.covers,frames:batch.frames})).digest("hex")});if(!state)break;}
 console.log(JSON.stringify(results,null,2));})().catch(e=>{console.error(e);process.exitCode=1});

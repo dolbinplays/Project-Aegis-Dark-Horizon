@@ -1,3 +1,14 @@
+BUILD: v0.26.09.28.0010_LARGE_BATTLE_PLANNING_EFFICIENCY_PATCH
+September 28, 2026 — Large-Battle Planning Efficiency
+Save format: 4
+
+- Reuses visibility calculations within contact checks, fear perception, movement scoring and playback snapshots.
+- Uses fresh per-calculation fire/smoke indexes for escort formation and route scoring.
+- Avoids allocating temporary coordinate objects for each hex-distance query.
+- Adds mutation and equivalence regressions plus deterministic large-battle state fingerprints.
+- Corrects the outdated roadmap status of the completed incident VIP-count patch.
+- See LARGE_BATTLE_PLANNING_EFFICIENCY_VALIDATION.md for measured results and remaining limitations.
+
 BUILD: v0.26.09.28.0009_GROUNDED_TPV_BACKGROUND_SCENERY_PATCH
 September 28, 2026 — Grounded TPV Background Scenery
 Save format: 4

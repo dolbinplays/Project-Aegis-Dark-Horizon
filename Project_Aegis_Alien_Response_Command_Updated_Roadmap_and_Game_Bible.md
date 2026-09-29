@@ -1,8 +1,12 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.28.0009_GROUNDED_TPV_BACKGROUND_SCENERY_PATCH`
+Current browser build: `v0.26.09.28.0010_LARGE_BATTLE_PLANNING_EFFICIENCY_PATCH`
 
 Current save format: `4`
+
+## Large-Battle Planning Efficiency — September 28 / Browser 0010
+
+Reduces repeated visibility-context construction in contact selection, fear perception, movement scoring and playback snapshots. Escort formation and route scoring use short-lived hazard indexes; each new calculation sees current cover state, including in-place changes. Hex distance no longer creates temporary cube-coordinate objects. Tactical rules and save format 4 remain unchanged. See `LARGE_BATTLE_PLANNING_EFFICIENCY_VALIDATION.md` for benchmarks and equivalence checks. Long planning pauses remain a performance follow-up; this is not a GPU FPS improvement claim.
 
 ## Roadmap — TPV Free-Camera Floating Background Scenery
 
@@ -883,10 +887,10 @@ Recognition is a repeatable commendation credited to the soldier who completes p
 
 ## Roadmap Addition — Incident-Defined VIP Counts and Incomplete Rescue Reports
 
-**Requested September 13, 2026. Status: planned, not implemented.**
+**Requested September 13, 2026. Status: implemented September 22 in Browser 0003; VIP/civilian briefing separation followed September 24.**
 
 - Set and persist the actual number of VIPs when an incident enters the incident list. The incident determines rescue demand; assigning, adding or removing squads must never change the VIP count. Preserve that count through deployment, tactical generation, continuation and save/reload without rerolling it.
-- Track the actual VIP count separately from whether AEGIS knows it. When confirmed, include the number in the incident description and briefing. Give eligible rescue incidents a chance to arrive with incomplete intelligence; the probability is a future tuning decision.
+- Track the actual VIP count separately from whether AEGIS knows it. When confirmed, include the number in the incident description and briefing. Give eligible rescue incidents a chance to arrive with incomplete intelligence; Browser 0003 assigns interrupted reports to one quarter of eligible incident IDs.
 - An incomplete report should clearly communicate an attack and VIPs requiring extraction, with the transmission cut off before the count could be communicated. Display **VIP count: unknown**, rather than zero or an invented estimate. Example: "Attack in progress. VIPs require immediate extraction. We have— [TRANSMISSION LOST]. Land to establish contact with their short-range trackers and confirm the count."
 - Landing establishes local contact with the VIPs' short-range trackers and reveals the already-set count. Update the mission objective and rescue counters at that point, with a clear tracker-acquisition message. The reveal must not generate extra VIPs or scale them to the deployed force.
 - Keep tracker confirmation distinct from visual contact: knowing the rescue count must not automatically reveal enemies or grant sight through walls. Any tracker location indicators should be explicitly presented as tracker information and remain subject to the eventual tracker design.
@@ -894,7 +898,7 @@ Recognition is a repeatable commendation credited to the soldier who completes p
 - Use the same incident count and knowledge state across Manual, Hybrid and Simulation, tactical views, playback and mission reports. Preserve existing rescue/casualty accounting; later VIP deaths or extractions change outcome counters, not the incident's original count.
 - **Acceptance:** deploy different squad counts to the same incident and confirm identical VIP totals. Check confirmed and interrupted-report descriptions; ensure no pre-landing count leaks; verify landing reveals the stored count exactly once. Repeat after save/reload before and after landing, and check rescue, casualty and mission-report totals across control modes.
 
-This is a roadmap-only update; the runtime, build identifier and save format are unchanged.
+This status correction reflects the existing shipped implementation and patch notes; it introduces no new population or rescue-rule change. Save format remains 4.
 
 ## Solid Building Walls Block Adjacent Vision — Implemented in Browser 0955
 
