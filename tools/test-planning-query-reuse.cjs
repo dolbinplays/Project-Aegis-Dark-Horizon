@@ -34,7 +34,9 @@ function runtimeContext(options={}) {
   Object.assign(context.React,options.React||{});
   if(options.tv)context.AEGIS_TV_RUNTIME={enabled:true,metrics:{}};
   vm.createContext(context);
-  vm.runInContext(fs.readFileSync(path.join(root,'assets/runtime/aegis-building-layouts.js'),'utf8'),context);
+  const layoutsPath=path.join(root,'assets/runtime/aegis-building-layouts.js');
+  if(fs.existsSync(layoutsPath))vm.runInContext(fs.readFileSync(layoutsPath,'utf8'),context);
+  else context.AEGIS_BUILDING_LAYOUTS={create:()=>({read:()=>null,shape:x=>x,plan:(l,b)=>b,covers:()=>[],validate:()=>({ok:false,errors:['compact-package-stub'],warnings:[],reachable:[]}),publish:x=>x,clear:noop,copy:x=>JSON.parse(JSON.stringify(x))})};
   vm.runInContext(appSource, context, {timeout:15000});
   return context;
 }

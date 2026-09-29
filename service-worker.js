@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.29.0012_ALIEN_FORCED_ENTRY_AND_SHELTER_BREACH_PATCH";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.29.0012_ALIEN_FORCED_ENTRY_AND_SHELTER_BREACH_PATCH";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v66-alien-forced-entry";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.29.0013_SHOT_IMPACT_STATE_SEQUENCING_AND_DIRECTIONAL_KNOCKBACK_HOTFIX";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.29.0013_SHOT_IMPACT_STATE_SEQUENCING_AND_DIRECTIONAL_KNOCKBACK_HOTFIX";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v67-impact-sequencing";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;

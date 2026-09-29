@@ -1,8 +1,19 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.29.0012_ALIEN_FORCED_ENTRY_AND_SHELTER_BREACH_PATCH`
+Current browser build: `v0.26.09.29.0013_SHOT_IMPACT_STATE_SEQUENCING_AND_DIRECTIONAL_KNOCKBACK_HOTFIX`
 
 Current save format: `4`
+
+
+## Shot Impact State Sequencing + Directional Knockback — September 29 / Browser 0013
+
+Browser 0013 fixes two shot-time presentation-order regressions while adding physically consistent visual hit reaction direction. Authoritative combat state remains immediate; only the renderer temporarily holds the pre-impact visual state until the recorded projectile reaches its impact point.
+
+Recoverably downed/bleeding humans now retain their pre-impact stance while the shot travels. Streamed playback captures the prior human/civilian presentation before applying the already-resolved frame medical state, and live/manual shot presentation uses the same temporary hold. At impact, the target receives a bounded presentation-only shove/lean along the incoming shooter-to-target world vector and then settles into the authoritative downed/prone state. The visual impulse never moves the authoritative tactical hex.
+
+Beacon destruction reuses the established pre-impact snapshot/impact-commit system. Browser 0013 synchronously mirrors the destruction hold before the destroyed cover can render, preventing the one-frame wreck/disappearance before the lethal projectile cinematic activates. The existing destruction effect still commits the wreck at impact.
+
+Focused tests cover shot-vector direction, pre-impact casualty hold, authoritative-position preservation, bounded reaction timing, Beacon synchronous hold wiring and removal of arbitrary target-id knockback direction. Existing Browser 0012 alien forced-entry, Browser 0011 cooperative-planning and Browser 0010 planning-query/hazard regressions remain passing. Save format remains 4. See `SHOT_IMPACT_STATE_SEQUENCING_AND_DIRECTIONAL_KNOCKBACK_VALIDATION.md`.
 
 
 ## Alien Forced Entry + Shelter Breach Doctrine — September 29 / Browser 0012
@@ -16,7 +27,7 @@ Focused regression coverage verifies knowledge gating, open-route preference, st
 
 ## Roadmap — Casualty Shot-Time Presentation Before Bleeding / Prone Commit
 
-**Reported September 29, 2026. Status: investigated; presentation-order regression identified; implementation queued.**
+**Reported September 29, 2026. Status: implemented in Browser 0013; installed-game field acceptance pending.**
 
 When an alien shot causes an AEGIS soldier to become recoverably downed/bleeding, the soldier can enter the prone bleeding presentation before the projectile/shot that caused the wound is visibly shown. Authoritative casualty resolution is correct; the defect is playback ordering.
 
@@ -32,7 +43,7 @@ Investigation found that sequential tactical playback already defers lethal `sho
 
 ## Roadmap — Beacon Lethal-Frame Pre-Impact Hold Regression
 
-**Reported September 29, 2026. Status: investigated; regression point identified; implementation queued.**
+**Reported September 29, 2026. Status: implemented in Browser 0013; installed-game field acceptance pending.**
 
 Alien Field Beacons can disappear/wreck one render before the lethal projectile is presented, then reappear intact for the destruction shot/cinematic. This is a regression in the established deferred Beacon-destruction presentation system, not a missing destruction animation.
 

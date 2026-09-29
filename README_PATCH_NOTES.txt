@@ -1,3 +1,15 @@
+BUILD: v0.26.09.29.0013_SHOT_IMPACT_STATE_SEQUENCING_AND_DIRECTIONAL_KNOCKBACK_HOTFIX
+September 29, 2026 — Shot Impact State Sequencing + Directional Knockback
+Save format: 4
+
+- Recoverably downed/bleeding soldiers keep their pre-impact pose while the causative projectile travels; prone/downed presentation is committed only after visible impact.
+- Human/civilian hit reactions derive a normalized world-space impulse from shooter to target, so the visible shove/lean follows shot momentum instead of an arbitrary left/right sign.
+- Knockback is presentation-only: the authoritative tactical hex, occupancy, LOS, pathing and movement state do not move.
+- Streamed AI playback captures a pre-impact casualty presentation snapshot before applying the authoritative post-hit medical state; live/manual shot presentation uses the same hold/release authority.
+- Beacon destruction now mirrors its pre-impact hold synchronously before authoritative wreck covers can render, closing the disappear-then-reappear regression while preserving the established impact-commit destruction cinematic.
+- Damage, bleeding timers, TU/ammunition, AI priorities, reinforcement cancellation, mission results and save format 4 are unchanged.
+- See SHOT_IMPACT_STATE_SEQUENCING_AND_DIRECTIONAL_KNOCKBACK_VALIDATION.md.
+
 BUILD: v0.26.09.29.0012_ALIEN_FORCED_ENTRY_AND_SHELTER_BREACH_PATCH
 September 29, 2026 — Alien Forced Entry + Shelter Breach Doctrine
 Save format: 4
