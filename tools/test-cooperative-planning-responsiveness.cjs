@@ -3,7 +3,7 @@ const path=require('path');
 const root=path.resolve(__dirname,'..');
 const runtimePath=process.env.AEGIS_PROFILE_RUNTIME||process.argv[2]||path.join(root,'src','browser-runtime.html');
 const source=fs.readFileSync(runtimePath,'utf8');
-const BUILD='v0.26.09.29.0017_DEFAULT_AI_ESCORT_COMBAT_BEFORE_CASUALTY_RECOVERY_PATCH';
+const BUILD=JSON.parse(fs.readFileSync(path.join(root,'release-metadata.json'),'utf8')).build;
 const tests=[];const test=(name,fn)=>tests.push([name,fn]);
 const scripts=[...source.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 let app=scripts.find(s=>s.includes('const CURRENT_GAME_BUILD=')&&s.includes('function resolveMissionAiStreamBatchAsync'));

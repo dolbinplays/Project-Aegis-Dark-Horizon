@@ -1,3 +1,13 @@
+BUILD: v0.26.09.29.0020_INCOMING_FIRE_PLAYBACK_COMPLETENESS_PATCH
+September 29, 2026 — Incoming Fire Playback Completeness
+Save format: 4
+
+- Animates alien shots at AEGIS even when the shooter is hidden, including misses.
+- Gives repeated attacks separate playback frames and sequences manual incoming shots.
+- Prevents an old shot timer from clearing a newer effect.
+- Preserves fog/shooter visibility, combat rules and save format.
+- See INCOMING_FIRE_0020_VALIDATION.md.
+
 BUILD: v0.26.09.29.0019_TRANSPORT_WING_CLEARANCE_AND_UFO_FLIGHT_RAMP_PATCH
 September 29, 2026 — Transport Wing Clearance and UFO Flight Ramp
 Save format: 4

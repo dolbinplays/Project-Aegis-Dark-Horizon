@@ -1,8 +1,12 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.29.0019_TRANSPORT_WING_CLEARANCE_AND_UFO_FLIGHT_RAMP_PATCH`
+Current browser build: `v0.26.09.29.0020_INCOMING_FIRE_PLAYBACK_COMPLETENESS_PATCH`
 
 Current save format: `4`
+
+## Incoming Fire Playback Completeness — Browser 0020
+
+Fixes dropped incoming alien shot animations: shots at AEGIS remain presentable when the shooter is hidden, each recorded attack receives a separate playback frame, manual alien turns sequence incoming effects, and older expiry timers cannot clear newer shots. Shooter visibility/knowledge and combat rules remain unchanged. Automated regressions pass; installed-game acceptance remains pending. See `INCOMING_FIRE_0020_VALIDATION.md`.
 
 ## Transport Wing Clearance and UFO Flight Ramp — Browser 0019
 

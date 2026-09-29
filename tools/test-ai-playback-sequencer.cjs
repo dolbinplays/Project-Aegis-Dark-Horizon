@@ -197,6 +197,9 @@ function missionFixture({ terminal = false, speed = 100 } = {}) {
     setTacticalRound: () => {}, setAiMapCameraAnchor: () => {}, setLog: () => {}, onBattleImpact: () => {},
     tacticalAiFrameCameraAnchor: () => null, hasLineOfSight: () => true,
     tacticalPhysioFrameInjuryIds: () => [], holdPhysioVitals: () => {}, releasePhysioVitals: () => {},
+    tacticalShotImpactPresentationHoldIds: () => [], holdImpactPresentation: () => {}, releaseImpactPresentation: () => {},
+    hybridBattleMode: false,
+    tacticalHumanIsDowned: unit => Boolean(unit?.downed || unit?.unconscious),
     tacticalSequenceRampBoardingPlaybackPlans: plans => plans,
     tacticalAiFrameCivilianExtractionPlaybackState: (frame, target) => ({ animate: target.team === 'civilian' }),
     tacticalPlaybackUnitMayAnimate: () => true,
@@ -217,6 +220,7 @@ function missionFixture({ terminal = false, speed = 100 } = {}) {
   const d = source.indexOf('function takeBackAiCommand()'), e = source.indexOf('function finishAiPlayback()', d);
   const medicalStart=source.indexOf('function tacticalPlaybackMedicalState('),medicalEnd=source.indexOf('function TacticalStabilizationMarker(',medicalStart);
   const dragStart=source.indexOf('function tacticalPlaybackCasualtyRescuerId('),dragEnd=source.indexOf('function tacticalAiSequentialPlaybackFrames(',dragStart);
+  vm.runInContext(source.split('\n').find(line=>line.startsWith('function tacticalPlaybackMovingStance(')), vm.createContext(scope));
   vm.runInContext(source.slice(dragStart,dragEnd) + '\n' + source.slice(medicalStart,medicalEnd) + '\n' + source.slice(h, i) + '\n' + source.slice(a, b) + '\n' + source.slice(d, e), vm.createContext(scope));
   return { c, q, scope, states, human, vip };
 }
