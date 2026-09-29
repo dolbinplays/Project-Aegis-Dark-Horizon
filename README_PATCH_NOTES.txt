@@ -1,3 +1,19 @@
+BUILD: v0.26.09.29.0014_CIVILIAN_VIP_WINDOW_CONCEALMENT_AND_PRESECURED_SHELTER_PATCH
+September 29, 2026 — Civilian/VIP Window Concealment + Pre-Secured Shelters
+Save format: 4
+
+- Adds functional blinds/curtains to existing authoritative building-window records. Closed intact coverings block ordinary LOS through the aperture without adding ballistic armor or movement blocking.
+- Shattering a covered window destroys its covering and restores the ordinary window sightline.
+- Civilians/VIPs close intact coverings when their existing shelter-securing behavior completes, breaking current exterior sightlines while preserving ordinary Last Known Contact rules.
+- VIP-bearing missions deterministically select a usable shelter building, place the initial VIPs in clear interior cells, lock its existing doors and close its relevant coverings before first contact. No alien knowledge is seeded from the mission objective.
+- Closed coverings render in Three.js and 2D Hex; residence/farm/timber families favor curtains while other building families favor blinds.
+- Existing Call Out, escort, Browser 0012 alien forced entry, window destruction, Hybrid/Simulation authority and save format 4 remain intact.
+- Validation: 6/6 new concealment tests, 6/6 Browser 0013 impact tests, 6/6 Browser 0012 forced-entry tests, 5/5 Browser 0011 cooperative-planning tests and 6/6 Browser 0010 planning-query/hazard tests.
+
+See `CIVILIAN_VIP_WINDOW_CONCEALMENT_AND_PRESECURED_SHELTER_VALIDATION.md`.
+
+---
+
 BUILD: v0.26.09.29.0013_SHOT_IMPACT_STATE_SEQUENCING_AND_DIRECTIONAL_KNOCKBACK_HOTFIX
 September 29, 2026 — Shot Impact State Sequencing + Directional Knockback
 Save format: 4

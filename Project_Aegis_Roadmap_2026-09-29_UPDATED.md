@@ -1,21 +1,46 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.29.0014_CIVILIAN_VIP_WINDOW_CONCEALMENT_AND_PRESECURED_SHELTER_PATCH`
+Current browser build: `v0.26.09.29.0013_SHOT_IMPACT_STATE_SEQUENCING_AND_DIRECTIONAL_KNOCKBACK_HOTFIX`
 
 Current save format: `4`
 
 
-## Civilian/VIP Window Concealment + Pre-Secured Shelters — September 29 / Browser 0014
+## Roadmap — Civilian/VIP Window Coverings, Concealment + Pre-Secured VIP Shelters
 
-**Status: implemented; installed-game field acceptance pending.**
+**Requested September 29, 2026. Status: roadmap item; not yet implemented.**
 
-Browser 0014 adds functional blinds and curtains to the existing building-window authority. Each intact window carries a deterministic covering type/state. Closed coverings block ordinary visual LOS through the aperture but do not become armor, hard cover or movement blockers. A shattered window destroys its covering and restores the ordinary opening.
+Add functional **window blinds and curtains** to civilian/VIP shelter behavior so hiding inside a building is more than simply closing a door. Window coverings become presentation-backed tactical concealment state tied to the existing authoritative building/window and shelter systems.
 
-Civilian/VIP shelter behavior now closes intact window coverings once the building is secured, so occupants can actually break exterior visual contact instead of remaining targetable through transparent windows. Existing Last Known Contact rules remain authoritative: an alien that previously observed a target may remember that position, but a closed covering does not grant continuing direct vision and never reveals an occupant the alien had not observed.
+### Window-covering state and LOS
+- Eligible building windows may spawn with a covering type appropriate to the structure, such as horizontal/vertical blinds or curtains/drapes. The covering has an explicit open/closed presentation state rather than being baked permanently into the window mesh.
+- **Closed blinds/curtains block ordinary visual LOS through that window.** A civilian/VIP concealed behind a closed covering therefore cannot be directly acquired or targeted through the window merely because the glass itself would otherwise be transparent.
+- Concealment is symmetric and physical: AEGIS and aliens should both lose ordinary visual LOS through a fully closed covering. The covering does not invent one-way visibility or faction-specific fog rules.
+- Closing a covering does not silently turn the window into armored hard cover. Existing glass/window structural HP, penetration, destruction, shattering, fire/smoke and projectile rules remain authoritative. The primary effect is **visibility/target-acquisition denial**, not extra ballistic protection.
+- If an enemy previously observed a target before the covering closed, existing Last Known Contact / remembered-position rules may persist, but the target is no longer a current visible target through that window. Do not allow hidden-state omniscience or direct fire at a currently unseen person unless an existing game rule independently authorizes firing at remembered terrain/cover.
+- Destroying/shattering the relevant window or destroying/removing its covering must immediately recompute LOS from the authoritative current state. Do not leave stale concealment after the aperture is physically opened.
 
-On VIP-bearing missions, deployment deterministically chooses a valid building with existing doors, windows and enough clear interior cells. Initial VIPs begin inside that shelter with its existing exterior entrances closed/locked and its intact blinds/curtains closed. This starting condition does not seed alien knowledge. AEGIS Call Out / Identify AEGIS, escort acquisition/extraction and Browser 0012 knowledge-gated alien forced entry continue to operate on the same building/door/contact authority.
+### Civilian/VIP hiding and barricading behavior
+- When civilians or VIPs enter the existing **hide / shelter / barricade** behavior inside a building, they should close accessible blinds/curtains on exterior windows associated with their shelter area in addition to securing appropriate doors.
+- Shelter logic should prefer concealment actions that can be completed without exposing the civilian/VIP to a known visible alien. Do not make a hiding civilian cross an unsafe room solely to operate a distant window covering.
+- Once the shelter is secured, civilians/VIPs should remain away from exposed uncovered windows where practical and continue using existing furnishing-cover/fear behavior.
+- If AEGIS successfully makes contact, escorts a VIP, uses Call Out, breaches/opens the shelter, or otherwise transitions the civilian/VIP out of hiding, window coverings may remain closed unless an explicit later interaction opens them; rescue does not require magically resetting the room.
+- Alien forced-entry doctrine from Browser 0012 remains authoritative for locked shelter doors. Closed blinds/curtains conceal occupants but must not grant aliens knowledge that a specific VIP is inside or tell them which window/door to approach.
 
-Closed coverings are visible in Three.js and 2D Hex. Save format remains 4. See `CIVILIAN_VIP_WINDOW_CONCEALMENT_AND_PRESECURED_SHELTER_VALIDATION.md`.
+### VIP mission starting state
+- For missions that spawn objective VIPs on the tactical map, mission generation should reserve/guarantee at least one valid **VIP shelter building** unless a specific scenario explicitly defines a different starting situation.
+- VIPs begin **inside that shelter building**, already in a hiding/shelter state rather than standing visibly outdoors.
+- Exterior shelter doors begin **closed and locked** under the existing civilian-secured-door authority.
+- Exterior windows serving the occupied shelter area begin with their blinds/curtains **closed**, preventing aliens from immediately seeing and shooting the VIPs through transparent windows at mission start.
+- Initial hiding state must not leak the shelter location to aliens. Alien AI still has to discover/observe evidence according to ordinary fog-of-war, search, Last Known Contact and forced-entry rules.
+- AEGIS must still be able to resolve the shelter through the existing rescue chain, including **Call Out / Identify AEGIS**, lawful door interaction, escort contact and extraction. Initial locking/concealment must not create an unreachable VIP or bypass the existing VIP-priority hierarchy.
+- Multiple VIPs may share one shelter when appropriate, but map generation should avoid stacking them on blocked cells or creating a sealed building with no legal AEGIS approach/door interaction path.
+
+### Presentation and interaction
+- 3D Iso, FPV and TPV should visibly show the covering opening/closing in the actual window aperture. 2D/Classic should expose an equivalent readable closed/open state without requiring a separate tactical authority.
+- Where useful, hovering/selecting a window can identify **Blinds Closed / Curtains Closed** and explain that the covering blocks visual LOS but is not armored cover.
+- If manual civilian/VIP control or future building-interaction tools expose window-covering controls, they must use the same authoritative state as AI shelter behavior rather than a renderer-only toggle.
+
+**Acceptance:** generate multiple VIP-bearing urban/residential missions and confirm VIPs begin inside a valid shelter with exterior doors closed/locked and relevant blinds/curtains closed. From outside, verify aliens cannot obtain current LOS or directly target concealed VIPs through covered windows. Open the covering and confirm LOS returns; close it again and confirm LOS is removed. Repeat after glass/window destruction, save/load, Simulation/Hybrid playback, AEGIS Call Out/escort acquisition and Browser 0012 alien forced entry. Confirm no hidden VIP location is leaked, no one-way faction visibility is introduced, ordinary window structural/ballistic rules remain intact, and save format remains **4** unless implementation later proves a schema change unavoidable.
 
 
 ## Shot Impact State Sequencing + Directional Knockback — September 29 / Browser 0013

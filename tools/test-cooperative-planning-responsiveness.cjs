@@ -3,7 +3,7 @@ const path=require('path');
 const root=path.resolve(__dirname,'..');
 const runtimePath=process.env.AEGIS_PROFILE_RUNTIME||process.argv[2]||path.join(root,'src','browser-runtime.html');
 const source=fs.readFileSync(runtimePath,'utf8');
-const BUILD='v0.26.09.29.0013_SHOT_IMPACT_STATE_SEQUENCING_AND_DIRECTIONAL_KNOCKBACK_HOTFIX';
+const BUILD='v0.26.09.29.0014_CIVILIAN_VIP_WINDOW_CONCEALMENT_AND_PRESECURED_SHELTER_PATCH';
 const tests=[];const test=(name,fn)=>tests.push([name,fn]);
 const scripts=[...source.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 let app=scripts.find(s=>s.includes('const CURRENT_GAME_BUILD=')&&s.includes('function resolveMissionAiStreamBatchAsync'));
