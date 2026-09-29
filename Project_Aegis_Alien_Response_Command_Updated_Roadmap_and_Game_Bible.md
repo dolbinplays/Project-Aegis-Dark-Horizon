@@ -1,8 +1,12 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.29.0017_DEFAULT_AI_ESCORT_COMBAT_BEFORE_CASUALTY_RECOVERY_PATCH`
+Current browser build: `v0.26.09.29.0018_UPDATE_REVIEW_PLANNING_AND_TPV_FIXES_PATCH`
 
 Current save format: `4`
+
+## September 29 Update Review — Browser 0018
+
+Reviewed pushed Browser 0011–0017 changes. Fixed temporary planning limits leaking across cooperative yields and overlapping planners, cancellation running an extra planning segment, and generator cleanup on checkpoint errors. TPV recovery now stops before close obstructions, ignores invisible parent groups and preserves horizontal orbit distance when the camera is elevated. Recent gameplay additions and save format 4 are retained. Forty-nine focused checks pass; installed-game field acceptance remains pending. See `UPDATE_REVIEW_0018_VALIDATION.md`.
 
 ## Default AI Escort + Combat Before Casualty Recovery — September 29 / Browser 0017
 

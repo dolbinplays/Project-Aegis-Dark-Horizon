@@ -1,3 +1,13 @@
+BUILD: v0.26.09.29.0018_UPDATE_REVIEW_PLANNING_AND_TPV_FIXES_PATCH
+September 29, 2026 — Update Review: Planning and TPV Fixes
+Save format: 4
+
+- Reviews pushed Browser 0011–0017 changes against the last reviewed Browser 0010.
+- Restores planning limits between asynchronous slices and overlapping planners.
+- Cancels stale planning before more work runs and closes interrupted generators.
+- Fixes TPV close-wall clearance, hidden-parent obstructions and elevated orbit expansion.
+- 49 focused regression checks pass; see UPDATE_REVIEW_0018_VALIDATION.md.
+
 BUILD: v0.26.09.29.0017_DEFAULT_AI_ESCORT_COMBAT_BEFORE_CASUALTY_RECOVERY_PATCH
 September 29, 2026 — Default AI Escort + Combat Before Casualty Recovery
 Save format: 4
