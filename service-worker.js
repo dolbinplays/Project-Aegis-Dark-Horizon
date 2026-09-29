@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.29.0015_BEACON_ROUND_PREIMPACT_PLAYBACK_HOLD_HOTFIX";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.29.0015_BEACON_ROUND_PREIMPACT_PLAYBACK_HOLD_HOTFIX";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v69-beacon-round-hold";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.29.0016_TPV_CAMERA_SHIELD_PARITY_AND_ROOF_OCCLUSION_PATCH";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.29.0016_TPV_CAMERA_SHIELD_PARITY_AND_ROOF_OCCLUSION_PATCH";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v70-tpv-shield-roof";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;

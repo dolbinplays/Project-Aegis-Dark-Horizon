@@ -1,8 +1,52 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.29.0015_BEACON_ROUND_PREIMPACT_PLAYBACK_HOLD_HOTFIX`
+Current browser build: `v0.26.09.29.0016_TPV_CAMERA_SHIELD_PARITY_AND_ROOF_OCCLUSION_PATCH`
 
 Current save format: `4`
+
+## TPV Camera Occlusion Recovery + Beacon Shield Parity + Sealed Sloped Roofs — September 29 / Browser 0016
+
+**Status: implemented; installed-game field acceptance required.**
+
+Browser 0016 closes three presentation/authority seams without changing save format or tactical balance.
+
+### TPV obstruction recovery
+
+Third Person View now tests the desired chase-camera line against persistent battlefield cover geometry, including Skyranger hull/interior geometry and building/scenery meshes. If the requested camera location would sit inside an obstruction or leave the observed soldier hidden behind one, the camera first clamps to a safe visible distance and then evaluates bounded lateral orbit alternatives around the soldier. The best legal candidate is used while the actor/look target and authoritative tactical state remain unchanged. Roof panels/decks are excluded from this camera collision pass because roof visibility is handled by the building cutaway system.
+
+### Manual / AI Alien Field Beacon shield parity
+
+A control-mode audit found two seams. An older manual direct-fire-at-Beacon path could fall through the generic structural cover helper without identifying the equipped weapon class, while blocked streamed-AI shots could resolve correctly in gameplay but still animate all the way to the protected alien, making a deflected shot look like a penetration. Browser 0016 hardens manual Beacon damage through the shared weapon-aware shield resolver and carries the blocking Beacon/source into shot playback so a blocked projectile visibly terminates at the shield boundary.
+
+The tested rules remain the established ones: kinetic shielding blocks applicable outside ballistic fire while outside energy fire can pass; combined shielding blocks applicable outside ballistic and energy fire; Frag Grenades retain their established outside-field effectiveness; and a shooter legally inside the seven-hex field bypasses that field for applicable attacks. Ordinary aliens standing in the field receive the same protection as the Beacon. Manual direct fire, reaction fire, Hybrid/autonomous fire and full Simulation AI now consume the same shield-result authority rather than a control-mode-specific damage rule.
+
+### Sealed pitched/slanted roofs
+
+Pitched/slanted procedural roofs now include a flat roof/deck layer immediately beneath the visible slope. This seals the building visually from exterior camera angles instead of allowing sight into the interior through gaps beneath the sloped roof presentation. The under-deck follows the same damaged-roof hole rules and the same roof-fade lifecycle as the outer roof. Roof transparency/cutaway is now limited to buildings occupied by a living AEGIS soldier, so exterior-only views remain closed while soldiers operating inside can still be observed.
+
+**Acceptance:** test TPV beside/inside the Skyranger, close to procedural buildings, map-edge structures and dense scenery; the camera should move to a nearby unobstructed angle without clipping or losing the observed actor. Repeat Beacon/shield attacks under Manual, Hybrid, Simulation and reaction fire with ballistic, laser/plasma and Frag Grenades from outside and inside the shield; damage/block results and visual interception must agree across control modes. Inspect pitched roofs from low/high exterior angles and confirm no interior is visible until a living AEGIS soldier occupies the building, then confirm the existing cutaway/fade remains usable. Save format remains 4.
+
+See `TPV_CAMERA_SHIELD_PARITY_AND_ROOF_OCCLUSION_VALIDATION.md`.
+
+
+## Roadmap — Victory Celebration TPV Soldier Flythrough
+
+**Requested September 29, 2026. Status: approved roadmap item; implementation pending.**
+
+After authoritative mission victory is committed and the final consequential action has finished visibly, the victory celebration should gain a presentation-only TPV flythrough that visits surviving AEGIS soldiers one at a time so the player can actually see each soldier's victory pose and existing weapon-specific celebration effects.
+
+- Build the visit list only from legitimate surviving, conscious AEGIS soldiers who remain valid celebration actors. KIA, downed/unconscious and otherwise non-celebrating actors must not stall the sequence.
+- Use a deterministic visit order (stable fire-team/soldier order) so replays do not randomly reorder the celebration.
+- For each soldier, transition to a readable TPV framing, dwell long enough for that soldier's celebration pose/effect to register, then fly smoothly to the next actor.
+- Reuse Browser 0016 TPV obstruction recovery so celebration cameras avoid Skyrangers, building shells, map-edge scenery and other persistent geometry rather than being placed inside an object.
+- Preserve the existing weapon-specific celebration effects, victory music and success-only gating. Camera movement is presentation-only: no soldier coordinates, facing authority, TU, ammunition, damage, AI, fog, rewards, casualties or mission results may change.
+- Do not reveal hidden/unexplored information merely to obtain a dramatic shot. Camera candidates should remain constrained to legal presentation space around already-visible surviving AEGIS actors.
+- If a visited actor becomes invalid during cleanup, skip them and continue. The sequence must never deadlock mission-result progression.
+- Respect reduced-motion/accessibility settings with shorter moves, cuts or stable holds while still visiting the celebration roster where practical.
+- At sequence completion, transition cleanly to the normal victory/result presentation without replaying effects or visiting soldiers twice.
+
+**Acceptance:** win missions with one soldier, multiple fire teams, indoor survivors, soldiers beside/in the Skyranger, mixed weapon celebration effects and casualty-heavy squads. Start the terminal sequence from 3D Iso, FPV and TPV. Confirm every eligible survivor receives one readable celebration shot, camera collision recovery keeps the action visible, no downed/KIA actor is treated as celebrating, hidden information remains hidden, reduced-motion behavior is bounded, and the Mission Result becomes available normally after the flythrough.
+
 
 ## Beacon Round Pre-Impact Playback Hold Hotfix — September 29 / Browser 0015
 

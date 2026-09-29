@@ -1,3 +1,21 @@
+BUILD: v0.26.09.29.0016_TPV_CAMERA_SHIELD_PARITY_AND_ROOF_OCCLUSION_PATCH
+September 29, 2026 — TPV Camera Occlusion Recovery + Beacon Shield Parity + Sealed Sloped Roofs
+Save format: 4
+
+- TPV now ray-tests its desired chase-camera path against persistent cover/Skyranger/building geometry and tries bounded side-orbit alternatives when the default position would be inside/behind an obstruction.
+- The camera fix is presentation-only: it does not move the observed actor, change AI control, reveal hidden units or alter tactical state.
+- Manual-vs-AI Beacon/shield audit found and fixed an older manual direct-fire-at-Beacon seam that could omit weapon class when applying structural damage. Manual fire now uses the same weapon-aware shield damage authority as Simulation/Hybrid.
+- Blocked AI/reaction/manual shots now carry the blocking Beacon into playback and visibly terminate at the shield boundary instead of visually continuing to the protected target after gameplay already recorded a deflection.
+- Verified shield parity: kinetic blocks applicable outside ballistic fire; combined blocks applicable outside ballistic and laser/plasma fire; Frag Grenades retain their established outside-field effectiveness; legal inside-field shooters bypass; ordinary aliens inside the field receive the same protection.
+- Pitched/slanted roofs now retain a flat sealed under-deck beneath the slope, preventing exterior cameras from seeing through roof geometry into the building.
+- Roof fade/cutaway applies to buildings occupied by a living AEGIS soldier; unoccupied buildings stay visually closed from outside.
+- Roadmap adds an approved Victory Celebration TPV Soldier Flythrough to visit each eligible surviving soldier and show their victory pose/weapon celebration effects. This camera flythrough is not implemented in Browser 0016.
+- Validation: 8/8 new TPV/shield/roof tests, 6/6 Browser 0015 Beacon hold, 6/6 Browser 0014 concealment, 6/6 Browser 0013 impact, 6/6 Browser 0012 forced entry, 5/5 Browser 0011 cooperative planning and 6/6 Browser 0010 planning-query/hazard tests.
+
+See `TPV_CAMERA_SHIELD_PARITY_AND_ROOF_OCCLUSION_VALIDATION.md`.
+
+---
+
 BUILD: v0.26.09.29.0015_BEACON_ROUND_PREIMPACT_PLAYBACK_HOLD_HOTFIX
 September 29, 2026 — Beacon Round Pre-Impact Playback Hold Hotfix
 Save format: 4
