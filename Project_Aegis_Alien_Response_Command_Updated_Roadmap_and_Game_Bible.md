@@ -1,8 +1,38 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.28.0007_PRINCIPAL_RESCUE_AND_LARGE_BATTLE_PERFORMANCE_PATCH`
+Current browser build: `v0.26.09.28.0008_OBSERVATION_DRIVEN_SHIELD_TACTICS_PATCH`
 
 Current save format: `4`
+
+## Roadmap — TPV Free-Camera Floating Background Scenery
+
+**Requested September 28, 2026. Status: planned; not implemented.**
+
+The player reports that background landscape items appear to hover when using the TPV free camera, possibly only after increasing camera height. The supplied screenshot shows distant rectangular scenery visibly separated from the apparent ground/horizon. Camera height is a suspected trigger; the underlying cause has not yet been verified.
+
+- Reproduce by raising and lowering the TPV free camera, rotating and changing pitch around the same scene. Inspect background scenery placement, terrain coverage, camera-relative transforms, clipping and level-of-detail transitions to establish the cause.
+- Keep distant landscape scenery visually grounded throughout the supported camera range, including elevated views that expose the edge of the tactical terrain. Preserve free-camera controls and avoid hiding the symptom by unnecessarily restricting camera height.
+- Preserve tactical geometry, visibility rules and rendering performance; check that any shared rendering changes also behave correctly in FPV and 3D isometric views.
+
+**Acceptance:** compare low, default and maximum supported TPV camera heights across pitch angles, rotations and map edges; include different landscape types and day/night lighting. Confirm no floating background strips or exposed scenery bases, no popping when changing height, and no regressions when switching between TPV, FPV and 3D isometric views.
+
+This entry records future work only; it does not change gameplay, the browser build or save format.
+
+## Roadmap — Observation-Driven Beacon Shield Tactics
+
+**Requested September 28, 2026. Status: implemented in Browser 0008; installed-game field acceptance pending.**
+
+The AI commander should learn from observed weapons fire that a beacon shield protects aliens within its field, then adapt ordinary combat decisions. Browser 0008 uses observed, source-scoped blocked weapon classes before spending TU/ammunition on normal, covered, reaction, Hybrid and emergency fire. It also considers safe grenades against a single protected alien and legal inside-field approaches.
+
+- Learn from legitimately observed shield interceptions against aliens as well as the beacon. Track the demonstrated blocked weapon class and the known shield source; do not infer hidden aliens, unseen shield properties or unobserved enemy actions from internal damage state. A first probing shot may be needed when protection is unknown.
+- Once a block is confirmed, reevaluate attacks before spending TU or ammunition. Prefer a known effective equipped weapon, another visible target, or a safe legal approach inside the field. Explosives retain normal availability and friendly-fire checks. Hold or support when no useful attack or approach exists rather than repeating futile fire.
+- Apply this knowledge consistently to Simulation AI, Hybrid AI, reaction fire, emergency attacks and covered-fire follow-up shots. Preserve explicit assignments, urgent medical and rescue commitments, LOS, fog of war, range, pathing, ammunition and all movement/stance costs.
+- Reevaluate when the target or shooter crosses the field boundary, weapons change, or the shield is disabled, destroyed, changed or replaced. Keep knowledge scoped to the observed source and avoid permanent target blacklists or stale protection assumptions.
+- Preserve learned observations through saves, tactical continuations and streamed snapshots. Playback must not duplicate observations or grant knowledge early. Give brief feedback explaining the observed protection and changed tactic.
+
+**Acceptance:** verify first observation versus an unknown field; kinetic and combined shields against ballistic, energy and explosive attacks; inside-field bypass; switching targets or weapons; stopping blocked follow-up fire; unavailable safe approaches; shield destruction/replacement; hidden targets; and save/load during observation and adaptation. Confirm no hidden-information advantage or interruption of committed rescue work.
+
+Implementation preserves manual firing control and the existing single equipped ranged weapon model; there is no new inventory or automatic rifle-swapping system. Learned classes persist on beacon records through snapshots and saves. Save format remains 4. See `OBSERVED_SHIELD_TACTICS_VALIDATION.md` for tests and field-acceptance limits.
 
 ## Principal Rescue Foundation and Large-Battle Performance — September 28 / Browser 0007
 

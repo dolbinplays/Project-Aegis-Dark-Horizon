@@ -1517,7 +1517,7 @@ function aegisTacticalViewportDimensions(mount,fallback={},layout=AEGIS_INTERFAC
 }
 // AEGIS_MOBILE_INTERFACE_END
 
-const CURRENT_GAME_BUILD="v0.26.09.28.0007_PRINCIPAL_RESCUE_AND_LARGE_BATTLE_PERFORMANCE_PATCH";
+const CURRENT_GAME_BUILD="v0.26.09.28.0008_OBSERVATION_DRIVEN_SHIELD_TACTICS_PATCH";
 const TACTICAL_LAST_KNOWN_CONTACT_CLEARANCE_FEEDBACK_AND_PERSISTENCE_HOTFIX=true;
 const BANDAGE_EARLY_GAME_FIRST_AID_AND_MEDKIT_RESEARCH_PROGRESSION_PATCH=true;
 const TACTICAL_OBSERVATION_GATED_UFO_FLIGHT_PRESENTATION_PATCH=true;
@@ -3256,7 +3256,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
       const beaconHoldToAttack=Boolean(beaconStrikeAttack&&beaconImmediateAttack.ready);
       const beaconCommittedSupportHold=Boolean(beaconEngagementLock.active&&beaconAssignmentNeutralization.active&&beaconStrikeAssigned&&!beaconStrikeActor&&!formationMove&&!explicitBeaconTrafficClear);
       const stateSearchTarget=[TACTICAL_FIRE_TEAM_TACTICAL_STATES.LIVE_COMBAT,TACTICAL_FIRE_TEAM_TACTICAL_STATES.LAST_KNOWN_CONTACT,TACTICAL_FIRE_TEAM_TACTICAL_STATES.DEFAULT_SEARCH].includes(fireTeamPriorityState.key)?search.target:null;
-      let target = postContactSupportReform&&formationTarget ? { ...formationTarget, id: `formation-recovery:${human.fireTeamId}` } : playerCommandTarget || hybridCombatTarget || (formationTarget ? { ...formationTarget, id: `formation:${human.fireTeamId}` } : personalContacts.sort((left, right) => tacticalDistance(left, human) - tacticalDistance(right, human) || String(left.id).localeCompare(String(right.id)))[0] || beaconStrikeTarget || ufoBayTarget || (beaconPerimeterPlan?.target ? { ...beaconPerimeterPlan.target, id:`beacon-perimeter:${human.id}`, team:"command", hp:1, alive:true } : null) || stateSearchTarget);
+      let target = postContactSupportReform&&formationTarget ? { ...formationTarget, id: `formation-recovery:${human.fireTeamId}` } : playerCommandTarget || hybridCombatTarget || (formationTarget ? { ...formationTarget, id: `formation:${human.fireTeamId}` } : tacticalFireTeamCommandShotTarget(playerOrder,personalContacts,human,covers)||personalContacts.sort((left, right) => tacticalDistance(left, human) - tacticalDistance(right, human) || String(left.id).localeCompare(String(right.id)))[0] || beaconStrikeTarget || ufoBayTarget || (beaconPerimeterPlan?.target ? { ...beaconPerimeterPlan.target, id:`beacon-perimeter:${human.id}`, team:"command", hp:1, alive:true } : null) || stateSearchTarget);
       if (!target) {if(persistentObjectiveResumePriority){human.aiTurnAction="persistent-objective-hold";human.fireTeamCommandStatus=human.fireTeamCommandStatus||"holding";}return;}
       const coveredFiringHold=tacticalAiCoveredFiringHoldState({unit:human,targets:personalContacts,units:allUnits(),covers,mission,formationTarget,leader:fireTeamLeader,blocked:playerCommandMove||ufoBayInspectionMove||beaconStrikeMove});
       if(coveredFiringHold.active){target=coveredFiringHold.target;human.aiCoveredFireHold=true;human.aiCoveredFireTargetId=target.id;human.aiCoveredFireScore=coveredFiringHold.coverScore;human.aiTurnAction="hold-cover-fire";}
@@ -3485,7 +3485,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
           }
         }
       }
-      target = tacticalFireTeamCommandShotTarget(playerOrder,visibleTargets,human);
+      target = tacticalFireTeamCommandShotTarget(playerOrder,visibleTargets,human,covers);
       if (!target && beaconStrikeAttack && (beaconShooterInsideField || tacticalWeaponCanBreachAlienBeaconShield(human.weaponKind, liveBeaconAfterMove?.alienBeaconShield)) && liveBeaconAfterMove && tacticalDistance(human, liveBeaconAfterMove) <= range && hasLineOfSight(human, liveBeaconAfterMove.x, liveBeaconAfterMove.y, covers, mission)) {
         const beforeShotTu = human.tu;
         const beforeShotAmmo = human.ammo;
@@ -3505,6 +3505,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
         return;
       }
       if (!target) {
+        if(visibleTargets.some(alien=>tacticalAiKnownShieldBlocksShot(human,alien,covers))){human.aiTurnAction="shield-aware-hold";logs.push(`${human.name} withheld ineffective fire: this weapon class was observed being blocked by the shield.`);return;}
         if(human.aiReserveWantsKneel&&!human.kneeling&&human.tu>=TACTICAL_STANCE_CHANGE_TU){
           human.tu-=TACTICAL_STANCE_CHANGE_TU;
           human.kneeling=true;
@@ -3519,6 +3520,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
       while(currentShotTarget&&committedShotActions<coveredFireActionLimit){
         const shotVisibility=tacticalShotCommitVisibilityState({shooter:human,target:currentShotTarget,covers,mission,range,requiredTargetTeam:"alien"});
         if(!shotVisibility.ok){if(committedShotActions===0){human.aiTurnAction=movementLegs>0?"move-contact-lost":"contact-lost";logs.push(`${human.name} withheld fire: personal contact was lost (${shotVisibility.reason}).`);}break;}
+        if(tacticalAiKnownShieldBlocksShot(human,currentShotTarget,covers))break;
         currentShotTarget.revealed=true;currentShotTarget.lastKnownX=currentShotTarget.x;currentShotTarget.lastKnownY=currentShotTarget.y;currentShotTarget.aegisContactObserved=true;currentShotTarget.aegisLastSeenMarkerActive=false;currentShotTarget.aegisLastSeenX=currentShotTarget.x;currentShotTarget.aegisLastSeenY=currentShotTarget.y;currentShotTarget.aegisLastSeenLevel=tacticalUnitLevel(currentShotTarget);currentShotTarget.aegisLastSeenRound=initialRound+round-1;currentShotTarget.aegisLastSeenObserverId=human.id;Object.assign(currentShotTarget,tacticalLastKnownContactClearResolutionFields());
         const beforeShotTu=human.tu,beforeShotAmmo=human.ammo;
         const shot=spendHumanShot(human);
@@ -3542,7 +3544,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
         if(damage>0){currentShotTarget.hp-=damage;if(currentShotTarget.hp<=0&&currentShotTarget.alive){currentShotTarget.alive=false;human.kills+=1;}}
         if(!coveredFiringHold.active)break;
         const nextVisible=tacticalAiRevealPersonallyVisibleContacts(human,aliens,covers,mission).filter(alien=>tacticalDistance(alien,human)<=range);
-        const nextTarget=tacticalFireTeamCommandShotTarget(playerOrder,nextVisible,human);
+        const nextTarget=tacticalFireTeamCommandShotTarget(playerOrder,nextVisible,human,covers);
         const nextHold=tacticalAiCoveredFiringHoldState({unit:human,targets:nextTarget?[nextTarget]:[],units:allUnits(),covers,mission,formationTarget,leader:fireTeamLeader,blocked:false});
         if(!nextHold.active)break;
         currentShotTarget=nextTarget;
@@ -3572,7 +3574,7 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
       tacticalVisibleCellSet(allUnits(),covers,mission).forEach(key=>exploredCells.add(key));
       const range=human.weaponKind==="ballistic"?18:20;
       const contacts=tacticalAiRevealPersonallyVisibleContacts(human,aliens,covers,mission).filter(alien=>tacticalDistance(alien,human)<=range).sort((left,right)=>tacticalDistance(left,human)-tacticalDistance(right,human)||String(left.id).localeCompare(String(right.id)));
-      const target=contacts[0]||null;
+      const target=tacticalFireTeamCommandShotTarget(null,contacts,human,covers);
       if(target){
         human.facing=facingToward(human,target.x,target.y);human.aiAlienHuntMode=null;human.aiAlienHuntTargetX=null;human.aiAlienHuntTargetY=null;
         const reserve=tacticalAiAdaptiveReserveDecision({unit:human,visibleAliens:contacts,covers,mission,upgrades:weaponUpgrades,round:initialRound+round-1});
@@ -3759,8 +3761,9 @@ function resolveMission({ squad, mission, tech, mode, leaderInstruction, weaponU
         const hit = rand(1, 100) <= clamp(hitChance-windowShot.penalty,8,86);
         const shieldShot = hit ? tacticalAlienBeaconShieldShotState({ attacker: alien, target, covers: windowShot.covers, weaponKind: "alien" }) : { blocked: false };
         const damage = hit && !shieldShot.blocked ? alienDamage() : 0;
-        if (shieldShot.blocked) covers=tacticalAlienBeaconShieldImpactCovers(windowShot.covers, "alien");
         const observable = humans.some((observer) => tacticalHumanCombatActive(observer) && hasLineOfSight(observer, alien.x, alien.y, covers, mission));
+        const impactObserved=shieldShot.blocked&&tacticalVisibleCellSet(humans,covers,mission).has(tacticalKey(target.x,target.y));
+        if(shieldShot.blocked)covers=tacticalAlienBeaconShieldImpactCovers(windowShot.covers,"alien",impactObserved);
         const casualtyResult=hit?(target.team==="human"?tacticalResolveHumanCasualtyHit(target,damage,alien,initialRound+round-1):tacticalResolveCivilianCasualtyHit(target,damage,alien,initialRound+round-1)):null;
         shots.push({ fromId: alien.id, toId: target.id, fromX: alien.x, fromY: alien.y, toX: target.x, toY: target.y, color: shotColorForWeapon("alien"), side: "alien", weaponKind: "alien", windowShattered:Boolean(windowShot.window), shieldBlocked: Boolean(shieldShot.blocked), hit, killed: Boolean(casualtyResult?.killed), downed:Boolean(casualtyResult?.downed), observable });
         if (target.team === "human") Object.assign(target, tacticalAiMarkDistress(casualtyResult?.unit||target, alien, initialRound + round - 1, hit));
@@ -6097,8 +6100,8 @@ function tacticalFireTeamAssistCivilianClaimAllowed(unit=null,civilian=null,unit
   return Boolean(!owner||owner===assist.assistTeamId);
 }
 function tacticalFireTeamObjectiveAssistTarget(unit=null,units=[],covers=[],mission={}){const state=tacticalFireTeamObjectiveAssistState(unit,units),ownLeader=tacticalFireTeamLeaderForUnit(unit,units);if(!state||!ownLeader||ownLeader.id!==unit.id)return null;const assistants=tacticalFireTeamCommandGroups(units).filter(team=>tacticalFireTeamObjectiveAssignmentForTeam(units,team.id).assistTeamId===state.assistTeamId).map(team=>team.id),slot=Math.max(0,assistants.indexOf(unit.fireTeamId)),direction=tacticalFireTeamDirectionIndex(state.targetLeader.facing||"E"),rear=(direction+3)%6,offsets=[rear,(rear+5)%6,(rear+1)%6],desired=tacticalFireTeamStep(state.targetLeader,offsets[slot%offsets.length],3+Math.floor(slot/offsets.length)*2),target=tacticalFireTeamNearestOpenCell(desired,unit,covers,units,mission,2)||desired;return{...target,id:`objective-assist:${unit.fireTeamId}:${state.assistTeamId}`,team:"command",hp:1,alive:true,assistTeamId:state.assistTeamId,objectiveId:state.objectiveId,objectiveType:state.objectiveType};}
-function tacticalFireTeamCommandShotTarget(order=null,visibleTargets=[],unit=null){
-  const available=(Array.isArray(visibleTargets)?visibleTargets:[]).filter(target=>target&&target.alive!==false&&Number(target.hp)>0);
+function tacticalFireTeamCommandShotTarget(order=null,visibleTargets=[],unit=null,covers=[]){
+  const available=(Array.isArray(visibleTargets)?visibleTargets:[]).filter(target=>target&&target.alive!==false&&Number(target.hp)>0&&!tacticalAiKnownShieldBlocksShot(unit,target,covers));
   const preferred=order?.preferredTargetId?available.find(target=>target.id===order.preferredTargetId)||null:null;
   return preferred||available.slice().sort((left,right)=>(unit?tacticalDistance(left,unit)-tacticalDistance(right,unit):0)||String(left.id).localeCompare(String(right.id)))[0]||null;
 }
@@ -6861,6 +6864,7 @@ function tacticalAiTurnActionLabel(action=""){
     "move-fire":"Move + Fire",
     "hold-cover-fire":"Hold Cover + Fire",
     "hold-cover-repeat-fire":"Hold Cover + Repeat Fire",
+    "shield-aware-hold":"Hold Fire — Observed Shield Protection",
     "kneel":"Kneel",
     "move-kneel":"Move + Kneel"
   };
@@ -7443,7 +7447,7 @@ function tacticalAiCoveredFiringHoldState({unit=null,targets=[],units=[],covers=
   if(blocked||!unit||unit.team!=="human"||Number(unit.hp)<=0||unit.alive===false)return{active:false,reason:"blocked",target:null,coverScore:0};
   if(tacticalFireIntensityAt(covers,unit.x,unit.y)>0||tacticalMovementHazardCost(unit,unit,covers)>0)return{active:false,reason:"hazard",target:null,coverScore:0};
   const range=tacticalAiWeaponEffectiveRange(unit);
-  const visible=(Array.isArray(targets)?targets:[]).filter(target=>target?.team==="alien"&&Number(target.hp)>0&&target.alive!==false&&tacticalShotCommitVisibilityState({shooter:unit,target,covers,mission,range,requiredTargetTeam:"alien"}).ok);
+  const visible=(Array.isArray(targets)?targets:[]).filter(target=>target?.team==="alien"&&Number(target.hp)>0&&target.alive!==false&&tacticalShotCommitVisibilityState({shooter:unit,target,covers,mission,range,requiredTargetTeam:"alien"}).ok&&!tacticalAiKnownShieldBlocksShot(unit,target,covers));
   const formationAcceptable=!formationTarget||tacticalDistance(unit,formationTarget)<=2||leader&&tacticalDistance(unit,leader)<=4;
   if(!formationAcceptable)return{active:false,reason:"formation",target:null,coverScore:0};
   const gridSize=tacticalGridSizeFrom(unit,visible,units,covers,mission),coverIndex=tacticalAiCoverAdjacencyIndex(covers,gridSize);
@@ -7552,7 +7556,8 @@ function tacticalAiMovePlan({unit,target,covers=[],units=[],commander=null,doctr
   const targetPixel=tacticalHexPixel(target.x,target.y);
   const commanderPixel=commander?tacticalHexPixel(commander.x,commander.y):null;
   const livingAllies=units.filter(other=>other.team===unit.team&&other.hp>0&&other.id!==unit.id);
-  const rangedContext=!alienMove?tacticalAiRangedEngagementContext({unit,target,units,covers,mission,targetKnown,weaponRange}):{active:false,weaponRange,preferredMin:0,currentNearest:Infinity,threats:[]};
+  const shieldApproach=Boolean(!alienMove&&targetKnown&&target.team==="alien"&&tacticalAiKnownShieldBlocksShot(unit,target,covers));
+  const rangedContext=!alienMove&&!shieldApproach?tacticalAiRangedEngagementContext({unit,target,units,covers,mission,targetKnown,weaponRange}):{active:false,weaponRange,preferredMin:0,currentNearest:Infinity,threats:[]};
   const rangedCoverIndex=rangedContext.active?tacticalAiCoverAdjacencyIndex(covers,gridSize):null;
   const visitedKeys=new Set(visitedCells||[]);
   const tiePhase=visitedKeys.size+Number(unit.aiPatrolIndex||0)+Number(unit.aiContactSearchIndex||0);
@@ -7574,6 +7579,13 @@ function tacticalAiMovePlan({unit,target,covers=[],units=[],commander=null,doctr
     if(line){score+=28;if(distance<=weaponRange)score+=34;if(distance<=1)score-=20;}
     const rangedPosition=rangedContext.active?tacticalAiRangedEngagementScore({unit,cell,target,context:rangedContext,covers,coverIndex:rangedCoverIndex,targetLine:line,mission}):{score:0,nearest:Infinity,coverScore:0,closeThreats:0,inPreferredBand:false};
     score+=rangedPosition.score;
+    if(shieldApproach){
+      // Retain legal reachable cells, hazards, occupancy and formation pacing.
+      const safe=Number(cell.hazardCost||0)===0&&Number(cell.fireSteps||0)===0&&tacticalMovementHazardCost(unit,cell,covers)===0;
+      if(!safe&&cell.steps>0)continue;
+      score+=pathEfficiency.progress*32;
+      if(line&&distance<=weaponRange&&!tacticalAiKnownShieldBlocksShot(candidate,target,covers))score+=180;
+    }
     if(alienMove){
       const spread=livingAllies.reduce((nearest,ally)=>Math.min(nearest,tacticalDistance(cell,ally)),99);
       score+=Math.min(4,spread)*4;
@@ -7609,6 +7621,7 @@ function tacticalReactionShotResult({shooter,target,covers=[],mission=null,reque
   if(shooter.tu<reserve.tu)return{triggered:false,reason:"tu",shooter,target,reserve};
   if(shooter.weaponKind==="ballistic"&&reserve.rounds<=0)return{triggered:false,reason:"ammo",shooter,target,reserve};
   if(!visibility.ok)return{triggered:false,reason:visibility.reason,shooter,target,reserve,visibility};
+  if(tacticalAiKnownShieldBlocksShot(shooter,target,covers))return{triggered:false,reason:"known-shield-block",shooter,target,reserve,visibility};
   const base=shooter.baseSoldier||shooter.base||{};
   const reactions=Number(base?.stats?.reactions??shooter.reactions??50);
   const reactionChance=clamp(Math.round(reactions-distance*2),5,95);
@@ -8795,10 +8808,32 @@ function tacticalAlienBeaconShieldShotState({ attacker = null, target = null, co
   const blocked = Boolean(active && targetInside && !attackerInside && tacticalAlienBeaconShieldBlocksDamage(shield, weaponKind));
   return { active, beacon, shield, attackerInside, targetInside, blocked, bypassed: Boolean(active && targetInside && attackerInside) };
 }
-function tacticalAlienBeaconShieldImpactCovers(covers = [], weaponKind = "structural") {
+function tacticalAlienBeaconShieldImpactCovers(covers = [], weaponKind = "structural", observed = true) {
+  if(!observed)return covers;
   const beacon = tacticalActiveAlienBeacon(covers);
   if (!beacon) return [...(covers || [])];
-  return (covers || []).map((cover) => cover.id === beacon.id ? { ...cover, visual: "alien-field-beacon-shield-impact", alienBeaconBaseVisual: cover.alienBeaconBaseVisual || cover.visual, revealed: true, alienBeaconShieldImpact: true, alienBeaconShieldObserved:true,alienBeaconShieldObservedType:normalizeAlienFieldBeaconShield(cover.alienBeaconShield),lastBlockedDamageKind: tacticalAlienBeaconDamageClass(weaponKind) } : cover);
+  return (covers || []).map((cover) => cover.id === beacon.id ? tacticalAlienBeaconObservedImpact(cover,weaponKind) : cover);
+}
+function tacticalAlienBeaconObservedImpact(beacon,weaponKind){
+  const shield=normalizeAlienFieldBeaconShield(beacon.alienBeaconShield),damageClass=tacticalAlienBeaconDamageClass(weaponKind);
+  const sameSource=beacon.alienBeaconShieldObservationKey===tacticalAlienBeaconObservationKey(beacon);
+  const learned=sameSource&&Array.isArray(beacon.alienBeaconShieldBlockedClasses)?beacon.alienBeaconShieldBlockedClasses:[];
+  return {...beacon,visual:"alien-field-beacon-shield-impact",alienBeaconBaseVisual:beacon.alienBeaconBaseVisual||beacon.visual,revealed:true,alienBeaconShieldImpact:true,alienBeaconShieldObserved:true,alienBeaconShieldObservedType:shield,lastBlockedDamageKind:damageClass,alienBeaconShieldObservationKey:tacticalAlienBeaconObservationKey(beacon),alienBeaconShieldBlockedClasses:[...new Set([...learned,damageClass])].filter(kind=>["high-speed-ballistic","energy"].includes(kind))};
+}
+function tacticalAlienBeaconObservationKey(beacon){
+  return JSON.stringify([beacon?.id,beacon?.x,beacon?.y,normalizeAlienFieldBeaconShield(beacon?.alienBeaconShield)]);
+}
+// Call only with a legitimately observed combat target. This is learned knowledge,
+// not the damage resolver: an unknown field still permits a probing shot.
+function tacticalAiKnownShieldBlocksShot(unit,target,covers=[]){
+  if(unit?.team!=="human"||!target)return false;
+  const beacon=tacticalActiveAlienBeacon(covers);
+  if(!beacon?.revealed||!beacon.alienBeaconShieldObserved)return false;
+  if(beacon.alienBeaconShieldObservedType!==normalizeAlienFieldBeaconShield(beacon.alienBeaconShield))return false;
+  if(beacon.alienBeaconShieldObservationKey&&beacon.alienBeaconShieldObservationKey!==tacticalAlienBeaconObservationKey(beacon))return false;
+  const learned=Array.isArray(beacon.alienBeaconShieldBlockedClasses)?beacon.alienBeaconShieldBlockedClasses:[beacon.lastBlockedDamageKind];
+  if(!learned.includes(tacticalAlienBeaconDamageClass(unit.weaponKind)))return false;
+  return tacticalAlienBeaconShieldShotState({attacker:unit,target,covers:[beacon],weaponKind:unit.weaponKind}).blocked;
 }
 function tacticalAlienBeaconFieldImpactText(shield = "none", attackerName = "The attacker", targetName = "the shielded target") {
   return `${attackerName}'s fire disperses across the ${tacticalAlienBeaconShieldLabel(shield).toLowerCase()} before reaching ${targetName}.`;
@@ -9109,8 +9144,9 @@ function tacticalAiGrenadeDecision({ unit = null, units = [], covers = [], missi
     const alienHits = (visibleAliens || []).filter((alien) => alien?.team === "alien" && alien.hp > 0 && alien.alive !== false && blastKeys.has(tacticalKey(alien.x, alien.y)));
     const beaconHit = Boolean(beacon && Number(beacon.hp) > 0 && blastKeys.has(tacticalKey(beacon.x, beacon.y)));
     const entrenched = alienHits.length === 1 && tacticalNeighbors(alienHits[0].x, alienHits[0].y, tacticalGridSizeFrom(mission, units, covers)).some((cell) => isHardCoverAt(covers, cell.x, cell.y));
-    if (alienHits.length < 2 && !entrenched && !(beaconPriority && beaconHit)) return;
-    const score = alienHits.length * 12 + (entrenched ? 4 : 0) + (beaconPriority && beaconHit ? 16 : 0);
+    const shielded=alienHits.some(alien=>tacticalAiKnownShieldBlocksShot(unit,alien,covers));
+    if (alienHits.length < 2 && !entrenched && !shielded && !(beaconPriority && beaconHit)) return;
+    const score = alienHits.length * 12 + (entrenched ? 4 : 0) + (shielded ? 8 : 0) + (beaconPriority && beaconHit ? 16 : 0);
     scored.push({ target: { x: candidate.x, y: candidate.y }, alienHits, beaconHit, entrenched, score });
   });
   return scored.sort((left, right) => right.score - left.score || right.alienHits.length - left.alienHits.length || tacticalDistance(unit, left.target) - tacticalDistance(unit, right.target))[0] || null;
@@ -12579,7 +12615,7 @@ function tacticalBreachCover(cover, damage = 0, damageKind = "structural", optio
   if (!cover) return cover;
   if (cover.indestructible) return { ...cover, revealed: true };
   if (!options.bypassAlienBeaconShield && tacticalAlienBeaconShieldBlocks(cover, damageKind)) {
-    return { ...cover, visual: "alien-field-beacon-shield-impact", alienBeaconBaseVisual: cover.alienBeaconBaseVisual || cover.visual, revealed: true, alienBeaconShieldImpact: true, alienBeaconShieldObserved:true,alienBeaconShieldObservedType:normalizeAlienFieldBeaconShield(cover.alienBeaconShield),lastBlockedDamageKind: tacticalAlienBeaconDamageClass(damageKind) };
+    return tacticalAlienBeaconObservedImpact(cover,damageKind);
   }
   const remaining = Math.max(0, Number(cover.hp || 0) - Math.max(0, Number(damage || 0)));
   if (cover.alienBeacon) {
@@ -17955,7 +17991,8 @@ PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.28.0003_VIP_AND_SOLDIER_PRESENTATIO
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.28.0004_VIP_HAIR_VARIETY_PATCH",date:"September 28, 2026",title:"VIP Hair Variety",summary:"VIPs gain five stable hairstyles across both presentation variants.",items:["Adds short, swept, bob, bun and bald appearances derived from stable VIP identity.","Preserves natural hair colors, business outfits, unarmed authority and existing animations.","Hair shares the existing cached head mesh across full/mid views; no additional meshes or draw calls. Save format remains 4."]});
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.28.0005_VIP_BUSINESS_DRESS_PATCH",date:"September 28, 2026",title:"VIP Business Dress",summary:"Adds a stable business-dress alternative to VIP pantsuits.",items:["Female-presenting VIPs deterministically choose a pantsuit or coordinated business dress.","Pleated dress panels use existing hip joints and cached leg meshes; lower legs retain their normal movement.","No additional meshes, animation clock or gameplay changes. Save format remains 4."]});
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.28.0006_CHARACTER_POLISH_AND_ANIMATION_PERFORMANCE_PATCH",date:"September 28, 2026",title:"Character Polish and Animation Performance",summary:"Fixes VIP pose and hair defects while reducing repeated animation work.",items:["Stopping a frightened VIP walk preserves the cover-kneeling pose instead of reverting to standing.","VIP hair caps cover the crown without scalp poking through.","Caches immutable pose definitions and skips idle walk lookups. A 48-soldier/12-VIP CPU fixture shows lower animation cost; total game FPS is not yet measured.","Save format remains 4; gameplay rules and gait timing are unchanged."]});
-PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"September 28, 2026",title:"Principal Rescue and Large-Battle Performance",summary:"Adds mandatory principal rescues and reduces large-battle hazard-query work.",items:["Rare principal rescue incidents begin in month 3. Extract the named principal to win; their loss fails the operation. Other VIPs provide optional rescue credit.","Briefings, principal markers, AI rescue assignment, failure notices, saves and debriefs share principal identity.","Avoids expanding non-hazard scenery footprints during fire/smoke checks. Three measured 48-soldier AI rounds were approximately 24–28% faster; planning pauses remain.","Save format remains 4. Armed security and cinematic briefings are future work."]});
+PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.28.0007_PRINCIPAL_RESCUE_AND_LARGE_BATTLE_PERFORMANCE_PATCH",date:"September 28, 2026",title:"Principal Rescue and Large-Battle Performance",summary:"Adds mandatory principal rescues and reduces large-battle hazard-query work.",items:["Rare principal rescue incidents begin in month 3. Extract the named principal to win; their loss fails the operation. Other VIPs provide optional rescue credit.","Briefings, principal markers, AI rescue assignment, failure notices, saves and debriefs share principal identity.","Avoids expanding non-hazard scenery footprints during fire/smoke checks. Three measured 48-soldier AI rounds were approximately 24–28% faster; planning pauses remain.","Save format remains 4. Armed security and cinematic briefings are future work."]});
+PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"September 28, 2026","title":"Observation-Driven Shield Tactics","summary":"AI adapts after observing beacon shields intercept weapons fire.","items":["Soldiers remember demonstrated blocked weapon classes per beacon and avoid wasting further shots, including covered fire, reaction fire, Hybrid and emergency AI. Unknown protection still permits a probing shot.","AI can choose an unprotected visible target, use a safe Frag Grenade against a shielded alien, or approach inside the field through normal legal movement.","Observed classes survive snapshots and save/load. Field boundaries, changed or removed shields and replacement sources are reevaluated; unseen enemy impacts do not teach the commander.","Manual firing remains under player control. Save format remains 4."]});
 PATCH_NOTES_HISTORY.sort((left,right)=>String(right.build||"").localeCompare(String(left.build||""),undefined,{numeric:true,sensitivity:"base"}));
  return PATCH_NOTES_HISTORY;},[]);
 function PatchNotesLibraryScreen(){

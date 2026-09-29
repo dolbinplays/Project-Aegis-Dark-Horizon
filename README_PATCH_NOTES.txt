@@ -1,3 +1,14 @@
+BUILD: v0.26.09.28.0008_OBSERVATION_DRIVEN_SHIELD_TACTICS_PATCH
+September 28, 2026 — Observation-Driven Shield Tactics
+Save format: 4
+
+- Learns demonstrated blocked weapon classes from observed shield impacts, including attacks on protected aliens.
+- Avoids repeated ineffective normal, covered, reaction, Hybrid and emergency fire before spending TU or ammo.
+- Selects alternate visible targets, considers safe grenades against a single protected alien, and approaches inside fields using legal movement.
+- Retains source-scoped observations through frames and saves; reevaluates moving targets, changing weapons and removed/replaced shields.
+- Unobserved enemy impacts do not grant knowledge. Manual weapon fire remains player-controlled.
+- Installed-game field acceptance remains pending. See OBSERVED_SHIELD_TACTICS_VALIDATION.md.
+
 BUILD: v0.26.09.28.0007_PRINCIPAL_RESCUE_AND_LARGE_BATTLE_PERFORMANCE_PATCH
 September 28, 2026 — Principal Rescue and Large-Battle Performance
 Save format: 4
