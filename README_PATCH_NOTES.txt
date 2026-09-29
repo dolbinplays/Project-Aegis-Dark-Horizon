@@ -1,3 +1,12 @@
+BUILD: v0.26.09.29.0019_TRANSPORT_WING_CLEARANCE_AND_UFO_FLIGHT_RAMP_PATCH
+September 29, 2026 — Transport Wing Clearance and UFO Flight Ramp
+Save format: 4
+
+- Raises Skyranger wings to the roofline, outside the cabin, with engines/exhaust aligned.
+- Removes UFO ramp and rails during approach/departure and closes the rear hull aperture.
+- Landed UFO ramps, extraction, cover and movement rules are preserved.
+- See TRANSPORT_VISUALS_0019_VALIDATION.md for checks and field acceptance.
+
 BUILD: v0.26.09.29.0018_UPDATE_REVIEW_PLANNING_AND_TPV_FIXES_PATCH
 September 29, 2026 — Update Review: Planning and TPV Fixes
 Save format: 4

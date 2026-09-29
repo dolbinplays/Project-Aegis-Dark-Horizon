@@ -1,8 +1,12 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.29.0018_UPDATE_REVIEW_PLANNING_AND_TPV_FIXES_PATCH`
+Current browser build: `v0.26.09.29.0019_TRANSPORT_WING_CLEARANCE_AND_UFO_FLIGHT_RAMP_PATCH`
 
 Current save format: `4`
+
+## Transport Wing Clearance and UFO Flight Ramp — Browser 0019
+
+Skyranger main wings now attach at the roofline outside the cabin volume; engines and exhaust move upward together. UFO approach/departure models omit the ramp and rails and close the rear hull aperture. Landed UFO access and all authoritative movement/cover/extraction rules remain unchanged. Model renders and focused regressions pass; installed-game field acceptance remains pending. See `TRANSPORT_VISUALS_0019_VALIDATION.md`.
 
 ## September 29 Update Review — Browser 0018
 
@@ -81,7 +85,7 @@ After authoritative mission victory is committed and the final consequential act
 
 ## Roadmap — Raised Skyranger Wing Roots / Cargo-Aircraft Silhouette
 
-**Requested September 29, 2026. Status: approved roadmap item; implementation pending.**
+**Requested September 29, 2026. Status: implemented in Browser 0019; installed-game field acceptance pending.**
 
 Raise the Skyranger wing roots so the main wings attach high on the fuselage, immediately below the roof/top surface rather than intersecting the lower soldier-occupancy volume. The goal is to eliminate soldiers visually clipping through the wings while giving the craft a more believable high-wing cargo-aircraft silhouette.
 
