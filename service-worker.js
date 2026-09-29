@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.29.0014_CIVILIAN_VIP_WINDOW_CONCEALMENT_AND_PRESECURED_SHELTER_PATCH";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.29.0014_CIVILIAN_VIP_WINDOW_CONCEALMENT_AND_PRESECURED_SHELTER_PATCH";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v68-window-concealment";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.29.0015_BEACON_ROUND_PREIMPACT_PLAYBACK_HOLD_HOTFIX";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.29.0015_BEACON_ROUND_PREIMPACT_PLAYBACK_HOLD_HOTFIX";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v69-beacon-round-hold";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;

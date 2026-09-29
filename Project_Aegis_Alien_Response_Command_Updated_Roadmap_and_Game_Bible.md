@@ -1,8 +1,24 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.29.0014_CIVILIAN_VIP_WINDOW_CONCEALMENT_AND_PRESECURED_SHELTER_PATCH`
+Current browser build: `v0.26.09.29.0015_BEACON_ROUND_PREIMPACT_PLAYBACK_HOLD_HOTFIX`
 
 Current save format: `4`
+
+## Beacon Round Pre-Impact Playback Hold Hotfix — September 29 / Browser 0015
+
+**Status: implemented; installed-game field acceptance required.**
+
+A field report after Browser 0014 confirmed that the Alien Field Beacon could still disappear for most of an AI-controlled AEGIS phase once the resolver had already computed that a later shot in the same buffered phase would destroy it. The Beacon then reappeared only for the final lethal-shot cinematic.
+
+Root cause: the streamed resolver records an AEGIS phase as one buffered playback frame containing movement and multiple shots. Its prior `beaconPresentationSnapshot` came from `currentFrameBase()` when that frame was finally appended — after every AEGIS action in the phase had already mutated authoritative cover state. A lethal Beacon shot therefore left the frame without an intact frame-owned Beacon snapshot even though earlier actions still needed to be displayed.
+
+Browser 0015 captures the active Beacon presentation snapshot before the AEGIS human phase starts and writes that preserved snapshot onto the completed phase frame. The renderer restores that snapshot whenever the live/authoritative cover has already advanced to destroyed or disabled state but the lethal impact has not committed. A frame containing the lethal shot no longer bypasses restoration merely because that shot exists; the established Beacon destruction hold owns presentation through projectile travel, and the committed impact state alone releases the wreck.
+
+This remains presentation-only. Beacon HP, reinforcement cancellation, AI planning, objective completion, replacement timing and terminal mission authority still use immediate authoritative state. Save format remains 4.
+
+**Acceptance:** under Simulation AI, create a round where several AEGIS actions play before the final shot destroys an observed Beacon. Confirm the Beacon remains rendered continuously from the beginning of that playback phase through every movement/earlier shot and through the lethal projectile travel. Confirm it changes to the wreck only after impact/explosion commit. Repeat with ballistic/energy fire and Frag Grenades, FPV/TPV/3D Iso, Hybrid playback, final-objective Beacon destruction and replacement-Beacon scenarios. No Beacon may disappear and later reappear before its destruction shot.
+
+See `BEACON_ROUND_PREIMPACT_PLAYBACK_HOLD_VALIDATION.md`.
 
 
 ## Civilian/VIP Window Concealment + Pre-Secured Shelters — September 29 / Browser 0014

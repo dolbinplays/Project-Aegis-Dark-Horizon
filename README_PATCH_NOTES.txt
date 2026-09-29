@@ -1,3 +1,19 @@
+BUILD: v0.26.09.29.0015_BEACON_ROUND_PREIMPACT_PLAYBACK_HOLD_HOTFIX
+September 29, 2026 — Beacon Round Pre-Impact Playback Hold Hotfix
+Save format: 4
+
+- Fixes the field-reported case where streamed Simulation AI could remove the Alien Field Beacon for most of the AEGIS action phase once the resolver had already determined that a later shot in that phase would destroy it.
+- Root cause: the AEGIS human-phase playback frame sampled `beaconPresentationSnapshot` after all actions in the phase had resolved. If the Beacon died in that phase, the supposed frame snapshot was already null/destroyed even though earlier shots and movement still had to play.
+- Browser 0015 captures the intact Beacon presentation snapshot before the human phase begins and attaches that snapshot to the buffered phase frame.
+- Buffered playback now restores that intact snapshot across every pre-impact action in the frame, including a frame that already contains the lethal shot.
+- The existing destruction-cinematic hold remains authoritative during projectile travel; only the explicit impact commit releases presentation to the destroyed/wreck cover.
+- Authoritative HP, reinforcement cancellation, AI/objective decisions, mission completion and save data still resolve immediately and are unchanged.
+- Validation: 6/6 new Beacon round-hold tests, 6/6 Browser 0013 impact tests, 6/6 Browser 0012 forced-entry tests, 6/6 Browser 0014 concealment tests, 5/5 Browser 0011 cooperative-planning tests and 6/6 Browser 0010 planning-query/hazard tests.
+
+See `BEACON_ROUND_PREIMPACT_PLAYBACK_HOLD_VALIDATION.md`.
+
+---
+
 BUILD: v0.26.09.29.0014_CIVILIAN_VIP_WINDOW_CONCEALMENT_AND_PRESECURED_SHELTER_PATCH
 September 29, 2026 — Civilian/VIP Window Concealment + Pre-Secured Shelters
 Save format: 4
