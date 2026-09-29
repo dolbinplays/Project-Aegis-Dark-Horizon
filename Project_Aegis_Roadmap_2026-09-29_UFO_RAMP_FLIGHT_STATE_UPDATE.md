@@ -1,35 +1,8 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.29.0017_DEFAULT_AI_ESCORT_COMBAT_BEFORE_CASUALTY_RECOVERY_PATCH`
+Current browser build: `v0.26.09.29.0016_TPV_CAMERA_SHIELD_PARITY_AND_ROOF_OCCLUSION_PATCH`
 
 Current save format: `4`
-
-## Default AI Escort + Combat Before Casualty Recovery — September 29 / Browser 0017
-
-**Status: implemented; installed-game field acceptance required.**
-
-Browser 0017 changes the authoritative Default AI mission hierarchy to the player-approved order:
-
-1. **Bleeding stabilization**
-2. **Active civilian/VIP escort**
-3. **Visible alien contact**
-4. **Downed AEGIS recovery/extraction**
-5. **Last Known Contact / distress**
-6. **Alien Field Beacon**
-7. **UFO reinforcement bay**
-8. **Known civilian/VIP not yet under escort**
-9. **Exploration/search**
-
-This is an execution-order change, not merely a HUD relabel. Bleeding stabilization remains the only medical prepass allowed to consume a responder before escort/combat authority. An already-established escort receives its bounded escort movement before ordinary combat or casualty recovery. If a living alien is currently visible after that escort pass, free Default-AI soldiers resolve current-contact combat before any downed-soldier recovery/extraction responder is assigned. Once direct contact is gone, casualty recovery again outranks Last Known/distress investigation, Beacon/UFO-source work, new civilian/VIP approach, and exploration.
-
-An **active escort** means a real established civilian/VIP escort relationship; merely knowing where another civilian/VIP is does not promote that rescue above combat or casualty recovery. Existing Civilian Escort Support doctrine remains actor-specific: the escort-owning leader stays with the evacuee, while support soldiers may remain or break off under Stay / Ask / Engage settings as already configured. Explicit Hybrid/manual player-owned orders remain player-owned.
-
-The current-order HUD and Default-AI diagnostics now label Active Escort as priority 2, Visible Alien as priority 3, and Casualty Recovery as priority 4. Save format remains **4**.
-
-**Acceptance:** create a mission containing a bleeding casualty, an established VIP escort, a visible alien, another downed AEGIS casualty, an unresolved Last Known Contact, a known Beacon and a known unescorted VIP. Confirm stabilization acts first; the established escort remains committed; free soldiers engage the visible alien; only after current visible contact clears does a free responder recover/extract the downed AEGIS casualty; then Last Known, Beacon, UFO bay, unescorted VIP and exploration proceed in that order. Repeat under full Simulation and autonomous Hybrid support, verify player-owned Hybrid/manual commands are not seized, and save/reload without changing the hierarchy.
-
-See `DEFAULT_AI_ESCORT_COMBAT_BEFORE_CASUALTY_RECOVERY_VALIDATION.md`.
-
 
 ## TPV Camera Occlusion Recovery + Beacon Shield Parity + Sealed Sloped Roofs — September 29 / Browser 0016
 

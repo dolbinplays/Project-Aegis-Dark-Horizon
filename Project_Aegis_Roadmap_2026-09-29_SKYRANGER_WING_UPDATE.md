@@ -1,35 +1,8 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.29.0017_DEFAULT_AI_ESCORT_COMBAT_BEFORE_CASUALTY_RECOVERY_PATCH`
+Current browser build: `v0.26.09.29.0016_TPV_CAMERA_SHIELD_PARITY_AND_ROOF_OCCLUSION_PATCH`
 
 Current save format: `4`
-
-## Default AI Escort + Combat Before Casualty Recovery — September 29 / Browser 0017
-
-**Status: implemented; installed-game field acceptance required.**
-
-Browser 0017 changes the authoritative Default AI mission hierarchy to the player-approved order:
-
-1. **Bleeding stabilization**
-2. **Active civilian/VIP escort**
-3. **Visible alien contact**
-4. **Downed AEGIS recovery/extraction**
-5. **Last Known Contact / distress**
-6. **Alien Field Beacon**
-7. **UFO reinforcement bay**
-8. **Known civilian/VIP not yet under escort**
-9. **Exploration/search**
-
-This is an execution-order change, not merely a HUD relabel. Bleeding stabilization remains the only medical prepass allowed to consume a responder before escort/combat authority. An already-established escort receives its bounded escort movement before ordinary combat or casualty recovery. If a living alien is currently visible after that escort pass, free Default-AI soldiers resolve current-contact combat before any downed-soldier recovery/extraction responder is assigned. Once direct contact is gone, casualty recovery again outranks Last Known/distress investigation, Beacon/UFO-source work, new civilian/VIP approach, and exploration.
-
-An **active escort** means a real established civilian/VIP escort relationship; merely knowing where another civilian/VIP is does not promote that rescue above combat or casualty recovery. Existing Civilian Escort Support doctrine remains actor-specific: the escort-owning leader stays with the evacuee, while support soldiers may remain or break off under Stay / Ask / Engage settings as already configured. Explicit Hybrid/manual player-owned orders remain player-owned.
-
-The current-order HUD and Default-AI diagnostics now label Active Escort as priority 2, Visible Alien as priority 3, and Casualty Recovery as priority 4. Save format remains **4**.
-
-**Acceptance:** create a mission containing a bleeding casualty, an established VIP escort, a visible alien, another downed AEGIS casualty, an unresolved Last Known Contact, a known Beacon and a known unescorted VIP. Confirm stabilization acts first; the established escort remains committed; free soldiers engage the visible alien; only after current visible contact clears does a free responder recover/extract the downed AEGIS casualty; then Last Known, Beacon, UFO bay, unescorted VIP and exploration proceed in that order. Repeat under full Simulation and autonomous Hybrid support, verify player-owned Hybrid/manual commands are not seized, and save/reload without changing the hierarchy.
-
-See `DEFAULT_AI_ESCORT_COMBAT_BEFORE_CASUALTY_RECOVERY_VALIDATION.md`.
-
 
 ## TPV Camera Occlusion Recovery + Beacon Shield Parity + Sealed Sloped Roofs — September 29 / Browser 0016
 
@@ -18369,18 +18342,3 @@ Incident creation now fixes VIP population independently of response size. A det
 ### Mobile mission VIP briefing layout hotfix — September 22, 2026
 
 Fixed the adaptive Mission Control fallback caused by adding the VIP report between existing planning elements. The adapter isolates the marked VIP briefing before identifying the original planning sections and displays it in Briefing. Squad selection, orders, launch controls, Standard layout and save format are preserved. Regression tests: tools/test-mobile-mission-vip-layout.cjs.
-
-
-## Roadmap — UFO Ramp Flight-State Presentation
-
-**Status: approved roadmap item; implementation pending.**
-
-- UFOs must not display an extended/open boarding ramp while they are airborne or visibly flying.
-- During flight, the UFO should present a sealed hull silhouette; the ramp should be hidden, retracted, or represented as a closed flush hull section as appropriate to the craft model.
-- The ramp may become visible only when the UFO has reached a landed/grounded state or when a specific landing, boarding, deployment, or disembarkation presentation calls for it.
-- If a landing animation is later expanded, ramp deployment should occur only after touchdown/settling rather than while the craft is still translating through the air.
-- Takeoff should reverse the sequence: close/retract the ramp before the UFO begins sustained flight.
-- This is a presentation-state rule only unless a later tactical audit proves that ramp geometry currently participates in authoritative movement, LOS, cover, collision, or deployment cells. Existing UFO movement, interception, landing, reinforcement, mission, and save authority must remain unchanged.
-- Apply the rule consistently to tactical reinforcement/delivery UFOs, landed UFO mission craft, and any other shared UFO renderer that can transition between airborne and grounded states.
-
-**Acceptance:** observe each UFO presentation that can fly and land. Confirm no ramp is visible during approach, transit, hover-flight, departure, or other airborne movement; confirm the ramp appears only after a valid grounded/landing-state transition; confirm takeoff closes it first; and verify no change to UFO timing, alien deployment, tactical blockers, LOS, reinforcement timing, interception, or save format **4**.

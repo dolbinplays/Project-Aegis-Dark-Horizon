@@ -1,3 +1,21 @@
+BUILD: v0.26.09.29.0017_DEFAULT_AI_ESCORT_COMBAT_BEFORE_CASUALTY_RECOVERY_PATCH
+September 29, 2026 — Default AI Escort + Combat Before Casualty Recovery
+Save format: 4
+
+- Reorders the authoritative Default AI stack to: bleeding stabilization > active escort > visible alien > downed AEGIS recovery/extraction > Last Known/distress > Beacon > UFO bay > known civilian/VIP > exploration.
+- This changes execution order as well as labels: established escorts receive their bounded escort pass before ordinary combat/recovery, and visible-contact combat prevents casualty recovery from consuming a free responder that round.
+- Once no alien is currently visible, casualty recovery/extraction again outranks Last Known Contact and every lower source/rescue/search objective.
+- An active escort means an already-established escort relationship; approaching an unescorted known civilian/VIP remains priority 8.
+- Bleeding stabilization remains absolute priority 1 and may still interrupt escort/combat when a casualty is actively unstable.
+- Existing Stay / Ask / Engage escort-support doctrine and explicit Hybrid/manual player ownership are preserved.
+- HUD/current-order numbering now reports Active Escort #2, Visible Alien #3 and Casualty Recovery #4.
+- Save format remains 4.
+- Validation: new focused priority suite plus all Browser 0016/0015/0014/0013/0012/0011/0010 retained suites pass.
+
+See `DEFAULT_AI_ESCORT_COMBAT_BEFORE_CASUALTY_RECOVERY_VALIDATION.md`.
+
+---
+
 BUILD: v0.26.09.29.0016_TPV_CAMERA_SHIELD_PARITY_AND_ROOF_OCCLUSION_PATCH
 September 29, 2026 — TPV Camera Occlusion Recovery + Beacon Shield Parity + Sealed Sloped Roofs
 Save format: 4
