@@ -1,3 +1,13 @@
+BUILD: v0.26.09.28.0009_GROUNDED_TPV_BACKGROUND_SCENERY_PATCH
+September 28, 2026 — Grounded TPV Background Scenery
+Save format: 4
+
+- Fixes distant buildings and landscape silhouettes rising with the TPV free camera.
+- Anchors scenery, windows and haze to the map while retaining the camera-following sky.
+- Preserves camera height controls and existing geometry/draw-call budgets.
+- Covers FPV, TPV, reaction and Iso mode transitions, including sky rebuild and cleanup.
+- See GROUNDED_TPV_BACKGROUND_VALIDATION.md for tests and visual fixture results.
+
 BUILD: v0.26.09.28.0008_OBSERVATION_DRIVEN_SHIELD_TACTICS_PATCH
 September 28, 2026 — Observation-Driven Shield Tactics
 Save format: 4

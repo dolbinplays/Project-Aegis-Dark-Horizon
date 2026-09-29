@@ -1,14 +1,14 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.28.0008_OBSERVATION_DRIVEN_SHIELD_TACTICS_PATCH`
+Current browser build: `v0.26.09.28.0009_GROUNDED_TPV_BACKGROUND_SCENERY_PATCH`
 
 Current save format: `4`
 
 ## Roadmap — TPV Free-Camera Floating Background Scenery
 
-**Requested September 28, 2026. Status: planned; not implemented.**
+**Requested September 28, 2026. Status: implemented in Browser 0009; installed-game field acceptance pending.**
 
-The player reports that background landscape items appear to hover when using the TPV free camera, possibly only after increasing camera height. The supplied screenshot shows distant rectangular scenery visibly separated from the apparent ground/horizon. Camera height is a suspected trigger; the underlying cause has not yet been verified.
+The player reports that background landscape items appear to hover when using the TPV free camera, possibly only after increasing camera height. The supplied screenshot shows distant rectangular scenery visibly separated from the apparent ground/horizon. Confirmed cause: distant scenery inherited all camera translation from the sky root. Browser 0009 cancels that translation for the scenery subgroup, keeping buildings, silhouettes, window atlas and haze in map coordinates while the sky continues to follow the camera.
 
 - Reproduce by raising and lowering the TPV free camera, rotating and changing pitch around the same scene. Inspect background scenery placement, terrain coverage, camera-relative transforms, clipping and level-of-detail transitions to establish the cause.
 - Keep distant landscape scenery visually grounded throughout the supported camera range, including elevated views that expose the edge of the tactical terrain. Preserve free-camera controls and avoid hiding the symptom by unnecessarily restricting camera height.
@@ -16,7 +16,7 @@ The player reports that background landscape items appear to hover when using th
 
 **Acceptance:** compare low, default and maximum supported TPV camera heights across pitch angles, rotations and map edges; include different landscape types and day/night lighting. Confirm no floating background strips or exposed scenery bases, no popping when changing height, and no regressions when switching between TPV, FPV and 3D isometric views.
 
-This entry records future work only; it does not change gameplay, the browser build or save format.
+Real Three.js transform tests cover 27 landscape/lighting/map-size combinations and camera translation, height, view switching and rebuild/disposal. WebGL fixtures reproduce the old floating skyline and show grounded scenery after the fix. Camera limits, geometry and draw-call budgets are unchanged. Save format remains 4. See `GROUNDED_TPV_BACKGROUND_VALIDATION.md`.
 
 ## Roadmap — Observation-Driven Beacon Shield Tactics
 
