@@ -1,8 +1,14 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.28.0006_CHARACTER_POLISH_AND_ANIMATION_PERFORMANCE_PATCH`
+Current browser build: `v0.26.09.28.0007_PRINCIPAL_RESCUE_AND_LARGE_BATTLE_PERFORMANCE_PATCH`
 
 Current save format: `4`
+
+## Principal Rescue Foundation and Large-Battle Performance — September 28 / Browser 0007
+
+Rare routine incidents from month 3 can become Urban Principal Rescue missions (deterministic one-in-eight selection). One named fictional senior scientist must be extracted; two other VIPs are optional. Principal extraction ends the operation without requiring alien elimination. Death, explicit permanent loss or a missing principal record fails the objective; ordinary temporary route blockage is not treated as permanent loss. Automatic unclaimed rescue selection prefers the principal while respecting explicit assignments and existing escorts. Briefings, markers, snapshots, failure notices and debriefs retain identity and separate optional credit. Base reward receives a 150k premium; existing 40k/person credit and a 200k principal completion bonus apply. Existing missions are not converted. Save format remains 4. Security details, cinematic briefing, new maps and new diplomacy systems remain separate work.
+
+Profiled three real streamed AI rounds with 48 soldiers, 6 VIPs, 8 aliens and 378 cover objects. Fire/smoke queries now reject non-hazard scenery before footprint calculations; identical cell results are regression tested without introducing caches that could become stale. Indicative round times changed from 40.08/63.45/62.61 seconds to 30.52/45.87/46.40 seconds in the Node test environment. Long planning pauses and full installed-game GPU/camera/boarding validation remain open. See `PRINCIPAL_RESCUE_PERFORMANCE_VALIDATION.md`.
 
 ## Character Polish and Animation Performance — September 28 / Browser 0006
 

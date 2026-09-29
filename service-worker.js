@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.28.0006_CHARACTER_POLISH_AND_ANIMATION_PERFORMANCE_PATCH";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.28.0006_CHARACTER_POLISH_AND_ANIMATION_PERFORMANCE_PATCH";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v60-character-performance";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.28.0007_PRINCIPAL_RESCUE_AND_LARGE_BATTLE_PERFORMANCE_PATCH";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.28.0007_PRINCIPAL_RESCUE_AND_LARGE_BATTLE_PERFORMANCE_PATCH";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v61-principal-rescue";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;

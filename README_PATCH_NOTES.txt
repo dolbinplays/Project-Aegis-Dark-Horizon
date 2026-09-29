@@ -1,3 +1,14 @@
+BUILD: v0.26.09.28.0007_PRINCIPAL_RESCUE_AND_LARGE_BATTLE_PERFORMANCE_PATCH
+September 28, 2026 — Principal Rescue and Large-Battle Performance
+Save format: 4
+
+- Rare month-3+ incidents require extraction of one named principal; other VIPs are optional.
+- Losing the principal fails the mission. Extracting them succeeds without requiring alien elimination.
+- Adds principal briefing/marker, automatic rescue priority, failure explanation and separate debrief accounting.
+- Improves fire/smoke queries by skipping footprint calculations for non-hazard scenery.
+- Three profiled 48-soldier AI rounds were approximately 24–28% faster; this is not a GPU FPS measurement.
+- Armed security, cinematic briefings and further performance work remain follow-ups.
+
 BUILD: v0.26.09.28.0006_CHARACTER_POLISH_AND_ANIMATION_PERFORMANCE_PATCH
 September 28, 2026 — Character Polish and Animation Performance
 Save format: 4
