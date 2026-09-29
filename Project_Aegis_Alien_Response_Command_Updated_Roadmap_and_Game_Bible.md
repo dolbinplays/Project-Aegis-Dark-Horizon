@@ -1,8 +1,49 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.28.0011_COOPERATIVE_AI_PLANNING_RESPONSIVENESS_PATCH`
+Current browser build: `v0.26.09.29.0012_ALIEN_FORCED_ENTRY_AND_SHELTER_BREACH_PATCH`
 
 Current save format: `4`
+
+
+## Alien Forced Entry + Shelter Breach Doctrine — September 29 / Browser 0012
+
+Browser 0012 closes the civilian-shelter loop for alien AI without granting hidden building knowledge. A visible human/civilian or a legitimate VIP/Last Known Contact search state inside a building may justify forced entry; generic patrol/search waypoints cannot. Before selecting a breach, the alien planner checks whether the same known target area has a legal route through an open/unlocked entrance.
+
+If no legal route exists, the alien moves to a reachable adjacent cell while reserving attack TU, then damages the existing locked door cover. Door HP, damage state, unlocking/breach behavior, reaction fire, occupancy and pathing remain authoritative; no alien-only doorway state is introduced. Streamed Simulation AI and the live/manual alien turn use the same forced-entry helpers. Indestructible locked entrances are skipped and failure falls back to ordinary objective reevaluation. Save format remains 4.
+
+Focused regression coverage verifies knowledge gating, open-route preference, structural door mutation, TU spending, indestructible-door rejection and shared execution wiring. The September 29 casualty pre-impact prone/bleeding and Beacon disappear/reappear reports were investigated during this patch and recorded immediately below as separate presentation hotfix roadmap items rather than being mixed into the forced-entry implementation.
+
+
+## Roadmap — Casualty Shot-Time Presentation Before Bleeding / Prone Commit
+
+**Reported September 29, 2026. Status: investigated; presentation-order regression identified; implementation queued.**
+
+When an alien shot causes an AEGIS soldier to become recoverably downed/bleeding, the soldier can enter the prone bleeding presentation before the projectile/shot that caused the wound is visibly shown. Authoritative casualty resolution is correct; the defect is playback ordering.
+
+Investigation found that sequential tactical playback already defers lethal `shot.killed` targets until the impact frame, but recoverable casualties are recorded as `shot.downed` with `killed:false`. The sequential playback staging therefore treats the target as an ordinary nonlethal update and copies the already-authoritative `downed / unconscious / prone / bleeding` state into the shot frame before impact.
+
+- Treat `shot.downed` as an impact-deferred presentation transition, analogous to lethal collapse, without delaying authoritative damage or medical state.
+- Preserve the casualty's pre-impact standing/kneeling/prone state, HP presentation and bleeding/downed flags while the projectile/tracer travels; commit the authoritative downed/bleeding/prone state on the impact frame.
+- Preserve any movement that legitimately occurred earlier in the same streamed action; only casualty-state presentation should be deferred.
+- Apply consistently to 3D Iso, FPV, TPV, 2D/Classic sequential playback, Simulation AI, Hybrid AI, reaction fire and manual/streamed shot playback where the same sequential frame authority is used.
+- Do not delay bleeding timers, TU loss, AI medical priority, mission outcome, save state or actual casualty authority.
+
+**Acceptance:** create a recoverable non-catastrophic alien hit against standing and kneeling AEGIS soldiers. Confirm the victim remains in the pre-impact pose while the incoming shot is visible, changes to the authoritative downed/bleeding/prone pose only at impact, and remains downed afterward. Repeat for hidden-shooter playback, reaction fire, Hybrid/Simulation, save/load after impact and a catastrophic KIA to ensure ordinary lethal-collapse ordering remains correct.
+
+## Roadmap — Beacon Lethal-Frame Pre-Impact Hold Regression
+
+**Reported September 29, 2026. Status: investigated; regression point identified; implementation queued.**
+
+Alien Field Beacons can disappear/wreck one render before the lethal projectile is presented, then reappear intact for the destruction shot/cinematic. This is a regression in the established deferred Beacon-destruction presentation system, not a missing destruction animation.
+
+The current runtime still records `beaconPresentationSnapshot` and shot-level `beaconPresentationBefore` data and still has the pre-impact/impact-commit cinematic authority. Investigation found a render-order hole in `tacticalBeaconStreamFramePresentationCovers(...)`: when the lethal frame first renders and the destruction presentation state has not yet been activated by the effect lifecycle, the helper sees the lethal shot and returns authoritative destroyed covers instead of restoring the frame's intact pre-impact Beacon snapshot. On the following presentation update the cinematic hold becomes active, which makes the Beacon reappear for the shot.
+
+- The lethal Beacon frame must render the intact pre-impact snapshot immediately on its first render, even before the cinematic/effect state hook has run.
+- Continue using the existing impact-commit state to reveal the authoritative destroyed/wreck cover after projectile impact; do not create a second Beacon state machine.
+- Preserve direct fire, Frag Grenade and endgame-watchdog kill paths, replacement Beacon identity, reinforcement cancellation, shield knowledge, LOS/fog, TU/ammunition and save authority.
+- Ensure terminal victory/camera transitions cannot expose the one-frame destroyed state before the final projectile/destruction beat completes.
+
+**Acceptance:** destroy a visible Beacon with ballistic/energy fire and a Frag Grenade in Manual, Hybrid and Simulation playback. The Beacon must remain continuously visible/intact from the preceding frame through projectile travel, transition exactly once to the destruction effect/wreck at impact, and never disappear-then-reappear. Repeat when the lethal frame is the first rendered frame after a streamed continuation and when Beacon destruction completes the mission.
 
 ## Cooperative AI Planning Responsiveness — September 28 / Browser 0011
 

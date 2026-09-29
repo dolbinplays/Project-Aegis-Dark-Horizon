@@ -1,3 +1,15 @@
+BUILD: v0.26.09.29.0012_ALIEN_FORCED_ENTRY_AND_SHELTER_BREACH_PATCH
+September 29, 2026 — Alien Forced Entry + Shelter Breach Doctrine
+Save format: 4
+
+- Aliens may force civilian-secured locked entrances only when legitimate visible/remembered/suspected target knowledge points into that building. Generic sector search does not authorize random door attacks.
+- The planner first checks for a legal open/unlocked route to the same known target area and uses that route instead of breaching when available.
+- With no legal route, the alien approaches a reachable adjacent door cell, reserves normal attack TU, and damages the existing authoritative door cover. Existing HP, damaged/unlocked, breached and pathing states remain authoritative.
+- Streamed Simulation AI and the live/manual alien turn call the same forced-entry plan and attack helpers. Reaction fire and ordinary objective reevaluation remain active.
+- Indestructible locked entrances are excluded from breach selection so aliens do not enter an endless futile attack loop.
+- Save format remains 4. The reported casualty pre-impact prone/bleeding and Beacon disappear/reappear issues were investigated and added to the roadmap for separate presentation hotfixes.
+- See ALIEN_FORCED_ENTRY_AND_SHELTER_BREACH_VALIDATION.md.
+
 BUILD: v0.26.09.28.0011_COOPERATIVE_AI_PLANNING_RESPONSIVENESS_PATCH
 September 28, 2026 — Cooperative AI Planning Responsiveness
 Save format: 4

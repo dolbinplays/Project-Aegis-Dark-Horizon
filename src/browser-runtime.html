@@ -1518,7 +1518,7 @@ function aegisTacticalViewportDimensions(mount,fallback={},layout=AEGIS_INTERFAC
 }
 // AEGIS_MOBILE_INTERFACE_END
 
-const CURRENT_GAME_BUILD="v0.26.09.28.0011_COOPERATIVE_AI_PLANNING_RESPONSIVENESS_PATCH";
+const CURRENT_GAME_BUILD="v0.26.09.29.0012_ALIEN_FORCED_ENTRY_AND_SHELTER_BREACH_PATCH";
 const TACTICAL_LAST_KNOWN_CONTACT_CLEARANCE_FEEDBACK_AND_PERSISTENCE_HOTFIX=true;
 const BANDAGE_EARLY_GAME_FIRST_AID_AND_MEDKIT_RESEARCH_PROGRESSION_PATCH=true;
 const TACTICAL_OBSERVATION_GATED_UFO_FLIGHT_PRESENTATION_PATCH=true;
@@ -3803,7 +3803,8 @@ function* resolveMissionGenerator({ squad, mission, tech, mode, leaderInstructio
       let line = visibleTarget && distance <= 20 && hasLineOfSight(alien, target.x, target.y, covers, mission);
       if (!line) {
         const exfilMove = ["dropship", "beacon", "insertion", "emergency-call"].includes(objective.targetKind);
-        const rawPlan = exfilMove ? tacticalAlienExfilMovePlan({ unit: alien, target, covers, units: allUnits(), reserveTu: 14, mission }) : tacticalAiMovePlan({ unit: alien, target, covers, units: allUnits(), reserveTu: 14, role: alienIndex % 2 ? "alienRight" : "alienLeft", mission, targetKnown: true, alienMove: true, visitedCells: alien.aiMoveVisited || [] });
+        const forcedEntry=exfilMove?null:tacticalAlienForcedEntryPlan({alien,objective,covers,units:allUnits(),mission,reserveTu:TACTICAL_ALIEN_FORCED_ENTRY_TU});
+        const rawPlan = forcedEntry ? {cell:forcedEntry.movePath[forcedEntry.movePath.length-1]||alien,path:forcedEntry.movePath,steps:Math.max(0,forcedEntry.movePath.length-1),reserveTu:TACTICAL_ALIEN_FORCED_ENTRY_TU,forcedEntry:true} : exfilMove ? tacticalAlienExfilMovePlan({ unit: alien, target, covers, units: allUnits(), reserveTu: 14, mission }) : tacticalAiMovePlan({ unit: alien, target, covers, units: allUnits(), reserveTu: 14, role: alienIndex % 2 ? "alienRight" : "alienLeft", mission, targetKnown: true, alienMove: true, visitedCells: alien.aiMoveVisited || [] });
         const plan=tacticalAuthoritativeMovementPlan(alien,rawPlan,covers,allUnits(),mission);
         for (const step of (plan?.path||[{x:alien.x,y:alien.y}]).slice(1)) {
           const commitState=tacticalMovementCommitCellState(alien,step,covers,allUnits(),{requireAdjacent:true});
@@ -3829,6 +3830,17 @@ function* resolveMissionGenerator({ squad, mission, tech, mode, leaderInstructio
         }
         if (plan.steps > 0) { alien.aiMoveVisited = [...(alien.aiMoveVisited || []), ...plan.path.map((cell) => tacticalKey(cell.x, cell.y))].slice(-16); alien.alienExfilStallTurns = 0; } else if (exfilMove && tacticalDistance(alien, target) > TACTICAL_ALIEN_EXFIL.arrivalRadius) { alien.alienExfilStallTurns = Math.max(0, Number(alien.alienExfilStallTurns) || 0) + 1; if (alien.alienExfilStallTurns >= TACTICAL_ALIEN_EXFIL.stallResetTurns) alien.aiMoveVisited = []; }
         if (!alien.alive) return;
+        if(forcedEntry){
+          const liveDoor=(covers||[]).find(cover=>cover.id===forcedEntry.door.id)||forcedEntry.door;
+          const breach=tacticalAlienForcedEntryAttackResult({alien,door:liveDoor,covers,mission,round:initialRound+round-1});
+          if(breach.ok){
+            covers=breach.covers;roundTacticalContext.invalidateCovers(covers,"alien-forced-entry");Object.assign(alien,breach.alien);
+            const observable=humans.some(observer=>tacticalHumanCombatActive(observer)&&(hasLineOfSight(observer,alien.x,alien.y,covers,mission)||hasLineOfSight(observer,liveDoor.x,liveDoor.y,covers,mission)));
+            shots.push({fromId:alien.id,toId:liveDoor.id,fromX:alien.x,fromY:alien.y,toX:liveDoor.x,toY:liveDoor.y,color:shotColorForWeapon("alien"),side:"alien",weaponKind:"alien",hit:true,killed:Boolean(breach.breached),targetBuildingDoor:true,alienForcedEntry:true,targetName:liveDoor.buildingLabel||"Locked shelter door",targetHpBefore:liveDoor.hp,targetMaxHp:liveDoor.maxHp,damage:breach.damage,observable});
+            logs.push(breach.breached?`${alien.name} breaches the locked ${liveDoor.buildingLabel||"shelter"} entrance while pursuing a known contact.`:`${alien.name} forces the locked ${liveDoor.buildingLabel||"shelter"} entrance open while pursuing a known contact.`);
+          }else logs.push(`${alien.name} reaches a locked entrance but cannot force it this turn; the alien objective planner will reevaluate next round.`);
+          return;
+        }
         objective = tacticalAlienObjectivePlan({ alien, units: allUnits(), covers, mission, round: initialRound + round - 1, reinforcementState: alienReinforcementState, alienIndex });
         Object.assign(alien, objective.patch || {});
         target = objective.target;
@@ -9623,6 +9635,44 @@ function tacticalAlienReinforcementState(mission = null, units = [], previous = 
 function tacticalAlienReinforcementRoll(mission = null, round = 1, contactRounds = 1) {
   const seed = tacticalSeed(mission || {});
   return 1 + Math.abs(seed * 37 + Number(round) * 53 + Number(contactRounds) * 29) % 100;
+}
+
+const TACTICAL_ALIEN_FORCED_ENTRY_AND_SHELTER_BREACH_PATCH=true;
+const TACTICAL_ALIEN_FORCED_ENTRY_TU=14;
+function tacticalAlienForcedEntryKnowledgeEligible(objective=null){
+  if(!objective?.target)return false;
+  if(objective.visibleTarget===true&&["human","civilian"].includes(objective.target.team))return true;
+  return new Set(["vip-last-known","vip-suspected","vip-search","last-known"]).has(String(objective.targetKind||""));
+}
+function tacticalAlienForcedEntryPlan({alien=null,objective=null,covers=[],units=[],mission=null,reserveTu=TACTICAL_ALIEN_FORCED_ENTRY_TU}={}){
+  if(!alien||!tacticalAlienForcedEntryKnowledgeEligible(objective))return null;
+  const target=objective.target,gridSize=tacticalGridSizeFrom(alien,target,covers,units,mission),targetInfo=tacticalBuildingCellAt(target.x,target.y,mission||{}),building=targetInfo?.building||null;
+  if(!building)return null;
+  const routeUnits=(units||[]).filter(unit=>unit?.id!==alien.id&&unit?.id!==target.id&&Number(unit?.hp)>0&&unit.alive!==false&&!unit.rescued&&!unit.extracted&&!unit.casualtyExtracted);
+  const direct=tacticalAiHazardAwarePath(alien,target,covers,routeUnits,Math.min(TACTICAL_AI_MAX_CANDIDATES,Math.max(16,gridSize*2)),null,mission);
+  if(Array.isArray(direct)&&direct.length>1)return null;
+  const lockedDoors=tacticalShelterDoorsForBuilding(building,covers).filter(door=>tacticalDoorIsLocked(door)&&!door.indestructible&&Number(door.hp)>0);
+  if(!lockedDoors.length)return null;
+  const occupied=new Set(routeUnits.map(unit=>tacticalKey(unit.x,unit.y))),candidates=[];
+  for(const door of lockedDoors){
+    for(const cell of tacticalNeighbors(door.x,door.y,gridSize)){
+      if(occupied.has(tacticalKey(cell.x,cell.y)))continue;
+      if((covers||[]).some(cover=>cover?.id!==door.id&&Number(cover?.hp)>0&&tacticalCoverBlocksMovement(cover)&&tacticalCoverOccupiesCell(cover,cell.x,cell.y)))continue;
+      const path=(cell.x===alien.x&&cell.y===alien.y)?[{x:alien.x,y:alien.y}]:tacticalAiHazardAwarePath(alien,cell,covers,routeUnits,Math.min(TACTICAL_AI_MAX_CANDIDATES,Math.max(16,gridSize*2)),null,mission);
+      if(!Array.isArray(path)||!path.length)continue;
+      candidates.push({door,cell,path});
+    }
+  }
+  candidates.sort((a,b)=>a.path.length-b.path.length||tacticalDistance(a.cell,target)-tacticalDistance(b.cell,target)||String(a.door.id||"").localeCompare(String(b.door.id||"")));
+  const best=candidates[0];if(!best)return null;
+  const maxMoveSteps=clamp(Math.floor((Math.max(0,Number(alien.tu)||0)-Math.max(0,Number(reserveTu)||0))/4),0,TACTICAL_AI_MAX_ADAPTIVE_MOVE_STEPS),movePath=best.path.slice(0,maxMoveSteps+1);
+  return{building,door:best.door,approachCell:best.cell,path:best.path,movePath:movePath.length?movePath:[{x:alien.x,y:alien.y}],reserveTu:Math.max(0,Number(reserveTu)||0),targetKind:objective.targetKind||null,knowledgeLimited:true};
+}
+function tacticalAlienForcedEntryAttackResult({alien=null,door=null,covers=[],mission=null,round=1,damage=null}={}){
+  if(!alien||!door||!tacticalDoorIsLocked(door)||door.indestructible||Number(door.hp)<=0)return{ok:false,alien,covers,door,damage:0,opened:false,breached:false};
+  if(tacticalDistance(alien,door)>1||(Number(alien.tu)||0)<TACTICAL_ALIEN_FORCED_ENTRY_TU)return{ok:false,alien,covers,door,damage:0,opened:false,breached:false};
+  const structuralDamage=Math.max(1,Number.isFinite(Number(damage))?Number(damage):18+Math.max(1,Number(mission?.threat)||1)*4),changed=tacticalBreachCover(door,structuralDamage,"alien"),nextCovers=(covers||[]).map(cover=>cover.id===door.id?{...changed,doorForcedByAlienId:alien.id,doorForcedRound:Math.max(1,Number(round)||1)}:cover),nextDoor=nextCovers.find(cover=>cover.id===door.id)||changed,opened=!tacticalDoorIsLocked(nextDoor)||Number(nextDoor.hp)<=0||Boolean(nextDoor.breached),breached=Number(nextDoor.hp)<=0||Boolean(nextDoor.breached)||String(nextDoor.buildingPart||"")==="breach";
+  return{ok:true,alien:{...alien,facing:facingToward(alien,door.x,door.y),tu:Math.max(0,(Number(alien.tu)||0)-TACTICAL_ALIEN_FORCED_ENTRY_TU)},covers:nextCovers,door:nextDoor,damage:Math.max(0,(Number(door.hp)||0)-Math.max(0,Number(nextDoor.hp)||0)),opened,breached};
 }
 function tacticalAlienReinforcementTurn({ state = null, units = [], covers = [], mission = null, round = 1, rollOverride = null } = {}) {
   let next = tacticalAlienReinforcementState(mission, units, state);
@@ -16359,7 +16409,8 @@ function endTurn() {
         return;
       }
       const exfilMove = ["dropship", "beacon", "insertion", "emergency-call"].includes(objective.targetKind);
-      const plan = exfilMove ? tacticalAlienExfilMovePlan({ unit: movingAlien, target, covers, units: next, reserveTu: 14, mission }) : tacticalAiMovePlan({
+      const forcedEntry=exfilMove?null:tacticalAlienForcedEntryPlan({alien:movingAlien,objective,covers,units:next,mission,reserveTu:TACTICAL_ALIEN_FORCED_ENTRY_TU});
+      const plan = forcedEntry ? {cell:forcedEntry.movePath[forcedEntry.movePath.length-1]||movingAlien,path:forcedEntry.movePath,steps:Math.max(0,forcedEntry.movePath.length-1),reserveTu:TACTICAL_ALIEN_FORCED_ENTRY_TU,forcedEntry:true} : exfilMove ? tacticalAlienExfilMovePlan({ unit: movingAlien, target, covers, units: next, reserveTu: 14, mission }) : tacticalAiMovePlan({
         unit: movingAlien,
         target,
         covers,
@@ -16383,6 +16434,16 @@ function endTurn() {
       }
       if (movingAlien.hp <= 0) {
         newLogs.push(alien.name + " was stopped by reaction fire.");
+        return;
+      }
+      if(forcedEntry){
+        const liveDoor=(covers||[]).find(cover=>cover.id===forcedEntry.door.id)||forcedEntry.door,breach=tacticalAlienForcedEntryAttackResult({alien:movingAlien,door:liveDoor,covers,mission,round:tacticalRound});
+        if(breach.ok){
+          covers.splice(0,covers.length,...breach.covers);coversRef.current=breach.covers;setCovers([...breach.covers]);
+          next=next.map(unit=>unit.id===movingAlien.id?{...unit,...breach.alien}:unit);movingAlien=next.find(unit=>unit.id===movingAlien.id)||breach.alien;
+          showShotEvent({shooter:movingAlien,target:{...liveDoor,name:liveDoor.buildingLabel||"Locked shelter door"},hit:true,killed:Boolean(breach.breached),armored:false,weaponKind:"alien",label:"Forced Entry"});
+          newLogs.push(breach.breached?`${movingAlien.name} breaches the locked ${liveDoor.buildingLabel||"shelter"} entrance while pursuing a known contact.`:`${movingAlien.name} forces the locked ${liveDoor.buildingLabel||"shelter"} entrance open while pursuing a known contact.`);
+        }else newLogs.push(`${movingAlien.name} reaches a locked entrance but cannot force it this turn; the alien objective planner will reevaluate next round.`);
         return;
       }
       objective = tacticalAlienObjectivePlan({ alien: movingAlien, units: next, covers, mission, round: tacticalRound, reinforcementState, alienIndex });
@@ -18090,7 +18151,8 @@ PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.28.0006_CHARACTER_POLISH_AND_ANIMAT
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.28.0007_PRINCIPAL_RESCUE_AND_LARGE_BATTLE_PERFORMANCE_PATCH",date:"September 28, 2026",title:"Principal Rescue and Large-Battle Performance",summary:"Adds mandatory principal rescues and reduces large-battle hazard-query work.",items:["Rare principal rescue incidents begin in month 3. Extract the named principal to win; their loss fails the operation. Other VIPs provide optional rescue credit.","Briefings, principal markers, AI rescue assignment, failure notices, saves and debriefs share principal identity.","Avoids expanding non-hazard scenery footprints during fire/smoke checks. Three measured 48-soldier AI rounds were approximately 24–28% faster; planning pauses remain.","Save format remains 4. Armed security and cinematic briefings are future work."]});
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.28.0008_OBSERVATION_DRIVEN_SHIELD_TACTICS_PATCH",date:"September 28, 2026","title":"Observation-Driven Shield Tactics","summary":"AI adapts after observing beacon shields intercept weapons fire.","items":["Soldiers remember demonstrated blocked weapon classes per beacon and avoid wasting further shots, including covered fire, reaction fire, Hybrid and emergency AI. Unknown protection still permits a probing shot.","AI can choose an unprotected visible target, use a safe Frag Grenade against a shielded alien, or approach inside the field through normal legal movement.","Observed classes survive snapshots and save/load. Field boundaries, changed or removed shields and replacement sources are reevaluated; unseen enemy impacts do not teach the commander.","Manual firing remains under player control. Save format remains 4."]});
 PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.28.0009_GROUNDED_TPV_BACKGROUND_SCENERY_PATCH",date:"September 28, 2026",title:"Grounded TPV Background Scenery",summary:"Keeps distant scenery grounded when the free camera moves or rises.",items:["Distant buildings, landscape silhouettes, window atlas and horizon haze remain in map coordinates while the sky follows the camera.","Preserves TPV height controls, FPV and reaction views, isometric visibility, scenery batching and resource cleanup.","Save format remains 4. No additional geometry, draw calls or tactical rule changes."]});
-PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"September 28, 2026",title:"Cooperative AI Planning Responsiveness",summary:"Keeps the authoritative Simulation AI resolver responsive by yielding between completed planning checkpoints instead of monopolizing the browser main thread for a whole large-battle round.",items:["The same tactical resolver now exposes safe generator checkpoints after completed soldier decisions and major phase boundaries; ordinary synchronous callers exhaust it immediately with unchanged authority.","Streamed Simulation AI consumes those checkpoints cooperatively, yielding to the browser when a planning slice exceeds its bounded time budget so HUD, loading feedback and input can repaint during large battles.","Existing stream epoch cancellation now reaches the in-progress planner: Take Back Control or newer tactical commands invalidate unfinished cooperative work before it can publish stale results.","Performance diagnostics record cooperative yield count, active planning time, wall time and maximum synchronous slice. Tactical priorities, movement/combat rules, deterministic results and save format 4 are unchanged."]});
+PATCH_NOTES_HISTORY.unshift({build:"v0.26.09.28.0011_COOPERATIVE_AI_PLANNING_RESPONSIVENESS_PATCH",date:"September 28, 2026",title:"Cooperative AI Planning Responsiveness",summary:"Keeps the authoritative Simulation AI resolver responsive by yielding between completed planning checkpoints instead of monopolizing the browser main thread for a whole large-battle round.",items:["The same tactical resolver now exposes safe generator checkpoints after completed soldier decisions and major phase boundaries; ordinary synchronous callers exhaust it immediately with unchanged authority.","Streamed Simulation AI consumes those checkpoints cooperatively, yielding to the browser when a planning slice exceeds its bounded time budget so HUD, loading feedback and input can repaint during large battles.","Existing stream epoch cancellation now reaches the in-progress planner: Take Back Control or newer tactical commands invalidate unfinished cooperative work before it can publish stale results.","Performance diagnostics record cooperative yield count, active planning time, wall time and maximum synchronous slice. Tactical priorities, movement/combat rules, deterministic results and save format 4 are unchanged."]});
+PATCH_NOTES_HISTORY.unshift({build:CURRENT_GAME_BUILD,date:"September 29, 2026",title:"Alien Forced Entry + Shelter Breach Doctrine",summary:"Lets aliens pursue legitimately known contacts through civilian-secured locked entrances using the existing door damage/pathing authority without granting hidden target knowledge.",items:["Forced entry is knowledge-gated: visible humans/civilians and legitimate VIP/Last Known Contact search states may justify a breach, while generic patrol/search waypoints cannot make aliens randomly attack buildings.","Before breaching, the alien planner checks for a legal route to the same known target area. An available unlocked/open route remains preferred and suppresses the breach plan.","When no legal route exists, the alien approaches a reachable cell beside a locked destructible door, preserves TU for the attack, and uses the existing structural door HP/damage transition instead of a parallel alien-only opening system.","The same helper is used by streamed Simulation AI and the live/manual alien turn path. Indestructible entrances are skipped, and an unsuccessful force attempt returns to normal objective reevaluation rather than creating an endless special-state loop.","LOS/fog, VIP knowledge, shelter behavior, movement costs, reaction fire, combat authority and save format 4 remain unchanged. The reported casualty pre-impact prone/bleeding and Beacon disappear/reappear presentation bugs were investigated and added to the roadmap as separate hotfix work."]});
 PATCH_NOTES_HISTORY.sort((left,right)=>String(right.build||"").localeCompare(String(left.build||""),undefined,{numeric:true,sensitivity:"base"}));
  return PATCH_NOTES_HISTORY;},[]);
 function PatchNotesLibraryScreen(){
