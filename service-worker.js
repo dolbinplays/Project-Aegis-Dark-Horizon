@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.28.0010_LARGE_BATTLE_PLANNING_EFFICIENCY_PATCH";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.28.0010_LARGE_BATTLE_PLANNING_EFFICIENCY_PATCH";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v64-planning-efficiency";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.28.0011_COOPERATIVE_AI_PLANNING_RESPONSIVENESS_PATCH";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.28.0011_COOPERATIVE_AI_PLANNING_RESPONSIVENESS_PATCH";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v65-cooperative-planning";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;

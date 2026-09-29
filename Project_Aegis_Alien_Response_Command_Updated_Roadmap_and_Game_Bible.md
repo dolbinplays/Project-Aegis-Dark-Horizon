@@ -1,8 +1,16 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.28.0010_LARGE_BATTLE_PLANNING_EFFICIENCY_PATCH`
+Current browser build: `v0.26.09.28.0011_COOPERATIVE_AI_PLANNING_RESPONSIVENESS_PATCH`
 
 Current save format: `4`
+
+## Cooperative AI Planning Responsiveness — September 28 / Browser 0011
+
+Browser 0011 keeps the existing tactical resolver authoritative but exposes safe cooperative checkpoints between completed planning phases and soldier decisions. Ordinary/manual/Classic/Hybrid synchronous callers continue to exhaust the same resolver immediately; streamed Simulation AI consumes that resolver incrementally and yields to the browser after a bounded planning slice so interface paint/input is not blocked for the whole large-battle round.
+
+The largest Browser 0010 stress-fixture pause was concentrated in VIP/rescue planning. Browser 0011 splits that prepass at actor ordering, rescue/search assignment, ingress planning and fire-team boundaries while preserving atomic movement/combat commits. Existing AI stream epoch/token cancellation now reaches unfinished cooperative planning, so Take Back Control or a newer command cancels stale work at a checkpoint before it can publish a result. Diagnostics record cooperative yields, active planning time, wall time, maximum synchronous slice and cancellation count.
+
+A deterministic 48-soldier / 6-VIP / 8-alien / 378-cover one-round fixture retains Browser 0010's exact state fingerprint (`df8a4b2c14a5b8dc6c851cf00ef618a8ab9a88ba5c37c99ca4537da4a8bf6ebe`), 38 frames and 62 unit records. Browser 0010 planning was one approximately 10-second synchronous resolver task in the matched profile. Browser 0011 yielded 35-36 times; repeated maximum measured synchronous slices were approximately 0.99-1.39 seconds. Total CPU planning time is not claimed to improve and can vary slightly because yielding adds scheduling overhead. Save format remains 4. Installed/PWA field acceptance remains pending. See `COOPERATIVE_AI_PLANNING_RESPONSIVENESS_VALIDATION.md`.
 
 ## Large-Battle Planning Efficiency — September 28 / Browser 0010
 

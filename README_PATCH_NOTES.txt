@@ -1,3 +1,15 @@
+BUILD: v0.26.09.28.0011_COOPERATIVE_AI_PLANNING_RESPONSIVENESS_PATCH
+September 28, 2026 — Cooperative AI Planning Responsiveness
+Save format: 4
+
+- Keeps one authoritative tactical resolver: synchronous callers exhaust it immediately, while streamed Simulation AI consumes the same resolver through safe generator checkpoints.
+- Yields to the browser only between completed planning stages/soldier decisions when the current planning slice exceeds the bounded budget; HUD/loading feedback and input can repaint during large battles.
+- Splits the expensive VIP/rescue prepass at assignment and fire-team boundaries without yielding inside an individual movement/combat commit.
+- Existing stream epoch cancellation reaches in-progress cooperative planning so Take Back Control/newer commands cannot publish stale future results.
+- Adds cooperative diagnostics for yields, active/wall planning time, maximum synchronous slice and cancellation count.
+- Deterministic 48-soldier profiling retains the Browser 0010 state fingerprint, frame count, unit count and cover count. Save format remains 4.
+- See COOPERATIVE_AI_PLANNING_RESPONSIVENESS_VALIDATION.md for equivalence tests, stress timings and remaining limits.
+
 BUILD: v0.26.09.28.0010_LARGE_BATTLE_PLANNING_EFFICIENCY_PATCH
 September 28, 2026 — Large-Battle Planning Efficiency
 Save format: 4
