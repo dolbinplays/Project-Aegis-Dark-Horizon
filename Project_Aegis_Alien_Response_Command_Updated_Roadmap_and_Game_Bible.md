@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.29.0021_RESERVE_TU_CLARITY_AND_BEACON_COMPLETION_PATCH`
+Current browser build: `v0.26.09.30.0022_VICTORY_SOLDIER_FLYTHROUGH_PATCH`
 
 Current save format: `4`
 
@@ -76,7 +76,9 @@ See `TPV_CAMERA_SHIELD_PARITY_AND_ROOF_OCCLUSION_VALIDATION.md`.
 
 ## Roadmap — Victory Celebration TPV Soldier Flythrough
 
-**Requested September 29, 2026. Status: approved roadmap item; implementation pending.**
+**Requested September 29, 2026. Status: implemented in Browser 0022; installed-game acceptance pending.**
+
+Browser 0022 provides stable survivor visits, Skip celebration, reduced-motion holds, and TPV obstruction recovery. Nearby explored transitions interpolate; distant/unexplored gaps cut directly to the next survivor. Results remain available throughout. See `VICTORY_FLYTHROUGH_0022_VALIDATION.md`.
 
 After authoritative mission victory is committed and the final consequential action has finished visibly, the victory celebration should gain a presentation-only TPV flythrough that visits surviving AEGIS soldiers one at a time so the player can actually see each soldier's victory pose and existing weapon-specific celebration effects.
 

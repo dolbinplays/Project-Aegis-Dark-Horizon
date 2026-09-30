@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.29.0021_RESERVE_TU_CLARITY_AND_BEACON_COMPLETION_PATCH";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.29.0021_RESERVE_TU_CLARITY_AND_BEACON_COMPLETION_PATCH";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v75-reserve-beacon";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.30.0022_VICTORY_SOLDIER_FLYTHROUGH_PATCH";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.30.0022_VICTORY_SOLDIER_FLYTHROUGH_PATCH";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v76-victory-flythrough";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;

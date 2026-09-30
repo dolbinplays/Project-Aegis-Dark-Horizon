@@ -1,3 +1,14 @@
+BUILD: v0.26.09.30.0022_VICTORY_SOLDIER_FLYTHROUGH_PATCH
+September 30, 2026 — Victory Soldier Flythrough
+Save format: 4
+
+- TPV celebration visits conscious surviving soldiers in stable order.
+- Waits for final action effects, reuses obstruction recovery, preserves existing celebrations.
+- Close visits focus weapon effects on the featured soldier at a readable scale.
+- Skip control and reduced-motion cuts; no hidden terrain reveal for camera travel.
+- No changes to combat, rewards, results or saves.
+- See VICTORY_FLYTHROUGH_0022_VALIDATION.md.
+
 BUILD: v0.26.09.29.0021_RESERVE_TU_CLARITY_AND_BEACON_COMPLETION_PATCH
 September 29, 2026 — Reserve TU Clarity and Beacon Completion
 Save format: 4
