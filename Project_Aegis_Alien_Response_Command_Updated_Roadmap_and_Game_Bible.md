@@ -1,8 +1,14 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.29.0020_INCOMING_FIRE_PLAYBACK_COMPLETENESS_PATCH`
+Current browser build: `v0.26.09.29.0021_RESERVE_TU_CLARITY_AND_BEACON_COMPLETION_PATCH`
 
 Current save format: `4`
+
+## Reserve TU Clarity and Beacon Completion — Browser 0021
+
+Snap/Aimed timing now sets actual manual firing TU as well as the matching reserve (14/22 TU using existing weapon timing). Single/Burst/Full Auto only determine rounds and per-round accuracy; reaction fire now rolls each round independently. None reserves zero; Kneel reserves 4 TU for the end of movement, and both use Snap timing when firing. Movement budgets standing first and prevents door costs consuming reserve. Legacy Auto/Burst reserve selections normalize to Snap.
+
+A confirmed active beacon is mandatory in every mission type, including rescue-only/crash missions when an actual beacon exists and principal extraction. Final victory completion rechecks live beacon state. This supersedes prior mission-type exemptions. Unknown function does not grant knowledge or introduce a required objective; disabled/destroyed beacons satisfy it. Save format remains 4. Installed-game acceptance pending; see `RESERVE_BEACON_0021_VALIDATION.md`.
 
 ## Incoming Fire Playback Completeness — Browser 0020
 

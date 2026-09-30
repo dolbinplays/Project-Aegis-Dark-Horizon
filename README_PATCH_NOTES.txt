@@ -1,3 +1,13 @@
+BUILD: v0.26.09.29.0021_RESERVE_TU_CLARITY_AND_BEACON_COMPLETION_PATCH
+September 29, 2026 — Reserve TU Clarity and Beacon Completion
+Save format: 4
+
+- Snap 14 TU / Aimed 22 TU now set both actual shot timing and matching movement reserve.
+- Single/Burst/Full Auto change rounds and accuracy per round, not TU.
+- Kneel reserves 4 TU; movement budgets standing first and protects reserves through door costs.
+- Confirmed active beacons block victory, including after principal extraction.
+- See RESERVE_BEACON_0021_VALIDATION.md.
+
 BUILD: v0.26.09.29.0020_INCOMING_FIRE_PLAYBACK_COMPLETENESS_PATCH
 September 29, 2026 — Incoming Fire Playback Completeness
 Save format: 4
