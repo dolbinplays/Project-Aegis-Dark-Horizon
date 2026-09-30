@@ -35,7 +35,7 @@
     <div class="toolbar">
       <div class="currentBadge">Current approved authoring tool</div>
       <h1>AEGIS Articulated Pose Editor</h1><div class="muted">Authoritative pose library: v0.26.08.26.0033_APPROVED_ARTICULATED_POSE_SET_PATCH</div>
-      <div class="muted">Drag in the preview to orbit, wheel to zoom. Use the hinge sliders to pose the articulated body. Export JSON and paste the result into the game pose authority.</div>
+      <div class="muted">Drag in the preview to orbit, wheel to zoom. Use the hinge sliders to pose the articulated body. Write Pose to Project to make the selected pose part of future game releases.</div>
     </div>
     <div class="card">
       <h2>Appearance</h2>
@@ -59,7 +59,7 @@
   </main>
   <aside class="panel right">
     <div class="card"><h2>Joint Hinges</h2><div id="jointControls"></div></div>
-    <div class="card"><h2>Export / Import</h2>
+    <div class="card"><h2>Project / Export / Import</h2><button id="writePoseProject">Write Pose to Project</button><p id="projectStatus" role="status">Preview changes here, then write them to the project and commit the files for future releases.</p>
       <div class="buttonRow"><button id="copyBtn">Copy JSON</button><button id="loadBtn">Load JSON</button></div>
       <textarea id="jsonOutput"></textarea>
       <div class="muted">All rotation sliders are in degrees. The exported JSON is converted to radians for the game.</div>
@@ -72,7 +72,7 @@
   </aside>
 </div>
 <script src="assets/vendor/three.min.js"></script>
-<script>
+<script src="./assets/data/aegis-authored-content.js"></script><script src="./assets/runtime/aegis-authored-content-runtime.js"></script><script src="./assets/runtime/aegis-project-authoring.js"></script><script>
 const PRESETS = {
   standing: {rootPosition:[0,0.6,0],rootRotation:[0,0,0],torso:[-2.899166,0,0],leftHip:[3.999245,0,-2.297561],rightHip:[4.600851,0,2.297561],leftKnee:[7.998491,0,0],rightKnee:[7.001544,0,0],leftAnkle:[-4.600851,-5.70093,0],rightAnkle:[-4.600851,5.70093,0],leftShoulder:[-54.001272,11.00079,-26.000825],rightShoulder:[-31.999693,-35.998938,5.998868],leftElbow:[-90.997157,-28.000447,-5.998868],rightElbow:[-69.998254,20.001957,-15.000035],leftWrist:[12.599342,10.301781,35.500465],rightWrist:[-11.00079,13.000412,-3.999245],neck:[-1.100079,0,0],weaponPosition:[-0.24,-0.61,0.2],weaponRotation:[86.000965,155.999219,17.200193]},
   standingAim: {rootPosition:[0,0.6,0],rootRotation:[0,46.002781,0],torso:[-2.899166,0,0],leftHip:[3.999245,0,-2.297561],rightHip:[4.600851,0,2.297561],leftKnee:[7.998491,0,0],rightKnee:[7.001544,0,0],leftAnkle:[-4.600851,-5.70093,0],rightAnkle:[-4.600851,5.70093,0],leftShoulder:[-108.999491,-28.000447,-26.000825],rightShoulder:[-76.002852,5.001922,-50.002027],leftElbow:[-11.00079,7.001544,20.001957],rightElbow:[-46.002781,-56.000895,-30.00007],leftWrist:[12.599342,10.301781,35.500465],rightWrist:[28.997394,31.002746,18.002334],neck:[-1.100079,-46.002781,0],weaponPosition:[-0.24,-0.61,0.2],weaponRotation:[86.000965,155.999219,17.200193]},
@@ -139,7 +139,7 @@ function applyPose(){ if(!soldierRoot) return; const p=state.pose; soldierRoot.p
 function updateJson(){ const out = {}; Object.keys(state.pose).forEach(key=>{ const value = state.pose[key]; out[key] = value.map((n,idx)=> (DEG_KEYS.includes(key) ? Number((n*Math.PI/180).toFixed(4)) : Number(n.toFixed(4)) )); }); document.getElementById('jsonOutput').value = JSON.stringify(out,null,2); }
 function makeSliderTriplet(container,key,label,min,max,step,isDegrees=true){ const wrap=document.createElement('details'); wrap.open=true; wrap.className='jointGroup'; const summary=document.createElement('summary'); summary.textContent=label; wrap.appendChild(summary); ['X','Y','Z'].forEach((axis,idx)=>{ const row=document.createElement('div'); row.className='xyz'; const letter=document.createElement('div'); letter.textContent=axis; const range=document.createElement('input'); range.type='range'; range.min=min; range.max=max; range.step=step; range.value=state.pose[key][idx]; const num=document.createElement('input'); num.type='number'; num.min=min; num.max=max; num.step=step; num.value=state.pose[key][idx]; const sync=(v)=>{ state.pose[key][idx]=Number(v); range.value=v; num.value=v; applyPose(); }; range.addEventListener('input',e=>sync(e.target.value)); num.addEventListener('input',e=>sync(e.target.value)); row.append(letter,range,num); wrap.appendChild(row); }); container.appendChild(wrap); }
 function rebuildControls(){ const jointControls=document.getElementById('jointControls'); jointControls.innerHTML=''; JOINT_ORDER.forEach(key=>makeSliderTriplet(jointControls,key,key,-180,180,1,true)); const core=document.getElementById('coreControls'); core.innerHTML=''; makeSliderTriplet(core,'rootPosition','rootPosition',-2,2,0.01,false); makeSliderTriplet(core,'rootRotation','rootRotation',-180,180,1,true); makeSliderTriplet(core,'weaponPosition','weaponPosition',-1,1,0.01,false); makeSliderTriplet(core,'weaponRotation','weaponRotation',-180,180,1,true); }
-function clonePreset(name){ return JSON.parse(JSON.stringify(PRESETS[name])); }
+function clonePreset(name){const authored=window.AEGIS_AUTHORED_RUNTIME.pose(name);if(authored)return Object.fromEntries(Object.entries(authored).map(([key,value])=>[key,value.map(n=>DEG_KEYS.includes(key)?rad(n):n)]));return JSON.parse(JSON.stringify(PRESETS[name]));}
 function syncAppearanceSelects(){ document.getElementById('presetSelect').value=state.preset; document.getElementById('armorSelect').value=state.armor; document.getElementById('skinSelect').value=state.skin; document.getElementById('weaponColorSelect').value=state.weaponColor; document.getElementById('facingSelect').value=state.facing; }
 function fillSelect(id, list){ const el=document.getElementById(id); el.innerHTML=''; list.forEach(item=>{ const opt=document.createElement('option'); opt.value=item.key; opt.textContent=item.label; el.appendChild(opt); }); }
 fillSelect('presetSelect', Object.keys(PRESETS).map(key=>({key,label:key}))); fillSelect('armorSelect', ARMOR_OPTIONS); fillSelect('skinSelect', SKIN_OPTIONS); fillSelect('weaponColorSelect', WEAPON_OPTIONS); fillSelect('facingSelect', FACING_OPTIONS); syncAppearanceSelects();
@@ -156,7 +156,8 @@ document.getElementById('loadBtn').addEventListener('click', ()=>{ try{ const pa
 function resize(){ const w=mount.clientWidth||800, h=mount.clientHeight||600; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); } window.addEventListener('resize', resize);
 let dragging=false,lastX=0,lastY=0; renderer.domElement.addEventListener('pointerdown', e=>{ dragging=true; lastX=e.clientX; lastY=e.clientY; renderer.domElement.setPointerCapture(e.pointerId); }); renderer.domElement.addEventListener('pointermove', e=>{ if(!dragging) return; orbit.yaw += (e.clientX-lastX)*0.01; orbit.pitch = Math.max(-1.1,Math.min(1.1,orbit.pitch+(e.clientY-lastY)*0.01)); lastX=e.clientX; lastY=e.clientY; }); renderer.domElement.addEventListener('pointerup', ()=> dragging=false); renderer.domElement.addEventListener('wheel', e=>{ e.preventDefault(); orbit.distance=Math.max(2.2,Math.min(9.5,orbit.distance+e.deltaY*0.005)); },{passive:false});
 function animate(){ requestAnimationFrame(animate); camera.position.set(Math.sin(orbit.yaw)*Math.cos(orbit.pitch)*orbit.distance, 1.2+Math.sin(orbit.pitch)*orbit.distance, Math.cos(orbit.yaw)*Math.cos(orbit.pitch)*orbit.distance); camera.lookAt(0,0.7,0); renderer.render(scene,camera); }
-rebuildControls(); buildSoldier(); resize(); animate();
+document.getElementById('writePoseProject').onclick=async()=>{const status=document.getElementById('projectStatus');try{updateJson();const pose=AEGIS_AUTHORED_RUNTIME.validatePose(JSON.parse(document.getElementById('jsonOutput').value)),name=state.preset;status.textContent=await AEGIS_PROJECT_AUTHORING.writeSection('poses',{[name]:pose});window.AEGIS_AUTHORED_CONTENT.poses[name]=pose;}catch(e){status.textContent=e.message;}};
+state.pose=clonePreset(state.preset);rebuildControls(); buildSoldier(); resize(); animate();
 </script>
 </body>
 </html>

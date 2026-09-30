@@ -1,3 +1,14 @@
+BUILD: v0.26.09.30.0023_AUTHORING_PROJECT_PIPELINE_AND_SKYRANGER_EDITOR_PATCH
+September 30, 2026 — Editor Project Persistence and Editable Skyranger
+Save format: 4
+
+- Building and pose editors write validated edits to shared project assets.
+- Prop, layout and pose writes back up previous files, verify their contents and roll back failed writes.
+- Adds the current 30-part Skyranger to the prop editor vehicle library and tactical renderer.
+- Keeps existing mission layouts, boarding/extraction locations and tactical facing authoritative.
+- Commit and publish the written files to distribute changes; browser-local previews remain separate.
+- See EDITOR_PROJECT_AUTHORING_0023_VALIDATION.md.
+
 BUILD: v0.26.09.30.0022_VICTORY_SOLDIER_FLYTHROUGH_PATCH
 September 30, 2026 — Victory Soldier Flythrough
 Save format: 4

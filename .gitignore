@@ -5,3 +5,6 @@
 godot/export/
 godot/build/
 godot/test_output/
+
+# Editor safety copies; canonical authored assets remain tracked.
+assets/data/*.backup

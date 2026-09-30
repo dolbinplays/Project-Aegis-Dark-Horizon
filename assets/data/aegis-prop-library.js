@@ -30822,6 +30822,1143 @@ window.AEGIS_PROP_LIBRARY={
         "variants": [],
         "attachments": {}
       }
+    },
+    {
+      "schema": "aegis-prop-definition-v1",
+      "id": "prop-vehicle-skyranger",
+      "name": "Skyranger",
+      "visualKey": "vehicle-skyranger",
+      "metadata": {
+        "navigationClass": "solid",
+        "runtimeScaleMode": "none",
+        "notes": "Editable tactical Skyranger. Boarding cells, extraction, lights and craft heading remain game-controlled. Keep the rear ramp aligned with the original boarding lane."
+      },
+      "collision": {
+        "shape": "box",
+        "size": [
+          5.55,
+          2.5,
+          11
+        ],
+        "offset": [
+          0,
+          1.25,
+          0
+        ]
+      },
+      "rootTransform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "components": [
+        {
+          "id": "skyranger-troop-bay-floor",
+          "name": "troop-bay-floor",
+          "primitive": "box",
+          "size": {
+            "width": 5.15,
+            "height": 0.18,
+            "depth": 7.55
+          },
+          "position": [
+            0,
+            0.48,
+            -0.34
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#1f2937",
+            "roughness": 0.62,
+            "metalness": 0.4,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-left-fuselage-shell",
+          "name": "left-fuselage-shell",
+          "primitive": "box",
+          "size": {
+            "width": 0.34,
+            "height": 1.72,
+            "depth": 7.45
+          },
+          "position": [
+            -2.62,
+            1.34,
+            -0.34
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#3f4f5f",
+            "roughness": 0.46,
+            "metalness": 0.48,
+            "opacity": 1,
+            "emissive": "#0e7490",
+            "emissiveStrength": 0.04,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-right-fuselage-shell",
+          "name": "right-fuselage-shell",
+          "primitive": "box",
+          "size": {
+            "width": 0.34,
+            "height": 1.72,
+            "depth": 7.45
+          },
+          "position": [
+            2.62,
+            1.34,
+            -0.34
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#3f4f5f",
+            "roughness": 0.46,
+            "metalness": 0.48,
+            "opacity": 1,
+            "emissive": "#0e7490",
+            "emissiveStrength": 0.04,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-troop-bay-roof",
+          "name": "troop-bay-roof",
+          "primitive": "box",
+          "size": {
+            "width": 5.55,
+            "height": 0.22,
+            "depth": 7.45
+          },
+          "position": [
+            0,
+            2.24,
+            -0.34
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#3f4f5f",
+            "roughness": 0.46,
+            "metalness": 0.48,
+            "opacity": 1,
+            "emissive": "#0e7490",
+            "emissiveStrength": 0.04,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-forward-cabin-bulkhead",
+          "name": "forward-cabin-bulkhead",
+          "primitive": "box",
+          "size": {
+            "width": 5.15,
+            "height": 1.72,
+            "depth": 0.28
+          },
+          "position": [
+            0,
+            1.34,
+            3.36
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#3f4f5f",
+            "roughness": 0.46,
+            "metalness": 0.48,
+            "opacity": 1,
+            "emissive": "#0e7490",
+            "emissiveStrength": 0.04,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-raised-cabin",
+          "name": "raised-cabin",
+          "primitive": "box",
+          "size": {
+            "width": 4.35,
+            "height": 0.72,
+            "depth": 2.55
+          },
+          "position": [
+            0,
+            2.18,
+            3.08
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#3f4f5f",
+            "roughness": 0.46,
+            "metalness": 0.48,
+            "opacity": 1,
+            "emissive": "#0e7490",
+            "emissiveStrength": 0.04,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-left-troop-bench",
+          "name": "left-troop-bench",
+          "primitive": "box",
+          "size": {
+            "width": 0.55,
+            "height": 0.32,
+            "depth": 4.6
+          },
+          "position": [
+            -2.05,
+            0.72,
+            -0.9
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#263746",
+            "roughness": 0.82,
+            "metalness": 0.26,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-right-troop-bench",
+          "name": "right-troop-bench",
+          "primitive": "box",
+          "size": {
+            "width": 0.55,
+            "height": 0.32,
+            "depth": 4.6
+          },
+          "position": [
+            2.05,
+            0.72,
+            -0.9
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#263746",
+            "roughness": 0.82,
+            "metalness": 0.26,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-tapered-nose",
+          "name": "tapered-nose",
+          "primitive": "mesh",
+          "size": {},
+          "vertices": [
+            -2.9000000953674316,
+            0,
+            -1.4500000476837158,
+            2.9000000953674316,
+            0,
+            -1.4500000476837158,
+            2.9000000953674316,
+            1.5,
+            -1.4500000476837158,
+            -2.9000000953674316,
+            1.5,
+            -1.4500000476837158,
+            -1.25,
+            0.2199999988079071,
+            1.4500000476837158,
+            1.25,
+            0.2199999988079071,
+            1.4500000476837158,
+            1.25,
+            1.1200000047683716,
+            1.4500000476837158,
+            -1.25,
+            1.1200000047683716,
+            1.4500000476837158
+          ],
+          "indices": [
+            0,
+            2,
+            1,
+            0,
+            3,
+            2,
+            4,
+            5,
+            6,
+            4,
+            6,
+            7,
+            0,
+            1,
+            5,
+            0,
+            5,
+            4,
+            3,
+            7,
+            6,
+            3,
+            6,
+            2,
+            0,
+            4,
+            7,
+            0,
+            7,
+            3,
+            1,
+            2,
+            6,
+            1,
+            6,
+            5
+          ],
+          "position": [
+            0,
+            0.58,
+            5.3
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#3f4f5f",
+            "roughness": 0.46,
+            "metalness": 0.48,
+            "opacity": 1,
+            "emissive": "#0e7490",
+            "emissiveStrength": 0.04,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-cockpit-glass",
+          "name": "cockpit-glass",
+          "primitive": "box",
+          "size": {
+            "width": 2.65,
+            "height": 0.62,
+            "depth": 1.65
+          },
+          "position": [
+            0,
+            1.82,
+            4.65
+          ],
+          "rotation": [
+            -4.583662361046586,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#082f49",
+            "roughness": 0.18,
+            "metalness": 0.24,
+            "opacity": 1,
+            "emissive": "#38bdf8",
+            "emissiveStrength": 0.3,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-left-wing",
+          "name": "left-wing",
+          "primitive": "box",
+          "size": {
+            "width": 3.6,
+            "height": 0.24,
+            "depth": 4.2
+          },
+          "position": [
+            -4.6,
+            2.28,
+            -0.15
+          ],
+          "rotation": [
+            0,
+            -4.583662361046586,
+            -2.0053522829578814
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#3f4f5f",
+            "roughness": 0.46,
+            "metalness": 0.48,
+            "opacity": 1,
+            "emissive": "#0e7490",
+            "emissiveStrength": 0.04,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-left-engine",
+          "name": "left-engine",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.62,
+            "radiusBottom": 0.68,
+            "height": 3.7,
+            "segments": 12
+          },
+          "position": [
+            -3.75,
+            2.12,
+            0.4
+          ],
+          "rotation": [
+            90,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#111827",
+            "roughness": 0.38,
+            "metalness": 0.72,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-left-engine-glow",
+          "name": "left-engine-glow",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.42,
+            "radiusBottom": 0.42,
+            "height": 0.12,
+            "segments": 12
+          },
+          "position": [
+            -3.75,
+            2.12,
+            -1.48
+          ],
+          "rotation": [
+            90,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#67e8f9",
+            "roughness": 0.22,
+            "metalness": 0.16,
+            "opacity": 1,
+            "emissive": "#22d3ee",
+            "emissiveStrength": 1.1,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-left-tailplane",
+          "name": "left-tailplane",
+          "primitive": "box",
+          "size": {
+            "width": 2.8,
+            "height": 0.18,
+            "depth": 2
+          },
+          "position": [
+            -2.75,
+            1.9,
+            -3.65
+          ],
+          "rotation": [
+            0,
+            -6.875493541569878,
+            -3.437746770784939
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#94a3b8",
+            "roughness": 0.38,
+            "metalness": 0.56,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-right-wing",
+          "name": "right-wing",
+          "primitive": "box",
+          "size": {
+            "width": 3.6,
+            "height": 0.24,
+            "depth": 4.2
+          },
+          "position": [
+            4.6,
+            2.28,
+            -0.15
+          ],
+          "rotation": [
+            0,
+            4.583662361046586,
+            2.0053522829578814
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#3f4f5f",
+            "roughness": 0.46,
+            "metalness": 0.48,
+            "opacity": 1,
+            "emissive": "#0e7490",
+            "emissiveStrength": 0.04,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-right-engine",
+          "name": "right-engine",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.62,
+            "radiusBottom": 0.68,
+            "height": 3.7,
+            "segments": 12
+          },
+          "position": [
+            3.75,
+            2.12,
+            0.4
+          ],
+          "rotation": [
+            90,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#111827",
+            "roughness": 0.38,
+            "metalness": 0.72,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-right-engine-glow",
+          "name": "right-engine-glow",
+          "primitive": "cylinder",
+          "size": {
+            "radiusTop": 0.42,
+            "radiusBottom": 0.42,
+            "height": 0.12,
+            "segments": 12
+          },
+          "position": [
+            3.75,
+            2.12,
+            -1.48
+          ],
+          "rotation": [
+            90,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#67e8f9",
+            "roughness": 0.22,
+            "metalness": 0.16,
+            "opacity": 1,
+            "emissive": "#22d3ee",
+            "emissiveStrength": 1.1,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-right-tailplane",
+          "name": "right-tailplane",
+          "primitive": "box",
+          "size": {
+            "width": 2.8,
+            "height": 0.18,
+            "depth": 2
+          },
+          "position": [
+            2.75,
+            1.9,
+            -3.65
+          ],
+          "rotation": [
+            0,
+            6.875493541569878,
+            3.437746770784939
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#94a3b8",
+            "roughness": 0.38,
+            "metalness": 0.56,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-vertical-tail",
+          "name": "vertical-tail",
+          "primitive": "box",
+          "size": {
+            "width": 0.28,
+            "height": 2.2,
+            "depth": 2.5
+          },
+          "position": [
+            0,
+            2.9,
+            -3.2
+          ],
+          "rotation": [
+            4.583662361046586,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#3f4f5f",
+            "roughness": 0.46,
+            "metalness": 0.48,
+            "opacity": 1,
+            "emissive": "#0e7490",
+            "emissiveStrength": 0.04,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-rear-cargo-lintel",
+          "name": "rear-cargo-lintel",
+          "primitive": "box",
+          "size": {
+            "width": 2.75,
+            "height": 0.26,
+            "depth": 0.16
+          },
+          "position": [
+            0,
+            1.72,
+            -4.46
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#111827",
+            "roughness": 0.38,
+            "metalness": 0.72,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-rear-cargo-left-jamb",
+          "name": "rear-cargo-left-jamb",
+          "primitive": "box",
+          "size": {
+            "width": 0.24,
+            "height": 1.36,
+            "depth": 0.16
+          },
+          "position": [
+            -1.27,
+            1.04,
+            -4.46
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#111827",
+            "roughness": 0.38,
+            "metalness": 0.72,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-rear-cargo-right-jamb",
+          "name": "rear-cargo-right-jamb",
+          "primitive": "box",
+          "size": {
+            "width": 0.24,
+            "height": 1.36,
+            "depth": 0.16
+          },
+          "position": [
+            1.27,
+            1.04,
+            -4.46
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#111827",
+            "roughness": 0.38,
+            "metalness": 0.72,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-cargo-aisle",
+          "name": "cargo-aisle",
+          "primitive": "box",
+          "size": {
+            "width": 2.55,
+            "height": 0.06,
+            "depth": 4.7
+          },
+          "position": [
+            0,
+            0.59,
+            -2.15
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#52606f",
+            "roughness": 0.68,
+            "metalness": 0.42,
+            "opacity": 1,
+            "emissive": "#22d3ee",
+            "emissiveStrength": 0.06,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-rear-ramp",
+          "name": "rear-ramp",
+          "primitive": "box",
+          "size": {
+            "width": 2.72,
+            "height": 0.18,
+            "depth": 3.5
+          },
+          "position": [
+            0,
+            0.32,
+            -5.75
+          ],
+          "rotation": [
+            -6.302535746439056,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#52606f",
+            "roughness": 0.68,
+            "metalness": 0.42,
+            "opacity": 1,
+            "emissive": "#22d3ee",
+            "emissiveStrength": 0.06,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-left-ramp-rail",
+          "name": "left-ramp-rail",
+          "primitive": "box",
+          "size": {
+            "width": 0.12,
+            "height": 0.28,
+            "depth": 3.35
+          },
+          "position": [
+            -1.28,
+            0.48,
+            -5.72
+          ],
+          "rotation": [
+            -6.302535746439056,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#94a3b8",
+            "roughness": 0.38,
+            "metalness": 0.56,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-right-ramp-rail",
+          "name": "right-ramp-rail",
+          "primitive": "box",
+          "size": {
+            "width": 0.12,
+            "height": 0.28,
+            "depth": 3.35
+          },
+          "position": [
+            1.28,
+            0.48,
+            -5.72
+          ],
+          "rotation": [
+            -6.302535746439056,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#94a3b8",
+            "roughness": 0.38,
+            "metalness": 0.56,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-ramp-stripe-0",
+          "name": "ramp-stripe-0",
+          "primitive": "box",
+          "size": {
+            "width": 2.45,
+            "height": 0.035,
+            "depth": 0.12
+          },
+          "position": [
+            0,
+            0.43,
+            -4.65
+          ],
+          "rotation": [
+            -6.302535746439056,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#94a3b8",
+            "roughness": 0.38,
+            "metalness": 0.56,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-ramp-stripe-1",
+          "name": "ramp-stripe-1",
+          "primitive": "box",
+          "size": {
+            "width": 2.45,
+            "height": 0.035,
+            "depth": 0.12
+          },
+          "position": [
+            0,
+            0.395,
+            -5.3500000000000005
+          ],
+          "rotation": [
+            -6.302535746439056,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#94a3b8",
+            "roughness": 0.38,
+            "metalness": 0.56,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-ramp-stripe-2",
+          "name": "ramp-stripe-2",
+          "primitive": "box",
+          "size": {
+            "width": 2.45,
+            "height": 0.035,
+            "depth": 0.12
+          },
+          "position": [
+            0,
+            0.36,
+            -6.050000000000001
+          ],
+          "rotation": [
+            -6.302535746439056,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#94a3b8",
+            "roughness": 0.38,
+            "metalness": 0.56,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        },
+        {
+          "id": "skyranger-ramp-stripe-3",
+          "name": "ramp-stripe-3",
+          "primitive": "box",
+          "size": {
+            "width": 2.45,
+            "height": 0.035,
+            "depth": 0.12
+          },
+          "position": [
+            0,
+            0.32499999999999996,
+            -6.75
+          ],
+          "rotation": [
+            -6.302535746439056,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "material": {
+            "color": "#94a3b8",
+            "roughness": 0.38,
+            "metalness": 0.56,
+            "opacity": 1,
+            "emissive": "#000000",
+            "emissiveStrength": 0,
+            "castShadow": true
+          }
+        }
+      ],
+      "placement": {
+        "mode": "free",
+        "strictness": "preferred"
+      },
+      "presentation": {
+        "damageThreshold": 0.5,
+        "damageStates": {},
+        "variants": [],
+        "attachments": {}
+      }
     }
   ],
   "editorBuild": "v0.26.09.18.0835_GENERATED_PROP_DAMAGE_AND_DESTROYED_STATES_PATCH"
@@ -30839,7 +31976,7 @@ window.AEGIS_PROP_LIBRARY={
   W.AEGIS_PROP_FILE_LIBRARY=FILE_LIBRARY;
   function validLibrary(value){return Boolean(value&&value.schema===SCHEMA&&Array.isArray(value.props)&&value.props.length);}
   function cloneLocal(value){try{return JSON.parse(JSON.stringify(value));}catch{return value;}}
-  function upgrade(value){if(!validLibrary(value))return value;const fileByKey=new Map((FILE_LIBRARY.props||[]).map(p=>[String(p?.visualKey||'').toLowerCase(),p]));for(const p of value.props){const fp=fileByKey.get(String(p?.visualKey||'').toLowerCase()),prior=p.presentation||{};p.presentation={damageThreshold:Number.isFinite(+prior.damageThreshold)?+prior.damageThreshold:.5,damageStates:{...cloneLocal(fp?.presentation?.damageStates||{}),...(prior.damageStates||{})},variants:Array.isArray(prior.variants)?prior.variants:[],attachments:prior.attachments||{}};if(fp?.presentation?.attachments?.vehicleLighting&&!p.presentation.attachments.vehicleLighting)p.presentation.attachments.vehicleLighting=cloneLocal(fp.presentation.attachments.vehicleLighting);p.metadata=p.metadata||{};p.metadata.presentationAuthoringBuild=BUILD;}value.libraryVersion=BUILD;value.editorBuild=BUILD;value.sourceEditorBuild=BUILD;return value;}
+  function upgrade(value){if(!validLibrary(value))return value;const fileByKey=new Map((FILE_LIBRARY.props||[]).map(p=>[String(p?.visualKey||'').toLowerCase(),p]));const existing=new Set(value.props.map(p=>String(p.visualKey||'').toLowerCase()));for(const p of FILE_LIBRARY.props)if(!existing.has(String(p.visualKey||'').toLowerCase()))value.props.push(cloneLocal(p));for(const p of value.props){const fp=fileByKey.get(String(p?.visualKey||'').toLowerCase()),prior=p.presentation||{};p.presentation={damageThreshold:Number.isFinite(+prior.damageThreshold)?+prior.damageThreshold:.5,damageStates:{...cloneLocal(fp?.presentation?.damageStates||{}),...(prior.damageStates||{})},variants:Array.isArray(prior.variants)?prior.variants:[],attachments:prior.attachments||{}};if(fp?.presentation?.attachments?.vehicleLighting&&!p.presentation.attachments.vehicleLighting)p.presentation.attachments.vehicleLighting=cloneLocal(fp.presentation.attachments.vehicleLighting);p.metadata=p.metadata||{};p.metadata.presentationAuthoringBuild=BUILD;}value.libraryVersion=BUILD;value.editorBuild=BUILD;value.sourceEditorBuild=BUILD;return value;}
   function notify(source){
     W.AEGIS_PROP_LIVE_STATUS={active:source!=='project-file',source,libraryVersion:String(W.AEGIS_PROP_LIBRARY?.libraryVersion||''),propCount:Number(W.AEGIS_PROP_LIBRARY?.props?.length||0)};
     try{W.dispatchEvent(new CustomEvent('aegis-prop-library-updated',{detail:{source,status:W.AEGIS_PROP_LIVE_STATUS}}));}catch{}
@@ -30893,6 +32030,7 @@ window.AEGIS_PROP_LIBRARY={
     };
     W.tacticalRuntimePropComponentGeometry=function tacticalRuntimePropComponentGeometry2358(THREE=null,component=null){
       if(!THREE||!component)return null;const size=component.size||{},primitive=String(component.primitive||'box').toLowerCase();
+      if(primitive==='mesh')return W.AEGIS_AUTHORED_RUNTIME?.meshGeometry(THREE,component)||null;
       if(primitive==='cylinder')return new THREE.CylinderGeometry(Math.max(.005,Number(size.radiusTop??size.radius)||.25),Math.max(.005,Number(size.radiusBottom??size.radius)||.25),Math.max(.005,Number(size.height)||.5),Math.max(3,Math.floor(Number(size.segments)||8)));
       if(primitive==='sphere')return new THREE.SphereGeometry(Math.max(.005,Number(size.radius)||.25),Math.max(4,Math.floor(Number(size.widthSegments)||10)),Math.max(3,Math.floor(Number(size.heightSegments)||7)));
       if(primitive==='cone')return new THREE.ConeGeometry(Math.max(.005,Number(size.radius)||.25),Math.max(.005,Number(size.height)||.5),Math.max(3,Math.floor(Number(size.segments)||8)));

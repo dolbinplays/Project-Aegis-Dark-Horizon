@@ -28,6 +28,7 @@ window.AEGIS_INSTALL_BUILDING_EDITOR=function(a,token){
       let result;
       if(m.type==='load')result={validation:load(m.layout),layout};
       else if(m.type==='baseline'){const value=baseline();result={layout:value,validation:load(value)};}
+      else if(m.type==='project-layout'){const candidate=a.api.shape(m.layout);for(const y of [10,11]){const report=a.api.validate(candidate,{x:10,y});if(!report.ok)throw Error(report.errors.join(' '));}result={layout:candidate};}
       else if(m.type==='publish'){result={layout:a.api.publish(m.layout)};}
       else if(m.type==='clear'){a.api.clear();result={};}
       else if(m.type==='walk'){
@@ -52,5 +53,5 @@ window.AEGIS_INSTALL_BUILDING_EDITOR=function(a,token){
     }catch(e){send('result',{request:m.request,error:e.message});}
   });
   const props=(window.AEGIS_PROP_LIBRARY?.props||[]).filter(p=>p.visualKey?.startsWith('interior-')).map(p=>({visual:p.visualKey,name:p.name||p.label||p.visualKey}));
-  send('ready',{layout:baseline(),props});
+  send('ready',{layout:a.api.read()||baseline(),props});
 };

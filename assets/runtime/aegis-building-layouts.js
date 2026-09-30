@@ -46,8 +46,8 @@ function create(a){
     return {ok:!errors.length,errors:[...new Set(errors)],warnings,reachable:[...reachable].map(k=>{const [x,y]=k.split(',').map(Number);return{x:x-origin.x,y:y-origin.y};})};
   }
   function publish(input){const layout=shape(input);for(const y of [10,11]){const report=validate(layout,{x:10,y});if(!report.ok)throw Error(report.errors.join('\n'));}root.localStorage.setItem(KEY,JSON.stringify(layout));return layout;}
-  function read(){try{const value=JSON.parse(root.localStorage.getItem(KEY)||'null');if(!value)return null;const layout=shape(value);return [10,11].every(y=>validate(layout,{x:10,y}).ok)?layout:null;}catch{return null;}}
-  return {shape,plan,covers,validate,publish,read,clear:()=>root.localStorage.removeItem(KEY),copy};
+  function read(){let local=null;try{local=JSON.parse(root.localStorage.getItem(KEY)||'null');}catch{}if(local?.procedural===true)return null;const content=root.AEGIS_AUTHORED_CONTENT,shipped=content?.schema==='aegis-authored-content-v1'?content.buildingLayout:null;for(const value of [local,shipped]){try{if(!value)continue;const layout=shape(value);if([10,11].every(y=>validate(layout,{x:10,y}).ok))return layout;}catch{}}return null;}
+  return {shape,plan,covers,validate,publish,read,clear:()=>root.localStorage.setItem(KEY,JSON.stringify({procedural:true})),copy};
 }
 root.AEGIS_BUILDING_LAYOUTS={create,SCHEMA,KEY};
 })(typeof window==='undefined'?globalThis:window);

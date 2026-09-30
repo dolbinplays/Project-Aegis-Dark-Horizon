@@ -3,10 +3,10 @@ const root=path.resolve(__dirname,'..'),source=fs.readFileSync(path.join(root,'s
 function fn(name){const start=source.indexOf('function '+name+'(');assert.ok(start>=0,name);for(let end=source.indexOf('}',start);end>=0;end=source.indexOf('}',end+1)){const text=source.slice(start,end+1);try{new vm.Script('('+text+')');return text;}catch{}}throw Error(name);}
 const store=new Map(),library=JSON.parse(fs.readFileSync(path.join(root,'assets/data/aegis-prop-library.json'),'utf8'));
 const ctx=vm.createContext({console,localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},TACTICAL_GRID_SIZE:64,TACTICAL_DIRECTIONS:['E','W','NE','NW','SE','SW'].map(key=>({key})),tacticalKey:(x,y)=>`${x},${y}`,clamp:(v,min,max)=>Math.max(min,Math.min(max,v)),tacticalSeed:m=>m.seed||9417,tacticalBiomeForMission:()=>({key:'smalltown'}),tacticalMapProfileForMission:()=>({key:'medium',size:64,structureBonus:0}),tacticalFieldFeature:()=>null,tacticalIsSkyrangerInteriorRampCover:()=>false,TACTICAL_BUILDING_DOOR_STATES:{CLOSED:'closed'}});
-vm.runInContext('window=globalThis;',ctx);
+vm.runInContext('window=globalThis;',ctx);ctx.TACTICAL_WINDOW_COVERING_STATES={OPEN:'open',CLOSED:'closed',DESTROYED:'destroyed'};
 const start=source.indexOf('const TACTICAL_BUILDING_ARCHETYPES='),end=source.indexOf('function tacticalStreetRoadDirection',start);
 vm.runInContext(source.slice(start,end),ctx);
-for(const name of ['tacticalOffsetToCube','tacticalDistance','tacticalCoverStats','tacticalStepForDirection','tacticalNeighbors','tacticalCoverFootprintCells','tacticalPropVisualKey','tacticalPropIsSpecialStructure','tacticalCoverIsSolidPropObstacle','tacticalCoverBlocksMovement','tacticalBuildingCovers'])vm.runInContext(fn(name),ctx);
+for(const name of ['tacticalWindowCoveringTypeForCover','tacticalWindowCoveringState','tacticalWindowIsShattered','tacticalInitializeWindowCovering','tacticalCoverIsWindow','tacticalRepairSavedInteriorBeacons','tacticalOffsetToCube','tacticalDistance','tacticalCoverStats','tacticalStepForDirection','tacticalNeighbors','tacticalCoverFootprintCells','tacticalPropVisualKey','tacticalPropIsSpecialStructure','tacticalCoverIsSolidPropObstacle','tacticalCoverBlocksMovement','tacticalBuildingCovers'])vm.runInContext(fn(name),ctx);
 ctx.propExists=visual=>library.props.some(p=>p.visualKey===visual);
 vm.runInContext(fs.readFileSync(path.join(root,'assets/runtime/aegis-building-layouts.js'),'utf8'),ctx);
 const api=vm.runInContext(`window.AEGIS_BUILDING_LAYOUT_API=AEGIS_BUILDING_LAYOUTS.create({propExists,facade:tacticalBuildingFacadeOrientation,perimeter:tacticalBuildingPerimeterCells,furnishingBlock:tacticalInteriorFurnishingCoverBlock,coverStats:tacticalCoverStats,coverCells:tacticalCoverFootprintCells,blocks:tacticalCoverBlocksMovement,neighbors:tacticalNeighbors})`,ctx);
@@ -42,3 +42,5 @@ test('the real tactical save/restore path preserves authored geometry and door s
  assert.equal(ctx.TACTICAL_LIVE_STATE_CACHE.get(mission.id).covers.find(c=>c.buildingPart==='door').doorState,'open');
  assert.ok(ctx.tacticalBuildingPlans(mission).some(b=>b.authoredLayout),'restore must not misclassify authored covers as legacy rectangles');
 });
+
+test('project layout is the default without browser data; local procedural selection remains explicit',()=>{store.clear();ctx.AEGIS_AUTHORED_CONTENT={schema:'aegis-authored-content-v1',poses:{},buildingLayout:fixture()};assert.equal(api.read().name,'Test Dwelling');store.set('aegis-building-layout-published-v1','{broken');assert.equal(api.read().name,'Test Dwelling');api.clear();assert.equal(api.read(),null);store.clear();ctx.AEGIS_AUTHORED_CONTENT=null;});

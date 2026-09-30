@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.30.0022_VICTORY_SOLDIER_FLYTHROUGH_PATCH";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.30.0022_VICTORY_SOLDIER_FLYTHROUGH_PATCH";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v76-victory-flythrough";
+const AEGIS_PWA_CACHE = "aegis-v0.26.09.30.0023_AUTHORING_PROJECT_PIPELINE_AND_SKYRANGER_EDITOR_PATCH";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.30.0023_AUTHORING_PROJECT_PIPELINE_AND_SKYRANGER_EDITOR_PATCH";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v77-project-authoring";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;
@@ -10,6 +10,8 @@ const AEGIS_PLACEMENT_OVERRIDES_URL = new URL("./assets/data/aegis-prop-placemen
 const AEGIS_CONTEXT_RUNTIME_URL = new URL("./assets/runtime/aegis-contextual-prop-placement-runtime.js", self.registration.scope).href;
 const AEGIS_TOOLS_EDITOR_RUNTIME_URL = new URL("./assets/runtime/aegis-tools-editor-launcher-runtime.js", self.registration.scope).href;
 const AEGIS_TOOL_NAV_URLS = new Set([
+  new URL("./AEGIS_Articulated_Pose_Editor_CURRENT.html", self.registration.scope).href,
+  new URL("./AEGIS_Articulated_Pose_Editor_v0.26.08.26.0033_APPROVED_ARTICULATED_POSE_SET_PATCH.html", self.registration.scope).href,
   new URL("./AEGIS_TV.html", self.registration.scope).href,
   new URL("./AEGIS_Phone_Controller.html", self.registration.scope).href,
   new URL("./AEGIS_Building_Layout_Editor_CURRENT.html", self.registration.scope).href,
@@ -21,6 +23,11 @@ const AEGIS_TOOL_NAV_URLS = new Set([
 ]);
 const AEGIS_BOOT_PROBE_TIMEOUT_MS = 1800;
 const AEGIS_SMALL_SHELL = [
+  "./assets/data/aegis-authored-content.js",
+  "./assets/runtime/aegis-authored-content-runtime.js",
+  "./assets/runtime/aegis-project-authoring.js",
+  "./AEGIS_Articulated_Pose_Editor_CURRENT.html",
+  "./AEGIS_Articulated_Pose_Editor_v0.26.08.26.0033_APPROVED_ARTICULATED_POSE_SET_PATCH.html",
   "./AEGIS_TV.html",
   "./AEGIS_Phone_Controller.html",
   "./assets/vendor/peerjs-1.5.5.min.js",

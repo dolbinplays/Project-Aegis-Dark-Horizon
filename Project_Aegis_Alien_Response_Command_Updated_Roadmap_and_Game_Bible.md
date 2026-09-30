@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.30.0022_VICTORY_SOLDIER_FLYTHROUGH_PATCH`
+Current browser build: `v0.26.09.30.0023_AUTHORING_PROJECT_PIPELINE_AND_SKYRANGER_EDITOR_PATCH`
 
 Current save format: `4`
 
@@ -73,6 +73,10 @@ Pitched/slanted procedural roofs now include a flat roof/deck layer immediately 
 
 See `TPV_CAMERA_SHIELD_PARITY_AND_ROOF_OCCLUSION_VALIDATION.md`.
 
+
+## Editor project persistence — Browser 0023
+
+Props, building layouts and articulated soldier poses can now be written to the selected project folder with backups and read-back verification. Layouts and poses share assets/data/aegis-authored-content.json and its runtime JS counterpart; saved layouts apply to new matching residences, preserving existing battle snapshots. The tactical Skyranger is an editable vehicle in the shared prop library. Its placement, boarding/extraction cells and night lights remain game-controlled. Commit and publish editor-written files for distribution; browser-local Apply/Publish actions remain separate. See EDITOR_PROJECT_AUTHORING_0023_VALIDATION.md.
 
 ## Roadmap — Victory Celebration TPV Soldier Flythrough
 
