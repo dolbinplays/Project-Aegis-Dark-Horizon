@@ -1521,7 +1521,7 @@ function aegisTacticalViewportDimensions(mount,fallback={},layout=AEGIS_INTERFAC
 }
 // AEGIS_MOBILE_INTERFACE_END
 
-const CURRENT_GAME_BUILD="v0.26.09.30.0023_AUTHORING_PROJECT_PIPELINE_AND_SKYRANGER_EDITOR_PATCH";
+const CURRENT_GAME_BUILD="v0.26.09.30.0024_ACTIVE_COMBAT_BEACON_PRIORITY_PATCH";
 const TACTICAL_LAST_KNOWN_CONTACT_CLEARANCE_FEEDBACK_AND_PERSISTENCE_HOTFIX=true;
 const BANDAGE_EARLY_GAME_FIRST_AID_AND_MEDKIT_RESEARCH_PROGRESSION_PATCH=true;
 const TACTICAL_OBSERVATION_GATED_UFO_FLIGHT_PRESENTATION_PATCH=true;
@@ -3293,12 +3293,14 @@ function* resolveMissionGenerator({ squad, mission, tech, mode, leaderInstructio
         human.aiCatchUpPreviousReserveTu=Math.max(0,Number(human.reserveTu)||0);human.reserveTu=hybridSupportCatchUp.movementReserveTu;human.aiReserveMode="catch-up";human.aiReserveLabel="Formation Catch-Up";human.aiReserveWantsKneel=false;human.aiTurnAction="formation-catch-up";
       }
       const playerCommandMove=Boolean(playerCommandTarget&&!postContactSupportReform);
-      const beaconHoldToAttack=Boolean(beaconStrikeAttack&&beaconImmediateAttack.ready);
+      const combatBeaconChoice=tacticalAiCombatBeaconChoice({unit:human,units:allUnits(),visibleAliens:personalContacts,covers,mission,knowledge:beaconKnowledgeForRound,playerOrder,civilianDuty:civilianDutyIds.has(human.id)});
+      const beaconHoldToAttack=Boolean(combatBeaconChoice||beaconStrikeAttack&&beaconImmediateAttack.ready);
       const beaconCommittedSupportHold=Boolean(beaconEngagementLock.active&&beaconAssignmentNeutralization.active&&beaconStrikeAssigned&&!beaconStrikeActor&&!formationMove&&!explicitBeaconTrafficClear);
       const stateSearchTarget=[TACTICAL_FIRE_TEAM_TACTICAL_STATES.LIVE_COMBAT,TACTICAL_FIRE_TEAM_TACTICAL_STATES.LAST_KNOWN_CONTACT,TACTICAL_FIRE_TEAM_TACTICAL_STATES.DEFAULT_SEARCH].includes(fireTeamPriorityState.key)?search.target:null;
       let target = postContactSupportReform&&formationTarget ? { ...formationTarget, id: `formation-recovery:${human.fireTeamId}` } : playerCommandTarget || hybridCombatTarget || (formationTarget ? { ...formationTarget, id: `formation:${human.fireTeamId}` } : tacticalFireTeamCommandShotTarget(playerOrder,personalContacts,human,covers)||personalContacts.sort((left, right) => tacticalDistance(left, human) - tacticalDistance(right, human) || String(left.id).localeCompare(String(right.id)))[0] || beaconStrikeTarget || ufoBayTarget || (beaconPerimeterPlan?.target ? { ...beaconPerimeterPlan.target, id:`beacon-perimeter:${human.id}`, team:"command", hp:1, alive:true } : null) || stateSearchTarget);
+      if(combatBeaconChoice)target={...combatBeaconChoice.beacon,team:"beacon",alive:true};
       if (!target) {if(persistentObjectiveResumePriority){human.aiTurnAction="persistent-objective-hold";human.fireTeamCommandStatus=human.fireTeamCommandStatus||"holding";}return;}
-      const coveredFiringHold=tacticalAiCoveredFiringHoldState({unit:human,targets:personalContacts,units:allUnits(),covers,mission,formationTarget,leader:fireTeamLeader,blocked:playerCommandMove||ufoBayInspectionMove||beaconStrikeMove});
+      const coveredFiringHold=tacticalAiCoveredFiringHoldState({unit:human,targets:personalContacts,units:allUnits(),covers,mission,formationTarget,leader:fireTeamLeader,blocked:Boolean(combatBeaconChoice)||playerCommandMove||ufoBayInspectionMove||beaconStrikeMove});
       if(coveredFiringHold.active){target=coveredFiringHold.target;human.aiCoveredFireHold=true;human.aiCoveredFireTargetId=target.id;human.aiCoveredFireScore=coveredFiringHold.coverScore;human.aiTurnAction="hold-cover-fire";}
       else{human.aiCoveredFireHold=false;human.aiCoveredFireTargetId=null;human.aiCoveredFireScore=0;}
       if(allowFriendlyTrafficDefer&&!formationMove&&personalContacts.length===0&&pendingHumanTrafficIds.size){
@@ -3492,8 +3494,9 @@ function* resolveMissionGenerator({ squad, mission, tech, mode, leaderInstructio
         Object.assign(human,disabled.unit);covers=disabled.covers;roundTacticalContext.invalidateCovers(covers,"beacon-disabled");tacticalClearFireTeamBeaconEngagementLockInPlace(allUnits(),human.fireTeamId,"disabled",initialRound+round-1);alienReinforcementState=tacticalCancelAlienReinforcementTransit(alienReinforcementState);roundActedIds.add(human.id);human.aiTurnAction=movementLegs>0?"move-beacon-disable":"beacon-disable";logs.push(`${human.name} disables the confirmed Alien Field Beacon intact using ${disabled.method}; pending reinforcement transit is cut off.`);return;
       }
       const beaconShooterInsideField = Boolean(liveBeaconAfterMove && tacticalAlienBeaconShieldContainsCell(liveBeaconAfterMove, human, battlefieldGridSize));
+      const combatBeaconAfterMove=tacticalAiCombatBeaconChoice({unit:human,units:allUnits(),visibleAliens:visibleTargets,covers,mission,knowledge:beaconKnowledgeForRound,playerOrder,civilianDuty:civilianDutyIds.has(human.id)});
       const beaconNeedsGrenade = Boolean(beaconStrikeAttack && liveBeaconAfterMove && !beaconShooterInsideField && !tacticalWeaponCanBreachAlienBeaconShield(human.weaponKind, liveBeaconAfterMove.alienBeaconShield));
-      const grenadeDecision = tacticalAiGrenadeDecision({ unit: human, units: allUnits(), covers, mission, visibleAliens: visibleTargets, beacon: liveBeaconAfterMove, beaconPriority: Boolean(beaconNeedsGrenade && visibleTargets.length === 0) });
+      const grenadeDecision = combatBeaconAfterMove?.grenade || tacticalAiGrenadeDecision({ unit: human, units: allUnits(), covers, mission, visibleAliens: visibleTargets, beacon: liveBeaconAfterMove, beaconPriority: Boolean(beaconNeedsGrenade && visibleTargets.length === 0) });
       if (grenadeDecision) {
         const primed = tacticalGrenadePrimeResult(human, "human");
         if (primed.ok) {
@@ -3525,8 +3528,8 @@ function* resolveMissionGenerator({ squad, mission, tech, mode, leaderInstructio
           }
         }
       }
-      target = tacticalFireTeamCommandShotTarget(playerOrder,visibleTargets,human,covers);
-      if (!target && beaconStrikeAttack && (beaconShooterInsideField || tacticalWeaponCanBreachAlienBeaconShield(human.weaponKind, liveBeaconAfterMove?.alienBeaconShield)) && liveBeaconAfterMove && tacticalDistance(human, liveBeaconAfterMove) <= range && hasLineOfSight(human, liveBeaconAfterMove.x, liveBeaconAfterMove.y, covers, mission)) {
+      target = combatBeaconAfterMove?.ranged?null:tacticalFireTeamCommandShotTarget(playerOrder,visibleTargets,human,covers);
+      if (!target && (combatBeaconAfterMove?.ranged||beaconStrikeAttack) && (combatBeaconAfterMove?.ranged || beaconShooterInsideField || tacticalWeaponCanBreachAlienBeaconShield(human.weaponKind, liveBeaconAfterMove?.alienBeaconShield)) && liveBeaconAfterMove && tacticalDistance(human, liveBeaconAfterMove) <= range && hasLineOfSight(human, liveBeaconAfterMove.x, liveBeaconAfterMove.y, covers, mission)) {
         const beforeShotTu = human.tu;
         const beforeShotAmmo = human.ammo;
         const shot = spendHumanShot(human);
@@ -6186,6 +6189,23 @@ function tacticalFireTeamAssistCivilianClaimAllowed(unit=null,civilian=null,unit
   return Boolean(!owner||owner===assist.assistTeamId);
 }
 function tacticalFireTeamObjectiveAssistTarget(unit=null,units=[],covers=[],mission={}){const state=tacticalFireTeamObjectiveAssistState(unit,units),ownLeader=tacticalFireTeamLeaderForUnit(unit,units);if(!state||!ownLeader||ownLeader.id!==unit.id)return null;const assistants=tacticalFireTeamCommandGroups(units).filter(team=>tacticalFireTeamObjectiveAssignmentForTeam(units,team.id).assistTeamId===state.assistTeamId).map(team=>team.id),slot=Math.max(0,assistants.indexOf(unit.fireTeamId)),direction=tacticalFireTeamDirectionIndex(state.targetLeader.facing||"E"),rear=(direction+3)%6,offsets=[rear,(rear+5)%6,(rear+1)%6],desired=tacticalFireTeamStep(state.targetLeader,offsets[slot%offsets.length],3+Math.floor(slot/offsets.length)*2),target=tacticalFireTeamNearestOpenCell(desired,unit,covers,units,mission,2)||desired;return{...target,id:`objective-assist:${unit.fireTeamId}:${state.assistTeamId}`,team:"command",hp:1,alive:true,assistTeamId:state.assistTeamId,objectiveId:state.objectiveId,objectiveType:state.objectiveType};}
+function tacticalAiCombatBeaconChoice({unit=null,units=[],visibleAliens=[],covers=[],mission=null,knowledge="unknown",playerOrder=null,civilianDuty=false}={}){
+  if(!tacticalHumanCombatActive(unit)||civilianDuty||!alienFieldBeaconKnowledgeConfirmed(knowledge))return null;
+  const explicitBeacon=Boolean(playerOrder&&(playerOrder.kind==="beacon-assault"||playerOrder.objectiveType==="beacon"));
+  if(playerOrder&&!explicitBeacon&&(!String(playerOrder.id||"").startsWith("hybrid-round:")||playerOrder.preferredTargetId))return null;
+  const beacon=tacticalActiveAlienBeacon(covers);
+  if(!beacon?.revealed)return null;
+  const range=unit.weaponKind==="ballistic"?18:20;
+  if(!tacticalShotCommitVisibilityState({shooter:unit,target:{...beacon,team:"beacon",alive:true},covers,mission,range}).ok)return null;
+  const ranged=Boolean(tacticalUnitHasLoadedRangedWeapon(unit)&&Number(unit.tu)>=tacticalWeaponShotMode(unit,"single").tu&&!tacticalAiKnownShieldBlocksShot(unit,beacon,covers));
+  const grenade=ranged?null:tacticalAiGrenadeDecision({unit,units,covers,mission,visibleAliens,beacon,beaconPriority:true});
+  if(!ranged&&!grenade?.beaconHit)return null;
+  const alien=tacticalFireTeamCommandShotTarget(null,visibleAliens.filter(target=>tacticalShotCommitVisibilityState({shooter:unit,target,covers,mission,range}).ok),unit,covers);
+  // Same target tier: nearer effective threats win, with aliens winning ties.
+  // Point-blank aliens remain an immediate danger even for a beacon assignment.
+  if(alien&&(tacticalDistance(unit,alien)<=3||!explicitBeacon&&tacticalDistance(unit,alien)<=tacticalDistance(unit,beacon)))return null;
+  return{beacon,ranged,grenade:ranged?null:grenade};
+}
 function tacticalFireTeamCommandShotTarget(order=null,visibleTargets=[],unit=null,covers=[]){
   const available=(Array.isArray(visibleTargets)?visibleTargets:[]).filter(target=>target&&target.alive!==false&&Number(target.hp)>0&&!tacticalAiKnownShieldBlocksShot(unit,target,covers));
   const preferred=order?.preferredTargetId?available.find(target=>target.id===order.preferredTargetId)||null:null;

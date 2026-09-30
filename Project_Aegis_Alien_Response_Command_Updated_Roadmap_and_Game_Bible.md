@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.30.0023_AUTHORING_PROJECT_PIPELINE_AND_SKYRANGER_EDITOR_PATCH`
+Current browser build: `v0.26.09.30.0024_ACTIVE_COMBAT_BEACON_PRIORITY_PATCH`
 
 Current save format: `4`
 
@@ -222,6 +222,21 @@ The player reports that background landscape items appear to hover when using th
 **Acceptance:** compare low, default and maximum supported TPV camera heights across pitch angles, rotations and map edges; include different landscape types and day/night lighting. Confirm no floating background strips or exposed scenery bases, no popping when changing height, and no regressions when switching between TPV, FPV and 3D isometric views.
 
 Real Three.js transform tests cover 27 landscape/lighting/map-size combinations and camera translation, height, view switching and rebuild/disposal. WebGL fixtures reproduce the old floating skyline and show grounded scenery after the fix. Camera limits, geometry and draw-call budgets are unchanged. Save format remains 4. See `GROUNDED_TPV_BACKGROUND_VALIDATION.md`.
+
+## Roadmap — Known Reinforcement Beacons as Active Combat Targets
+
+Browser 0024 compares attack-ready, revealed, known reinforcement beacons with legal alien targets before movement and again before firing. Nearer effective targets share the same tier, aliens win ties, and point-blank alien threats take precedence. Existing beacon approach/neutralization behavior continues outside these immediate combat opportunities. See COMBAT_BEACON_PRIORITY_0024_VALIDATION.md.
+
+**Requested September 30, 2026. Status: implemented in Browser 0024; installed-game acceptance pending.**
+
+Once AEGIS knows that beacons are reinforcement points, treat a known active beacon as a combat target with the same priority as live aliens. Soldiers must be able to select and destroy it while aliens remain alive; beacon targeting must not be gated on clearing every alien first.
+
+- Consider eligible beacons alongside visible aliens in ordinary combat target selection. Equal priority means tactical selection between them, not always preferring the beacon or always preferring aliens. Immediate danger, attack effectiveness, range, LOS and available TU/ammunition should inform the choice.
+- Require established reinforcement knowledge and legitimate target visibility/contact. Do not reveal hidden beacons or infer their purpose from internal mission state. Respect observed shield protection and avoid known ineffective attacks.
+- Apply the policy consistently to AI-controlled soldiers, including Hybrid AI and simulation planning. Preserve explicit player orders and urgent medical/rescue commitments.
+- Reevaluate after destruction, replacement, loss of contact or changes in tactical conditions. Keep the existing required-objective and mission-completion rules consistent with this target priority.
+
+**Acceptance:** with reinforcement knowledge established and both aliens and a beacon present, demonstrate legal beacon attacks before the last alien dies, while immediate alien threats can still win target selection. Verify unknown-purpose and hidden beacons, shielded/ineffective shots, player assignments, beacon replacement, and save/load continuity.
 
 ## Roadmap — Observation-Driven Beacon Shield Tactics
 

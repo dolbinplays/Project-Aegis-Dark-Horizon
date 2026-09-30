@@ -1,3 +1,13 @@
+BUILD: v0.26.09.30.0024_ACTIVE_COMBAT_BEACON_PRIORITY_PATCH
+September 30, 2026 — Active Combat Beacon Priority
+Save format: 4
+
+- Known reinforcement beacons compete with live aliens for immediate attacks in simulation and Hybrid AI.
+- Nearer effective targets win; point-blank alien threats remain urgent. Soldiers need not clear every alien before shooting the beacon.
+- Target selection is rechecked after movement and respects visibility, learned shields, TU/ammunition, grenade safety, player orders and rescue duties.
+- Existing required-beacon completion and reinforcement cancellation rules are preserved.
+- See COMBAT_BEACON_PRIORITY_0024_VALIDATION.md.
+
 BUILD: v0.26.09.30.0023_AUTHORING_PROJECT_PIPELINE_AND_SKYRANGER_EDITOR_PATCH
 September 30, 2026 — Editor Project Persistence and Editable Skyranger
 Save format: 4
