@@ -1521,7 +1521,7 @@ function aegisTacticalViewportDimensions(mount,fallback={},layout=AEGIS_INTERFAC
 }
 // AEGIS_MOBILE_INTERFACE_END
 
-const CURRENT_GAME_BUILD="v0.26.09.30.0025_BUILDING_FOOTPRINT_EDITOR_PATCH";
+const CURRENT_GAME_BUILD="v0.26.09.30.0026_PRINCIPAL_BEACON_AI_CONTINUATION_FIX";
 const TACTICAL_LAST_KNOWN_CONTACT_CLEARANCE_FEEDBACK_AND_PERSISTENCE_HOTFIX=true;
 const BANDAGE_EARLY_GAME_FIRST_AID_AND_MEDKIT_RESEARCH_PROGRESSION_PATCH=true;
 const TACTICAL_OBSERVATION_GATED_UFO_FLIGHT_PRESENTATION_PATCH=true;
@@ -2891,7 +2891,7 @@ function* resolveMissionGenerator({ squad, mission, tech, mode, leaderInstructio
   const requestedMaxRounds = Math.floor(Number(maxRoundsOverride));
   const maxRounds = Number.isFinite(requestedMaxRounds) && requestedMaxRounds > 0 ? clamp(requestedMaxRounds, 1, 72) : continuing ? 72 : 48;
   while (!finalizeOnly && humans.some((unit) => tacticalHumanCombatActive(unit)) && (aliens.some((unit) => tacticalPlaybackFrameUnitAuthoritativeAlive(unit)) || tacticalMissionHasUnresolvedAlienContact(aliens) || tacticalUfoBeaconDeliveryPending(alienReinforcementState) || alienReinforcementState.called && !alienReinforcementState.arrived || tacticalAiShouldContinueRescue(mission, humans, aliens, civilians) || tacticalAiShouldContinueBeacon(mission, humans, covers, (beaconKnowledgeActive()||humans.some(unit=>unit?.fireTeamObjectiveAssignmentMode==="explicit"&&unit.fireTeamObjectiveAssignmentType==="beacon")) ? ALIEN_FIELD_BEACON_KNOWLEDGE.confirmed : ALIEN_FIELD_BEACON_KNOWLEDGE.unknown) || tacticalAiShouldContinueUfoBay(mission, humans, aliens, covers, beaconKnowledgeActive() ? ALIEN_FIELD_BEACON_KNOWLEDGE.confirmed : ALIEN_FIELD_BEACON_KNOWLEDGE.unknown)) && round < maxRounds) {
-    if(highValuePrincipalMission(mission)&&!principalRescueState(mission,civilians).pending)break;
+    if(highValuePrincipalMission(mission)&&tacticalAiMissionResolution(mission,humans,aliens,civilians,covers,beaconKnowledgeActive()?ALIEN_FIELD_BEACON_KNOWLEDGE.confirmed:ALIEN_FIELD_BEACON_KNOWLEDGE.unknown,alienReinforcementState).resolved)break;
     round += 1;
     yield {phase:"round-start",round:initialRound+round-1};
     humans = tacticalAiRefreshHumanTurnUnits(humans, round);
@@ -3793,7 +3793,7 @@ function* resolveMissionGenerator({ squad, mission, tech, mode, leaderInstructio
     const shotAtCivilianIds = new Set();
     yield {phase:"alien-planning-start",round:initialRound+round-1,actorCount:aliens.filter((unit)=>unit.alive).length};
 	    aliens.filter((unit) => unit.alive).forEach((alien, alienIndex) => {
-      if(highValuePrincipalMission(mission)&&!principalRescueState(mission,civilians).pending)return;
+      if(highValuePrincipalMission(mission)&&tacticalAiMissionResolution(mission,humans,aliens,civilians,covers,beaconKnowledgeActive()?ALIEN_FIELD_BEACON_KNOWLEDGE.confirmed:ALIEN_FIELD_BEACON_KNOWLEDGE.unknown,alienReinforcementState).resolved)return;
 	      alien.tu = alien.maxTu || 50;
 	      if(alien.fearForcedRound===initialRound+round-1){alien.tu=0;return;}
       let objective = tacticalAlienObjectivePlan({ alien, units: allUnits(), covers, mission, round: initialRound + round - 1, reinforcementState: alienReinforcementState, alienIndex });
@@ -15410,6 +15410,7 @@ async function resolveMissionAiStreamBatchAsync({squad=[],mission=null,tech=[],l
     if(continuation)selfHealReason="AI continuation snapshot was reconstructed from the completed tactical frame.";
   }
   if(!terminalResult&&!continuation)throw new Error("AI streamed round ended unresolved without a recoverable continuation snapshot.");
+  if(!terminalResult&&Number(continuation.round)<=fromRound)throw new Error("AI planning did not advance the unresolved tactical round. The current battlefield is preserved.");
   return{result,frames,continuation,simulatedRounds:already+consumed,complete:terminalResult,finalBatch:false,selfHealReason,planningMs,planningWallMs,cooperativeYields,maxSliceMs};
 }
 

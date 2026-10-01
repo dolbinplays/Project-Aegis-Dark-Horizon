@@ -1,3 +1,13 @@
+BUILD: v0.26.09.30.0026_PRINCIPAL_BEACON_AI_CONTINUATION_FIX
+September 30, 2026 — Principal Rescue / Beacon AI Continuation Fix
+Save format: 4
+
+- Rescuing the principal no longer stops AI rounds while a confirmed reinforcement beacon remains required.
+- Alien turns use the same terminal rules; extraction does not grant immunity during unfinished combat.
+- Non-advancing continuation snapshots enter bounded error recovery instead of silently rebuilding forever.
+- Verified with 18 targeted checks, including a reproduced failure before the fix.
+- Installed-session recovery remains unverified; local patch must be deployed to update installed games.
+
 BUILD: v0.26.09.30.0025_BUILDING_FOOTPRINT_EDITOR_PATCH
 September 30, 2026 — Building Footprint Editor
 Save format: 4
