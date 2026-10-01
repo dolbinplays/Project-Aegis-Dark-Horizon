@@ -1,8 +1,21 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.01.0031_BEACON_COMBAT_THREAT_FORMATION_BYPASS_HOTFIX`
+Current browser build: `v0.26.10.01.0032_REPLACEMENT_BEACON_FIVE_TURN_UFO_DELIVERY_HOTFIX`
 
 Current save format: `4`
+
+## Replacement Beacon Five-Turn UFO Delivery — Browser 0032
+
+**Status: implemented; installed-game field acceptance pending.**
+
+Replacement Alien Field Beacons now require five fully completed tactical turns after the authoritative destruction round before a replacement delivery can begin. The countdown stores completed turns and the last counted round, preventing multiple resolver invocations in one tactical round from shortening the delay. The replacement becomes eligible only on the following round after those five turns have completed.
+
+Every successful replacement deployment also creates a real observation-gated UFO approach using the shared reinforcement-flight presentation. When AEGIS legitimately observes the flight or delivery cell, the UFO flies to the committed replacement location and the Beacon remains visually masked until the approach completes. An unobserved delivery remains hidden and does not leak the Beacon location. Hard difficulty retains its doubled replacement reinforcement size and established legal overflow/staging rules. Save format remains **4**.
+
+**Acceptance:** destroy a Beacon and count five complete subsequent tactical turns with no replacement present; on the next round confirm the delivery attempt begins. Repeat across Manual, Hybrid/Simulation, save/load during the countdown, and a blocked deployment footprint. When the delivery is observed, confirm a UFO approach is shown before the Beacon becomes visible; when unobserved, confirm no craft/location knowledge leaks.
+
+See `REPLACEMENT_BEACON_0032_VALIDATION.md`.
+
 
 ## Beacon Combat Threat / Formation Bypass — Browser 0031
 

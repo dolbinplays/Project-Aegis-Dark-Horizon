@@ -1,3 +1,15 @@
+BUILD: v0.26.10.01.0032_REPLACEMENT_BEACON_FIVE_TURN_UFO_DELIVERY_HOTFIX
+October 1, 2026 - Replacement Beacon Five-Turn UFO Delivery Hotfix
+Save format: 4
+
+- Replacement Beacons cannot deploy until five complete post-destruction tactical turns have finished; the fifth waiting turn itself cannot spawn the replacement.
+- Countdown progress is explicit and round-deduplicated, preventing repeated resolver calls or playback continuations in one round from accelerating redeployment.
+- Every successful replacement deployment now creates a real observation-gated UFO approach tied to the committed Beacon cell.
+- When observed, the shared UFO flight cinematic plays before the Beacon is revealed; the Beacon is presentation-masked beneath the craft until approach completion.
+- Unobserved replacement craft remain hidden under normal AEGIS visibility rules. Hard keeps its doubled reinforcement-wave strength and legal overflow behavior.
+- Save format remains 4.
+- See REPLACEMENT_BEACON_0032_VALIDATION.md.
+
 BUILD: v0.26.10.01.0031_BEACON_COMBAT_THREAT_FORMATION_BYPASS_HOTFIX
 October 1, 2026 - Beacon Combat Threat Formation Bypass
 Save format: 4

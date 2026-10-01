@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.10.01.0031_BEACON_COMBAT_THREAT_FORMATION_BYPASS_HOTFIX";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.01.0031_BEACON_COMBAT_THREAT_FORMATION_BYPASS_HOTFIX";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v85-beacon-combat-threat";
+const AEGIS_PWA_CACHE = "aegis-v0.26.10.01.0032_REPLACEMENT_BEACON_FIVE_TURN_UFO_DELIVERY_HOTFIX";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.01.0032_REPLACEMENT_BEACON_FIVE_TURN_UFO_DELIVERY_HOTFIX";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v86-replacement-beacon-ufo";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;
