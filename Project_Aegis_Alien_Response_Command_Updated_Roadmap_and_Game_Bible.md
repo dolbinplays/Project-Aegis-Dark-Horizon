@@ -4,9 +4,21 @@ Current browser build: `v0.26.10.01.0028_DEPARTMENT_HEADS_FOUNDATION_PATCH`
 
 Current save format: `4`
 
+## Roadmap — Unified Orders, Patrol Routes and Fallback Posts
+
+**Requested October 1, 2026. Status: implementation pending.**
+
+- Expand **Orders** in mission controls into one place for setting soldier behavior, with the tactical map available while reviewing and assigning orders.
+- **Patrol route:** select an ordered set of map waypoints for a soldier to patrol; show the route and current destination, with controls to edit, clear and stop the patrol.
+- **Fallback post:** assign a map position the soldier returns to and holds when no other objectives require action. Keep the post as a standing fallback rather than replacing active objectives.
+- **Check a location:** assign a one-time map destination to investigate; after completing the check, release that order and resume default exploring/searching behavior.
+- Open the existing **objective assignment screen** directly from Orders, retaining its map and current assignments. Provide a clear return to Orders so patrols, fallback behavior and objective assignments can be managed together.
+- Define and display how these standing orders interact with explicit objectives, contact/combat, VIP/civilian priority locks, medical emergencies and extraction. Preserve movement, visibility, TU and stance rules; unreachable destinations must report their status rather than silently stall.
+- Acceptance: patrol waypoint progression and interruption/resumption; fallback activation only when other objectives are absent; one-time check completion followed by default search; map-based editing and objective-screen navigation on desktop/mobile; cancellation, unavailable soldiers and blocked routes; save/load persistence without repeating completed checks or losing standing orders.
+
 ## Roadmap — Confirm Overwriting an Occupied Save Slot
 
-**Requested September 30, 2026. Status: implementation pending.**
+**Requested September 30, 2026. Status: implemented in Browser 0027.**
 
 - Implemented in Browser 0027: before a player saves to a slot containing an existing game, show a confirmation identifying the slot and the existing save, using available campaign name/date/time details.
 - Require an explicit overwrite action; Cancel or closing the confirmation must leave the existing save unchanged. Empty slots continue saving directly.
