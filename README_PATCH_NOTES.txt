@@ -1,3 +1,26 @@
+BUILD: v0.26.10.01.0028_DEPARTMENT_HEADS_FOUNDATION_PATCH
+October 1, 2026 - Department Heads Foundation
+Save format: 4
+
+- New Departments screen: hire Quartermaster and Personnel heads for $120k and one personnel berth each.
+- Enable policies for a home base and selected squads, with treasury reserves and per-review spending caps.
+- Quartermaster applies weapon/armor/medkit policy, refills bandages and medical supplies, and optionally buys market shortages and spare stock.
+- Personnel fills squads from local Ready soldiers and orders replacements/reserves with existing $120k, three-day recruitment rules; pending recruits and wounded members count toward strength.
+- Reviews run daily, after mission returns and recruit arrivals, or on request. Automation waits while sorties are away.
+- Policies and activity logs persist in saves; old campaigns start with both heads unhired.
+- Workshop-only items are reported as shortages, not purchased or manufactured automatically. Per-squad loadout presets and further department roles remain roadmap.
+- See DEPARTMENT_HEADS_0028_VALIDATION.md.
+
+BUILD: v0.26.10.01.0027_SAVE_SLOT_OVERWRITE_CONFIRMATION_PATCH
+October 1, 2026 - Save Slot Overwrite Confirmation
+Save format: 4
+
+- Occupied manual slots ask for confirmation with existing save name, date and campaign month.
+- Cancel/dismiss preserves the save; empty slots save directly.
+- Prevents overlapping save clicks and rejects a destination changed during confirmation.
+- Autosave and recovery backup behavior is retained.
+- Validation: 5 overwrite-handler checks, 5 storage checks and 17 recovery checks.
+
 BUILD: v0.26.09.30.0026_PRINCIPAL_BEACON_AI_CONTINUATION_FIX
 September 30, 2026 — Principal Rescue / Beacon AI Continuation Fix
 Save format: 4

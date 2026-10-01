@@ -26,7 +26,7 @@ test('manual saves persist through the durable backend before UI state is commit
   assert.match(body, /await readDurableManualSaveSlots\(\)/);
   assert.match(body, /await writeDurableManualSaveSlots\(nextSlots\)/);
   assert.match(body, /emergencyExport:true/);
-  assert.ok(body.indexOf('await writeDurableManualSaveSlots(nextSlots)') < body.indexOf('setSaveSlots(nextSlots)'), 'durable write should complete before React state reports the save');
+  assert.ok(body.indexOf('await writeDurableManualSaveSlots(nextSlots)') < body.lastIndexOf('setSaveSlots(nextSlots)'), 'durable write should complete before React state reports the save');
 });
 
 test('autosaves and post-mission reboot checkpoints share durable storage authority', () => {

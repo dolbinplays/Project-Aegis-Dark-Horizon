@@ -84,7 +84,7 @@ test('active escortId becomes physical commitment authority and cross-team escor
 });
 
 test('runtime rescue path explicitly bypasses visible-contact suspension only for committed responder',()=>{
-  const rescue=src.slice(src.indexOf('function tacticalAiCivilianPriorityTurn'),src.indexOf('function tacticalAdvanceEscortedCivilians',src.indexOf('function tacticalAiCivilianPriorityTurn')));
+  const rescue=src.slice(src.indexOf('function* tacticalAiCivilianPriorityTurnGenerator'),src.indexOf('function tacticalAdvanceEscortedCivilians',src.indexOf('function* tacticalAiCivilianPriorityTurnGenerator')));
   assert.match(rescue,/if\(dynamicCombatPriority&&!followers\.length&&!committedRescuer\)/);
   assert.match(rescue,/\(!dynamicCombatPriority\|\|committedRescuer\)/);
   assert.match(rescue,/allowNonLeader:committedRescuer/);
@@ -93,9 +93,9 @@ test('runtime rescue path explicitly bypasses visible-contact suspension only fo
 });
 
 test('only committed pre-contact rescuer is reserved; teammates remain available for combat',()=>{
-  const rescue=src.slice(src.indexOf('function tacticalAiCivilianPriorityTurn'),src.indexOf('function tacticalAdvanceEscortedCivilians',src.indexOf('function tacticalAiCivilianPriorityTurn')));
+  const rescue=src.slice(src.indexOf('function* tacticalAiCivilianPriorityTurnGenerator'),src.indexOf('function tacticalAdvanceEscortedCivilians',src.indexOf('function* tacticalAiCivilianPriorityTurnGenerator')));
   assert.match(rescue,/const fireTeamDutyMembers = committedRescuer&&!followers\.length\?\[soldier\]/);
-  const resolver=src.slice(src.indexOf('function resolveMission'),src.indexOf('function classicLineup',src.indexOf('function resolveMission'))>0?src.indexOf('function classicLineup',src.indexOf('function resolveMission')):src.length);
+  const resolver=src.slice(src.indexOf('function* resolveMissionGenerator'),src.indexOf('function classicLineup',src.indexOf('function* resolveMissionGenerator'))>0?src.indexOf('function classicLineup',src.indexOf('function* resolveMissionGenerator')):src.length);
   assert.match(resolver,/committedVipRescuerIds/);
   assert.match(resolver,/civilianDutyIds=new Set/);
 });

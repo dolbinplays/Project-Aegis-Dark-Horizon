@@ -1,6 +1,6 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.30.0026_PRINCIPAL_BEACON_AI_CONTINUATION_FIX`
+Current browser build: `v0.26.10.01.0028_DEPARTMENT_HEADS_FOUNDATION_PATCH`
 
 Current save format: `4`
 
@@ -8,7 +8,7 @@ Current save format: `4`
 
 **Requested September 30, 2026. Status: implementation pending.**
 
-- Before a player saves to a slot containing an existing game, show a confirmation identifying the slot and the existing save, using available campaign name/date/time details.
+- Implemented in Browser 0027: before a player saves to a slot containing an existing game, show a confirmation identifying the slot and the existing save, using available campaign name/date/time details.
 - Require an explicit overwrite action; Cancel or closing the confirmation must leave the existing save unchanged. Empty slots continue saving directly.
 - Recheck the destination before committing and keep existing backups/recovery intact. Confirmation must not write or remove the old save before the overwrite is accepted.
 - Acceptance: occupied versus empty slots, cancel/close, confirmed overwrite, repeated clicks and a destination changed while confirmation is open. Apply consistently to every manual slot-save entry point.
@@ -18436,3 +18436,10 @@ Fixed the adaptive Mission Control fallback caused by adding the VIP report betw
 - Apply the rule consistently to tactical reinforcement/delivery UFOs, landed UFO mission craft, and any other shared UFO renderer that can transition between airborne and grounded states.
 
 **Acceptance:** observe each UFO presentation that can fly and land. Confirm no ramp is visible during approach, transit, hover-flight, departure, or other airborne movement; confirm the ramp appears only after a valid grounded/landing-state transition; confirm takeoff closes it first; and verify no change to UFO timing, alien deployment, tactical blockers, LOS, reinforcement timing, interception, or save format **4**.
+
+
+## Department Heads — Browser 0028 foundation
+
+Implemented hireable Quartermaster and Personnel heads, with one home base per role, selected managed squads, persisted policies, treasury reserves, review budgets and activity reports. Quartermaster supports a shared weapon/armor/medkit loadout, bandage/medical refills and market purchases with storage and research restrictions. Personnel fills local squads and maintains an optional reserve target using normal recruitment queues. Both wait until sorties return; automatic review runs on campaign days, mission returns and recruit arrivals.
+
+Next: per-squad/role loadout presets; additional Research, Engineering and Operations heads; richer staff identity, traits and hiring options; base-specific heads for multi-base automation. Advanced manufacture remains manual in this foundation. See DEPARTMENT_HEADS_0028_VALIDATION.md.

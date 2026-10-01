@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.09.30.0026_PRINCIPAL_BEACON_AI_CONTINUATION_FIX";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.09.30.0026_PRINCIPAL_BEACON_AI_CONTINUATION_FIX";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v80-principal-beacon-continuation";
+const AEGIS_PWA_CACHE = "aegis-v0.26.10.01.0028_DEPARTMENT_HEADS_FOUNDATION_PATCH";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.01.0028_DEPARTMENT_HEADS_FOUNDATION_PATCH";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v82-department-heads";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;
@@ -39,6 +39,7 @@ const AEGIS_SMALL_SHELL = [
   "./assets/runtime/aegis-tv-phone.js",
   "./AEGIS_Building_Layout_Editor_CURRENT.html",
   "./assets/runtime/aegis-building-layouts.js",
+  "./assets/runtime/aegis-department-heads.js",
   "./assets/runtime/aegis-building-editor-runtime.js",
   "./assets/runtime/aegis-building-editor-ui.js",
   "./manifest.webmanifest",

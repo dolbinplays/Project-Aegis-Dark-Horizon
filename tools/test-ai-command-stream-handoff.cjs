@@ -35,6 +35,7 @@ function runtimeContext(options={}) {
   if(options.tv)context.AEGIS_TV_RUNTIME={enabled:true,metrics:{}};
   vm.createContext(context);
   vm.runInContext(fs.readFileSync(path.join(root,'assets/runtime/aegis-building-layouts.js'),'utf8'),context);
+  vm.runInContext(fs.readFileSync(path.join(root,'assets/runtime/aegis-department-heads.js'),'utf8'),context);
   vm.runInContext(appSource, context, {timeout:15000});
   return context;
 }

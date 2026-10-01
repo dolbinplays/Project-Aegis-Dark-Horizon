@@ -1,0 +1,15 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const source=fs.readFileSync('src/browser-runtime.html','utf8');
+const start=source.indexOf('async function saveToSlot(slotNumber)');
+const handler=source.slice(start,source.indexOf('\nconst ActiveUfoListModal=',start));
+function setup(occupied=true){
+ const empty=()=>[{slot:1,empty:true},{slot:2,empty:true}];
+ const state={slots:occupied?[{slot:1,empty:false,name:'Original',savedAt:'Yesterday',month:6,data:{original:true}},empty()[1]]:empty(),writes:[],prompts:[],blocked:[],completed:[],accept:true};
+ const c={Number,JSON,Date,window:{confirm:message=>{state.prompts.push(message);return state.accept;}},manualSavePendingRef:{current:false},missionAftermathInProgressRef:{current:false},saveName:'New campaign',month:7,funds:100,CURRENT_SAVE_FORMAT_VERSION:4,CURRENT_GAME_BUILD:'test',blankSaveSlots:empty,normalizeManualSaveSlotCollection:s=>structuredClone(s),readDurableManualSaveSlots:async()=>structuredClone(state.slots),writeDurableManualSaveSlots:async s=>{state.writes.push(structuredClone(s));state.slots=s;return true;},getCurrentGameData:()=>({new:true}),saveStorageWriteRevisionRef:{current:0},setSaveSlots:()=>{},setCurrentGameName:()=>{},completeAction:m=>state.completed.push(m),blockedAction:(...m)=>state.blocked.push(m)};
+ vm.createContext(c);vm.runInContext(handler,c);return{c,state};
+}
+test('cancel or dismiss leaves an occupied slot unchanged',async()=>{const{c,state}=setup();state.accept=false;await c.saveToSlot(1);assert.equal(state.writes.length,0);assert.equal(state.slots[0].name,'Original');assert.match(state.prompts[0],/Original/);assert.match(state.prompts[0],/Yesterday/);assert.equal(c.manualSavePendingRef.current,false);});
+test('confirmed overwrite writes once; empty slots bypass confirmation',async()=>{for(const occupied of [true,false]){const{c,state}=setup(occupied);await c.saveToSlot(1);assert.equal(state.prompts.length,Number(occupied));assert.equal(state.writes.length,1);assert.equal(state.slots[0].name,'New campaign');assert.equal(state.completed.length,1);}});
+test('slot changed during confirmation is preserved and requires another request',async()=>{const{c,state}=setup();c.window.confirm=()=>{state.slots[0]={...state.slots[0],name:'Other tab save'};return true;};await c.saveToSlot(1);assert.equal(state.writes.length,0);assert.equal(state.slots[0].name,'Other tab save');assert.match(state.blocked[0][1],/destination slot changed/);});
+test('overlapping clicks cannot open two prompts or write twice',async()=>{const{c,state}=setup();await Promise.all([c.saveToSlot(1),c.saveToSlot(1)]);assert.equal(state.writes.length,1);assert.equal(state.prompts.length,1);});
+test('invalid slots and read failures release the guard without writing',async()=>{const{c,state}=setup();await c.saveToSlot(0);assert.equal(state.writes.length,0);c.readDurableManualSaveSlots=async()=>{throw Error('read failed');};await c.saveToSlot(1);assert.equal(c.manualSavePendingRef.current,false);assert.equal(state.writes.length,0);assert.match(state.blocked[1][1],/read failed/);});
