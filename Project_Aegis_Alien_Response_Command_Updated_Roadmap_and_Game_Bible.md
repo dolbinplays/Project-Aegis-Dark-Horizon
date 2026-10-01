@@ -1,20 +1,26 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.01.0028_DEPARTMENT_HEADS_FOUNDATION_PATCH`
+Current browser build: `v0.26.10.01.0029_UNIFIED_ORDERS_PATROL_FALLBACK_POSTS_PATCH`
 
 Current save format: `4`
 
-## Roadmap — Unified Orders, Patrol Routes and Fallback Posts
+## Unified Orders, Patrol Routes and Fallback Posts — Browser 0029
 
-**Requested October 1, 2026. Status: implementation pending.**
+**Requested October 1, 2026. Status: implemented in Browser 0029; installed-game acceptance pending.**
 
-- Expand **Orders** in mission controls into one place for setting soldier behavior, with the tactical map available while reviewing and assigning orders.
-- **Patrol route:** select an ordered set of map waypoints for a soldier to patrol; show the route and current destination, with controls to edit, clear and stop the patrol.
-- **Fallback post:** assign a map position the soldier returns to and holds when no other objectives require action. Keep the post as a standing fallback rather than replacing active objectives.
-- **Check a location:** assign a one-time map destination to investigate; after completing the check, release that order and resume default exploring/searching behavior.
-- Open the existing **objective assignment screen** directly from Orders, retaining its map and current assignments. Provide a clear return to Orders so patrols, fallback behavior and objective assignments can be managed together.
-- Define and display how these standing orders interact with explicit objectives, contact/combat, VIP/civilian priority locks, medical emergencies and extraction. Preserve movement, visibility, TU and stance rules; unreachable destinations must report their status rather than silently stall.
-- Acceptance: patrol waypoint progression and interruption/resumption; fallback activation only when other objectives are absent; one-time check completion followed by default search; map-based editing and objective-screen navigation on desktop/mobile; cancellation, unavailable soldiers and blocked routes; save/load persistence without repeating completed checks or losing standing orders.
+- The existing tactical **Orders / Command Map** is now the single map-first surface for temporary movement, standing orders and entry into the existing objective-assignment board.
+- **Move / Hold** preserves the pre-0029 temporary Command Map behavior and remains the default mode so existing workflows do not silently change.
+- **Check Location** is a one-time order. The fire-team leader routes to the selected point; after a quiet arrival the order clears exactly once and normal autonomous doctrine resumes.
+- **Patrol Route** stores up to 12 unique ordered waypoints, displays them on the Orders map and advances deterministically from one point to the next. After the final waypoint it loops to the first. The leader owns the route while supports retain normal formation behavior.
+- **Fallback Post** stores a persistent return/hold point. It activates only when no higher-priority tactical duty owns the team and remains available after those duties clear.
+- **Assign Objectives** can be opened directly from Orders without discarding the current standing order.
+- Standing orders are deliberately lower than explicit mission-objective assignments and the authoritative Default AI stack: bleeding stabilization > active escort > visible alien > downed AEGIS recovery/extraction > Last Known/distress > Beacon > UFO bay > known civilian/VIP > standing order > ordinary exploration.
+- Standing orders pause rather than clear when those higher priorities take over. This includes autonomous Hybrid support: visible combat interrupts patrol/fallback/check-location movement even though the order remains saved for later resumption.
+- Beacon/UFO reinforcement-source takeover no longer deletes patrol/fallback/check-location orders. Legacy temporary Move / Hold commands retain their older release behavior where applicable.
+- Unreachable standing routes enter a visible `blocked / route-unreachable` state and are retained for retry rather than silently disappearing. Progress reactivates the order.
+- Tactical snapshots/playback merge state carry standing-order kind, patrol route, current patrol index and blocked reason. Save format remains **4**.
+
+**Acceptance:** verify Move / Hold backward compatibility; patrol progression/looping and combat interruption/resumption; fallback activation only after higher duties clear; one-time Check Location completion; direct Orders -> Assign Objectives navigation; blocked-route feedback/retry; cancellation; unavailable soldiers; and active-mission save/load of route/index/status on desktop and Mobile / Adaptive. See `UNIFIED_ORDERS_0029_VALIDATION.md`.
 
 ## Roadmap — Confirm Overwriting an Occupied Save Slot
 

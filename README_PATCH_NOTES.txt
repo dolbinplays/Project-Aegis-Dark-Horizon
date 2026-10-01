@@ -1,3 +1,19 @@
+BUILD: v0.26.10.01.0029_UNIFIED_ORDERS_PATROL_FALLBACK_POSTS_PATCH
+October 1, 2026 - Unified Orders, Patrol Routes + Fallback Posts
+Save format: 4
+
+- Expands the existing tactical Orders / Command Map into Move / Hold, Check Location, Patrol Route and Fallback Post modes.
+- Move / Hold remains the default and preserves the legacy temporary Command Map workflow.
+- Patrol Route stores up to 12 unique ordered waypoints, advances deterministically and loops after the final point.
+- Fallback Post persists as a return-and-hold location used only when higher-priority tactical duties are absent.
+- Check Location clears once after a quiet arrival, then autonomous doctrine resumes.
+- Standing orders pause for higher-priority stabilization, escort, visible combat, casualty recovery, Last Known/distress, Beacon/UFO source work and known rescue objectives, then resume instead of being erased.
+- Blocked standing routes retain the order with a visible route-unreachable status and retry after conditions change; legacy temporary waypoints retain their existing blocked-order release behavior.
+- Orders links directly to the existing Assign Objectives board.
+- Patrol route/index/blocked state persist through tactical snapshots and save continuity. Save format remains 4.
+- Validation: 13/13 focused unified-orders checks plus executable runtime syntax/package seam checks.
+- See UNIFIED_ORDERS_0029_VALIDATION.md.
+
 BUILD: v0.26.10.01.0028_DEPARTMENT_HEADS_FOUNDATION_PATCH
 October 1, 2026 - Department Heads Foundation
 Save format: 4
