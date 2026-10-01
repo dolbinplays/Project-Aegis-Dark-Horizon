@@ -44,3 +44,25 @@ test('the real tactical save/restore path preserves authored geometry and door s
 });
 
 test('project layout is the default without browser data; local procedural selection remains explicit',()=>{store.clear();ctx.AEGIS_AUTHORED_CONTENT={schema:'aegis-authored-content-v1',poses:{},buildingLayout:fixture()};assert.equal(api.read().name,'Test Dwelling');store.set('aegis-building-layout-published-v1','{broken');assert.equal(api.read().name,'Test Dwelling');api.clear();assert.equal(api.read(),null);store.clear();ctx.AEGIS_AUTHORED_CONTENT=null;});
+
+test('footprint edits remove only matching items, preserve input and can restore cells',()=>{
+ const original=fixture(),saved=JSON.stringify(original),edit=ctx.AEGIS_BUILDING_LAYOUTS.editFootprint(original,0,0);
+ assert.equal(edit.footprint.length,71);assert.equal(edit.items.some(p=>p.x===0&&p.y===0),false);assert.equal(JSON.stringify(original),saved);
+ const expanded=ctx.AEGIS_BUILDING_LAYOUTS.editFootprint(edit,0,0);assert.equal(expanded.footprint.length,72);assert.equal(expanded.items.some(p=>p.x===0&&p.y===0),false);
+ assert.throws(()=>ctx.AEGIS_BUILDING_LAYOUTS.editFootprint(original,9,0));
+ assert.throws(()=>ctx.AEGIS_BUILDING_LAYOUTS.editFootprint({...original,footprint:original.footprint.slice(0,9)},0,0),/nine cells/);
+});
+test('a sealed L-shaped residence validates, generates exact footprint and survives serialization',()=>{
+ const value=fixture();value.footprint=value.footprint.filter(p=>!(p.x>=5&&p.y<=2));
+ const base={id:'l-house',x:10,y:10,width:9,height:8,wall:'brick'},building=api.plan(value,base),edges=ctx.tacticalBuildingPerimeterCells(building);
+ value.items=edges.map(p=>({x:p.x-10,y:p.y-10,type:p.x===14&&p.y===17?'door':'wall'}));
+ for(const y of [10,11]){const report=api.validate(value,{x:10,y});assert.equal(report.ok,true,report.errors.join(' '));}
+ const mission={id:'l-shaped-generation',seed:9417,authoredBuildingLayout:JSON.parse(JSON.stringify(value))},home=ctx.tacticalBuildingPlans(mission).find(b=>b.key==='residence');
+ assert.equal(home.footprintCells.length,60);assert.equal(home.footprintCells.some(p=>p.x===home.x+8&&p.y===home.y),false);
+ const records=api.covers(value,home);assert.equal(records.length,value.items.length);assert.equal(records.filter(p=>p.buildingPart==='door').length,1);
+});
+test('reshaping cannot publish disconnected islands or a newly exposed shell gap',()=>{
+ const value=fixture();value.footprint=value.footprint.filter(p=>p.x!==4);value.items=value.items.filter(p=>p.x!==4);
+ assert.match(api.validate(value).errors.join(' '),/connected/);
+ const notch=ctx.AEGIS_BUILDING_LAYOUTS.editFootprint(fixture(),4,0);assert.match(api.validate(notch).errors.join(' '),/seam gap/);
+});

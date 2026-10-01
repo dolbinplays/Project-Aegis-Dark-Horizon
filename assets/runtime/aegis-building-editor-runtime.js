@@ -13,7 +13,7 @@ window.AEGIS_INSTALL_BUILDING_EDITOR=function(a,token){
       cameraFocus:{x:14,y:14,kind:'building-editor',revision},onRendererFailure:reason=>send('error',{message:String(reason)})
     })));
   }
-  function load(value){layout=a.api.shape(value);mission={id:`building-editor-${++revision}`,kind:'Town Abduction',region:'Europe',threat:1,tacticalMapTier:'small',buildingLayoutPreview:layout,clock:{month:1,dayOfMonth:1,minute:720}};covers=a.covers(mission).map(c=>({...c,revealed:true}));units=[];draw();return a.api.validate(layout);}
+  function load(value){layout=a.api.shape(value);mission={id:`building-editor-${++revision}`,kind:'Town Abduction',region:'Europe',threat:1,tacticalMapTier:'small',buildingLayoutPreview:layout,clock:{month:1,dayOfMonth:1,minute:720}};covers=a.covers(mission).map(c=>({...c,revealed:true}));units=[];draw();const reports=[10,11].map(y=>a.api.validate(layout,{x:10,y}));return {...reports[0],ok:reports.every(r=>r.ok),errors:[...new Set(reports.flatMap(r=>r.errors))]};}
   function baseline(){
     const b={...a.residence,id:'editor-residence',x:10,y:10,shapeFamily:'O',shapeRotation:0};
     b.footprintCells=a.footprint(b);b.doors=a.doors(b);

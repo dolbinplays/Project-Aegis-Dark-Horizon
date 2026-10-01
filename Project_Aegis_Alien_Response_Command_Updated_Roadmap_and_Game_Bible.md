@@ -1,8 +1,17 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.09.30.0024_ACTIVE_COMBAT_BEACON_PRIORITY_PATCH`
+Current browser build: `v0.26.09.30.0025_BUILDING_FOOTPRINT_EDITOR_PATCH`
 
 Current save format: `4`
+
+## Roadmap — Confirm Overwriting an Occupied Save Slot
+
+**Requested September 30, 2026. Status: implementation pending.**
+
+- Before a player saves to a slot containing an existing game, show a confirmation identifying the slot and the existing save, using available campaign name/date/time details.
+- Require an explicit overwrite action; Cancel or closing the confirmation must leave the existing save unchanged. Empty slots continue saving directly.
+- Recheck the destination before committing and keep existing backups/recovery intact. Confirmation must not write or remove the old save before the overwrite is accepted.
+- Acceptance: occupied versus empty slots, cancel/close, confirmed overwrite, repeated clicks and a destination changed while confirmation is open. Apply consistently to every manual slot-save entry point.
 
 ## Reserve TU Clarity and Beacon Completion — Browser 0021
 
@@ -73,6 +82,10 @@ Pitched/slanted procedural roofs now include a flat roof/deck layer immediately 
 
 See `TPV_CAMERA_SHIELD_PARITY_AND_ROOF_OCCLUSION_VALIDATION.md`.
 
+
+## Building footprint editing — Browser 0025
+
+The building editor can add/remove residence cells within its existing 9 × 8 grid. Removing a cell also removes its contents; undo/redo restores both. Exterior sealing, door approach, connectivity and walking-lane validation run at both staggered-row offsets before publishing or project writes. A rendered L-shaped residence passed mission generation. Existing mission snapshots and save format 4 are preserved. See BUILDING_FOOTPRINT_EDITOR_0025_VALIDATION.md.
 
 ## Editor project persistence — Browser 0023
 
@@ -535,7 +548,7 @@ New farm and town maps use deterministic connected plots with two two-hex gaps. 
 
 ## Developer Tool Roadmap — Prop Editor + Building Layout Editor
 
-**Requested September 17, 2026. Status: Prop Editor runtime bridge implemented in Browser 1320; Building Layout Editor residence foundation implemented in Browser 0002; broader archetypes and footprint editing remain roadmap.**
+**Requested September 17, 2026. Status: Prop Editor runtime bridge implemented in Browser 1320; Building Layout Editor residence foundation implemented in Browser 0002; residence footprint editing within the existing 9 × 8 grid implemented in Browser 0025; broader archetypes and larger grids remain roadmap.**
 
 - **Prop Editor:** continue expanding the standalone downloadable editor so common and newly authored props can be built from selectable components, moved/rotated/scaled, duplicated, added/removed, assigned materials, and given collision/navigation/cover/LOS/hex-edge metadata. Runtime handoff now uses the canonical shared prop library rather than bespoke Three.js edits.
 - **Building Layout Editor:** create a separate downloadable editor that can place/remove walls, doors, windows, furnishings and shared-library props; edit dwelling/business archetypes; maintain walking lanes and door-swing clearance; add/remove inappropriate props; create new layouts; and export deterministic layout data for the game.

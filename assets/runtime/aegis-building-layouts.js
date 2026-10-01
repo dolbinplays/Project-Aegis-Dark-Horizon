@@ -2,6 +2,15 @@
 'use strict';
 const SCHEMA='aegis-building-layout-v1',KEY='aegis-building-layout-published-v1';
 const copy=value=>JSON.parse(JSON.stringify(value));
+function editFootprint(input,x,y){
+  if(!input||!Number.isInteger(x)||!Number.isInteger(y)||x<0||y<0||x>=input.width||y>=input.height)throw Error('Choose a cell inside the layout grid.');
+  const layout=copy(input),inside=layout.footprint.some(p=>p.x===x&&p.y===y);
+  if(inside&&layout.footprint.length<=9)throw Error('Keep at least nine cells in the building footprint.');
+  if(inside){layout.footprint=layout.footprint.filter(p=>p.x!==x||p.y!==y);layout.items=layout.items.filter(p=>p.x!==x||p.y!==y);}
+  else layout.footprint.push({x,y});
+  layout.footprint.sort((a,b)=>a.y-b.y||a.x-b.x);
+  return layout;
+}
 function create(a){
   function shape(layout){
     if(!layout||layout.schema!==SCHEMA||layout.archetype!=='residence')throw Error('Choose a residence layout in aegis-building-layout-v1 format.');
@@ -49,5 +58,5 @@ function create(a){
   function read(){let local=null;try{local=JSON.parse(root.localStorage.getItem(KEY)||'null');}catch{}if(local?.procedural===true)return null;const content=root.AEGIS_AUTHORED_CONTENT,shipped=content?.schema==='aegis-authored-content-v1'?content.buildingLayout:null;for(const value of [local,shipped]){try{if(!value)continue;const layout=shape(value);if([10,11].every(y=>validate(layout,{x:10,y}).ok))return layout;}catch{}}return null;}
   return {shape,plan,covers,validate,publish,read,clear:()=>root.localStorage.setItem(KEY,JSON.stringify({procedural:true})),copy};
 }
-root.AEGIS_BUILDING_LAYOUTS={create,SCHEMA,KEY};
+root.AEGIS_BUILDING_LAYOUTS={create,editFootprint,SCHEMA,KEY};
 })(typeof window==='undefined'?globalThis:window);

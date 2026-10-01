@@ -1,3 +1,14 @@
+BUILD: v0.26.09.30.0025_BUILDING_FOOTPRINT_EDITOR_PATCH
+September 30, 2026 — Building Footprint Editor
+Save format: 4
+
+- Add/remove residence footprint cells within the existing 9 × 8 editing grid.
+- Undo/redo restores the outline and removed walls/furnishings together.
+- Validate connected footprints, sealed exteriors, doors and walking lanes on both staggered-row offsets.
+- Invalid or pending layouts cannot be published, written to the project or generation-tested.
+- Existing campaign layouts remain unchanged. Larger grids and business archetypes remain roadmap.
+- See BUILDING_FOOTPRINT_EDITOR_0025_VALIDATION.md.
+
 BUILD: v0.26.09.30.0024_ACTIVE_COMBAT_BEACON_PRIORITY_PATCH
 September 30, 2026 — Active Combat Beacon Priority
 Save format: 4
