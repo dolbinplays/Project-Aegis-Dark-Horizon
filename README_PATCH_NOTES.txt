@@ -1,3 +1,14 @@
+BUILD: v0.26.10.01.0031_BEACON_COMBAT_THREAT_FORMATION_BYPASS_HOTFIX
+October 1, 2026 - Beacon Combat Threat Formation Bypass
+Save format: 4
+
+- Assigned, revealed Alien Field Beacons now remain an active combat threat after a firefight instead of allowing post-contact formation recovery to run first.
+- The post-contact recovery latch is cleared/suppressed for the assigned Beacon team while the known active Beacon remains valid.
+- Ordinary formation-target movement is suppressed; assigned soldiers receive the Beacon as a direct threat target and move toward it using direct-contact-style pathing when they cannot already attack.
+- Existing Browser 0024 alien-vs-Beacon same-tier target selection remains intact during mixed contact; Last Known Contact and higher medical/escort priorities remain unchanged.
+- Beacon shields, TU/ammunition, LOS, hazards, occupancy, damage, reinforcement cancellation and mission completion remain authoritative.
+- Save format remains 4. See BEACON_COMBAT_THREAT_0031_VALIDATION.md.
+
 BUILD: v0.26.10.01.0030_VIP_PRIORITY_LOCK_STICKY_RESCUER_HOTFIX
 October 1, 2026 - VIP Priority Lock Sticky Rescuer Hotfix
 Save format: 4

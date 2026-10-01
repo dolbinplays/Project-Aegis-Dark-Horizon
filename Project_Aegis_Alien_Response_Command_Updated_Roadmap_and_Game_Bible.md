@@ -1,8 +1,24 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.01.0030_VIP_PRIORITY_LOCK_STICKY_RESCUER_HOTFIX`
+Current browser build: `v0.26.10.01.0031_BEACON_COMBAT_THREAT_FORMATION_BYPASS_HOTFIX`
 
 Current save format: `4`
+
+## Beacon Combat Threat / Formation Bypass — Browser 0031
+
+**Reported October 1, 2026. Status: implemented; installed-game field acceptance pending.**
+
+A fire team assigned to a legitimately known/revealed active Alien Field Beacon must treat that device as continuing combat contact. After fighting nearby aliens, the team must not spend a round or movement leg rebuilding its prior formation before resuming the Beacon assault.
+
+- When an assigned Beacon remains active/revealed and its reinforcement function is known, suppress/clear the team's post-contact formation-recovery latch.
+- Suppress ordinary formation-slot movement while this Beacon combat-threat state is active. Soldiers should advance toward or attack the Beacon using the same direct-response philosophy used for current hostile contact rather than first returning to a rally formation.
+- Preserve Browser 0024's same-tier immediate target comparison while aliens and a Beacon are simultaneously valid targets; point-blank/immediate alien danger may still win the individual attack decision.
+- Preserve the approved global AI hierarchy outside that same-tier combat comparison: active escort, casualty recovery and Last Known Contact retain their established authority relative to Beacon work.
+- Do not bypass shield knowledge, LOS, range, TU/ammunition, grenade safety, hazards, occupancy, movement legality, explicit player ownership or mission-terminal authority.
+- Save format remains 4.
+
+**Acceptance:** scatter an explicitly Beacon-assigned team during a firefight, end current alien contact with the Beacon still active, and confirm every eligible assigned soldier immediately advances/attacks toward the Beacon without first re-forming. Repeat with mixed alien + Beacon targets, shielded Beacons, Last Known Contact, Simulation, autonomous Hybrid support and save/reload. See `BEACON_COMBAT_THREAT_0031_VALIDATION.md`.
+
 
 ## VIP Priority Lock Sticky Rescuer — Browser 0030
 
