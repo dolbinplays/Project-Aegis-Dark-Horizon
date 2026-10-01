@@ -1,17 +1,26 @@
+BUILD: v0.26.10.01.0030_VIP_PRIORITY_LOCK_STICKY_RESCUER_HOTFIX
+October 1, 2026 - VIP Priority Lock Sticky Rescuer Hotfix
+Save format: 4
+
+- Fixes VIP Priority Lock losing or transferring its committed rescuer while the assigned civilian/VIP objective is still active.
+- A blocked route now keeps the same named rescuer in a paused/replan state instead of clearing the lock.
+- Priority-1 bleeding stabilization may temporarily suspend the locked rescuer without transferring ownership.
+- Ordinary casualty recovery/extraction will not newly consume an actionable VIP-locked rescuer.
+- Central objective authority now recognizes VIP Priority Lock for the chosen rescuer above visible combat and ordinary casualty recovery while leaving the rest of the fire team on the normal priority hierarchy.
+- FPV/TPV current-order feedback shows VIP PRIORITY LOCK for the committed rescuer.
+- Save format remains 4.
+- See VIP_PRIORITY_LOCK_0030_VALIDATION.md.
+
 BUILD: v0.26.10.01.0029_UNIFIED_ORDERS_PATROL_FALLBACK_POSTS_PATCH
 October 1, 2026 - Unified Orders, Patrol Routes + Fallback Posts
 Save format: 4
 
-- Expands the existing tactical Orders / Command Map into Move / Hold, Check Location, Patrol Route and Fallback Post modes.
-- Move / Hold remains the default and preserves the legacy temporary Command Map workflow.
-- Patrol Route stores up to 12 unique ordered waypoints, advances deterministically and loops after the final point.
-- Fallback Post persists as a return-and-hold location used only when higher-priority tactical duties are absent.
-- Check Location clears once after a quiet arrival, then autonomous doctrine resumes.
-- Standing orders pause for higher-priority stabilization, escort, visible combat, casualty recovery, Last Known/distress, Beacon/UFO source work and known rescue objectives, then resume instead of being erased.
-- Blocked standing routes retain the order with a visible route-unreachable status and retry after conditions change; legacy temporary waypoints retain their existing blocked-order release behavior.
-- Orders links directly to the existing Assign Objectives board.
-- Patrol route/index/blocked state persist through tactical snapshots and save continuity. Save format remains 4.
-- Validation: 13/13 focused unified-orders checks plus executable runtime syntax/package seam checks.
+- Adds Move/Hold, Check Location, Patrol Route, Fallback Post, and direct Assign Objectives access to tactical Orders.
+- Standing orders persist through higher-priority tactical interruptions and resume afterward.
+- Patrols loop waypoint sequences; one-time checks clear on completion; fallback posts remain standing hold points.
+- Blocked standing orders remain visible with status instead of silently disappearing.
+- Streamed tactical snapshots/save state preserve standing-order intent.
+- Save format remains 4.
 - See UNIFIED_ORDERS_0029_VALIDATION.md.
 
 BUILD: v0.26.10.01.0028_DEPARTMENT_HEADS_FOUNDATION_PATCH

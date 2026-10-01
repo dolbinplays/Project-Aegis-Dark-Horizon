@@ -1,8 +1,26 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.01.0029_UNIFIED_ORDERS_PATROL_FALLBACK_POSTS_PATCH`
+Current browser build: `v0.26.10.01.0030_VIP_PRIORITY_LOCK_STICKY_RESCUER_HOTFIX`
 
 Current save format: `4`
+
+## VIP Priority Lock Sticky Rescuer — Browser 0030
+
+**Status: implemented; installed-game field acceptance pending.**
+
+Browser 0030 fixes a player-reported failure where a fire team assigned to a civilian/VIP objective with **VIP Priority Lock** could lose or transfer its committed rescuer while the objective itself remained unresolved. The lock is now one authoritative actor-level commitment layered above ordinary visible-contact and casualty-recovery reassignment for that chosen rescuer, while urgent bleeding stabilization remains allowed to suspend the rescuer temporarily.
+
+- Once a living eligible rescuer is selected, blocked doors, temporary traffic, or a currently unavailable path no longer clear or transfer the commitment. The same rescuer remains named and replans/holds until a route becomes legal.
+- Priority-1 bleeding stabilization can temporarily preempt the rescuer, but the VIP/civilian ownership stays attached to that same soldier and resumes afterward instead of being reassigned.
+- Ordinary casualty recovery/extraction no longer newly consumes an actionable VIP-locked rescuer. Existing casualty ownership already in progress may finish while the VIP lock remains recorded for later resumption.
+- A rescuer who is killed, downed/incapacitated, explicitly player-owned in Hybrid, or already owns another civilian escort can be replaced by another eligible member of the assigned fire team.
+- The central Default-AI objective resolver now recognizes the selected rescuer's **VIP PRIORITY LOCK** at priority 25: below bleeding stabilization (10) and active escort (20), but above visible alien contact (30) and ordinary casualty recovery (40). This special priority applies only to the single locked rescuer; other team members continue the normal hierarchy.
+- Civilian-approach route scratch is preserved while VIP Priority Lock is authoritative, preventing contact-state transitions from erasing the locked rescuer's ingress/progress state.
+- FPV/TPV current-order feedback explicitly displays **VIP PRIORITY LOCK** for the committed rescuer.
+- Save format remains **4**; the existing objective-assignment and commitment fields are reused.
+
+**Acceptance:** assign a known civilian/VIP objective and enable VIP Priority Lock. Confirm the same rescuer continues toward the target while aliens are visible, survives a temporarily blocked doorway without reassignment, pauses for urgent bleeding stabilization and then resumes, is not stolen by ordinary downed-soldier recovery, establishes escort and continues to extraction, and is replaced only when genuinely unavailable. Repeat through Simulation and autonomous Hybrid support, then save/reload during approach and after contact.
+
 
 ## Unified Orders, Patrol Routes and Fallback Posts — Browser 0029
 

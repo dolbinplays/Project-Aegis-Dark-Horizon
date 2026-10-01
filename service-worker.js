@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.10.01.0029_UNIFIED_ORDERS_PATROL_FALLBACK_POSTS_PATCH";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.01.0029_UNIFIED_ORDERS_PATROL_FALLBACK_POSTS_PATCH";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v83-unified-orders";
+const AEGIS_PWA_CACHE = "aegis-v0.26.10.01.0030_VIP_PRIORITY_LOCK_STICKY_RESCUER_HOTFIX";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.01.0030_VIP_PRIORITY_LOCK_STICKY_RESCUER_HOTFIX";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v84-vip-priority-lock";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;
