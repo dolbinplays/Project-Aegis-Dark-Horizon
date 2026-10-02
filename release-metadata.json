@@ -1,6 +1,6 @@
 {
-  "build": "v0.26.10.02.0041_TACTICAL_VITALS_FIRE_TEAM_DRAG_REASSIGNMENT_PATCH",
-  "package_filename": "Project_Aegis_v0.26.10.02.0041_TACTICAL_VITALS_FIRE_TEAM_DRAG_REASSIGNMENT_PATCH.zip",
+  "build": "v0.26.10.02.0042_SEASONAL_EVENT_FRAMEWORK_HALLOWEEN_COLLECTION_FOUNDATION_PATCH",
+  "package_filename": "Project_Aegis_v0.26.10.02.0042_SEASONAL_EVENT_FRAMEWORK_HALLOWEEN_COLLECTION_FOUNDATION_PATCH.zip",
   "save_format": 4,
   "base_game_runtime_build": "v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH",
   "editor": "AEGIS_Prop_Editor_v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH.html",
@@ -9,14 +9,14 @@
   "tools_editor_launcher_extension": "assets/runtime/aegis-tools-editor-launcher-runtime.js",
   "tools_editor_launcher_build": "v0.26.09.18.2115_IN_GAME_TOOLS_EDITOR_RENDERED_RUNTIME_HOTFIX",
   "tools_editor_access": "native-react-button-via-pre-render-embedded-runtime-payload-transform",
-  "launch_cache": "aegis-launch-shell-v95-vitals-fire-team-reassignment",
-  "hotfix_reason": "Adds direct Vitals drag/drop fire-team reassignment with commander-managed roster persistence and full team labels while preserving actor-owned duties and team-owned orders.",
+  "launch_cache": "aegis-launch-shell-v96-seasonal-halloween",
+  "hotfix_reason": "Adds reusable cosmetic-only seasonal event authority and the Halloween collection foundation: rare alien-carried costume pieces, permanent soldier recovery, map/base decorations, holiday weapon effects, and full-set victory flourishes.",
   "runtime_extension": "assets/runtime/aegis-contextual-prop-placement-runtime.js",
   "runtime_extension_build": "v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH",
   "prop_authoring_pipeline": "canonical-prop-definition",
-  "runtime_bytes": 7724231,
-  "runtime_sha256": "4db577635e29643e29d5bdbd6d1d154d796aeb9e850fd19eb3a4e46383b003bf",
-  "host_sha256": "850e08e1f8015c8f0339508071f7a0cad3ead2918c541b076a46f44bbab3403e",
+  "runtime_bytes": 7749009,
+  "runtime_sha256": "f2a4f4c9b036e20dc2486d87e4680c62057249ee33a7a64282308d46f8b939a3",
+  "host_sha256": "92b77bf4c0c0a158db8dc697b5042932882f083e9f272755c9f91cd4a9f8a28c",
   "building_layout_editor": "AEGIS_Building_Layout_Editor_CURRENT.html",
   "building_layout_schema": "aegis-building-layout-v1",
   "tv_play": "AEGIS_TV.html",
@@ -30,5 +30,16 @@
   "escort_authority_contract": "escortId-owner-state-v1+breach-egress-v1",
   "standing_order_resume_contract": "objective-completion-preserves-standing-v1+civilian-objective-suspend-resume-v2",
   "tactical_vitals_reassignment_contract": "drag-drop-fire-team-roster-v1",
-  "fire_team_roster_authority": "commander-managed-after-first-vitals-reassignment"
+  "fire_team_roster_authority": "commander-managed-after-first-vitals-reassignment",
+  "seasonal_event_contract": "calendar-event-v1+halloween-cosmetic-collection-v1",
+  "seasonal_event_stat_policy": "presentation-only-no-stat-bonuses",
+  "halloween_drop_policy": "1-3-initial-carriers-per-normal-october-mission",
+  "halloween_collection_slots": [
+    "top",
+    "bottom",
+    "head",
+    "weapon"
+  ],
+  "halloween_full_set_reward": "presentation-only-victory-flourish",
+  "seasonal_locker_ui": "follow-up"
 }

@@ -1,8 +1,28 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.02.0041_TACTICAL_VITALS_FIRE_TEAM_DRAG_REASSIGNMENT_PATCH`
+Current browser build: `v0.26.10.02.0042_SEASONAL_EVENT_FRAMEWORK_HALLOWEEN_COLLECTION_FOUNDATION_PATCH`
 
 Current save format: `4`
+
+## Seasonal Event Framework + Halloween Collection Foundation — Browser 0042
+
+Browser 0042 implements the first reusable seasonal-event slice. Halloween runs for the full month of October and is deliberately **fun/cosmetic only**: no stat boosts, combat modifiers, armor changes, accuracy changes, TU changes, morale modifiers, AI changes, or hidden mechanical bonuses.
+
+Normal October missions select only 1–3 initial alien seasonal carriers depending on threat. A carrier visibly wears one exact collectible in a Top, Bottom, Helmet/Mask, or Weapon Skin slot. Foundation sets are Vampire, Witch, Wolfman, Mummy, Creature from the Black Lagoon, Frankenstein, and Skeleton. Successful recovery permanently keeps the piece and assigns it to an eligible soldier with an empty matching slot; overflow remains a seasonal spare.
+
+A complete matching four-slot set unlocks that costume's special victory flourish. Weapon skins change only presentation: ballistic holiday confetti, laser neon spider-web geometry, plasma spectral rings and future set-specific variants. Halloween also adds small base-hallway decorations and non-blocking presentation props around normal tactical-map buildings.
+
+### Approved follow-up — Seasonal Locker + Collection Polish
+
+- Add a dedicated shared Seasonal Locker / collection screen showing unlocked, equipped, spare, missing, and completed-set pieces.
+- Allow direct manual swapping/trading of Top, Bottom, Helmet/Mask, and Weapon Skin pieces between soldiers while retaining optional auto-assignment for new drops.
+- Add favorite/lock controls so automatic assignment never displaces a soldier's chosen costume.
+- Add rare signature visual variants such as Crimson Vampire, Moonlit Wolfman, Swamp King, Cursed Pharaoh, and Spectral Witch without adding mechanical bonuses.
+- Add richer anatomy-fit variants per alien family and additional full-set victory poses/flourishes.
+- Add optional subtle seasonal audio/stingers and collection-completion callouts while preserving normal audio controls.
+- Reuse the same event framework for later winter, Valentine, St. Patrick's, summer, AEGIS anniversary, and other events without cloning Halloween-specific campaign authority.
+
+See `SEASONAL_EVENT_HALLOWEEN_0042_VALIDATION.md`.
 
 ## Tactical Vitals Fire-Team Drag Reassignment + Full Team Labels — Browser 0041
 

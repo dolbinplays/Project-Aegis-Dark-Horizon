@@ -1,3 +1,19 @@
+BUILD: v0.26.10.02.0042_SEASONAL_EVENT_FRAMEWORK_HALLOWEEN_COLLECTION_FOUNDATION_PATCH
+October 2, 2026 - Seasonal Event Framework + Halloween Collection Foundation
+Save format: 4
+
+- Adds a reusable calendar-driven seasonal event framework, with Halloween active for the full month of October.
+- Halloween is cosmetic-only: no costume piece, matching set, weapon skin, decoration, or flourish changes combat or strategic statistics.
+- Ordinary October missions deterministically contain only 1-3 seasonal carrier aliens. Each visibly wears one exact recoverable Top, Bottom, Helmet/Mask, or Weapon Skin item.
+- Foundation collections: Vampire, Witch, Wolfman, Mummy, Creature from the Black Lagoon, Frankenstein, and Skeleton.
+- Successful recovery permanently assigns pieces to living soldiers with open matching slots, preferring mission participants. Overflow pieces remain retained as seasonal spares.
+- Soldiers wearing a complete matching four-slot set unlock a costume-specific victory celebration flourish.
+- Halloween weapon skins provide presentation-only ballistic confetti, laser spider-web, and plasma spectral-ring effects.
+- Base hallways receive subtle Halloween dressing; normal tactical building maps receive non-blocking pumpkins, webs and bats.
+- Mission reports call out recovered seasonal pieces. Existing saves normalize missing seasonal fields safely; save format remains 4.
+- Next seasonal polish: dedicated shared locker/collection UI, manual swaps/favorites, signature variants, richer fit variants, optional seasonal audio.
+- See SEASONAL_EVENT_HALLOWEEN_0042_VALIDATION.md.
+
 BUILD: v0.26.10.02.0041_TACTICAL_VITALS_FIRE_TEAM_DRAG_REASSIGNMENT_PATCH
 October 2, 2026 - Tactical Vitals Fire-Team Drag Reassignment + Full Team Labels
 Save format: 4

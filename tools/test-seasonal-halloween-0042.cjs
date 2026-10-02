@@ -1,0 +1,18 @@
+const fs=require('fs');
+const path=require('path');
+const runtime=fs.readFileSync(path.join(__dirname,'..','src','browser-runtime.html'),'utf8');
+const tests=[]; const t=(name,pass)=>tests.push([name,!!pass]);
+const build='v0.26.10.02.0042_SEASONAL_EVENT_FRAMEWORK_HALLOWEEN_COLLECTION_FOUNDATION_PATCH';
+t('Build identity is Browser 0042',runtime.includes(`const CURRENT_GAME_BUILD="${build}"`));
+t('Reusable seasonal framework and October Halloween event are present',runtime.includes('SEASONAL_EVENT_FRAMEWORK_HALLOWEEN_PATCH=true')&&runtime.includes('halloween:Object.freeze({key:"halloween",label:"Halloween",month:10'));
+t('Classic Halloween set catalog includes all approved foundation sets',['vampire','witch','wolfman','mummy','lagoon','frankenstein','skeleton'].every(key=>runtime.includes(`key:"${key}"`)));
+t('Only one to three initial aliens are selected as seasonal carriers',runtime.includes('seasonalHalloweenDropBudget')&&runtime.includes('clamp(1+(threat>=3?1:0)+(threat>=5?1:0),1,3)')&&runtime.includes('seasonalApplyAlienCostume({ id: `alien-${index}`'));
+t('Seasonal pieces are cosmetic-only and have no stat bonus authority',runtime.includes('const AEGIS_SEASONAL_COSTUME_SLOTS=Object.freeze(["top","bottom","head","weapon"])')&&!runtime.includes('seasonalStatBonus')&&!runtime.includes('seasonalEquipmentBonus'));
+t('Alien and soldier persistent 3D models receive slot-specific seasonal overlays',runtime.includes('seasonalThreeAddCostume')&&runtime.includes('seasonalAlienCostumeLoadout')&&runtime.includes('tacticalThreePersistentCreateUnitNode=function'));
+t('Both simulation and live battle results collect defeated alien seasonal drops',runtime.includes('seasonalDrops:seasonalRecoveredDropsFromAliens(aliens,mission,success)')&&runtime.includes('seasonalDrops:seasonalRecoveredDropsFromAliens((Array.isArray(units)?units:[]).filter'));
+t('Mission aftermath permanently assigns recovered pieces and preserves overflow spares',runtime.includes('const seasonalRecovery=seasonalAssignDropsToRoster')&&runtime.includes('seasonalSparePieces')&&runtime.includes('Halloween recoveries:'));
+t('Matching four-slot sets unlock named victory flourishes',runtime.includes('function seasonalFullSet')&&runtime.includes('seasonalThreeCelebrationFlourish')&&runtime.includes('Moonlit Howl')&&runtime.includes('Witchlight Spiral'));
+t('Halloween weapon skins provide ballistic, laser and plasma presentation effects',runtime.includes('function seasonalThreeShotCelebration')&&runtime.includes('kind.includes("laser")')&&runtime.includes('kind.includes("plasma")')&&runtime.includes('OctahedronGeometry'));
+t('Base hallways and mission maps receive cosmetic Halloween decorations',runtime.includes('AEGIS_BASE_HALLWAY_STYLE_BEFORE_SEASONAL_0042')&&runtime.includes('halloween-pumpkin')&&runtime.includes('halloween-web')&&runtime.includes('halloween-bats')&&runtime.includes('presentationOnly:true')&&runtime.includes('block:0'));
+t('Seasonal persistence remains additive under save format four',runtime.includes('CURRENT_SAVE_FORMAT_VERSION=4')||runtime.includes('CURRENT_SAVE_FORMAT_VERSION = 4'));
+console.log(`${tests.filter(x=>x[1]).length}/${tests.length}`); for(const [name,pass] of tests) console.log(`${pass?'PASS':'FAIL'} ${name}`); if(tests.some(x=>!x[1])) process.exit(1);
