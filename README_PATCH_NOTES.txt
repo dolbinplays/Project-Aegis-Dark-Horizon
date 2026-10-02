@@ -1,3 +1,28 @@
+BUILD: v0.26.10.01.0035_ACTIVE_ESCORT_EXTRACTION_PERSISTENCE_HOTFIX
+October 1, 2026 - Active Escort Extraction Persistence Hotfix
+Save format: 4
+
+- Fixes escort owners showing Escort Duty but falling back to Priority 3 visible-alien behavior and holding position instead of evacuating VIPs.
+- Panicked/frightened civilians with a valid escortId remain owned escort followers until the escort is actually released.
+- Active escort remains Priority 2 above ordinary visible alien contact.
+- Established escort leaders no longer wait for scattered fire-team supports to re-form before moving toward extraction.
+- Civilian catch-up pacing still slows the leader when the VIP column itself falls behind.
+- Existing fear, cover-seeking, escort-support doctrine, extraction/ramp authority, TU/pathing and save format 4 remain intact.
+- See ACTIVE_ESCORT_EXTRACTION_0035_VALIDATION.md.
+
+BUILD: v0.26.10.01.0034_QUARTERMASTER_PER_SQUAD_ROLE_LOADOUT_DOCTRINE_PATCH
+October 1, 2026 - Quartermaster Per-Squad + Role Loadout Doctrine
+Save format: 4
+
+- Expands the Department Head Quartermaster from one shared template into layered default, per-squad and per-specialization loadout doctrine.
+- Weapon and armor doctrine supports Preferred, Acceptable and Fallback choices while preserving research, local stock, market, Workshop, storage, treasury and review-budget authority.
+- Adds per-soldier weapon, armor and Medkit locks so commander-selected equipment can be protected from automation.
+- Mission-ready reserve stock targets now expose the broader equipment catalog; Workshop-only shortages are reported and never manufactured automatically.
+- Preview Quartermaster review performs a dry run with projected spending and planned actions without mutating the campaign.
+- Audit lines identify the affected soldier, squad and specialization. Existing Browser 0028 policies migrate as the default doctrine.
+- Save format remains 4.
+- See QUARTERMASTER_LOADOUT_DOCTRINE_0034_VALIDATION.md.
+
 BUILD: v0.26.10.01.0033_INDIVIDUAL_FACILITY_CAPACITY_UPGRADES_PATCH
 October 1, 2026 - Individual Facility Capacity Upgrades
 Save format: 4

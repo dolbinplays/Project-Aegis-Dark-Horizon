@@ -1,8 +1,32 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.01.0033_INDIVIDUAL_FACILITY_CAPACITY_UPGRADES_PATCH`
+Current browser build: `v0.26.10.01.0035_ACTIVE_ESCORT_EXTRACTION_PERSISTENCE_HOTFIX`
 
 Current save format: `4`
+
+## Active Escort Extraction Persistence — Browser 0035
+
+**Reported October 1, 2026. Status: implemented; installed-game field acceptance pending.**
+
+Fixes a field-observed case where the escort owner could remain stationary for multiple rounds while escorted VIPs clustered around the soldier and the HUD incorrectly fell back to Priority 3 visible-alien authority. A valid escort relationship now remains Priority 2 through civilian panic/fear, and established escort leaders no longer wait for ordinary fire-team reformation before moving the civilian/VIP column toward extraction. Civilian catch-up pacing still prevents the leader from outrunning lagging evacuees. Save format remains **4**.
+
+See `ACTIVE_ESCORT_EXTRACTION_0035_VALIDATION.md`.
+
+
+## Quartermaster Per-Squad + Role Loadout Doctrine — Browser 0034
+
+**Status: implemented; installed-game field acceptance pending.**
+
+The Department Head Quartermaster now resolves equipment policy in layers: the existing default doctrine remains the fallback, a managed squad may opt into its own doctrine, and each soldier specialization may override that squad. Weapon and armor doctrine uses Preferred → Acceptable → Fallback choices so a temporary shortage does not force the entire review to stall when a legal alternative exists.
+
+Per-soldier weapon, armor and Medkit locks protect explicit commander choices from automatic replacement. Mission-ready reserve-stock targets remain base-level and now expose the broader equipment catalog. All purchases still obey local inventory, research, market availability, Base Stores capacity (including Browser 0033 x2 Stores), treasury reserve and per-review spending limits. Workshop-only shortages are reported, not automatically manufactured.
+
+A new Preview Quartermaster review control runs the same Quartermaster calculation without committing campaign changes and shows projected spending/actions. Live audit lines identify soldier, squad and specialization. Existing Browser 0028 policies normalize into the default doctrine without changing save format **4**.
+
+**Acceptance:** configure different Alpha/Bravo policies, add a Medic override, lock one soldier's equipment, test preferred-item shortage fallback, preview before spending, exercise upgraded Base Stores capacity, run the review, and verify save/reload persistence.
+
+See `QUARTERMASTER_LOADOUT_DOCTRINE_0034_VALIDATION.md`.
+
 
 ## Individual Facility Capacity Upgrades — Browser 0033
 
@@ -18522,4 +18546,4 @@ Fixed the adaptive Mission Control fallback caused by adding the VIP report betw
 
 Implemented hireable Quartermaster and Personnel heads, with one home base per role, selected managed squads, persisted policies, treasury reserves, review budgets and activity reports. Quartermaster supports a shared weapon/armor/medkit loadout, bandage/medical refills and market purchases with storage and research restrictions. Personnel fills local squads and maintains an optional reserve target using normal recruitment queues. Both wait until sorties return; automatic review runs on campaign days, mission returns and recruit arrivals.
 
-Next: per-squad/role loadout presets; additional Research, Engineering and Operations heads; richer staff identity, traits and hiring options; base-specific heads for multi-base automation. Advanced manufacture remains manual in this foundation. See DEPARTMENT_HEADS_0028_VALIDATION.md.
+Browser 0034 implements per-squad/role Quartermaster loadout doctrine, equipment locks, fallback choices, reserve-stock targets and spend preview. Next: additional Medical / V.A.L.A.N.T., Research, Engineering and Operations heads; richer staff identity, traits and hiring options; base-specific heads for multi-base automation. Advanced manufacture remains manual unless explicitly authorized by a later Engineering policy. See DEPARTMENT_HEADS_0028_VALIDATION.md.

@@ -1,6 +1,6 @@
 {
-  "build": "v0.26.10.01.0033_INDIVIDUAL_FACILITY_CAPACITY_UPGRADES_PATCH",
-  "package_filename": "Project_Aegis_v0.26.10.01.0033_INDIVIDUAL_FACILITY_CAPACITY_UPGRADES_PATCH.zip",
+  "build": "v0.26.10.01.0035_ACTIVE_ESCORT_EXTRACTION_PERSISTENCE_HOTFIX",
+  "package_filename": "Project_Aegis_v0.26.10.01.0035_ACTIVE_ESCORT_EXTRACTION_PERSISTENCE_HOTFIX.zip",
   "save_format": 4,
   "base_game_runtime_build": "v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH",
   "editor": "AEGIS_Prop_Editor_v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH.html",
@@ -9,14 +9,14 @@
   "tools_editor_launcher_extension": "assets/runtime/aegis-tools-editor-launcher-runtime.js",
   "tools_editor_launcher_build": "v0.26.09.18.2115_IN_GAME_TOOLS_EDITOR_RENDERED_RUNTIME_HOTFIX",
   "tools_editor_access": "native-react-button-via-pre-render-embedded-runtime-payload-transform",
-  "launch_cache": "aegis-launch-shell-v87-facility-capacity-upgrades",
-  "hotfix_reason": "Adds expensive, individually purchased x2 capacity upgrades for Living Quarters, Laboratory, Workshop, Sickbay, Base Stores, and V.A.L.A.N.T. Mental Health Center facilities.",
+  "launch_cache": "aegis-launch-shell-v89-active-escort-persistence",
+  "hotfix_reason": "Keeps active escort ownership authoritative through civilian panic/fear and prevents fire-team reformation pacing from stalling VIP extraction.",
   "runtime_extension": "assets/runtime/aegis-contextual-prop-placement-runtime.js",
   "runtime_extension_build": "v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH",
   "prop_authoring_pipeline": "canonical-prop-definition",
-  "runtime_bytes": 7671010,
-  "runtime_sha256": "f5f6d986509d48c04ca9e7b9ffbdfcb946d283f421717dff49bb5453890eb84d",
-  "host_sha256": "a7ef7d35511026e051c1b081e8d0d84c660c312a660734259814aaf3e9c3e73f",
+  "runtime_bytes": 7677988,
+  "runtime_sha256": "f9c752091d32409a1d41f5a18e510e4433844ab90ddc49a63bb757cdc0e707c8",
+  "host_sha256": "cb686da27f80ab18b1dc4dbab8f14fc8b8de2c01d466073bd0ef9fdd7662ac72",
   "building_layout_editor": "AEGIS_Building_Layout_Editor_CURRENT.html",
   "building_layout_schema": "aegis-building-layout-v1",
   "tv_play": "AEGIS_TV.html",
@@ -24,5 +24,7 @@
   "tv_lite_runtime": "assets/runtime/aegis-tv-runtime.js",
   "tv_hardware_acceptance": "pending",
   "tv_controller_protocol": 2,
-  "tv_qr_encoder": "assets/vendor/qrcode-generator-2.0.4.js"
+  "tv_qr_encoder": "assets/vendor/qrcode-generator-2.0.4.js",
+  "department_heads_runtime": "assets/runtime/aegis-department-heads.js",
+  "department_heads_policy_version": 2
 }
