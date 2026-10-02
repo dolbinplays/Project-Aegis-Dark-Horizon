@@ -1,8 +1,23 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.01.0039_ESCORT_BREACH_EGRESS_AND_STANDING_ORDER_RESUME_HOTFIX`
+Current browser build: `v0.26.10.02.0040_CIVILIAN_OBJECTIVE_STANDING_ORDER_SUSPEND_RESUME_HOTFIX`
 
 Current save format: `4`
+
+## Civilian Objective Standing-Order Suspend + Resume — Browser 0040
+
+**Status: implemented; installed-game field acceptance pending.**
+
+Browser 0040 corrects the Assign Objectives transaction so a persistent standing order remains distinct from a temporary civilian/VIP mission objective. Assigning a known civilian/VIP to a fire team no longer nulls that team's Patrol Route, Fallback Post, or Check Location command. Instead, the standing order is persisted in a suspended-objective state while the rescue assignment owns tactical execution.
+
+The suspended record retains the original order identity, route, current patrol waypoint/index, issue round, target metadata, and active/holding/blocked state. Changing from one civilian/VIP objective to another preserves the same suspended order. When the civilian/VIP objective is legitimately cleared, completed, or returned to Default, the standing order reactivates automatically and a Patrol continues from its saved waypoint rather than restarting. Legacy one-shot Move / Hold remains temporary and is still displaced by explicit objective assignment.
+
+Unified Orders now renders a suspended standing route and labels it **SUSPENDED BY ASSIGNED OBJECTIVE**, so the commander can distinguish a temporarily overridden patrol from an order that has actually been cleared. Existing streamed tactical snapshots already carry the command status/kind/route/index fields used by this state, so save format remains **4**.
+
+**Acceptance:** create a multi-waypoint patrol and allow it to advance beyond waypoint 1. Assign that same fire team to a known VIP/civilian and confirm the patrol remains visible as suspended while the rescue owns movement. Save/reload during the rescue, complete/extract the assigned civilian/VIP, and confirm the same patrol resumes at its saved waypoint. Repeat by changing from one VIP target to another, with a blocked Patrol/Fallback/Check order, and in both Simulation and autonomous Hybrid support.
+
+See `CIVILIAN_OBJECTIVE_STANDING_ORDER_SUSPEND_RESUME_0040_VALIDATION.md`.
+
 
 ## Escort Breach Egress + Standing Order Resume — Browser 0039
 

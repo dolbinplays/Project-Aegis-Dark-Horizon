@@ -1,3 +1,16 @@
+BUILD: v0.26.10.02.0040_CIVILIAN_OBJECTIVE_STANDING_ORDER_SUSPEND_RESUME_HOTFIX
+October 2, 2026 - Civilian Objective Standing-Order Suspend + Resume Hotfix
+Save format: 4
+
+- Assigning a VIP/civilian objective now suspends an existing Patrol Route, Fallback Post, or Check Location standing order instead of clearing it.
+- The suspended order preserves its route, current waypoint/index, original issue round, preferred target metadata, and blocked/holding state while the rescue objective owns execution.
+- Changing from one VIP/civilian objective to another keeps the same standing order suspended.
+- Completing or clearing the civilian/VIP objective restores the same standing order automatically; Patrol resumes from the saved waypoint rather than restarting at waypoint 1.
+- Unified Orders keeps the suspended route visible and labels it SUSPENDED BY ASSIGNED OBJECTIVE.
+- Legacy one-shot Move / Hold commands remain temporary and are still replaced by an explicit civilian/VIP objective.
+- Save format remains 4.
+- See CIVILIAN_OBJECTIVE_STANDING_ORDER_SUSPEND_RESUME_0040_VALIDATION.md.
+
 BUILD: v0.26.10.01.0039_ESCORT_BREACH_EGRESS_AND_STANDING_ORDER_RESUME_HOTFIX
 October 1, 2026 - Escort Breach Egress + Standing Order Resume Hotfix
 Save format: 4
