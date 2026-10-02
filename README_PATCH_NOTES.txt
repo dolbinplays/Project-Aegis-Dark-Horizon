@@ -1,3 +1,16 @@
+BUILD: v0.26.10.01.0033_INDIVIDUAL_FACILITY_CAPACITY_UPGRADES_PATCH
+October 1, 2026 - Individual Facility Capacity Upgrades
+Save format: 4
+
+- Adds expensive x2 capacity upgrades purchased separately for each eligible built facility instance.
+- Living Quarters 12→24 ($750k), Laboratory 10→20 Scientists ($1,125k), Workshop 10→20 Engineers ($1,000k), Sickbay 4→8 beds ($950k), Base Stores 80→160 units ($700k), and V.A.L.A.N.T. 4→8 specialist positions ($1,075k).
+- Upgrades are tile-specific; two facilities of the same type can have different capacities until both are upgraded.
+- V.A.L.A.N.T. keeps one included specialist per Center; upgraded capacity only creates additional positions that still require normal hiring.
+- Upgraded facilities show an x2 badge. Demolition removes the upgrade with no refund; rebuilding starts at standard capacity.
+- Existing strategic capacity authorities consume the upgraded values, including Quartermaster storage and Department Head personnel housing.
+- Old saves without upgrade fields remain compatible. Save format remains 4.
+- See FACILITY_CAPACITY_UPGRADES_0033_VALIDATION.md.
+
 BUILD: v0.26.10.01.0032_REPLACEMENT_BEACON_FIVE_TURN_UFO_DELIVERY_HOTFIX
 October 1, 2026 - Replacement Beacon Five-Turn UFO Delivery Hotfix
 Save format: 4

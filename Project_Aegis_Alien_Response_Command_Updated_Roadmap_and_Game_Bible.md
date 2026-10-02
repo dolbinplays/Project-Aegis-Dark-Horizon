@@ -1,8 +1,23 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.01.0032_REPLACEMENT_BEACON_FIVE_TURN_UFO_DELIVERY_HOTFIX`
+Current browser build: `v0.26.10.01.0033_INDIVIDUAL_FACILITY_CAPACITY_UPGRADES_PATCH`
 
 Current save format: `4`
+
+## Individual Facility Capacity Upgrades — Browser 0033
+
+**Requested October 1, 2026. Status: implemented; installed-game field acceptance pending.**
+
+Eligible bounded-capacity facilities can now be upgraded individually for a high one-time cost. The upgrade doubles only the selected facility instance: Living Quarters 12→24 personnel berths ($750k), Laboratory 10→20 Scientist positions ($1,125k), Workshop 10→20 Engineer positions ($1,000k), Sickbay 4→8 beds ($950k), Base Stores 80→160 storage units ($700k), and V.A.L.A.N.T. Mental Health Center 4→8 total specialist positions ($1,075k).
+
+Each purchase is stored by exact base tile. Other facilities of the same type remain at their normal capacity until independently upgraded. V.A.L.A.N.T. continues to include one specialist per Center; the expanded positions still require separate specialist hires. Existing research, manufacturing, Sickbay, storage, Quartermaster, personnel-housing, and mental-health systems consume the upgraded capacities through their existing authorities.
+
+Demolishing an upgraded facility permanently removes that upgrade with no refund, and rebuilding in the same location starts at normal capacity. Upgraded tiles show an x2 badge. Training/Rec remain unlimited, Hangars remain aircraft-slot facilities, and Alien Containment has no current numeric capacity authority. Save format remains **4**.
+
+**Acceptance:** build two matching facilities, upgrade only one, and confirm only that tile contributes x2 capacity. Repeat for all six families. Exercise hiring/admission/storage limits, save/reload, demolition/rebuild, low-funds rejection, and multi-base calculations.
+
+See `FACILITY_CAPACITY_UPGRADES_0033_VALIDATION.md`.
+
 
 ## Replacement Beacon Five-Turn UFO Delivery — Browser 0032
 
