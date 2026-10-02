@@ -1521,7 +1521,7 @@ function aegisTacticalViewportDimensions(mount,fallback={},layout=AEGIS_INTERFAC
 }
 // AEGIS_MOBILE_INTERFACE_END
 
-const CURRENT_GAME_BUILD="v0.26.10.01.0036_ESCORT_OWNER_TURN_SCHEDULING_HOTFIX";const QUARTERMASTER_PER_SQUAD_ROLE_LOADOUT_DOCTRINE_PATCH=true;const TACTICAL_ACTIVE_ESCORT_EXTRACTION_PERSISTENCE_HOTFIX=true;
+const CURRENT_GAME_BUILD="v0.26.10.01.0037_HIDDEN_ESCORT_CONTINUITY_HOTFIX";const QUARTERMASTER_PER_SQUAD_ROLE_LOADOUT_DOCTRINE_PATCH=true;const TACTICAL_ACTIVE_ESCORT_EXTRACTION_PERSISTENCE_HOTFIX=true;
 const TACTICAL_LAST_KNOWN_CONTACT_CLEARANCE_FEEDBACK_AND_PERSISTENCE_HOTFIX=true;
 const BANDAGE_EARLY_GAME_FIRST_AID_AND_MEDKIT_RESEARCH_PROGRESSION_PATCH=true;
 const TACTICAL_OBSERVATION_GATED_UFO_FLIGHT_PRESENTATION_PATCH=true;
@@ -6258,7 +6258,7 @@ function tacticalEnsureVipRescueCommitments({units=[],covers=[],mission=null,rou
     const teamMembers=next.filter(unit=>unit?.team==="human"&&unit.fireTeamId===teamId),escortOwner=target.escortId?next.find(unit=>unit?.id===target.escortId&&unit.team==="human")||null:null;
     if(escortOwner&&escortOwner.fireTeamId!==teamId){tacticalClearVipRescueCommitmentTeamInPlace(next,teamId,"escort-transferred");return;}
     const ownsOtherEscort=unit=>Boolean(unit&&tacticalEscortFollowers(next,unit.id).some(follower=>follower.id!==target.id));
-    const permanentlyEligible=unit=>Boolean(tacticalHumanCombatActive(unit)&&unit.fireTeamId===teamId&&!unit.hybridPlayerControlledLead&&!ownsOtherEscort(unit));
+    const permanentlyEligible=unit=>Boolean(tacticalHumanCombatActive(unit)&&unit.fireTeamId===teamId&&!unit.hybridPlayerControlledLead&&(target.escortId===unit.id||!ownsOtherEscort(unit)));
     const temporarilyPreempted=unit=>Boolean(unit&&(excluded.has(unit.id)||unit.fearState===TACTICAL_FEAR_STATES.override||unit.aiCasualtyTargetId||unit.draggingCasualtyId));
     const actionable=unit=>Boolean(permanentlyEligible(unit)&&!temporarilyPreempted(unit));
     const preemptionStatus=unit=>excluded.has(unit?.id)?"medical-preempted":unit?.fearState===TACTICAL_FEAR_STATES.override?"fear-preempted":unit?.draggingCasualtyId||unit?.aiCasualtyTargetId?"casualty-preempted":"suspended";
@@ -12492,7 +12492,9 @@ function* tacticalAiCivilianPriorityTurnGenerator({ units = [], covers = [], pla
     const objective=tacticalFireTeamObjectiveAssignmentForTeam(nextUnits,assignment.fireTeamId);
     return objective?.mode==="explicit"&&objective.type==="civilian"&&objective.targetId===vip.id;
   }));
-  if (!spottedCount && !searchActive && !guardPhase && !explicitVipApproachActive) return { units: nextUnits, covers, dutyIds, actedIds, stalledIds, events, movementTrails, spottedCount: 0, secureRescue: false, guardPhase: false, explored: Array.from(exploredCells), searchAssignments: [] };
+  // Existing escort ownership survives visibility changes and restored fog-of-war state.
+  const hasAssignedEscort=soldiers.some(actor=>tacticalEscortFollowers(nextUnits,actor.id).length>0);
+  if (!spottedCount && !searchActive && !guardPhase && !explicitVipApproachActive && !hasAssignedEscort) return { units: nextUnits, covers, dutyIds, actedIds, stalledIds, events, movementTrails, spottedCount: 0, secureRescue: false, guardPhase: false, explored: Array.from(exploredCells), searchAssignments: [] };
   for (const originalSoldier of soldiers) {
     yield {phase:"vip-rescue-soldier-start",round,actorId:originalSoldier?.id||null};
     let soldier = nextUnits.find((unit) => unit.id === originalSoldier.id);

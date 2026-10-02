@@ -1,3 +1,9 @@
+BUILD: v0.26.10.01.0037_HIDDEN_ESCORT_CONTINUITY_HOTFIX
+- Fixes Pavel being skipped with three escorted VIPs whose revealed flags were false.
+- Existing escort ownership keeps extraction active regardless of follower visibility.
+- A rescuer escorting multiple VIPs remains eligible for the priority lock on their own follower.
+- Save format 4 unchanged; verified against the reported mid-mission save.
+
 BUILD: v0.26.10.01.0036_ESCORT_OWNER_TURN_SCHEDULING_HOTFIX
 October 1, 2026 - Escort Owner Turn Scheduling Hotfix
 - Every established VIP/civilian escort owner receives Priority 2 scheduling, including support and solo soldiers.

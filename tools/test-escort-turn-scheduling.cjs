@@ -69,3 +69,19 @@ test('moving an escort does not consume another escort owners TU or move them as
  const before=units.find(u=>u.id==='support'),support=after.find(u=>u.id==='support');
  assert.deepEqual([support.x,support.y,support.tu],[before.x,before.y,before.tu]);
 });
+
+for(const tracked of [true,false])test(`hidden ${tracked?'VIP':'civilian'} followers retain an extraction turn`,()=>{
+ const c=runtimeContext();seededRandom(c);const units=escortFixture(c,tracked).map(u=>u.team==='civilian'?{...u,revealed:false,visible:false}:u);
+ const result=c.tacticalAiCivilianPriorityTurn({units,placement:c.tacticalSkyrangerPlacement({x:8,y:24}),covers:[],mission:{id:'hidden-escorts',gridSize:32,clock:{minute:720}},round:2,combatPriority:true});
+ for(const id of ['lead','support'])assert.ok(result.actedIds.includes(id)&&result.movementTrails[id]?.length>1,`${id} skipped`);
+});
+if(process.env.AEGIS_ESCORT_SAVE)test('Pavel advances from the reported save with three hidden VIPs',()=>{
+ const c=runtimeContext();seededRandom(c);const data=JSON.parse(fs.readFileSync(process.env.AEGIS_ESCORT_SAVE,'utf8')).data;
+ const live=data.activeTacticalState.liveState,mission=live.aiPlayback.mission,pavel=live.units.find(u=>u.name==='Pavel');
+ const locked=c.tacticalEnsureVipRescueCommitments({units:live.units,covers:live.covers,mission,round:live.tacticalRound});
+ assert.equal(locked.units.find(u=>u.id===pavel.id).fireTeamVipRescueCommitmentStatus,'escort');
+ const result=c.tacticalAiCivilianPriorityTurn({units:locked.units,covers:live.covers,placement:live.deployment.skyranger,mission,round:live.tacticalRound,combatPriority:true,explored:live.explored});
+ assert.ok(result.actedIds.includes(pavel.id),JSON.stringify(result.events));
+ assert.ok(result.movementTrails[pavel.id]?.length>1,'Pavel must actually move');
+ console.log('Pavel save replay:',JSON.stringify({before:[pavel.x,pavel.y],after:result.units.filter(u=>u.id===pavel.id).map(u=>[u.x,u.y]),events:result.events.slice(-3)}));
+});

@@ -1,8 +1,12 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.01.0036_ESCORT_OWNER_TURN_SCHEDULING_HOTFIX`
+Current browser build: `v0.26.10.01.0037_HIDDEN_ESCORT_CONTINUITY_HOTFIX`
 
 Current save format: `4`
+
+## Hidden Escort Continuity — Browser 0037
+
+Existing escort owners now receive extraction turns even when all followers have hidden visibility flags. Multi-VIP ownership no longer invalidates the priority lock on an already escorted target. The reported Pavel save reproduces the old failure and passes the fixed rescue routine: Pavel moves from (56,49) to (55,53). Save format 4 unchanged; installed-game field acceptance pending.
 
 ## Escort Owner Turn Scheduling — Browser 0036
 
