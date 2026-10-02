@@ -1,6 +1,6 @@
 # Mid-Mission Save Resume Compatibility 0045 Validation
 
-Build: `v0.26.10.02.0045_MIDMISSION_SAVE_RESUME_COMPATIBILITY_HOTFIX`  
+Build: `v0.26.10.02.0046_EARLY_TACTICAL_HYDRATION_COMPATIBILITY_HOTFIX`  
 Save format: `4`
 
 ## Regression fixed

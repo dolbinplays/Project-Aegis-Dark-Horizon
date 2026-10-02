@@ -1,4 +1,18 @@
-BUILD: v0.26.10.02.0045_MIDMISSION_SAVE_RESUME_COMPATIBILITY_HOTFIX
+BUILD: v0.26.10.02.0046_EARLY_TACTICAL_HYDRATION_COMPATIBILITY_HOTFIX
+October 2, 2026 - Early Tactical Hydration Compatibility Hotfix
+Save format: 4
+
+- Fixes the follow-on 0042 save resume crash: `seasonalHalloweenMapDecorations is not a function`.
+- Root cause: the cached tactical React component can hydrate before later seasonal patch helpers are registered.
+- Cached tactical covers are now authoritative during initial resume hydration.
+- Resume no longer directly calls late seasonal helper symbols from the early cover-state initializer.
+- Already-available perimeter authority repair remains guarded and optional; any helper failure falls back to the saved cover array instead of aborting load.
+- Fresh missions still use the normal 0044/0045 preparation path when those helpers are registered.
+- Save format remains 4.
+
+Previous 0045 notes follow:
+
+BUILD: v0.26.10.02.0046_EARLY_TACTICAL_HYDRATION_COMPATIBILITY_HOTFIX
 October 2, 2026 - Mid-Mission Save Resume Compatibility Hotfix
 Save format: 4
 

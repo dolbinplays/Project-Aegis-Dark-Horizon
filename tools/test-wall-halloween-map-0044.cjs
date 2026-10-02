@@ -1,4 +1,4 @@
-const fs=require('fs');const path=require('path');const runtime=fs.readFileSync(path.join(__dirname,'..','src','browser-runtime.html'),'utf8');const tests=[];const t=(n,p)=>tests.push([n,!!p]);const acceptedBuilds=['v0.26.10.02.0044_TACTICAL_WALL_AUTHORITY_AND_HALLOWEEN_MAP_VISIBILITY_HOTFIX','v0.26.10.02.0045_MIDMISSION_SAVE_RESUME_COMPATIBILITY_HOTFIX'];
+const fs=require('fs');const path=require('path');const runtime=fs.readFileSync(path.join(__dirname,'..','src','browser-runtime.html'),'utf8');const tests=[];const t=(n,p)=>tests.push([n,!!p]);const acceptedBuilds=['v0.26.10.02.0044_TACTICAL_WALL_AUTHORITY_AND_HALLOWEEN_MAP_VISIBILITY_HOTFIX','v0.26.10.02.0046_EARLY_TACTICAL_HYDRATION_COMPATIBILITY_HOTFIX'];
 t('Build preserves Browser 0044 wall/map authority lineage',acceptedBuilds.some(build=>runtime.includes(`const CURRENT_GAME_BUILD="${build}"`)));
 t('0044 wall/map visibility flag exists',runtime.includes('TACTICAL_WALL_AUTHORITY_AND_HALLOWEEN_MAP_VISIBILITY_HOTFIX=true'));
 t('Missing procedural perimeter authority repair exists',runtime.includes('function tacticalRestoreMissingBuildingPerimeterAuthority')&&runtime.includes('aegisRestoredPerimeterAuthority'));
@@ -11,7 +11,7 @@ t('Building decorations render once their building is discovered',runtime.includ
 t('Every October deployment gets guaranteed seasonal landing-zone decorations',runtime.includes('function seasonalHalloweenDeploymentDecorations')&&runtime.includes('tacticalDeploymentWithHalloweenVisibility0044'));
 t('Seasonal map props remain non-blocking presentation-only',runtime.includes('seasonalDeploymentDecoration:true')&&runtime.includes('block:0')&&runtime.includes('presentationOnly:true'));
 t('Map catalog includes pumpkins webs bats and ghosts',['halloween-pumpkin','halloween-web','halloween-bats','halloween-ghost'].every(v=>runtime.includes(v)));
-t('Loaded TacticalMission cover state is normalized through 0044 authority preparation',runtime.includes('tacticalPrepareMissionCovers0044(resumeCovers,mission,initialDeployment)')&&runtime.includes('typeof tacticalPrepareMissionCovers0044==="function"'));
+t('Loaded TacticalMission preserves 0044 authority with 0046 early-hydration compatibility',runtime.includes('tacticalPrepareMissionCovers0044(savedFirst,mission,initialDeployment)')&&runtime.includes('typeof tacticalPrepareMissionCovers0044==="function"')&&runtime.includes('if(cachedBattleState?.covers)'));
 t('Seasonal backfill is idempotent for map and deployment decorations',runtime.includes('existingSeasonal=source.filter')&&runtime.includes('existingDeployment=covers.filter')&&runtime.includes('needed=Math.max(0,4-existingDeployment)'));
 t('Save format remains four',runtime.includes('CURRENT_SAVE_FORMAT_VERSION=4')||runtime.includes('CURRENT_SAVE_FORMAT_VERSION = 4'));
 console.log(`${tests.filter(x=>x[1]).length}/${tests.length}`);for(const [n,p] of tests)console.log(`${p?'PASS':'FAIL'} ${n}`);if(tests.some(x=>!x[1]))process.exit(1);

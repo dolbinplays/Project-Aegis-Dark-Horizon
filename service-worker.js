@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.10.02.0045_MIDMISSION_SAVE_RESUME_COMPATIBILITY_HOTFIX";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.02.0045_MIDMISSION_SAVE_RESUME_COMPATIBILITY_HOTFIX";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v98-wall-halloween-map";
+const AEGIS_PWA_CACHE = "aegis-v0.26.10.02.0046_EARLY_TACTICAL_HYDRATION_COMPATIBILITY_HOTFIX";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.02.0046_EARLY_TACTICAL_HYDRATION_COMPATIBILITY_HOTFIX";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v99-early-tactical-hydration";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;
