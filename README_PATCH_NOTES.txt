@@ -1,3 +1,15 @@
+BUILD: v0.26.10.02.0043_HALLOWEEN_BASE_DECOR_VISIBILITY_HOTFIX
+October 2, 2026 - Halloween Base Decoration Visibility Hotfix
+Save format: 4
+
+- Fixes Browser 0042 Base Halloween dressing being effectively hidden underneath facility tiles at ordinary Base-view zoom.
+- Keeps the October hallway tint but adds recognizable foreground jack-o'-lanterns, cobwebs, bats and ghosts along facility/corridor edges.
+- Decorations render above facility artwork, scale up on hangars, and use pointer-events:none so they cannot interfere with facility selection, building, hover, activity markers or other Base controls.
+- Decoration placement is deterministic per base/tile and remains presentation-only. No Base capacity, adjacency, defense routing, personnel movement, costs, research, combat stats or save authority changes.
+- Browser 0042 seasonal drops, permanent costume ownership, full-set celebration flourishes, weapon effects and tactical-map decorations remain unchanged.
+- Save format remains 4.
+- See HALLOWEEN_BASE_DECOR_VISIBILITY_0043_VALIDATION.md.
+
 BUILD: v0.26.10.02.0042_SEASONAL_EVENT_FRAMEWORK_HALLOWEEN_COLLECTION_FOUNDATION_PATCH
 October 2, 2026 - Seasonal Event Framework + Halloween Collection Foundation
 Save format: 4

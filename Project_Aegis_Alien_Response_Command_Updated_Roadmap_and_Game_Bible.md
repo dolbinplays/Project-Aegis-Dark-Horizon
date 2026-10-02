@@ -1,8 +1,22 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.02.0042_SEASONAL_EVENT_FRAMEWORK_HALLOWEEN_COLLECTION_FOUNDATION_PATCH`
+Current browser build: `v0.26.10.02.0043_HALLOWEEN_BASE_DECOR_VISIBILITY_HOTFIX`
 
 Current save format: `4`
+
+## Halloween Base Decoration Visibility — Browser 0043
+
+**Status: implemented; installed-game field acceptance pending.**
+
+Browser 0043 corrects the first visual-acceptance issue found in the Browser 0042 Halloween foundation. The original Base treatment added seasonal gradients to the hallway-grid background, but normal facility and hangar artwork covers nearly all of that background; at ordinary Base zoom only the narrow tile gaps remained visible, making the intended Halloween dressing effectively invisible.
+
+The Base view now retains its October hallway tint and additionally renders a foreground seasonal layer above facility artwork. Deterministic corridor/facility-edge placements use recognizable jack-o'-lanterns, cobwebs, bats and ghosts, with larger presentation on hangars. The layer is `pointer-events:none`, does not change tile hitboxes, and remains underneath normal interaction authority. Facility selection, Build mode, x2 capacity badges, live activity markers and Base management remain functional.
+
+This is presentation-only. Facility capacity, adjacency, Base Defense routing, personnel movement, construction/upkeep, research, tactical systems, seasonal loot rules and save format **4** are unchanged.
+
+**Acceptance:** during October, open the Base screen at ordinary desktop zoom and confirm recognizable Halloween decorations are immediately visible without zooming in. Click facilities behind/near decorations, enter Build mode, inspect x2 badges and Live Activity markers, and confirm decorations never intercept input. Repeat on mobile/installed-app layout. Outside October the foreground decorations and stronger seasonal tint must disappear while permanent earned costume pieces remain available.
+
+See `HALLOWEEN_BASE_DECOR_VISIBILITY_0043_VALIDATION.md`.
 
 ## Seasonal Event Framework + Halloween Collection Foundation — Browser 0042
 

@@ -1,0 +1,15 @@
+const fs=require('fs');
+const path=require('path');
+const runtime=fs.readFileSync(path.join(__dirname,'..','src','browser-runtime.html'),'utf8');
+const tests=[]; const t=(name,pass)=>tests.push([name,!!pass]);
+const build='v0.26.10.02.0043_HALLOWEEN_BASE_DECOR_VISIBILITY_HOTFIX';
+t('Build identity is Browser 0043',runtime.includes(`const CURRENT_GAME_BUILD="${build}"`));
+t('Foreground Base decoration visibility hotfix flag exists',runtime.includes('HALLOWEEN_BASE_DECOR_VISIBILITY_HOTFIX=true'));
+t('Actual Base facility tiles render seasonal foreground decoration',runtime.includes('seasonalHalloweenBaseTileDecor(selectedBase,x,y,cell,isHangarCell(cell))'));
+t('Foreground decoration contains recognizable Halloween icons',['🎃','🕸️','🦇','👻'].every(icon=>runtime.includes(icon)));
+t('Decorations are pointer-event transparent and cannot block facility controls',runtime.includes('"data-aegis-halloween-base-decor":"foreground"')&&runtime.includes('pointerEvents:"none"'));
+t('Base grid has a relative stacking context for foreground decorations',runtime.includes('"data-aegis-base-grid":"true",className:"relative grid max-w-3xl'));
+t('Hallway gaps receive stronger October tint',runtime.includes('AEGIS_BASE_HALLWAY_STYLE_BEFORE_VISIBILITY_0043')&&runtime.includes('repeating-linear-gradient'));
+t('0042 seasonal systems remain present',runtime.includes('SEASONAL_EVENT_FRAMEWORK_HALLOWEEN_PATCH=true')&&runtime.includes('seasonalHalloweenMapDecorations')&&runtime.includes('seasonalThreeShotCelebration'));
+t('Save format remains four',runtime.includes('CURRENT_SAVE_FORMAT_VERSION=4')||runtime.includes('CURRENT_SAVE_FORMAT_VERSION = 4'));
+console.log(`${tests.filter(x=>x[1]).length}/${tests.length}`); for(const [name,pass] of tests) console.log(`${pass?'PASS':'FAIL'} ${name}`); if(tests.some(x=>!x[1])) process.exit(1);
