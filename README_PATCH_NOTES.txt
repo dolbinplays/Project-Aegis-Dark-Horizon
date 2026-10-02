@@ -1,3 +1,15 @@
+BUILD: v0.26.10.01.0039_ESCORT_BREACH_EGRESS_AND_STANDING_ORDER_RESUME_HOTFIX
+October 1, 2026 - Escort Breach Egress + Standing Order Resume Hotfix
+Save format: 4
+
+- Fixes the supplied Browser 0038 save where Celine physically owns three VIPs but receives no useful extraction movement because the shelter's destroyed wall is represented as passable `breach-rubble` with residual presentation HP.
+- Building-exit planning now recognizes `breached`, `buildingPart: breach`, and `breach-rubble` states through the same passable-opening authority used by VIP approach logic.
+- Completed Beacon/Assist objectives no longer erase a separately active Patrol Route, Fallback Post, or Check Location standing order.
+- Adds a narrow 0038-save repair for stranded Patrol Routes whose waypoint arrays survived but whose command identity was cleared by `beacon-destroyed` or `assisted-objective-complete` cleanup.
+- The repair preserves patrol waypoint order, saved patrol index, and original issued round; it does not infer missing fallback/check orders from ambiguous data.
+- Save format remains 4.
+- See ESCORT_BREACH_EGRESS_AND_STANDING_ORDER_RESUME_0039_VALIDATION.md.
+
 BUILD: v0.26.10.01.0038_ESCORT_AUTHORITY_CONSOLIDATION_AND_REGRESSION_HARDENING_PATCH
 October 1, 2026 - Escort Authority Consolidation + Regression Hardening
 Save format: 4

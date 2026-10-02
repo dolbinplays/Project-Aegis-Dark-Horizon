@@ -1,8 +1,21 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.01.0038_ESCORT_AUTHORITY_CONSOLIDATION_AND_REGRESSION_HARDENING_PATCH`
+Current browser build: `v0.26.10.01.0039_ESCORT_BREACH_EGRESS_AND_STANDING_ORDER_RESUME_HOTFIX`
 
 Current save format: `4`
+
+## Escort Breach Egress + Standing Order Resume — Browser 0039
+
+**Status: implemented; installed-game field acceptance pending.**
+
+Browser 0039 responds to the supplied 0038 Urban Scout Raid save. Celine still physically owns Avery, Morgan, and Reese and retains Priority-2 Active Escort authority, but the extraction planner cannot classify the destroyed west shelter wall as an exit because the authoritative breached cover is rendered/stored as `breach-rubble` with 12 residual presentation HP. The older exit helper checked only `hp <= 0`, while VIP approach already honored the explicit breached state. Extraction and approach now share one passable-breach authority, so a real breached opening remains usable regardless of rubble presentation HP.
+
+The same save proves the Delta, Echo, and Foxtrot patrol waypoint arrays survived serialization. Their active command kinds were cleared earlier when the temporary Beacon/Assist objective completed, leaving six-waypoint routes stranded in state. Objective-completion cleanup now preserves an independently active Patrol Route, Fallback Post, or Check Location order. A narrow compatibility repair reactivates stranded Browser 0038 patrols only when a complete patrol route remains and the cleared command carries a known Beacon/Assist completion reason; ambiguous missing orders are not invented.
+
+**Acceptance:** reload the reported save. Confirm Celine receives an Active Escort extraction turn through the breached shelter opening and begins leading Avery/Morgan/Reese toward the assigned Skyranger. Confirm Delta, Echo, and Foxtrot recover their six saved patrol waypoints without redrawing them and resume patrol after higher-priority duties clear. Then destroy another assigned Beacon while Patrol/Fallback/Check is suspended and verify the standing order remains active after objective cleanup. Repeat save/load during an active patrol. Save format remains **4**.
+
+See `ESCORT_BREACH_EGRESS_AND_STANDING_ORDER_RESUME_0039_VALIDATION.md`.
+
 
 ## Escort Authority Consolidation + Regression Hardening — Browser 0038
 
