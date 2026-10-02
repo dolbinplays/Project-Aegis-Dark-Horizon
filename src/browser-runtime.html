@@ -1521,7 +1521,7 @@ function aegisTacticalViewportDimensions(mount,fallback={},layout=AEGIS_INTERFAC
 }
 // AEGIS_MOBILE_INTERFACE_END
 
-const CURRENT_GAME_BUILD="v0.26.10.01.0035_ACTIVE_ESCORT_EXTRACTION_PERSISTENCE_HOTFIX";const QUARTERMASTER_PER_SQUAD_ROLE_LOADOUT_DOCTRINE_PATCH=true;const TACTICAL_ACTIVE_ESCORT_EXTRACTION_PERSISTENCE_HOTFIX=true;
+const CURRENT_GAME_BUILD="v0.26.10.01.0036_ESCORT_OWNER_TURN_SCHEDULING_HOTFIX";const QUARTERMASTER_PER_SQUAD_ROLE_LOADOUT_DOCTRINE_PATCH=true;const TACTICAL_ACTIVE_ESCORT_EXTRACTION_PERSISTENCE_HOTFIX=true;
 const TACTICAL_LAST_KNOWN_CONTACT_CLEARANCE_FEEDBACK_AND_PERSISTENCE_HOTFIX=true;
 const BANDAGE_EARLY_GAME_FIRST_AID_AND_MEDKIT_RESEARCH_PROGRESSION_PATCH=true;
 const TACTICAL_OBSERVATION_GATED_UFO_FLIGHT_PRESENTATION_PATCH=true;
@@ -2960,11 +2960,11 @@ function* resolveMissionGenerator({ squad, mission, tech, mode, leaderInstructio
     }
     let observedBeforeRescue = tacticalAiObservedAliens(allUnits(), covers, mission);
     // Priority 2: an escort that is already established moves before ordinary combat or casualty recovery.
-    // Run only established escort leaders here; every unformed/new civilian rescue remains priority 8.
-    const activeEscortLeaderIds=humans.filter(unit=>tacticalHumanCombatActive(unit)&&unit.fireTeamId&&tacticalFireTeamIsLeader(unit,allUnits())&&tacticalEscortFollowers(allUnits(),unit.id).length>0&&!medicalPriorityDutyIds.has(unit.id)).map(unit=>unit.id);
+    // Run every established escort owner, including supports and solo soldiers; new rescues remain priority 8.
+    const activeEscortLeaderIds=tacticalActiveEscortActorIds(allUnits(),medicalPriorityDutyIds);
     if(activeEscortLeaderIds.length){
       const activeEscortLeaderSet=new Set(activeEscortLeaderIds);
-      const escortOnlyExcludedLeaderIds=humans.filter(unit=>unit?.team==="human"&&unit.hp>0&&unit.alive!==false&&unit.fireTeamId&&tacticalFireTeamIsLeader(unit,allUnits())&&!activeEscortLeaderSet.has(unit.id)).map(unit=>unit.id);
+      const escortOnlyExcludedLeaderIds=humans.filter(unit=>!activeEscortLeaderSet.has(unit.id)).map(unit=>unit.id);
       const escortTurn=yield* tacticalAiCivilianPriorityTurnGenerator({units:allUnits(),covers,placement:rescuePlacement,secureRescue:false,fireMode:aiFireModeKey,weaponUpgrades,round:initialRound+round-1,mission,combatPriority:true,threats:observedBeforeRescue,explored:exploredCells,excludedLeaderIds:Array.from(new Set([...escortOnlyExcludedLeaderIds,...medicalPriorityDutyIds])),overrideLowerPriorityOrders:false});
       covers=escortTurn.covers||covers;humans=escortTurn.units.filter(unit=>unit.team==="human");aliens=escortTurn.units.filter(unit=>unit.team==="alien");civilians=escortTurn.units.filter(unit=>unit.team==="civilian").map(civilian=>({...civilian,alive:civilian.hp>0&&!civilian.rescued}));
       civilianDutyIds=new Set([...civilianDutyIds,...(escortTurn.dutyIds||[])]);(escortTurn.actedIds||[]).forEach(id=>roundActedIds.add(id));tacticalMovementTrailMerge(frameMovementTrails,escortTurn.movementTrails);logs.push(...(escortTurn.events||[]).map(event=>`Active escort: ${event}`));
@@ -12307,6 +12307,9 @@ function tacticalReleaseCompletedVipEscortState(units=[]){
     };
   });
 }
+function tacticalActiveEscortActorIds(units=[],excludedIds=new Set()){
+  return units.filter(unit=>tacticalHumanCombatActive(unit)&&!excludedIds.has(unit.id)&&tacticalEscortFollowers(units,unit.id).length>0).map(unit=>unit.id);
+}
 function tacticalAiRescueActorOrder(units=[],round=1,excludedLeaderIds=[]){
   const safeUnits=Array.isArray(units)?units:[];
   const excluded=new Set(Array.isArray(excludedLeaderIds)?excludedLeaderIds:excludedLeaderIds instanceof Set?Array.from(excludedLeaderIds):[]);
@@ -12314,7 +12317,8 @@ function tacticalAiRescueActorOrder(units=[],round=1,excludedLeaderIds=[]){
   const escortIds=new Set(safeUnits.filter(unit=>unit?.team==="civilian"&&Number(unit.hp)>0&&unit.alive!==false&&!unit.rescued&&unit.escortId).map(unit=>unit.escortId));
   const escortOwners=livingHumans.filter(unit=>escortIds.has(unit.id)).sort((left,right)=>tacticalEscortFollowers(safeUnits,right.id).length-tacticalEscortFollowers(safeUnits,left.id).length||String(left.id).localeCompare(String(right.id)));
   const actors=[];const coordinatedTeams=new Set();
-  escortOwners.forEach(owner=>{const teamKey=owner.fireTeamId||`solo:${owner.id}`;if(coordinatedTeams.has(teamKey))return;coordinatedTeams.add(teamKey);actors.push(owner);});
+  // Each physical escort owner needs a turn, even when several belong to one fire team.
+  escortOwners.forEach(owner=>{coordinatedTeams.add(owner.fireTeamId||`solo:${owner.id}`);actors.push(owner);});
   livingHumans.filter(unit=>unit.fireTeamVipRescueCommitmentEnabled&&unit.fireTeamVipRescueCommitmentRescuerId===unit.id).forEach(rescuer=>{const teamKey=rescuer.fireTeamId||`solo:${rescuer.id}`;if(coordinatedTeams.has(teamKey))return;coordinatedTeams.add(teamKey);actors.push(rescuer);});
   livingHumans.filter(unit=>tacticalFireTeamIsLeader(unit,safeUnits)).forEach(leader=>{const teamKey=leader.fireTeamId||`solo:${leader.id}`;if(coordinatedTeams.has(teamKey))return;coordinatedTeams.add(teamKey);actors.push(leader);});
   return tacticalFireTeamTurnOrder(actors,round);
@@ -12805,7 +12809,7 @@ function tacticalAdvanceEscortedCivilians(units = [], escortId = null, nextCell 
   }
   let nextUnits = workingUnits.map((unit) => unit.id === leader.id ? leaderPatch : { ...unit });
   const followers = tacticalEscortFollowers(nextUnits, leader.id);
-  const teamMembers = tacticalFireTeamMembers(nextUnits, leader.fireTeamId).filter((unit) => unit.id !== leader.id&&!formationExcludedIds.has(unit.id));
+  const teamMembers = tacticalFireTeamMembers(nextUnits, leader.fireTeamId).filter((unit) => unit.id !== leader.id&&!formationExcludedIds.has(unit.id)&&!tacticalEscortFollowers(nextUnits,unit.id).length);
   if(automateFireTeam&&teamMembers.length&&(enteringExtraction||tacticalIsExtractionCell(placement,leaderPatch.x,leaderPatch.y))){
     const guardCells=tacticalEscortExtractionOutsideCells({placement,leader:leaderPatch,covers,units:nextUnits,mission:safeMission,count:teamMembers.length,ignoreTeam:true});
     const guardById=new Map(tacticalFireTeamTurnOrder(teamMembers,1).map((member,index)=>[member.id,guardCells[index]||guardCells[guardCells.length-1]||null]));

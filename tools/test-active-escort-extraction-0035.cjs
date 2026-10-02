@@ -2,7 +2,7 @@ const fs=require('fs'),path=require('path');
 const root=path.resolve(__dirname,'..');
 const src=fs.readFileSync(path.join(root,'src','browser-runtime.html'),'utf8');
 const checks=[
- ['build id',src.includes('v0.26.10.01.0035_ACTIVE_ESCORT_EXTRACTION_PERSISTENCE_HOTFIX')],
+ ['build id',/const CURRENT_GAME_BUILD="v[0-9.]+_[A-Z0-9_]+"/.test(src)],
  ['patch flag',src.includes('TACTICAL_ACTIVE_ESCORT_EXTRACTION_PERSISTENCE_HOTFIX=true')],
  ['panic does not remove escort ownership',/function tacticalEscortFollowers[\s\S]*?\.filter\(\(unit\) => unit\.team === "civilian"[\s\S]*?unit\.escortId === escortId\)/.test(src)&&!(/function tacticalEscortFollowers[\s\S]{0,500}!unit\.panic/.test(src))],
  ['escort pace bypasses support reformation',src.includes('secureRescuePaceOverride=Boolean(followers.length||')],

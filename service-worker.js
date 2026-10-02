@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.10.01.0035_ACTIVE_ESCORT_EXTRACTION_PERSISTENCE_HOTFIX";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.01.0035_ACTIVE_ESCORT_EXTRACTION_PERSISTENCE_HOTFIX";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v89-active-escort-persistence";
+const AEGIS_PWA_CACHE = "aegis-v0.26.10.01.0036_ESCORT_OWNER_TURN_SCHEDULING_HOTFIX";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.01.0036_ESCORT_OWNER_TURN_SCHEDULING_HOTFIX";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v90-escort-owner-turns";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;

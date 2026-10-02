@@ -1,8 +1,12 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.01.0035_ACTIVE_ESCORT_EXTRACTION_PERSISTENCE_HOTFIX`
+Current browser build: `v0.26.10.01.0036_ESCORT_OWNER_TURN_SCHEDULING_HOTFIX`
 
 Current save format: `4`
+
+## Escort Owner Turn Scheduling — Browser 0036
+
+Implemented; installed-game field acceptance pending. Established escorts now receive Priority 2 turns regardless of fire-team role or solo assignment. Multiple escort owners on one team each receive an extraction turn, and automatic formation movement no longer moves another escort owner or spends their TU away from their own civilian column. Verified with runtime regressions for both VIPs and civilians. Save format remains **4**.
 
 ## Active Escort Extraction Persistence — Browser 0035
 

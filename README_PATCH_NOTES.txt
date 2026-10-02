@@ -1,3 +1,10 @@
+BUILD: v0.26.10.01.0036_ESCORT_OWNER_TURN_SCHEDULING_HOTFIX
+October 1, 2026 - Escort Owner Turn Scheduling Hotfix
+- Every established VIP/civilian escort owner receives Priority 2 scheduling, including support and solo soldiers.
+- Multiple escort owners in one fire team each get an extraction turn.
+- Other escorts are excluded from automatic support formation movement, preserving their TU and civilian columns.
+- Save format remains 4. Existing saves supported.
+
 BUILD: v0.26.10.01.0035_ACTIVE_ESCORT_EXTRACTION_PERSISTENCE_HOTFIX
 October 1, 2026 - Active Escort Extraction Persistence Hotfix
 Save format: 4
