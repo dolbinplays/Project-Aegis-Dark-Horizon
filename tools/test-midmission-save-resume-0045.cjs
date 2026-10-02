@@ -1,0 +1,14 @@
+const fs=require('fs');
+const path=require('path');
+const runtime=fs.readFileSync(path.join(__dirname,'..','src','browser-runtime.html'),'utf8');
+const tests=[];const t=(name,pass)=>tests.push([name,Boolean(pass)]);
+const build='v0.26.10.02.0045_MIDMISSION_SAVE_RESUME_COMPATIBILITY_HOTFIX';
+t('0045 build id is current',runtime.includes(`const CURRENT_GAME_BUILD="${build}"`));
+t('resume initializer guards the 0044 helper',runtime.includes('typeof tacticalPrepareMissionCovers0044==="function"'));
+t('resume initializer preserves normal helper fast path',runtime.includes('return tacticalPrepareMissionCovers0044(resumeCovers,mission,initialDeployment)'));
+t('resume fallback applies Halloween map normalization',runtime.includes('seasonalHalloweenMapDecorations(Array.isArray(resumeCovers)?resumeCovers:[],mission)'));
+t('resume fallback applies deployment decoration normalization',runtime.includes('seasonalHalloweenDeploymentDecorations({...initialDeployment,covers:next},mission)'));
+t('resume fallback restores perimeter authority',runtime.includes('return tacticalRestoreMissingBuildingPerimeterAuthority(next,mission)'));
+t('save format remains four',runtime.includes('const CURRENT_SAVE_FORMAT_VERSION=4'));
+for(const [name,pass] of tests)console.log(`${pass?'PASS':'FAIL'} - ${name}`);
+if(tests.some(([,pass])=>!pass))process.exit(1);

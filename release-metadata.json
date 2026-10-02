@@ -1,6 +1,6 @@
 {
-  "build": "v0.26.10.02.0044_TACTICAL_WALL_AUTHORITY_AND_HALLOWEEN_MAP_VISIBILITY_HOTFIX",
-  "package_filename": "Project_Aegis_v0.26.10.02.0044_TACTICAL_WALL_AUTHORITY_AND_HALLOWEEN_MAP_VISIBILITY_HOTFIX.zip",
+  "build": "v0.26.10.02.0045_MIDMISSION_SAVE_RESUME_COMPATIBILITY_HOTFIX",
+  "package_filename": "Project_Aegis_v0.26.10.02.0045_MIDMISSION_SAVE_RESUME_COMPATIBILITY_HOTFIX.zip",
   "save_format": 4,
   "base_game_runtime_build": "v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH",
   "editor": "AEGIS_Prop_Editor_v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH.html",
@@ -45,5 +45,6 @@
   "halloween_base_decor_presentation": "foreground-facility-edge-overlay-v1",
   "halloween_base_decor_input_policy": "pointer-events-none-presentation-only",
   "procedural_wall_authority": "missing-perimeter-wall-window-restoration+loaded-cover-normalization-v2",
-  "halloween_map_visibility": "every-october-map+deployment-cluster+loaded-save-backfill-v3"
+  "halloween_map_visibility": "every-october-map+deployment-cluster+loaded-save-backfill-v3",
+  "midmission_save_resume_compatibility": "guarded-0044-cover-preparation-with-inline-equivalent-fallback-v1"
 }

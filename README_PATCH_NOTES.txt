@@ -1,3 +1,15 @@
+BUILD: v0.26.10.02.0045_MIDMISSION_SAVE_RESUME_COMPATIBILITY_HOTFIX
+October 2, 2026 - Mid-Mission Save Resume Compatibility Hotfix
+Save format: 4
+
+- Fixes a Browser 0042 -> 0044 mid-mission restore crash reporting `tacticalPrepareMissionCovers0044 is not a function`.
+- Tactical cover restoration no longer assumes the 0044 helper symbol is callable during cached tactical-state hydration.
+- Resume first attempts the normal 0044 cover-preparation helper; if that symbol is unavailable or non-callable, it performs the same Halloween decoration backfill and procedural perimeter-authority normalization inline.
+- The fallback is idempotent and preserves legitimate destroyed/breached openings, existing seasonal decorations, unit state, round state, standing orders, escorts, and mission progress.
+- New missions and current 0044 saves retain the existing 0044 path.
+- Save format remains 4.
+- See MIDMISSION_SAVE_RESUME_COMPATIBILITY_0045_VALIDATION.md.
+
 BUILD: v0.26.10.02.0044_TACTICAL_WALL_AUTHORITY_AND_HALLOWEEN_MAP_VISIBILITY_HOTFIX
 October 2, 2026 - Tactical Wall Authority + Halloween Map Visibility Hotfix
 Save format: 4
