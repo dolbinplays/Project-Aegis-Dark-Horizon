@@ -1,3 +1,17 @@
+BUILD: v0.26.10.01.0038_ESCORT_AUTHORITY_CONSOLIDATION_AND_REGRESSION_HARDENING_PATCH
+October 1, 2026 - Escort Authority Consolidation + Regression Hardening
+Save format: 4
+
+- Consolidates Browser 0035–0037 escort fixes behind one actor-level active-escort ownership authority.
+- The physical civilian/VIP `escortId` relationship is authoritative regardless of follower revealed/visibility flags, fire-team role, panic, or temporary search/formation state.
+- Support and solo escort owners now receive the same Priority-2 objective lock used by formal leaders; multiple owners in one fire team remain independently scheduled.
+- Fire-team formation targeting excludes members who own their own evacuee column, preventing automatic support movement from spending their TU or pulling them away.
+- New-contact and rescue-combat duty retention check the actual escort owner before Stay / Ask / Engage support doctrine.
+- FPV/TPV ESC status now uses the real tactical unit list instead of an empty follower query.
+- Developer console diagnostics expose owner/follower count, hidden-follower count and AI turn eligibility without adding player-facing hidden information.
+- Focused exact-helper fixture passes 8/8 checks; all five executable embedded runtime script blocks parse. Save format remains 4.
+- See ESCORT_AUTHORITY_CONSOLIDATION_0038_VALIDATION.md.
+
 BUILD: v0.26.10.01.0037_HIDDEN_ESCORT_CONTINUITY_HOTFIX
 - Fixes Pavel being skipped with three escorted VIPs whose revealed flags were false.
 - Existing escort ownership keeps extraction active regardless of follower visibility.

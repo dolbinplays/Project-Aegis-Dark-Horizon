@@ -1,8 +1,29 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.01.0037_HIDDEN_ESCORT_CONTINUITY_HOTFIX`
+Current browser build: `v0.26.10.01.0038_ESCORT_AUTHORITY_CONSOLIDATION_AND_REGRESSION_HARDENING_PATCH`
 
 Current save format: `4`
+
+## Escort Authority Consolidation + Regression Hardening — Browser 0038
+
+**Status: implemented; installed-game field acceptance pending.**
+
+Browser 0038 consolidates the recent 0035–0037 escort fixes behind one actor-level active-escort authority. The persistent civilian/VIP `escortId` relationship is now the single source of truth for whether a living AEGIS soldier physically owns an evacuation column; follower visibility/revealed flags, fire-team role, panic state, temporary search state and formation assignment cannot silently release that ownership.
+
+- `tacticalEscortOwnerState(...)` now provides the shared ownership result consumed by Priority-2 scheduling, the central Default-AI objective resolver, contact-interrupt retention, formation exclusion, FPV/TPV status, and developer diagnostics.
+- Support and solo soldiers who physically own evacuees receive the same actor-level Priority-2 lock as formal fire-team leaders. Multiple escort owners in one fire team remain independently scheduled.
+- Automatic fire-team formation targets exclude members who own their own civilian/VIP column so another leader cannot spend their TU or pull them away from evacuation.
+- New-contact and rescue-combat retention check the escort owner directly before applying Stay / Ask / Engage support doctrine. This prevents a support-owned escort from being released merely because the formal leader is not the owner.
+- The ESC status icon now evaluates the real tactical unit list rather than an empty follower query, keeping HUD status aligned with objective authority.
+- A developer-only `window.__AEGIS_ESCORT_AUTHORITY_DIAGNOSTICS` snapshot reports each physical escort owner, follower count, hidden-follower count, and whether the owner's AI escort turn is eligible or temporarily preempted. It is not rendered into the player-facing tactical UI.
+- Priority-1 stabilization and explicit Hybrid/manual player ownership still retain their established authority. Civilian separation fear, catch-up pacing, building egress, ramp boarding, objective assignments and save format **4** are unchanged.
+
+**Regression coverage:** exact runtime helpers pass an 8/8 focused fixture covering three hidden VIP followers on one owner, two independent support-position escort owners in the same fire team, Priority 2 over visible alien contact, rescue-turn scheduling, formation exclusion, ESC HUD parity, owner-lock compatibility, and developer diagnostics. All five executable embedded runtime JavaScript blocks pass syntax validation. The previous 0037 Pavel hidden/multi-VIP fix remains preserved.
+
+**Field acceptance:** reproduce the recent Finn/Pavel class of missions with multiple escorted VIPs, visible aliens, scattered fire-team members, frightened followers, support-position escort owners, save/reload and Skyranger boarding. Confirm every physical escort owner continues receiving Priority-2 extraction turns unless genuinely preempted by Priority-1 stabilization, fear override, or explicit Hybrid/manual player control.
+
+See `ESCORT_AUTHORITY_CONSOLIDATION_0038_VALIDATION.md`.
+
 
 ## Hidden Escort Continuity — Browser 0037
 
