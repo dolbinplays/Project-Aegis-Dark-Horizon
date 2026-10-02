@@ -1,8 +1,25 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.02.0040_CIVILIAN_OBJECTIVE_STANDING_ORDER_SUSPEND_RESUME_HOTFIX`
+Current browser build: `v0.26.10.02.0041_TACTICAL_VITALS_FIRE_TEAM_DRAG_REASSIGNMENT_PATCH`
 
 Current save format: `4`
+
+## Tactical Vitals Fire-Team Drag Reassignment + Full Team Labels — Browser 0041
+
+**Requested October 2, 2026. Status: implemented; installed-game field acceptance pending.**
+
+Browser 0041 turns the tactical Vitals strip into a direct fire-team roster-management surface. During the human phase, when no AI playback, battle resolution, or unit movement is already in progress, the commander can drag a living, conscious AEGIS soldier from one fire-team Vitals panel onto another legal destination panel. Valid destinations highlight during the drag, and the Vitals panels are widened/reflowed to show full labels such as **Alpha Fire Team Vitals** instead of clipping the team designation. Pointer handling supports both mouse and touch-capable devices while preserving ordinary click-to-select behavior when no drag threshold is crossed.
+
+The reassignment is authoritative rather than cosmetic. The moved soldier adopts the destination fire-team identity and formation slot authority, and deterministic reconciliation immediately recalculates leaders, wingmen, roles, commander references and formation metadata in both the source and destination teams. A destination may not exceed the established four-soldier fire-team cap, and the last active member of a source team may not be dragged away so a team-owned order/objective cannot be silently orphaned.
+
+**Ownership rule:** actor-owned duties follow the soldier; team-owned doctrine stays with the team. A moved soldier who physically owns an active civilian/VIP escort keeps that `escortId` responsibility, and casualty recovery/drag ownership is not cleared. Patrol Route, Fallback Post, Check Location, Beacon/VIP objective assignment, VIP Priority Lock planning state and other fire-team command/objective fields remain with their original fire team; the moved soldier adopts the destination team's team-owned state instead of carrying the source team's orders across the reassignment.
+
+Once the commander performs a manual fire-team reassignment, that battle's AEGIS roster becomes **commander-managed**. Legacy automatic casualty-based 4↔2 membership balancing no longer reshuffles those custom teams on later reconciliation passes, while deterministic leader/role succession after casualties or moving a leader continues normally. The manual-roster authority is serialized in streamed tactical snapshots and ordinary tactical save state, keeping save format **4** unchanged.
+
+**Acceptance:** drag an ordinary member between teams and confirm membership/formation/HUD update immediately; move a current leader and confirm both teams receive legal deterministic leadership; move an escort owner and confirm the civilian/VIP column follows that actor; move a casualty responder and confirm actor-owned rescue state remains intact; move a soldier out of a team with an active Patrol/Fallback/Check/Beacon/VIP assignment and confirm the order stays with the source team; confirm the moved soldier adopts the destination team's objective state; verify the four-soldier cap and no-empty-source rejection; repeat after save/reload and on a touch device.
+
+See `TACTICAL_VITALS_FIRE_TEAM_REASSIGNMENT_0041_VALIDATION.md`.
+
 
 ## Civilian Objective Standing-Order Suspend + Resume — Browser 0040
 

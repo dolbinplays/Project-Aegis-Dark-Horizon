@@ -1,6 +1,6 @@
 {
-  "build": "v0.26.10.02.0040_CIVILIAN_OBJECTIVE_STANDING_ORDER_SUSPEND_RESUME_HOTFIX",
-  "package_filename": "Project_Aegis_v0.26.10.02.0040_CIVILIAN_OBJECTIVE_STANDING_ORDER_SUSPEND_RESUME_HOTFIX.zip",
+  "build": "v0.26.10.02.0041_TACTICAL_VITALS_FIRE_TEAM_DRAG_REASSIGNMENT_PATCH",
+  "package_filename": "Project_Aegis_v0.26.10.02.0041_TACTICAL_VITALS_FIRE_TEAM_DRAG_REASSIGNMENT_PATCH.zip",
   "save_format": 4,
   "base_game_runtime_build": "v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH",
   "editor": "AEGIS_Prop_Editor_v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH.html",
@@ -9,14 +9,14 @@
   "tools_editor_launcher_extension": "assets/runtime/aegis-tools-editor-launcher-runtime.js",
   "tools_editor_launcher_build": "v0.26.09.18.2115_IN_GAME_TOOLS_EDITOR_RENDERED_RUNTIME_HOTFIX",
   "tools_editor_access": "native-react-button-via-pre-render-embedded-runtime-payload-transform",
-  "launch_cache": "aegis-launch-shell-v94-civilian-objective-standing-order-resume",
-  "hotfix_reason": "Makes civilian/VIP objective assignment temporarily suspend persistent Patrol/Fallback/Check orders and automatically resume the same standing order after objective completion.",
+  "launch_cache": "aegis-launch-shell-v95-vitals-fire-team-reassignment",
+  "hotfix_reason": "Adds direct Vitals drag/drop fire-team reassignment with commander-managed roster persistence and full team labels while preserving actor-owned duties and team-owned orders.",
   "runtime_extension": "assets/runtime/aegis-contextual-prop-placement-runtime.js",
   "runtime_extension_build": "v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH",
   "prop_authoring_pipeline": "canonical-prop-definition",
-  "runtime_bytes": 7705948,
-  "runtime_sha256": "9cff9e5cf3772760130f2d4f8909320a846c8fbd350edc41c3ad7c6082cff723",
-  "host_sha256": "eecaa2982fe98a8e9f4c4fb9e5de395b1bb02bfcf3dc3a9cd561bf3ff048d3d1",
+  "runtime_bytes": 7724231,
+  "runtime_sha256": "4db577635e29643e29d5bdbd6d1d154d796aeb9e850fd19eb3a4e46383b003bf",
+  "host_sha256": "850e08e1f8015c8f0339508071f7a0cad3ead2918c541b076a46f44bbab3403e",
   "building_layout_editor": "AEGIS_Building_Layout_Editor_CURRENT.html",
   "building_layout_schema": "aegis-building-layout-v1",
   "tv_play": "AEGIS_TV.html",
@@ -28,5 +28,7 @@
   "department_heads_runtime": "assets/runtime/aegis-department-heads.js",
   "department_heads_policy_version": 2,
   "escort_authority_contract": "escortId-owner-state-v1+breach-egress-v1",
-  "standing_order_resume_contract": "objective-completion-preserves-standing-v1+civilian-objective-suspend-resume-v2"
+  "standing_order_resume_contract": "objective-completion-preserves-standing-v1+civilian-objective-suspend-resume-v2",
+  "tactical_vitals_reassignment_contract": "drag-drop-fire-team-roster-v1",
+  "fire_team_roster_authority": "commander-managed-after-first-vitals-reassignment"
 }

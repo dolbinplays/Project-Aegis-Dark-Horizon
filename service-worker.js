@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.10.02.0040_CIVILIAN_OBJECTIVE_STANDING_ORDER_SUSPEND_RESUME_HOTFIX";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.02.0040_CIVILIAN_OBJECTIVE_STANDING_ORDER_SUSPEND_RESUME_HOTFIX";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v94-civilian-objective-standing-order-resume";
+const AEGIS_PWA_CACHE = "aegis-v0.26.10.02.0041_TACTICAL_VITALS_FIRE_TEAM_DRAG_REASSIGNMENT_PATCH";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.02.0041_TACTICAL_VITALS_FIRE_TEAM_DRAG_REASSIGNMENT_PATCH";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v95-vitals-fire-team-reassignment";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;

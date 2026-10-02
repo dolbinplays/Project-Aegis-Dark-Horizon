@@ -1,3 +1,19 @@
+BUILD: v0.26.10.02.0041_TACTICAL_VITALS_FIRE_TEAM_DRAG_REASSIGNMENT_PATCH
+October 2, 2026 - Tactical Vitals Fire-Team Drag Reassignment + Full Team Labels
+Save format: 4
+
+- Makes living, conscious AEGIS soldier entries draggable between legal fire-team Vitals panels during the human phase.
+- Valid drop-target teams highlight during drag; click-to-select remains intact when a drag is not performed.
+- Widens/reflows Vitals panels and uses full labels such as `Alpha Fire Team Vitals`.
+- Reassignment updates authoritative fire-team membership, formation identity, leadership, wingman/role state and commander references immediately.
+- Preserves actor-owned active VIP/civilian escorts and casualty-response ownership on the moved soldier.
+- Keeps team-owned Patrol/Fallback/Check orders, Beacon/VIP assignments and VIP-lock planning authority with their original teams; the moved soldier adopts the destination team's team-owned state.
+- Enforces the existing four-soldier fire-team cap and prevents dragging the final active member out of a team.
+- After the first commander-managed reassignment, legacy automatic membership balancing no longer reshuffles custom teams for the rest of that tactical battle; leader/role succession still recalculates normally.
+- Persists manual-roster authority through tactical snapshots/save-load without changing save format 4.
+- Focused reassignment fixture passes 12/12 checks; inherited Browser 0038-0040 escort/standing-order regressions remain passing.
+- See TACTICAL_VITALS_FIRE_TEAM_REASSIGNMENT_0041_VALIDATION.md.
+
 BUILD: v0.26.10.02.0040_CIVILIAN_OBJECTIVE_STANDING_ORDER_SUSPEND_RESUME_HOTFIX
 October 2, 2026 - Civilian Objective Standing-Order Suspend + Resume Hotfix
 Save format: 4
