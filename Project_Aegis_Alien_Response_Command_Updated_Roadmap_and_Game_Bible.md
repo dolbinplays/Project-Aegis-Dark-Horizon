@@ -1,8 +1,20 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.02.0043_HALLOWEEN_BASE_DECOR_VISIBILITY_HOTFIX`
+Current browser build: `v0.26.10.02.0044_TACTICAL_WALL_AUTHORITY_AND_HALLOWEEN_MAP_VISIBILITY_HOTFIX`
 
 Current save format: `4`
+
+## Tactical Wall Authority + Halloween Map Visibility — Browser 0044
+
+**Status: implemented; installed-game field acceptance pending.**
+
+Browser 0044 closes a live field-reported visual/pathing split in procedural buildings. Earlier discovered-building presentation repairs could synthesize a visually continuous pristine facade when a structural perimeter record was missing from the authoritative battlefield state. That made an old wall-gap correction look solid while movement could still traverse the missing blocker. The battlefield integrity pass now restores genuinely missing non-door procedural perimeter wall/window records as real structural cover. Legitimate breaches/destroyed openings are explicitly recognized and never restored; the presentation shell likewise stops drawing a pristine wall over authoritative breach-rubble.
+
+The same release hardens Halloween tactical-map visibility. October decorations now apply to every mission type rather than depending on ordinary procedural buildings. Building dressing becomes visible when the building itself is discovered, and each October deployment receives a small guaranteed non-blocking landing-zone cluster of pumpkins, webs, bats and ghosts so the seasonal event is immediately apparent on urban, rural, open-terrain, crash-site and alien-base maps. Seasonal props remain presentation-only.
+
+**Acceptance:** confirm intact rendered walls cannot be traversed, real doors/breaches remain usable, October missions visibly contain Halloween dressing near deployment and around discovered buildings, and seasonal props never alter LOS/pathing/cover/occupancy. Save format remains **4**.
+
+See `TACTICAL_WALL_AND_HALLOWEEN_MAP_0044_VALIDATION.md`.
 
 ## Halloween Base Decoration Visibility — Browser 0043
 

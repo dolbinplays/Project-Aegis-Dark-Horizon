@@ -1,6 +1,6 @@
 {
-  "build": "v0.26.10.02.0043_HALLOWEEN_BASE_DECOR_VISIBILITY_HOTFIX",
-  "package_filename": "Project_Aegis_v0.26.10.02.0043_HALLOWEEN_BASE_DECOR_VISIBILITY_HOTFIX.zip",
+  "build": "v0.26.10.02.0044_TACTICAL_WALL_AUTHORITY_AND_HALLOWEEN_MAP_VISIBILITY_HOTFIX",
+  "package_filename": "Project_Aegis_v0.26.10.02.0044_TACTICAL_WALL_AUTHORITY_AND_HALLOWEEN_MAP_VISIBILITY_HOTFIX.zip",
   "save_format": 4,
   "base_game_runtime_build": "v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH",
   "editor": "AEGIS_Prop_Editor_v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH.html",
@@ -9,14 +9,14 @@
   "tools_editor_launcher_extension": "assets/runtime/aegis-tools-editor-launcher-runtime.js",
   "tools_editor_launcher_build": "v0.26.09.18.2115_IN_GAME_TOOLS_EDITOR_RENDERED_RUNTIME_HOTFIX",
   "tools_editor_access": "native-react-button-via-pre-render-embedded-runtime-payload-transform",
-  "launch_cache": "aegis-launch-shell-v97-halloween-base-decor",
-  "hotfix_reason": "Makes October Base Halloween decorations clearly visible at normal zoom by adding pointer-transparent foreground pumpkins, webs, bats and ghosts above facility artwork while preserving all 0042 seasonal mechanics.",
+  "launch_cache": "aegis-launch-shell-v98-wall-halloween-map",
+  "hotfix_reason": "Aligns procedural building facade presentation with authoritative structural pathing and guarantees visible non-blocking Halloween decorations on every October tactical mission.",
   "runtime_extension": "assets/runtime/aegis-contextual-prop-placement-runtime.js",
   "runtime_extension_build": "v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH",
   "prop_authoring_pipeline": "canonical-prop-definition",
-  "runtime_bytes": 7754233,
-  "runtime_sha256": "9d3a557e02aec3b1efccebfdac75ca71f413c274deb90b1e2ad25f7c18c7e475",
-  "host_sha256": "8a5e079a9959fa42ce2bf35ffef1024a714ea3c06c2ad4ede1ce4f4fdac67fee",
+  "runtime_bytes": 7766879,
+  "runtime_sha256": "4740621fcc6060f360c8d702aa3de7dbf514bfce47e0d08d0916903e2ec48512",
+  "host_sha256": "855b8b4230e789f45c40c43f173d5f2c2406b9a52ddffb413f189b8704386a06",
   "building_layout_editor": "AEGIS_Building_Layout_Editor_CURRENT.html",
   "building_layout_schema": "aegis-building-layout-v1",
   "tv_play": "AEGIS_TV.html",
@@ -43,5 +43,7 @@
   "halloween_full_set_reward": "presentation-only-victory-flourish",
   "seasonal_locker_ui": "follow-up",
   "halloween_base_decor_presentation": "foreground-facility-edge-overlay-v1",
-  "halloween_base_decor_input_policy": "pointer-events-none-presentation-only"
+  "halloween_base_decor_input_policy": "pointer-events-none-presentation-only",
+  "procedural_wall_authority": "missing-perimeter-wall-window-restoration+loaded-cover-normalization-v2",
+  "halloween_map_visibility": "every-october-map+deployment-cluster+loaded-save-backfill-v3"
 }

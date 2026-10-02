@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.10.02.0043_HALLOWEEN_BASE_DECOR_VISIBILITY_HOTFIX";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.02.0043_HALLOWEEN_BASE_DECOR_VISIBILITY_HOTFIX";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v97-halloween-base-decor";
+const AEGIS_PWA_CACHE = "aegis-v0.26.10.02.0044_TACTICAL_WALL_AUTHORITY_AND_HALLOWEEN_MAP_VISIBILITY_HOTFIX";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.02.0044_TACTICAL_WALL_AUTHORITY_AND_HALLOWEEN_MAP_VISIBILITY_HOTFIX";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v98-wall-halloween-map";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;

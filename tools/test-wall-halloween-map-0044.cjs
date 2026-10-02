@@ -1,0 +1,17 @@
+const fs=require('fs');const path=require('path');const runtime=fs.readFileSync(path.join(__dirname,'..','src','browser-runtime.html'),'utf8');const tests=[];const t=(n,p)=>tests.push([n,!!p]);const build='v0.26.10.02.0044_TACTICAL_WALL_AUTHORITY_AND_HALLOWEEN_MAP_VISIBILITY_HOTFIX';
+t('Build identity is Browser 0044',runtime.includes(`const CURRENT_GAME_BUILD="${build}"`));
+t('0044 wall/map visibility flag exists',runtime.includes('TACTICAL_WALL_AUTHORITY_AND_HALLOWEEN_MAP_VISIBILITY_HOTFIX=true'));
+t('Missing procedural perimeter authority repair exists',runtime.includes('function tacticalRestoreMissingBuildingPerimeterAuthority')&&runtime.includes('aegisRestoredPerimeterAuthority'));
+t('Loaded tactical integrity repair invokes perimeter restoration',runtime.includes('tacticalRepairBattlefieldStateWithWallAuthority')&&runtime.includes('tacticalRestoreMissingBuildingPerimeterAuthority(options?.covers'));
+t('New battlefields invoke perimeter restoration',runtime.includes('makeBattlefieldWithWallAuthority0044')&&runtime.includes('makeBattlefieldAsyncWithWallAuthority0044'));
+t('Presentation shell preserves legitimate breach openings',runtime.includes('aegisPresentationAuthoritativeOpening')&&runtime.includes('presentation-opening-'));
+t('Halloween map generation no longer excludes alien-base missions',!runtime.slice(runtime.indexOf('function seasonalHalloweenMapDecorations'),runtime.indexOf('const AEGIS_MAKE_BATTLEFIELD_BEFORE_SEASONAL_0042')).includes('tacticalMissionIsAlienBaseAssault'));
+t('Halloween map generator has open-map fallback candidates',runtime.includes('fallbackCount=Math.max(14')&&runtime.includes('targetCount=Math.min(18'));
+t('Building decorations render once their building is discovered',runtime.includes('cover?.buildingId&&discovered.has(cover.buildingId)'));
+t('Every October deployment gets guaranteed seasonal landing-zone decorations',runtime.includes('function seasonalHalloweenDeploymentDecorations')&&runtime.includes('tacticalDeploymentWithHalloweenVisibility0044'));
+t('Seasonal map props remain non-blocking presentation-only',runtime.includes('seasonalDeploymentDecoration:true')&&runtime.includes('block:0')&&runtime.includes('presentationOnly:true'));
+t('Map catalog includes pumpkins webs bats and ghosts',['halloween-pumpkin','halloween-web','halloween-bats','halloween-ghost'].every(v=>runtime.includes(v)));
+t('Loaded TacticalMission cover state is normalized through 0044 authority preparation',runtime.includes('useState(()=>tacticalPrepareMissionCovers0044(cachedBattleState?.covers'));
+t('Seasonal backfill is idempotent for map and deployment decorations',runtime.includes('existingSeasonal=source.filter')&&runtime.includes('existingDeployment=covers.filter')&&runtime.includes('needed=Math.max(0,4-existingDeployment)'));
+t('Save format remains four',runtime.includes('CURRENT_SAVE_FORMAT_VERSION=4')||runtime.includes('CURRENT_SAVE_FORMAT_VERSION = 4'));
+console.log(`${tests.filter(x=>x[1]).length}/${tests.length}`);for(const [n,p] of tests)console.log(`${p?'PASS':'FAIL'} ${n}`);if(tests.some(x=>!x[1]))process.exit(1);

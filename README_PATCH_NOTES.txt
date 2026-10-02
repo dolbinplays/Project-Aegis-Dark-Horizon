@@ -1,3 +1,17 @@
+BUILD: v0.26.10.02.0044_TACTICAL_WALL_AUTHORITY_AND_HALLOWEEN_MAP_VISIBILITY_HOTFIX
+October 2, 2026 - Tactical Wall Authority + Halloween Map Visibility Hotfix
+Save format: 4
+
+- Fixes a procedural/discovered-building seam where renderer-only wall repair could display a solid facade segment without a matching authoritative movement blocker.
+- Missing non-door procedural perimeter wall/window cells are now restored as real hard structural cover during battlefield generation/integrity repair; legitimate breach-rubble and destroyed openings stay open.
+- The discovered-building shell no longer paints a pristine wall over an authoritative breach.
+- Halloween tactical dressing now exists on every October mission type, including open terrain and alien-base missions.
+- Every October deployment receives a guaranteed small, revealed, non-blocking landing-zone cluster of pumpkins/webs/bats/ghosts, while additional building decorations appear when their building is discovered.
+- Loaded tactical saves receive the same wall-authority repair and October decoration normalization; seasonal backfill is idempotent and does not stack duplicate props on repeated loads.
+- Seasonal decorations remain presentation-only and do not affect movement, LOS, cover, occupancy, targeting or mission objectives.
+- Save format remains 4.
+- See TACTICAL_WALL_AND_HALLOWEEN_MAP_0044_VALIDATION.md.
+
 BUILD: v0.26.10.02.0043_HALLOWEEN_BASE_DECOR_VISIBILITY_HOTFIX
 October 2, 2026 - Halloween Base Decoration Visibility Hotfix
 Save format: 4
