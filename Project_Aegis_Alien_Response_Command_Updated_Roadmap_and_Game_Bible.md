@@ -1,8 +1,12 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.02.0046_EARLY_TACTICAL_HYDRATION_COMPATIBILITY_HOTFIX`
+Current browser build: `v0.26.10.02.0047_SHARED_GAMEPLAY_STARTUP_SCOPE_HOTFIX`
 
 Current save format: `4`
+
+## Shared Gameplay Startup Scope — Browser 0047
+
+Seasonal and map extensions initialize before either normal gameplay or building-editor startup. Fixes the editor-only scope that left normal-game helpers undefined and repeatedly broke AI mission completion. Reported 0042 recovery state completes in runtime replay with six frames. Startup and editor regression coverage added; save format 4 unchanged.
 
 ## Tactical Wall Authority + Halloween Map Visibility — Browser 0044
 

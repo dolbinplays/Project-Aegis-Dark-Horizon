@@ -1524,7 +1524,7 @@ function aegisTacticalViewportDimensions(mount,fallback={},layout=AEGIS_INTERFAC
 }
 // AEGIS_MOBILE_INTERFACE_END
 
-const CURRENT_GAME_BUILD="v0.26.10.02.0046_EARLY_TACTICAL_HYDRATION_COMPATIBILITY_HOTFIX";const TACTICAL_WALL_AUTHORITY_AND_HALLOWEEN_MAP_VISIBILITY_HOTFIX=true;const HALLOWEEN_BASE_DECOR_VISIBILITY_HOTFIX=true;const SEASONAL_EVENT_FRAMEWORK_HALLOWEEN_PATCH=true;const TACTICAL_CIVILIAN_OBJECTIVE_STANDING_ORDER_SUSPEND_RESUME_RELEASE=true;const QUARTERMASTER_PER_SQUAD_ROLE_LOADOUT_DOCTRINE_PATCH=true;const TACTICAL_ESCORT_BREACH_EGRESS_AND_STANDING_ORDER_RESUME_HOTFIX=true;const TACTICAL_ESCORT_AUTHORITY_CONSOLIDATION_PATCH=true;const TACTICAL_ACTIVE_ESCORT_EXTRACTION_PERSISTENCE_HOTFIX=true;
+const CURRENT_GAME_BUILD="v0.26.10.02.0047_SHARED_GAMEPLAY_STARTUP_SCOPE_HOTFIX";const TACTICAL_WALL_AUTHORITY_AND_HALLOWEEN_MAP_VISIBILITY_HOTFIX=true;const HALLOWEEN_BASE_DECOR_VISIBILITY_HOTFIX=true;const SEASONAL_EVENT_FRAMEWORK_HALLOWEEN_PATCH=true;const TACTICAL_CIVILIAN_OBJECTIVE_STANDING_ORDER_SUSPEND_RESUME_RELEASE=true;const QUARTERMASTER_PER_SQUAD_ROLE_LOADOUT_DOCTRINE_PATCH=true;const TACTICAL_ESCORT_BREACH_EGRESS_AND_STANDING_ORDER_RESUME_HOTFIX=true;const TACTICAL_ESCORT_AUTHORITY_CONSOLIDATION_PATCH=true;const TACTICAL_ACTIVE_ESCORT_EXTRACTION_PERSISTENCE_HOTFIX=true;
 const TACTICAL_LAST_KNOWN_CONTACT_CLEARANCE_FEEDBACK_AND_PERSISTENCE_HOTFIX=true;
 const BANDAGE_EARLY_GAME_FIRST_AID_AND_MEDKIT_RESEARCH_PROGRESSION_PATCH=true;
 const TACTICAL_OBSERVATION_GATED_UFO_FLIGHT_PRESENTATION_PATCH=true;
@@ -21617,16 +21617,7 @@ function tacticalVitalsFireTeamReassignment0041ContractChecks(){
 const AEGIS_POST_DEFERRED_BUILD_HEALTH_RUNNER_BEFORE_VITALS_REASSIGNMENT_0041=AEGIS_POST_DEFERRED_BUILD_HEALTH_RUNNER;
 AEGIS_POST_DEFERRED_BUILD_HEALTH_RUNNER=()=>[...AEGIS_POST_DEFERRED_BUILD_HEALTH_RUNNER_BEFORE_VITALS_REASSIGNMENT_0041(),...Object.entries(tacticalVitalsFireTeamReassignment0041ContractChecks()).map(([name,pass])=>({name,pass:Boolean(pass)}))];
 
-let aegisBuildingEditorToken='';
-try{aegisBuildingEditorToken=new URLSearchParams(window.parent.location.search).get('aegisBuildingEditor')||'';}catch{}
-if(aegisBuildingEditorToken&&window.parent!==window&&window.parent.parent!==window.parent){
-  window.AEGIS_INSTALL_BUILDING_EDITOR({api:window.AEGIS_BUILDING_LAYOUT_API,View:TacticalIsoThreeView,
-    residence:TACTICAL_BUILDING_ARCHETYPES.smalltown.find(b=>b.key==='residence'),footprint:tacticalBuildingFootprintCells,
-    doors:tacticalBuildingDoorCells,perimeter:tacticalBuildingPerimeterCells,facade:tacticalBuildingFacadeOrientation,furnishings:tacticalBuildingFurnishingPoints,
-    covers:tacticalBuildingCovers,plans:tacticalBuildingPlans,neighbors:tacticalNeighbors,path:tacticalPath,generate:makeBattlefield,
-    autoDoors:tacticalAutoOpenDoorsAlongPathInPlace,toggleDoor:tacticalToggleBuildingDoorResult},aegisBuildingEditorToken);
-
-
+// Register shared gameplay extensions before choosing game or editor startup.
 // Browser 0042 — reusable seasonal event framework + Halloween collection foundation.
 const AEGIS_SEASONAL_EVENT_DEFINITIONS=Object.freeze({
   halloween:Object.freeze({key:"halloween",label:"Halloween",month:10,dropLabel:"Halloween Costume Drop",palette:[0xff7a00,0x111111,0x8b5cf6,0x22c55e]})
@@ -21713,13 +21704,23 @@ function seasonalHalloween0042ContractChecks(){const previous=globalThis.__AEGIS
 "Alien collectible is an exact slot-bearing permanent cosmetic with no stat payload":Boolean(decorated.some(unit=>unit.seasonalCostumePiece))&&!Object.prototype.hasOwnProperty.call(piece,"stat")&&!Object.prototype.hasOwnProperty.call(piece,"bonus"),
 "Recovered seasonal pieces assign to an empty soldier slot and persist on normalized soldier data":Boolean(assigned.soldiers.find(s=>s.id==="s1")?.seasonalCosmetics?.[piece.slot])&&Boolean(normalizeSoldier(assigned.soldiers[0]).seasonalCosmetics[piece.slot]),
 "A matching four-slot costume set unlocks its named celebration flourish":seasonalFullSet(fullLoadout)?.key===piece.setKey&&Boolean(seasonalFullSet(fullLoadout)?.flourish),
-"Halloween base hallway presentation is seasonal and cosmetic only":String(baseHallwayGridStyle).includes("radial-gradient")&&String(baseHallwayGridStyle).includes("seasonalEventActive"),
+"Halloween base hallway presentation is seasonal and cosmetic only":String(baseHallwayGridStyle().backgroundImage).includes("radial-gradient")&&String(baseHallwayGridStyle).includes("seasonalEventActive"),
 "Mission Halloween decorations are explicitly non-blocking presentation props":String(seasonalHalloweenMapDecorations).includes('block:0')&&String(seasonalHalloweenMapDecorations).includes('presentationOnly:true'),
 "Weapon skins alter only persistent-renderer celebration effects":String(seasonalThreeShotCelebration).includes("seasonalCosmetics")&&String(seasonalThreeShotCelebration).includes("TorusGeometry"),
 "Seasonal framework remains additive under save format four":CURRENT_SAVE_FORMAT_VERSION===4
 };}finally{if(previous===undefined)delete globalThis.__AEGIS_SEASONAL_DATE_OVERRIDE;else globalThis.__AEGIS_SEASONAL_DATE_OVERRIDE=previous;}}
 const AEGIS_POST_DEFERRED_BUILD_HEALTH_RUNNER_BEFORE_SEASONAL_0042=AEGIS_POST_DEFERRED_BUILD_HEALTH_RUNNER;
 AEGIS_POST_DEFERRED_BUILD_HEALTH_RUNNER=()=>[...AEGIS_POST_DEFERRED_BUILD_HEALTH_RUNNER_BEFORE_SEASONAL_0042(),...Object.entries(seasonalHalloween0042ContractChecks()).map(([name,pass])=>({name,pass:Boolean(pass)}))];
+
+let aegisBuildingEditorToken='';
+try{aegisBuildingEditorToken=new URLSearchParams(window.parent.location.search).get('aegisBuildingEditor')||'';}catch{}
+if(aegisBuildingEditorToken&&window.parent!==window&&window.parent.parent!==window.parent){
+  window.AEGIS_INSTALL_BUILDING_EDITOR({api:window.AEGIS_BUILDING_LAYOUT_API,View:TacticalIsoThreeView,
+    residence:TACTICAL_BUILDING_ARCHETYPES.smalltown.find(b=>b.key==='residence'),footprint:tacticalBuildingFootprintCells,
+    doors:tacticalBuildingDoorCells,perimeter:tacticalBuildingPerimeterCells,facade:tacticalBuildingFacadeOrientation,furnishings:tacticalBuildingFurnishingPoints,
+    covers:tacticalBuildingCovers,plans:tacticalBuildingPlans,neighbors:tacticalNeighbors,path:tacticalPath,generate:makeBattlefield,
+    autoDoors:tacticalAutoOpenDoorsAlongPathInPlace,toggleDoor:tacticalToggleBuildingDoorResult},aegisBuildingEditorToken);
+
 
 }else{ReactDOM.createRoot(document.getElementById("root")).render(/*#__PURE__*/React.createElement(AlienResponseCommand,null));}
 

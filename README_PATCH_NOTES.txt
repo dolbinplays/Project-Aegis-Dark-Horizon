@@ -1,3 +1,12 @@
+BUILD: v0.26.10.02.0047_SHARED_GAMEPLAY_STARTUP_SCOPE_HOTFIX
+October 2, 2026 - Shared Gameplay Startup Scope Hotfix
+- Fixes AI continuation failing with seasonalRecoveredDropsFromAliens is not a function.
+- Seasonal and map helpers now initialize for both normal gameplay and editor startup before rendering.
+- Fixes the underlying scope mistake behind the related seasonal/map-helper availability errors.
+- Verified the reported 0042 saved recovery continuation completes with six playback frames.
+- On an already-failed save, choose Retry AI Continuation after loading this update.
+- Save format remains 4; no save edits required.
+
 BUILD: v0.26.10.02.0046_EARLY_TACTICAL_HYDRATION_COMPATIBILITY_HOTFIX
 October 2, 2026 - Early Tactical Hydration Compatibility Hotfix
 Save format: 4
