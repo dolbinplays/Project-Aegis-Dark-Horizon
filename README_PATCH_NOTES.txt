@@ -1,3 +1,12 @@
+BUILD: v0.26.10.02.0048_AI_RELIABILITY_AND_STANDING_ORDER_RESUMPTION_PATCH
+October 2, 2026 - AI Reliability and Standing Order Resumption
+- Patrol, Fallback Post, and Check Location resume automatically after their assigned civilian/VIP group is resolved. Patrol waypoint and order identity are preserved across save/reload.
+- Temporary objective completion preserves suspended standing orders. Cancelling or replacing orders remains authoritative; partial escort extraction does not resume the route early.
+- Shared startup and AI continuation checks identify missing gameplay helpers before planning starts.
+- AI playback shows whether it is planning, playing actions, waiting for the player, missing a continuation, or stopped by an error. Export AI Diagnostics downloads a compact JSON report with team orders and escort ownership.
+- Packaging now requires startup, saved-result replay, escort, beacon, order-continuity, and streamed AI regression tests to pass.
+- Save format remains 4. Existing saves are supported.
+
 BUILD: v0.26.10.02.0047_SHARED_GAMEPLAY_STARTUP_SCOPE_HOTFIX
 October 2, 2026 - Shared Gameplay Startup Scope Hotfix
 - Fixes AI continuation failing with seasonalRecoveredDropsFromAliens is not a function.

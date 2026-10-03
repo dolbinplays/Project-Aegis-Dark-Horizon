@@ -1,8 +1,22 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.02.0047_SHARED_GAMEPLAY_STARTUP_SCOPE_HOTFIX`
+Current browser build: `v0.26.10.02.0048_AI_RELIABILITY_AND_STANDING_ORDER_RESUMPTION_PATCH`
 
 Current save format: `4`
+
+## AI Reliability and Standing Order Resumption — Browser 0048
+
+Implemented; installed-game field acceptance pending.
+
+October 2, 2026 - AI Reliability and Standing Order Resumption
+- Patrol, Fallback Post, and Check Location resume automatically after their assigned civilian/VIP group is resolved. Patrol waypoint and order identity are preserved across save/reload.
+- Temporary objective completion preserves suspended standing orders. Cancelling or replacing orders remains authoritative; partial escort extraction does not resume the route early.
+- Shared startup and AI continuation checks identify missing gameplay helpers before planning starts.
+- AI playback shows whether it is planning, playing actions, waiting for the player, missing a continuation, or stopped by an error. Export AI Diagnostics downloads a compact JSON report with team orders and escort ownership.
+- Packaging now requires startup, saved-result replay, escort, beacon, order-continuity, and streamed AI regression tests to pass.
+- Save format remains 4. Existing saves are supported.
+
+See `AI_RELIABILITY_0048_VALIDATION.md`.
 
 ## Shared Gameplay Startup Scope — Browser 0047
 

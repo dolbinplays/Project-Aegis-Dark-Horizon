@@ -46,6 +46,16 @@ if (missingLineage.length) {
   throw new Error(`Refusing to package a stale browser runtime. Missing: ${missingLineage.join(", ")}`);
 }
 
+// Do not emit a release when gameplay startup, save-resume, or command continuity regress.
+const releaseGate = require("child_process").spawnSync(process.execPath, ["--test", "--test-concurrency=2",
+  "tools/test-seasonal-startup-runtime.cjs", "tools/test-ai-reliability-runtime.cjs",
+  "tools/test-order-resumption-runtime.cjs", "tools/test-escort-turn-scheduling.cjs",
+  "tools/test-principal-beacon-continuation.cjs", "tools/test-rescue-lock-runtime.cjs",
+  "tools/test-ai-command-stream-handoff.cjs"
+], {cwd:root, stdio:"inherit", timeout:180000});
+if (releaseGate.error || releaseGate.status !== 0) throw new Error("Gameplay release checks failed; package was not written. " + (releaseGate.error?.message || ""));
+if (fs.readFileSync(sourcePath, "utf8") !== source) throw new Error("Runtime source changed during release checks; retry packaging.");
+
 const sourceBytes = Buffer.from(source, "utf8");
 const payload = sourceBytes.toString("base64");
 const payloadSha256 = crypto.createHash("sha256").update(sourceBytes).digest("hex");
