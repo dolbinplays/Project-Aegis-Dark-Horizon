@@ -1,3 +1,12 @@
+BUILD: v0.26.10.04.0049.1_SIGNAL_INTRUSION_OUTCOME_HOTFIX
+October 4, 2026 - Signal Intrusion Outcome Hotfix
+- Winning immediately locks all guesses so rapid clicks cannot schedule both success and failure or spend hacking TU twice.
+- Attempt count, quality and TU refund remain fixed while the result animation plays.
+- Abort and Auto Resolve visibly disable as soon as the first guess commits.
+- Replaces the never-disconnected MutationObserver with synchronous button-state updates.
+- Adds eight interaction regressions to the mandatory packaging gate and synchronizes the source manifest.
+- Existing hacking costs, AI behavior and save format 4 are unchanged. Planned Browser 0050/0051 feature slots are preserved.
+
 BUILD: v0.26.10.04.0049_MINIGAME_FRAMEWORK_AND_BEACON_SIGNAL_INTRUSION_PATCH
 October 4, 2026 - Minigame Framework + Beacon Signal Intrusion
 - Adds a reusable player minigame contract that modifies bounded action outcomes without replacing authoritative gameplay rules.
