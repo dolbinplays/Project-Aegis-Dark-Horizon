@@ -1,8 +1,33 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.02.0048_AI_RELIABILITY_AND_STANDING_ORDER_RESUMPTION_PATCH`
+Current browser build: `v0.26.10.04.0049_MINIGAME_FRAMEWORK_AND_BEACON_SIGNAL_INTRUSION_PATCH`
 
 Current save format: `4`
+
+
+## Minigame Framework + Beacon Signal Intrusion — Browser 0049
+
+**Status: implemented; installed-game field acceptance pending.**
+
+Browser 0049 establishes one reusable minigame contract: player-facing skill challenges may modify a bounded presentation/action result, but eligibility, resource costs, tactical legality, AI authority, damage, campaign state and mission completion remain owned by the existing gameplay resolver. Every minigame must provide an Auto Resolve path and must never soft-lock campaign progression.
+
+Manual researched Alien Field Beacon hacking now opens **Signal Intrusion**, an original alien-command-signature deduction interface. The player chooses among alien glyph sequences and receives exact phase-alignment plus total resonance feedback for up to four attempts. The first successful attempt refunds 4 TU from the established 16-TU hack; a second-attempt success refunds 2 TU; later success uses the normal 16-TU cost. Auto Resolve preserves the pre-0049 deterministic 16-TU successful hack. A failed committed intrusion spends the 16-TU hacking action and leaves the Beacon active for a later legal attempt. Opening the interface and aborting before the first guess costs nothing. Pale Commander badge override remains a credential bypass at the established 8 TU and does not open the hacking minigame.
+
+Simulation AI and autonomous Hybrid support continue to use the existing authoritative Beacon disable resolver directly; they do not play or simulate UI inputs. Shield collapse, reinforcement-transit cancellation, Beacon objective completion, research/knowledge gates, adjacency/field requirements and save format **4** are unchanged.
+
+### Approved continuation — Browser 0050: Alien Resonance Locks
+- Add an original tactile alien access-lock bypass minigame for secured UFO/base doors, compartments, consoles and optional caches.
+- Preserve alternate solutions: authorized credential, researched electronic bypass, ordinary door/breach authority, or abandonment where appropriate.
+- Failure may consume TU, create noise, strain a bypass tool, or trigger a local response, but must not create an unrecoverable progression lock.
+- Engineer/research advantages may widen feedback/tolerance without making the minigame mandatory.
+
+### Approved continuation — Browser 0051: Interactive Interceptor Combat
+- Layer an optional pursuit / weapons-solution / breakaway minigame over the existing interceptor combat resolver.
+- Aircraft, weapons, formation, fuel, ammunition, UFO evasion, damage and stance remain the baseline authority; player performance contributes bounded hit, damage and incoming-damage modifiers.
+- Auto Resolve retains strategic combat resolution for players who skip the minigame and for AI/noninteractive contexts.
+- Support mouse, keyboard, touch and the TV/phone-controller input path where practical.
+
+**Acceptance:** manually hack a legally accessible researched Beacon and verify puzzle feedback, first/second-attempt TU refund, standard later success, four-attempt failure, abort-before-attempt, Auto Resolve, and Pale Commander badge bypass. Confirm success cancels pending reinforcement transit exactly as before; failure leaves the Beacon active; AI Beacon hacking remains deterministic; save/load and mission completion remain unchanged.
 
 ## AI Reliability and Standing Order Resumption — Browser 0048
 

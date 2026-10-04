@@ -1,6 +1,6 @@
 {
-  "build": "v0.26.10.02.0048_AI_RELIABILITY_AND_STANDING_ORDER_RESUMPTION_PATCH",
-  "package_filename": "Project_Aegis_v0.26.10.02.0048_AI_RELIABILITY_AND_STANDING_ORDER_RESUMPTION_PATCH.zip",
+  "build": "v0.26.10.04.0049_MINIGAME_FRAMEWORK_AND_BEACON_SIGNAL_INTRUSION_PATCH",
+  "package_filename": "Project_Aegis_v0.26.10.04.0049_MINIGAME_FRAMEWORK_AND_BEACON_SIGNAL_INTRUSION_PATCH.zip",
   "save_format": 4,
   "base_game_runtime_build": "v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH",
   "editor": "AEGIS_Prop_Editor_v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH.html",
@@ -9,14 +9,14 @@
   "tools_editor_launcher_extension": "assets/runtime/aegis-tools-editor-launcher-runtime.js",
   "tools_editor_launcher_build": "v0.26.09.18.2115_IN_GAME_TOOLS_EDITOR_RENDERED_RUNTIME_HOTFIX",
   "tools_editor_access": "native-react-button-via-pre-render-embedded-runtime-payload-transform",
-  "launch_cache": "aegis-launch-shell-v101-ai-reliability",
-  "hotfix_reason": "Restores standing orders after temporary rescue duties, adds gameplay dependency checks and AI diagnostics, and gates packaging on runtime regression tests.",
+  "launch_cache": "aegis-launch-shell-v102-minigame-signal-intrusion",
+  "hotfix_reason": "Adds the reusable player minigame framework and manual Alien Field Beacon Signal Intrusion while preserving authoritative Beacon eligibility, TU, AI, reinforcement, and mission rules.",
   "runtime_extension": "assets/runtime/aegis-contextual-prop-placement-runtime.js",
   "runtime_extension_build": "v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH",
   "prop_authoring_pipeline": "canonical-prop-definition",
-  "runtime_bytes": 7774227,
-  "runtime_sha256": "73f93faa83e4d252dad2bfd24c063d8d602a41c624815ed2b82c1f07f7963f1f",
-  "host_sha256": "c2211b2f774f7b9d5026c8b678ea0b71def485706bf71c352c427fd6f097a8c1",
+  "runtime_bytes": 7782720,
+  "runtime_sha256": "ff0c57b318e3136f4eaf2766f52b8a5d74d9ec7558a7ceb80c700dc8a7f481b5",
+  "host_sha256": "0e10693d5ddfb88da8f06c166263e96026421d5c9b794f791b72a88d81e08037",
   "building_layout_editor": "AEGIS_Building_Layout_Editor_CURRENT.html",
   "building_layout_schema": "aegis-building-layout-v1",
   "tv_play": "AEGIS_TV.html",
@@ -47,5 +47,7 @@
   "procedural_wall_authority": "missing-perimeter-wall-window-restoration+loaded-cover-normalization-v2",
   "halloween_map_visibility": "every-october-map+deployment-cluster+loaded-save-backfill-v3",
   "midmission_save_resume_compatibility": "guarded-0044-cover-preparation-with-inline-equivalent-fallback-v1",
-  "notes": "Early tactical hydration compatibility hotfix: cached tactical covers are authoritative during resume; late seasonal helper symbols are never mandatory during initial React hydration."
+  "notes": "Manual researched Beacon hacks now offer Signal Intrusion. Excellent/clean solves refund 4/2 TU; Auto Resolve uses the established 16 TU result; Pale Commander badge override remains direct at 8 TU; failed committed intrusion spends 16 TU and leaves the Beacon active. Save format 4 unchanged.",
+  "minigame_contract": "player-skill-overlay-v1+authoritative-action-resolver-v1",
+  "beacon_signal_intrusion": "manual-hack-puzzle+auto-resolve+badge-bypass-v1"
 }

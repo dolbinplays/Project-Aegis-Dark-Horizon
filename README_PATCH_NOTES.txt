@@ -1,3 +1,14 @@
+BUILD: v0.26.10.04.0049_MINIGAME_FRAMEWORK_AND_BEACON_SIGNAL_INTRUSION_PATCH
+October 4, 2026 - Minigame Framework + Beacon Signal Intrusion
+- Adds a reusable player minigame contract that modifies bounded action outcomes without replacing authoritative gameplay rules.
+- Manual researched Alien Field Beacon hacking now opens Signal Intrusion, an original alien command-signature deduction minigame with four attempts.
+- First-attempt success refunds 4 TU; second-attempt success refunds 2 TU; later success uses the established 16-TU hack cost.
+- Auto Resolve preserves the existing deterministic 16-TU successful hack. Pale Commander badge override remains a direct 8-TU credential bypass.
+- A failed committed intrusion spends 16 TU and leaves the Beacon active; aborting before the first guess costs nothing.
+- AI/Simulation uses the existing Beacon resolver directly and never depends on the UI minigame.
+- Roadmap locks Browser 0050 Alien Resonance Locks and Browser 0051 Interactive Interceptor Combat as the next minigame phases.
+- Save format remains 4.
+
 BUILD: v0.26.10.02.0048_AI_RELIABILITY_AND_STANDING_ORDER_RESUMPTION_PATCH
 October 2, 2026 - AI Reliability and Standing Order Resumption
 - Patrol, Fallback Post, and Check Location resume automatically after their assigned civilian/VIP group is resolved. Patrol waypoint and order identity are preserved across save/reload.
