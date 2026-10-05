@@ -1,6 +1,6 @@
 {
-  "build": "v0.26.10.05.0053.1_COSTUME_EDITOR_REVIEW_HOTFIX",
-  "package_filename": "Project_Aegis_v0.26.10.05.0053.1_COSTUME_EDITOR_REVIEW_HOTFIX.zip",
+  "build": "v0.26.10.05.0054.1_COSTUME_FIT_REVIEW_HOTFIX",
+  "package_filename": "Project_Aegis_v0.26.10.05.0054.1_COSTUME_FIT_REVIEW_HOTFIX.zip",
   "save_format": 4,
   "base_game_runtime_build": "v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH",
   "editor": "AEGIS_Prop_Editor_v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH.html",
@@ -9,14 +9,14 @@
   "tools_editor_launcher_extension": "assets/runtime/aegis-tools-editor-launcher-runtime.js",
   "tools_editor_launcher_build": "v0.26.09.18.2115_IN_GAME_TOOLS_EDITOR_RENDERED_RUNTIME_HOTFIX",
   "tools_editor_access": "native-react-button-via-pre-render-embedded-runtime-payload-transform",
-  "launch_cache": "aegis-launch-shell-v111-costume-review",
-  "hotfix_reason": "Repair service worker URL initialization and offline costume assets, protect editor load/save and backups, preserve ordinary collectible IDs, and validate authored presentation.",
+  "launch_cache": "aegis-launch-shell-v113-costume-fit-review",
+  "hotfix_reason": "Align costume preview mesh geometry with runtime, dispose replaced preview resources, validate and bound fit data, preserve legacy material defaults, and retain authoring without WebGL.",
   "runtime_extension": "assets/runtime/aegis-contextual-prop-placement-runtime.js",
   "runtime_extension_build": "v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH",
   "prop_authoring_pipeline": "canonical-prop-definition",
-  "runtime_bytes": 7847222,
-  "runtime_sha256": "1cf9b07d36fd5618692d821b8bb30e1e7be8e8bd44215f0a2046105e85e5e49c",
-  "host_sha256": "c87b640c08b5528920a1b2554e2821c3692e42da2f79e7244cd8ed1790e40a4d",
+  "runtime_bytes": 7851069,
+  "runtime_sha256": "22afcc172df20da3c1d337aa4d4605aafffb8041eb1c23f2b8c0fd584bc635a5",
+  "host_sha256": "57883030af41c2ef0a071557624f219a9dc76fe4723b5dbacdb752f1d3a9ecc7",
   "building_layout_editor": "AEGIS_Building_Layout_Editor_CURRENT.html",
   "building_layout_schema": "aegis-building-layout-v1",
   "tv_play": "AEGIS_TV.html",
@@ -63,5 +63,16 @@
     "moonlit-wolfman",
     "cursed-pharaoh",
     "swamp-king"
-  ]
+  ],
+  "costume_fit_authoring": "per-slot-transform+material+body-family-overrides-v1",
+  "costume_fit_families": [
+    "lean",
+    "standard",
+    "stocky",
+    "alien",
+    "brute",
+    "drone",
+    "leech"
+  ],
+  "costume_preview": "articulated-threejs+standing+aim+kneel+prone+walk+victory-v1"
 }

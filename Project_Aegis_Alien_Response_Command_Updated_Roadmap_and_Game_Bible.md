@@ -1,9 +1,33 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.05.0053.1_COSTUME_EDITOR_REVIEW_HOTFIX`
+Current browser build: `v0.26.10.05.0054.1_COSTUME_FIT_REVIEW_HOTFIX`
 
 Current save format: `4`
 
+
+
+## Costume Fit Review Hotfix — Browser 0054.1
+
+- Runtime/preview costume geometry parity, GPU resource cleanup, safe transform bounds and unchanged legacy opacity defaults.
+- Correct pose limb selection and preserve editing without WebGL. Body previews remain simplified guides requiring in-game acceptance.
+- Actual Three.js geometry and disposal regressions join the mandatory release gate.
+
+## Costume Anatomy, Fit & Visual Authoring Expansion — Browser 0054
+
+**Status: implemented; installed-game visual/file-picker acceptance pending.**
+
+October 5, 2026
+- Expands the Costume Editor from palette/name authoring into articulated visual-fit authoring. The editor previews an articulated humanoid in Standing, Aim, Kneel, Prone, Walk, and Victory poses.
+- Each Top, Bottom, Helmet / Mask, and Weapon Skin definition can author presentation-only position, rotation, XYZ scale, opacity, and emissive treatment.
+- Each slot can additionally store fit-family overrides for Lean, Standard, Stocky, generic Alien, Brute, Drone, and Leech bodies. Fit overrides layer on top of base transforms and do not create new collectible identities.
+- Runtime costume rendering consumes the authored slot transforms through the existing `aegis-costume-library-v1` library. Untouched definitions retain the Browser 0053.1 placement exactly.
+- Foundation and signature definitions share the same authoring surface. Signature `variantKey`, foundation `setKey`, Locker ownership, copy conservation, favorite locks, rare-drop rules and set completion remain authoritative and unchanged.
+- Project-folder saving continues to validate the complete catalog and back up both JS/JSON files before either canonical replacement.
+- All new fit/material fields are presentation-only. No costume field may alter HP, TU, armor, accuracy, damage, morale, AI, LOS, research, economy, mission results, pathing, occupancy, or save authority. Save format remains **4**.
+
+**Acceptance:** open Costume Editor from the Seasonal Locker; select each slot and adjust base position/rotation/scale; switch between Lean/Standard/Stocky and alien-family fit overrides; cycle all six preview poses and verify clipping can be inspected; change opacity/emissive; save to the project folder; relaunch and confirm authored transforms apply to matching soldier/alien costume presentation while inventory and set completion remain unchanged. Verify unchanged definitions render identically to 0053.1 and save/reload campaigns require no migration.
+
+See `COSTUME_FIT_AUTHORING_0054_VALIDATION.md`.
 
 ## Costume Editor Review Hotfix — Browser 0053.1
 

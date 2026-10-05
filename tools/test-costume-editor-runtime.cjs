@@ -2,17 +2,17 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const {runtimeContext}=require('./runtime-test-context.cjs');
 const root=path.resolve(__dirname,'..');
 const library=()=>JSON.parse(fs.readFileSync(path.join(root,'assets/data/aegis-costume-library.json'),'utf8'));
-function editorFixture(files={},failure=null){
+function editorFixture(files={},failure=null,previewFailure=false){
  const elements=new Map(),writes=[];
- const node=()=>({children:[],style:{setProperty(){}},appendChild(n){this.children.push(n);},replaceChildren(){this.children=[];},click(){}});
- const document={getElementById(id){if(!elements.has(id))elements.set(id,node());return elements.get(id);},createElement:node};
+ const node=()=>({children:[],dataset:{},classList:{add(){},toggle(){}},addEventListener(){},getBoundingClientRect(){return{width:600,height:600};},style:{setProperty(){}},appendChild(n){this.children.push(n);},replaceChildren(){this.children=[];},click(){}});
+ const document={querySelectorAll(selector){return selector==='.slotbtn'?(elements.get('slots')?.children||[]):[];},querySelector(){return node();},getElementById(id){if(!elements.has(id))elements.set(id,node());return elements.get(id);},createElement:node};
  const missing=()=>Object.assign(new Error('missing'),{name:'NotFoundError'});
  const dir={async getFileHandle(name,options={}){
   if(!(name in files)&&!options.create)throw missing();
   return{async getFile(){return{text:async()=>files[name]};},async createWritable(){if(failure?.(name))throw new Error('write denied');let value;return{async write(text){value=text;},async close(){files[name]=value;writes.push(name);},async abort(){}};}};
  }};
  const folder={async getFileHandle(name){if(name!=='index.html')throw missing();return{};},async getDirectoryHandle(name){assert.equal(name,'assets');return{async getDirectoryHandle(child){assert.equal(child,'data');return dir;}};}};
- const c={document,structuredClone,Blob,URL,setTimeout:()=>{},window:{showDirectoryPicker:async()=>folder}};
+ const c={document,structuredClone,Blob,URL,setTimeout:()=>{},devicePixelRatio:1,requestAnimationFrame:()=>{},THREE:{...require('../assets/vendor/three.min.js'),WebGLRenderer:class{constructor(){if(previewFailure)throw new Error("WebGL unavailable");}setPixelRatio(){}setSize(){}render(){}}},window:{addEventListener(){},showDirectoryPicker:async()=>folder}};
  vm.createContext(c);const html=fs.readFileSync(path.join(root,'AEGIS_Costume_Editor_CURRENT.html'),'utf8');vm.runInContext(html.match(/<script>([\s\S]*?)<\/script>/)[1],c);
  return{c,elements,files,writes};
 }
@@ -61,4 +61,38 @@ test('editor rejects invalid identities and colors and reports unavailable folde
  const f=editorFixture(),data=library();data.sets[0].primary=-1;assert.throws(()=>f.c.validateLibrary(data),/color/);
  data.sets[0].primary=0;data.variants[0].setKey='witch';assert.throws(()=>f.c.validateLibrary(data),/identity/);
  f.c.window.showDirectoryPicker=null;await f.elements.get('choose').onclick();assert.equal(f.elements.get('save').disabled,true);assert.match(f.elements.get('status').textContent,/unavailable/);
+});
+
+test('fit editor rejects malformed, nonfinite and out-of-range transforms before saving',()=>{
+ const f=editorFixture();
+ for(const [key,value] of [['position',[0,Infinity,0]],['rotation',[0,'bad',0]],['scale',[0,1,1]],['scale',[-1,1,1]],['scale',[4,1,1]],['position',[0,1]]]){
+  const data=library();data.sets[0].slots.top[key]=value;assert.throws(()=>f.c.validateLibrary(data),/transform/);
+ }
+ const data=library();data.sets[0].slots.top.fits.stocky={scale:[1,NaN,1]};assert.throws(()=>f.c.validateLibrary(data),/transform/);
+});
+test('runtime clamps invalid fit data and retains legacy opacity when no override is authored',()=>{
+ const c=runtimeContext();const style=c.seasonalCostumeSlotStyle({slots:{top:{position:[Infinity,2,0],scale:[-1,99,NaN],opacity:NaN,emissive:Infinity}}},'top');
+ assert.equal(style.position[0],0);assert.equal(style.scale[0],.2);assert.equal(style.scale[1],3);assert.equal(style.scale[2],1);assert.equal(style.opacity,undefined);assert.equal(style.emissive,.16);
+ let options;c.tacticalThreePersistentMaterial=(runtime,key,color,value)=>{options=value;return value;};c.seasonalThreeMaterial({},'test',0,.94,style);assert.equal(options.opacity,.94);
+});
+test('preview costume geometry, placement and material match runtime for every foundation set',()=>{
+ const f=editorFixture(),c=runtimeContext(),THREE=f.c.THREE;c.AEGIS_COSTUME_LIBRARY=library();
+ c.tacticalThreePersistentMaterial=(runtime,key,color,options)=>new THREE.MeshStandardMaterial({color,opacity:options.opacity,emissiveIntensity:options.emissive});
+ const signature=root=>{const meshes=[];root.traverse(object=>{if(object.isMesh)meshes.push({type:object.geometry.type,parameters:object.geometry.parameters,position:object.position.toArray(),rotation:object.rotation.toArray(),opacity:object.material.opacity});});return JSON.parse(JSON.stringify(meshes));};
+ for(let i=0;i<library().sets.length;i++){
+  f.c.select('sets:'+i);const key=library().sets[i].key,loadout=Object.fromEntries(['top','bottom','head','weapon'].map(slot=>[slot,{setKey:key,slot}])),root=new THREE.Group();c.seasonalThreeAddCostume({THREE},root,{id:'test',seasonalCosmetics:loadout});
+  const expected=signature(root).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)));const actual=signature(vm.runInContext('costumeRoot',f.c)).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)));
+  assert.deepEqual(actual,expected,key);
+ }
+});
+test('rebuilding the preview releases replaced GPU geometry and materials',()=>{
+ const f=editorFixture();const root=vm.runInContext('costumeRoot',f.c);let geometry=0,material=0,count=0;
+ root.traverse(object=>{if(object.isMesh){count++;object.geometry.addEventListener('dispose',()=>geometry++);object.material.addEventListener('dispose',()=>material++);}});
+ f.c.rebuildCostume();assert.ok(count>0);assert.equal(geometry,count);assert.equal(material,count);
+});
+
+test('missing WebGL preview does not disable file authoring',async()=>{
+ const f=editorFixture({'aegis-costume-library.json':JSON.stringify(library()),'aegis-costume-library.js':'original'},null,true);
+ assert.match(f.elements.get('status').textContent,/preview unavailable/);
+ await f.elements.get('choose').onclick();assert.equal(f.elements.get('save').disabled,false);await f.elements.get('save').onclick();assert.equal(f.writes.length,4);
 });

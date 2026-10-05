@@ -1,6 +1,6 @@
 {
   "schema": "aegis-costume-library-v1",
-  "build": "v0.26.10.05.0053_COSTUME_EDITOR_AND_SIGNATURE_VARIANTS_PATCH",
+  "build": "v0.26.10.05.0054.1_COSTUME_FIT_REVIEW_HOTFIX",
   "presentationOnly": true,
   "sets": [
     {
@@ -8,49 +8,595 @@
       "label": "Vampire",
       "primary": 8330525,
       "accent": 1120295,
-      "flourish": "Cape Flourish"
+      "flourish": "Cape Flourish",
+      "slots": {
+        "top": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "bottom": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "head": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "weapon": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        }
+      }
     },
     {
       "key": "witch",
       "label": "Witch",
       "primary": 5774471,
       "accent": 2278750,
-      "flourish": "Witchlight Spiral"
+      "flourish": "Witchlight Spiral",
+      "slots": {
+        "top": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "bottom": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "head": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "weapon": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        }
+      }
     },
     {
       "key": "wolfman",
       "label": "Wolfman",
       "primary": 7032634,
       "accent": 13751771,
-      "flourish": "Moonlit Howl"
+      "flourish": "Moonlit Howl",
+      "slots": {
+        "top": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "bottom": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "head": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "weapon": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        }
+      }
     },
     {
       "key": "mummy",
       "label": "Mummy",
       "primary": 14078917,
       "accent": 9141608,
-      "flourish": "Unravel-and-Snap"
+      "flourish": "Unravel-and-Snap",
+      "slots": {
+        "top": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "bottom": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "head": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "weapon": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        }
+      }
     },
     {
       "key": "lagoon",
       "label": "Creature from the Black Lagoon",
       "primary": 1467700,
       "accent": 2282478,
-      "flourish": "Lagoon Splash"
+      "flourish": "Lagoon Splash",
+      "slots": {
+        "top": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "bottom": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "head": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "weapon": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        }
+      }
     },
     {
       "key": "frankenstein",
       "label": "Frankenstein",
       "primary": 5078031,
       "accent": 10741301,
-      "flourish": "Lightning Jolt"
+      "flourish": "Lightning Jolt",
+      "slots": {
+        "top": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "bottom": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "head": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "weapon": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        }
+      }
     },
     {
       "key": "skeleton",
       "label": "Skeleton",
       "primary": 15067115,
       "accent": 1120295,
-      "flourish": "Bone-Rattle Shuffle"
+      "flourish": "Bone-Rattle Shuffle",
+      "slots": {
+        "top": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "bottom": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "head": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "weapon": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        }
+      }
     }
   ],
   "variants": [
@@ -60,7 +606,85 @@
       "label": "Crimson Vampire",
       "primary": 12131356,
       "accent": 16109776,
-      "rarity": "signature"
+      "rarity": "signature",
+      "slots": {
+        "top": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "bottom": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "head": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "weapon": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        }
+      }
     },
     {
       "key": "spectral-witch",
@@ -68,7 +692,85 @@
       "label": "Spectral Witch",
       "primary": 8266446,
       "accent": 6809849,
-      "rarity": "signature"
+      "rarity": "signature",
+      "slots": {
+        "top": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "bottom": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "head": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "weapon": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        }
+      }
     },
     {
       "key": "moonlit-wolfman",
@@ -76,7 +778,85 @@
       "label": "Moonlit Wolfman",
       "primary": 3621201,
       "accent": 12573694,
-      "rarity": "signature"
+      "rarity": "signature",
+      "slots": {
+        "top": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "bottom": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "head": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "weapon": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        }
+      }
     },
     {
       "key": "cursed-pharaoh",
@@ -84,7 +864,85 @@
       "label": "Cursed Pharaoh",
       "primary": 13214247,
       "accent": 3223169,
-      "rarity": "signature"
+      "rarity": "signature",
+      "slots": {
+        "top": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "bottom": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "head": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "weapon": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        }
+      }
     },
     {
       "key": "swamp-king",
@@ -92,7 +950,85 @@
       "label": "Swamp King",
       "primary": 1332013,
       "accent": 8702998,
-      "rarity": "signature"
+      "rarity": "signature",
+      "slots": {
+        "top": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "bottom": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "head": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        },
+        "weapon": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "emissive": 0.16,
+          "fits": {}
+        }
+      }
     }
   ]
 }

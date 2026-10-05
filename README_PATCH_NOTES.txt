@@ -1,3 +1,21 @@
+BUILD: v0.26.10.05.0054.1_COSTUME_FIT_REVIEW_HOTFIX
+October 5, 2026 - Costume Fit Review Hotfix
+- Match preview costume geometry/placement/materials to runtime; correct arm/leg pose selection. Body poses remain simplified guides for in-game field verification.
+- Dispose replaced preview geometry and materials to prevent GPU resource accumulation while editing.
+- Reject malformed/nonfinite/out-of-range slot and family transforms; runtime sanitization safely bounds loaded presentation data.
+- Preserve legacy per-mesh opacity for untouched definitions. Blank Opacity uses the default.
+- Keep file authoring available when WebGL cannot initialize. Update actual Three.js preview regressions and synchronize the canonical manifest. Save format remains 4.
+
+BUILD: v0.26.10.05.0054_COSTUME_ANATOMY_FIT_AND_VISUAL_AUTHORING_PATCH
+October 5, 2026 - Costume Anatomy, Fit & Visual Authoring Expansion
+- Expands Costume Editor with articulated Three.js preview and Standing/Aim/Kneel/Prone/Walk/Victory pose checks.
+- Adds per-slot position, rotation, XYZ scale, opacity and emissive authoring for Top/Bottom/Head/Weapon pieces.
+- Adds Lean/Standard/Stocky/Alien/Brute/Drone/Leech fit-family overrides layered over base transforms.
+- Runtime consumes authored transforms from the existing costume library; untouched definitions preserve existing placement.
+- Foundation/signature collectible identity, Locker ownership, rare drops, set completion and all combat/strategic rules remain unchanged.
+- Project-folder JS/JSON validation and timestamped backup workflow remains in force. Save format remains 4.
+- See COSTUME_FIT_AUTHORING_0054_VALIDATION.md.
+
 BUILD: v0.26.10.05.0053.1_COSTUME_EDITOR_REVIEW_HOTFIX
 October 5, 2026 - Costume Editor Review Hotfix
 - Fix a malformed service-worker URL that prevented worker startup; cache the costume editor and runtime library for offline use.
