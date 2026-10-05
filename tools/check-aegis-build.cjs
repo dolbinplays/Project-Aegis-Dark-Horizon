@@ -1256,7 +1256,8 @@ const poseEditorManifest = manifest.authoringTools?.articulatedPoseEditor;
 if (poseEditorManifest?.launcher !== path.basename(poseEditorLauncherPath) || poseEditorManifest?.approved !== path.basename(approvedPoseEditorPath) || poseEditorManifest?.archived?.length !== 1 || poseEditorManifest.archived[0] !== path.basename(archivedPoseEditorPath) || poseEditorManifest.facingPreviewExported !== false) {
   missing.push("manifest must register one stable current pose-editor launcher, the approved 0033 library, one archived 2356 predecessor, and non-exported facing preview");
 }
-if (!poseEditorLauncher.includes(`url=${path.basename(approvedPoseEditorPath)}`) || !poseEditorLauncher.includes(`location.replace("${path.basename(approvedPoseEditorPath)}")`)) {
+const currentPoseEditor = poseEditorManifest.current || path.basename(approvedPoseEditorPath);
+if (!fs.existsSync(path.join(root,currentPoseEditor)) || !poseEditorLauncher.includes(`url=${currentPoseEditor}`) || !poseEditorLauncher.includes(`location.replace("${currentPoseEditor}")`)) {
   missing.push("stable articulated pose-editor launcher must forward to the approved 0033 tool");
 }
 for (const needle of ["Current approved authoring tool", "Facing Preview", "AEGIS tactical-facing preview parent", "AEGIS exported pose child", "Facing Preview control demonstrates that parent but never enters the pose export", "Object.keys(state.pose)"]) {

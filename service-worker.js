@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.10.05.0055.1_VICTORY_FLOURISH_REVIEW_HOTFIX";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.05.0055.1_VICTORY_FLOURISH_REVIEW_HOTFIX";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v115-flourish-review";
+const AEGIS_PWA_CACHE = "aegis-v0.26.10.05.0056.1_UNIFIED_AUTHORING_REVIEW_HOTFIX";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.05.0056.1_UNIFIED_AUTHORING_REVIEW_HOTFIX";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v117-unified-review";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;
@@ -10,6 +10,7 @@ const AEGIS_PLACEMENT_OVERRIDES_URL = new URL("./assets/data/aegis-prop-placemen
 const AEGIS_CONTEXT_RUNTIME_URL = new URL("./assets/runtime/aegis-contextual-prop-placement-runtime.js", self.registration.scope).href;
 const AEGIS_TOOLS_EDITOR_RUNTIME_URL = new URL("./assets/runtime/aegis-tools-editor-launcher-runtime.js", self.registration.scope).href;
 const AEGIS_TOOL_NAV_URLS = new Set([
+  new URL("./AEGIS_Articulated_Pose_Editor_v0.26.10.05.0056_UNIFIED_POSE_AND_COSTUME_AUTHORING_PATCH.html", self.registration.scope).href,
   new URL("./AEGIS_Articulated_Pose_Editor_CURRENT.html", self.registration.scope).href,
   new URL("./AEGIS_Articulated_Pose_Editor_v0.26.08.26.0033_APPROVED_ARTICULATED_POSE_SET_PATCH.html", self.registration.scope).href,
   new URL("./AEGIS_TV.html", self.registration.scope).href,
@@ -24,6 +25,7 @@ const AEGIS_TOOL_NAV_URLS = new Set([
 ]);
 const AEGIS_BOOT_PROBE_TIMEOUT_MS = 1800;
 const AEGIS_SMALL_SHELL = [
+  "./assets/runtime/aegis-costume-articulated.js",
   "./assets/runtime/aegis-costume-celebration.js",
   "./AEGIS_Costume_Editor_CURRENT.html",
   "./assets/data/aegis-costume-library.js",
@@ -31,6 +33,7 @@ const AEGIS_SMALL_SHELL = [
   "./assets/runtime/aegis-authored-content-runtime.js",
   "./assets/runtime/aegis-project-authoring.js",
   "./AEGIS_Articulated_Pose_Editor_CURRENT.html",
+  "./AEGIS_Articulated_Pose_Editor_v0.26.10.05.0056_UNIFIED_POSE_AND_COSTUME_AUTHORING_PATCH.html",
   "./AEGIS_Articulated_Pose_Editor_v0.26.08.26.0033_APPROVED_ARTICULATED_POSE_SET_PATCH.html",
   "./AEGIS_TV.html",
   "./AEGIS_Phone_Controller.html",

@@ -1,4 +1,4 @@
-{
+window.AEGIS_COSTUME_LIBRARY = {
   "schema": "aegis-costume-library-v1",
   "build": "v0.26.10.05.0055.1_VICTORY_FLOURISH_REVIEW_HOTFIX",
   "presentationOnly": true,
@@ -173,9 +173,9 @@
         },
         "weapon": {
           "position": [
-            -0.34,
-            0.31,
-            -0.17
+            0,
+            0,
+            0
           ],
           "rotation": [
             0,
@@ -325,7 +325,7 @@
         "top": {
           "position": [
             0,
-            -0.01,
+            0,
             0
           ],
           "rotation": [
@@ -334,9 +334,9 @@
             0
           ],
           "scale": [
-            1.03,
-            1.03,
-            1.03
+            1,
+            1,
+            1
           ],
           "emissive": 0.16,
           "fits": {}
@@ -353,9 +353,9 @@
             0
           ],
           "scale": [
-            1.03,
-            1.03,
-            1.03
+            1,
+            1,
+            1
           ],
           "emissive": 0.16,
           "fits": {}
@@ -363,8 +363,8 @@
         "head": {
           "position": [
             0,
-            0.03,
-            -0.05
+            0,
+            0
           ],
           "rotation": [
             0,
@@ -381,14 +381,14 @@
         },
         "weapon": {
           "position": [
-            -0.4,
-            0.3,
-            -0.24
+            0,
+            0,
+            0
           ],
           "rotation": [
-            0.08726646259971647,
             0,
-            -0.08726646259971647
+            0,
+            0
           ],
           "scale": [
             1,
@@ -405,7 +405,7 @@
         "speed": 1,
         "phases": [
           {
-            "pose": "aim",
+            "pose": "standing",
             "durationMs": 350
           },
           {
@@ -1259,4 +1259,4 @@
       }
     }
   ]
-}
+};

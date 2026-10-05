@@ -37,6 +37,7 @@ function runtimeContext(options={}) {
   vm.runInContext(fs.readFileSync(path.join(root,'assets/runtime/aegis-building-layouts.js'),'utf8'),context);
   vm.runInContext(fs.readFileSync(path.join(root,'assets/runtime/aegis-department-heads.js'),'utf8'),context);
   vm.runInContext(fs.readFileSync(path.join(root,"assets/runtime/aegis-costume-celebration.js"),"utf8"),context);
+  vm.runInContext(fs.readFileSync(path.join(root,"assets/runtime/aegis-costume-articulated.js"),"utf8"),context);
   vm.runInContext(appSource, context, {timeout:15000});
   return context;
 }

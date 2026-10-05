@@ -1,8 +1,33 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.05.0055.1_VICTORY_FLOURISH_REVIEW_HOTFIX`
+Current browser build: `v0.26.10.05.0056.1_UNIFIED_AUTHORING_REVIEW_HOTFIX`
 
 Current save format: `4`
+
+
+## Unified Authoring Review Hotfix — Browser 0056.1
+
+- Restore full authoring validation and serialize saves; preserve user libraries and backups.
+- Honor explicit attachment removal, share preview/runtime attachment rendering, and release replaced preview materials.
+- Update offline navigation and automated checks for the new unified editor.
+
+## Unified Pose + Costume Authoring — Browser 0056
+
+**Status: implemented; installed-game visual/file-picker acceptance pending.**
+
+October 5, 2026
+- Incorporates costume authoring into the familiar Articulated Pose Editor. The stable Pose Editor launcher now opens one unified Pose / Costume tool; the former Costume Editor redirects there for compatibility.
+- Articulated human costumes become **base-model recolor first**. Top and Bottom no longer require duplicate overlay boxes/legs. Head and Weapon can also recolor their existing model pieces.
+- Every tagged articulated model piece is individually addressable, including left/right upper arms, forearms, hands, thighs, shins and feet plus torso, chest plate, neck, head, helmet and weapon sub-parts. Group buttons are shortcuts only.
+- Per-piece custom colors support asymmetric designs. Copy Left → Right / Right → Left assists paired limbs without making them inseparable.
+- Optional attachments remain available when silhouette must change: cape, hat, mask, helmet, wig, horns, crown, scarf and shoulder pieces. Attachment geometry is anchored to the articulated rig so it follows authored/runtime poses.
+- Existing 0053–0055 costume libraries remain valid. Missing recolor data uses generated foundation colors; a slot switches to explicit Custom mode only when authored. `none` can deliberately preserve the ordinary model for a slot.
+- Alien seasonal carriers and Classic soldier presentation retain their legacy overlay path; this patch changes the articulated AEGIS presentation path only. Collection identity, signature `variantKey`, set completion, favorite locks, celebration authoring and seasonal drop authority remain unchanged.
+- Presentation-only. No HP, TU, armor, accuracy, damage, morale, AI, LOS, pathing, inventory ownership, rewards or mission-result changes. Save format remains **4**.
+
+**Acceptance:** open Pose + Costume Editor; verify existing pose presets/joint sliders/project pose writing; switch to Costume; recolor left/right limbs independently and use mirror copy; create Top/Bottom looks without duplicate overlay shells; add a cape/mask/hat and verify it follows Standing/Aim/Kneel/Prone/Victory poses; save costume library and relaunch; verify articulated soldiers use direct recolors while alien carriers remain visibly costumed and old saves/collections remain unchanged.
+
+See `UNIFIED_POSE_COSTUME_AUTHORING_0056_VALIDATION.md`.
 
 
 

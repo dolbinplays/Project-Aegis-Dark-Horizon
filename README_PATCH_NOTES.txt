@@ -1,3 +1,22 @@
+BUILD: v0.26.10.05.0056.1_UNIFIED_AUTHORING_REVIEW_HOTFIX
+October 5, 2026 - Unified Authoring Review Hotfix
+- Restore validation for transforms, recolors, attachments, materials and celebration data. Block overlapping saves and reset defaults when connecting a project without a library.
+- Treat an explicit empty attachment list as removal; only missing lists use generated defaults.
+- Share attachment geometry/materials and default recolors with the editor; apply saved slot transforms to previews. Dispose replaced preview materials.
+- Use runtime-compatible celebration phase names and keep file authoring available without WebGL.
+- Update offline tool navigation, current editor metadata and executable regression checks for the unified tool. Preserve user-authored library files and backups. Save format remains 4.
+
+BUILD: v0.26.10.05.0056_UNIFIED_POSE_AND_COSTUME_AUTHORING_PATCH
+October 5, 2026 - Unified Pose + Costume Authoring
+- Moves costume authoring into the familiar Articulated Pose Editor; legacy Costume Editor redirects to the unified tool.
+- Articulated human Top/Bottom cosmetics recolor the existing body instead of requiring duplicate overlay geometry.
+- Every distinct articulated part can be recolored independently, including left/right limbs and weapon sub-parts. Group and mirror-copy controls are conveniences only.
+- Adds optional rig-anchored cape/hat/mask/helmet/wig/horns/crown/scarf/shoulder attachments for silhouette-changing costume elements.
+- Existing costume libraries automatically fall back to generated foundation recolors; explicit per-piece maps are optional and backward compatible.
+- Alien carriers and Classic presentation keep the established overlay path. Collection, signature variants, victory flourishes and gameplay authority are unchanged.
+- Save format remains 4.
+- See UNIFIED_POSE_COSTUME_AUTHORING_0056_VALIDATION.md.
+
 BUILD: v0.26.10.05.0055.1_VICTORY_FLOURISH_REVIEW_HOTFIX
 October 5, 2026 - Victory Flourish Review Hotfix
 - Fix undefined particle-count errors in sand/mist effects and zero-time animation starts.
