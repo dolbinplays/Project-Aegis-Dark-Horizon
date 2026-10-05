@@ -49,7 +49,7 @@ if (missingLineage.length) {
 // Do not emit a release when gameplay startup, save-resume, or command continuity regress.
 const releaseGate = require("child_process").spawnSync(process.execPath, ["--test", "--test-concurrency=2",
   "tools/test-seasonal-startup-runtime.cjs", "tools/test-ai-reliability-runtime.cjs",
-  "tools/test-signal-intrusion-runtime.cjs",
+  "tools/test-signal-intrusion-runtime.cjs", "tools/test-runtime-host.cjs",
   "tools/test-order-resumption-runtime.cjs", "tools/test-escort-turn-scheduling.cjs",
   "tools/test-principal-beacon-continuation.cjs", "tools/test-rescue-lock-runtime.cjs",
   "tools/test-ai-command-stream-handoff.cjs"
@@ -207,6 +207,9 @@ const packaged = template
   .replaceAll("__SOURCE_BYTES__", String(sourceBytes.length))
   .replaceAll("__PAYLOAD_SHA256__", payloadSha256)
   .replace("__PAYLOAD__", payload);
+
+const hostFailures=require("./validate-runtime-host.cjs").validateRuntimeHost(packaged);
+if(hostFailures.length)throw new Error(hostFailures.join(" "));
 
 const workerPath = path.join(root, "service-worker.js");
 const workerSource = fs.readFileSync(workerPath, "utf8");

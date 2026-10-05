@@ -38,11 +38,13 @@ function embeddedScriptBlocks(html, filename, ancestry = []) {
   });
 }
 
+const hostFailures=htmlPaths.flatMap(htmlPath=>{const html=fs.readFileSync(htmlPath,"utf8");return html.includes("data-aegis-host-build")?require("./validate-runtime-host.cjs").validateRuntimeHost(html).map(message=>`${path.basename(htmlPath)}: ${message}`):[];});
+
 const blocks = htmlPaths.flatMap((htmlPath) =>
   embeddedScriptBlocks(fs.readFileSync(htmlPath, "utf8"), path.basename(htmlPath)),
 );
 
-const failures = [];
+const failures = [...hostFailures];
 blocks.forEach(({ source, filename, decodeFailure }) => {
   if (decodeFailure) {
     failures.push(`${filename}: runtime payload decode failed: ${decodeFailure}`);

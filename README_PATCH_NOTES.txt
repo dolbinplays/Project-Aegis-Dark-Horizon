@@ -1,3 +1,16 @@
+BUILD: v0.26.10.04.0050_ALIEN_RESONANCE_LOCKS_PATCH
+October 4, 2026 - Alien Resonance Locks
+- Launch-page repair: regenerate index.html from the canonical packager to restore its missing executable bootstrap.
+- Packaging and embedded-script checks now reject a missing bootstrap rather than reporting a false syntax pass.
+- Adds original Resonance Lock minigame interactions to seeded secured alien-base bulkhead shortcuts.
+- Locked alien security doors reuse the existing tactical door/pathing/damage/breach authority and remain physically destructible.
+- Every generated secured shortcut retains a separate route around it so failed/ignored minigames cannot soft-lock progression.
+- Five tension tests; Engineer and Alien Beacon Interface Protocols widen the valid resonance window.
+- Base bypass 12 TU; first/second-test success refunds 4/2 TU; Auto Resolve 12 TU; researched Electronic Bypass 10 TU; Pale Commander credential override 6 TU.
+- Five failed tests spend 12 TU and leave the door locked; abort before the first test costs 0 TU.
+- Save format remains 4. Existing saves are supported.
+- See ALIEN_RESONANCE_LOCKS_0050_VALIDATION.md.
+
 BUILD: v0.26.10.04.0049.1_SIGNAL_INTRUSION_OUTCOME_HOTFIX
 October 4, 2026 - Signal Intrusion Outcome Hotfix
 - Winning immediately locks all guesses so rapid clicks cannot schedule both success and failure or spend hacking TU twice.

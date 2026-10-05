@@ -1,8 +1,26 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.04.0049.1_SIGNAL_INTRUSION_OUTCOME_HOTFIX`
+Current browser build: `v0.26.10.04.0050_ALIEN_RESONANCE_LOCKS_PATCH`
 
 Current save format: `4`
+
+
+## Alien Resonance Locks — Browser 0050
+
+**Status: implemented; installed-game field acceptance pending.**
+
+October 4, 2026 - Alien Resonance Locks
+- Adds the second reusable minigame phase: secured alien-base bulkheads use an original tactile resonance-probe challenge rather than a copied lock-picking interface.
+- Seeded alien bases can place one secured shortcut per deck in an existing bulkhead opening. A separate seeded opening remains available, so no Resonance Lock is the mission's only route.
+- Manual bypass uses up to five tension tests. Engineer specialization and Alien Beacon Interface Protocols research widen the successful resonance window without making the challenge mandatory.
+- Base bypass cost is 12 TU. First-test success refunds 4 TU; second-test success refunds 2 TU. Auto Resolve costs 12 TU, researched Electronic Bypass costs 10 TU, and a carried Pale Commander command badge opens the door for 6 TU.
+- Exhausting the five tests spends 12 TU and leaves the door locked. Abort before the first tension test costs nothing.
+- Alien security doors reuse the existing locked/damaged/breached/destroyed door and movement authority. They have destructible HP, so ordinary physical breaching remains a valid alternative.
+- Save format remains **4**. Existing saves require no migration; the new doors are generated only for newly generated alien-base battlefields.
+
+**Acceptance:** enter several seeded Alien Base Assaults and confirm secured bulkheads vary by deck/seed, are real movement blockers while locked, can be bypassed by the minigame/Auto Resolve/research/credential options, can be physically destroyed through existing combat rules, never remove the alternate route, and remain open after save/reload once bypassed. Verify mouse, keyboard and touch operation and confirm no ordinary Earth shelter door launches Resonance Lock.
+
+See `ALIEN_RESONANCE_LOCKS_0050_VALIDATION.md`.
 
 
 ## Signal Intrusion Outcome Hotfix — Browser 0049.1
