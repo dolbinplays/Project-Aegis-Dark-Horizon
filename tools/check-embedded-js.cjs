@@ -8,6 +8,7 @@ const htmlPaths = requestedHtmlPaths.length
   ? requestedHtmlPaths.map((htmlPath) => path.resolve(process.cwd(), htmlPath))
   : [
       path.join(root, "index.html"),
+      path.join(root, "AEGIS_Costume_Editor_CURRENT.html"),
       path.join(root, "AEGIS_Articulated_Pose_Editor_CURRENT.html"),
       path.join(root, "AEGIS_Articulated_Pose_Editor_v0.26.08.26.0033_APPROVED_ARTICULATED_POSE_SET_PATCH.html"),
       path.join(root, "AEGIS_Articulated_Pose_Editor_v0.26.08.25.2356_ARTICULATED_SINGLE_RIFLE_AND_POSE_EDITOR_TOOL_PATCH.html"),

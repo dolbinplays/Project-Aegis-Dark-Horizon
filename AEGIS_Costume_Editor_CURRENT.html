@@ -1,0 +1,53 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AEGIS Costume Editor</title><style>body{margin:0;background:#020617;color:#e2e8f0;font-family:system-ui}main{max-width:1100px;margin:auto;padding:20px}button,input,select{font:inherit}button{background:#312e81;color:white;border:1px solid #a78bfa;border-radius:10px;padding:8px 12px;cursor:pointer}.grid{display:grid;grid-template-columns:280px 1fr;gap:16px}.panel{background:#0f172a;border:1px solid #334155;border-radius:16px;padding:14px}label{display:grid;gap:5px;margin:10px 0}input,select{background:#020617;color:#e2e8f0;border:1px solid #475569;border-radius:8px;padding:8px}.mannequin{height:360px;border-radius:18px;background:radial-gradient(circle at 50% 30%,#1e293b,#020617 70%);display:grid;place-items:center}.body{width:110px;height:190px;border-radius:40px 40px 28px 28px;position:relative;background:var(--p);box-shadow:0 0 35px var(--a)}.head{width:74px;height:74px;border-radius:50%;background:var(--a);position:absolute;top:-62px;left:18px}.legs{position:absolute;bottom:-105px;left:8px;width:94px;height:110px;background:linear-gradient(90deg,var(--p) 0 42%,transparent 42% 58%,var(--p) 58%)}small{opacity:.75}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}@media(max-width:760px){.grid{grid-template-columns:1fr}}</style></head><body><main><h1>AEGIS Costume Editor</h1><p>Presentation-only authoring. Choose a Project Aegis folder to load/save <code>assets/data/aegis-costume-library.js</code>. Changes do not alter combat stats or save format.</p><div class="row"><button id="choose">Choose Project Folder</button><button id="save" disabled>Save to Game Path</button><button id="download">Download Library</button><span id="status">Using packaged defaults</span></div><div class="grid" style="margin-top:16px"><section class="panel"><label>Definition<select id="entry"></select></label><label>Display name<input id="label"></label><label>Primary<input id="primary" type="color"></label><label>Accent<input id="accent" type="color"></label><label>Victory flourish<input id="flourish"></label><small>Variant entries inherit the foundation set and are rare collectible presentation variants. Foundation sets remain completable without them.</small></section><section class="panel"><div class="mannequin"><div class="body" id="body"><div class="head"></div><div class="legs"></div></div></div><h3 id="previewName"></h3><p id="previewMeta"></p></section></div></main><script>const DEFAULT={"schema":"aegis-costume-library-v1","build":"v0.26.10.05.0053_COSTUME_EDITOR_AND_SIGNATURE_VARIANTS_PATCH","presentationOnly":true,"sets":[{"key":"vampire","label":"Vampire","primary":8330525,"accent":1120295,"flourish":"Cape Flourish"},{"key":"witch","label":"Witch","primary":5774471,"accent":2278750,"flourish":"Witchlight Spiral"},{"key":"wolfman","label":"Wolfman","primary":7032634,"accent":13751771,"flourish":"Moonlit Howl"},{"key":"mummy","label":"Mummy","primary":14078917,"accent":9141608,"flourish":"Unravel-and-Snap"},{"key":"lagoon","label":"Creature from the Black Lagoon","primary":1467700,"accent":2282478,"flourish":"Lagoon Splash"},{"key":"frankenstein","label":"Frankenstein","primary":5078031,"accent":10741301,"flourish":"Lightning Jolt"},{"key":"skeleton","label":"Skeleton","primary":15067115,"accent":1120295,"flourish":"Bone-Rattle Shuffle"}],"variants":[{"key":"crimson-vampire","setKey":"vampire","label":"Crimson Vampire","primary":12131356,"accent":16109776,"rarity":"signature"},{"key":"spectral-witch","setKey":"witch","label":"Spectral Witch","primary":8266446,"accent":6809849,"rarity":"signature"},{"key":"moonlit-wolfman","setKey":"wolfman","label":"Moonlit Wolfman","primary":3621201,"accent":12573694,"rarity":"signature"},{"key":"cursed-pharaoh","setKey":"mummy","label":"Cursed Pharaoh","primary":13214247,"accent":3223169,"rarity":"signature"},{"key":"swamp-king","setKey":"lagoon","label":"Swamp King","primary":1332013,"accent":8702998,"rarity":"signature"}]};let data=structuredClone(DEFAULT),rootHandle=null,current={kind:'sets',index:0};
+const $=id=>document.getElementById(id),hex=n=>'#'+Number(n||0).toString(16).padStart(6,'0').slice(-6),num=s=>parseInt(String(s).replace('#',''),16)||0;
+function validateLibrary(value){
+ if(value?.schema!==DEFAULT.schema||value.presentationOnly!==true)throw new Error('Invalid costume library schema.');
+ for(const kind of ['sets','variants']){
+  if(!Array.isArray(value[kind])||value[kind].length!==DEFAULT[kind].length)throw new Error('Incomplete '+kind+' catalog.');
+  const seen=new Set();for(const row of value[kind]){
+   const base=DEFAULT[kind].find(item=>item.key===row?.key);
+   if(!base||seen.has(row.key)||(kind==='variants'&&row.setKey!==base.setKey))throw new Error('Invalid or duplicate costume identity.');seen.add(row.key);
+   if(typeof row.label!=='string'||!row.label.trim())throw new Error('Display name is required.');
+   for(const key of ['primary','accent'])if(!Number.isInteger(row[key])||row[key]<0||row[key]>0xffffff)throw new Error('Invalid costume color.');
+   if(row.flourish!==undefined&&typeof row.flourish!=='string')throw new Error('Invalid flourish.');
+  }
+ }
+ return value;
+}
+function entries(){return [...data.sets.map((x,i)=>({kind:'sets',index:i,x})),...data.variants.map((x,i)=>({kind:'variants',index:i,x}))];}
+function rebuild(){const menu=$('entry');menu.replaceChildren();for(const e of entries()){const option=document.createElement('option');option.value=e.kind+':'+e.index;option.textContent=(e.kind==='variants'?'★ ':'')+e.x.label;menu.appendChild(option);}menu.value='sets:0';select(menu.value);}
+function select(v){const [kind,i]=v.split(':');current={kind,index:+i};const x=data[kind][+i];$('label').value=x.label||'';$('primary').value=hex(x.primary);$('accent').value=hex(x.accent);$('flourish').value=x.flourish||'';render();}
+function commit(){const x=data[current.kind][current.index];x.label=$('label').value.trim()||x.key;x.primary=num($('primary').value);x.accent=num($('accent').value);if(current.kind==='sets')x.flourish=$('flourish').value.trim();const option=$('entry').children[entries().findIndex(e=>e.kind===current.kind&&e.index===current.index)];if(option)option.textContent=(current.kind==='variants'?'★ ':'')+x.label;render();}
+function render(){const x=data[current.kind][current.index];$('body').style.setProperty('--p',hex(x.primary));$('body').style.setProperty('--a',hex(x.accent));$('previewName').textContent=x.label;$('previewMeta').textContent=current.kind==='variants'?`Signature variant of ${x.setKey}`:`Foundation set • ${x.flourish||'No flourish'}`;$('flourish').disabled=current.kind==='variants';}
+async function readOptional(dir,name){try{return await(await(await dir.getFileHandle(name)).getFile()).text();}catch(error){if(error.name==='NotFoundError')return null;throw error;}}
+async function writeFile(dir,name,text){const handle=await dir.getFileHandle(name,{create:true}),writer=await handle.createWritable();try{await writer.write(text);await writer.close();}catch(error){await writer.abort?.().catch(()=>{});throw error;}}
+function serializedLibrary(){validateLibrary(data);return [['aegis-costume-library.json',JSON.stringify(data,null,2)],['aegis-costume-library.js','window.AEGIS_COSTUME_LIBRARY = '+JSON.stringify(data,null,2)+';\n']];}
+$('entry').onchange=e=>select(e.target.value);['label','primary','accent','flourish'].forEach(id=>$(id).oninput=commit);
+$('choose').onclick=async()=>{
+ rootHandle=null;$('save').disabled=true;
+ try{
+  if(!window.showDirectoryPicker)throw new Error('Folder access is unavailable here. Open this editor in desktop Chrome/Edge, or use Download Library.');
+  const candidate=await window.showDirectoryPicker({mode:'readwrite'});await candidate.getFileHandle('index.html');
+  const assets=await candidate.getDirectoryHandle('assets'),dir=await assets.getDirectoryHandle('data');
+  const json=await readOptional(dir,'aegis-costume-library.json'),js=await readOptional(dir,'aegis-costume-library.js');
+  if((json===null)!==(js===null))throw new Error('Library pair is incomplete. Restore the missing JS/JSON file before editing.');
+  const loaded=json===null?structuredClone(DEFAULT):validateLibrary(JSON.parse(json));
+  data=loaded;rebuild();rootHandle=candidate;$('save').disabled=false;$('status').textContent='Project folder connected';
+ }catch(error){$('status').textContent=error.name==='AbortError'?'Folder selection cancelled':'Cannot load project: '+error.message;}
+};
+$('save').onclick=async()=>{
+ if(!rootHandle||$('save').disabled)return;
+ $('save').disabled=true;$('choose').disabled=true;
+ try{
+  commit();const files=serializedLibrary(),assets=await rootHandle.getDirectoryHandle('assets'),dir=await assets.getDirectoryHandle('data'),stamp=new Date().toISOString().replace(/[:.]/g,'-');
+  // Read and back up both existing files before replacing either. Backup failures abort the save.
+  const originals=[];for(const [name] of files)originals.push([name,await readOptional(dir,name)]);
+  for(const [name,text] of originals)if(text!==null)await writeFile(dir,name+'.backup-'+stamp,text);
+  for(const [name,text] of files)await writeFile(dir,name,text);
+  $('status').textContent='Saved to assets/data. Reload the game to apply changes.';
+ }catch(error){$('status').textContent='Save failed: '+error.message+' Existing backups are retained.';}
+ finally{$('save').disabled=!rootHandle;$('choose').disabled=false;}
+};
+$('download').onclick=()=>{try{commit();const text=serializedLibrary()[1][1],blob=new Blob([text],{type:'text/javascript'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='aegis-costume-library.js';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000);}catch(error){$('status').textContent='Export failed: '+error.message;}};
+rebuild();
+</script></body></html>

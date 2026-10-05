@@ -1,3 +1,21 @@
+BUILD: v0.26.10.05.0053.1_COSTUME_EDITOR_REVIEW_HOTFIX
+October 5, 2026 - Costume Editor Review Hotfix
+- Fix a malformed service-worker URL that prevented worker startup; cache the costume editor and runtime library for offline use.
+- Reject corrupt/incomplete editor libraries instead of silently replacing them with defaults. Validate identities/colors, back up both files before either overwrite, and report save/backup failures.
+- Preserve legacy ordinary costume item IDs; signature pieces retain their separate identities and foundation-set completion.
+- Resolve saved-piece display names and foundation flourish labels through authored definitions, with safe fallback for malformed presentation data.
+- Restore actual-runtime locker tests, add seven editor/runtime/worker regressions to the release gate, and synchronize build metadata. Save format remains 4.
+
+BUILD: v0.26.10.05.0053_COSTUME_EDITOR_AND_SIGNATURE_VARIANTS_PATCH
+October 5, 2026 - Costume Editor + Halloween Signature Variants
+- Adds AEGIS_Costume_Editor_CURRENT.html with project-folder authoring for presentation-only seasonal costume definitions.
+- Editor writes assets/data/aegis-costume-library.js and JSON with timestamped backups.
+- Adds rare Crimson Vampire, Spectral Witch, Moonlit Wolfman, Cursed Pharaoh, and Swamp King collectible variants.
+- Signature pieces keep the ordinary foundation setKey, so rare drops are never required to complete a normal four-slot set.
+- Seasonal Locker launches the editor and counts signature ownership separately.
+- Authored palette/name/flourish changes affect runtime presentation dynamically and never modify combat statistics.
+- Save format remains 4. Existing saves require no migration.
+
 BUILD: v0.26.10.05.0052.1_SEASONAL_LOCKER_REVIEW_HOTFIX
 October 5, 2026 - Seasonal Locker Review Hotfix
 - Preserve separately earned copies of the same costume type; selecting the currently equipped type is a no-op.

@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.10.05.0052.1_SEASONAL_LOCKER_REVIEW_HOTFIX";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.05.0052.1_SEASONAL_LOCKER_REVIEW_HOTFIX";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v109-seasonal-locker-review";
+const AEGIS_PWA_CACHE = "aegis-v0.26.10.05.0053.1_COSTUME_EDITOR_REVIEW_HOTFIX";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.05.0053.1_COSTUME_EDITOR_REVIEW_HOTFIX";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v111-costume-review";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;
@@ -15,6 +15,7 @@ const AEGIS_TOOL_NAV_URLS = new Set([
   new URL("./AEGIS_TV.html", self.registration.scope).href,
   new URL("./AEGIS_Phone_Controller.html", self.registration.scope).href,
   new URL("./AEGIS_Building_Layout_Editor_CURRENT.html", self.registration.scope).href,
+  new URL("./AEGIS_Costume_Editor_CURRENT.html", self.registration.scope).href,
   new URL("./AEGIS_Tools_Editors.html", self.registration.scope).href,
   new URL("./AEGIS_Prop_Editor_CURRENT.html", self.registration.scope).href,
   new URL("./AEGIS_Prop_Editor_v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH.html", self.registration.scope).href,
@@ -23,6 +24,8 @@ const AEGIS_TOOL_NAV_URLS = new Set([
 ]);
 const AEGIS_BOOT_PROBE_TIMEOUT_MS = 1800;
 const AEGIS_SMALL_SHELL = [
+  "./AEGIS_Costume_Editor_CURRENT.html",
+  "./assets/data/aegis-costume-library.js",
   "./assets/data/aegis-authored-content.js",
   "./assets/runtime/aegis-authored-content-runtime.js",
   "./assets/runtime/aegis-project-authoring.js",

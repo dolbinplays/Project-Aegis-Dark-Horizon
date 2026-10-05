@@ -1,9 +1,32 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.05.0052.1_SEASONAL_LOCKER_REVIEW_HOTFIX`
+Current browser build: `v0.26.10.05.0053.1_COSTUME_EDITOR_REVIEW_HOTFIX`
 
 Current save format: `4`
 
+
+## Costume Editor Review Hotfix — Browser 0053.1
+
+- Repair worker startup and offline costume asset caching.
+- Validate editor loads/saves; abort on backup failures before replacing library files.
+- Preserve ordinary collectible IDs and resolve authored presentation safely on saved pieces.
+- Seven executable regressions join the mandatory release gate. Save format remains 4.
+
+## Costume Editor + Halloween Signature Variants — Browser 0053
+
+**Status: implemented; installed-game field acceptance pending.**
+
+October 5, 2026
+- Adds a standalone Costume Editor following the project-authoring model used by the other AEGIS editors. The editor can choose the game/project folder, load the current costume library, preview definitions, change display names and primary/accent palettes, and write the updated JS/JSON library back to `assets/data/` with timestamped backups.
+- Runtime costume presentation resolves through the authored library. Existing saved pieces retain stable set/variant identities, so authored visual adjustments apply without rewriting campaign saves.
+- Adds rare signature variants: Crimson Vampire, Spectral Witch, Moonlit Wolfman, Cursed Pharaoh, and Swamp King. Signature drops are deterministic rare alternatives and remain cosmetic-only.
+- A signature piece retains its foundation `setKey`; therefore it satisfies the matching foundation slot and ordinary four-piece set completion. Rare variants are never required for completion.
+- Seasonal Locker provides direct Costume Editor access and separately reports signature ownership while preserving 0052.1 copy conservation/favorite rules.
+- Save format remains **4**.
+
+**Acceptance:** open Costume Editor from Seasonal Locker; choose a project folder; change a foundation and signature palette/name; save and verify timestamped backups plus `assets/data/aegis-costume-library.js/json`; relaunch and verify carriers/soldiers/effects use authored colors. Recover signature and standard copies of the same foundation slot and verify both remain individually conserved. Confirm a signature piece counts toward ordinary set completion and no authored field changes combat stats.
+
+See `COSTUME_EDITOR_AND_SIGNATURE_VARIANTS_0053_VALIDATION.md`.
 
 ## Seasonal Locker Review Hotfix — Browser 0052.1
 

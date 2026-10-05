@@ -1,0 +1,98 @@
+window.AEGIS_COSTUME_LIBRARY = {
+  "schema": "aegis-costume-library-v1",
+  "build": "v0.26.10.05.0053_COSTUME_EDITOR_AND_SIGNATURE_VARIANTS_PATCH",
+  "presentationOnly": true,
+  "sets": [
+    {
+      "key": "vampire",
+      "label": "Vampire",
+      "primary": 8330525,
+      "accent": 1120295,
+      "flourish": "Cape Flourish"
+    },
+    {
+      "key": "witch",
+      "label": "Witch",
+      "primary": 5774471,
+      "accent": 2278750,
+      "flourish": "Witchlight Spiral"
+    },
+    {
+      "key": "wolfman",
+      "label": "Wolfman",
+      "primary": 7032634,
+      "accent": 13751771,
+      "flourish": "Moonlit Howl"
+    },
+    {
+      "key": "mummy",
+      "label": "Mummy",
+      "primary": 14078917,
+      "accent": 9141608,
+      "flourish": "Unravel-and-Snap"
+    },
+    {
+      "key": "lagoon",
+      "label": "Creature from the Black Lagoon",
+      "primary": 1467700,
+      "accent": 2282478,
+      "flourish": "Lagoon Splash"
+    },
+    {
+      "key": "frankenstein",
+      "label": "Frankenstein",
+      "primary": 5078031,
+      "accent": 10741301,
+      "flourish": "Lightning Jolt"
+    },
+    {
+      "key": "skeleton",
+      "label": "Skeleton",
+      "primary": 15067115,
+      "accent": 1120295,
+      "flourish": "Bone-Rattle Shuffle"
+    }
+  ],
+  "variants": [
+    {
+      "key": "crimson-vampire",
+      "setKey": "vampire",
+      "label": "Crimson Vampire",
+      "primary": 12131356,
+      "accent": 16109776,
+      "rarity": "signature"
+    },
+    {
+      "key": "spectral-witch",
+      "setKey": "witch",
+      "label": "Spectral Witch",
+      "primary": 8266446,
+      "accent": 6809849,
+      "rarity": "signature"
+    },
+    {
+      "key": "moonlit-wolfman",
+      "setKey": "wolfman",
+      "label": "Moonlit Wolfman",
+      "primary": 3621201,
+      "accent": 12573694,
+      "rarity": "signature"
+    },
+    {
+      "key": "cursed-pharaoh",
+      "setKey": "mummy",
+      "label": "Cursed Pharaoh",
+      "primary": 13214247,
+      "accent": 3223169,
+      "rarity": "signature"
+    },
+    {
+      "key": "swamp-king",
+      "setKey": "lagoon",
+      "label": "Swamp King",
+      "primary": 1332013,
+      "accent": 8702998,
+      "rarity": "signature"
+    }
+  ]
+};
