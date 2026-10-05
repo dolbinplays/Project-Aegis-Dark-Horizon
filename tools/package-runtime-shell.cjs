@@ -50,6 +50,7 @@ if (missingLineage.length) {
 const releaseGate = require("child_process").spawnSync(process.execPath, ["--test", "--test-concurrency=2",
   "tools/test-seasonal-startup-runtime.cjs", "tools/test-ai-reliability-runtime.cjs",
   "tools/test-signal-intrusion-runtime.cjs", "tools/test-runtime-host.cjs",
+  "tools/test-interceptor-combat-runtime.cjs",
   "tools/test-order-resumption-runtime.cjs", "tools/test-escort-turn-scheduling.cjs",
   "tools/test-principal-beacon-continuation.cjs", "tools/test-rescue-lock-runtime.cjs",
   "tools/test-ai-command-stream-handoff.cjs"

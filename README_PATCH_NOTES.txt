@@ -1,3 +1,23 @@
+BUILD: v0.26.10.04.0051.1_INTERCEPTOR_COMBAT_REVIEW_HOTFIX
+October 5, 2026 - Interceptor Combat Review Hotfix
+- Campaign time pauses throughout the attack-run dialog, preventing the launch from using a UFO or fleet state that advanced behind it. The previous clock setting is preserved.
+- Keyboard focus stays inside the dialog; stage transitions and dismissal restore focus correctly.
+- Repeated or stale control callbacks cannot skip stages or resolve the same interception twice. Neutral Auto Resolve modifiers remain neutral when normalized again.
+- Synchronized the canonical build manifest and added six runtime regression tests to the mandatory packaging gate. Save format remains 4.
+
+BUILD: v0.26.10.04.0051_INTERACTIVE_INTERCEPTOR_COMBAT_PATCH
+October 4, 2026 - Interactive Interceptor Combat
+- Adds an optional three-stage interceptor attack-run minigame: Pursuit, Weapons Solution, and Breakaway.
+- Auto Resolve preserves the pre-0051 strategic air-combat resolver with neutral pilot modifiers.
+- Pursuit and weapons performance can shift the existing hit estimate only within -8 to +16 percentage points; aircraft, formation, weapons, radar, UFO threat/evasion, stance, and prior UFO damage remain authoritative.
+- An excellent weapons solution can add at most one severity level to an existing Damaged Escape result; it cannot manufacture a hit after the authoritative resolver has classified another outcome.
+- Breakaway performance scales existing interceptor return damage only from x0.70 to x1.20; normal stance/outcome/threat damage and repair authority remains in force.
+- Interactive weapons performance can slightly reduce or increase ammunition pressure (x0.90 to x1.10).
+- Launching the regular 1/Pair interceptor action opens the minigame before fuel, ammunition, or sortie state is committed. Abort before stage 1 spends nothing. Global staggered swarm launches continue to Auto Resolve because each aircraft reaches the UFO at a different time.
+- Mouse, touch, and keyboard-arrow control are supported through the native range input.
+- Save format remains 4. Existing saves are supported.
+- See INTERACTIVE_INTERCEPTOR_COMBAT_0051_VALIDATION.md.
+
 BUILD: v0.26.10.04.0050_ALIEN_RESONANCE_LOCKS_PATCH
 October 4, 2026 - Alien Resonance Locks
 - Launch-page repair: regenerate index.html from the canonical packager to restore its missing executable bootstrap.

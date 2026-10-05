@@ -1,7 +1,7 @@
 {
   "project": "Project Aegis / Alien Response Command",
   "playableArtifact": "index.html",
-  "currentBuild": "v0.26.10.04.0050_ALIEN_RESONANCE_LOCKS_PATCH",
+  "currentBuild": "v0.26.10.04.0051.1_INTERCEPTOR_COMBAT_REVIEW_HOTFIX",
   "saveFormat": 4,
   "sourceRoot": "src",
   "toolRoot": "tools",
@@ -26,7 +26,7 @@
     "ARCHITECTURE_MODULE_PLAN",
     "runSelfTests"
   ],
-  "lastInspectedBuild": "v0.26.10.04.0050_ALIEN_RESONANCE_LOCKS_PATCH",
+  "lastInspectedBuild": "v0.26.10.04.0051.1_INTERCEPTOR_COMBAT_REVIEW_HOTFIX",
   "authoringTools": {
     "articulatedPoseEditor": {
       "launcher": "AEGIS_Articulated_Pose_Editor_CURRENT.html",
@@ -61,7 +61,7 @@
   },
   "gameplayParity": {
     "policy": "paired-browser-godot",
-    "browserBuild": "v0.26.10.04.0050_ALIEN_RESONANCE_LOCKS_PATCH",
+    "browserBuild": "v0.26.10.04.0051.1_INTERCEPTOR_COMBAT_REVIEW_HOTFIX",
     "nativeBuild": "v0.26.08.03.GODOT.0026_CROSS_SQUAD_DIRECT_CONTACT_RESPONSE_VERTICAL_SLICE",
     "saveFormat": 4,
     "requiredSystems": [
@@ -671,7 +671,7 @@
       },
       {
         "system": "civic-landmark-multihex-footprints",
-        "reason": "Browser civic statues and fountains now use deterministic connected 1–7 hex footprints, shared collision/visibility/placement authority and footprint-scaled presentation. Native Godot needs equivalent engine-native landmark footprints and presentation."
+        "reason": "Browser civic statues and fountains now use deterministic connected 1\u00e2\u20ac\u201c7 hex footprints, shared collision/visibility/placement authority and footprint-scaled presentation. Native Godot needs equivalent engine-native landmark footprints and presentation."
       },
       {
         "system": "tetromino-procedural-building-wall-continuity",

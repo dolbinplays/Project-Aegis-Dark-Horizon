@@ -1,8 +1,35 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.04.0050_ALIEN_RESONANCE_LOCKS_PATCH`
+Current browser build: `v0.26.10.04.0051.1_INTERCEPTOR_COMBAT_REVIEW_HOTFIX`
 
 Current save format: `4`
+
+
+## Interceptor Combat Review Hotfix — Browser 0051.1
+
+- Pause campaign advancement while the attack-run dialog is open; preserve the player's clock setting on exit.
+- Contain keyboard focus, restore it after each stage/exit, and settle stage/exit callbacks only once.
+- Preserve neutral modifier round trips and synchronize build metadata. Six runtime regressions now run in the release gate.
+
+## Interactive Interceptor Combat — Browser 0051
+
+**Status: implemented; installed-game field acceptance pending.**
+
+October 4, 2026 - Interactive Interceptor Combat
+- Regular interceptor launches now offer an optional three-stage player attack run: **Pursuit → Weapons Solution → Breakaway**.
+- The existing air-combat resolver remains authoritative for formation, radar coverage, aircraft weapons, UFO threat/evasion, stance, prior UFO damage, ammunition, fuel, sortie routing, return damage, and repair.
+- Player Pursuit/Weapons performance supplies a bounded hit-estimate modifier from **-8 to +16 percentage points**. It does not replace the combat roll.
+- An excellent Weapons Solution can add at most one additional severity level when the authoritative outcome is already **Damaged Escape**. Confirmed Shootdown still requires the resolver to produce a hit.
+- Breakaway performance scales the existing interceptor damage result within **x0.70 to x1.20**; it cannot eliminate the underlying stance/threat/outcome risk.
+- Excellent/poor Weapons Solution can scale ammunition pressure within **x0.90 to x1.10**.
+- **Auto Resolve** is neutral and reproduces the pre-0051 strategic resolution path. **Abort before stage 1** commits no fuel, ammo, or sortie state.
+- Global **Launch All Interceptors** remains auto-resolved because staggered aircraft arrive at different attack times; each existing pass still uses the strategic resolver.
+- Range controls support mouse, touch, and keyboard arrows.
+- Save format remains **4**; no migration is required.
+
+**Acceptance:** launch single and paired interceptors against Small/Medium/Large UFOs under Cautious/Standard/Aggressive stances. Verify the three stages, bounded hit modifier, damaged-escape severity bonus, breakaway return-damage scaling, ammo scaling, Auto Resolve parity, abort-before-commit, and unchanged fuel/ammo/repair/UFO mission authority. Verify save/load during ordinary interceptor travel remains unchanged and global staggered swarm launches continue resolving normally.
+
+See `INTERACTIVE_INTERCEPTOR_COMBAT_0051_VALIDATION.md`.
 
 
 ## Alien Resonance Locks — Browser 0050
