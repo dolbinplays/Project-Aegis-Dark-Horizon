@@ -1,3 +1,22 @@
+BUILD: v0.26.10.05.0052.1_SEASONAL_LOCKER_REVIEW_HOTFIX
+October 5, 2026 - Seasonal Locker Review Hotfix
+- Preserve separately earned copies of the same costume type; selecting the currently equipped type is a no-op.
+- Prefer retained spares before transferring worn items; show owned and spare counts in the locker.
+- Use current roster state for equipment/favorite edits so pending recruitment and soldier changes are retained.
+- Reject invalid swaps and deceased recipients without modifying inventory. Favorite locks survive normalization and auto-assignment.
+- Replace copied-helper validation with six actual-runtime regressions in the mandatory release gate; synchronize the source manifest. Save format remains 4.
+
+BUILD: v0.26.10.05.0052_SEASONAL_LOCKER_AND_COLLECTION_POLISH_PATCH
+October 5, 2026 - Seasonal Locker + Collection Polish
+- Adds a shared Seasonal Locker to Barracks for recovered Halloween cosmetics.
+- Shows collection progress across all 7 sets and 4 slots, including complete-set status.
+- Lets the player manually equip/unequip Top, Bottom, Helmet / Mask, and Weapon Skin pieces on any living soldier.
+- Swaps are authoritative and lossless: displaced pieces return to retained spares and one recovered item cannot be duplicated onto multiple soldiers.
+- Adds persistent per-slot Lock / Favorite controls. Seasonal auto-assignment skips locked slots, including intentionally empty locked slots.
+- Existing full-set victory flourishes and seasonal weapon effects continue to consume the same soldier seasonalCosmetics records.
+- Halloween remains cosmetic-only. Save format remains 4 and existing saves require no migration.
+- See SEASONAL_LOCKER_0052_VALIDATION.md.
+
 BUILD: v0.26.10.04.0051.1_INTERCEPTOR_COMBAT_REVIEW_HOTFIX
 October 5, 2026 - Interceptor Combat Review Hotfix
 - Campaign time pauses throughout the attack-run dialog, preventing the launch from using a UFO or fleet state that advanced behind it. The previous clock setting is preserved.

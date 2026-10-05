@@ -1,8 +1,31 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.04.0051.1_INTERCEPTOR_COMBAT_REVIEW_HOTFIX`
+Current browser build: `v0.26.10.05.0052.1_SEASONAL_LOCKER_REVIEW_HOTFIX`
 
 Current save format: `4`
+
+
+## Seasonal Locker Review Hotfix — Browser 0052.1
+
+- Preserve individual recovered copies, prefer spare pieces, and display owned/spare counts.
+- Apply locker edits to the latest roster state and reject invalid/deceased targets.
+- Six actual-runtime regressions cover transfers, copy conservation, favorite locks, normalization, and queued roster updates. Save format remains 4.
+
+## Seasonal Locker + Collection Polish — Browser 0052
+
+**Status: implemented; installed-game field acceptance pending.**
+
+October 5, 2026 - Seasonal Locker + Collection Polish
+- Barracks now exposes the existing Halloween collection through one shared Seasonal Locker rather than leaving equipped pieces and overflow spares hidden on individual soldier records.
+- The Locker aggregates every recovered equipped/spare item into collection progress for Vampire, Witch, Wolfman, Mummy, Creature from the Black Lagoon, Frankenstein, and Skeleton sets.
+- Players may manually equip or unequip Top, Bottom, Helmet / Mask, and Weapon Skin pieces on any living soldier. Transactions move the single authoritative recovered item between equipped state and retained spares; displaced items return to the collection instead of being deleted or duplicated.
+- Each soldier gains persistent per-slot Lock / Favorite controls. Seasonal recovery auto-assignment excludes locked slots, including an empty slot intentionally reserved by the commander.
+- Existing full-set victory flourishes and Halloween weapon presentation continue to read the same `seasonalCosmetics` loadout. No seasonal item changes HP, TU, accuracy, armor, morale, damage, AI, LOS, research, economy, or mission results.
+- Existing 0042+ saves normalize missing lock fields to unlocked. Save format remains **4**.
+
+**Acceptance:** recover several pieces, open Barracks → Seasonal Locker, swap a piece between soldiers, unequip/re-equip it, verify the displaced item remains available exactly once, lock occupied and empty slots, recover another seasonal drop and confirm auto-assignment skips those locks, complete a matching four-piece set and confirm its existing victory flourish still triggers, then save/reload and verify equipment/locks/collection counts persist. Repeat on desktop and Mobile/Adaptive.
+
+See `SEASONAL_LOCKER_0052_VALIDATION.md`.
 
 
 ## Interceptor Combat Review Hotfix — Browser 0051.1
