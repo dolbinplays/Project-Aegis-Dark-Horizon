@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.10.05.0054.1_COSTUME_FIT_REVIEW_HOTFIX";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.05.0054.1_COSTUME_FIT_REVIEW_HOTFIX";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v113-costume-fit-review";
+const AEGIS_PWA_CACHE = "aegis-v0.26.10.05.0055.1_VICTORY_FLOURISH_REVIEW_HOTFIX";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.05.0055.1_VICTORY_FLOURISH_REVIEW_HOTFIX";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v115-flourish-review";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;
@@ -24,6 +24,7 @@ const AEGIS_TOOL_NAV_URLS = new Set([
 ]);
 const AEGIS_BOOT_PROBE_TIMEOUT_MS = 1800;
 const AEGIS_SMALL_SHELL = [
+  "./assets/runtime/aegis-costume-celebration.js",
   "./AEGIS_Costume_Editor_CURRENT.html",
   "./assets/data/aegis-costume-library.js",
   "./assets/data/aegis-authored-content.js",

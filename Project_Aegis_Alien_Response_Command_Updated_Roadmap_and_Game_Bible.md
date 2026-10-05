@@ -1,10 +1,34 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.05.0054.1_COSTUME_FIT_REVIEW_HOTFIX`
+Current browser build: `v0.26.10.05.0055.1_VICTORY_FLOURISH_REVIEW_HOTFIX`
 
 Current save format: `4`
 
 
+
+
+## Victory Flourish Review Hotfix — Browser 0055.1
+
+- Fix sand/mist runtime exceptions and animation timing; share rendered effect geometry/motion with editor previews.
+- Preserve live phase controls, add/remove phases, and clean up completed previews.
+- Allocate runtime flourishes only during victory; executable tests cover all nine effects.
+
+## Full-Set Victory Flourish & Celebration Authoring — Browser 0055
+
+**Status: implemented; installed-game visual/file-picker acceptance pending.**
+
+October 5, 2026
+- Extends the Costume Editor with presentation-only full-set celebration authoring for foundation and signature definitions.
+- Each definition can select an effect family (Orbit, Cape Sweep, Witchlight, Moon Glow, Sand Swirl, Swamp Mist, Lightning, Bone Rattle, Spectral Aura), intensity, speed, and up to four timed pose phases using Standing/Aim/Kneel/Prone/Walk/Victory labels.
+- The existing tactical victory-dance and TPV survivor flythrough remain authoritative. Authored celebration data only changes the visible full-set flourish attached to a legitimate surviving celebration actor.
+- A uniform four-piece signature set may use its signature celebration override; mixed signature/foundation pieces that still complete the foundation set use the foundation celebration.
+- Existing libraries without a celebration block retain the prior built-in orbit flourish. Costume ownership, rewards, mission results, TU, XP, morale, AI, coordinates and save authority are unchanged.
+- Costume Editor adds Preview Celebration plus Load Last Backup, scanning timestamped project-folder backups without overwriting the current files until the player explicitly saves.
+- Save format remains **4**.
+
+**Acceptance:** complete a foundation set and a uniform signature set; win a mission and verify the existing victory sequence shows the authored flourish without delaying or changing mission results. Test every effect family, several phase timings and reduced/normal visual settings. Use Preview Celebration in the editor, save/relaunch, then Load Last Backup and confirm it restores into preview without immediately overwriting canonical files. Verify older 0053/0054 libraries continue to show the legacy flourish.
+
+See `COSTUME_VICTORY_FLOURISH_0055_VALIDATION.md`.
 
 ## Costume Fit Review Hotfix — Browser 0054.1
 

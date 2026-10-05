@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,'..');
 const library=()=>JSON.parse(fs.readFileSync(path.join(root,'assets/data/aegis-costume-library.json'),'utf8'));
 function editorFixture(files={},failure=null,previewFailure=false){
  const elements=new Map(),writes=[];
- const node=()=>({children:[],dataset:{},classList:{add(){},toggle(){}},addEventListener(){},getBoundingClientRect(){return{width:600,height:600};},style:{setProperty(){}},appendChild(n){this.children.push(n);},replaceChildren(){this.children=[];},click(){}});
+ const node=()=>({children:[],append(...nodes){this.children.push(...nodes);},dataset:{},classList:{add(){},toggle(){}},addEventListener(){},getBoundingClientRect(){return{width:600,height:600};},style:{setProperty(){}},appendChild(n){this.children.push(n);},replaceChildren(){this.children=[];},click(){}});
  const document={querySelectorAll(selector){return selector==='.slotbtn'?(elements.get('slots')?.children||[]):[];},querySelector(){return node();},getElementById(id){if(!elements.has(id))elements.set(id,node());return elements.get(id);},createElement:node};
  const missing=()=>Object.assign(new Error('missing'),{name:'NotFoundError'});
  const dir={async getFileHandle(name,options={}){
@@ -12,8 +12,8 @@ function editorFixture(files={},failure=null,previewFailure=false){
   return{async getFile(){return{text:async()=>files[name]};},async createWritable(){if(failure?.(name))throw new Error('write denied');let value;return{async write(text){value=text;},async close(){files[name]=value;writes.push(name);},async abort(){}};}};
  }};
  const folder={async getFileHandle(name){if(name!=='index.html')throw missing();return{};},async getDirectoryHandle(name){assert.equal(name,'assets');return{async getDirectoryHandle(child){assert.equal(child,'data');return dir;}};}};
- const c={document,structuredClone,Blob,URL,setTimeout:()=>{},devicePixelRatio:1,requestAnimationFrame:()=>{},THREE:{...require('../assets/vendor/three.min.js'),WebGLRenderer:class{constructor(){if(previewFailure)throw new Error("WebGL unavailable");}setPixelRatio(){}setSize(){}render(){}}},window:{addEventListener(){},showDirectoryPicker:async()=>folder}};
- vm.createContext(c);const html=fs.readFileSync(path.join(root,'AEGIS_Costume_Editor_CURRENT.html'),'utf8');vm.runInContext(html.match(/<script>([\s\S]*?)<\/script>/)[1],c);
+ const c={document,structuredClone,Blob,URL,setTimeout:()=>{},performance:{now:()=>0},devicePixelRatio:1,requestAnimationFrame:()=>{},THREE:{...require('../assets/vendor/three.min.js'),WebGLRenderer:class{constructor(){if(previewFailure)throw new Error("WebGL unavailable");}setPixelRatio(){}setSize(){}render(){}}},window:{addEventListener(){},showDirectoryPicker:async()=>folder}};
+ vm.createContext(c);vm.runInContext(fs.readFileSync(path.join(root,"assets/runtime/aegis-costume-celebration.js"),"utf8"),c);const html=fs.readFileSync(path.join(root,'AEGIS_Costume_Editor_CURRENT.html'),'utf8');vm.runInContext(html.match(/<script>([\s\S]*?)<\/script>/)[1],c);
  return{c,elements,files,writes};
 }
 test('service worker evaluates and caches both new offline assets',()=>{
@@ -95,4 +95,27 @@ test('missing WebGL preview does not disable file authoring',async()=>{
  const f=editorFixture({'aegis-costume-library.json':JSON.stringify(library()),'aegis-costume-library.js':'original'},null,true);
  assert.match(f.elements.get('status').textContent,/preview unavailable/);
  await f.elements.get('choose').onclick();assert.equal(f.elements.get('save').disabled,false);await f.elements.get('save').onclick();assert.equal(f.writes.length,4);
+});
+
+test('all celebration effects remain finite across frames, including a zero-time start',()=>{
+ const c=runtimeContext(),THREE=require('../assets/vendor/three.min.js');let now=0;c.performance.now=()=>now;
+ c.tacticalThreePersistentMaterial=(r,key,color,o)=>new THREE.MeshStandardMaterial({color,opacity:o.opacity});
+ for(const effect of ['orbit','cape','witchlight','moon','sand','mist','lightning','bones','spectral']){
+  c.AEGIS_COSTUME_LIBRARY=library();c.AEGIS_COSTUME_LIBRARY.sets[0].celebration={effect,intensity:.7,speed:1,phases:[{pose:'standing',durationMs:150},{pose:'victory',durationMs:150}]};
+  const unit={id:'test',seasonalCosmetics:Object.fromEntries(['top','bottom','head','weapon'].map(slot=>[slot,{setKey:'vampire',slot}]))},node=new THREE.Group();now=0;
+  const group=c.seasonalThreeCelebrationFlourish({THREE},node,unit);now=175;group.children[0].onBeforeRender();assert.equal(group.userData.phaseIndex,1,effect);
+  for(const time of [300,1500,7000]){now=time;assert.equal(c.seasonalThreeCelebrationFlourish({THREE},node,unit),group);group.traverse(o=>assert.ok([...o.position.toArray(),...o.scale.toArray()].every(Number.isFinite),effect));}
+ }
+});
+test('phase controls remain attached after preview reads and support one to four phases',()=>{
+ const f=editorFixture();f.c.rebuildCelebrationInputs();const first=f.elements.get('celebrationPhases').children[0],select=first.children[0].children[0],duration=first.children[1].children[0];
+ f.c.ensureCelebration();f.c.ensureCelebration();select.value='kneel';select.onchange();duration.value='650';duration.oninput();
+ assert.equal(f.c.ensureCelebration().phases[0].pose,'kneel');assert.equal(f.c.ensureCelebration().phases[0].durationMs,650);
+ for(let i=0;i<6;i++)f.elements.get('addCelebrationPhase').onclick();assert.equal(f.c.ensureCelebration().phases.length,4);
+ for(let i=0;i<6;i++)f.elements.get('removeCelebrationPhase').onclick();assert.equal(f.c.ensureCelebration().phases.length,1);
+});
+test('editor previews selected effect from phase zero and disposes it on completion',()=>{
+ const f=editorFixture();let now=12345;f.c.performance.now=()=>now;f.c.ensureCelebration().effect='lightning';f.elements.get('previewCelebration').onclick();f.c.loop(now);
+ const group=vm.runInContext('celebrationGroup',f.c);assert.equal(group.children.length,6);assert.equal(group.userData.phaseIndex,0);
+ let disposed=0;group.traverse(o=>o.geometry?.addEventListener('dispose',()=>disposed++));now+=7100;f.c.loop(now);assert.equal(vm.runInContext('celebrationGroup',f.c),null);assert.equal(disposed,6);
 });

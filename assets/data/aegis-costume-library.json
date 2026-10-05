@@ -1,6 +1,6 @@
 {
   "schema": "aegis-costume-library-v1",
-  "build": "v0.26.10.05.0054.1_COSTUME_FIT_REVIEW_HOTFIX",
+  "build": "v0.26.10.05.0055.1_VICTORY_FLOURISH_REVIEW_HOTFIX",
   "presentationOnly": true,
   "sets": [
     {
@@ -86,6 +86,25 @@
           "emissive": 0.16,
           "fits": {}
         }
+      },
+      "celebration": {
+        "effect": "cape",
+        "intensity": 0.78,
+        "speed": 1.0,
+        "phases": [
+          {
+            "pose": "standing",
+            "durationMs": 350
+          },
+          {
+            "pose": "victory",
+            "durationMs": 1200
+          },
+          {
+            "pose": "victory",
+            "durationMs": 650
+          }
+        ]
       }
     },
     {
@@ -171,6 +190,25 @@
           "emissive": 0.16,
           "fits": {}
         }
+      },
+      "celebration": {
+        "effect": "witchlight",
+        "intensity": 0.78,
+        "speed": 1.0,
+        "phases": [
+          {
+            "pose": "standing",
+            "durationMs": 350
+          },
+          {
+            "pose": "victory",
+            "durationMs": 1200
+          },
+          {
+            "pose": "victory",
+            "durationMs": 650
+          }
+        ]
       }
     },
     {
@@ -256,6 +294,25 @@
           "emissive": 0.16,
           "fits": {}
         }
+      },
+      "celebration": {
+        "effect": "moon",
+        "intensity": 0.78,
+        "speed": 1.0,
+        "phases": [
+          {
+            "pose": "standing",
+            "durationMs": 350
+          },
+          {
+            "pose": "victory",
+            "durationMs": 1200
+          },
+          {
+            "pose": "victory",
+            "durationMs": 650
+          }
+        ]
       }
     },
     {
@@ -341,6 +398,25 @@
           "emissive": 0.16,
           "fits": {}
         }
+      },
+      "celebration": {
+        "effect": "sand",
+        "intensity": 0.78,
+        "speed": 1.0,
+        "phases": [
+          {
+            "pose": "standing",
+            "durationMs": 350
+          },
+          {
+            "pose": "victory",
+            "durationMs": 1200
+          },
+          {
+            "pose": "victory",
+            "durationMs": 650
+          }
+        ]
       }
     },
     {
@@ -426,6 +502,25 @@
           "emissive": 0.16,
           "fits": {}
         }
+      },
+      "celebration": {
+        "effect": "mist",
+        "intensity": 0.78,
+        "speed": 1.0,
+        "phases": [
+          {
+            "pose": "standing",
+            "durationMs": 350
+          },
+          {
+            "pose": "victory",
+            "durationMs": 1200
+          },
+          {
+            "pose": "victory",
+            "durationMs": 650
+          }
+        ]
       }
     },
     {
@@ -511,6 +606,25 @@
           "emissive": 0.16,
           "fits": {}
         }
+      },
+      "celebration": {
+        "effect": "lightning",
+        "intensity": 0.78,
+        "speed": 1.0,
+        "phases": [
+          {
+            "pose": "standing",
+            "durationMs": 350
+          },
+          {
+            "pose": "victory",
+            "durationMs": 1200
+          },
+          {
+            "pose": "victory",
+            "durationMs": 650
+          }
+        ]
       }
     },
     {
@@ -596,6 +710,25 @@
           "emissive": 0.16,
           "fits": {}
         }
+      },
+      "celebration": {
+        "effect": "bones",
+        "intensity": 0.78,
+        "speed": 1.0,
+        "phases": [
+          {
+            "pose": "standing",
+            "durationMs": 350
+          },
+          {
+            "pose": "victory",
+            "durationMs": 1200
+          },
+          {
+            "pose": "victory",
+            "durationMs": 650
+          }
+        ]
       }
     }
   ],
@@ -684,6 +817,25 @@
           "emissive": 0.16,
           "fits": {}
         }
+      },
+      "celebration": {
+        "effect": "cape",
+        "intensity": 0.92,
+        "speed": 1.1,
+        "phases": [
+          {
+            "pose": "standing",
+            "durationMs": 250
+          },
+          {
+            "pose": "victory",
+            "durationMs": 1450
+          },
+          {
+            "pose": "victory",
+            "durationMs": 750
+          }
+        ]
       }
     },
     {
@@ -770,6 +922,25 @@
           "emissive": 0.16,
           "fits": {}
         }
+      },
+      "celebration": {
+        "effect": "spectral",
+        "intensity": 0.92,
+        "speed": 1.1,
+        "phases": [
+          {
+            "pose": "standing",
+            "durationMs": 250
+          },
+          {
+            "pose": "victory",
+            "durationMs": 1450
+          },
+          {
+            "pose": "victory",
+            "durationMs": 750
+          }
+        ]
       }
     },
     {
@@ -856,6 +1027,25 @@
           "emissive": 0.16,
           "fits": {}
         }
+      },
+      "celebration": {
+        "effect": "moon",
+        "intensity": 0.92,
+        "speed": 1.1,
+        "phases": [
+          {
+            "pose": "standing",
+            "durationMs": 250
+          },
+          {
+            "pose": "victory",
+            "durationMs": 1450
+          },
+          {
+            "pose": "victory",
+            "durationMs": 750
+          }
+        ]
       }
     },
     {
@@ -942,6 +1132,25 @@
           "emissive": 0.16,
           "fits": {}
         }
+      },
+      "celebration": {
+        "effect": "sand",
+        "intensity": 0.92,
+        "speed": 1.1,
+        "phases": [
+          {
+            "pose": "standing",
+            "durationMs": 250
+          },
+          {
+            "pose": "victory",
+            "durationMs": 1450
+          },
+          {
+            "pose": "victory",
+            "durationMs": 750
+          }
+        ]
       }
     },
     {
@@ -1028,6 +1237,25 @@
           "emissive": 0.16,
           "fits": {}
         }
+      },
+      "celebration": {
+        "effect": "mist",
+        "intensity": 0.92,
+        "speed": 1.1,
+        "phases": [
+          {
+            "pose": "standing",
+            "durationMs": 250
+          },
+          {
+            "pose": "victory",
+            "durationMs": 1450
+          },
+          {
+            "pose": "victory",
+            "durationMs": 750
+          }
+        ]
       }
     }
   ]

@@ -1,6 +1,6 @@
 {
-  "build": "v0.26.10.05.0054.1_COSTUME_FIT_REVIEW_HOTFIX",
-  "package_filename": "Project_Aegis_v0.26.10.05.0054.1_COSTUME_FIT_REVIEW_HOTFIX.zip",
+  "build": "v0.26.10.05.0055.1_VICTORY_FLOURISH_REVIEW_HOTFIX",
+  "package_filename": "Project_Aegis_v0.26.10.05.0055.1_VICTORY_FLOURISH_REVIEW_HOTFIX.zip",
   "save_format": 4,
   "base_game_runtime_build": "v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH",
   "editor": "AEGIS_Prop_Editor_v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH.html",
@@ -9,14 +9,14 @@
   "tools_editor_launcher_extension": "assets/runtime/aegis-tools-editor-launcher-runtime.js",
   "tools_editor_launcher_build": "v0.26.09.18.2115_IN_GAME_TOOLS_EDITOR_RENDERED_RUNTIME_HOTFIX",
   "tools_editor_access": "native-react-button-via-pre-render-embedded-runtime-payload-transform",
-  "launch_cache": "aegis-launch-shell-v113-costume-fit-review",
-  "hotfix_reason": "Align costume preview mesh geometry with runtime, dispose replaced preview resources, validate and bound fit data, preserve legacy material defaults, and retain authoring without WebGL.",
+  "launch_cache": "aegis-launch-shell-v115-flourish-review",
+  "hotfix_reason": "Fix sand/mist effect crashes, share effect geometry and animation with the editor, retain phase edits, start previews at phase zero, and gate runtime celebration allocation to victory.",
   "runtime_extension": "assets/runtime/aegis-contextual-prop-placement-runtime.js",
   "runtime_extension_build": "v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH",
   "prop_authoring_pipeline": "canonical-prop-definition",
-  "runtime_bytes": 7851069,
-  "runtime_sha256": "22afcc172df20da3c1d337aa4d4605aafffb8041eb1c23f2b8c0fd584bc635a5",
-  "host_sha256": "57883030af41c2ef0a071557624f219a9dc76fe4723b5dbacdb752f1d3a9ecc7",
+  "runtime_bytes": 7853603,
+  "runtime_sha256": "9323dffb731eb1d477ccd27d4d5bf8ac7de03d38889a6c49a8a1f971dd493c67",
+  "host_sha256": "c75c7bf47ba7644ff0ae52d4ad2ffed84f42d1972a99fee767fc56fab3573ea6",
   "building_layout_editor": "AEGIS_Building_Layout_Editor_CURRENT.html",
   "building_layout_schema": "aegis-building-layout-v1",
   "tv_play": "AEGIS_TV.html",
@@ -74,5 +74,25 @@
     "drone",
     "leech"
   ],
-  "costume_preview": "articulated-threejs+standing+aim+kneel+prone+walk+victory-v1"
+  "costume_preview": "articulated-threejs+standing+aim+kneel+prone+walk+victory-v1",
+  "costume_celebration_authoring": "effect+intensity+speed+pose-phases-v1",
+  "costume_celebration_effects": [
+    "orbit",
+    "cape",
+    "witchlight",
+    "moon",
+    "sand",
+    "mist",
+    "lightning",
+    "bones",
+    "spectral"
+  ],
+  "costume_celebration_pose_phases": [
+    "standing",
+    "aim",
+    "kneel",
+    "prone",
+    "walk",
+    "victory"
+  ]
 }

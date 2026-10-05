@@ -1,3 +1,21 @@
+BUILD: v0.26.10.05.0055.1_VICTORY_FLOURISH_REVIEW_HOTFIX
+October 5, 2026 - Victory Flourish Review Hotfix
+- Fix undefined particle-count errors in sand/mist effects and zero-time animation starts.
+- Share celebration geometry/motion between runtime and editor; update effects per rendered frame and create them only during victory.
+- Preview selected effects from phase one and release preview resources afterward.
+- Preserve phase control references through repeated previews; add one-to-four phase controls.
+- Add executable regressions across all nine effects, phase edits and preview cleanup; synchronize canonical manifest. Save format remains 4.
+
+BUILD: v0.26.10.05.0055_FULL_SET_VICTORY_FLOURISH_AUTHORING_PATCH
+October 5, 2026 - Full-Set Victory Flourish & Celebration Authoring
+- Adds authored full-set celebration effect, intensity, speed and up to four timed pose phases to foundation/signature costume definitions.
+- Runtime consumes those fields only during the existing authoritative victory dance/TPV survivor celebration.
+- Uniform four-piece signature sets may use signature celebration overrides; mixed sets retain the foundation celebration.
+- Older libraries without celebration data keep the existing built-in orbit flourish.
+- Costume Editor adds Preview Celebration and Load Last Backup while retaining validated JS/JSON backup-before-replace saves.
+- Presentation-only: no mission-result, reward, TU, XP, morale, AI, coordinate, inventory or combat changes. Save format remains 4.
+- See COSTUME_VICTORY_FLOURISH_0055_VALIDATION.md.
+
 BUILD: v0.26.10.05.0054.1_COSTUME_FIT_REVIEW_HOTFIX
 October 5, 2026 - Costume Fit Review Hotfix
 - Match preview costume geometry/placement/materials to runtime; correct arm/leg pose selection. Body poses remain simplified guides for in-game field verification.
