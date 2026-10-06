@@ -1,3 +1,21 @@
+BUILD: v0.26.10.06.0058.1_SEASONAL_REWARD_REVIEW_HOTFIX
+October 6, 2026 - Seasonal Reward Feedback Review
+- Fixed the reward health-check scope error.
+- Only retained items announce recovery; loaded collection filters stale Locker highlights.
+- Audio errors cannot interrupt mission recovery, and only completion stingers duck music.
+- Corrected in-game patch history and synchronized the source manifest. Save format remains 4.
+
+BUILD: v0.26.10.06.0058_SEASONAL_REWARD_STINGERS_AND_COLLECTION_FEEDBACK_PATCH
+October 6, 2026 - Seasonal Reward Stingers + Collection Completion Feedback
+- Compare the shared Halloween collection before/after authoritative mission recovery and emit one aggregated reward feedback event.
+- Distinguish ordinary/new-slot recovery, signature recovery, foundation set completion, and uniform signature-set completion; higher-priority completion wins when several drops arrive together.
+- Synthesize short Halloween stingers through the existing SFX bus, honoring Master Mute and Master SFX Volume with no new audio assets.
+- Briefly duck active music for major completion cues without stopping/restarting the 0057.1 soundtrack or breaking mission search/contact identity.
+- Show a positive temporary HUD callout, add the collection-completion line to the mission report, and highlight newly completed sets in the Seasonal Locker.
+- Duplicate copies remain conserved without falsely triggering new-slot/set completion. Save format remains 4.
+
+See SEASONAL_REWARD_FEEDBACK_0058_VALIDATION.md.
+
 BUILD: v0.26.10.05.0057.1_HALLOWEEN_AUDIO_REVIEW_HOTFIX
 October 6, 2026 - Halloween Audio Review Hotfix
 - Preserve the selected underlying soundtrack and same Halloween take across mission search/combat crossfades and failed-playback recovery.

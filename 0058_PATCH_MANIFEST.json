@@ -1,0 +1,19 @@
+{
+  "build": "v0.26.10.06.0058.1_SEASONAL_REWARD_REVIEW_HOTFIX",
+  "save_format": 4,
+  "files": [
+    "AEGIS_Articulated_Pose_Editor_v0.26.10.05.0056_UNIFIED_POSE_AND_COSTUME_AUTHORING_PATCH.html",
+    "HALLOWEEN_RANDOMIZED_SOUNDTRACK_0057_VALIDATION.md",
+    "Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md",
+    "README_PATCH_NOTES.txt",
+    "SEASONAL_REWARD_FEEDBACK_0058_VALIDATION.md",
+    "UNIFIED_POSE_COSTUME_AUTHORING_0056_VALIDATION.md",
+    "index.html",
+    "release-metadata.json",
+    "service-worker.js",
+    "src/browser-runtime.html",
+    "src/manifest.json",
+    "tools/test-seasonal-reward-runtime.cjs",
+    "tools/package-runtime-shell.cjs"
+  ]
+}

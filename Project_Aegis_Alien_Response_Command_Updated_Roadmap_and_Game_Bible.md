@@ -1,10 +1,33 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.05.0057.1_HALLOWEEN_AUDIO_REVIEW_HOTFIX`
+Current browser build: `v0.26.10.06.0058.1_SEASONAL_REWARD_REVIEW_HOTFIX`
 
 Current save format: `4`
 
 
+
+
+## 0058.1 Review Hotfix
+
+Fixed reward health-check scope errors, false recovery announcements for unretained drops, stale Locker highlights for absent sets, and recovery interruption on audio errors. Completion-only music ducking and save format 4 are preserved.
+
+## Seasonal Reward Stingers + Collection Completion Feedback — Browser 0058
+
+**Status: implemented; installed-game audio/visual acceptance pending.**
+
+October 6, 2026
+- Seasonal mission recovery now compares the authoritative shared Halloween collection immediately before and after the existing recovery transaction. UI rerenders and Locker browsing cannot replay the reward cue.
+- One aggregated presentation event is selected per mission recovery: ordinary recovery, newly filled collection slot, signature variant recovery, foundation four-slot completion, or uniform four-slot signature completion. Higher-value completion feedback wins when several pieces are recovered together.
+- Short Halloween reward stingers are synthesized through the existing Web Audio SFX bus, so Master Mute and Master SFX Volume remain authoritative and no additional audio files are required.
+- Set/signature completion briefly ducks, rather than stops or restarts, the active soundtrack. The duck composes with recorded-dialogue ducking and preserves the 0057.1 mission search/contact soundtrack identity.
+- A temporary positive HUD notification identifies the recovered/completed collection state, the same completion line is recorded in the mission report Rewards and recovery section, and the Seasonal Locker highlights newly completed foundation/signature sets as NEW 4 / 4 COMPLETE.
+- Shared Locker completion counts foundation pieces by `setKey` across equipped and spare inventory, so signature pieces still satisfy their foundation slot. Uniform signature completion requires all four slots from the same `variantKey`.
+- Duplicate copies remain recoverable and conserved normally but do not falsely announce a newly completed slot/set.
+- Presentation-only: no drop odds, ownership, auto-assignment, stats, combat, rewards, mission authority, AI, pathing, or save schema changes. Save format remains **4**.
+
+**Acceptance:** recover one ordinary new slot, one signature piece, the fourth foundation slot, and the fourth matching signature slot; verify the corresponding callout/stinger occurs once after mission recovery. Recover multiple pieces in one mission and confirm only one highest-priority cue plays. Set Master SFX to 0 / Master Mute and verify no stinger audio. Confirm active Halloween music ducks briefly without restarting or switching takes, including mission music. Verify duplicate pieces do not claim a new slot/set completion and mission reports preserve the collection feedback.
+
+See `SEASONAL_REWARD_FEEDBACK_0058_VALIDATION.md`.
 
 ## Halloween Audio Review Hotfix — Browser 0057.1
 
