@@ -1,15 +1,33 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.05.0056.1_UNIFIED_AUTHORING_REVIEW_HOTFIX`
+Current browser build: `v0.26.10.05.0057.1_HALLOWEEN_AUDIO_REVIEW_HOTFIX`
 
 Current save format: `4`
 
 
-## Unified Authoring Review Hotfix — Browser 0056.1
 
-- Restore full authoring validation and serialize saves; preserve user libraries and backups.
-- Honor explicit attachment removal, share preview/runtime attachment rendering, and release replaced preview materials.
-- Update offline navigation and automated checks for the new unified editor.
+## Halloween Audio Review Hotfix — Browser 0057.1
+
+- Preserve soundtrack identity through seasonal mission crossfades, including failure recovery; ignore stale playback history callbacks.
+- Restore the reviewed 0056.1 authoring safeguards and helper dependencies.
+- Four executable audio regressions join the release gate. Save format remains 4.
+
+## Halloween Randomized Soundtrack Bank — Browser 0057
+
+**Status: implemented; installed-game audio acceptance pending.**
+
+October 5, 2026
+- Adds all 38 supplied ElevenLabs Halloween music files as external assets under `assets/audio/halloween/`.
+- Every standard music context receives two Halloween takes: Start, Command Menu, Geoscape, Base, Inventory, Database, Soldiers, Research, Workshop, Squads, Sickbay, Missions, Reports, Memorial and Pause.
+- During the calendar month of October, the Halloween bank automatically overlays the selected Original or Dark Horizon soundtrack while leaving that preference intact for non-October playback.
+- Each context randomizes between its two tracks and avoids immediately repeating the last successfully played Halloween take for that context.
+- The two Halloween `Contact in the Dark` mission tracks preserve the established visibility-reactive contract: 0:00–0:36 search, 0:37–1:00 visible-contact combat, with the existing 1.4-second crossfade.
+- Successful October missions use an eight-track Halloween Operation Vindicator pool (two takes each for Vindicator I–IV), also with no immediate repeat. Existing terminal-victory/reinforcement safety gates remain authoritative.
+- Music On/Off, master music volume, post-mission audio continuity, normal Original/Dark Horizon banks and all gameplay systems remain unchanged. Save format remains **4**.
+
+**Acceptance:** in October, enter each of the 15 music contexts repeatedly and verify both Halloween takes can appear without an immediate repeat; switch Original/Dark Horizon and verify the Halloween override remains active while the preference is retained; play a tactical mission and verify search/contact crossfades stay within the selected Halloween mission file; win several missions and verify the eight-track victory pool varies without early victory; disable Music and verify all seasonal music remains silent. Outside October, verify normal soundtrack routing resumes.
+
+See `HALLOWEEN_RANDOMIZED_SOUNDTRACK_0057_VALIDATION.md`.
 
 ## Unified Pose + Costume Authoring — Browser 0056
 

@@ -1,3 +1,27 @@
+BUILD: v0.26.10.05.0057.1_HALLOWEEN_AUDIO_REVIEW_HOTFIX
+October 6, 2026 - Halloween Audio Review Hotfix
+- Preserve the selected underlying soundtrack and same Halloween take across mission search/combat crossfades and failed-playback recovery.
+- Ignore stale playback completions when recording no-repeat history.
+- Restore 0056.1 editor validation, serialized saves, explicit attachment removal, shared preview rendering and material cleanup unintentionally reverted by 0057. Restore patch-note history.
+- Add four executable seasonal routing/crossfade regressions; synchronize canonical build metadata and offline helper caching. All 38 music assets remain external and unchanged. Save format remains 4.
+
+PROJECT AEGIS / ALIEN RESPONSE COMMAND
+PATCH NOTES
+
+BUILD: v0.26.10.05.0057_HALLOWEEN_RANDOMIZED_SOUNDTRACK_BANK_PATCH
+October 5, 2026 - Halloween Randomized Soundtrack Bank
+Save format: 4
+
+- Adds the supplied 38-track Halloween score as external assets.
+- Provides two randomized, no-immediate-repeat Halloween tracks for every normal music context.
+- October seasonal music temporarily overlays Original/Dark Horizon while preserving the player's underlying soundtrack preference.
+- Both Halloween mission tracks retain Contact in the Dark search/combat segment looping and the existing visibility crossfade.
+- Adds eight Halloween victory tracks (two versions each of Operation Vindicator I-IV) with no immediate repeat.
+- Existing terminal victory/reinforcement gating, Music On/Off, volume, audio continuity and all gameplay authority remain unchanged.
+- Save format remains 4.
+
+See HALLOWEEN_RANDOMIZED_SOUNDTRACK_0057_VALIDATION.md.
+
 BUILD: v0.26.10.05.0056.1_UNIFIED_AUTHORING_REVIEW_HOTFIX
 October 5, 2026 - Unified Authoring Review Hotfix
 - Restore validation for transforms, recolors, attachments, materials and celebration data. Block overlapping saves and reset defaults when connecting a project without a library.

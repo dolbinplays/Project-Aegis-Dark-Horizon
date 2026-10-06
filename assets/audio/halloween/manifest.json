@@ -1,0 +1,76 @@
+{
+  "build": "v0.26.10.05.0057_HALLOWEEN_RANDOMIZED_SOUNDTRACK_BANK_PATCH",
+  "season": "halloween",
+  "contexts": {
+    "start": [
+      "assets/audio/halloween/start_01.mp3",
+      "assets/audio/halloween/start_02.mp3"
+    ],
+    "menu": [
+      "assets/audio/halloween/menu_01.mp3",
+      "assets/audio/halloween/menu_02.mp3"
+    ],
+    "geoscape": [
+      "assets/audio/halloween/geoscape_01.mp3",
+      "assets/audio/halloween/geoscape_02.mp3"
+    ],
+    "base": [
+      "assets/audio/halloween/base_01.mp3",
+      "assets/audio/halloween/base_02.mp3"
+    ],
+    "inventory": [
+      "assets/audio/halloween/inventory_01.mp3",
+      "assets/audio/halloween/inventory_02.mp3"
+    ],
+    "database": [
+      "assets/audio/halloween/database_01.mp3",
+      "assets/audio/halloween/database_02.mp3"
+    ],
+    "soldiers": [
+      "assets/audio/halloween/soldiers_01.mp3",
+      "assets/audio/halloween/soldiers_02.mp3"
+    ],
+    "research": [
+      "assets/audio/halloween/research_01.mp3",
+      "assets/audio/halloween/research_02.mp3"
+    ],
+    "workshop": [
+      "assets/audio/halloween/workshop_01.mp3",
+      "assets/audio/halloween/workshop_02.mp3"
+    ],
+    "squads": [
+      "assets/audio/halloween/squads_01.mp3",
+      "assets/audio/halloween/squads_02.mp3"
+    ],
+    "sickbay": [
+      "assets/audio/halloween/sickbay_01.mp3",
+      "assets/audio/halloween/sickbay_02.mp3"
+    ],
+    "missions": [
+      "assets/audio/halloween/missions_01.mp3",
+      "assets/audio/halloween/missions_02.mp3"
+    ],
+    "reports": [
+      "assets/audio/halloween/reports_01.mp3",
+      "assets/audio/halloween/reports_02.mp3"
+    ],
+    "memorial": [
+      "assets/audio/halloween/memorial_01.mp3",
+      "assets/audio/halloween/memorial_02.mp3"
+    ],
+    "pause": [
+      "assets/audio/halloween/pause_01.mp3",
+      "assets/audio/halloween/pause_02.mp3"
+    ]
+  },
+  "victory": [
+    "assets/audio/halloween/victory_01.mp3",
+    "assets/audio/halloween/victory_02.mp3",
+    "assets/audio/halloween/victory_03.mp3",
+    "assets/audio/halloween/victory_04.mp3",
+    "assets/audio/halloween/victory_05.mp3",
+    "assets/audio/halloween/victory_06.mp3",
+    "assets/audio/halloween/victory_07.mp3",
+    "assets/audio/halloween/victory_08.mp3"
+  ]
+}

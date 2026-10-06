@@ -1,6 +1,6 @@
-const AEGIS_PWA_CACHE = "aegis-v0.26.10.05.0056.1_UNIFIED_AUTHORING_REVIEW_HOTFIX";
-const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.05.0056.1_UNIFIED_AUTHORING_REVIEW_HOTFIX";
-const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v117-unified-review";
+const AEGIS_PWA_CACHE = "aegis-v0.26.10.05.0057.1_HALLOWEEN_AUDIO_REVIEW_HOTFIX";
+const AEGIS_RUNTIME_CACHE = "aegis-runtime-v0.26.10.05.0057.1_HALLOWEEN_AUDIO_REVIEW_HOTFIX";
+const AEGIS_LAUNCH_CACHE = "aegis-launch-shell-v119-halloween-audio-review";
 const AEGIS_BUILD = AEGIS_PWA_CACHE.slice("aegis-".length);
 const AEGIS_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 const AEGIS_RELEASE_URL = new URL("./release-metadata.json", self.registration.scope).href;
@@ -10,8 +10,8 @@ const AEGIS_PLACEMENT_OVERRIDES_URL = new URL("./assets/data/aegis-prop-placemen
 const AEGIS_CONTEXT_RUNTIME_URL = new URL("./assets/runtime/aegis-contextual-prop-placement-runtime.js", self.registration.scope).href;
 const AEGIS_TOOLS_EDITOR_RUNTIME_URL = new URL("./assets/runtime/aegis-tools-editor-launcher-runtime.js", self.registration.scope).href;
 const AEGIS_TOOL_NAV_URLS = new Set([
-  new URL("./AEGIS_Articulated_Pose_Editor_v0.26.10.05.0056_UNIFIED_POSE_AND_COSTUME_AUTHORING_PATCH.html", self.registration.scope).href,
   new URL("./AEGIS_Articulated_Pose_Editor_CURRENT.html", self.registration.scope).href,
+  new URL("./AEGIS_Articulated_Pose_Editor_v0.26.10.05.0056_UNIFIED_POSE_AND_COSTUME_AUTHORING_PATCH.html", self.registration.scope).href,
   new URL("./AEGIS_Articulated_Pose_Editor_v0.26.08.26.0033_APPROVED_ARTICULATED_POSE_SET_PATCH.html", self.registration.scope).href,
   new URL("./AEGIS_TV.html", self.registration.scope).href,
   new URL("./AEGIS_Phone_Controller.html", self.registration.scope).href,
