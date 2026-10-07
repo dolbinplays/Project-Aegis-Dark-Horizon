@@ -1,3 +1,22 @@
+BUILD: v0.26.10.07.0060.1_WINTER_SEASONAL_REVIEW_HOTFIX
+October 7, 2026 - Winter Seasonal Review
+- Initialize Winter within the canonical runtime before game/editor startup and include it in actual runtime tests.
+- Keep legacy Halloween recovery feedback correctly scoped during Winter.
+- Replace stale decoration health checks with behavior checks and fix patch-history ordering.
+- Synchronize build metadata. Save format remains 4.
+
+BUILD: v0.26.10.07.0060_WINTER_SEASONAL_EVENT_PACK
+October 7, 2026 - Winter Seasonal Event Pack
+- Adds Winter as the second registry-driven seasonal content pack, active December 1 through February 28 through the existing year-wrapping date-window authority.
+- Adds seven cosmetic foundation sets and five signature variants using the same generic carrier/drop factory and save-4 seasonal inventory authority as Halloween.
+- Scopes collection snapshots, completion feedback, local NEW highlights, and Locker progress by event so Halloween and Winter can never satisfy one another.
+- Seasonal Locker gains an event selector; permanent pieces from inactive events remain owned/equippable and cross-event swaps conserve copies.
+- Adds deterministic icy Base and tactical dressing plus Winter-flavored SFX-bus reward tones and existing victory-flourish integration.
+- Winter intentionally has no seasonal music bank yet; Original/Dark Horizon routing remains authoritative until a dedicated soundtrack patch.
+- Presentation-only. No combat, AI, economy, research, mission-result, pathing, LOS, or save-schema changes. Save format remains 4.
+
+See WINTER_SEASONAL_EVENT_0060_VALIDATION.md.
+
 BUILD: v0.26.10.06.0059.1_SEASONAL_FRAMEWORK_REVIEW_HOTFIX
 October 6, 2026 - Seasonal Framework Review
 - Reject malformed calendar windows, unknown event keys, and inherited feature names.

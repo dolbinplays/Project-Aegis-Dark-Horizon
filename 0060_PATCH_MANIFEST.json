@@ -1,0 +1,18 @@
+{
+  "build": "v0.26.10.07.0060.1_WINTER_SEASONAL_REVIEW_HOTFIX",
+  "save_format": 4,
+  "files": [
+    "index.html",
+    "service-worker.js",
+    "release-metadata.json",
+    "README_PATCH_NOTES.txt",
+    "Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md",
+    "WINTER_SEASONAL_EVENT_0060_VALIDATION.md",
+    "src/browser-runtime.html",
+    "0060_PATCH_MANIFEST.json",
+    "tools/test-winter-seasonal-runtime.cjs",
+    "src/manifest.json",
+    "tools/test-seasonal-locker-runtime.cjs",
+    "tools/package-runtime-shell.cjs"
+  ]
+}

@@ -52,7 +52,7 @@ test('empty favorite locks survive save normalization and auto assignment uses a
 });
 
 test('panel applies lock and equip changes to latest roster state, preserving queued updates',()=>{
-  const c=runtimeContext();c.React.createElement=(type,props,...children)=>({type,props:props||{},children:children.flat(Infinity)});
+  const c=runtimeContext({React:{useState:value=>[typeof value==='function'?value():value,()=>{}]}});c.React.createElement=(type,props,...children)=>({type,props:props||{},children:children.flat(Infinity)});
   const initial=[soldier('a',null,[piece()])];let update;
   const tree=c.SeasonalLockerPanel({soldiers:initial,onChange:value=>{update=value;}});
   const nodes=node=>node&&typeof node==='object'?[node,...(node.children||[]).flatMap(nodes)]:[];
@@ -60,7 +60,7 @@ test('panel applies lock and equip changes to latest roster state, preserving qu
   lock.props.onChange({target:{checked:true}});assert.equal(typeof update,'function');
   const latest=[{...initial[0],xp:99},soldier('new-recruit')];
   const locked=update(latest);assert.equal(locked.length,2);assert.equal(locked[0].xp,99);
-  const equip=all.filter(n=>n.type==='select')[1];equip.props.onChange({target:{value:piece().itemId}});
+  const equip=all.find(n=>n.type==='select'&&n.children.some(option=>option?.props?.value===piece().itemId));equip.props.onChange({target:{value:piece().itemId}});
   const equipped=update(locked);assert.equal(equipped.length,2);assert.equal(equipped[0].xp,99);
   assert.equal(equipped[0].seasonalCosmeticLocks.top,true);assert.equal(equipped[0].seasonalCosmetics.top.itemId,piece().itemId);
 });

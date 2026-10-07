@@ -1,8 +1,32 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.06.0059.1_SEASONAL_FRAMEWORK_REVIEW_HOTFIX`
+Current browser build: `v0.26.10.07.0060.1_WINTER_SEASONAL_REVIEW_HOTFIX`
 
 Current save format: `4`
+
+
+## 0060.1 Winter Review
+
+Winter initializes before the first game/editor render and is covered by actual runtime tests. Legacy Halloween reward identity is preserved in Winter; decoration health checks now verify behavior. Save format remains 4.
+
+## Winter Seasonal Event Pack — Browser 0060
+
+**Status: implemented; installed-game visual/audio acceptance pending.**
+
+October 7, 2026
+- Winter is the second registered seasonal content pack and runs December 1 through February 28 using the generalized year-wrapping date-window authority. No `isWinter()` gameplay branch owns carrier/drop selection.
+- Foundation collections: Arctic Trooper, Nutcracker, Snow Ranger, Winter Wizard, Krampus Hunter, Toy Soldier, and Frost Specter. Rare signatures: Polar Vanguard, Clockwork Captain, Whiteout Ranger, Aurora Sage, and Rimehorn Warden. All remain presentation-only.
+- Winter reuses the generic one-to-three carrier pressure, exact four-slot collectible factory, shared `seasonalCosmetics` / `seasonalSparePieces` ownership, manual Locker swaps, favorite locks, duplicate conservation, and victory-flourish authority.
+- Collection snapshots and reward feedback are now explicitly event-scoped. Legacy pieces without `eventKey` continue to resolve as Halloween, but Winter foundation/signature progress cannot satisfy Halloween completion and vice versa.
+- Seasonal Locker adds an event selector. Inactive collections remain browsable and permanently recovered pieces remain equippable year-round. A soldier may wear pieces from either event, but a complete-set flourish requires all four slots from one matching event/set.
+- Winter Base dressing uses an icy hallway treatment plus snowflake/snowman/pine/light foreground accents. Tactical missions receive deterministic non-blocking snowman, pine, light, and snowdrift props including a revealed deployment cluster.
+- Winter recovery/completion cues use the existing Web Audio SFX bus with a higher icy-bell motif; Master Mute/SFX remain authoritative and only completion cues use the established music duck.
+- Winter deliberately does **not** add a music bank in Browser 0060. During Winter, normal Original/Dark Horizon soundtrack routing remains authoritative until a dedicated Winter soundtrack release.
+- No combat stats, TU, armor, accuracy, damage, morale, AI, LOS, pathing, research, economy, mission authority, or schema changes. Save format remains **4**.
+
+**Acceptance:** override to December/January and verify Winter carriers, exact collectible identities, Locker Winter progress, swaps/locks, Base/tactical decoration, reward feedback and full-set celebration. Override to October and confirm Halloween remains isolated and authoritative. Override to November and confirm no event is active. Verify previously recovered Halloween and Winter pieces remain owned/equippable outside their event windows and that normal Original/Dark Horizon music continues during Winter.
+
+See `WINTER_SEASONAL_EVENT_0060_VALIDATION.md`.
 
 ## 0059.1 Seasonal Framework Review
 
