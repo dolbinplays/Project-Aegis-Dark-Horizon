@@ -1,6 +1,6 @@
 {
-  "build": "v0.26.10.06.0058.1_SEASONAL_REWARD_REVIEW_HOTFIX",
-  "package_filename": "Project_Aegis_v0.26.10.06.0058.1_SEASONAL_REWARD_REVIEW_HOTFIX.zip",
+  "build": "v0.26.10.06.0059.1_SEASONAL_FRAMEWORK_REVIEW_HOTFIX",
+  "package_filename": "Project_Aegis_v0.26.10.06.0059.1_SEASONAL_FRAMEWORK_REVIEW_HOTFIX.zip",
   "save_format": 4,
   "base_game_runtime_build": "v0.26.09.17.1320_PROP_EDITOR_RUNTIME_LIBRARY_INTEGRATION_PATCH",
   "editor": "AEGIS_Prop_Editor_v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH.html",
@@ -9,14 +9,14 @@
   "tools_editor_launcher_extension": "assets/runtime/aegis-tools-editor-launcher-runtime.js",
   "tools_editor_launcher_build": "v0.26.09.18.2115_IN_GAME_TOOLS_EDITOR_RENDERED_RUNTIME_HOTFIX",
   "tools_editor_access": "native-react-button-via-pre-render-embedded-runtime-payload-transform",
-  "launch_cache": "aegis-launch-shell-v121-seasonal-reward-review",
-  "hotfix_reason": "Repair seasonal reward health checks, retain-only recovery feedback, loaded-collection highlights, and audio failure isolation; preserve save format 4.",
+  "launch_cache": "aegis-launch-shell-v123-seasonal-framework-review",
+  "hotfix_reason": "Validate seasonal calendar windows and registry keys, honor recovery collection gates, and preserve Halloween compatibility and release history.",
   "runtime_extension": "assets/runtime/aegis-contextual-prop-placement-runtime.js",
   "runtime_extension_build": "v0.26.09.18.2051_IN_GAME_TOOLS_AND_PROP_EDITOR_ACCESS_PATCH",
   "prop_authoring_pipeline": "canonical-prop-definition",
-  "runtime_bytes": 7880616,
-  "runtime_sha256": "95d8f0ef567180cc7b618a16f7e6a40910b29b48f6358696458e6a03bad645e6",
-  "host_sha256": "4b2f75e46789d4eeac13f5f2450ee8100a98b7ff580be2737a10dedabaf94d37",
+  "runtime_bytes": 7888556,
+  "runtime_sha256": "9ffa5d8336ccabb021289fef56645c0f509062d61a21ad1c16311780cee98980",
+  "host_sha256": "497556e67012fb7dc196708e1671752d4c41514ea427967ba71a2b145e13fad3",
   "building_layout_editor": "AEGIS_Building_Layout_Editor_CURRENT.html",
   "building_layout_schema": "aegis-building-layout-v1",
   "tv_play": "AEGIS_TV.html",
@@ -31,7 +31,7 @@
   "standing_order_resume_contract": "objective-completion-preserves-standing-v1+civilian-objective-suspend-resume-v2",
   "tactical_vitals_reassignment_contract": "drag-drop-fire-team-roster-v1",
   "fire_team_roster_authority": "commander-managed-after-first-vitals-reassignment",
-  "seasonal_event_contract": "calendar-event-v1+halloween-cosmetic-collection-v1",
+  "seasonal_event_contract": "calendar-event-registry-v2+data-driven-content-pack-v1+halloween-compatibility-v1",
   "seasonal_event_stat_policy": "presentation-only-no-stat-bonuses",
   "halloween_drop_policy": "1-3-initial-carriers-per-normal-october-mission",
   "halloween_collection_slots": [
@@ -102,5 +102,8 @@
   "halloween_mission_music": "two-contact-in-the-dark-tracks+existing-search-combat-crossfade",
   "seasonal_reward_stingers": "procedural-web-audio+sfx-bus+composed-music-duck-v1",
   "seasonal_collection_feedback": "shared-locker-before-after-diff+foundation-signature-completion-v1",
-  "seasonal_reward_rate_limit_ms": 450
+  "seasonal_reward_rate_limit_ms": 450,
+  "seasonal_event_registry": "priority+date-window+feature-gates+content-pack-v1",
+  "seasonal_event_active_policy": "highest-priority-active-event-per-feature-v1",
+  "seasonal_event_first_pack": "halloween"
 }

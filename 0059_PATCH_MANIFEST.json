@@ -1,0 +1,16 @@
+{
+  "build": "v0.26.10.06.0059.1_SEASONAL_FRAMEWORK_REVIEW_HOTFIX",
+  "save_format": 4,
+  "files": [
+    "index.html",
+    "service-worker.js",
+    "release-metadata.json",
+    "README_PATCH_NOTES.txt",
+    "Project_Aegis_Alien_Response_Command_Updated_Roadmap_and_Game_Bible.md",
+    "SEASONAL_EVENT_FRAMEWORK_0059_VALIDATION.md",
+    "src/browser-runtime.html",
+    "src/manifest.json",
+    "tools/test-seasonal-framework-runtime.cjs",
+    "tools/package-runtime-shell.cjs"
+  ]
+}

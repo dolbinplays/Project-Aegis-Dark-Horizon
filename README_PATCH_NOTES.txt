@@ -1,3 +1,20 @@
+BUILD: v0.26.10.06.0059.1_SEASONAL_FRAMEWORK_REVIEW_HOTFIX
+October 6, 2026 - Seasonal Framework Review
+- Reject malformed calendar windows, unknown event keys, and inherited feature names.
+- Respect the collection feature gate during recovery; retain legacy Halloween saves and deterministic drops.
+- Restore the previous in-game patch history and synchronize source metadata. Save format remains 4.
+
+BUILD: v0.26.10.06.0059_GENERALIZED_SEASONAL_EVENT_CONTENT_FRAMEWORK_PATCH
+October 6, 2026 - Generalized Seasonal Event Content Framework
+- Replaces the single-month seasonal definition with a reusable registry supporting priority, date windows, feature gates and content-pack metadata.
+- Halloween is migrated as the first registered pack with unchanged October activation, 1-3 carrier pressure, four collectible slots, signature variants, music, decorations, reward feedback and victory presentation.
+- Generic carrier selection and collectible creation now own seasonal mission drops; legacy Halloween helper names remain compatibility wrappers.
+- Seasonal recovery validates the recovered piece's own event key instead of assuming every seasonal item is Halloween.
+- Base/tactical decoration, soundtrack and reward feedback paths now consult event feature gates rather than raw Halloween month checks.
+- No Winter or other new event content is added yet. Presentation-only; save format remains 4.
+
+See SEASONAL_EVENT_FRAMEWORK_0059_VALIDATION.md.
+
 BUILD: v0.26.10.06.0058.1_SEASONAL_REWARD_REVIEW_HOTFIX
 October 6, 2026 - Seasonal Reward Feedback Review
 - Fixed the reward health-check scope error.

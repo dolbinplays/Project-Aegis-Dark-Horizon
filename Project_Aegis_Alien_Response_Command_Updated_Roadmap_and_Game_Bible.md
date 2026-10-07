@@ -1,11 +1,29 @@
 # PROJECT AEGIS / ALIEN RESPONSE COMMAND — UPDATED ROADMAP AND GAME BIBLE
 
-Current browser build: `v0.26.10.06.0058.1_SEASONAL_REWARD_REVIEW_HOTFIX`
+Current browser build: `v0.26.10.06.0059.1_SEASONAL_FRAMEWORK_REVIEW_HOTFIX`
 
 Current save format: `4`
 
+## 0059.1 Seasonal Framework Review
 
+Malformed date windows and unknown event/feature keys now remain inactive. Recovery honors each event collection switch while preserving legacy Halloween saves. Valid month ranges, year-wrapping windows, leap day, and deterministic carrier selection are covered by runtime tests. Save format remains 4.
 
+## Generalized Seasonal Event Content Framework — Browser 0059
+
+**Status: implemented; Halloween parity/installed-game acceptance pending.**
+
+October 6, 2026
+- Seasonal content now resolves through a registry with event priority, reusable date windows, presentation-only policy and named feature gates.
+- A content pack supplies collection identity, four-slot catalog, foundation/signature definitions, carrier pressure, soundtrack key, reward theme and decoration hooks.
+- Halloween is the first registered pack and retains its existing October behavior. Legacy Halloween helpers remain compatibility wrappers while generic event functions own activation, carrier selection and collectible creation.
+- Seasonal recovery accepts only pieces whose own `eventKey` is currently active, removing the hard assumption that every future seasonal collectible is Halloween.
+- Existing Halloween music, Base/tactical decorations and reward stingers now consult registered feature gates.
+- The framework intentionally activates the highest-priority eligible event per feature. It does not add Winter/Valentine/St. Patrick's/Anniversary content yet.
+- Existing campaign collection fields remain authoritative. No migration or gameplay/stat changes; save format remains **4**.
+
+**Acceptance:** during October verify Halloween carriers, drops, Locker, decorations, soundtrack, reward feedback and victory flourishes behave exactly as 0058.1. Override the seasonal date to November and verify Halloween presentation deactivates while permanent earned cosmetics remain owned/equippable. Confirm existing saves load without migration.
+
+See `SEASONAL_EVENT_FRAMEWORK_0059_VALIDATION.md`.
 
 ## 0058.1 Review Hotfix
 
